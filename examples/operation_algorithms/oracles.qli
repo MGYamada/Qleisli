@@ -1,11 +1,11 @@
 //! Phase oracles on four labels; the first bit has integer weight one.
 use std::quantum::z;
 
-basis fn is00(a: Bit, b: Bit) -> Bit { not a and not b }
-basis fn is10(a: Bit, b: Bit) -> Bit { a and not b }
-basis fn is01(a: Bit, b: Bit) -> Bit { not a and b }
-basis fn is11(a: Bit, b: Bit) -> Bit { a and b }
-basis fn nonzero(a: Bit, b: Bit) -> Bit { not (not a and not b) }
+basis fn is00((a, b): (Bit, Bit)) -> Bit { not a and not b }
+basis fn is10((a, b): (Bit, Bit)) -> Bit { a and not b }
+basis fn is01((a, b): (Bit, Bit)) -> Bit { not a and b }
+basis fn is11((a, b): (Bit, Bit)) -> Bit { a and b }
+basis fn nonzero((a, b): (Bit, Bit)) -> Bit { not (not a and not b) }
 
 // An independently stated unary product meaning, separate from the oracle body.
 // phase_by retains its exact right-associated three-bit exponent interface.

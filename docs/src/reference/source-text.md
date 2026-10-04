@@ -183,4 +183,16 @@ and results remain historical evidence. Existing single-declaration observations
 and six small proposal byte sequences are unchanged by the sibling extension;
 newly accepted source still undergoes its actual native check.
 
+Both current finite `with_computed` forms now require the
+[explicit predicate domain](type-model.md#predicate-domains-and-argument-lists).
+Replace a legacy `p(a: A, b: B)` predicate with `p((a,b): (A,B))` for a
+`Q<(A,B)>` register. For three or more parameters, write the register's exact
+tree; the old fold was left-associated. A `Q<Unit>` predicate takes an explicit
+Unit parameter. Ordinary calls retain their argument-list arity, so update any
+ordinary callers or provide a separate unary wrapper. The
+`tests/fixtures/frontend_v030/predicate-domain/` and
+`predicate-domain-independent/` packets retain old diagnostics, explicit current
+translations, small proposal comparisons and independent phase/reference
+checks. Source-bearing artifact identities change when embedded source changes.
+
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

@@ -1,0 +1,16 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: MIT
+// Modified from https://github.com/microsoft/QuantumKatas/blob/1a4740ff70ceffebde73d1434b2dedbe27643300/GroversAlgorithm/ReferenceImplementation.qs
+// Selected symbol(s): GroversSearch_Reference; GroverIteration_Reference
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::z;
+use std::routines::hadamard2;
+use std::routines::reflect_uniform2;
+basis fn marked((a,b): (Bit,Bit)) -> Bit { a and b }
+pub unitary fn kernel(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let q = hadamard2(q);
+    let q = with_computed(q, marked) { |flag| z(flag) };
+    reflect_uniform2(q)
+}

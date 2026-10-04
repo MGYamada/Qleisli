@@ -1,0 +1,699 @@
+[
+  {
+    "label": "remaining-focused-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_judgments",
+      "--test",
+      "with_computed_diagnostics",
+      "--test",
+      "function_contracts",
+      "--test",
+      "operation_parameters",
+      "--test",
+      "cli_json",
+      "--test",
+      "cli_sampling"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 23.264026125019882,
+    "stdout": "remaining-focused-tests.stdout.txt",
+    "stderr": "remaining-focused-tests.stderr.txt"
+  },
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.09137512499000877,
+    "stdout": "build.stdout.txt",
+    "stderr": "build.stderr.txt"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/observer.rs",
+      "--extern",
+      "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-predicate-domain-after/observer"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.3608733330038376,
+    "stdout": "observer-build.stdout.txt",
+    "stderr": "observer-build.stderr.txt"
+  },
+  {
+    "label": "study-restricted-legacy-flat",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.3960535409860313,
+    "stdout": "study-restricted-legacy-flat.stdout.txt",
+    "stderr": "study-restricted-legacy-flat.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unary-flat",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.44014508300460875,
+    "stdout": "study-restricted-unary-flat.stdout.txt",
+    "stderr": "study-restricted-unary-flat.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unary-mismatch-flat",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.027218916977290064,
+    "stdout": "study-restricted-unary-mismatch-flat.stdout.txt",
+    "stderr": "study-restricted-unary-mismatch-flat.stderr.txt"
+  },
+  {
+    "label": "study-certified-legacy-flat",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.04697387502528727,
+    "stdout": "study-certified-legacy-flat.stdout.txt",
+    "stderr": "study-certified-legacy-flat.stderr.txt"
+  },
+  {
+    "label": "study-meaning-unary-flat",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unary-flat",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4962893750052899,
+    "stdout": "study-meaning-unary-flat.stdout.txt",
+    "stderr": "study-meaning-unary-flat.stderr.txt"
+  },
+  {
+    "label": "study-restricted-legacy-left",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.027384458982851356,
+    "stdout": "study-restricted-legacy-left.stdout.txt",
+    "stderr": "study-restricted-legacy-left.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unary-left",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.43107295798836276,
+    "stdout": "study-restricted-unary-left.stdout.txt",
+    "stderr": "study-restricted-unary-left.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unary-mismatch-left",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.028497541963588446,
+    "stdout": "study-restricted-unary-mismatch-left.stdout.txt",
+    "stderr": "study-restricted-unary-mismatch-left.stderr.txt"
+  },
+  {
+    "label": "study-certified-legacy-left",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.04740779101848602,
+    "stdout": "study-certified-legacy-left.stdout.txt",
+    "stderr": "study-certified-legacy-left.stderr.txt"
+  },
+  {
+    "label": "study-meaning-unary-left",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unary-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4106592910247855,
+    "stdout": "study-meaning-unary-left.stdout.txt",
+    "stderr": "study-meaning-unary-left.stderr.txt"
+  },
+  {
+    "label": "study-restricted-legacy-right",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.028847458015661687,
+    "stdout": "study-restricted-legacy-right.stdout.txt",
+    "stderr": "study-restricted-legacy-right.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unary-right",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.42353774997172877,
+    "stdout": "study-restricted-unary-right.stdout.txt",
+    "stderr": "study-restricted-unary-right.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unary-mismatch-right",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unary-mismatch-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.02724558301270008,
+    "stdout": "study-restricted-unary-mismatch-right.stdout.txt",
+    "stderr": "study-restricted-unary-mismatch-right.stderr.txt"
+  },
+  {
+    "label": "study-certified-legacy-right",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-legacy-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.04820012499112636,
+    "stdout": "study-certified-legacy-right.stdout.txt",
+    "stderr": "study-certified-legacy-right.stderr.txt"
+  },
+  {
+    "label": "study-meaning-unary-right",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unary-right",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4120478750555776,
+    "stdout": "study-meaning-unary-right.stdout.txt",
+    "stderr": "study-meaning-unary-right.stderr.txt"
+  },
+  {
+    "label": "study-meaning-legacy-left",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-legacy-left",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.007073917018715292,
+    "stdout": "study-meaning-legacy-left.stdout.txt",
+    "stderr": "study-meaning-legacy-left.stderr.txt"
+  },
+  {
+    "label": "study-restricted-zero",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.027138000004924834,
+    "stdout": "study-restricted-zero.stdout.txt",
+    "stderr": "study-restricted-zero.stderr.txt"
+  },
+  {
+    "label": "study-certified-zero",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.04684566700598225,
+    "stdout": "study-certified-zero.stdout.txt",
+    "stderr": "study-certified-zero.stderr.txt"
+  },
+  {
+    "label": "study-meaning-zero",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.007146375020965934,
+    "stdout": "study-meaning-zero.stdout.txt",
+    "stderr": "study-meaning-zero.stderr.txt"
+  },
+  {
+    "label": "study-restricted-unit",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4311394579708576,
+    "stdout": "study-restricted-unit.stdout.txt",
+    "stderr": "study-restricted-unit.stderr.txt"
+  },
+  {
+    "label": "study-certified-unit",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/certified-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.5110127920052037,
+    "stdout": "study-certified-unit.stdout.txt",
+    "stderr": "study-certified-unit.stderr.txt"
+  },
+  {
+    "label": "study-meaning-unit",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/meaning-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4126073339721188,
+    "stdout": "study-meaning-unit.stdout.txt",
+    "stderr": "study-meaning-unit.stderr.txt"
+  },
+  {
+    "label": "study-ordinary-three-arguments",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-three-arguments",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.415129708009772,
+    "stdout": "study-ordinary-three-arguments.stdout.txt",
+    "stderr": "study-ordinary-three-arguments.stderr.txt"
+  },
+  {
+    "label": "study-ordinary-tuple-is-not-three-arguments",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-tuple-is-not-three-arguments",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.0070585840148851275,
+    "stdout": "study-ordinary-tuple-is-not-three-arguments.stdout.txt",
+    "stderr": "study-ordinary-tuple-is-not-three-arguments.stderr.txt"
+  },
+  {
+    "label": "study-ordinary-zero-called-with-unit",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-zero-called-with-unit",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006584457994904369,
+    "stdout": "study-ordinary-zero-called-with-unit.stdout.txt",
+    "stderr": "study-ordinary-zero-called-with-unit.stderr.txt"
+  },
+  {
+    "label": "study-ordinary-unit-called-with-zero",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-after/observer",
+      "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-unit-called-with-zero",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.006450542015954852,
+    "stdout": "study-ordinary-unit-called-with-zero.stdout.txt",
+    "stderr": "study-ordinary-unit-called-with-zero.stderr.txt"
+  },
+  {
+    "label": "pair-contract-historical-new-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-predicate-domain-after/pair-contract-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 1,
+    "seconds": 0.5997208749759011,
+    "stdout": "pair-contract-historical-new-check.stdout.txt",
+    "stderr": "pair-contract-historical-new-check.stderr.txt"
+  },
+  {
+    "label": "pair-contract-before-run",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-predicate-domain-after/pair-contract-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.9753723749890924,
+    "stdout": "pair-contract-before-run.stdout.txt",
+    "stderr": "pair-contract-before-run.stderr.txt"
+  },
+  {
+    "label": "pair-contract-after-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-predicate-domain-after/pair-contract-current",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.5841314170393161,
+    "stdout": "pair-contract-after-run.stdout.txt",
+    "stderr": "pair-contract-after-run.stderr.txt"
+  },
+  {
+    "label": "pair-contract-before-proposal",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "emit-ir",
+      "/private/tmp/qleisli-predicate-domain-after/pair-contract-historical",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/pair-contract-before.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.6051242499961518,
+    "stdout": "pair-contract-before-proposal.stdout.txt",
+    "stderr": "pair-contract-before-proposal.stderr.txt"
+  },
+  {
+    "label": "pair-contract-after-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/private/tmp/qleisli-predicate-domain-after/pair-contract-current",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/pair-contract-after.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.6074557499960065,
+    "stdout": "pair-contract-after-proposal.stdout.txt",
+    "stderr": "pair-contract-after-proposal.stderr.txt"
+  },
+  {
+    "label": "basis-tuple-pattern-historical-new-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-predicate-domain-after/basis-tuple-pattern-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 1,
+    "seconds": 0.006554417021106929,
+    "stdout": "basis-tuple-pattern-historical-new-check.stdout.txt",
+    "stderr": "basis-tuple-pattern-historical-new-check.stderr.txt"
+  },
+  {
+    "label": "basis-tuple-pattern-before-run",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-predicate-domain-after/basis-tuple-pattern-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4685794999822974,
+    "stdout": "basis-tuple-pattern-before-run.stdout.txt",
+    "stderr": "basis-tuple-pattern-before-run.stderr.txt"
+  },
+  {
+    "label": "basis-tuple-pattern-after-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-predicate-domain-after/basis-tuple-pattern-current",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4812379579525441,
+    "stdout": "basis-tuple-pattern-after-run.stdout.txt",
+    "stderr": "basis-tuple-pattern-after-run.stderr.txt"
+  },
+  {
+    "label": "basis-tuple-pattern-before-proposal",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "emit-ir",
+      "/private/tmp/qleisli-predicate-domain-after/basis-tuple-pattern-historical",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/basis-tuple-pattern-before.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.48613516602199525,
+    "stdout": "basis-tuple-pattern-before-proposal.stdout.txt",
+    "stderr": "basis-tuple-pattern-before-proposal.stderr.txt"
+  },
+  {
+    "label": "basis-tuple-pattern-after-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/private/tmp/qleisli-predicate-domain-after/basis-tuple-pattern-current",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/basis-tuple-pattern-after.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4845256250118837,
+    "stdout": "basis-tuple-pattern-after-proposal.stdout.txt",
+    "stderr": "basis-tuple-pattern-after-proposal.stderr.txt"
+  },
+  {
+    "label": "phase-mismatch-historical-new-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-predicate-domain-after/phase-mismatch-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 1,
+    "seconds": 0.006702124956063926,
+    "stdout": "phase-mismatch-historical-new-check.stdout.txt",
+    "stderr": "phase-mismatch-historical-new-check.stderr.txt"
+  },
+  {
+    "label": "phase-mismatch-before",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-predicate-domain-after/phase-mismatch-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 1,
+    "seconds": 0.18009224999696016,
+    "stdout": "phase-mismatch-before.stdout.txt",
+    "stderr": "phase-mismatch-before.stderr.txt"
+  },
+  {
+    "label": "phase-mismatch-after",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-predicate-domain-after/phase-mismatch-current",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 1,
+    "seconds": 0.1804616249864921,
+    "stdout": "phase-mismatch-after.stdout.txt",
+    "stderr": "phase-mismatch-after.stderr.txt"
+  },
+  {
+    "label": "grover-historical-new-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/private/tmp/qleisli-predicate-domain-after/grover-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 1,
+    "seconds": 0.16642399999545887,
+    "stdout": "grover-historical-new-check.stdout.txt",
+    "stderr": "grover-historical-new-check.stderr.txt"
+  },
+  {
+    "label": "grover-before-run",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-predicate-domain-after/grover-historical",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.42703691695351154,
+    "stdout": "grover-before-run.stdout.txt",
+    "stderr": "grover-before-run.stderr.txt"
+  },
+  {
+    "label": "grover-after-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/private/tmp/qleisli-predicate-domain-after/grover-current",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.42486870801076293,
+    "stdout": "grover-after-run.stdout.txt",
+    "stderr": "grover-after-run.stderr.txt"
+  },
+  {
+    "label": "grover-before-proposal",
+    "argv": [
+      "/private/tmp/qleisli-lexical-baseline-fae0/target/debug/qleisli",
+      "emit-ir",
+      "/private/tmp/qleisli-predicate-domain-after/grover-historical",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/grover-before.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.4293405840289779,
+    "stdout": "grover-before-proposal.stdout.txt",
+    "stderr": "grover-before-proposal.stderr.txt"
+  },
+  {
+    "label": "grover-after-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/private/tmp/qleisli-predicate-domain-after/grover-current",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/grover-after.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "seconds": 0.42920370801584795,
+    "stdout": "grover-after-proposal.stdout.txt",
+    "stderr": "grover-after-proposal.stderr.txt"
+  }
+]

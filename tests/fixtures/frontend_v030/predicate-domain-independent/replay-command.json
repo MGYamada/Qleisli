@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "python3",
+    "tests/fixtures/frontend_v030/predicate-domain-independent/replay.py",
+    "--tree",
+    "/Users/masa/git/Qleisli",
+    "--baseline-tree",
+    "/private/tmp/qleisli-predicate-baseline-a6c8bb7",
+    "--kernel",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--output-dir",
+    "/private/tmp/qleisli-predicate-independent-final",
+    "--msrv-bin",
+    "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "stdout": "Saved 56 observations, 8 byte-identical old/current proposals, 7 tests per toolchain and both all-target Clippy checks.\n",
+  "stderr": "",
+  "source_stable_at_end": true
+}

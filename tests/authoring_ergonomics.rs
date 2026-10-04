@@ -57,7 +57,25 @@ fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
         ("flat_is_not_balanced", "type_mismatch"),
         ("phase_mismatch", "contract"),
     ] {
-        let root = SourceRoot::new(&source(name));
+        let text = if name == "phase_mismatch" {
+            let original = SourceRoot::new(&source(name));
+            let error = check_project_diagnostic(&original.0).unwrap_err();
+            assert_eq!(error.code, "arity", "historical predicate: {error:?}");
+            assert!(
+                error
+                    .message
+                    .contains("exactly one explicit basis parameter")
+            );
+            // Preserve the original counterexample; its current translation
+            // must still reach the independent phase mismatch, not an arity error.
+            include_str!(
+                "fixtures/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli"
+            )
+            .to_owned()
+        } else {
+            source(name)
+        };
+        let root = SourceRoot::new(&text);
         let error = check_project_diagnostic(&root.0).unwrap_err();
         assert_eq!(error.code, code, "{name}: {error:?}");
     }

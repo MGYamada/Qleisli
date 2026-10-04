@@ -1,0 +1,6 @@
+{
+  "scope": "test assertion only; no source or production change",
+  "actual": "Arity for zero or multiple with_computed predicate parameters",
+  "old_expected": "TypeMismatch",
+  "reason": "Argument count is a distinct checking failure; Meaning keeps its existing TypeMismatch contract for wrong exact signature."
+}

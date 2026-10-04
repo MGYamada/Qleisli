@@ -38,6 +38,17 @@ fn fixture(name: &str) -> String {
     .unwrap()
 }
 
+// #25 keeps original authoring bytes as historical inputs. The selected current
+// translations only make the predicate domain explicit; neither is auto-repaired.
+fn current_predicate_fixture(name: &str) -> String {
+    fs::read_to_string(
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/frontend_v030/predicate-domain/current/qli_authoring")
+            .join(format!("{name}.qli")),
+    )
+    .unwrap()
+}
+
 fn project(example: &str) -> SourceRoot {
     let root = SourceRoot::new("");
     for entry in fs::read_dir(
@@ -287,17 +298,23 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
         &execute(&SourceRoot::new(&fixture("accepted/nary_tuple"))),
         &[(vec![false; 3], 1.0)],
     );
-    distribution(
-        &execute(&SourceRoot::new(&fixture("accepted/basis_tuple_pattern"))),
-        &[(vec![true, true], 1.0)],
-    );
+    for name in ["accepted/basis_tuple_pattern", "accepted/pair_contract"] {
+        let original = SourceRoot::new(&fixture(name));
+        let error = check_project_diagnostic(&original.0).unwrap_err();
+        assert_eq!(error.code, "arity", "historical {name}: {error:?}");
+        assert!(
+            error
+                .message
+                .contains("exactly one explicit basis parameter")
+        );
+        distribution(
+            &execute(&SourceRoot::new(&current_predicate_fixture(name))),
+            &[(vec![true, true], 1.0)],
+        );
+    }
     distribution(
         &execute(&SourceRoot::new(&fixture("accepted/auxiliary_hh"))),
         &[(vec![false], 1.0)],
-    );
-    distribution(
-        &execute(&SourceRoot::new(&fixture("accepted/pair_contract"))),
-        &[(vec![true, true], 1.0)],
     );
     distribution(
         &execute(&SourceRoot::new(&fixture("accepted/product_reassociation"))),

@@ -331,7 +331,7 @@ fn certified_source_checks_step_width_and_recursion_limits() {
         ErrorCode::Limit,
     );
     rejects(
-        "basis fn predicate(a: Bit,b: Bit,c: Bit,d: Bit,e: Bit,f: Bit) -> Bit { a }
+        "basis fn predicate((((((a,b),c),d),e),f): (((((Bit,Bit),Bit),Bit),Bit),Bit)) -> Bit { a }
         unitary fn identity(q: Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)>) -> Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)> { q }
         unitary fn candidate(q: Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)>) -> Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)> {
             with_computed(q,predicate,identity) { |d,a| (d,a) }

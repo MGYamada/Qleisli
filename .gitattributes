@@ -67,3 +67,12 @@ tests/fixtures/frontend_v030/multi-declaration/after/focused-tests.stdout.txt -t
 tests/fixtures/frontend_v030/sized-declarations-independent/after/latest-tests.stdout -text -whitespace
 tests/fixtures/frontend_v030/sized-declarations-independent/after/msrv-tests.stdout -text -whitespace
 tests/fixtures/frontend_v030/sized-declarations-independent/validation/sized-declarations.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/after/latest-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/after/msrv-tests.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/build.stderr -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/legacy_left_fold_complete_actions.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/noninjective_and_and_constant_predicates_remain_legal_in_both_forms.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain-independent/first-current/test.stdout -text -whitespace
+tests/fixtures/frontend_v030/predicate-domain/validation/remaining-focused-tests.stdout.txt -text -whitespace

@@ -1,0 +1,1 @@
+emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain/validation/pair-contract-after.proposal.json

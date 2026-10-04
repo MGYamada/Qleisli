@@ -217,7 +217,7 @@ use std::quantum::z;
 use std::quantum::join;
 use std::quantum::split;
 use std::observe::measure_z;
-basis fn predicate(a: Bit, b: Bit) -> Bit { xor2(and2(a, b), 0) }
+basis fn predicate((a,b): (Bit,Bit)) -> Bit { xor2(and2(a, b), 0) }
 observe fn main() -> (CBit, CBit) {
     let q = join(h(init0()), x(init0()));
     let q = with_computed(q, predicate) { |a| z(a) };
@@ -346,14 +346,10 @@ fn annotated_types_and_computed_domains_share_the_tree_limits() {
     for _ in 0..12 {
         ty = format!("({ty}, {ty})");
     }
-    let params = (0..70)
-        .map(|i| format!("a{i}: Unit"))
-        .collect::<Vec<_>>()
-        .join(", ");
     for source in [
         format!("unitary fn f(v: {ty}) -> Unit {{ () }}"),
         format!(
-            "basis fn p({params}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}"
+            "basis fn p(value: {ty}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}"
         ),
     ] {
         let root = SourceRoot::new(&source);

@@ -333,7 +333,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
 }
 
 const COMPUTED: &str = "
-basis fn predicate(a: Bit, u: Unit, b: Bit, c: Bit) -> Bit { (a and not b) xor c }
+basis fn predicate((((a,u),b),c): (((Bit,Unit),Bit),Bit)) -> Bit { (a and not b) xor c }
 unitary fn oracle(q: Q<(((Bit,Unit),Bit),Bit)>) -> Q<(((Bit,Unit),Bit),Bit)> {
     with_computed(q,predicate) { |ancilla| z(t(t(t(ancilla)))) }
 }
@@ -416,11 +416,11 @@ observe fn main() -> (((CBit,CBit),CBit),CBit) {{
         }
     }
 
-    // Empty parameters pack to Unit; two Unit parameters pack to (Unit,Unit).
-    // Both domains have one label, but their exact trees are not interchangeable.
+    // Explicit Unit and (Unit,Unit) domains each have one label, but their
+    // exact trees are not interchangeable and neither is inferred from arity.
     for (params, basis, label, wrong_basis) in [
-        ("", "Unit", "()", "(Unit,Unit)"),
-        ("a: Unit, b: Unit", "(Unit,Unit)", "((),())", "Unit"),
+        ("_: Unit", "Unit", "()", "(Unit,Unit)"),
+        ("(_, _): (Unit,Unit)", "(Unit,Unit)", "((),())", "Unit"),
     ] {
         let definitions = format!(
             "

@@ -1,0 +1,3 @@
+finite.load: ok, 1 local modules
+sized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function
+finite.check: Diagnostic { code: "type_mismatch", message: "predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli", span: Span { start: 564, end: 573 }, line: 8, column: 75 }) }

@@ -1,0 +1,57 @@
+[
+  {
+    "case": "zero-width-wrong-restricted",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..59: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the source basis type to Bit: expected `Unit -> Bit`, found `(Unit,Unit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/main.qli\", span: Span { start: 112, end: 117 }, line: 1, column: 113 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "zero-width-wrong-certified",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..53: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `Unit -> Bit`, found `(Unit,Unit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified/main.qli\", span: Span { start: 219, end: 224 }, line: 1, column: 220 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "zero-width-wrong-meaning",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..58: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning/main.qli\", span: Span { start: 88, end: 93 }, line: 1, column: 89 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "ordinary-nullary-packed",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..27: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed/main.qli\", span: Span { start: 60, end: 72 }, line: 1, column: 61 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "ordinary-unit-omitted",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..28: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted/main.qli\", span: Span { start: 55, end: 60 }, line: 1, column: 56 }) }\n",
+    "stderr": ""
+  }
+]

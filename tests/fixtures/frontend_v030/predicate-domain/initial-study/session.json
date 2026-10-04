@@ -1,0 +1,182 @@
+{
+  "kind": "informed read-only basis-arity experiment",
+  "issue": {
+    "number": 25,
+    "url": "https://github.com/MGYamada/Qleisli/issues/25",
+    "updatedAt": "2026-10-04T08:18:25Z"
+  },
+  "baseline_git_head": "0d93a186fbe2e1345542595b75f680f867e1e4e5",
+  "working_tree_context": "multi-declaration sized candidate present; basis/compiler code unchanged by this experiment",
+  "status": "all first sources frozen before checking",
+  "source_files": {
+    "certified-legacy-flat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "certified-legacy-flat/main.qli": "5a836010d0cb6265a235e7a8283564765fc0a574339755a7bad7890b96c2ce17",
+    "certified-legacy-left/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "certified-legacy-left/main.qli": "84ad003ca17e72fb11ce9ccac1b978eef9329a35ef62531e5ce5cb54da0b0292",
+    "certified-legacy-right/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "certified-legacy-right/main.qli": "3179de52c9cfffeb5dac392a49db4e434a0e4f23a86140cf052fb06c9c364055",
+    "certified-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "certified-unit/main.qli": "ca0d3f0c1131acb36c00e58bf15ae892691c6a2d0ec53400def4f9f83a301540",
+    "certified-zero/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "certified-zero/main.qli": "459d9d801a77a4da60fcfffb6bcc2a30918e5f273a06b7dfa6b1bf6c1c202220",
+    "meaning-legacy-left/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "meaning-legacy-left/main.qli": "c1eb3087e51b939770fb19043c9923acbafbb7d2f54670c2eb06c43ca00a23ab",
+    "meaning-unary-flat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "meaning-unary-flat/main.qli": "5f0f557bdfa4b9263f1dcb1714c409ebff0f67f8f0755792d8e7ce4d69a43db3",
+    "meaning-unary-left/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "meaning-unary-left/main.qli": "fa45fb351b70a9b4a66767829bc1801760f784c9bc47ff848b64dabefe33214e",
+    "meaning-unary-right/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "meaning-unary-right/main.qli": "cbd13e77931168911126b95b4b9276bc3fd6cd7bfb7c3d94476ebfa81e0823f5",
+    "meaning-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "meaning-unit/main.qli": "f0e5cdfb4408b1463631854f793a5aa56b4dd80bfc65886cf850e59a185a1f60",
+    "meaning-zero/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "meaning-zero/main.qli": "b36de4e49a0882494e6dabb77deb7d7b7130e83244c11a3336d63441bc59c9a5",
+    "ordinary-three-arguments/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-three-arguments/main.qli": "70efe46492c3fea07b81bdfea4e6f12eed3ae3abd181b5f1a99205ccedbd9671",
+    "ordinary-tuple-is-not-three-arguments/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-tuple-is-not-three-arguments/main.qli": "bec4e80ac4d75079d23ad6ab5ef69b2521ddf061e40ee49f5eab6e88e580e897",
+    "ordinary-unit-called-with-zero/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-unit-called-with-zero/main.qli": "4f5146dffb32d4ca86c3b7bd9026c3c72d118b57515e769c3a3f1099a9a987f9",
+    "ordinary-zero-called-with-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-zero-called-with-unit/main.qli": "6d13a58b04fba19ce2163e444a20b7682df85bb06f14ca0cec3a86ee4365399e",
+    "restricted-legacy-flat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-legacy-flat/main.qli": "33b068a9e6af71cca53d70a8621d04dfb673d752738b34c6bdf1bb88b55a55f4",
+    "restricted-legacy-left/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-legacy-left/main.qli": "0506a3eb9163fda076337a1459d9e54f76f9adee1b2497b8c5adb4a60aa0e888",
+    "restricted-legacy-right/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-legacy-right/main.qli": "37e979b9401ad0218adf8fa4d7171281c0853e2f0d43894339a44819b9945f66",
+    "restricted-unary-flat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unary-flat/main.qli": "a0a204c8e619f996f916f102621dd721327054f965aaaef62c287c4d642c346a",
+    "restricted-unary-left/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unary-left/main.qli": "62f773287c83e6d38462089f9bf7f45e7040714665e9b856434e660fb143f663",
+    "restricted-unary-mismatch-flat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unary-mismatch-flat/main.qli": "da85b495624692450b2801d14ac3df55afdfb2d53110bce7ec84a2894bc95bbe",
+    "restricted-unary-mismatch-left/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unary-mismatch-left/main.qli": "3f38e2228c5ef38b1a1c35f2ae854bf02f2d35614c22ae3445f85de6f8291952",
+    "restricted-unary-mismatch-right/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unary-mismatch-right/main.qli": "9f35a5bf72a44ecb5c4e76ec8ab6f3f704a041a4e61d7831300e17d3fbd468a6",
+    "restricted-unary-right/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unary-right/main.qli": "d0e353ed01f435ac921bad8bf9fa1faca07b839c44bb0d8e1964c3f0f4cc08f9",
+    "restricted-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-unit/main.qli": "e74650a92d33803305af1efbc436ef007fe8762dfac2c17e065be10132cd6ec0",
+    "restricted-zero/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "restricted-zero/main.qli": "57cdc13f5b4dcd89c3da34c51d2d1a2b6124b1655c81387fdf7d1964917f311c"
+  },
+  "current_source_hashes": {
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080",
+    "src/frontend/compile/basis.rs": "4adde2a8262b2a9acfe3fed87baf1a4bbb44d4ed61843d2a9566254661825fad",
+    "src/frontend/compile/operations.rs": "db999b2ad531781e4dae54d97c8d25069aff23687c2c24b846aa05d10f5c756b",
+    "src/frontend/compile/lower/mod.rs": "8c353e939bebc1032d55db96b3e0657c1ee05f91f26c6e64c1a957e2914c0321",
+    "src/frontend/compile/lower/certified.rs": "530049b2a1397631228b8d1b01d7741e2e04d879cd1042a9720127233bc9271d",
+    "src/frontend/compile/mod.rs": "baf3b6fc5b70b73ee67b6cbf675c2aba4a017ba64f57b2e9ceb7713a2d597305",
+    "src/frontend/resolve/locals.rs": "7132b78dff038887df51a5431cb3b6e2d1e1b326ac7ab73634be37925a29bbfd"
+  },
+  "cases": {
+    "restricted-legacy-flat": {
+      "first_source_sha256": "33b068a9e6af71cca53d70a8621d04dfb673d752738b34c6bdf1bb88b55a55f4",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "restricted-unary-flat": {
+      "first_source_sha256": "a0a204c8e619f996f916f102621dd721327054f965aaaef62c287c4d642c346a",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "restricted-unary-mismatch-flat": {
+      "first_source_sha256": "da85b495624692450b2801d14ac3df55afdfb2d53110bce7ec84a2894bc95bbe",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "certified-legacy-flat": {
+      "first_source_sha256": "5a836010d0cb6265a235e7a8283564765fc0a574339755a7bad7890b96c2ce17",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "meaning-unary-flat": {
+      "first_source_sha256": "5f0f557bdfa4b9263f1dcb1714c409ebff0f67f8f0755792d8e7ce4d69a43db3",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "restricted-legacy-left": {
+      "first_source_sha256": "0506a3eb9163fda076337a1459d9e54f76f9adee1b2497b8c5adb4a60aa0e888",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "restricted-unary-left": {
+      "first_source_sha256": "62f773287c83e6d38462089f9bf7f45e7040714665e9b856434e660fb143f663",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "restricted-unary-mismatch-left": {
+      "first_source_sha256": "3f38e2228c5ef38b1a1c35f2ae854bf02f2d35614c22ae3445f85de6f8291952",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "certified-legacy-left": {
+      "first_source_sha256": "84ad003ca17e72fb11ce9ccac1b978eef9329a35ef62531e5ce5cb54da0b0292",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "meaning-unary-left": {
+      "first_source_sha256": "fa45fb351b70a9b4a66767829bc1801760f784c9bc47ff848b64dabefe33214e",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "restricted-legacy-right": {
+      "first_source_sha256": "37e979b9401ad0218adf8fa4d7171281c0853e2f0d43894339a44819b9945f66",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "restricted-unary-right": {
+      "first_source_sha256": "d0e353ed01f435ac921bad8bf9fa1faca07b839c44bb0d8e1964c3f0f4cc08f9",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "restricted-unary-mismatch-right": {
+      "first_source_sha256": "9f35a5bf72a44ecb5c4e76ec8ab6f3f704a041a4e61d7831300e17d3fbd468a6",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "certified-legacy-right": {
+      "first_source_sha256": "3179de52c9cfffeb5dac392a49db4e434a0e4f23a86140cf052fb06c9c364055",
+      "expected_current_behavior_before_observation": "exact-domain rejection"
+    },
+    "meaning-unary-right": {
+      "first_source_sha256": "cbd13e77931168911126b95b4b9276bc3fd6cd7bfb7c3d94476ebfa81e0823f5",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "meaning-legacy-left": {
+      "first_source_sha256": "c1eb3087e51b939770fb19043c9923acbafbb7d2f54670c2eb06c43ca00a23ab",
+      "expected_current_behavior_before_observation": "signature rejection: Meaning already requires one parameter"
+    },
+    "restricted-zero": {
+      "first_source_sha256": "57cdc13f5b4dcd89c3da34c51d2d1a2b6124b1655c81387fdf7d1964917f311c",
+      "expected_current_behavior_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    "certified-zero": {
+      "first_source_sha256": "459d9d801a77a4da60fcfffb6bcc2a30918e5f273a06b7dfa6b1bf6c1c202220",
+      "expected_current_behavior_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    "meaning-zero": {
+      "first_source_sha256": "b36de4e49a0882494e6dabb77deb7d7b7130e83244c11a3336d63441bc59c9a5",
+      "expected_current_behavior_before_observation": "signature rejection"
+    },
+    "restricted-unit": {
+      "first_source_sha256": "e74650a92d33803305af1efbc436ef007fe8762dfac2c17e065be10132cd6ec0",
+      "expected_current_behavior_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    "certified-unit": {
+      "first_source_sha256": "ca0d3f0c1131acb36c00e58bf15ae892691c6a2d0ec53400def4f9f83a301540",
+      "expected_current_behavior_before_observation": "accept under current implicit zero-argument Unit convention"
+    },
+    "meaning-unit": {
+      "first_source_sha256": "f0e5cdfb4408b1463631854f793a5aa56b4dd80bfc65886cf850e59a185a1f60",
+      "expected_current_behavior_before_observation": "accept"
+    },
+    "ordinary-three-arguments": {
+      "first_source_sha256": "70efe46492c3fea07b81bdfea4e6f12eed3ae3abd181b5f1a99205ccedbd9671",
+      "expected_current_behavior_before_observation": "accept: ordinary argument list retains arity three"
+    },
+    "ordinary-tuple-is-not-three-arguments": {
+      "first_source_sha256": "bec4e80ac4d75079d23ad6ab5ef69b2521ddf061e40ee49f5eab6e88e580e897",
+      "expected_current_behavior_before_observation": "arity rejection"
+    },
+    "ordinary-zero-called-with-unit": {
+      "first_source_sha256": "6d13a58b04fba19ce2163e444a20b7682df85bb06f14ca0cec3a86ee4365399e",
+      "expected_current_behavior_before_observation": "arity rejection"
+    },
+    "ordinary-unit-called-with-zero": {
+      "first_source_sha256": "4f5146dffb32d4ca86c3b7bd9026c3c72d118b57515e769c3a3f1099a9a987f9",
+      "expected_current_behavior_before_observation": "arity rejection"
+    }
+  },
+  "scope": "At most three data qubits plus one protected auxiliary; no production edits, no source fixes, no new guarantee or source-preservation claim."
+}

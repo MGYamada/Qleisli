@@ -1,7 +1,7 @@
 use std::quantum::z;
 
 // Exactly one marked input: (1, 1).
-basis fn marked(a: Bit, b: Bit) -> Bit { a and b }
+basis fn marked((a, b): (Bit, Bit)) -> Bit { a and b }
 
 pub unitary fn mark(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     with_computed(q, marked) { |ancilla| z(ancilla) }

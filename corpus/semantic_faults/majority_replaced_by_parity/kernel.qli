@@ -11,7 +11,7 @@ use std::quantum::z;
 use std::quantum::join;
 use std::quantum::split;
 
-basis fn majority(a: Bit, b: Bit, c: Bit) -> Bit {
+basis fn majority(((a, b), c): ((Bit, Bit), Bit)) -> Bit {
     a xor b xor c
 }
 unitary fn hadamards(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {

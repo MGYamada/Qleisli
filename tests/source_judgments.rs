@@ -93,7 +93,7 @@ unitary fn reserved(predicate: Q<Unit>, q: Q<Bit>) -> (Q<Unit>,Q<Bit>) {
 
 #[test]
 fn basis_domains_and_branch_results_preserve_exact_product_trees() {
-    let predicate = "basis fn p(a: Bit, u: Unit, b: Bit) -> Bit { a xor b }";
+    let predicate = "basis fn p(((a,u),b): ((Bit,Unit),Bit)) -> Bit { a xor b }";
     accepted(&format!(
         "{predicate} unitary fn oracle(q: Q<((Bit,Unit),Bit)>) -> Q<((Bit,Unit),Bit)> {{
             with_computed(q,p) {{ |a| a }}

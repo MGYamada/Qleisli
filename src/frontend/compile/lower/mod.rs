@@ -1261,21 +1261,12 @@ impl Lowerer<'_, '_> {
             .saturating_add(predicate.table.len());
         self.compiler.charge(module, function.span, size)?;
         let predicate = self.compiler.basis[&key].clone();
-        let mut params = predicate.params.into_iter();
-        let mut domain = params.next().unwrap_or(Ty::unit());
-        for param in params {
-            domain = Ty::pair(domain, param);
-            self.compiler
-                .check_tree(module, function.span, domain.tree_size())?;
-        }
-        if domain != self.registers[&source_slot].basis || predicate.result != Ty::bit() {
-            return Err(self.error(
-                module,
-                function.span,
-                ErrorCode::TypeMismatch,
-                format!("predicate must map the source basis type to Bit: expected `{} -> Bit`, found `{domain} -> {}`", self.registers[&source_slot].basis, predicate.result),
-            ));
-        }
+        self.compiler.check_predicate_domain(
+            module,
+            function.span,
+            &predicate,
+            &self.registers[&source_slot].basis,
+        )?;
         let wire = self.wire();
         let ancilla = self.register(Ty::bit(), vec![wire]);
         let ancilla_slot = self.quantum(module, span, &ancilla, true)?;

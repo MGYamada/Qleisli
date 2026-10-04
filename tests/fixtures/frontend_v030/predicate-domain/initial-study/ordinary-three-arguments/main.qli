@@ -1,0 +1,4 @@
+use std::quantum::z;
+basis fn tri(a:Bit,b:Bit,c:Bit)->Bit{a xor (b and c)}
+basis fn probe((a,(b,c)):(Bit,(Bit,Bit)))->Bit{tri(a,b,c)}
+observe fn main()->CBit{false}

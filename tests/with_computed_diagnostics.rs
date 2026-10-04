@@ -137,7 +137,7 @@ unitary fn candidate(tag: CBit, q: Q<Bit>) -> Q<Bit> {{
 fn joined_source_data_supports_the_suggested_controlled_gate_repair() {
     let source = format!(
         "{IMPORTS}
-basis fn first(x: Bit, y: Bit) -> Bit {{ x }}
+basis fn first((x,y): (Bit,Bit)) -> Bit {{ x }}
 unitary fn controlled_x(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
     let (control,target)=split(q);
     let (control,target)=cnot(control,target);

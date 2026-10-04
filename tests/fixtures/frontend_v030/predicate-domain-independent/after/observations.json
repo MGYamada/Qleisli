@@ -1,0 +1,394 @@
+[
+  {
+    "folder": "sources",
+    "case": "and-certified",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..217: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "and-restricted",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..217: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "certified-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "certified-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "certified-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "constant-certified",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..211: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "constant-restricted",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..211: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "legacy-certified-three",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/main.qli\", span: Span { start: 370, end: 379 }, line: 6, column: 78 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "legacy-restricted-three",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/main.qli\", span: Span { start: 367, end: 376 }, line: 6, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "meaning-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..66: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "meaning-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..70: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "meaning-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..70: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "nullary-certified",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-certified/main.qli\", span: Span { start: 283, end: 286 }, line: 6, column: 56 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "nullary-meaning",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-meaning/main.qli:409..412: parse error: expected an identifier\nsized.parse: main:409..412: parse: expected an identifier\nfinite.check: Diagnostic { code: \"parse\", message: \"parse error: expected an identifier\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-meaning/main.qli\", span: Span { start: 409, end: 412 }, line: 9, column: 12 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "nullary-restricted",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-restricted/main.qli\", span: Span { start: 283, end: 286 }, line: 6, column: 56 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "ordinary-certified-packed",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/main.qli\", span: Span { start: 279, end: 297 }, line: 5, column: 48 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "ordinary-nullary-packed",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..27: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed/main.qli\", span: Span { start: 60, end: 72 }, line: 1, column: 61 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "ordinary-restricted-packed",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/main.qli\", span: Span { start: 279, end: 297 }, line: 5, column: 48 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "ordinary-unit-omitted",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..28: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"basis argument count does not match\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted/main.qli\", span: Span { start: 55, end: 60 }, line: 1, column: 56 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "restricted-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "restricted-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "restricted-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "unit-certified",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "unit-meaning",
+    "exit_code": 0,
+    "stdout": "finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-meaning/main.qli:415..418: parse error: expected an identifier\nsized.parse: main:415..418: parse: expected an identifier\nfinite.check: Diagnostic { code: \"parse\", message: \"parse error: expected an identifier\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-meaning/main.qli\", span: Span { start: 415, end: 418 }, line: 9, column: 12 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "unit-restricted",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-certified-flat-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 74 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-certified-flat-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 74 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-certified-left-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 78 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-certified-left-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli\", span: Span { start: 378, end: 387 }, line: 6, column: 78 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-certified-right-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli\", span: Span { start: 374, end: 383 }, line: 6, column: 78 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-certified-right-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli\", span: Span { start: 378, end: 387 }, line: 6, column: 78 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-meaning-flat-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..70: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-left/main.qli\", span: Span { start: 113, end: 119 }, line: 2, column: 43 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-meaning-flat-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..70: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-right/main.qli\", span: Span { start: 113, end: 119 }, line: 2, column: 43 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-meaning-left-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..66: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-flat/main.qli\", span: Span { start: 111, end: 117 }, line: 2, column: 45 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-meaning-left-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..70: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-right/main.qli\", span: Span { start: 115, end: 121 }, line: 2, column: 45 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-meaning-right-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..66: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-flat/main.qli\", span: Span { start: 111, end: 117 }, line: 2, column: 45 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-meaning-right-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..70: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-left/main.qli\", span: Span { start: 115, end: 121 }, line: 2, column: 45 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-restricted-flat-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 71 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-restricted-flat-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 71 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-restricted-left-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-restricted-left-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli\", span: Span { start: 375, end: 384 }, line: 6, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-restricted-right-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli\", span: Span { start: 371, end: 380 }, line: 6, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "wrong-restricted-right-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli\", span: Span { start: 375, end: 384 }, line: 6, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "zero-width-wrong-certified",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..53: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `Unit -> Bit`, found `(Unit,Unit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified/main.qli\", span: Span { start: 219, end: 224 }, line: 1, column: 220 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "zero-width-wrong-meaning",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:0..58: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning/main.qli\", span: Span { start: 88, end: 93 }, line: 1, column: 89 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "sources",
+    "case": "zero-width-wrong-restricted",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:21..59: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `Unit -> Bit`, found `(Unit,Unit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/main.qli\", span: Span { start: 112, end: 117 }, line: 1, column: 113 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "legacy-certified-three",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `((Bit,Bit),Bit)`; found 3 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/main.qli\", span: Span { start: 556, end: 565 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "nullary-certified",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"arity\", message: \"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli\", span: Span { start: 403, end: 406 }, line: 8, column: 55 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "nullary-meaning",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli\", span: Span { start: 387, end: 395 }, line: 8, column: 30 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "unit-meaning",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "wrong-certified-flat-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/main.qli\", span: Span { start: 552, end: 561 }, line: 8, column: 71 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "wrong-certified-flat-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/main.qli\", span: Span { start: 552, end: 561 }, line: 8, column: 71 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "wrong-certified-left-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/main.qli\", span: Span { start: 560, end: 569 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "wrong-certified-left-as-right",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/main.qli\", span: Span { start: 564, end: 573 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "wrong-certified-right-as-flat",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/main.qli\", span: Span { start: 560, end: 569 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "folder": "repaired",
+    "case": "wrong-certified-right-as-left",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli\", span: Span { start: 564, end: 573 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  }
+]

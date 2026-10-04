@@ -1,0 +1,17 @@
+{
+  "proposal_bytes_identical": false,
+  "all_non_source_fields_identical": true,
+  "source_snapshot_changes": [
+    {
+      "source_path": "main",
+      "historical_sha256": "3e7869673eb86d630a826291573c58691bc3015e006a4a2a33bbb318799701a6",
+      "current_sha256": "89439ed4aba3a710984a64c04c353598ff0dcd4e40f481d63cf01ca314ef84e8"
+    },
+    {
+      "source_path": "std::routines",
+      "historical_sha256": "8e84bd444848e6801cacbb1269d2eff17d86f2db8fbcaf8d9a31f6db7fa0cba2",
+      "current_sha256": "2718c8a13f45e2078bdf830d55e36dfb47489547c8885d4cfedc4662306d0d55"
+    }
+  ],
+  "explanation": "Source text identity intentionally follows the migrated declaration; program/evidence/interface and source index/path fields are identical."
+}

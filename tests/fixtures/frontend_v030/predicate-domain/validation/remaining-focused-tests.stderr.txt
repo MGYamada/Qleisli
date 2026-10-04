@@ -1,0 +1,8 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+     Running tests/cli_json.rs (target/debug/deps/cli_json-32610fca51190052)
+     Running tests/cli_sampling.rs (target/debug/deps/cli_sampling-77f447d5147f91dc)
+     Running tests/function_contracts.rs (target/debug/deps/function_contracts-51773bbf3e613e4d)
+     Running tests/operation_parameters.rs (target/debug/deps/operation_parameters-e82ead800812bcff)
+     Running tests/source_judgments.rs (target/debug/deps/source_judgments-2c231157916efd89)
+     Running tests/with_computed_diagnostics.rs (target/debug/deps/with_computed_diagnostics-f89e381fa66f6a57)

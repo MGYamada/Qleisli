@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Require one explicit, exact basis-domain parameter for both forms of
+  `with_computed`; reject nullary and multi-parameter predicates without
+  implicit tuple packing. Preserve ordinary call arity, noninjective predicates,
+  ordered truth tables and controlled Unit phase. Migrate active examples,
+  standard-library code and corpus clients, retaining historical sources with
+  explicit current translations and bounded semantic comparisons (#25).
 - Check every supported ordinary declaration in sized modules, including
   private and forward siblings and unused bodies. Preserve distinct definition
   identities, public host-entry visibility, decreasing self-recursion and

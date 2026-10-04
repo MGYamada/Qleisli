@@ -1,0 +1,12 @@
+
+running 7 tests
+test zero_width_does_not_identify_unit_with_a_pair_of_units ... ok
+test nullary_and_multiple_parameters_are_not_implicitly_packed_for_computed_use ... ok
+test equal_width_tree_substitution_rejects_at_each_predicate_use ... ok
+test ordinary_call_arity_and_meaning_output_tree_keep_their_own_contracts ... ok
+test explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls ... ok
+test noninjective_and_and_constant_predicates_remain_legal_in_both_forms ... ok
+test exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.49s
+

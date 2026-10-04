@@ -1,7 +1,7 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli::frontend::compile::compile_project;
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::sim::{RandomSource, SampleError, SampleLimits, SplitMix64, sample_closed};
 use std::path::Path;
 
@@ -209,9 +209,19 @@ fn projection_copy_limits_precede_visible_and_hidden_random_draws() {
 }
 
 #[test]
-fn preserved_grover_trial_draws_marked_result() {
-    let p = compile_project(Path::new(
+fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
+    let original = check_project(Path::new(
         "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02",
+    ))
+    .unwrap_err();
+    assert_eq!(original.code, ErrorCode::Arity);
+    assert!(
+        original
+            .message
+            .contains("exactly one explicit basis parameter")
+    );
+    let p = compile_project(Path::new(
+        "tests/fixtures/frontend_v030/predicate-domain/current/grover-trial-v020",
     ))
     .unwrap();
     let mut rng = SplitMix64::new(0);

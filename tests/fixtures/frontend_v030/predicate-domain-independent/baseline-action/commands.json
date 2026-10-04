@@ -1,0 +1,88 @@
+[
+  {
+    "label": "build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "--test",
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-predicate-baseline-a6c8bb7/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-predicate-baseline-a6c8bb7/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_MANIFEST_DIR": "/Users/masa/git/Qleisli",
+    "exit_code": 1
+  },
+  {
+    "label": "build-02",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "--test",
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-predicate-baseline-a6c8bb7/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-predicate-baseline-a6c8bb7/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_MANIFEST_DIR": "/Users/masa/git/Qleisli",
+    "exit_code": 0
+  },
+  {
+    "label": "legacy_left_fold_complete_actions",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer",
+      "legacy_left_fold_complete_actions",
+      "--exact"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_MANIFEST_DIR": "/Users/masa/git/Qleisli",
+    "exit_code": 0
+  },
+  {
+    "label": "exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer",
+      "exact_flat_left_and_right_domains_preserve_ordered_tables_and_complex_actions",
+      "--exact"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_MANIFEST_DIR": "/Users/masa/git/Qleisli",
+    "exit_code": 0
+  },
+  {
+    "label": "noninjective_and_and_constant_predicates_remain_legal_in_both_forms",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer",
+      "noninjective_and_and_constant_predicates_remain_legal_in_both_forms",
+      "--exact"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_MANIFEST_DIR": "/Users/masa/git/Qleisli",
+    "exit_code": 0
+  },
+  {
+    "label": "explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls",
+    "argv": [
+      "/private/tmp/qleisli-predicate-domain-independent/baseline-tests/observer",
+      "explicit_unit_keeps_controlled_eighth_phase_and_ordinary_nullary_helper_calls",
+      "--exact"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_MANIFEST_DIR": "/Users/masa/git/Qleisli",
+    "exit_code": 0
+  }
+]

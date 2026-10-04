@@ -6,7 +6,7 @@
 // Fixed-scope adaptation; see README.md and corpus/POLICY.md.
 
 use std::quantum::z;
-basis fn occupied(a: Bit, b: Bit, c: Bit, d: Bit) -> Bit { a and b and not c and not d }
+basis fn occupied((((a, b), c), d): (((Bit, Bit), Bit), Bit)) -> Bit { a and b and not c and not d }
 basis fn flip(a: Bit, b: Bit, c: Bit, d: Bit) -> Bit {
     (a and b and not c and not d) xor (not a and not b and c and d)
 }

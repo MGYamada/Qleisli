@@ -10,7 +10,11 @@ rejected programs and is not itself an executable project.
   an independent mathematical permutation; the multi-parameter case retains
   Unit nodes and whole-subtree bindings.
 - Duplicate/shape/arity/capture cases reject during ordinary source checking.
-  `phase_mismatch` fails existing exact evidence checking. Ignoring a basis
+  The explicit current translation of `phase_mismatch` fails existing exact
+  evidence checking. Its preserved historical predicate now rejects with
+  `arity` first; both cases are exercised and identified in the
+  [translation map](../frontend_v030/predicate-domain/current-translations.json).
+  Ignoring a basis
   component does not authorize a noninjective quantum lift.
 - `dropped_*` sources retain precise diagnostic cases for parameters, nested
   tuple binders, shadowing, zero-wire owners and computed auxiliaries. The test
@@ -19,6 +23,7 @@ rejected programs and is not itself an executable project.
   programs are kept here as `.qli` source. Existing binary examples stay in the
   other corpus as regressions.
 
-The earlier [authoring corpus](../qli_authoring/README.md) now classifies
-`accepted/nary_tuple.qli` and `accepted/basis_tuple_pattern.qli` as successful
-programs; the two-argument `phase_by` mismatch remains a useful arity rejection.
+The earlier [authoring corpus](../qli_authoring/README.md) executes
+`accepted/nary_tuple.qli` directly and the explicit current translation of
+`accepted/basis_tuple_pattern.qli`; the two-argument `phase_by` mismatch remains
+a useful arity rejection.

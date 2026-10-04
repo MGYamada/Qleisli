@@ -1,0 +1,4 @@
+use std::quantum::z;
+basis fn perm((a,(b,c)):(Bit,(Bit,Bit)))->(Bit,(Bit,Bit)){(a,(b,c))}
+meaning Target:(Bit,(Bit,Bit))=permutation_by(perm);
+observe fn main()->CBit{false}

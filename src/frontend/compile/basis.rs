@@ -7,6 +7,40 @@ pub(super) struct BasisValue {
 }
 
 impl Compiler<'_> {
+    /// A predicate over one register has one explicit domain parameter. Ordinary
+    /// basis calls keep their declared argument-list arity; no tuple is inferred.
+    pub(super) fn check_predicate_domain(
+        &self,
+        module: &str,
+        span: Span,
+        predicate: &BasisFunction,
+        source: &Ty,
+    ) -> Result<(), CompileError> {
+        let [domain] = predicate.params.as_slice() else {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::Arity,
+                format!(
+                    "with_computed predicate requires exactly one explicit basis parameter of type `{source}`; found {} parameters",
+                    predicate.params.len()
+                ),
+            ));
+        };
+        if domain != source || predicate.result != Ty::bit() {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                format!(
+                    "predicate must map the exact source basis type to Bit: expected `{source} -> Bit`, found `{domain} -> {}`",
+                    predicate.result
+                ),
+            ));
+        }
+        Ok(())
+    }
+
     /// Bind one finite label through the exact product tree. Wildcards omit
     /// basis information only; the complete lift still checks injectivity.
     pub(super) fn bind_basis_pattern(

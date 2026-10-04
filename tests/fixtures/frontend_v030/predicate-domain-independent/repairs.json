@@ -1,0 +1,19 @@
+{
+  "saved_before_observation": true,
+  "rationale": {
+    "meaning": "Original used reserved use as an ordinary function name and failed parsing; rename only that local helper to apply.",
+    "certified": "Independent logical reference now uses its own correctly typed predicate, so the candidate bad predicate is rejected specifically at the three-argument use, not earlier in the reference."
+  },
+  "sources": {
+    "repaired/nullary-meaning/main.qli": "a490173b246b3895b54903d8d0bc955e8ce01e3b309aaf58ed9b5a25c527d134",
+    "repaired/wrong-certified-right-as-flat/main.qli": "df5000f837d64a4bdfd6e8143150fdc873182d959252c034b10e070c24791ab1",
+    "repaired/wrong-certified-right-as-left/main.qli": "9f67daa8771a600023452903aae96c3e71869351721bddb8225185ac0b45acfb",
+    "repaired/unit-meaning/main.qli": "cecedcfee2b2bbac934e0cfab0c4e946ade1dafdc0893d983dd5fdd821a59347",
+    "repaired/wrong-certified-flat-as-right/main.qli": "42ecf993031fa69cc4045e9794779d84fc962dba1a1443303e628612bffc1637",
+    "repaired/wrong-certified-left-as-flat/main.qli": "216b8f2893f4d20e033061b998fa49a298a66b4d0cdc7fb32724e3a9349ca5d9",
+    "repaired/wrong-certified-flat-as-left/main.qli": "18aedaf199f953dd12c6d9437fcc9a429e9f125227648f761c40bbdf2bead647",
+    "repaired/legacy-certified-three/main.qli": "b37c85897d47883ff09a424dfa1a045ab88c8c0b1d0756a39e525cc863eb9a83",
+    "repaired/wrong-certified-left-as-right/main.qli": "df05dc6d631a9df418a6adb6b541173a0514703fb589d0114cb251df04742b4e",
+    "repaired/nullary-certified/main.qli": "ea2d6080488d15b0dcd1f3ed9f0f94758088ada7ad707a80299d7ebdecc9f40a"
+  }
+}

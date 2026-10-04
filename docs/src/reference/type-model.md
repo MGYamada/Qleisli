@@ -71,6 +71,33 @@ nontrivial phase, is never inserted as ordinary type coercion. Rearranging
 bindings is not permission to rearrange axes. Pattern destructuring of a tuple
 does not implicitly split a quantum owner whose basis is a tuple.
 
+## Predicate domains and argument lists
+
+A predicate used by either form of `with_computed` takes **one** ordinary basis
+parameter of the source register's exact basis type and returns `Bit`. An
+argument list is not implicitly folded into a tuple. This is the same exact
+single-domain convention already required of a `Meaning` function.
+
+For example, a register of basis `((Bit,Bit),Bit)` may use
+`basis fn p(((a,b),c): ((Bit,Bit),Bit)) -> Bit { a and c }`.
+A flat `(Bit,Bit,Bit)` or right-nested `(Bit,(Bit,Bit))` register requires a
+parameter with that precise tree. A predicate on `Q<Unit>` takes `u: Unit` or
+`_: Unit`; a nullary function is not an implicit Unit-domain predicate.
+
+Ordinary basis calls continue to use their declared argument-list arity.
+`f(a,b)` and `f((a,b))` are distinct, and ordinary nullary calls remain nullary.
+When migrating a predicate used in both roles, update its ordinary callers or
+write a separate unary wrapper with an explicit product pattern. No implicit
+packing, reassociation or physical conversion repairs a mismatch.
+
+Predicates must be total but need not be injective. Constant and AND predicates
+remain valid; their computed auxiliary must still satisfy the applicable exact
+cleanup rule. Coherent basis lifting retains its separate injectivity check.
+Truth-table leaf order, retained phase, external reference correlations and the
+original owner's exact type are unchanged. This rule removes the historical
+left-folding behavior tracked in [#25](https://github.com/MGYamada/Qleisli/issues/25);
+implementation and migration evidence are recorded there.
+
 ## Unit owners retain phase
 
 `H(Unit)` is one-dimensional, not zero-dimensional. `Q<Unit>` remains a linear
