@@ -817,6 +817,13 @@
         [
           "cargo",
           "+1.98.1",
+          "test",
+          "--test",
+          "unit_patterns"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
           "build",
           "--locked",
           "--offline",

@@ -492,17 +492,24 @@ impl Lowerer<'_, '_> {
                 } else {
                     ""
                 };
-                let Some(fields) = value
-                    .into_fields()
-                    .filter(|fields| fields.len() == patterns.len())
-                else {
+                if actual.pattern_fields(patterns.len()).is_none() {
                     return Err(self.error(
                         module,
                         pattern.span,
                         ErrorCode::TypeMismatch,
-                        format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{}`{help}", patterns.len(), actual.runtime()),
+                        if patterns.is_empty() {
+                            format!("empty pattern requires ordinary Unit, found `{}`", actual.runtime())
+                        } else {
+                            format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{}`{help}", patterns.len(), actual.runtime())
+                        },
                     ));
-                };
+                }
+                if patterns.is_empty() {
+                    // The shared shape check established ordinary Unit. Any
+                    // expression effects were already emitted before binding.
+                    return Ok(());
+                }
+                let fields = value.into_fields().expect("checked nonempty tuple shape");
                 for (pattern, field) in patterns.iter().zip(fields) {
                     self.bind(module, pattern, field, env, names)?;
                 }

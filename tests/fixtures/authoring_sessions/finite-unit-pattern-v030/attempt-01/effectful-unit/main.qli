@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{init0,h};
+use std::observe::discard;
+observe fn drain(q: Q<Bit>) -> Unit { discard(q) }
+observe fn main() -> Bit { let () = drain(h(init0())); 1 }

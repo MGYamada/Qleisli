@@ -114,7 +114,16 @@ neither such a map nor an implicit `Q<A> -> A` conversion.
 
 Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.
-That pattern does not match `Bits<0>` or `Q<Bits<0>>`. Sized lowering omits
+That pattern matches only ordinary `Unit`, not an empty tuple, `Bits<0>`,
+`Q<Unit>` or `Q<Bits<0>>`. Nonempty tuple patterns preserve the same immediate
+arity and recursively match each child's exact shape. Ordinary runtime function
+parameters remain names; use `let` to destructure their values. Basis function
+parameters and coherent basis lifts also support patterns.
+
+The binder in `do () <- q; pure ()` describes the ordinary Unit basis of its
+quantum input. The existing coherent lift still consumes and returns a
+`Q<Unit>` owner and retains its scalar action; it is not runtime `let () = q`
+or an implicit owner elimination. Sized lowering omits
 ordinary Unit value ports while retaining the exact source interface and all
 executed operations. A computation returning Unit can still consume owners or
 perform observable work; omitting its result port does not omit its body.

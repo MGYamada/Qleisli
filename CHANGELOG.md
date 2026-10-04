@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Match ordinary `Unit` with `()` in finite let and basis patterns using the
+  same exact shape rule as sized checking. Preserve effectful computations,
+  quantum owners and scalar phase; reject other zero-width types (#43).
 - Select explicitly migrated Qleisli fixtures in external-format and Lean
   comparison clients while retaining original source hashes and independent
   format, phase and probability checks (#27, #32).

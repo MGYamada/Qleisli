@@ -1387,10 +1387,8 @@ fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Fr
     match pattern {
         Pattern::Name(name, span) => bind_name(name, value, *span, scope, frame),
         Pattern::Tuple(patterns, span) => {
-            if patterns.is_empty() && matches!(value.ty.kind, TypeKind::Unit) {
-                return Ok(());
-            }
-            if !matches!(value.ty.kind, TypeKind::Tuple(_)) || patterns.len() != value.fields.len()
+            if value.ty.pattern_fields(patterns.len()).is_none()
+                || patterns.len() != value.fields.len()
             {
                 return Err(error(
                     "type",

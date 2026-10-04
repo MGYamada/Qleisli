@@ -89,3 +89,5 @@ tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-fixed/stdou
 # Hosted log excerpts preserve timestamped blank lines exactly.
 tests/fixtures/review_v030alpha/hosted-canonical-integration/interop-failure.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-canonical-integration/release-test-failure.txt -text -whitespace
+# Retain raw Unit-pattern validation transcripts, including libtest blank lines.
+tests/fixtures/frontend_v030/unit-pattern-integration/*/*.stdout.txt -text -whitespace

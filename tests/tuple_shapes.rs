@@ -189,12 +189,16 @@ fn documented_type_categories_and_explicit_only_conversions() {
     for source in [
         "unitary fn f(x:Bit)->Unit{()}",
         "unitary fn f(x:Q<Bit>)->Q<Bit>{x}",
-        "unitary fn f(x:Q<Q<Bit>>)->Q<Q<Bit>>{x}",
         "basis fn f(x:Bit)->Bit{x}",
+    ] {
+        let root = SourceRoot::new(&format!("{source} observe fn main()->Unit{{()}}"));
+        check_project(&root.0).unwrap();
+    }
+    for source in [
+        "unitary fn f(x:Q<Q<Bit>>)->Q<Q<Bit>>{x}",
         "unitary fn f(x:Q<(Bit,Bit)>)->(Q<Bit>,Q<Bit>){x}",
         "unitary fn f(x:Q<Unit>)->Unit{x}",
         "unitary fn f(x:(Unit,Bit))->Bit{x}",
-        "unitary fn f(x:Bits<3>)->Unit{()}",
         "unitary fn f(x:Bits<3>)->Unit{()}",
     ] {
         let root = SourceRoot::new(&format!("{source} observe fn main()->Unit{{()}}"));

@@ -130,6 +130,16 @@ impl<N> Type<N> {
             _ => None,
         }
     }
+    /// Match one destructuring node; consumers recursively bind its children.
+    /// The empty pattern matches only ordinary Unit, never an empty tuple or
+    /// any quantum owner. Nonempty patterns preserve immediate tuple arity.
+    pub(super) fn pattern_fields(&self, arity: usize) -> Option<&[Self]> {
+        match &self.kind {
+            Kind::Unit if arity == 0 => Some(&[]),
+            Kind::Tuple(fields) if arity != 0 && fields.len() == arity => Some(fields),
+            _ => None,
+        }
+    }
     pub(super) fn into_pair(self) -> Option<Vec<Self>> {
         match self.kind {
             Kind::Tuple(fields) if fields.len() == 2 => Some(fields),

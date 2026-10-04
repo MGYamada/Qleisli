@@ -1,0 +1,18 @@
+{
+  "scope": "Additional explicit validation programs written after the frozen baseline, before any new-target test run. No original first source was edited.",
+  "files": {
+    "basis-literal-call/main.qli": "de8022e08fbc6cf19a6862dcb2e4e52f4b95b67166a9103bf1df6ba4fcc90878",
+    "basis-nullary-call/main.qli": "c461e05d7b32b9528d28e21937ff0546b724b3b1e1e88be37dea4429d6914b8e",
+    "coherent-contract/main.qli": "19abda964324199ef3e3d8e1b0696a0404bc6540160912291571642db49bb768",
+    "coherent-control/main.qli": "c64bfd2353604b7eda35efb966976827fcbd5dfb4298fd2545087c7ee2bd44c6",
+    "computed-control/main.qli": "38c914c9f5c35ea018048b6181812c7f2aa1cc9435e291e21498ac7d73149e75",
+    "duplicate-owner/main.qli": "af947584309805414d222c11312a3e66f6609583638360ffed2beea6aec5f878",
+    "first-shape-error/main.qli": "a4ac417b508583b94c1cd5478f37b78ca99d6e729f468d3f1226229cd6f4f85d",
+    "lost-owner/main.qli": "9f3b0c061a5868e300867837a89cb13d897728f29f09d0183a34c7389274ad20",
+    "nested-unit-only/main.qli": "69d56ac8602e754eb2479ab1044b26d77324bb0eed0cfb5174b5090b2c48606c",
+    "sized-consume/main.qli": "7f275bfa3b637fb08866d2cffde87bc1de9a44450a36d3f86ceda0a8933d716d",
+    "sized-nested-exact-mismatch/main.qli": "6c9b6c434ad6769a70ff366e1a4ee75cdf1158d84933f6110243b1ff2dcf4cb8",
+    "sized-zero-owner/main.qli": "b18bc06cb52f2c4561d8dddfb40586fbb82009fbad477e1779966e456fd4d065",
+    "unit-copy-drop/main.qli": "bfc503d7ac5253b781e9f353e2f87843a62adde55f229a805c7562f853859f69"
+  }
+}

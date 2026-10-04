@@ -31,7 +31,16 @@ pub(super) fn check(declaration: &Decl) -> Result<(), Failure> {
     }
     for parameter in &declaration.params {
         ty(&parameter.ty)?;
-        pattern(&parameter.pattern)?;
+        // Parsed ordinary parameters are names. Recheck that source-profile
+        // boundary for callers constructing or mutating the public AST.
+        if declaration.kind != FnKind::Basis
+            && !matches!(parameter.pattern.kind, PatternKind::Name(_))
+        {
+            return Err((
+                parameter.pattern.span,
+                "ordinary function parameters require names in the finite profile; destructure with let",
+            ));
+        }
     }
     ty(&declaration.return_type)?;
     if let FnBody::Quantum(body) = &declaration.body {
@@ -60,20 +69,6 @@ fn ty(ty: &Type) -> Result<(), Failure> {
         }
         TypeKind::Q(inner) => self::ty(inner)?,
         _ => {}
-    }
-    Ok(())
-}
-fn pattern(pattern: &Pattern) -> Result<(), Failure> {
-    if let PatternKind::Tuple(fields) = &pattern.kind {
-        if fields.is_empty() {
-            return Err((
-                pattern.span,
-                "empty tuple patterns are outside the finite lowering profile",
-            ));
-        }
-        for field in fields {
-            self::pattern(field)?;
-        }
     }
     Ok(())
 }
@@ -118,13 +113,7 @@ fn block(block: &Block) -> Result<(), Failure> {
     }
     for statement in &block.statements {
         match &statement.kind {
-            StmtKind::Let {
-                pattern: binder,
-                value,
-            } => {
-                pattern(binder)?;
-                expr(value)?;
-            }
+            StmtKind::Let { value, .. } => expr(value)?,
             StmtKind::Expr(value) => expr(value)?,
         }
     }
@@ -147,10 +136,7 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             }
             self::expr(input)?;
         }
-        ExprKind::CoherentLift { binder, input, .. } => {
-            pattern(binder)?;
-            self::expr(input)?;
-        }
+        ExprKind::CoherentLift { input, .. } => self::expr(input)?,
         ExprKind::ApplyContract { input, .. }
         | ExprKind::RepeatStatic { input, .. }
         | ExprKind::Not(input) => self::expr(input)?,

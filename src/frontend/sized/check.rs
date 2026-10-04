@@ -260,21 +260,22 @@ fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
                 }
                 bind_name(name, Ty { kind }, *span, scope)
             }
-            (Pattern::Tuple(patterns, _), Kind::Unit) if patterns.is_empty() => Ok(()),
-            (Pattern::Tuple(patterns, span), Kind::Tuple(fields))
-                if patterns.len() == fields.len() =>
-            {
-                for (p, t) in patterns.iter().zip(fields) {
-                    go(p, t, scope, names)?;
+            (Pattern::Tuple(patterns, span), kind) => {
+                let t = Ty { kind };
+                if t.pattern_fields(patterns.len()).is_none() {
+                    return Err(err(
+                        "type",
+                        *span,
+                        "binding pattern does not preserve tuple arity and nesting",
+                    ));
                 }
-                let _ = span;
+                if let Kind::Tuple(fields) = t.kind {
+                    for (p, t) in patterns.iter().zip(fields) {
+                        go(p, t, scope, names)?;
+                    }
+                }
                 Ok(())
             }
-            (Pattern::Tuple(_, span), _) => Err(err(
-                "type",
-                *span,
-                "binding pattern does not preserve tuple arity and nesting",
-            )),
         }
     }
     go(pattern, t, scope, &mut BTreeSet::new())

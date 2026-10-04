@@ -75,13 +75,17 @@ impl Compiler<'_> {
                 }
                 PatternKind::Wildcard => {}
                 PatternKind::Tuple(patterns) => {
-                    let Some(fields) = ty.fields().filter(|fields| fields.len() == patterns.len())
-                    else {
+                    let Some(fields) = ty.pattern_fields(patterns.len()) else {
                         return Err(self.error(
                             module,
                             pattern.span,
                             ErrorCode::TypeMismatch,
-                            "tuple basis pattern requires the same immediate arity as its basis type",
+                            if patterns.is_empty() {
+                                format!("empty basis pattern requires Unit basis, found `{ty}`")
+                            } else {
+                                "tuple basis pattern requires the same immediate arity as its basis type"
+                                    .to_owned()
+                            },
                         ));
                     };
                     let mut offset = 0;

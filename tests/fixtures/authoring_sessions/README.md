@@ -122,3 +122,12 @@ The unit project initially violates the existing CLI entry convention; a
 separate snapshot changes only `main` to `observe` and passes. This validates
 that small ownership identity example, not scalar-phase semantics or the new
 generic design. It is informed authoring, not a blind model benchmark.
+
+The [finite Unit-pattern study](finite-unit-pattern-v030/session.json) preserves
+nineteen informed first sources before checking with the existing canonical
+CLI: seven desired exact Unit patterns currently reject, three named-binder
+controls pass, eight deliberate type/effect/arity counterexamples reject, and
+one broader runtime parameter-pattern draft remains a parse rejection. The
+study separates ordinary Unit matching from coherent basis lifting and retains
+effectful-body/scalar-phase obligations for the implementation; it neither
+rewrites historical observations nor claims that the new patterns already work.

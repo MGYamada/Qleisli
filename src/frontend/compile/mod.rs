@@ -100,9 +100,6 @@ impl Ty {
     fn classical(&self) -> bool {
         !self.linear()
     }
-    fn fields(&self) -> Option<Vec<&Self>> {
-        self.tuple_fields().map(|fields| fields.iter().collect())
-    }
     fn runtime(&self) -> super::types::DisplayType<'_, std::convert::Infallible> {
         self.display(Stage::Runtime)
     }
@@ -947,6 +944,30 @@ mod snapshot_tests {
             checking: None,
             exact_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
             closed_meanings: BTreeMap::new(),
+        }
+    }
+
+    #[test]
+    fn constructed_ordinary_parameter_patterns_reject_before_name_only_lowering() {
+        let source = "unitary fn keep(u: Unit) -> Unit { u }";
+        for kind in [PatternKind::Tuple(vec![]), PatternKind::Wildcard] {
+            let mut project = project(0);
+            let module = project.modules.get_mut("main").unwrap();
+            module.source = source.into();
+            module.ast = crate::frontend::parser::parse_module(source).unwrap();
+            let parameter = &mut module.ast.decls[0].params[0];
+            let span = parameter.pattern.span;
+            parameter.pattern.kind = kind;
+            let error = process_loaded_project(Path::new("main.qli"), &project, false)
+                .expect_err("constructed runtime parameter must reject");
+            assert_eq!(error.code, ErrorCode::Unsupported);
+            assert_eq!(error.path, PathBuf::from("main.qli"));
+            assert_eq!(error.span, span);
+            assert!(
+                error
+                    .message
+                    .contains("ordinary function parameters require names")
+            );
         }
     }
 

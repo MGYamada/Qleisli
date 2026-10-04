@@ -1,0 +1,9 @@
+{
+  "status": "failed",
+  "driver": "observe-after-first.py",
+  "command": ["python3", "tests/fixtures/frontend_v030/unit-pattern-integration/observe-after.py"],
+  "exit": 1,
+  "observation": "The first driver reached line 60 and failed its assertion that both emit-ir commands succeeded. It omitted the required --output=PATH option. CLI --help subsequently confirmed that requirement.",
+  "record_limit": "That driver retained child outputs only in memory and exited before writing them. No raw child outputs or successful comparison record were saved. The corrected driver reruns the inputs and saves each actual command output before asserting success.",
+  "scope": "Validation-driver invocation error, not a compiler semantic failure. This record was written after observing the failure."
+}

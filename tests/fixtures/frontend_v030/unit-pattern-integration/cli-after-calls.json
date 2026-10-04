@@ -1,0 +1,289 @@
+[
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/runtime-unit",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/runtime-nested",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/runtime-mixed-owner",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/basis-unit",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/computed-unit",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/coherent-unit-phase",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/attempt-01/effectful-unit",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-unit",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-coherent-phase",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-effectful-unit",
+      "--format=json"
+    ],
+    "exit": 0,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/runtime-quantum-unit",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"empty pattern requires ordinary Unit, found `Q<Unit>`\",\"primary\":{\"path\":\"main.qli\",\"start\":117,\"end\":119,\"line\":2,\"column\":44},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/runtime-bit",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"empty pattern requires ordinary Unit, found `Bit`\",\"primary\":{\"path\":\"main.qli\",\"start\":115,\"end\":117,\"line\":2,\"column\":42},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/runtime-unit-product",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"empty pattern requires ordinary Unit, found `(Unit,Unit)`\",\"primary\":{\"path\":\"main.qli\",\"start\":124,\"end\":126,\"line\":2,\"column\":51},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/basis-bit",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"empty basis pattern requires Unit basis, found `Bit`\",\"primary\":{\"path\":\"main.qli\",\"start\":87,\"end\":89,\"line\":2,\"column\":14},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/coherent-unit-product",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"empty basis pattern requires Unit basis, found `(Unit,Unit)`\",\"primary\":{\"path\":\"main.qli\",\"start\":126,\"end\":128,\"line\":2,\"column\":53},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/unitary-effect",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"effect\",\"severity\":\"error\",\"message\":\"body effect `Observe` exceeds declared `Unitary` effect of `f`\",\"primary\":{\"path\":\"main.qli\",\"start\":148,\"end\":158,\"line\":3,\"column\":48},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/nullary-predicate",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"arity\",\"severity\":\"error\",\"message\":\"with_computed predicate requires exactly one explicit basis parameter of type `Unit`; found 0 parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":185,\"end\":188,\"line\":4,\"column\":63},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/ordinary-bits-zero",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"register types are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":97,\"end\":104,\"line\":2,\"column\":24},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/desired-unsupported/runtime-parameter-pattern",
+      "--format=json"
+    ],
+    "exit": 1,
+    "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected an identifier\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":92,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/examples/bell",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/19.qirf.json"
+    ],
+    "exit": 0,
+    "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/19.qirf.json\n",
+    "stderr": "",
+    "artifact": "cli-artifacts/19.qirf.json",
+    "artifact_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f"
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/examples/bell",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/20.qirf.json"
+    ],
+    "exit": 0,
+    "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/20.qirf.json\n",
+    "stderr": "",
+    "artifact": "cli-artifacts/20.qirf.json",
+    "artifact_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f"
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/examples/grover",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/21.qirf.json"
+    ],
+    "exit": 0,
+    "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/21.qirf.json\n",
+    "stderr": "",
+    "artifact": "cli-artifacts/21.qirf.json",
+    "artifact_sha256": "4d2bef49168ea8447b67e8f835b94e78033c3a3af00fdfc58e420fd19f0f80dc"
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/examples/grover",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/22.qirf.json"
+    ],
+    "exit": 0,
+    "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/22.qirf.json\n",
+    "stderr": "",
+    "artifact": "cli-artifacts/22.qirf.json",
+    "artifact_sha256": "4d2bef49168ea8447b67e8f835b94e78033c3a3af00fdfc58e420fd19f0f80dc"
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-effectful-unit",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/23.qirf.json"
+    ],
+    "exit": 0,
+    "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/23.qirf.json\n",
+    "stderr": "",
+    "artifact": "cli-artifacts/23.qirf.json",
+    "artifact_sha256": "debcc2d58eb249e099aa69d567d374cc329513bed136fe409469ada9cae6c653"
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/finite-unit-pattern-v030/controls/named-effectful-unit",
+      "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/24.qirf.json"
+    ],
+    "exit": 0,
+    "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/unit-pattern-integration/cli-artifacts/24.qirf.json\n",
+    "stderr": "",
+    "artifact": "cli-artifacts/24.qirf.json",
+    "artifact_sha256": "debcc2d58eb249e099aa69d567d374cc329513bed136fe409469ada9cae6c653"
+  }
+]

@@ -1,0 +1,67 @@
+{
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.024815249955281615,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.02318174997344613,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.258037791994866,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "frontend_types",
+        "--test",
+        "tuple_shapes"
+      ],
+      "exit": 101,
+      "elapsed_seconds": 14.60846420895541,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    }
+  ],
+  "source_files": 241,
+  "sources_stable": true,
+  "source_manifest_sha256": "889ac6a0e31e17575c44e4defd8c70b5d3ca96016fde3915b214267b69e2cea0",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing audited checker; no new Lean build/audit/replay",
+  "cargo_target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "free_bytes_before": 27852800000,
+  "free_bytes_after": 27688960000,
+  "scope": "Four bounded Rust integration targets, the manual-AST regression and unit_patterns Clippy; not all-target or release validation"
+}
