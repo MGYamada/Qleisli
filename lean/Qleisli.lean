@@ -62,6 +62,7 @@ import Qleisli.HierarchicalRoutedPower
 import Qleisli.HierarchicalQpeCircuit
 import Qleisli.Semantics.CoordinateOperators
 import Qleisli.CoordinateOperators
+import Qleisli.SharedControlCommutation
 import Qleisli.HierarchicalTensorCoordinates
 import Qleisli.HierarchicalCircuitTrace
 import Qleisli.HierarchicalCircuitTraceEvaluation

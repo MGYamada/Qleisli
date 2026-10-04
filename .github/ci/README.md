@@ -17,6 +17,16 @@ release-unready. This is the first identity-enforcement
 component of #141, not complete interpretation/proof/artifact enforcement.
 Human decisions and changes to enforcement code or workflows still need review.
 
+The v4 ledger separates append-only admitted identities from current evidence
+bindings. Explicit code registrations bind reviewed human events and exact
+proposal entries; fixed verifier profiles name their precise identity coverage.
+Candidate JSON cannot register an approval, select executable commands or omit
+an existing guarantee. Trusted-base checks preserve earlier entries across
+schema migration and append, while current source/proof evidence may refresh.
+`check_constitution.py --verify-lean` dispatches every selected fixed profile
+against one ledger/evidence snapshot and rejects replacement during checking.
+No new guarantee or full constitutional discharge follows from this migration.
+
 The scoped QS checker validates the separately recorded human admission and
 binds two declarations, independent predicates and current proof evidence to
 the current Lean source closure. The always-run job checks identities and rejection regressions;

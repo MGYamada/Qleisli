@@ -312,9 +312,9 @@ jobs:
       - name: Bind shipped schema types to rebuilt declarations and audited executable sources
         if: needs.changes.outputs.proof_lane == 'full'
         run: python3 scripts/check_schema_registry.py
-      - name: Recheck admitted scoped QS types against the built and audited environment
+      - name: Replay every registered guarantee verifier against the built and audited environment
         if: needs.changes.outputs.proof_lane != 'tests'
-        run: python3 scripts/check_initial_guarantees.py --verify-lean
+        run: python3 scripts/check_constitution.py --verify-lean
   check-lean-kernel:
     needs: changes
     if: needs.changes.outputs.profile == 'full'

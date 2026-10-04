@@ -576,12 +576,10 @@ class ConstitutionalRecords(unittest.TestCase):
 
         def synthetic_verifier(root, *, verify_lean):
             calls.append(verify_lean)
-            data_bytes = (root / names[2]).read_bytes()
-            data = json.loads(data_bytes)
+            data = json.loads((root / names[2]).read_bytes())
             if data != {"status": "synthetic-test-only", "purpose": names[2]}:
                 raise PacketError("synthetic verifier rejected evidence")
-            return {"mode": "synthetic-test-only", "admitted_by_this_check": 0,
-                    "current_evidence_sha256": hashlib.sha256(data_bytes).hexdigest()}
+            return {"mode": "synthetic-test-only", "admitted_by_this_check": 0}
 
         profiles = (*checker.verifier_profiles(), policy.VerifierProfile(
             "synthetic-test-only", ((identifier, policy.identity_sha256(entry)),), names[2], synthetic_verifier))
@@ -770,103 +768,11 @@ class ConstitutionalRecords(unittest.TestCase):
         calls = []
         def observed(root, *, verify_lean):
             calls.append(verify_lean)
-            return {"mode": "synthetic-dispatch-test",
-                    "current_evidence_sha256": hashlib.sha256((root / checker.CURRENT_PATH).read_bytes()).hexdigest()}
+            return {"mode": "synthetic-dispatch-test"}
         profile = policy.VerifierProfile(profile.name, profile.identities, profile.evidence_path, observed)
         result = checker.check_constitution(self.root, verify_lean=True, _profiles=(profile,))
         self.assertEqual(calls, [True, False])
         self.assertEqual(result["mode"], "current-Lean-replay")
-
-    def test_registered_guarantee_requires_an_adopted_interpretation_and_matching_jurisdiction(self):
-        policy = checker.ledger_policy
-        for field, value in (("interpretation", "QS-UNADOPTED"), ("jurisdiction", "PR")):
-            with self.subTest(field=field):
-                ledger, registrations, profiles, _ = self.synthetic_append()
-                row = copy.deepcopy(registrations[-1].entries[0])
-                row[field] = value
-                registrations = (*registrations[:-1], policy.AdmissionRegistration((row,)))
-                profile = profiles[-1]
-                profiles = (*profiles[:-1], policy.VerifierProfile(profile.name,
-                    ((row["id"], policy.identity_sha256(row)),), profile.evidence_path, profile.verify))
-                ledger["discharged_guarantees"][-1] = {**row, "identity_sha256": policy.identity_sha256(row)}
-                self.write_json(checker.LEDGER_PATH, ledger)
-                self.rejected("retained interpretation with matching jurisdiction",
-                              _registrations=registrations, _profiles=profiles)
-
-    def test_invalid_initial_and_final_snapshot_cannot_hide_behind_valid_intermediate_reads(self):
-        import check_ratification_packet as packet
-        path = self.root / "CONSTITUTION.md"
-        original = path.read_bytes()
-        changed = original + b"\nUnapproved retained change.\n"
-        path.write_bytes(changed)
-        real_checked_file = packet.checked_file
-        reads = []
-        def timed_read(root, name, digest):
-            if name != "CONSTITUTION.md":
-                return real_checked_file(root, name, digest)
-            # Only read timing is mocked; the real hash validation sees genuine
-            # original bytes. The captured/final snapshot contains changed bytes.
-            path.write_bytes(original)
-            try:
-                result = real_checked_file(root, name, digest)
-                reads.append(name)
-                return result
-            finally:
-                path.write_bytes(changed)
-        with patch.object(checker, "checked_file", side_effect=timed_read), \
-                patch.object(packet, "checked_file", side_effect=timed_read):
-            self.rejected("frozen artifact snapshot: SHA-256 mismatch.*CONSTITUTION")
-        self.assertEqual(len(reads), 2)
-        self.assertEqual(path.read_bytes(), changed)
-
-    def test_frozen_manifest_cannot_select_an_incomplete_snapshot_set(self):
-        snapshots = {name: (self.root / name).read_bytes() for name in checker.FROZEN_PATHS}
-        manifest = json.loads(snapshots[checker.FROZEN_IDENTITIES_PATH])
-        del manifest["files"]["CONSTITUTION.md"]
-        data = json.dumps(manifest).encode()
-        snapshots[checker.FROZEN_IDENTITIES_PATH] = data
-        # Even replacing the local pin does not make incomplete coverage valid.
-        with self.assertRaisesRegex(PacketError, "cover every protected snapshot"):
-            checker.ledger_policy.validate_frozen_snapshots(
-                snapshots, checker.FROZEN_IDENTITIES_PATH, hashlib.sha256(data).hexdigest())
-
-    def test_profile_must_validate_the_exact_ledger_bound_current_evidence_snapshot(self):
-        import check_initial_guarantees as initial
-        path = self.root / checker.CURRENT_PATH
-        original = path.read_bytes()
-        changed = json.loads(original)
-        changed["validation"]["source_revision"]["sha256"] = "0" * 64
-        bad = json.dumps(changed).encode()
-        path.write_bytes(bad)
-        ledger = copy.deepcopy(self.ledger)
-        ledger["current_bindings"][0]["evidence"]["sha256"] = hashlib.sha256(bad).hexdigest()
-        self.write_json(checker.LEDGER_PATH, ledger)
-        real_read = initial.read_file
-        reads = []
-        def timed_read(root, name):
-            if name != checker.CURRENT_PATH:
-                return real_read(root, name)
-            path.write_bytes(original)
-            try:
-                data = real_read(root, name)
-                reads.append(hashlib.sha256(data).hexdigest())
-                return data
-            finally:
-                path.write_bytes(bad)
-        with patch.object(initial, "read_file", side_effect=timed_read):
-            self.rejected("fixed verifier validated different evidence than the ledger binding")
-        self.assertEqual(reads, [hashlib.sha256(original).hexdigest()])
-        self.assertEqual(path.read_bytes(), bad)
-
-    def test_dispatch_rejects_missing_or_wrong_validated_input_identity(self):
-        policy = checker.ledger_policy
-        original = checker.verifier_profiles()[0]
-        for response in ({"mode": "claimed-success"}, {"current_evidence_sha256": "0" * 64}, None):
-            with self.subTest(response=response):
-                def unbound(root, *, verify_lean):
-                    return response
-                profile = policy.VerifierProfile(original.name, original.identities, original.evidence_path, unbound)
-                self.rejected("fixed verifier validated different evidence", _profiles=(profile,))
 
 
 if __name__ == "__main__":

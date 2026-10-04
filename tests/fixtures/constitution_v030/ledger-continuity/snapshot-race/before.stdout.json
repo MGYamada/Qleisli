@@ -1,0 +1,17 @@
+{
+  "kind": "initial-v4-enforcer-defect-not-proof-or-admission-counterexample",
+  "checker_sha256": "b2cd45b9431f063decbccba7f4e660c8a1a1ed7ce6ca9111d7cfd35737c4f5e9",
+  "helper_sha256": "63994f6043c18141b363726c2c45901803e39b6824adaedd49bbaacf334bc722",
+  "original_constitution_sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+  "retained_constitution_sha256": "004fd583b2f70069a5d19b1985b2b96cf2103da0a4dfc035092dd378144a600d",
+  "constitution_check_reads": 2,
+  "final_invalid_constitution_retained": true,
+  "result": {
+    "admitted_guarantees": 2,
+    "pending_obligations": 3,
+    "mode": "source-identity-only"
+  },
+  "error": null,
+  "accepted_invalid_frozen_snapshot": true,
+  "scope": "Only checked-file timing is mocked; validation still uses real checked_file and the actual fixed initial verifier. All file writes occur in the temporary fixture root. No Lean or project file is modified."
+}

@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.shared-control-commutation-proof-evidence",
+  "version": 1,
+  "status": "checked-proof-unit-not-guarantee-admission",
+  "issue": 303,
+  "baseline_commit": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "lean_toolchain": "leanprover/lean4:v4.30.0",
+  "production_files": {
+    "lean/Qleisli/SharedControlCommutation.lean": "54d534e523fd4d1eee80ef0d1a0b410ef6a0c2900ddbce6cd467c33b59c88cde",
+    "lean/Qleisli.lean": "16bace47612e801e1bea12653b4874c659bb008e4c1355cf555be6ed023bf770"
+  },
+  "files": {
+    "tests/fixtures/constitution_v030/shared-control-commutation/Examples.lean": "d322140e983188d230e5e468599b57573dfd9cdba21e3463d7dbb4ef960aeb5b",
+    "tests/fixtures/constitution_v030/shared-control-commutation/README.md": "732304fabdcf3744408f64691bbe9f063068ef61a5b307625cbc1aa57754860a",
+    "tests/fixtures/constitution_v030/shared-control-commutation/Review.lean": "a0f2ceff0110547a0a2d1d2ba8d207ed2135b1698eefbd8e4b78623b1ac0cd7f",
+    "tests/fixtures/constitution_v030/shared-control-commutation/audit-command.json": "c8be4a4836b76ae518d84b36b004d809620fe10560cb425e41ae13231cf96c13",
+    "tests/fixtures/constitution_v030/shared-control-commutation/audit.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/shared-control-commutation/audit.stdout.txt": "6b7715d0b0e437f9790d9b3337f0892a2672d580ee10a2b60f2268e6f313bdf0",
+    "tests/fixtures/constitution_v030/shared-control-commutation/build-command.json": "bb581d4234fc066b616c68a00a04198467cead0181ae237d373f4d4235362794",
+    "tests/fixtures/constitution_v030/shared-control-commutation/build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/shared-control-commutation/build.stdout.txt": "79886e379b1c1936c5cf661f9a77e0cc9fe86ad628022d2b860e1e53d02a679c",
+    "tests/fixtures/constitution_v030/shared-control-commutation/examples-command.json": "8d31a591fd5b803e967cf4783e66dc0a2b000bde0d68fb67c6e81e369dfa5168",
+    "tests/fixtures/constitution_v030/shared-control-commutation/examples.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/shared-control-commutation/examples.stdout.txt": "e7a922dfdc1b7f60494deb22855e905b7b3efd70857542f9c5191d7218bd2107",
+    "tests/fixtures/constitution_v030/shared-control-commutation/review-command.json": "19e2b678af4d3c1918aefc84e4518f90fd7bb8b3b24f0530d434dabc402ff93e",
+    "tests/fixtures/constitution_v030/shared-control-commutation/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/shared-control-commutation/review-types.stdout.txt": "fa548bac5507c6e6e07297d219c1c15cf3642bf6d8fecfbec6729e5665ac7de3",
+    "tests/fixtures/constitution_v030/shared-control-commutation/source-comparison.json": "acfce7d529dd87fd4c323411e38bb0f354e5d00aa5ce1dccf7aa4c0d5ac708e0"
+  },
+  "checks": {
+    "mathlib_package_build_exit_code": 0,
+    "mathlib_package_audit_exit_code": 0,
+    "closed_types_and_axioms_exit_code": 0,
+    "small_examples_exit_code": 0,
+    "public_theorems": 5,
+    "named_example_theorems": 3,
+    "positive_matrix_pairs": 6,
+    "noncommuting_matrix_orders": 4,
+    "correlated_reference_actions": 2,
+    "maximum_example_physical_qubits": 3,
+    "executable_assertions_passed": 18,
+    "mathlib_audited_declarations": 3446,
+    "existing_lean_sources_byte_identical": 207,
+    "project_axioms": [],
+    "observed_axiom_dependencies": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ]
+  },
+  "scope": "General finite-control block algebra, specialized to actual single Boolean true-control of ordered tensor factors in existing hierarchy operators; actual sequence prefix/suffix and arbitrary reference retained. Exact phase and zero target widths included without owner/access inference. No typed access/borrow contract, optimizer authorization, acceptance/success/failure/work preservation, finite/hierarchy codec correspondence, byte-I/O or runtime theorem, new guarantee admission, general #303 completion or PR/RS discharge. Native build/audit/fresh replay and live guarantee evidence are separate registry workflow."
+}

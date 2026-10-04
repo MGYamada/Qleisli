@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13",
+      "sha256": "c66276e0146a7dd50224d382582df6456969d8e2b24327cd6a660a269580000c",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -113,8 +113,9 @@
         "lean/Qleisli/Semantics/RawFunction.lean": "bcfd2976d4ade6bf6911a02f4d318e66fa12954a503b21a8d789fbaeca2e3947",
         "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
         "lean/Qleisli/Semantics/RawPure.lean": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
+        "lean/Qleisli/SharedControlCommutation.lean": "54d534e523fd4d1eee80ef0d1a0b410ef6a0c2900ddbce6cd467c33b59c88cde",
         "lean/Qleisli/Transition.lean": "e2a6be7d61e3b56b4079ba1ec39feca391a6d0feb3bc7193792993a0d4612b19",
-        "lean/Qleisli.lean": "5ed3d0884a20cb319f459b6e94b10253b11e2efcc8ff697213b36f4a1f29039f",
+        "lean/Qleisli.lean": "16bace47612e801e1bea12653b4874c659bb008e4c1355cf555be6ed023bf770",
         "lean/SchemaExport.lean": "40cbef842550d1e08c26f8371844713e5d47d236b953f9d63b6fff3ee675c02e",
         "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936",
         "lean/lakefile.toml": "70c000687aa6ec019d69db771f6f74e9eba06d82ba6f0ca23806e20c6d97327f",
@@ -240,12 +241,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "54ffd70bb3544d69d23a0fd563e84ce3988f9628492a08a14a76c6d1c7993532",
+      "lean/schema-registry.json": "22acf0b8239f645e2f5c09d65ee876ff904e9b3d2eddec479d2ef9665f004d17",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "005585e1e7d380bb431f4a9c81b1a77647114eeb4f3a19c1abcdbc518d72f3c4"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "d910cbb6446ea5915b49cdc967d9a683a2c2c8d76ebbaf826bef8e1bd627aeb6"
     },
     "commands": [
       {
@@ -258,7 +259,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 24.348653999972157,
+        "seconds": 6.6248326250351965,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -272,7 +273,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 61.52822895802092,
+        "seconds": 62.097659667022526,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -283,7 +284,7 @@
       "Classical.choice",
       "Quot.sound"
     ],
-    "scope": "Current-source evidence for the two human-admitted scoped ordinary QLV1 guarantees, after proof-only additions for protected literal-phase commutation and both-success matrix correspondence. The independent semantic dependency closure and reviewed guarantee meanings are unchanged. This is not production-wide constitutional certification, native runtime attestation or release validation.",
+    "scope": "Current-source evidence for the two human-admitted scoped ordinary QLV1 guarantees, after proof-only shared-control/disjoint-target commutation additions. The fixed elaborated historical continuity baseline is unchanged. This is not a new guarantee admission, source-access or byte/runtime correspondence proof, production-wide constitutional certification, or release validation.",
     "native_binary_note": "The local native binary digest identifies the selected build observed here. It is a build record, not a portable binary identity or a proof of compiler/runtime correctness.",
     "observed_native_build": {
       "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
@@ -315,7 +316,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 17.136190833,
+      "seconds": 11.460040458012372,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -331,7 +332,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean",
       "sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77"
     },
-    "source_revision_sha256": "1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13",
+    "source_revision_sha256": "c66276e0146a7dd50224d382582df6456969d8e2b24327cd6a660a269580000c",
     "command": {
       "argv": [
         "lake",

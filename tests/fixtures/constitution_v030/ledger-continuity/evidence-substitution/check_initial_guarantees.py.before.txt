@@ -491,8 +491,7 @@ def check(root=ROOT, *, verify_lean=False, require_adopted=False):
         validate_current(root, proposal, archive, data=current_bytes)
         require(read_file(root, CURRENT_PATH) == current_bytes, "current evidence changed during Lean replay")
     return {"mode": "current-Lean-identity-transport-and-source-identity" if verify_lean else "source-identity-only",
-            "scoped_guarantees": 2, "admitted_by_this_check": 0, "source_revision": record["source_revision"]["sha256"],
-            "current_evidence_sha256": digest(current_bytes)}
+            "scoped_guarantees": 2, "admitted_by_this_check": 0, "source_revision": record["source_revision"]["sha256"]}
 
 
 def main(argv=None):

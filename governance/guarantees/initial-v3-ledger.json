@@ -1,6 +1,6 @@
 {
   "format": "qleisli.guarantee-ledger",
-  "version": 4,
+  "version": 3,
   "edition": "2026",
   "status": "active-scoped-guarantees",
   "ratification": {
@@ -19,7 +19,7 @@
         "path": "governance/interpretations/initial-2026-reviewed.txt",
         "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
       },
-      "section": "1. Candidate QS-2026-01 — Meaning of accepted programs"
+      "section": "1. Candidate QS-2026-01 \u2014 Meaning of accepted programs"
     },
     {
       "id": "PR-2026-01",
@@ -32,7 +32,7 @@
         "path": "governance/interpretations/initial-2026-reviewed.txt",
         "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
       },
-      "section": "2. Candidate PR-2026-01 — Accepted target realizations"
+      "section": "2. Candidate PR-2026-01 \u2014 Accepted target realizations"
     },
     {
       "id": "RS-2026-01",
@@ -45,7 +45,7 @@
         "path": "governance/interpretations/initial-2026-reviewed.txt",
         "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
       },
-      "section": "3. Candidate RS-2026-01 — Quantitative resource accountability"
+      "section": "3. Candidate RS-2026-01 \u2014 Quantitative resource accountability"
     }
   ],
   "pending_obligations": [
@@ -81,8 +81,7 @@
         "path": "governance/proposals/initial-guarantees.json",
         "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
       },
-      "proposal_entry": "QS-QLV1-OWNERSHIP-2026-01",
-      "identity_sha256": "c30496379e2e88bf863a7ecc93746a1a445219fd64cc14016a02b30ae48b2a27"
+      "proposal_entry": "QS-QLV1-OWNERSHIP-2026-01"
     },
     {
       "id": "QS-QLV1-SCOPE-2026-01",
@@ -96,26 +95,12 @@
         "path": "governance/proposals/initial-guarantees.json",
         "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
       },
-      "proposal_entry": "QS-QLV1-SCOPE-2026-01",
-      "identity_sha256": "1ab1b9925a69c0d4f2153f74a8772d15298940bf7c5f97f3fdea1a4c2ee02c89"
+      "proposal_entry": "QS-QLV1-SCOPE-2026-01"
     }
   ],
-  "scope": "Registered scoped guarantees retain their admitted meanings and current evidence bindings. The three binding interpretations retain their broader pending obligations. No production-wide QS, PR or quantitative RS discharge is claimed.",
-  "previous_ledger": {
-    "path": "governance/guarantees/initial-v3-ledger.json",
-    "sha256": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e"
-  },
-  "current_bindings": [
-    {
-      "guarantee_ids": [
-        "QS-QLV1-OWNERSHIP-2026-01",
-        "QS-QLV1-SCOPE-2026-01"
-      ],
-      "verifier_profile": "qlv1-structural-identity-v1",
-      "evidence": {
-        "path": "governance/guarantees/current-evidence.json",
-        "sha256": "636ff760f27b347bdbaa983ae1db9985f7fef6c5d4aa0c81786e29f36f19790a"
-      }
-    }
-  ]
+  "scope": "Three binding interpretations retain their broader pending obligations. Two scoped ordinary QLV1 guarantees have been formally discharged and admitted under the recorded human adequacy judgment. No production-wide QS, PR or quantitative RS discharge is claimed.",
+  "current_evidence": {
+    "path": "governance/guarantees/current-evidence.json",
+    "sha256": "d0fb9ff93148a0aa680a3164789011d7e1438e74ac7472433dbf63fe01a7ebe1"
+  }
 }

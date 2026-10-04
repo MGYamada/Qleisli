@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Separate append-only admitted guarantee identities from current evidence in
+  ledger schema v4. Require explicit admission registrations, exact verifier
+  coverage, trusted-base continuity and stable snapshots during replay; retain
+  the two scoped guarantees and three pending broader obligations (#135, #141).
+- Prove exact exchange of shared coherent-control operations on disjoint ordered
+  target factors, connected to the existing hierarchy tensor/control/sequence
+  meanings and arbitrary reference amplitudes, including zero-width phase.
+  This is a local proof component, not a source access or reordering rule (#303).
 - Align the retained finite-profile corpus regression with the shared parser:
   static `Nat` parameters parse once, then reject as unsupported with the exact
   parameter span. Preserve the original source and historical diagnostics (#32).

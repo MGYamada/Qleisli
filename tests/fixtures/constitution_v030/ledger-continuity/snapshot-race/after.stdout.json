@@ -1,0 +1,13 @@
+{
+  "kind": "initial-v4-enforcer-defect-not-proof-or-admission-counterexample",
+  "checker_sha256": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+  "helper_sha256": "3e58e592f4a691091e91b8fd5b281c3dfceb56e8adf12a59c7f77d620a9ec46b",
+  "original_constitution_sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+  "retained_constitution_sha256": "004fd583b2f70069a5d19b1985b2b96cf2103da0a4dfc035092dd378144a600d",
+  "constitution_check_reads": 2,
+  "final_invalid_constitution_retained": true,
+  "result": null,
+  "error": "frozen artifact snapshot: SHA-256 mismatch: CONSTITUTION.md",
+  "accepted_invalid_frozen_snapshot": false,
+  "scope": "Only checked-file timing is mocked; validation still uses real checked_file and the actual fixed initial verifier. All file writes occur in the temporary fixture root. No Lean or project file is modified."
+}

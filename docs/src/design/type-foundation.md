@@ -344,6 +344,20 @@ decision packet and must update both lowering profiles together.
 | Scope exit | Every local linear owner is returned or explicitly consumed by an admitted operation. Lexical identities prevent shadowing from reviving an old owner. |
 | Zero-width owners | Same move/use/return rules as other owners; zero physical width grants no discard, copy or phase-erasure rule. |
 
+Two local proof components support the access work in
+[#303](https://github.com/MGYamada/Qleisli/issues/303). The protected-phase
+theorem exchanges adjacent literal phases in their original physical action.
+`Qleisli.SharedControlCommutation` additionally proves exact matrix equality
+for common control sectors acting on disjoint ordered target factors. Its
+single-control bridge concerns the actual hierarchy tensor, control and
+sequence definitions, including unchanged surrounding operations and arbitrary
+external-reference amplitudes. Zero-width factors retain their scalar phases.
+These results do not yet derive a source footprint from `ctrl`/`&mut`, prove
+arbitrary owner/axis routing, or authorize source reordering. Width premises
+do not discharge `Q<Unit>` ownership, and neither helper proof is an additional
+constitutional guarantee. The bounded examples and proof records are retained
+in `tests/fixtures/constitution_v030/shared-control-commutation/`.
+
 Diagnostics must distinguish syntax, unresolved/ambiguous name, kind or stage,
 type/tree/size mismatch, missing capability, ownership, effect, unsupported
 lowering profile, capacity limit and native rejection. Show the original UTF-8

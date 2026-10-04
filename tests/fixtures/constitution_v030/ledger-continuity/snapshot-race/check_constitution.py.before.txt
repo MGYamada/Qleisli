@@ -72,9 +72,7 @@ CONTINUITY_PATHS = tuple(f"{CONTINUITY_ROOT}/{name}" for name in (
     "historical-build.stdout.txt", "historical-build.stderr.txt",
     "historical-extraction-command.json", "empty.stderr.txt",
 ))
-FROZEN_IDENTITIES_PATH = "tests/fixtures/constitution_v030/ledger-continuity/frozen-identities.json"
-FROZEN_IDENTITIES_SHA256 = "6a2f99413d8357f3cdc4ba5b1b42e2bb21d03c781816ec91890d8159f2ee51e4"
-LEDGER_HISTORY_PATHS = (ledger_policy.V3_PATH, FROZEN_IDENTITIES_PATH)
+LEDGER_HISTORY_PATHS = (ledger_policy.V3_PATH,)
 FROZEN_PATHS = RATIFICATION_PATHS + INTERPRETATION_PATHS + GUARANTEE_PATHS + CONTINUITY_PATHS + LEDGER_HISTORY_PATHS
 INTERPRETATIONS = {
     "QS-2026-01": ("QS", "1. Candidate QS-2026-01 — Meaning of accepted programs"),
@@ -299,11 +297,6 @@ def validate_ledger(ledger, *, label="guarantee ledger", allow_bootstrap=False,
                 require_fields(row, dict(interpretation=identifier, formalization_status="pending-coverage-and-adequacy-review",
                                         proof_status="not-discharged", evidence_bindings=[]),
                                f"{label} pending obligation {identifier}")
-    if version == 4:
-        jurisdictions = {row["id"]: row["jurisdiction"] for row in ledger["binding_interpretations"]}
-        for entry in entries.values():
-            if jurisdictions.get(entry["interpretation"]) != entry["jurisdiction"]:
-                raise PacketError(f"{label}: admitted guarantee must reference a retained interpretation with matching jurisdiction")
     return version
 
 
@@ -434,7 +427,6 @@ def check_constitution(root=ROOT, *, base_ref=None, require_release_ready=False,
     entries = ledger_policy.validate_entries(ledger["discharged_guarantees"], registrations, hashed=True)
     ledger_policy.preserve_entries(historical["discharged_guarantees"], ledger["discharged_guarantees"], before_hashed=False)
     selected = ledger_policy.validate_bindings(ledger["current_bindings"], entries, profiles)
-    ledger_policy.validate_frozen_snapshots(protected_snapshots, FROZEN_IDENTITIES_PATH, FROZEN_IDENTITIES_SHA256)
     ledger_policy.dispatch(root, LEDGER_PATH, ledger_bytes, entries, selected, verify_lean=verify_lean,
                            protected_snapshots=protected_snapshots)
     if require_release_ready:

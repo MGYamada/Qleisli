@@ -1,0 +1,83 @@
+{
+  "format": "qleisli.ledger-continuity-validation",
+  "version": 1,
+  "scope": "Final schema-v4 policy after frozen-snapshot and mutable-evidence-substitution repairs; source-only current ledger check, no new human admission or proof claim.",
+  "source_files_before": {
+    "scripts/check_constitution.py": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "scripts/check_guarantee_ledger.py": "6bc1911bb0c4b8cff7357ff804f6dcc4c50fb99cce1318c0c2e6140bdbeb099c",
+    "scripts/check_initial_guarantees.py": "73cce808ddedca4571211e546f9d381cc7a00ddbb06958a82ed81573b91e5702",
+    "scripts/test_check_constitution.py": "cfce688e4faed64edbd3317ad1d7728e66b829f8146bacd59040fd9e204248b9",
+    "scripts/test_check_initial_guarantees.py": "563eb05086a6a59cbcb561ff9f0a9c979469ed387941b66fc0d9e78cde9fa972",
+    "governance/guarantees.json": "9237488a4c2589c50582e66b364859f6dbc240dea842cda71cb4fb2aacc723af",
+    "governance/guarantees/initial-v3-ledger.json": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e",
+    "tests/fixtures/constitution_v030/ledger-continuity/frozen-identities.json": "6a2f99413d8357f3cdc4ba5b1b42e2bb21d03c781816ec91890d8159f2ee51e4"
+  },
+  "source_files_after": {
+    "scripts/check_constitution.py": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "scripts/check_guarantee_ledger.py": "6bc1911bb0c4b8cff7357ff804f6dcc4c50fb99cce1318c0c2e6140bdbeb099c",
+    "scripts/check_initial_guarantees.py": "73cce808ddedca4571211e546f9d381cc7a00ddbb06958a82ed81573b91e5702",
+    "scripts/test_check_constitution.py": "cfce688e4faed64edbd3317ad1d7728e66b829f8146bacd59040fd9e204248b9",
+    "scripts/test_check_initial_guarantees.py": "563eb05086a6a59cbcb561ff9f0a9c979469ed387941b66fc0d9e78cde9fa972",
+    "governance/guarantees.json": "9237488a4c2589c50582e66b364859f6dbc240dea842cda71cb4fb2aacc723af",
+    "governance/guarantees/initial-v3-ledger.json": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e",
+    "tests/fixtures/constitution_v030/ledger-continuity/frozen-identities.json": "6a2f99413d8357f3cdc4ba5b1b42e2bb21d03c781816ec91890d8159f2ee51e4"
+  },
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_constitution.py"
+      ],
+      "cwd": ".",
+      "started_at_utc": "2026-10-04T14:16:31.329373+00:00",
+      "seconds": 109.48450845800107,
+      "exit_code": 0,
+      "stdout": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/final/policy-tests.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/final/policy-tests.stderr.txt",
+        "sha256": "d71043b7ea3d58ff02a6058d35d920f85a812f7f25c1634130fbc010288edaff"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_initial_guarantees.py"
+      ],
+      "cwd": ".",
+      "started_at_utc": "2026-10-04T14:16:31.330280+00:00",
+      "seconds": 14.488437000021804,
+      "exit_code": 0,
+      "stdout": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/final/initial-guarantee-tests.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/final/initial-guarantee-tests.stderr.txt",
+        "sha256": "f69217247fcdcdc0a4ece9a0598a2c88621a4a4ac2f5442086d222ec9d29e01b"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "HEAD"
+      ],
+      "cwd": ".",
+      "started_at_utc": "2026-10-04T14:18:20.815551+00:00",
+      "seconds": 1.1367739589768462,
+      "exit_code": 0,
+      "stdout": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/final/current-source-only.stdout.txt",
+        "sha256": "42dc38e167fc038aef459faf32f4a34962170cd17053c4b7e40af2d1eb4be623"
+      },
+      "stderr": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/final/current-source-only.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

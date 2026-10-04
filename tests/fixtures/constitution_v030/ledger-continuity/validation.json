@@ -1,0 +1,59 @@
+{
+  "format": "qleisli.ledger-continuity-validation",
+  "version": 1,
+  "scope": "Schema-v4 policy tests and source-only current ledger integrity; no new human admission or Lean proof claim.",
+  "source_files_before": {
+    "scripts/check_constitution.py": "b2cd45b9431f063decbccba7f4e660c8a1a1ed7ce6ca9111d7cfd35737c4f5e9",
+    "scripts/check_guarantee_ledger.py": "63994f6043c18141b363726c2c45901803e39b6824adaedd49bbaacf334bc722",
+    "scripts/test_check_constitution.py": "592e3fa523eb164b59539c4507b18c859d406ee6a3d6072d6c501324b65c75ab",
+    "governance/guarantees.json": "9237488a4c2589c50582e66b364859f6dbc240dea842cda71cb4fb2aacc723af",
+    "governance/guarantees/initial-v3-ledger.json": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e"
+  },
+  "source_files_after": {
+    "scripts/check_constitution.py": "b2cd45b9431f063decbccba7f4e660c8a1a1ed7ce6ca9111d7cfd35737c4f5e9",
+    "scripts/check_guarantee_ledger.py": "63994f6043c18141b363726c2c45901803e39b6824adaedd49bbaacf334bc722",
+    "scripts/test_check_constitution.py": "592e3fa523eb164b59539c4507b18c859d406ee6a3d6072d6c501324b65c75ab",
+    "governance/guarantees.json": "9237488a4c2589c50582e66b364859f6dbc240dea842cda71cb4fb2aacc723af",
+    "governance/guarantees/initial-v3-ledger.json": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e"
+  },
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_constitution.py"
+      ],
+      "cwd": ".",
+      "started_at_utc": "2026-10-04T14:04:00.020163+00:00",
+      "seconds": 116.39980679104337,
+      "exit_code": 0,
+      "stdout": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/policy-tests.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/policy-tests.stderr.txt",
+        "sha256": "69ab3dd725fa71e2140ab16213717433e8a247b6a046a3d05fe8f32d6b234ec5"
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "HEAD"
+      ],
+      "cwd": ".",
+      "started_at_utc": "2026-10-04T14:05:56.422101+00:00",
+      "seconds": 1.2700623749988154,
+      "exit_code": 0,
+      "stdout": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/current-source-only.stdout.txt",
+        "sha256": "42dc38e167fc038aef459faf32f4a34962170cd17053c4b7e40af2d1eb4be623"
+      },
+      "stderr": {
+        "path": "tests/fixtures/constitution_v030/ledger-continuity/current-source-only.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ]
+}

@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13",
+    "sha256": "c66276e0146a7dd50224d382582df6456969d8e2b24327cd6a660a269580000c",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -100,8 +100,9 @@
       "lean/Qleisli/Semantics/RawFunction.lean": "bcfd2976d4ade6bf6911a02f4d318e66fa12954a503b21a8d789fbaeca2e3947",
       "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
       "lean/Qleisli/Semantics/RawPure.lean": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
+      "lean/Qleisli/SharedControlCommutation.lean": "54d534e523fd4d1eee80ef0d1a0b410ef6a0c2900ddbce6cd467c33b59c88cde",
       "lean/Qleisli/Transition.lean": "e2a6be7d61e3b56b4079ba1ec39feca391a6d0feb3bc7193792993a0d4612b19",
-      "lean/Qleisli.lean": "5ed3d0884a20cb319f459b6e94b10253b11e2efcc8ff697213b36f4a1f29039f",
+      "lean/Qleisli.lean": "16bace47612e801e1bea12653b4874c659bb008e4c1355cf555be6ed023bf770",
       "lean/SchemaExport.lean": "40cbef842550d1e08c26f8371844713e5d47d236b953f9d63b6fff3ee675c02e",
       "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936",
       "lean/lakefile.toml": "70c000687aa6ec019d69db771f6f74e9eba06d82ba6f0ca23806e20c6d97327f",
