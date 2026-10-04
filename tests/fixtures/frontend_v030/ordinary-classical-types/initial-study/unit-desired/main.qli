@@ -1,0 +1,1 @@
+pub unitary fn main(u: Unit) -> Unit { u }

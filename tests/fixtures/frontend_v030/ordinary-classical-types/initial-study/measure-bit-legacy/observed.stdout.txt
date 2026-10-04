@@ -1,0 +1,8 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "invalid_entry", message: "main must be observe fn main() with a classical result", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/measure-bit-legacy/main.qli", span: Span { start: 29, end: 84 }, line: 1, column: 30 }) }
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Q(Type { kind: Bit }) }, identity: Some(0), fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Bit }, identity: Some(1), fields: [] }
+sized.lower: Error { code: "unsupported", module: Some("main"), span: Span { start: 29, end: 84 }, message: "selected sized lowering profile requires an observe root returning exactly one CBits value" }

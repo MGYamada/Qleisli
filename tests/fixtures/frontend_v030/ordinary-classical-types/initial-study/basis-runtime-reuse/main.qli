@@ -1,0 +1,1 @@
+basis fn flip(b: Bit) -> Bit { not b } pub unitary fn main(b: CBit) -> CBit { flip(b) }
