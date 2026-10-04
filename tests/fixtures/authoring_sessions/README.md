@@ -113,3 +113,12 @@ Its second snapshot retains the recursive helpers and classical word assembly;
 the [checkpoint](measured-qpe-v021/checkpoint.md) separates later implementation
 and validation from the original failure and stopping point. A current parser
 replay is recorded separately from the retained historical diagnostic reports.
+
+The [0.3.0 type-foundation session](type-foundation-v030/session.json) saves
+three desired projects before checking: unmarked observation output, an empty
+quantum owner and one generic operation body at two basis types. The current
+compiler rejects the ordinary `Bit` result and proposed basis parameter grammar.
+The unit project initially violates the existing CLI entry convention; a
+separate snapshot changes only `main` to `observe` and passes. This validates
+that small ownership identity example, not scalar-phase semantics or the new
+generic design. It is informed authoring, not a blind model benchmark.

@@ -13,6 +13,7 @@ from pathlib import Path
 import subprocess
 import struct
 import tempfile
+import tomllib
 
 from compact_sized_graph import remap
 from compile_sized_corpus import Operation
@@ -25,6 +26,8 @@ from test_hierarchical_routed_power import source_stages
 from test_hierarchical_wiring import closure
 from test_instrument_host import source_documents, oversized_composition, SIDE
 from test_sized_instrument import sources
+
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def documents(proposal,n,m):
@@ -89,7 +92,7 @@ def test_binary_transport(frame_path):
     assert len(root)//4<1000000 and len(atoms)<1000000
     cases.append(('shared-word-budget',b'QLQ1'+words([len(root)])+root+words(header+atoms),'limit'))
     for name,data,expected in cases:
-        run=subprocess.run([str(kernel),'--qpe-instrument-pending'],input=data,capture_output=True,timeout=30)
+        run=subprocess.run([str(kernel),'--qpe-instrument-pending',PRODUCT_VERSION],input=data,capture_output=True,timeout=30)
         lines=run.stdout.decode().splitlines()
         assert lines[:1]==['qleisli.qpe-instrument-pending 3'],(name,run)
         if expected=='pending':assert run.returncode==0 and lines[1]=='pending',(name,lines)

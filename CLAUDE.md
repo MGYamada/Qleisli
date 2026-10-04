@@ -10,11 +10,11 @@ Raise limits only on explicit user instruction.
 
 ## Start from the design
 
-The user's latest instructions take precedence. Before working, read
+User instructions take precedence. Read the [ratification](docs/src/design/ratification.md),
 [README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
 [adopted cutover](https://github.com/MGYamada/Qleisli/issues/276) and
-[algorithm drafts](docs/imaginary-v1/README.md).
-Read relevant specifications before changing behavior; English is authoritative
+[algorithm drafts](docs/src/imaginary-v1/index.md).
+Read specifications before behavior changes; English is authoritative
 for production specifications, public library contracts, comments and examples.
 
 - Start with desired `.qli` programs and a bounded contract/checking experiment.
@@ -68,15 +68,15 @@ and [sized evidence](corpus/sized/README.md). Validate small qubit systems only;
 do not newly generate/check maximum-size cases. A version or bounded component
 does not complete feature/R14/H1–H5 or theorem gates.
 
-## docs/ cleanup boundary at v0.3.0
+## Documentation after the v0.3.0 cleanup
 
-Only `imaginary-v1/` and [backend plan](docs/lean-backend-plan-v0.3.md) survive
-the v0.3.0 cleanup in `docs/`. Migration decisions live in Issues.
-Delete `docs-old/` at v0.3.0. Remove its links now, including pinned web links;
-do not add redirects, replacement copies or active build/check dependencies.
+Keep book sources in `docs/src/`, including the [backend plan](docs/src/lean-backend-plan-v0.3.md).
+Write new chapters from adopted decisions, actual code and proofs;
+migration decisions live in Issues. The retired `docs-old/` tree is deleted.
+Do not restore it, its links (including pinned web links), redirects, replacement
+copies of retired prose or active build/check dependencies; use Git history.
 Preserve executable source, proofs, counterexamples, validation artifacts and
-notices outside that tree. Use Git history after deletion. Derive new docs
-from adopted decisions, actual code and proofs. Regenerate corpus counts with
+notices outside retired documentation. Regenerate corpus counts with
 `python3 scripts/check_docs.py --write-corpus`; do not hand-edit generated views.
 
 ## Changes, versions and licensing
@@ -85,7 +85,7 @@ Use GitHub Issues for decisions/friction; no duplicate backlog. Breaking changes
 need an Issue with target, contracts, reason, migration and acceptance criteria
 before implementation. Compatible changes use PATCH, breaks MINOR, except the
 explicitly approved v0.2.9 verifier migration (#276). Cargo.toml is authoritative; synchronize
-Cargo.lock, both lakefiles, Python metadata/__version__ and std Qargo via
+Cargo.lock, lakefiles, Python metadata/runtime, std Qargo and research Cargo via
 `scripts/maintain_release.py`; inspect its plan and source-review requirements. Never change dependency versions as part of synchronization. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
 Qargo.toml. Accumulate changes in [CHANGELOG](CHANGELOG.md), not per-task bumps.
 Run relevant checks and record performed/skipped results accurately. For releases

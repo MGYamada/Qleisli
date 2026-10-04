@@ -128,6 +128,41 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
 }
 
 #[test]
+fn json_command_identity_is_independent_of_leading_options() {
+    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    for (command, flags, status) in [
+        ("check", vec!["--source-bytes=1048576"], 0),
+        ("run", vec!["--legacy-source-limits"], 0),
+        ("sample", vec!["--shots=2", "--seed=0"], 0),
+        ("check", vec!["--project-bytes=1"], 1),
+    ] {
+        let trailing = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .arg(command)
+            .arg(&root.0)
+            .args(&flags)
+            .arg("--format=json")
+            .output()
+            .unwrap();
+        let leading = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .args(&flags)
+            .arg(command)
+            .arg(&root.0)
+            .arg("--format=json")
+            .output()
+            .unwrap();
+        assert_eq!(trailing.status.code(), Some(status), "{trailing:?}");
+        assert_eq!(leading.status.code(), Some(status), "{leading:?}");
+        assert!(trailing.stderr.is_empty() && leading.stderr.is_empty());
+        assert!(
+            String::from_utf8_lossy(&trailing.stdout)
+                .contains(&format!("\"command\":\"{command}\"")),
+            "{trailing:?}"
+        );
+        assert_eq!(leading.stdout, trailing.stdout);
+    }
+}
+
+#[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
     let usage = include_str!("fixtures/verification_v029/usage.txt")
         .trim_end()
@@ -139,6 +174,9 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
         vec!["check", ".", "--format", "--format=json"],
         vec!["check", ".", "--format=xml", "--format=json"],
         vec!["check", "--unknown", "--format=json"],
+        vec!["--source-bytes=0", "check", ".", "--format=json"],
+        vec!["--unknown", "check", ".", "--format=json"],
+        vec!["--format=json", "--shots=01", "check", "."],
     ] {
         let args: Vec<_> = args.iter().map(std::ffi::OsStr::new).collect();
         let output = cli(&args);

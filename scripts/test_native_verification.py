@@ -10,8 +10,10 @@ import os
 from pathlib import Path
 import subprocess
 import tempfile
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
+VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
 SOURCE = ROOT / "tests/fixtures/authoring_sessions/dual-v028/attempt-02"
 FINITE = ROOT / "tests/fixtures/verification_v022/finite"
 
@@ -46,7 +48,7 @@ def main():
 
     def native(artifact, request=None, accepted=True):
         data = packet(artifact, request)
-        result = run([kernel, "--qirf-native"], 0 if accepted else 1, data)
+        result = run([kernel, "--qirf-native", VERSION], 0 if accepted else 1, data)
         lines = result.decode().splitlines()
         assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], result
         if accepted:
@@ -61,8 +63,17 @@ def main():
             missing = subprocess.run([str(binary), "check", str(SOURCE), "--format=json"],
                                      cwd=directory, env=absent, capture_output=True, timeout=60)
             assert missing.returncode == 1 and json.loads(missing.stdout)["diagnostics"][0]["code"] == "project"
-            wrong_version = run([kernel, "--qirf-native", "0.0.0"], 1, b"")
-            assert wrong_version == b"qleisli.qirf-native 1\nerror\nversion\n"
+            for mode in ["--qirf-native", "--qirf-contract", "--hierarchy-pending",
+                         "--hierarchy-request-pending", "--hierarchy-fourier-pending",
+                         "--readout-check", "--preparation-check", "--instrument-pending",
+                         "--qpe-instrument-pending"]:
+                wrong_version = run([kernel, mode, "0.0.0"], 1, b"")
+                assert wrong_version == b"qleisli.qirf-native 1\nerror\nversion\n"
+                # A missing version is not an implicit match for any native mode.
+                missing_version = run([kernel, mode], 1, b"")
+                assert missing_version == b"qleisli.qirf-native 1\nerror\nversion\n"
+                matching_version = run([kernel, mode, VERSION], 1, b"")
+                assert matching_version != b"qleisli.qirf-native 1\nerror\nversion\n"
 
             for command, extra in [("check", []), ("run", []), ("sample", ["--shots=64", "--seed=7"])]:
                 base = json.loads(run([binary, command, SOURCE, "--format=json", *extra]))
@@ -133,7 +144,7 @@ def main():
                          b"QLV1" + (16777217).to_bytes(4, "little") + bytes(4),
                          packet(b'{"version":2,' + encoded(artifact)[1:]),
                          packet(encoded(artifact).replace(b'"version":2', b'"version":02'))]:
-                run([kernel, "--qirf-native"], 1, data)
+                run([kernel, "--qirf-native", VERSION], 1, data)
 
             # Both selection mechanisms use the same native verifier and execution view.
             # Independent mathematical oracles remain separate tests.

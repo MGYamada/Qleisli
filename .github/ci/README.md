@@ -8,6 +8,26 @@ exact checkout; missing/unknown lanes and failed/skipped selected jobs reject.
 Dependency archive misses take the same validation path. Cargo `target`, Lean
 project outputs and prior validation reports are never cached.
 
+Constitution, governance records, constitutional fixtures and Reference changes
+select the full policy-risk lane. The always-run documentation job also checks
+the adopted constitutional identity, historical candidate evidence, pending
+ledger, separately adopted initial interpretations and scoped admissions. PR/push checks compare
+the available event base; tags reject incomplete proof enforcement as
+release-unready. This is the first identity-enforcement
+component of #141, not complete interpretation/proof/artifact enforcement.
+Human decisions and changes to enforcement code or workflows still need review.
+
+The scoped QS checker validates the separately recorded human admission and
+binds two declarations, independent predicates and current proof evidence to
+the current Lean source closure. The always-run job checks identities and rejection regressions;
+`model`/`full` also compare elaborated types, axioms and the complete Acceptance
+and Artifact structure fields after building and auditing the Lean environment.
+The independent semantic dependency closure and original byte-binding witness
+cannot be weakened by refreshing mutable source hashes. Historical reviewed meanings remain protected
+separately from current implementation evidence. These checks preserve the
+recorded admission; they cannot supply the human adequacy judgment or complete
+production-wide QS, PR or RS.
+
 ## Progressive test-oriented CI (#223)
 
 | Lane | Selection | Work |

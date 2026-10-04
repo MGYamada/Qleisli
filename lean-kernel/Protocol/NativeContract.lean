@@ -45,4 +45,185 @@ def check (bytes : ByteArray) : WorkM Bool := do
   else throw .request
   return true
 
+/-- The token, ordered wire list and exact bit shape read from a request port.
+This is a binding fact, not a substitute for the kernel's port checks. -/
+def PortBinding (value : Json) (result : Semantics.Raw.Port) : Prop :=
+  ∃ shape token wires bits wireValues,
+    value.getObjVal? "shape" = .ok shape ∧
+    value.getObjVal? "token" = .ok token ∧ token.getNat? = .ok result.token ∧
+    value.getObjVal? "wires" = .ok wires ∧ wires.getArr? = .ok wireValues ∧
+    wireValues.toList.mapM Json.getNat? = .ok result.wires ∧
+    shape.getObjVal? "bits" = .ok bits ∧ bits.getNat? = .ok result.bits
+
+private theorem string_bind_success {α β : Type} (first : Except String α)
+    (next : α → Except String β) (result : β) (ok : (first >>= next) = .ok result) :
+    ∃ value, first = .ok value ∧ next value = .ok result := by
+  cases first with
+  | error error => cases ok
+  | ok value => exact ⟨value,rfl,ok⟩
+
+private theorem port_binding (value : Json) (result : Semantics.Raw.Port)
+    (ok : port value = .ok result) : PortBinding value result := by
+  unfold port at ok
+  obtain ⟨_,_,h⟩ := string_bind_success _ _ _ ok
+  obtain ⟨shape,hs,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨_,_,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨token,ht,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨tokenValue,htv,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨wires,hw,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨wireValues,hwv,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨wireList,hwl,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨bits,hb,h⟩ := string_bind_success _ _ _ h
+  obtain ⟨bitValue,hbv,h⟩ := string_bind_success _ _ _ h
+  cases h
+  exact ⟨shape,token,wires,bits,wireValues,hs,ht,htv,hw,hwv,hwl,hb,hbv⟩
+
+private theorem adapt_success {α : Type} (input : Except String α) (value : α)
+    (work left : Nat) (ok : (adapt input).run work = (.ok value,left)) :
+    input = .ok value ∧ left = work := by
+  have h := lift_success _ _ _ _ ok
+  refine ⟨?_,h.2⟩
+  cases input <;> simp_all [Except.mapError]
+
+/-- An encoded request retains the decoded contract and its actual checking
+stage. It does not identify the root matrix with the finite wrapper's result. -/
+structure EncodedAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  contractJson : Json
+  required : Semantics.Finite.Contract
+  afterContract : Nat
+  kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "encoded"
+  contractBound : value.getObjVal? "contract" = .ok contractJson
+  contractDecoded : (FiniteCodec.readContract contractJson).run work = (.ok required,afterContract)
+  accepted : (QleisliKernel.Qirf.checkContract artifact order required).run afterContract = (.ok (),left)
+
+/-- A leaf request retains tuple shape, ordered ports and the exact requested
+matrix. Both root validation and equation checking are from this execution. -/
+structure LeafAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  signatureJson : Json
+  inputJson : Json
+  outputJson : Json
+  matrixJson : Json
+  signature : Semantics.Finite.Basis
+  input : Semantics.Raw.Port
+  output : Semantics.Raw.Port
+  matrix : Semantics.Exact.Matrix
+  root : QleisliKernel.Qirf.Validity.Root
+  actual : Semantics.Exact.Matrix
+  afterMatrix : Nat
+  afterRoot : Nat
+  kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "leaf"
+  signatureBound : value.getObjVal? "signature" = .ok signatureJson
+  signatureDecoded : Qirf.basis 129 signatureJson = .ok signature
+  inputBound : value.getObjVal? "input" = .ok inputJson
+  inputDecoded : PortBinding inputJson input
+  outputBound : value.getObjVal? "output" = .ok outputJson
+  outputDecoded : PortBinding outputJson output
+  matrixBound : value.getObjVal? "matrix" = .ok matrixJson
+  matrixDecoded : (FiniteCodec.readMatrixValue matrixJson).run work = (.ok matrix,afterMatrix)
+  rootAccepted : (QleisliKernel.Qirf.Validity.checkRoot artifact order).run afterMatrix = (.ok root,afterRoot)
+  accepted : (QleisliKernel.Qirf.check artifact order signature input output matrix).run afterRoot = (.ok actual,left)
+
+inductive RequestAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  | encoded (binding : EncodedAcceptance artifact order value work left)
+  | leaf (binding : LeafAcceptance artifact order value work left)
+
+/-- Original QLV1 bytes, mandatory original request, decoded payload and the
+continuous work states of the actual native-contract checker. These are
+necessary success facts; no converse or compiler correspondence is asserted. -/
+structure Acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat) where
+  body : ByteArray
+  requestBytes : ByteArray
+  text : String
+  value : Json
+  artifact : QleisliKernel.Qirf.Artifact
+  order : Array Nat
+  afterArtifact : Nat
+  packetBound : Validity.packet bytes = .ok (body,some requestBytes)
+  utf8Bound : String.fromUTF8? requestBytes = some text
+  requestBound : FiniteCodec.parseWithDepth text 128 = .ok value
+  formatBound : (value.getObjVal? "format" >>= Json.getStr?) = .ok "qleisli.native-contract"
+  versionBound : (value.getObjVal? "version" >>= Json.getNat?) = .ok 1
+  artifactBound : (Qirf.read body).run work = (.ok (artifact,order),afterArtifact)
+  request : RequestAcceptance artifact order value afterArtifact left
+  answered : answer = true
+
+private theorem adapt_bind_success {α β : Type} (input : Except String α)
+    (next : α → WorkM β) (result : β) (work left : Nat)
+    (ok : (adapt input >>= next).run work = (.ok result,left)) :
+    ∃ value, input = .ok value ∧ (next value).run work = (.ok result,left) := by
+  obtain ⟨value,middle,first,rest⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨bound,same⟩ := adapt_success _ _ _ _ first
+  exact ⟨value,bound,same ▸ rest⟩
+
+theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
+    (ok : (check bytes).run work = (.ok answer,left)) :
+    Nonempty (Acceptance bytes answer work left) := by
+  unfold check at ok
+  obtain ⟨⟨body,request⟩,packet,h⟩ := adapt_bind_success _ _ _ _ _ ok
+  cases request with
+  | none => cases h
+  | some request =>
+    cases utf8 : String.fromUTF8? request with
+    | none => simp only [utf8] at h; cases h
+    | some text =>
+      simp only [utf8] at h
+      obtain ⟨value,parsed,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨kindJson,kj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨kind,k,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨formatJson,fj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨format,f,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨versionJson,vj,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨version,v,h⟩ := adapt_bind_success _ _ _ _ _ h
+      obtain ⟨_,w₈,hguard,h⟩ := bind_success _ _ _ _ _ h
+      obtain ⟨profile,sameWork⟩ := guard_success _ _ _ _ hguard
+      have hguarded := sameWork ▸ h
+      simp only [Bool.and_eq_true,beq_iff_eq] at profile
+      have formatBound : (value.getObjVal? "format" >>= Json.getStr?) = .ok "qleisli.native-contract" := by
+        simp [fj,bind,Except.bind,f,profile.1]
+      have versionBound : (value.getObjVal? "version" >>= Json.getNat?) = .ok 1 := by
+        simp [vj,bind,Except.bind,v,profile.2]
+      obtain ⟨⟨artifact,order⟩,w₉,hread,h⟩ := bind_success _ _ _ _ _ hguarded
+      suffices binding : Nonempty (RequestAcceptance artifact order value w₉ left) ∧ answer = true by
+        obtain ⟨⟨binding⟩,answered⟩ := binding
+        exact ⟨⟨body,request,text,value,artifact,order,w₉,packet,utf8,parsed,
+          formatBound,versionBound,hread,binding,answered⟩⟩
+      split at h
+      · rename_i isEncoded
+        obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ h
+        obtain ⟨contractJson,cj,h⟩ := adapt_bind_success _ _ _ _ _ h
+        obtain ⟨required,c,hcontract,h⟩ := bind_success _ _ _ _ _ h
+        obtain ⟨_,d,hcheck,hreturn⟩ := bind_success _ _ _ _ _ h
+        have final := pure_success _ _ _ _ hreturn
+        have kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "encoded" := by
+          simp only [beq_iff_eq] at isEncoded
+          simp [kj,bind,Except.bind,k,isEncoded]
+        exact ⟨⟨.encoded ⟨contractJson,required,c,kindBound,cj,hcontract,final.2.symm ▸ hcheck⟩⟩,final.1⟩
+      · split at h
+        · rename_i isLeaf
+          obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨signatureJson,sj,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨signature,s,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨inputJson,ij,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨input,i,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨outputJson,oj,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨output,o,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨matrixJson,mj,h⟩ := adapt_bind_success _ _ _ _ _ h
+          obtain ⟨matrix,h₂,hm,h⟩ := bind_success _ _ _ _ _ h
+          obtain ⟨root,h₃,hroot,h⟩ := bind_success _ _ _ _ _ h
+          obtain ⟨actual,h₄,hcheck,h⟩ := bind_success _ _ _ _ _ h
+          obtain ⟨_,h₅,hunit,hreturn⟩ := bind_success _ _ _ _ _ h
+          have final := pure_success _ _ _ _ hreturn
+          have unit := pure_success _ _ _ _ hunit
+          have last : h₄ = left := (final.2.trans unit.2).symm
+          have kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "leaf" := by
+            simp only [beq_iff_eq] at isLeaf
+            simp [kj,bind,Except.bind,k,isLeaf]
+          exact ⟨⟨.leaf ⟨signatureJson,inputJson,outputJson,matrixJson,signature,input,output,
+            matrix,root,actual,h₂,h₃,kindBound,sj,s,ij,port_binding _ _ i,oj,
+            port_binding _ _ o,mj,hm,hroot,last ▸ hcheck⟩⟩,final.1⟩
+        · cases h
+
 end QleisliKernel.Protocol.NativeContract

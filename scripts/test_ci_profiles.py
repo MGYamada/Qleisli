@@ -88,11 +88,19 @@ class CIProfiles(unittest.TestCase):
             (["lean/Qleisli/RawPure.lean"], "model"),
             (["docs/type-system.md"], "full"),
             (["TRUSTBOUNDARY.md"], "full"),
+            (["CONSTITUTION.md"], "full"),
+            (["GOVERNANCE.md"], "full"),
+            (["governance/guarantees.json"], "full"),
+            (["tests/fixtures/constitution_v030/packet.json"], "full"),
+            (["docs/src/reference/authority.md"], "full"),
+            (["docs/src/design/initial-interpretations.md"], "full"),
             (["lean/lean-toolchain"], "full"), ([".github/workflows/ci.yml"], "full"),
             (["TRUSTBOUNDARY.md"], "full"),
             (["AGENTS.md", "CLAUDE.md"], "tests"),
             (["scripts/check_schema_registry.py"], "full"),
             (["scripts/package_lean_kernel.py"], "full"),
+            (["lean/Audit.lean"], "full"),
+            (["lean-kernel/Audit.lean"], "full"),
             (["new/unknown.rs"], "full"), (["../src/new.rs"], "full"),
             (["docs/new-unknown.md"], "full"), ([], "full"),
             (["lean/schema-registry.json"], "full"),
@@ -117,6 +125,9 @@ class CIProfiles(unittest.TestCase):
             self.assertTrue(registry_binding_only(ROOT, "a" * 40, "b" * 40))
         self.assertEqual(proof_lane(["lean-kernel/QleisliKernel/Finite.lean", "lean/schema-registry.json"], self.policy, True), "tests")
         self.assertEqual(proof_lane(["lean/Qleisli/RawPure.lean", "lean/schema-registry.json"], self.policy, True), "model")
+        for audit in ["lean/Audit.lean", "lean-kernel/Audit.lean"]:
+            with self.subTest(audit=audit):
+                self.assertEqual(proof_lane([audit, "lean/schema-registry.json"], self.policy, True), "full")
         for change in [
             lambda m: m["checker"].update(type=["constant", "Bool", []]),
             lambda m: m["entries"][0].update(external_enabled=True),

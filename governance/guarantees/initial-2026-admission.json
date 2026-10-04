@@ -1,0 +1,57 @@
+{
+  "format": "qleisli.human-guarantee-admission",
+  "version": 1,
+  "edition": "2026",
+  "admitted_on": "2026-10-04",
+  "timezone": "Asia/Tokyo",
+  "status": "scoped-guarantees-admitted",
+  "guardian": {
+    "name": "Masahiko G. Yamada",
+    "capacity": "sole natural-human holder of the Constitution Guardian Office",
+    "appointment_record": {
+      "path": "governance/ratification-2026.json",
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+    }
+  },
+  "guarantee_ids": [
+    "QS-QLV1-OWNERSHIP-2026-01",
+    "QS-QLV1-SCOPE-2026-01"
+  ],
+  "reviewed_proposal": {
+    "path": "governance/proposals/initial-guarantees.json",
+    "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
+  },
+  "evidence_at_admission": {
+    "validation": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/validation.json",
+      "sha256": "0afcb38ce713a998cb8025d4e6b4406a9e1ac023cd04cf273eaae67a58508720"
+    },
+    "reviewed_source_archive": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/reviewed-source.tar.gz",
+      "sha256": "8cdfc71a2ca583a3c41a46717b847e6ba904ccffdbb57a768b360d0c88c9e6f3"
+    },
+    "reviewed_registry": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees/reviewed-registry.json",
+      "sha256": "ac39211f5a94a0b6b14a794d4bbedc614940cb2b82e4850983df7fc8830759ee"
+    }
+  },
+  "previous_ledger": {
+    "path": "tests/fixtures/constitution_v030/pending-ledger.json",
+    "sha256": "248e25655a89becea9c0ca008102f50db8ea096248b2c2624b671445866d9481"
+  },
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "question_item_id": "[\"request_user_input_async\",\"call_x3AF1JfIZBcuWzEUlZR9mZH8\",0]",
+    "question": "[限定保証の提案原本](/Users/masa/git/Qleisli/governance/proposals/initial-guarantees.json)（SHA-256: bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02、[解説](/Users/masa/git/Qleisli/docs/src/design/initial-guarantees.md)）をGuardianとして確認し、QS-QLV1-OWNERSHIP-2026-01とQS-QLV1-SCOPE-2026-01の形式化の妥当性を認め、証明済みの限定保証として台帳への登録を承認しますか？ 対象は実際のQLV1 checkerが受理した元のdecoded rootの所有権・古典スコープです。Leanのbuild・audit・replay、定理型の再検査、独立レビューが完了しています。QS・PR・RS全体は未完了のままです。この確認は、[憲法第V条](/Users/masa/git/Qleisli/CONSTITUTION.md:98)が人間に留保する「形式化が義務を適切に表すか」という判断と、[採択済みの保証登録手順](/Users/masa/git/Qleisli/governance/interpretations/initial-2026-reviewed.txt:261)によります。",
+    "answer": "2件とも提示された範囲・前提で妥当と認め、保証登録を承認する",
+    "first_clock_observation_after_reply_utc": "2026-10-04T09:08:21Z",
+    "timestamp_note": "This is the first tool clock observation after the reply, not an independently authenticated timestamp of the human message."
+  },
+  "recording": {
+    "transcriber": "Codex assistant",
+    "authority": "The direct affirmative human reply supplies the adequacy and admission judgment. The assistant records the act and verified proof evidence; it does not exercise Guardian authority.",
+    "authentication_limit": "The transcript is provenance, not a cryptographic signature. Hash checks preserve the recorded bytes and cannot independently authenticate the human speaker."
+  },
+  "scope": "Admit exactly the two scoped guarantees, with every premise, independent property, source/acceptance binding and exclusion in the reviewed proposal. QS-2026-01, PR-2026-01 and RS-2026-01 remain pending broader obligations. Admission does not establish full production QS, PR, quantitative RS, source/runtime/compiler correspondence, current binary attestation or release approval. The reviewed proposal retains its original candidate status as historical text; this separate event records the subsequent admission."
+}

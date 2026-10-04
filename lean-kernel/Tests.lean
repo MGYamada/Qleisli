@@ -460,6 +460,15 @@ end RawPureTests
 
 namespace RawObservationTests
 open QleisliKernel.Semantics.Observation
+-- Fast append-only histories and the old membership fallback agree even on
+-- reordered/duplicate identities; scope pairs must remain exactly equal.
+example : Raw.Observation.historySubset ([] : List Nat) [1] = true := by decide
+example : Raw.Observation.historySubset [1,2] [1,2,3] = true := by decide
+example : Raw.Observation.historySubset [1,2] [2,1,3] = true := by decide
+example : Raw.Observation.historySubset [1,1] [1] = true := by decide
+example : Raw.Observation.historySubset [1,2] [1,3] = false := by decide
+example : Raw.Observation.historySubset [(1,0),(2,1)] [(2,1),(1,0)] = true := by decide
+example : Raw.Observation.historySubset [(1,0)] [(1,1)] = false := by decide
 private def nested : Nat → List Op
   | 0 => []
   | n+1 => [.branch 0 (nested n) [] [] []]

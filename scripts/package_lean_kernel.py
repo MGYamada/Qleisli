@@ -18,6 +18,7 @@ import tomllib
 from check_lean_kernel import check_kernel
 
 ROOT = Path(__file__).resolve().parents[1]
+PRODUCT_VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
 
 
 def digest(path):
@@ -116,11 +117,11 @@ def main(argv=None):
             request = json.dumps(dict(format="qleisli.request", version=1, signature=dict(tag="bit"),
                                       meaning=dict(tag="phase8", table=phases), source_snapshot=None)).encode()
             packet = b"QLV1" + len(artifact).to_bytes(4, "little") + len(request).to_bytes(4, "little") + artifact + request
-            result = subprocess.run([binary, "--qirf-native"], input=packet, cwd=output,
+            result = subprocess.run([binary, "--qirf-native", PRODUCT_VERSION], input=packet, cwd=output,
                                     env=environment, capture_output=True, timeout=60)
             if (result.returncode == 0) != accepted or not result.stdout.startswith(b"qleisli.qirf-native 1\n"):
                 raise RuntimeError(f"relocated bundle smoke check failed: {result}")
-            logs.append(dict(command=["bin/" + binary.name, "--qirf-native"], exit_code=result.returncode,
+            logs.append(dict(command=["bin/" + binary.name, "--qirf-native", PRODUCT_VERSION], exit_code=result.returncode,
                              expected_acceptance=accepted, input_sha256=hashlib.sha256(packet).hexdigest(),
                              stdout=result.stdout.decode(), stderr=result.stderr.decode()))
         manifest = dict(format="qleisli.native-bundle", version=1,

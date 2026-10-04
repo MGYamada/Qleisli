@@ -363,9 +363,9 @@ impl Kernel {
 
     pub(crate) fn function_evidence(
         &self,
-        signature: crate::contract::BasisType,
-        implementation: RawProgram,
-        specification: RawProgram,
+        signature: &crate::contract::BasisType,
+        implementation: &RawProgram,
+        specification: &RawProgram,
         identity: crate::contract::function::RetainedIdentity,
         budget: &mut crate::contract::exact::Budget,
     ) -> Result<crate::contract::FunctionEvidence> {
@@ -376,9 +376,9 @@ impl Kernel {
         encoder.entries.push(Value::Null);
         encoder.evidence_fields(
             0,
-            &signature,
-            &implementation,
-            &specification,
+            signature,
+            implementation,
+            specification,
             identity.parts(),
             None,
         )?;

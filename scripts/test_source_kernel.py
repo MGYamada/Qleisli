@@ -76,7 +76,7 @@ if sum(op.get('gate') == 't' for op in ops) >= 2 or sum(
         any(s['action']['tag'] == 'contract' for s in op.get('steps', [])) for op in ops) >= 2:
     print('qleisli.qirf-native 1\\nerror\\ncontract')
     sys.exit(1)
-result = subprocess.run(''' + repr([str(KERNEL), '--qirf-native']) + ''', input=data, capture_output=True)
+result = subprocess.run(''' + repr([str(KERNEL)]) + ''' + sys.argv[1:], input=data, capture_output=True)
 sys.stdout.buffer.write(result.stdout)
 sys.exit(result.returncode)
 ''')

@@ -32,10 +32,13 @@ class ArchiveTests(unittest.TestCase):
         (self.root / "README.md").write_text("current")
         self.assertEqual(check_registry_links(self.root,
             f"[current]({prefix}v0.2.8/README.md)", "0.2.8"), [])
-        (self.root / "docs").mkdir()
-        (self.root / "docs/lean-backend-plan-v0.3.md").write_text("requested plan")
+        (self.root / "docs/src").mkdir(parents=True)
+        (self.root / "docs/src/lean-backend-plan-v0.3.md").write_text("requested plan")
         self.assertEqual(check_registry_links(self.root,
-            f"[plan]({prefix}v0.2.9/docs/lean-backend-plan-v0.3.md)", "0.2.9"), [])
+            f"[plan]({prefix}v0.3.0-alpha/docs/src/lean-backend-plan-v0.3.md)", "0.3.0-alpha"), [])
+        (self.root / "docs/new-guide.md").write_text("derived from current code")
+        self.assertEqual(check_registry_links(self.root,
+            f"[guide]({prefix}v0.3.0-alpha/docs/new-guide.md)", "0.3.0-alpha"), [])
         (self.root / "docs-old").mkdir()
         (self.root / "docs-old/design.md").write_text("temporary")
         for target in ["README.md", prefix + "main/README.md", prefix + "v0.2.8/missing.md",

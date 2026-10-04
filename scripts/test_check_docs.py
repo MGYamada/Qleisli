@@ -22,6 +22,11 @@ class DocumentationReferences(unittest.TestCase):
         path.write_text(content, encoding="utf-8")
         return path
 
+    def book_sources(self):
+        for name in ("building.md", "lean-backend-plan-v0.3.md",
+                     "imaginary-v1/index.md", "imaginary-v1/requirements.md"):
+            self.write("docs/src/" + name, "Current chapter source.")
+
     def check(self, markdown):
         return check_links(self.root, [self.write("docs/rules.md", markdown)])
 
@@ -38,6 +43,14 @@ class DocumentationReferences(unittest.TestCase):
             self.assertTrue(check_python_readme_version(self.root))
         self.write("python/README.md", "Qleisli 0.2.8 Rust executable from the same checkout.")
         self.assertEqual(check_python_readme_version(self.root), [])
+
+    def test_python_readme_tracks_exact_prerelease_version(self):
+        self.write("Cargo.toml", '[package]\nversion = "0.3.0-alpha"\n')
+        self.write("python/README.md", "Qleisli 0.3.0-alpha Rust executable from the same checkout.")
+        self.assertEqual(check_python_readme_version(self.root), [])
+        for version in ("0.3.0", "0.3.0a0", "0.3.0-alpha.1", "0.3.0-beta", "0.2.9"):
+            self.write("python/README.md", f"Qleisli {version} Rust executable from the same checkout.")
+            self.assertTrue(check_python_readme_version(self.root))
 
     def test_agents_budget_accepts_exact_limits_and_rejects_hidden_extra_lines(self):
         for name in ("AGENTS.md", "CLAUDE.md"):
@@ -156,28 +169,77 @@ class DocumentationReferences(unittest.TestCase):
 
     def test_docs_layout_retains_drafts_and_requested_backend_plan(self):
         self.assertTrue(check_docs_layout(self.root))
-        self.write("docs/imaginary-v1/README.md", "drafts")
-        self.write("docs/imaginary-v1/nested/draft.md", "draft")
-        self.write("docs/lean-backend-plan-v0.3.md", "requested plan")
+        self.book_sources()
+        self.write("docs/src/imaginary-v1/nested/draft.md", "draft")
         self.assertEqual(check_docs_layout(self.root), [])
-        self.write("docs-old/unneeded.md", "no active dependency")
+        self.write("docs/current-guide.md", "New documentation derived from current source and proofs.")
         self.assertEqual(check_docs_layout(self.root), [])
-        self.write("docs/project-status.json", "{}")
-        self.assertIn("move retired documentation", check_docs_layout(self.root)[0])
+
+    def test_docs_layout_rejects_resurrected_retired_tree(self):
+        self.book_sources()
+        retired = self.root / "docs-old"
+        retired.mkdir()
+        self.assertIn("must remain deleted", check_docs_layout(self.root)[0])
+        retired.rmdir()
+        retired.symlink_to(self.root / "absent-history", target_is_directory=True)
+        self.assertIn("must remain deleted", check_docs_layout(self.root)[0])
+
+    def test_docs_layout_rejects_second_sources_and_redirects_at_old_locations(self):
+        self.book_sources()
+        for name in ("docs/README.md", "docs/lean-backend-plan-v0.3.md",
+                     "docs/imaginary-v1/README.md", "docs/imaginary-v1/requirements.md"):
+            with self.subTest(name=name):
+                old = self.write(name, "Use the relocated chapter instead.")
+                self.assertTrue(any("relocated originals must remain deleted" in error
+                                    for error in check_docs_layout(self.root)))
+                old.unlink()
+        old = self.root / "docs/README.md"
+        old.symlink_to(self.root / "docs/src/building.md")
+        self.assertTrue(any("relocated originals must remain deleted" in error
+                            for error in check_docs_layout(self.root)))
 
     def test_retired_doc_links_reject_local_and_pinned_references(self):
         for target in ["docs-old/design.md", "docs/type-system.md", "docs/verification-migration-v0.2.md",
                        "docs/lean-backend-plan-v0.3-copy.md",
+                       "docs/README.md", "docs/lean-backend-plan-v0.3.md",
+                       "docs/imaginary-v1/README.md", "docs/imaginary-v1/requirements.md",
+                       "https://github.com/MGYamada/Qleisli/blob/main/docs/README.md",
+                       "https://github.com/MGYamada/Qleisli/blob/main/docs/imaginary-v1/README.md",
                        "docs/%2e%2e/docs-old/design.md",
                        "https://github.com/MGYamada/Qleisli/blob/v0.2.8/docs/type-system.md",
                        "https://github.com/MGYamada/Qleisli/blob/main/docs-old/design.md"]:
             path = self.write("README.md", f"[old]({target})")
             self.assertIn("remove retired document link", check_retired_doc_links(self.root, [path])[0])
+        self.book_sources()
         path = self.write("README.md", "[decision](https://github.com/MGYamada/Qleisli/issues/276) "
-                          "[draft](docs/imaginary-v1/README.md) "
-                          "[plan](docs/lean-backend-plan-v0.3.md) "
-                          "[plan online](https://github.com/MGYamada/Qleisli/blob/main/docs/lean-backend-plan-v0.3.md) "
+                          "[draft](docs/src/imaginary-v1/index.md) "
+                          "[plan](docs/src/lean-backend-plan-v0.3.md) "
+                          "[build](docs/src/building.md) "
+                          "[plan online](https://github.com/MGYamada/Qleisli/blob/main/docs/src/lean-backend-plan-v0.3.md) "
                           "[upstream](https://github.com/example/repo/blob/main/docs/types.md)")
+        self.assertEqual(check_retired_doc_links(self.root, [path]), [])
+
+    def test_only_existing_immutable_draft_references_survive_the_move(self):
+        base = "https://github.com/MGYamada/Qleisli/blob/"
+        for name, revision in [(name, "b316a5065527c84f3dbcb059750637e2b14b0965")
+                               for name in ("qpe", "grover", "amplitude-estimation", "shor", "quantum-walk", "qsvt")] + [
+                                   ("review", "7bfcd36916199b05d5ab11851d38d53375ccf71e")]:
+            suffix = f"/docs/imaginary-v1/{name}.md"
+            with self.subTest(name=name):
+                path = self.write("README.md", f"[historical draft]({base}{revision}{suffix})")
+                self.assertEqual(check_retired_doc_links(self.root, [path]), [])
+                for other in ("main", "v0.3.0-alpha", "0" * 40):
+                    path.write_text(f"[unbound draft]({base}{other}{suffix})")
+                    self.assertTrue(check_retired_doc_links(self.root, [path]))
+        path.write_text(f"[removed original]({base}{revision}/docs/imaginary-v1/README.md)")
+        self.assertTrue(check_retired_doc_links(self.root, [path]))
+
+    def test_new_docs_support_local_and_remote_links(self):
+        self.write("docs/guide/README.md", "# New guide derived from code and proofs")
+        path = self.write("README.md", "[guide](docs/guide/README.md) "
+                          "[online](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/docs/guide/README.md) "
+                          "[directory](docs/guide/) "
+                          "[online directory](https://github.com/MGYamada/Qleisli/tree/main/docs)")
         self.assertEqual(check_retired_doc_links(self.root, [path]), [])
 
     def test_all_maintained_markdown_is_discovered_including_new_directories(self):

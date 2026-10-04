@@ -2,9 +2,11 @@
 
 Copyright 2026 Masahiko G. Yamada. Licensed under Apache-2.0.
 
-This development host package calls the separately installed Qleisli 0.2.9 Rust
+This development host package calls the separately installed Qleisli 0.3.0-alpha Rust
 executable built from the same checkout. The version denotes this development
 checkout; Rust and Python registry publications are separate.
+For the alpha prerelease, source metadata uses `0.3.0-alpha`; Python packaging
+normalizes the wheel version to `0.3.0a0`.
 It does not embed Rust or require an LLVM installation. Install a local wheel,
 then select `Client(executable="/path/to/qleisli")`, set `QLEISLI_BIN`, or put
 `qleisli` on PATH. Prebuilt all-in-one platform wheels are not provided yet.

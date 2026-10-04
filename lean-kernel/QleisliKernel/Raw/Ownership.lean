@@ -439,9 +439,9 @@ theorem trace_ownership (dependencies : List Basis) (initial final : Raw.State) 
       (ih (valid _ (Raw.step_conditions _ _ _ _ head).2.2))
 
 /-- The earlier straight-line raw API reaches the same independent property. -/
-theorem prepare_resourceSafe (dependencies : List Basis) (program : Program) (prepared : Raw.Prepared)
+theorem prepare_ownershipSafe (dependencies : List Basis) (program : Program) (prepared : Raw.Prepared)
     (ok : Raw.prepare dependencies program = .ok prepared) :
-    Semantics.Ownership.ResourceSafe (Semantics.Ownership.pureProgram program) := by
+    Semantics.Ownership.OwnershipSafe (Semantics.Ownership.pureProgram program) := by
   obtain ⟨initial,body,hi,_,ho,same,trace⟩ := Raw.prepare_conditions _ _ _ ok
   have initialized := Raw.inputs_valid _ _ _ (by decide) hi
   have coverage := Raw.output_coverage _ _ ho

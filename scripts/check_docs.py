@@ -296,25 +296,46 @@ def check_project_metadata(root: Path) -> list[str]:
     return []
 
 
-def retained_doc(relative: str) -> bool:
-    """The only two exceptions surviving the v0.3.0 docs cleanup boundary."""
-    return relative == "lean-backend-plan-v0.3.md" or relative.startswith("imaginary-v1/")
+HISTORICAL_DRAFTS = {
+    **{f"imaginary-v1/{name}.md": "b316a5065527c84f3dbcb059750637e2b14b0965"
+       for name in ("qpe", "grover", "amplitude-estimation", "shor", "quantum-walk", "qsvt")},
+    "imaginary-v1/review.md": "7bfcd36916199b05d5ab11851d38d53375ccf71e",
+}
+
+
+def relocated_doc(relative: str) -> bool:
+    """The old locations must not become a second source of the book chapters."""
+    return relative in {"README.md", "lean-backend-plan-v0.3.md", "imaginary-v1"} or relative.startswith("imaginary-v1/")
+
+
+def current_doc(root: Path, relative: str) -> bool:
+    """Allow new maintained docs without restoring retired-document links."""
+    docs = (root / "docs").resolve()
+    destination = (docs / relative).resolve()
+    return destination.is_relative_to(docs) and not relocated_doc(
+        destination.relative_to(docs).as_posix()
+    ) and destination.exists()
 
 
 def check_docs_layout(root: Path) -> list[str]:
-    """Require both cleanup survivors and exclude every other legacy docs path."""
+    """Require the single chapter sources and reject retired or duplicate roots."""
     errors = []
-    for name in ("docs/imaginary-v1/README.md", "docs/lean-backend-plan-v0.3.md"):
+    for name in ("docs/src/building.md", "docs/src/lean-backend-plan-v0.3.md",
+                 "docs/src/imaginary-v1/index.md", "docs/src/imaginary-v1/requirements.md"):
         if not (root / name).is_file():
             errors.append(f"missing retained document: {name}")
-    for path in sorted((root / "docs").rglob("*")):
-        if path.is_file() and path.name != ".DS_Store" and not retained_doc(path.relative_to(root / "docs").as_posix()):
-            errors.append(f"{path.relative_to(root)}: move retired documentation to docs-old until v0.3.0")
+    for name in ("docs/README.md", "docs/lean-backend-plan-v0.3.md", "docs/imaginary-v1"):
+        path = root / name
+        if path.is_symlink() or path.is_file() or path.is_dir() and any(path.iterdir()):
+            errors.append(f"{name}: relocated originals must remain deleted; use docs/src chapters")
+    retired = root / "docs-old"
+    if retired.exists() or retired.is_symlink():
+        errors.append("docs-old: retired documentation tree must remain deleted; use Git history")
     return errors
 
 
 def check_retired_doc_links(root: Path, paths: list[Path]) -> list[str]:
-    """Retiring documents must not remain dependencies, including pinned web links."""
+    """Retired documents must not remain dependencies, including pinned web links."""
     errors = []
     for path in paths:
         prose = markdown_prose(path.read_text(encoding="utf-8"))
@@ -327,15 +348,19 @@ def check_retired_doc_links(root: Path, paths: list[Path]) -> list[str]:
             url = urlsplit(target)
             retired = False
             if url.scheme or url.netloc:
-                remote = re.fullmatch(r"/MGYamada/Qleisli/(?:blob|tree)/[^/]+/(docs(?:-old)?)(?:/(.*))?", unquote(url.path))
+                remote = re.fullmatch(r"/MGYamada/Qleisli/(blob|tree)/([^/]+)/(docs(?:-old)?)(?:/(.*))?", unquote(url.path))
                 if url.netloc == "github.com" and remote:
-                    retired = remote[1] == "docs-old" or not retained_doc(remote[2] or "")
+                    historical = (remote[1] == "blob" and remote[3] == "docs"
+                                  and HISTORICAL_DRAFTS.get(remote[4] or "") == remote[2])
+                    retired = remote[3] == "docs-old" or not (
+                        historical or current_doc(root, remote[4] or "")
+                    )
             elif url.path:
                 destination = (path.parent / unquote(url.path)).resolve()
                 if destination.is_relative_to((root / "docs-old").resolve()):
                     retired = True
                 elif destination.is_relative_to((root / "docs").resolve()):
-                    retired = not retained_doc(destination.relative_to((root / "docs").resolve()).as_posix())
+                    retired = not current_doc(root, destination.relative_to((root / "docs").resolve()).as_posix())
             if retired:
                 errors.append(f"{path.relative_to(root)}: remove retired document link {target}")
     return errors
@@ -392,7 +417,7 @@ def check_source_doc_references(root: Path) -> list[str]:
 def check_python_readme_version(root: Path) -> list[str]:
     version = tomllib.loads((root / "Cargo.toml").read_text())["package"]["version"]
     text = (root / "python/README.md").read_text()
-    mentions = re.findall(r"Qleisli\s+([0-9]+\.[0-9]+\.[0-9]+)\s+Rust", text)
+    mentions = re.findall(r"Qleisli\s+(\S+)\s+Rust", text)
     if not mentions or any(value != version for value in mentions) or "latest published rust release" in text.lower():
         return ["python/README.md: name the selected Rust version; leave publication status to release records"]
     return []

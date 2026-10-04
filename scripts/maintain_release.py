@@ -19,7 +19,15 @@ from check_verification_inventory import INVENTORY, public_surface
 ROOT = Path(__file__).resolve().parents[1]
 MANIFESTS = {'Cargo.toml': 'package', 'lean/lakefile.toml': '',
              'lean-kernel/lakefile.toml': '', 'python/pyproject.toml': 'project',
-             'stdlib/Qargo.toml': 'qrate'}
+             'stdlib/Qargo.toml': 'qrate', 'research/semantic-kernel/Cargo.toml': 'package'}
+# Product versions must have the same ordering in SemVer and Python packaging.
+# An unnumbered stage normalizes to a0/b0/rc0, so numbered stages start at one.
+# Attached digits (alpha10), aliases and arbitrary SemVer identifiers are not
+# shared release selectors; build metadata is not a product release selector.
+PRODUCT_VERSION = (r'0\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)'
+                   r'(?:-(?:alpha|beta|rc)(?:\.[1-9][0-9]*)?)?')
+# Never replace only the stable prefix of a prerelease or malformed version.
+VERSION_SLOT = PRODUCT_VERSION + r'(?![\w.+-])'
 
 
 def digest(data):
@@ -39,8 +47,9 @@ def replace_version(text, section, version):
 
 
 def version_plan(root, version):
-    if not re.fullmatch(r'0\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)', version):
-        raise ValueError('expected a stable 0.y.z product version')
+    if not re.fullmatch(PRODUCT_VERSION, version):
+        raise ValueError('expected 0.y.z or 0.y.z-{alpha,beta,rc}[.N] with N >= 1; '
+                         'product versions must share SemVer/Python ordering')
     changes = {}
     for name, section in MANIFESTS.items():
         text = (root / name).read_text()
@@ -70,14 +79,15 @@ def version_plan(root, version):
     # Only current installation/version slots; never rewrite release history or
     # published versions. The source-doc URLs are an exact version-only edit.
     patterns = {
-        'README.md': [(r'(Development version: )[0-9.]+', r'\g<1>' + version),
-                      (r'(Compiler version `)[0-9.]+', r'\g<1>' + version),
-                      (r'(Once )[0-9.]+( is published)', r'\g<1>' + version + r'\g<2>'),
-                      (r'(cargo install qleisli --version )[0-9.]+', r'\g<1>' + version)],
-        'README.crates.md': [(r'(Package version: \*\*)[0-9.]+', r'\g<1>' + version),
-                             (r'(cargo install qleisli --version )[0-9.]+', r'\g<1>' + version),
-                             (r'(Current documentation links target `v)[0-9.]+', r'\g<1>' + version)],
-        'python/README.md': [(r'(separately installed Qleisli )[0-9.]+( Rust)', r'\g<1>' + version + r'\g<2>')],
+        'README.md': [(r'(Development version: )' + VERSION_SLOT, r'\g<1>' + version),
+                      (r'(Compiler version `)' + VERSION_SLOT, r'\g<1>' + version),
+                      (r'(Once )' + VERSION_SLOT + r'( is published)', r'\g<1>' + version + r'\g<2>'),
+                      (r'(cargo install qleisli --version )' + VERSION_SLOT, r'\g<1>' + version)],
+        'README.crates.md': [(r'(Package version: \*\*)' + VERSION_SLOT, r'\g<1>' + version),
+                             (r'(cargo install qleisli --version )' + VERSION_SLOT, r'\g<1>' + version),
+                             (r'(?m)^(qleisli\s*=\s*")' + VERSION_SLOT + r'(")$', r'\g<1>' + version + r'\g<2>'),
+                             (r'(Current documentation links target `v)' + VERSION_SLOT, r'\g<1>' + version)],
+        'python/README.md': [(r'(separately installed Qleisli )' + VERSION_SLOT + r'( Rust)', r'\g<1>' + version + r'\g<2>')],
         'src/lib.rs': [],
     }
     for name, rules in patterns.items():
@@ -89,7 +99,7 @@ def version_plan(root, version):
             if count != 1:
                 raise ValueError('expected one current version slot: ' + name + ': ' + pattern)
         if name in {'README.crates.md', 'src/lib.rs'}:
-            text = re.sub(r'(https://github.com/MGYamada/Qleisli/blob/v)[0-9.]+/',
+            text = re.sub(r'(https://github.com/MGYamada/Qleisli/blob/v)' + VERSION_SLOT + '/',
                           r'\g<1>' + version + '/', text)
         changes[name] = text
     return {name: text for name, text in changes.items() if text != (root / name).read_text()}

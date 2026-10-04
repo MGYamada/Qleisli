@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.witness-binding-rejection",
+  "version": 1,
+  "status": "same-compiled-mutation-rejected-by-current-enforcer",
+  "baseline_identity_check": {
+    "mode": "source-identity-only",
+    "scoped_guarantees": 2,
+    "admitted_by_this_check": 0,
+    "source_revision": "421ff6eb8911da073fb864d4cc0deaa56b29fe4e4efb0252c72504cec2136bad"
+  },
+  "changed_source_revision": "f40730fb447495867898a94978ae7bc789799318089e4e38ed2a259ae09642b8",
+  "mutation_sha256": "6c662211b9d8f267f7eef7963630690cd4ac87ded29e1ecd4475079713cbf9ce",
+  "current_checker_sha256": "2767ce0bb656f25295a5c2f139f0a945691fe1ae7248ef5007576d7149fb9a23",
+  "fixture_helper_sha256": "8a67e303125d809d559814e77241d2d9ce44a00a76825d4d507a8a0d21dc8b19",
+  "rejected": true,
+  "diagnostic": "admitted Acceptance binding fields changed; current-artifact semantic transport is required",
+  "scope": "Identity-only regression; rejection occurs before any external Lean invocation. The prior fixture separately records real compilation and indistinguishable old review output. No new guarantee admission or fresh full build is asserted."
+}

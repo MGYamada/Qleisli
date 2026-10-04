@@ -3,6 +3,9 @@ import QleisliKernel.Semantics.Observation
 /-! Independent linear ownership judgments for all original observing raw ops.
 No checker, work limit, effect decision, evidence receipt or matrix is imported.
 Quantum owners are exclusive operation rights, not separable quantum states.
+Ownership safety belongs to QS. Exact clean-workspace discharge is a separate
+QS obligation (https://github.com/MGYamada/Qleisli/issues/157); quantitative
+resource bounds belong to RS (https://github.com/MGYamada/Qleisli/issues/280).
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Ownership
 open Raw Observation
@@ -181,7 +184,7 @@ structure Returned (state : State) (outputs : List Nat) : Prop where
 
 /-- Linear ownership safety for a complete ordinary raw program. Classical
 SSA/effect correctness, quantum cleanup meaning, costs and hierarchy are separate. -/
-def ResourceSafe (program : Observation.Program) : Prop :=
+def OwnershipSafe (program : Observation.Program) : Prop :=
   ∃ initial final, Inputs {} program.inputs initial ∧
     Run initial program.operations final ∧ Returned final program.outputs
 

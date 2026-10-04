@@ -1,0 +1,41 @@
+{
+  "format": "qleisli.human-interpretation-adoption",
+  "version": 1,
+  "edition": "2026",
+  "adopted_on": "2026-10-04",
+  "timezone": "Asia/Tokyo",
+  "guardian": {
+    "name": "Masahiko G. Yamada",
+    "capacity": "sole natural-human holder of the Constitution Guardian Office",
+    "appointment_record": {
+      "path": "governance/ratification-2026.json",
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+    }
+  },
+  "interpretation_ids": [
+    "QS-2026-01",
+    "PR-2026-01",
+    "RS-2026-01"
+  ],
+  "reviewed_packet": {
+    "reviewed_path": "docs/src/design/initial-interpretations.md",
+    "snapshot_path": "governance/interpretations/initial-2026-reviewed.txt",
+    "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+  },
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "question_item_id": "[\"request_user_input_async\",\"call_xq3oVE6OSuXTahVLxXiZstUq\",0]",
+    "question": "[初期解釈案](/Users/masa/git/Qleisli/docs/src/design/initial-interpretations.md)（SHA-256: 7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3）をGuardianとして確認し、QS-2026-01・PR-2026-01・RS-2026-01の3件を採択しますか？ QSは実際に受理されたプログラムの意味・所有権・効果、PRは受理された実体化と実際の出力artifactとの前向きの対応、RSは数量的資源上限とコンパイルによるその保存を義務とします。採択は証明完了を意味しません。この確認は、あなたの計画と[批准済み憲法](/Users/masa/git/Qleisli/CONSTITUTION.md)第V・VI条が要求する、具体的な解釈に対する人間の明示判断です。",
+    "answer": "3件とも提示された本文どおり採択する",
+    "first_clock_observation_after_reply_utc": "2026-10-04T08:41:54Z",
+    "timestamp_note": "The observation is not the timestamp of the human message; the message supplied no timestamp."
+  },
+  "recording": {
+    "transcriber": "Codex assistant",
+    "authority": "The appointed human Guardian explicitly adopts all three identified interpretations; the assistant only transcribes that act.",
+    "authentication_limit": "This checked-in transcript is reviewable provenance, not a cryptographic signature or independent authentication of the human identity."
+  },
+  "status": "binding-pending-discharge",
+  "scope": "The three identified interpretations apply with their reviewed scopes, properties and premises. Adoption creates binding pending obligations, not completed formal discharge, production-wide constitutional certification, release approval or publication."
+}

@@ -1,0 +1,83 @@
+{
+  "format": "qleisli.native-contract-bridge-validation",
+  "version": 1,
+  "status": "checked-proof-work-not-admission",
+  "edition": "2026",
+  "source_files": {
+    "lean-kernel/Protocol/NativeContract.lean": "e11bfdcc00abb197fa4a1c1a10cfa33a9e6ef83b1f8b3d684ff505218bd42925",
+    "lean/Qleisli/NativeContract.lean": "1e6496718892c84cb9e0c3fc543010c458f0021c1743fb88f292991b9c8f6b62",
+    "lean/Qleisli.lean": "7271ddd396f491494b0902fdb897263264e972640d771ccd0c84eb169c943db1"
+  },
+  "executable_prefix": {
+    "comparison": "byte-identical",
+    "bytes": 2495,
+    "sha256": "d89d731617a091d430704d8bad6fef2655902bda3b5d9c4065821a4793c06839",
+    "baseline": "original-native-contract.lean",
+    "current": "lean-kernel/Protocol/NativeContract.lean",
+    "boundary": "before the original end QleisliKernel.Protocol.NativeContract line"
+  },
+  "review": {
+    "cwd": "lean",
+    "command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "/Users/masa/git/Qleisli/tests/fixtures/constitution_v030/native-contract-bridge/Review.lean"
+    ],
+    "exit_code": 0,
+    "portable_command": [
+      "lake",
+      "env",
+      "lean",
+      "-DwarningAsError=true",
+      "../tests/fixtures/constitution_v030/native-contract-bridge/Review.lean"
+    ],
+    "axioms": {
+      "QleisliKernel.Protocol.NativeContract.check_acceptance": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Qleisli.NativeContract.acceptance_root_meaning": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Qleisli.NativeContract.check_root_meaning": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Qleisli.NativeContract.leaf_meaning": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Qleisli.NativeContract.leaf_reference_laws": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
+      "Qleisli.NativeContract.check_sound": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  },
+  "files": {
+    "README.md": "3354c4517fc843fe3d053462ad4d3b09c1fa44c20e802d6c06925313dc1cdc6e",
+    "Review.lean": "49f72b12e8155ec9eb1f2a3d24379c0100b85f54bcc1e899f5db778fde87b1d2",
+    "original-native-contract.lean": "ca5296a69c772b016ca38ce96dfdb357714c99a26f9707677cbaa568c394eee6",
+    "review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review-types.stdout.txt": "4fdfb9752ec5f54619e6b000365cd7f247eb0773667c69b68a37332561eeab73"
+  },
+  "broader_validation_report": "tests/fixtures/constitution_v030/current-guarantee-registry.json",
+  "limitations": [
+    "source hashes are identity evidence, not mathematical adequacy",
+    "no new guarantee admission",
+    "encoded root-to-wrapper matrix equality is not established",
+    "compiler, deployed binary and Rust rematerialization are outside these Lean theorems"
+  ]
+}

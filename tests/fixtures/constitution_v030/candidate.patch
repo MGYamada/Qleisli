@@ -1,0 +1,17 @@
+--- issue-129/Draft-5/constitutional-text
++++ CONSTITUTION.md
+@@ -1,4 +1,4 @@
+-# Qleisli 2026 Constitution — Draft 5
++# Qleisli 2026 Constitution
+ 
+ ## Preamble
+ 
+@@ -203,7 +203,7 @@
+ 
+ ## Article VIII — Ratification and Proof Maturity
+ 
+-This Constitution takes effect through the v0.3.0 release that explicitly ratifies it. Earlier drafts may be revised without creating a new edition.
++This Constitution takes effect when the natural-human project maintainer affirmatively ratifies its exact text for Qleisli edition 2026 through an explicit ratification record. The record identifies the adopted text, the adopting human authority, and the effective date. Ratification precedes completion and publication of v0.3.0. That release verifies the identity of the ratified text and the applicable release conditions; it does not repeat ratification. Earlier drafts may be revised without creating a new edition.
+ 
+ Ratification permanently establishes QS, PR, and RS as the three Fundamental-Theorem obligations of edition 2026 together with the constitutional process by which they are interpreted, proved, and preserved.
+ 

@@ -26,7 +26,7 @@ SUITES = (
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 PROTECTED_ROOTS = {
     "Cargo.toml", "Cargo.lock", "LICENSE", "NOTICE", "TRUSTBOUNDARY.md",
-    "CONSTITUTION.md", "STDLIB.md", "README.crates.md",
+    "CONSTITUTION.md", "GOVERNANCE.md", "STDLIB.md", "README.crates.md",
 }
 NORMATIVE_DOCS = {"TRUSTBOUNDARY.md"}
 
@@ -54,7 +54,7 @@ def classify(paths: list[str], policy: dict) -> tuple[str, str]:
     for path in paths:
         if not valid_path(path):
             return "full", "unrecognized path; full validation required"
-        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/", "docs/", "docs-old/")):
+        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/", "docs/", "docs-old/", "governance/", "tests/fixtures/constitution_v030/")):
             return "full", f"protected executable/policy input: {path}"
         if path in policy["documentation_only"]:
             continue
@@ -80,11 +80,12 @@ def proof_lane(paths: list[str], policy: dict | None = None,
     for path in paths:
         if path == "lean/schema-registry.json" and registry_source_only:
             continue
-        if not valid_path(path) or path.startswith(".github/") or path in {
-            "TRUSTBOUNDARY.md", "CONSTITUTION.md",
+        if not valid_path(path) or path.startswith((".github/", "governance/", "tests/fixtures/constitution_v030/")) or path in {
+            "TRUSTBOUNDARY.md", "CONSTITUTION.md", "GOVERNANCE.md",
             "scripts/ci_profiles.py", "scripts/run_native_ci.py",
             "scripts/package_lean_kernel.py",
             "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py",
+            "lean/Audit.lean", "lean-kernel/Audit.lean",
             "lean/schema-registry.json",
         } or path.endswith(("lean-toolchain", "lakefile.toml", "lake-manifest.json")):
             return "full"

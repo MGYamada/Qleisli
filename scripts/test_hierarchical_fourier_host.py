@@ -14,12 +14,14 @@ import subprocess
 import sys
 import tempfile
 import time
+import tomllib
 
 from test_hierarchical_qft import SharedGradientCircuit, port, side, text
 from test_hierarchical_request import replace_word
 from test_hierarchical_wiring import closure
 
 ROOT = Path(__file__).resolve().parent.parent
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def request(n):
@@ -221,7 +223,7 @@ def main():
         cases.append((name,replace_word(good,fields[field]+delta,value),expected))
     results=[];start=time.monotonic()
     for name,data,expected in cases:
-        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending'],input=data,capture_output=True,timeout=30)
+        p=subprocess.run([str(kernel),'--hierarchy-fourier-pending',PRODUCT_VERSION],input=data,capture_output=True,timeout=30)
         lines=p.stdout.decode().splitlines();assert lines[:1]==['qleisli.hierarchy-fourier-pending 3'],(name,p)
         actual='pending' if lines[1]=='pending' else lines[2]
         assert actual==expected,(name,actual,expected)

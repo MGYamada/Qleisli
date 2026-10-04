@@ -6,12 +6,14 @@ Status: the design principles are fixed. Goal 1: a quantum language for the AI e
 
 This is the English development plan. Current targets and implementation boundaries do not adopt future syntax or imply completed proofs. The verification migration plan and fixture records distinguish bounded checks from pending guarantees; source validation, tagging and publication remain separate.
 
-## Selected v0.2.9: contributor instructions and maintenance
+## Selected v0.3.0-alpha: prerelease preparation and documentation cleanup
 
-Selected 2026-10-03: synchronize the product versions, give Codex and Claude
-identical checked working rules, and rename the trust policy to TRUSTBOUNDARY.md.
-Add nine small translations from frozen corpus sources (87 total) and move
-retiring documents to `docs-old/` without active links or checker dependencies.
+Selected 2026-10-04: synchronize the product versions to `0.3.0-alpha` and
+complete the planned documentation cleanup. This is an unpublished prerelease
+development version; the latest published release is 0.2.9. Its implementation
+and validation records remain the baseline,
+including identical checked Codex/Claude rules, TRUSTBOUNDARY.md and nine small
+translations from frozen corpus sources (87 total).
 Local validation and publication remain separate. Selected source/raw/foreign/
 Python paths now reach Lean, and sized hierarchy execution no longer repeats
 Rust finite-leaf acceptance. Actual native acceptance also implies independent
@@ -34,14 +36,24 @@ schema has been enabled.
 
 ## v0.3.0: Qleisli type-system specification
 
-**docs/ cleanup boundary at v0.3.0:** exactly two exceptions survive this boundary
-in `docs/`: the entire `imaginary-v1/` tree and
-[lean-backend-plan-v0.3.md](docs/lean-backend-plan-v0.3.md). Preserve both during
-and after the cleanup. Other former documents are stored
-in `docs-old/` until that entire tree is deleted at v0.3.0. Links and active
-validation dependencies are removed now. New documentation will follow adopted
-decisions, code, proofs and executable examples. The
-[cleanup policy](AGENTS.md#docs-cleanup-boundary-at-v030) governs this transition.
+The [Constitution and governance adoption](docs/src/design/ratification.md)
+took effect on 2026-10-04 (Asia/Tokyo), including the initial Guardian appointment.
+Work now proceeds through the [authority hierarchy](docs/src/reference/authority.md).
+The initial QS/PR/RS interpretations were separately adopted as three binding
+pending obligations, with no discharged constitutional ledger guarantees. The
+[release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
+tracks the 108 selected issues. Edition 2026 identifies the constitutional
+regime and remains unchanged by the syntax, type-system and CLI migration.
+
+**Documentation cleanup completed for v0.3.0-alpha:** `docs/` retains the entire
+`imaginary-v1/` tree and
+[lean-backend-plan-v0.3.md](docs/src/lean-backend-plan-v0.3.md). The temporary
+`docs-old/` tree is deleted, with no redirects or replacement copies of retired
+prose. Executable source, proofs, counterexamples, validation artifacts and
+notices remain in their source/fixture locations. Write new documentation in
+`docs/` from adopted decisions, code, proofs and executable examples; consult
+Git history for retired documents. The
+[documentation policy](AGENTS.md#documentation-after-the-v030-cleanup) governs new work.
 
 **User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
 of the v0.3.0 breaking-change release. Specify concrete rules, checking
@@ -50,11 +62,13 @@ current finite contract remains in force. This target
 builds on the migrated checker and requires corresponding rule/proof updates
 before adoption.
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development version is 0.2.9; the type-system decision remains future work.
+Current development version is `0.3.0-alpha`; selecting it and completing the
+documentation cleanup do not complete the type-system specification or its
+implementation/proof gates.
 
 ## v0.3.1–v0.3.9: proposed accelerated Lean backend expansion
 
-The [backend plan](docs/lean-backend-plan-v0.3.md) targets earlier retirement of
+The [backend plan](docs/src/lean-backend-plan-v0.3.md) targets earlier retirement of
 Rust transformations, hierarchy construction, target lowering, emitters and
 duplicate execution dispatch. Each stage requires a checked input/output
 relation, independent bounded validation and an explicit Rust deletion list;

@@ -43,13 +43,42 @@ criteria and resolution. The legacy backlog is retired; use Issues for new work.
 
 ## Documentation cleanup
 
-Follow **docs/ cleanup boundary at v0.3.0** in
-[AGENTS.md](AGENTS.md#docs-cleanup-boundary-at-v030). Only imaginary-v1 drafts remain in `docs/`. Other former documents
-are temporarily stored in `docs-old/`, which will be deleted at v0.3.0. Remove
-links and active checker dependencies now; preserve executable source, proofs,
-validation artifacts and notices outside that temporary tree.
+Follow the [documentation policy](AGENTS.md#documentation-after-the-v030-cleanup).
+The v0.3.0-alpha cleanup retains the imaginary-v1 drafts and Lean backend plan
+in `docs/src/` and deletes `docs-old/`. Write new book chapters in `docs/src/` from
+adopted decisions, actual code and proofs. Preserve executable source, proofs,
+validation artifacts and notices in their source/fixture locations; consult Git
+history for retired prose.
+
+The new book uses an external, version-pinned mdBook CLI. Follow the
+[documentation build instructions](docs/src/building.md) for local setup and the
+boundary between authored specifications, rendering and Qleisli API documentation.
 
 ## Recording changes
+
+The [ratified Constitution and appointment](docs/src/design/ratification.md)
+took effect on 2026-10-04 (Asia/Tokyo). Follow the
+[authority hierarchy](docs/src/reference/authority.md) for subsequent work.
+Binding interpretations require the appointed human Guardian's explicit decision;
+formal discharge requires the corresponding checked evidence. CI success is neither.
+The initial QS-2026-01, PR-2026-01 and RS-2026-01 interpretations are adopted as
+binding pending obligations; cite their scope when assessing a change.
+The later human admission of two scoped QLV1 ownership/scope guarantees is
+recorded separately in `governance/guarantees/initial-2026-admission.json`.
+Edition identifies the constitutional regime; syntax changes use release and
+compatibility policy and do not select a new edition.
+
+Use the [language-change issue template](.github/ISSUE_TEMPLATE/language-change.md)
+and [PR template](.github/PULL_REQUEST_TEMPLATE.md) for the standard
+[constitutional impact analysis](docs/src/reference/authority.md#change-and-impact-review).
+Language, typing/effects/ownership, static evaluation, operation/Meaning,
+instrument, realization/resource, acceptance and normative changes must address
+all three jurisdictions, current production/artifact binding, ledger impact,
+semantic transport, proof status and assumptions. Changes outside those
+boundaries may explain why there is no constitutional impact. Existing adopted
+interpretations cover routine implementation work; only a new constitutional
+case or dispute needs a new Guardian judgment. A template is a review aid,
+not proof of adequacy or an automatic approval.
 
 Record user-visible changes under `Unreleased` in [CHANGELOG.md](CHANGELOG.md).
 Explain compatibility effects, including source syntax, public Rust APIs,
@@ -64,8 +93,10 @@ descriptive documents/result records to use the docs path; specifications,
 protected/unknown inputs, missing diffs, tags and manual runs require full checks.
 Every required context rejects missing/failed selected suites. Cargo caches contain
 dependency archives only; project binaries/Lean definitions are rebuilt, audited
-and freshly replayed. This selection policy does not adopt the future constitutional
-registry in Issue #141. Use `python3 scripts/test_ci_profiles.py` locally.
+and freshly replayed. Constitutional identity checks preserve the recorded
+ratification, interpretations and admitted ledger; the remaining enforcement work in Issue #141
+must connect interpreted obligations, proofs and current production artifacts.
+Use `python3 scripts/test_ci_profiles.py` locally.
 For release preparation, check the exact source, packages, installed quickstart,
 archive inventories, licenses and full CI before tagging. Distinguish
 paper arguments, finite tests, Lean results, and remaining proof obligations.
@@ -78,12 +109,14 @@ authorized by the user on 2026-09-30, subject to rechecking.
 Preview all product-version edits and exact-source review requirements with:
 
 ```sh
-python3 scripts/maintain_release.py --version 0.2.9 --report /tmp/release-plan.json
+python3 scripts/maintain_release.py --version 0.3.0-alpha --report /tmp/release-plan.json
 ```
 
 Cargo is authoritative when `--version` is omitted. The plan covers Cargo/lock,
-both Lake packages, Python metadata/runtime, std Qargo and current installation
-snippets; dependency and publication-history versions are never rewritten.
+both Lake packages, Python metadata/runtime, std Qargo, the research Cargo
+package and current installation snippets. Stable and prerelease selectors
+such as `0.3.0-alpha` are supported; dependency and publication-history versions
+are never rewritten.
 Apply with `--write --refresh-registry` to run the existing complete registry
 build/audit/replay, followed by source, metadata, docs and edition checks.
 The report retains the exact proposed diffs, hashes and command outcomes.

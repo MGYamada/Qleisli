@@ -45,7 +45,7 @@ def quickstart_manifest(text):
 
 
 def check_registry_links(root, landing, version):
-    # Package documentation must remain usable after docs-old is deleted.
+    # Package documentation follows current sources after the docs cleanup.
     historical = []
     for target in re.findall(r"\[[^\]]+\]\(([^)]+)\)", landing):
         require(target.startswith(("https://", "#")), f"relative registry link: {target}")
@@ -54,10 +54,7 @@ def check_registry_links(root, landing, version):
             ref, relative = target[len(prefix):].split("/", 1)
             path = relative.split("#")[0]
             require(ref == "v" + version, "registry link uses an unreviewed source version")
-            require(not path.startswith("docs-old/") and (
-                not path.startswith("docs/")
-                or path == "docs/lean-backend-plan-v0.3.md"
-                or path.startswith("docs/imaginary-v1/")), "registry link targets retired documentation")
+            require(not path.startswith("docs-old/"), "registry link targets retired documentation")
             require((root / path).is_file(), f"missing registry link target: {target}")
     return historical
 

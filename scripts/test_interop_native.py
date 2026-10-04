@@ -131,7 +131,7 @@ class PublicNative(unittest.TestCase):
         forwarder.write_text(f"#!{sys.executable}\nimport pathlib, subprocess, sys\n"
             "packet = sys.stdin.buffer.read()\n"
             f"pathlib.Path({str(source)!r}).write_text({replacement!r})\n"
-            f"result = subprocess.run([{str(KERNEL)!r}, '--qirf-native'], input=packet, capture_output=True)\n"
+            f"result = subprocess.run([{str(KERNEL)!r}] + sys.argv[1:], input=packet, capture_output=True)\n"
             "sys.stdout.buffer.write(result.stdout)\nsys.exit(result.returncode)\n")
         forwarder.chmod(0o700)
         for action in ACTIONS:

@@ -27,7 +27,7 @@ class ArchiveTests(unittest.TestCase):
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
         self.manifest = dict(format="qleisli.native-bundle", version=1,
-                             package_version="0.2.9", platform="Darwin", machine="arm64",
+                             package_version="0.3.0-alpha", platform="Darwin", machine="arm64",
                              validation=dict(lane="full", fresh_replay=True),
                              sources={"Main.lean": sha((self.source / "Main.lean").read_bytes())},
                              files={name: sha(data) for name, data in self.files.items()})
@@ -38,17 +38,39 @@ class ArchiveTests(unittest.TestCase):
 
     def test_roundtrip_modes_licenses_binding_and_checksum(self):
         archive = self.archive()
-        self.assertEqual(archive.name, "qleisli-kernel-0.2.9-aarch64-apple-darwin.tar.gz")
+        self.assertEqual(archive.name, "qleisli-kernel-0.3.0-alpha-aarch64-apple-darwin.tar.gz")
         self.assertEqual(Path(str(archive) + ".sha256").read_text(), f"{sha(archive.read_bytes())}  {archive.name}\n")
         with tarfile.open(archive) as tar:
             entries = {entry.name.split("/", 1)[1]: entry for entry in tar}
             for name, data in self.files.items():
                 self.assertEqual(tar.extractfile(entries[name]).read(), data)
             self.assertEqual(entries["bin/qleisli-kernel"].mode, 0o755)
-            self.assertEqual(json.load(tar.extractfile(entries["distribution.json"]))["source_commit"], "a" * 40)
+            distribution = json.load(tar.extractfile(entries["distribution.json"]))
+            self.assertEqual(distribution["source_commit"], "a" * 40)
+            self.assertEqual(distribution["package_version"], "0.3.0-alpha")
+            self.assertIn(b"Qleisli native checker 0.3.0-alpha", tar.extractfile(entries["INSTALL.txt"]).read())
         self.assertEqual(archive.read_bytes(), self.archive("second").read_bytes())
         with self.assertRaisesRegex(ValueError, "already exists"):
             self.archive()
+
+    def test_stable_and_numbered_prerelease_versions(self):
+        for version in ["0.3.0", "0.3.0-alpha.1", "0.3.0-rc.2"]:
+            with self.subTest(version=version):
+                self.manifest["package_version"] = version
+                archive = self.archive(version)
+                self.assertEqual(archive.name, f"qleisli-kernel-{version}-aarch64-apple-darwin.tar.gz")
+
+    def test_invalid_or_unsafe_product_versions_reject_before_output(self):
+        for version in ["1.0.0", "0.03.0", "0.3.00", "0.3.0-", "0.3.0-alpha..1",
+                        "0.3.0-alpha.01", "0.3.0+build", "0.3.0-alpha/../../escape",
+                        "0.3.0-alpha\\escape", "0.3.0-alpha\n", "0.3.0-α", 3, None,
+                        "0.3.0-dev", "0.3.0-x-y.Z9", "0.3.0-alpha2", "0.3.0-alpha10",
+                        "0.3.0-beta-2", "0.3.0-alpha.0", "0.3.0-beta.0", "0.3.0-rc.0"]:
+            with self.subTest(version=version):
+                self.manifest["package_version"] = version
+                with self.assertRaisesRegex(ValueError, "invalid product version"):
+                    self.archive()
+                self.assertFalse((self.root / "output").exists())
 
     def test_changed_payload_or_source_cannot_be_distributed(self):
         (self.bundle / "bin/qleisli-kernel").write_bytes(b"changed")

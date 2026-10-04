@@ -843,6 +843,75 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
 }
 
 #[test]
+fn untrusted_function_trees_reject_without_recursive_cloning() {
+    const CHILD: &str = "QLEISLI_TEST_UNTRUSTED_FUNCTION_TREE";
+    if let Ok(case) = std::env::var(CHILD) {
+        std::thread::Builder::new()
+            .stack_size(2 * 1024 * 1024)
+            .spawn(move || {
+                let mut signature = BasisType::Unit;
+                let mut implementation = raw(0, vec![], 0);
+                let mut specification = raw(0, vec![], 0);
+                match case.as_str() {
+                    "implementation" | "specification" => {
+                        let mut operations = vec![];
+                        for _ in 0..1000 {
+                            operations = vec![RawOp::ClassicalBranch {
+                                condition: c(0),
+                                then_ops: operations,
+                                else_ops: vec![],
+                                quantum_phis: vec![],
+                                classical_phis: vec![],
+                            }];
+                        }
+                        if case == "implementation" {
+                            implementation.operations = operations;
+                        } else {
+                            specification.operations = operations;
+                        }
+                    }
+                    "signature" => {
+                        for _ in 0..10_000 {
+                            signature = BasisType::pair(BasisType::Unit, signature);
+                        }
+                    }
+                    _ => panic!("unknown regression case"),
+                }
+                // Zero qubits and no execution: malformed trees must hit a
+                // transport/type limit before any recursive clone or encoding.
+                assert!(matches!(
+                    FunctionEvidence::check(
+                        signature,
+                        implementation,
+                        specification,
+                        identity(),
+                        &mut work(),
+                    ),
+                    Err(ContractError::Limit(_))
+                ));
+            })
+            .unwrap()
+            .join()
+            .unwrap();
+        return;
+    }
+    // A stack overflow aborts the process, so isolate each public-API call
+    // rather than allowing a regression to terminate unrelated tests.
+    for case in ["implementation", "specification", "signature"] {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "untrusted_function_trees_reject_without_recursive_cloning",
+                "--nocapture",
+            ])
+            .env(CHILD, case)
+            .output()
+            .unwrap();
+        assert!(output.status.success(), "{case}: {output:?}");
+    }
+}
+
+#[test]
 fn branch_preflight_checks_both_functions_and_inactive_empty_arms() {
     for in_then_arm in [true, false] {
         for levels in [31, 32, 33] {

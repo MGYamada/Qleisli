@@ -60,8 +60,8 @@
 //! Version 0.2.9 is an explicitly approved breaking verifier migration: use
 //! `AcceptedProgram` and `Kernel::accept_raw` in place of the removed Rust
 //! verifier and its handles. The 0.3.0 type-system work remains separate.
-//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.9/tests/fixtures/quick_reference/README.md),
-//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.2.9/TRUSTBOUNDARY.md)
+//! See the [language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md),
+//! [trust boundary](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
 //! and versioning policy.
 
 pub mod contract;

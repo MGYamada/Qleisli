@@ -7,6 +7,7 @@ import math
 import unittest
 
 from compact_sized_graph import artifact, compact
+from compile_sized_corpus import SourceError, compile_source
 from test_hierarchical_qft import Circuit, SharedGradientCircuit, port
 from test_sized_corpus import circuit_action, difference
 
@@ -24,6 +25,47 @@ class CompactionTests(unittest.TestCase):
                 {0:1/math.sqrt(3),(1 << width)-1:1j/math.sqrt(6)}]:
             self.assertLess(difference(first(column),second(column)),1e-12)
         return result
+
+    def test_source_empty_classical_boundary_compacts_to_identity(self):
+        for source in ('pub unitary fn f() -> () { () }',
+                       'pub unitary fn f(q: ()) -> () { q }',
+                       'pub unitary fn f(q: ((), ())) -> ((), ()) { q }'):
+            with self.subTest(source=source):
+                direct = compile_source(source, 'f', {}, compact=False)
+                normalized = compile_source(source, 'f', {})
+                first, _ = circuit_action(direct)
+                second, _ = circuit_action(normalized)
+                for column in ({0: 1}, {0: 2 + 3j}, {0: -1j}):
+                    self.assertEqual(first(column), column)
+                    self.assertEqual(second(column), column)
+                self.compare(normalized)
+                root = normalized['definitions'][normalized['entry']['implementation']]
+                self.assertEqual(root['interface']['inputs']['quantum'], [])
+                self.assertEqual(root['interface']['outputs']['quantum'], [])
+
+    def test_empty_quantum_owner_is_retained_with_phase(self):
+        # Q<Unit> and Q<Bits<0>> each retain a logical owner. Neither is the
+        # owner-free classical () handled by an empty tensor above.
+        for basis in ([dict(tag='unit')], [dict(tag='bits', width=0)]):
+            with self.subTest(basis=basis):
+                c = Circuit()
+                empty = dict(owner=9, axes=[], basis=basis)
+                bit = port(1, [0], True)
+                phase = c.add([bit], [bit], dict(tag='dyadic_phase', target=1, j=1, k=2),
+                              dict(tag='phase', j=1, k=2), 'phase')
+                entry = c.tensor(c.identity([empty]), phase)
+                result = self.compare(artifact(c, entry))
+                root = result['definitions'][result['entry']['implementation']]
+                self.assertEqual(root['interface']['inputs']['quantum'], [empty, bit])
+                self.assertEqual(root['interface']['outputs']['quantum'], [empty, bit])
+                action, _ = circuit_action(result)
+                self.assertLess(difference(action({0: 1, 1: 1}), {0: 1, 1: 1j}), 1e-12)
+        source = 'pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { q }'
+        result = compile_source(source, 'f', {})
+        root = result['definitions'][result['entry']['implementation']]
+        self.assertEqual(len(root['interface']['outputs']['quantum']), 1)
+        with self.assertRaisesRegex(SourceError, 'unreturned quantum owners'):
+            compile_source('pub unitary fn f(q: Q<Bits<0>>) -> () { () }', 'f', {})
 
     def test_routes_keep_zero_owner_and_bit_order(self):
         c = Circuit()

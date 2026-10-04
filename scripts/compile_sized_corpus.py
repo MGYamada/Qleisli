@@ -1171,6 +1171,8 @@ def compact_artifact(inputs, outputs, trace):
             proofs=c.proofs, entry=dict(implementation=root, proof=root))
 
     def tensor(nodes):
+        if not nodes:
+            return c.identity([])
         result = nodes[0]
         for node in nodes[1:]:
             result = c.tensor(result, node)

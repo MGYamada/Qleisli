@@ -10,12 +10,15 @@ from pathlib import Path
 import struct
 import subprocess
 import tempfile
+import tomllib
 
 from test_hierarchical_artifact import ROOT, build_and_run
 from test_hierarchical_host import phase_bridge
 from compile_sized_corpus import Operation
 from compile_sized_instrument import compile_instrument
 from test_sized_instrument import sources, probes, test_interleaved_reference
+
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def words(values):
@@ -69,7 +72,7 @@ def test_transport(kernel):
              ('oversized-nested-length', b'QLI1'+words([64*1024*1024+1]), 'limit')]
     cases.extend((f'truncated-{i}',good[:i],'format') for i in range(1,len(good)))
     for name, data, expected in cases:
-        run = subprocess.run([str(kernel),'--instrument-pending'],input=data,capture_output=True,timeout=30)
+        run = subprocess.run([str(kernel),'--instrument-pending',PRODUCT_VERSION],input=data,capture_output=True,timeout=30)
         lines = run.stdout.decode().splitlines()
         assert lines[:1] == ['qleisli.instrument-pending 3'], (name,run)
         if expected == 'pending':

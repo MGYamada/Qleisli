@@ -209,12 +209,17 @@ fn execute(options: &super::options::Options, root: &Path) -> Result<String, Dia
 }
 
 pub(super) fn run(args: &[OsString]) -> ExitCode {
-    let positional: Vec<_> = args.iter().filter(|arg| *arg != "--format=json").collect();
-    let command = positional
-        .first()
-        .and_then(|arg| arg.to_str())
-        .unwrap_or("");
     let options = super::options::Options::parse(args, true);
+    let command = options.as_ref().map_or_else(
+        || {
+            args.iter()
+                .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+                .and_then(|arg| arg.to_str())
+                .unwrap_or("")
+                .to_owned()
+        },
+        |options| options.command.clone(),
+    );
     let mut root = PathBuf::new();
     let mut artifact_pointer = None;
     let mut warnings = vec![];
@@ -279,7 +284,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                 .join(",");
             let document = format!(
                 "{{\"format\":\"qleisli.result\",\"version\":1,\"command\":{},\"outcome\":\"ok\",\"diagnostics\":[{warnings}],\"result\":{result}}}\n",
-                quoted(command)
+                quoted(&command)
             );
             (document, ExitCode::SUCCESS)
         }
@@ -290,7 +295,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                 Some(pointer) => artifact_diagnostic_json(error.code, &error.message, &pointer),
             };
             (
-                envelope(command, Some(&diagnostic), "null"),
+                envelope(&command, Some(&diagnostic), "null"),
                 ExitCode::from(status),
             )
         }

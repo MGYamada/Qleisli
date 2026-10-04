@@ -56,10 +56,31 @@ theorem phi_coverage (left right : Raw.State) (phis : List QuantumPhi)
   simp only [phiValid,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at ok
   exact ⟨ok.1.1.2,ok.1.2⟩
 
+/-- Issued identities normally grow by appending. Check that common case in
+linear time, retaining the membership check for arbitrary public states. -/
+def historySubset {α : Type} [BEq α] (before after : List α) : Bool :=
+  if before.isPrefixOf after then true else before.all after.contains
+
+/-- The fast path changes neither acceptance nor the shared work counter. -/
+theorem historySubset_eq {α : Type} [BEq α] [LawfulBEq α] (before after : List α) :
+    historySubset before after = before.all after.contains := by
+  by_cases hprefix : before.isPrefixOf after = true
+  · simp only [historySubset,hprefix,↓reduceIte]
+    symm
+    simp only [List.all_eq_true,List.contains_iff_mem]
+    exact (List.isPrefixOf_iff_prefix.mp hprefix).subset
+  · simp [historySubset,hprefix]
+
 def history (before after : State) : Bool :=
-  before.quantum.seenTokens.all after.quantum.seenTokens.contains &&
-  before.quantum.seenWires.all after.quantum.seenWires.contains &&
-  before.classical.all after.classical.contains
+  historySubset before.quantum.seenTokens after.quantum.seenTokens &&
+  historySubset before.quantum.seenWires after.quantum.seenWires &&
+  historySubset before.classical after.classical
+
+theorem history_eq (before after : State) : history before after =
+    (before.quantum.seenTokens.all after.quantum.seenTokens.contains &&
+    before.quantum.seenWires.all after.quantum.seenWires.contains &&
+    before.classical.all after.classical.contains) := by
+  simp only [history,historySubset_eq]
 
 /-- Arm states share the monotonically growing global identity store. Only
 their live quantum frame/effect is restored to the common branch entry. -/
@@ -195,7 +216,7 @@ theorem checkOps_history (dependencies : List Dependency) (fuel : Nat) (initial 
     (∀ wire ∈ initial.quantum.seenWires, wire ∈ final.quantum.seenWires) ∧
     (∀ value ∈ initial.classical, value ∈ final.classical) := by
   have preserved := (checkOps_invariants _ _ _ _ _ _ _ ok).2
-  simp only [history,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at preserved
+  simp only [history_eq,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at preserved
   exact ⟨preserved.1.1,preserved.1.2,preserved.2⟩
 
 /-- The actual right-arm entry inherits every ID issued by the complete left
@@ -209,7 +230,8 @@ theorem exclusive_arms_history (dependencies : List Dependency) (fuel : Nat)
   simpa only [enter,restore] using checkOps_history _ _ _ _ _ _ _ ok
 
 /-- Structural facts retained for composition with independent denotations.
-This record does not define the project's full ResourceSafe/EffectSound goals. -/
+Independent OwnershipSafe, full EffectSound and quantitative resource bounds
+are separate obligations. -/
 structure Postcondition (program : Semantics.Observation.Program) (checked : Checked) : Prop where
   original : checked.program = program
   output : outputValid program checked.state = true

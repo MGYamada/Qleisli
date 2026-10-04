@@ -1,7 +1,7 @@
 import QleisliKernel.Raw.Observation
 import QleisliKernel.Raw.Ownership
 
-/-! Actual observing verification establishes independent linear ResourceSafe
+/-! Actual observing verification establishes independent linear OwnershipSafe
 for every original operation and both arms, with no Rust/checker premise in
 that judgment. Effect/instrument soundness and quantitative costs are separate.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
@@ -183,10 +183,10 @@ theorem returned_ownership (program : Semantics.Observation.Program) (state : St
 
 /-- All nineteen ordinary raw constructors, all nested arms and every ownership
 boundary follow the independent rules. No finite algorithm request is required. -/
-theorem verify_resourceSafe (dependencies : List Dependency) (program : Semantics.Observation.Program)
+theorem verify_ownershipSafe (dependencies : List Dependency) (program : Semantics.Observation.Program)
     (checked : Checked) (work left : Nat)
     (ok : (verify dependencies program).run work = (.ok checked,left)) :
-    Semantics.Ownership.ResourceSafe program := by
+    Semantics.Ownership.OwnershipSafe program := by
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨quantum,_,hq,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨initial,a,hi,h⟩ := bind_success _ _ _ _ _ h

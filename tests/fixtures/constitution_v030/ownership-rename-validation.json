@@ -1,0 +1,78 @@
+{
+  "issue": 287,
+  "change": "OwnershipSafe declaration and checker-facing theorem rename only; no legacy aliases",
+  "code_comparison": "tests/fixtures/constitution_v030/ownership-rename-comparison.json",
+  "commands": [
+    {
+      "cwd": "lean-kernel",
+      "command": "lake build",
+      "exit_code": 0,
+      "jobs": 215
+    },
+    {
+      "cwd": "lean-kernel",
+      "command": "lake env lean Audit.lean",
+      "exit_code": 0,
+      "declarations": 11457,
+      "pure_import_modules": 1124,
+      "executable_import_modules": 1137,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "cwd": "lean-kernel",
+      "command": "lake env lean Tests.lean",
+      "exit_code": 0
+    },
+    {
+      "cwd": ".",
+      "command": "python3 -B scripts/check_lean_kernel.py",
+      "exit_code": 0,
+      "source_modules": 110
+    },
+    {
+      "cwd": "lean",
+      "command": "lake build",
+      "exit_code": 0,
+      "jobs": 3542
+    },
+    {
+      "cwd": "lean",
+      "command": "lake env lean -DwarningAsError=true Audit.lean",
+      "exit_code": 0,
+      "declarations": 3342,
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    },
+    {
+      "cwd": ".",
+      "command": "QLEISLI_KERNEL=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel cargo test --test native_raw -- --test-threads=2",
+      "exit_code": 0,
+      "passed": 28,
+      "ignored": 2,
+      "ignored_reason": "Existing historical maximum-size Rust scaling experiments remain deferred."
+    },
+    {
+      "cwd": ".",
+      "command": "git diff --check -- lean lean-kernel",
+      "exit_code": 0
+    }
+  ],
+  "not_performed": [
+    "Fresh leanchecker replay (root coordinates full policy validation)",
+    "Maximum-size generation or ignored stress tests",
+    "Dependency/toolchain changes"
+  ],
+  "remaining_integration": [
+    "Root refresh of lean/schema-registry.json source binding",
+    "Root historical validation fixture and changelog entry",
+    "Historical ResourceSafe citations in adopted interpretation snapshot remain immutable"
+  ],
+  "record_scope": "Agent-performed rename validation before the separately recorded root schema refresh and replay. Remaining integration describes that checkpoint."
+}

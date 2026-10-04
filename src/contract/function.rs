@@ -196,22 +196,25 @@ impl FunctionEvidence {
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
         validate_identity(&identity, budget)?;
-        let implementation_view = implementation.clone();
-        let specification_view = specification.clone();
-        let signature_view = signature.clone();
+        // Keep the untrusted trees borrowed until transport has checked their
+        // capacity. Cloning here would recurse before its depth checks run.
         kernel
-            .function_evidence(signature, implementation, specification, identity, budget)
+            .function_evidence(
+                &signature,
+                &implementation,
+                &specification,
+                identity,
+                budget,
+            )
             .map_err(|failure| {
                 let error = native_error(failure);
                 let detail = if error == ContractError::EquationMismatch {
                     (|| {
-                        let bits = signature_view.bits()?;
-                        preflight(&implementation_view, bits, budget)?;
-                        preflight(&specification_view, bits, budget)?;
-                        let a = extract(&implementation_view, &signature_view, budget)?
-                            .matrix(budget)?;
-                        let b = extract(&specification_view, &signature_view, budget)?
-                            .matrix(budget)?;
+                        let bits = signature.bits()?;
+                        preflight(&implementation, bits, budget)?;
+                        preflight(&specification, bits, budget)?;
+                        let a = extract(&implementation, &signature, budget)?.matrix(budget)?;
+                        let b = extract(&specification, &signature, budget)?.matrix(budget)?;
                         Ok::<_, ContractError>(super::equation_counterexample(&a, &b))
                     })()
                     .ok()

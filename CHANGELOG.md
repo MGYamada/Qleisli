@@ -6,6 +6,66 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Record the human ratification of the edition-2026 Constitution and adoption of
+  governance, effective 2026-10-04 (Asia/Tokyo), appointing Masahiko G. Yamada as
+  initial Guardian. Preserve the exact approved hashes, human reply, Draft 5,
+  candidate diff and pre-existing alpha baseline. Add ratified identity checks
+  and a bootstrap guarantee ledger; no QS/PR/RS interpretation or proof discharge
+  is implied by ratification. Document the authority hierarchy and prepare the
+  initial interpretation candidates for a separate human decision.
+- Record the subsequent explicit Guardian adoption of QS-2026-01, PR-2026-01
+  and RS-2026-01 as binding pending obligations. Preserve the exact reviewed
+  packet and human answer separately from proof discharge.
+- Record the subsequent human adequacy judgment and admission of two scoped
+  QLV1 guarantees: original-root ownership and classical scope. Preserve their
+  reviewed meanings and historical evidence separately from current proof and
+  source binding; the three broader QS/PR/RS obligations remain pending.
+- Protect the admitted semantic dependency closure and elaborated acceptance
+  witness fields in constitutional CI. Retain a compiled witness-weakening
+  counterexample and reject it even after mutable source hashes are refreshed.
+- Prove actual native encoded/leaf-contract acceptance-to-root-meaning bridges
+  without changing executable acceptance. Preserve explicit limits on encoded
+  wrapper correspondence and distinguish these proofs from ledger admission.
+- Inventory 21 current production paths and nine native modes, distinguishing
+  fresh acceptance, hierarchy/component checks, proposal generation and host
+  execution. Bind their references to tests and actual source entry points.
+- Rename the ownership-only Lean predicate and checker-facing theorems from
+  `ResourceSafe` to `OwnershipSafe` under #287, preserving their mathematical
+  content and acceptance behavior. Ownership and clean return belong to QS;
+  quantitative Resource Safety remains a distinct pending obligation.
+- Track the 108 selected 0.3.0 issues through a GitHub milestone and the existing
+  release-readiness umbrella. Edition identifies the constitutional regime;
+  the syntax/frontend migration remains within edition 2026.
+- Pin the external mdBook documentation tool to 0.5.4 with an official binary
+  checksum in docs CI; add a minimal book and document its separation from
+  Qargo, language acceptance and Qleisli API documentation.
+- Move existing documentation into ordinary mdBook chapters under `docs/src/`,
+  remove the former files and update source/build references. Each chapter is
+  maintained in one place while the new tutorial is prepared.
+- Select `0.3.0-alpha` for the Rust, Lean, Python and standard-library product
+  versions and prepare version maintenance and native archives for prereleases.
+  This is prerelease preparation; the v0.3.0 type-system goals remain open.
+- Complete the planned documentation cleanup: delete `docs-old/`, retain
+  imaginary-v1 and the Lean backend plan in `docs/src/`, and write new chapters
+  from adopted decisions, code and proofs.
+- Require an explicit matching product version in every native kernel mode;
+  update direct tests, forwarding shims and relocated bundle checks (#289).
+- Bound JSON prescan allocation by scanning the input string directly, retaining
+  only bounded keys and bare tokens while preserving native protocol validation
+  and duplicate-field rejection (#290).
+- Add accepted-artifact round trips and recursive function/meaning evidence
+  matrix comparisons, including explicit QIRF2 meaning entries (#288).
+- Avoid cloning untrusted function-evidence inputs before bounded transport
+  validation, and retain parsed command names in CLI JSON with leading options.
+- Preserve empty classical-unit boundaries in sized-source compaction without
+  dropping zero-width quantum owners or their scalar phases.
+- Limit shared prerelease selectors to stable, alpha, beta and rc forms whose
+  Python normalization preserves release ordering; keep `0.3.0-alpha` unchanged.
+- Select full proof replay and schema binding when either Lean audit changes.
+- Replace repeated quadratic history-subset scans with a proved-equivalent
+  linear fast path for growing histories, addressing the classical-constant
+  timeout reproduced under #278 without changing native decisions or work counts.
+
 ## 0.2.9 — 2026-10-04
 
 Published to crates.io and GitHub with macOS arm64 and Linux x86-64 native

@@ -8,14 +8,14 @@ The Rust frontend produces IR that an independent native Lean verifier checks be
 reference execution. Human-written and AI-generated programs use the same checks.
 
 Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Package version: **0.2.9** (development; unpublished). The approved
+Package version: **0.3.0-alpha** (prerelease preparation; unpublished). The approved
 [breaking verifier migration](https://github.com/MGYamada/Qleisli/issues/276)
 removes the Rust verifier and dual acceptance API. Verification requires a
 matching separately installed native Lean checker; Cargo builds and docs remain
 independent of Lean. Select it with `QLEISLI_KERNEL` or `--lean-kernel=PATH`.
 Missing, incompatible or failing checkers reject without a fallback or download.
- Changes are recorded in
-[CHANGELOG](https://github.com/MGYamada/Qleisli/blob/v0.2.9/CHANGELOG.md).
+Changes are recorded in
+[CHANGELOG](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/CHANGELOG.md).
 **Qleisli language edition: `"2026"` for all current
 `.qli` and `.qlt` files.** Each source tree requires an explicit `Qargo.toml`.
 The bounded implementation and pending proof/migration goals are distinguished below.
@@ -38,7 +38,7 @@ Install from a source checkout with
 install it from crates.io with:
 
 ```sh
-cargo install qleisli --version 0.2.9 --locked
+cargo install qleisli --version 0.3.0-alpha --locked
 ```
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -102,7 +102,7 @@ Once this version is published, add this dependency to your Rust project's `Carg
 
 ```toml
 [dependencies]
-qleisli = "0.2.9"
+qleisli = "0.3.0-alpha"
 ```
 
 The [API documentation](https://docs.rs/qleisli) provides a runnable
@@ -138,22 +138,21 @@ Cargo alias.
 Version 0.2.9 explicitly breaks the verifier API and runtime installation
 contract: replace `verify`/`VerifiedProgram` with native acceptance/`AcceptedProgram`,
 remove `interchange::dual`, and select the matching checker. Version 0.2.3 also
-requires an edition manifest for filesystem source trees. The planned 0.3.0
-type-system work is a separate
-breaking-change boundary.
+requires an edition manifest for filesystem source trees. The 0.3.0-alpha
+prerelease preparation does not complete the planned 0.3.0 type-system work.
 
 ## Documentation
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.9/tests/fixtures/quick_reference/README.md)
-- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.9/python/README.md)
-- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.9/python/README.md)
-- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.9/TRUSTBOUNDARY.md)
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md)
+- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/python/README.md)
+- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/python/README.md)
+- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Current documentation links target `v0.2.9`. Only imaginary-v1 drafts and the
-v0.3 Lean backend plan remain under `docs/`; other former documents are in
-`docs-old/` pending deletion at v0.3.0. Active documentation has no links or
-validation dependencies on that temporary tree.
+Current documentation links target `v0.3.0-alpha`. The documentation cleanup retains
+the imaginary-v1 drafts and v0.3 Lean backend plan under `docs/`. The retired
+`docs-old/` tree has been deleted; new documentation belongs in `docs/` and
+follows adopted decisions, actual code and proofs.
 
 ## License
 

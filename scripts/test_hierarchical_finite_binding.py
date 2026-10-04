@@ -8,8 +8,10 @@ import json
 from pathlib import Path
 import struct
 import subprocess
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[1]
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 BINARY = ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel"
 
 
@@ -78,7 +80,7 @@ def main():
         ("trailing-required", good, good + b"false", "format"),
     ]
     for name, actual, required, expected in cases:
-        result = subprocess.run([str(BINARY), "--hierarchy-request-pending"],
+        result = subprocess.run([str(BINARY), "--hierarchy-request-pending", PRODUCT_VERSION],
                                 input=packet(actual, required), capture_output=True, timeout=30)
         lines = result.stdout.decode().splitlines()
         assert lines[:1] == ["qleisli.hierarchy-request-pending 3"], (name, result)
@@ -166,7 +168,7 @@ def main():
                            for j in range(4)] for k in range(4)]
     native_cases.append(('meaning-permutation',encode(permutation),encode(x_matrix),'pending'))
     for name, program, description, expected in native_cases:
-        result = subprocess.run([str(BINARY), '--hierarchy-request-pending'],
+        result = subprocess.run([str(BINARY), '--hierarchy-request-pending', PRODUCT_VERSION],
             input=packet(description, description, program), capture_output=True, timeout=30)
         lines = result.stdout.decode().splitlines()
         assert lines[0] == 'qleisli.hierarchy-request-pending 3', (name, result)
@@ -185,7 +187,7 @@ def main():
         # The QLR enclosing block length changes with the exact nested bytes.
         old_size = struct.unpack_from('<I',original,4)[0]
         original = original[:4]+words(old_size+len(program)-len(old))+original[8:]
-        result = subprocess.run([str(BINARY),'--hierarchy-request-pending'],input=original,
+        result = subprocess.run([str(BINARY),'--hierarchy-request-pending',PRODUCT_VERSION],input=original,
                                 capture_output=True,timeout=30)
         assert result.returncode == 1 and result.stdout.decode().splitlines()[1:] == ['error','format'], (name,result)
     print(f'Passed {len(cases)+len(native_cases)+4} native QIRF/request cases; Rust checker not invoked.')
