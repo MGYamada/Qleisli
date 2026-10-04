@@ -4,6 +4,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 
 import copy
+from contextlib import nullcontext
 import hashlib
 import json
 import os
@@ -52,7 +53,10 @@ class ConstitutionalRecords(unittest.TestCase):
         return hashlib.sha256((self.root / name).read_bytes()).hexdigest()
 
     def rejected(self, phrase=None, **kwargs):
-        with self.assertRaisesRegex(PacketError, phrase or ".+"):
+        # Hosted environment variables are not authority for these local fixture
+        # checks; release delegation must require explicitly supplied context.
+        environment = patch.dict(os.environ, {}, clear=True) if kwargs.get("require_release_ready") else nullcontext()
+        with environment, self.assertRaisesRegex(PacketError, phrase or ".+"):
             checker.check_constitution(self.root, **kwargs)
 
     def git(self, *args):
@@ -71,7 +75,7 @@ class ConstitutionalRecords(unittest.TestCase):
 
     def test_recorded_identity_is_not_release_readiness_or_independent_authentication(self):
         checker.check_constitution(self.root)
-        self.rejected("three broader binding interpretations remain pending", require_release_ready=True)
+        self.rejected("caller-selected trusted base", require_release_ready=True)
         script = Path(__file__).with_name("check_constitution.py")
         result = subprocess.run([sys.executable, str(script), "--root", str(self.root)],
                                 capture_output=True, text=True)
@@ -329,7 +333,7 @@ class ConstitutionalRecords(unittest.TestCase):
             (self.root / name).write_bytes(data)
         self.write_json(checker.LEDGER_PATH, self.ledger)
         checker.check_constitution(self.root, base_ref=base)
-        self.rejected("three broader binding interpretations remain pending", base_ref=base, require_release_ready=True)
+        self.rejected("trusted same-run hosted context", base_ref=base, require_release_ready=True)
 
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_v1_transition_preserves_exact_bootstrap_bytes(self):
@@ -522,7 +526,7 @@ class ConstitutionalRecords(unittest.TestCase):
             (self.root / name).write_bytes(data)
         self.write_json(checker.LEDGER_PATH, self.ledger)
         checker.check_constitution(self.root, base_ref=base)
-        self.rejected("three broader binding interpretations remain pending", base_ref=base, require_release_ready=True)
+        self.rejected("trusted same-run hosted context", base_ref=base, require_release_ready=True)
 
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_admitted_base_cannot_roll_back_to_pending_or_drop_scoped_entries(self):

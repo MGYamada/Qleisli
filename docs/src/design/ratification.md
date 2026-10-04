@@ -119,8 +119,12 @@ available PR/push base; changes to enforcement code and workflow policy still
 require review. These checks cannot independently authenticate the human
 transcript or decide whether a mathematical obligation is adequate.
 
-`check_constitution.py --require-release-ready` rejects the incomplete
-proof/readiness enforcement state.
+`check_constitution.py --require-release-ready` delegates to the scoped release
+gate. It requires a caller-reviewed exact requirements base, complete acceptance
+evidence and successful same-run validation receipts for the actual candidate
+and artifacts. Source identity checks cannot stand in for live Lean replay.
+The current incomplete acceptance evidence still prevents a ready result;
+truthfully disclosed broader pending obligations alone are not a pre-v1 ban.
 The remaining [constitutional CI work](https://github.com/MGYamada/Qleisli/issues/141)
 must connect binding interpretations, formal obligations, checked proofs and
 current production/artifact identity. Hash checks alone do not complete it.

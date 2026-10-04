@@ -1,0 +1,26 @@
+{
+  "commit": "18f55693e31585dde67eeddeb064e77c138f9a57",
+  "script_sha256": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+  "observations": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py",
+        "--require-release-ready"
+      ],
+      "exit_code": 1,
+      "stdout": "before-placeholder.stdout.txt",
+      "stderr": "before-placeholder.stderr.txt"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py"
+      ],
+      "exit_code": 0,
+      "stdout": "before-ordinary.stdout.txt",
+      "stderr": "before-ordinary.stderr.txt"
+    }
+  ],
+  "scope": "Actual pre-edit CLI observations; unrelated proof maintenance may affect source identity. No release-readiness claim."
+}

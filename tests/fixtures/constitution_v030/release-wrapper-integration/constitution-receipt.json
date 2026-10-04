@@ -1,0 +1,18 @@
+{
+  "context": {
+    "attempt": "1",
+    "commit": "8fa86770179775212d3c253b82840cb94ae18587",
+    "event": "workflow_dispatch",
+    "repository": "MGYamada/Qleisli",
+    "run_id": "142",
+    "tree": "d3b0fc30d1fe3bc897c2d8c3e1b8e7708c8b2165"
+  },
+  "format": "qleisli.release-constitution",
+  "ledger_sha256": "892b58469f95c5f487b4bd3cb3307f11062da1a49987ac9bb8cba3bab72fa3a0",
+  "result": {
+    "admitted_guarantees": 2,
+    "mode": "current-Lean-replay",
+    "pending_obligations": 3
+  },
+  "version": 1
+}

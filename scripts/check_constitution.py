@@ -9,6 +9,8 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 
 import argparse
+import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -402,6 +404,11 @@ def check_base(root, base_ref, *, ledger=None, _registrations=None, _profiles=No
 
 def check_constitution(root=ROOT, *, base_ref=None, require_release_ready=False, verify_lean=False,
                        _registrations=None, _profiles=None):
+    if require_release_ready:
+        from check_release_ready import check
+        # Release validation consumes trusted same-run replay receipts; ordinary
+        # source-only checks never establish readiness. No record-selected code.
+        return check(root, base_ref=base_ref or os.environ.get("RELEASE_TRUSTED_BASE"))
     root = Path(root)
     ledger_bytes = read_file(root, LEDGER_PATH)
     ledger = json_object(ledger_bytes, LEDGER_PATH)
@@ -437,8 +444,6 @@ def check_constitution(root=ROOT, *, base_ref=None, require_release_ready=False,
     ledger_policy.validate_frozen_snapshots(protected_snapshots, FROZEN_IDENTITIES_PATH, FROZEN_IDENTITIES_SHA256)
     ledger_policy.dispatch(root, LEDGER_PATH, ledger_bytes, entries, selected, verify_lean=verify_lean,
                            protected_snapshots=protected_snapshots)
-    if require_release_ready:
-        raise PacketError("release readiness is not established: two scoped QLV1 guarantees are admitted, but the three broader binding interpretations remain pending; full constitutional enforcement and release readiness are incomplete, and admission is not release approval")
 
     return {"admitted_guarantees": len(entries), "pending_obligations": len(ledger["pending_obligations"]),
             "mode": "current-Lean-replay" if verify_lean else "source-identity-only"}
@@ -457,6 +462,9 @@ def main(argv=None):
     except (PacketError, OSError) as error:
         print(f"constitutional record integrity: {error}", file=sys.stderr)
         return 1
+    if args.require_release_ready:
+        print(json.dumps(result, sort_keys=True))
+        return 0
     count = "two" if result["admitted_guarantees"] == 2 else str(result["admitted_guarantees"])
     mode = "fixed current Lean verifiers replayed" if args.verify_lean else "current source/evidence identity is checked, not a fresh Lean replay"
     print(f"Recorded edition 2026 ratification, appointment, interpretation adoption and {count} scoped guarantee admissions verified. "

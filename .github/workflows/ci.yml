@@ -12,6 +12,14 @@ on:
         type: choice
         options: [full, tests]
         default: full
+      release_readiness:
+        description: Require scoped release readiness (does not tag or publish)
+        type: boolean
+        default: false
+      release_base:
+        description: Exact reviewed requirements and guarantee base commit
+        type: string
+        default: ''
       cache:
         description: Cargo dependency archives (all validation still runs)
         type: choice
@@ -64,6 +72,7 @@ jobs:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
@@ -123,11 +132,25 @@ jobs:
       - run: cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check
       - run: cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
       - run: cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-rust --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-rust-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
 
   check-rust-msrv:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
@@ -168,11 +191,25 @@ jobs:
       - run: cargo +1.85.0 clippy --all-targets -- -D warnings
       - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
       - run: cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-rust-msrv --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-rust-msrv-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
 
   check-macos-source:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: macos-latest
     steps:
@@ -236,11 +273,25 @@ jobs:
             ${{ runner.temp }}/native-distribution/
             ${{ runner.temp }}/native-macos/
           if-no-files-found: error
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-macos-source --output "$RUNNER_TEMP/release-receipt" --native "$RUNNER_TEMP/native-distribution"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-macos-source-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
 
   check-interop:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-24.04
     steps:
@@ -285,10 +336,25 @@ jobs:
           python3 scripts/test_python_host.py
           llvm-as-18 tests/fixtures/interop/independent.ll -o /tmp/qleisli-independent.bc
           opt-18 -passes=verify -disable-output /tmp/qleisli-independent.bc
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-interop --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-interop-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
 
   check-lean:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -314,11 +380,26 @@ jobs:
         run: python3 scripts/check_schema_registry.py
       - name: Replay every registered guarantee verifier against the built and audited environment
         if: needs.changes.outputs.proof_lane != 'tests'
-        run: python3 scripts/check_constitution.py --verify-lean
+        run: python3 scripts/check_release_ready.py --record-constitution --output "$RUNNER_TEMP/release-constitution.json"
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-lean --output "$RUNNER_TEMP/release-receipt" --constitution "$RUNNER_TEMP/release-constitution.json"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-lean-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
   check-lean-kernel:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     env:
@@ -393,10 +474,25 @@ jobs:
           name: native-comparisons-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/native-comparisons/
           if-no-files-found: error
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-lean-kernel --output "$RUNNER_TEMP/release-receipt" --native "$RUNNER_TEMP/native-distribution"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-lean-kernel-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
   check-distribution:
     needs: changes
     if: needs.changes.outputs.profile == 'full'
     outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
       dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
     runs-on: ubuntu-latest
     steps:
@@ -441,8 +537,24 @@ jobs:
             ${{ runner.temp }}/qleisli-distribution-artifacts-*/*.crate
             ${{ runner.temp }}/qleisli-distribution-artifacts-*/*-source.tar
           if-no-files-found: error
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-distribution --output "$RUNNER_TEMP/release-receipt" --distribution "$RUNNER_TEMP/qleisli-distribution.json"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-distribution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
   check-docs:
     needs: changes
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
     runs-on: ubuntu-latest
     # External presentation toolchain; independent of Qleisli/Cargo/Qargo versions.
     env:
@@ -487,6 +599,7 @@ jobs:
           python3 scripts/test_check_ratification_packet.py
           python3 scripts/check_ratification_packet.py
           python3 scripts/test_check_constitution.py
+          python3 scripts/test_check_release_ready.py
           base_args=()
           if [[ -n "$CONSTITUTION_BASE" && "$CONSTITUTION_BASE" != '0000000000000000000000000000000000000000' ]]; then
             base_args=(--base-ref "$CONSTITUTION_BASE")
@@ -496,9 +609,6 @@ jobs:
         run: |
           python3 scripts/test_check_initial_guarantees.py
           python3 scripts/check_initial_guarantees.py
-      - name: Reject a release while constitutional proof enforcement is incomplete
-        if: startsWith(github.ref, 'refs/tags/')
-        run: python3 scripts/check_constitution.py --require-release-ready
       - run: python3 scripts/test_maintain_release.py
       - run: python3 scripts/test_native_harness.py
       - run: |
@@ -525,6 +635,19 @@ jobs:
       - run: python3 scripts/check_semantic_contract_examples.py
       - name: Check whitespace throughout the committed tree
         run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-docs --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-docs-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
 
   required:
     # Stable public check names preserve the existing branch-protection contexts.
@@ -550,3 +673,25 @@ jobs:
           name: ci-validation-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/required-results.json
           if-no-files-found: error
+
+  release-readiness:
+    # A later gate: never make a producer depend on its own aggregate result.
+    if: always() && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness))
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Fetch same-run producer evidence (never select a run from candidate JSON)
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: release-receipt-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-evidence
+      - name: Require exact-commit scoped readiness
+        env:
+          RELEASE_NEEDS_JSON: ${{ toJSON(needs) }}
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+          RELEASE_TRUSTED_BASE: ${{ inputs.release_base || vars.QLEISLI_RELEASE_BASE }}
+          RELEASE_EVIDENCE: ${{ runner.temp }}/release-evidence
+        run: python3 scripts/check_constitution.py --require-release-ready

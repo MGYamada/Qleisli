@@ -12,8 +12,8 @@ Constitution, governance records, constitutional fixtures and Reference changes
 select the full policy-risk lane. The always-run documentation job also checks
 the adopted constitutional identity, historical candidate evidence, pending
 ledger, separately adopted initial interpretations and scoped admissions. PR/push checks compare
-the available event base; tags reject incomplete proof enforcement as
-release-unready. This is the first identity-enforcement
+the available event base; the separate tag/readiness gate requires complete
+scoped acceptance and exact-candidate validation evidence. This is the first identity-enforcement
 component of #141, not complete interpretation/proof/artifact enforcement.
 Human decisions and changes to enforcement code or workflows still need review.
 
@@ -125,6 +125,77 @@ including receipt-path coverage, as a distinct command. The obsolete two-verifie
 current Rust adapters are not described as an independent semantic verifier.
 Transport failures never count as matched semantic rejection. Existing pure
 component proofs, independent semantic oracles and audit jobs remain required.
+
+## Scoped release readiness (Issue #142)
+
+`release-readiness` runs after the eight real validation jobs for tags and for
+an explicitly selected `workflow_dispatch.release_readiness`. Ordinary PRs and
+manual full validation do not require completion of the 108 selected issues.
+The gate requires both the full suite profile and full proof lane. The legacy
+`check_constitution.py --require-release-ready` delegates to the same checker;
+it rejects missing caller context instead of treating the three broader pending
+QS/PR/RS obligations as an intrinsic pre-v1 release prohibition.
+
+The human/workflow caller supplies an exact trusted base commit through the
+manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
+tag. There is no fallback to candidate HEAD. Before using this gate for a real
+release, review and commit `release/requirements.json` at that base: the exact
+13 groups/108 IDs, complete applicable criteria, immutable Issue snapshot
+references and an explicit review record. The checker reads these from Git
+blobs at the base. A candidate `release/acceptance.json` supplies evidence for
+exactly those criteria. GitHub remains the only decisions/progress ledger;
+these files are verification indices, not another backlog. There is currently
+no real completed index. Missing reviewed requirements or acceptance evidence
+is an actionable failure, not a request to auto-generate completion records.
+
+The requirements schema is `qleisli.release-requirements`, integer version 1,
+with `release_line`, `identities`, `groups`, `review`, and `issues`. Each Issue
+has `id`, a `snapshot` file reference and nonempty `criteria`; each criterion
+has `id`, verbatim snapshot `text`, `scope` (`required` or the already reviewed
+`explicit-later-version`), and required evidence `roles`. The latter range over
+implementation, reference, migration, positive, negative, jurisdictions,
+production and compatibility, with all categories covered by the index. Only
+the caller-reviewed requirements may mark a criterion as later-version scope.
+Updating the complete criterion list or its adopted meaning requires another
+explicitly reviewed base and Issue decision before release use. The gate does
+not infer adoption from Issue state, reviewer names, checkboxes or hashes.
+
+The candidate schema is `qleisli.release-acceptance`, integer version 1, with
+the exact `requirements_sha256`, separate `identities`, `schema_registry`,
+`proof_scope` and `issues`. Criterion entries retain their ID and disposition,
+review reference and precisely the required role-to-file `evidence` map. Every
+file reference is `{ "path": "repository/relative/file", "sha256": "..." }`.
+The proof scope declares `scoped-pre-v1`, the exact ledger digest, sorted admitted
+guarantee IDs and sorted pending obligation IDs. Edition `2026`, Qargo schema
+`2`, native protocol, product version, and artifact identity remain separate.
+A frontend edition check alone is not evidence that edition reaches native
+acceptance; that criterion must have its own reviewed implementation evidence.
+
+Each successful producer emits a receipt containing commit/tree, repository,
+run/attempt/event, job identity and actual file digests. Its digest travels in
+trusted `needs` job outputs. The final job downloads only same-run artifacts,
+checks their actual bytes against those outputs, and rechecks mutable inputs
+before reporting success. All producers must belong to the same run attempt;
+rerunning only failed jobs cannot combine old successful receipts into a new
+readiness result. The Lean producer records the result of the existing
+fixed live constitutional verifier; source-only checks cannot replace it.
+Distribution evidence includes the checked crate, complete source archive and
+fresh installation record. Both expected macOS arm64 and Linux x86_64 native
+assets retain full fresh replay, exact source and payload identities.
+
+The CLI trusts workflow/caller-supplied hosted context; it does not authenticate
+GitHub by examining a user-written environment or offline report. The supported
+hosted invocation obtains context from GitHub and digests directly from `needs`,
+never from candidate JSON. Local synthetic tests simulate that boundary and
+cannot establish real hosted CI provenance or human adequacy. No record may
+choose executable commands or validators. Successful schema/index validation
+cannot substitute for human specification review or admit a new guarantee.
+
+Generated receipts stay outside the candidate tree. The checker neither tags,
+pushes nor publishes. Publication needs separate authorization and later readback
+of the peeled tag, downloaded GitHub/registry assets and installed artifact
+identity. A publishing workflow, if added later, must explicitly depend on the
+readiness result; the existing ordinary `required` contexts remain test gates.
 
 ## Local distribution work directories
 

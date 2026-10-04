@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check scoped release readiness from a reviewed criterion base, complete
+  evidence and exact same-run CI receipts/artifacts. Preserve pending broader
+  obligations and require real replay of admitted guarantees; missing inputs
+  reject. Tagging and publication remain separate (#142).
 - Remove owned distribution build work after success or failure while keeping
   reports, logs and candidate archives. Add `--keep-work` for debugging and
   preserve caller-owned external Cargo targets (#142).

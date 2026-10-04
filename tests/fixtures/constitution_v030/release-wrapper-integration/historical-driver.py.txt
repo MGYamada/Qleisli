@@ -1,0 +1,52 @@
+import hashlib,json,os,pathlib,shutil,subprocess,sys,tarfile,tempfile,time
+live=pathlib.Path('/Users/masa/git/Qleisli'); run=pathlib.Path(tempfile.mkdtemp(prefix='qleisli-real-release-wrapper-',dir='/private/tmp')); root=run/'source'; root.mkdir(); records=[]
+def sha(b): return hashlib.sha256(b).hexdigest()
+def call(argv,cwd,env=None,name=None):
+ start=time.monotonic();p=subprocess.run(argv,cwd=cwd,env=env,capture_output=True)
+ n=name or f'command-{len(records):02d}'
+ (run/(n+'.stdout')).write_bytes(p.stdout);(run/(n+'.stderr')).write_bytes(p.stderr)
+ records.append(dict(argv=argv,cwd=str(cwd),exit_code=p.returncode,seconds=round(time.monotonic()-start,3),stdout=n+'.stdout',stderr=n+'.stderr'))
+ (run/'commands.json').write_text(json.dumps(records,indent=2)+'\n')
+ if p.returncode: raise RuntimeError(f'{n}: {p.returncode}: {p.stderr.decode(errors="replace")[:1000]}')
+ return p.stdout
+base=call(['git','rev-parse','b6f0fa0'],live).decode().strip()
+archive=run/'base.tar'; archive.write_bytes(call(['git','archive',base],live,name='base-archive'))
+with tarfile.open(archive) as tar:tar.extractall(root,filter='data')
+archive.unlink();(run/'base-archive.stdout').unlink();records[-1]['stdout']='not-retained-git-archive-binary'
+source_record=json.loads((live/'tests/fixtures/constitution_v030/release-readiness/source-identity.json').read_bytes())
+for name,expected in source_record['sources'].items():
+ data=(live/name).read_bytes();assert sha(data)==expected,name
+ (root/name).parent.mkdir(parents=True,exist_ok=True);(root/name).write_bytes(data)
+# Compare all copied production proof sources and exact current evidence with the
+# live source used to build the reused outputs before cloning those outputs.
+proof_sources={}
+for prefix in ['lean','lean-kernel']:
+ for path in (root/prefix).rglob('*'):
+  if path.is_file() and (path.suffix=='.lean' or path.name in ['lakefile.toml','lake-manifest.json','lean-toolchain','schema-registry.json']):
+   name=path.relative_to(root).as_posix();data=path.read_bytes();assert data==(live/name).read_bytes(),name;proof_sources[name]=sha(data)
+for name in ['governance/guarantees.json','governance/guarantees/current-evidence.json']:
+ assert (root/name).read_bytes()==(live/name).read_bytes(),name;proof_sources[name]=sha((root/name).read_bytes())
+for prefix in ['lean','lean-kernel']:
+ call(['cp','-cR',str(live/prefix/'.lake'),str(root/prefix/'.lake')],run,name=prefix+'-clone-cache')
+# Local config is per command; no global identity, hooks, or existing Git state.
+git=['git','-c','user.name=Local Synthetic Wrapper Test','-c','user.email=local-synthetic@example.invalid','-c','commit.gpgsign=false','-c','core.hooksPath=/dev/null','-c','maintenance.auto=false','-c','gc.auto=0']
+call(git+['init','--quiet'],root);call(git+['add','--all'],root);call(git+['commit','--quiet','-m','Synthetic clean wrapper integration; not a release candidate'],root)
+commit=call(['git','rev-parse','HEAD'],root).decode().strip();tree=call(['git','rev-parse','HEAD^{tree}'],root).decode().strip();assert call(['git','status','--porcelain=v1','--untracked-files=all'],root)==b''
+tracked=call(['git','ls-files','-z'],root).decode().strip('\0').split('\0');tracked_hashes={name:sha((root/name).read_bytes()) for name in tracked}
+context=dict(GITHUB_ACTIONS='true',GITHUB_REPOSITORY='MGYamada/Qleisli',GITHUB_EVENT_NAME='workflow_dispatch',GITHUB_RUN_ID='142',GITHUB_RUN_ATTEMPT='1',GITHUB_SHA=commit,GITHUB_JOB='check-lean',GITHUB_REF='refs/heads/synthetic-wrapper-integration',RELEASE_READINESS='true')
+for key in list(os.environ):
+ if key.startswith(('GITHUB_','RELEASE_')): pass
+env={key:value for key,value in os.environ.items() if not key.startswith(('GITHUB_','RELEASE_'))};env.update(context)
+metadata=dict(scope='LOCAL SYNTHETIC HOSTED CONTEXT with REAL Lean replay. Not a release candidate, actual GitHub run, complete108 acceptance, guarantee admission, tag or publication.',base_commit=base,synthetic_commit=commit,synthetic_tree=tree,owned_sources=source_record['sources'],proof_sources=proof_sources,simulated_environment=context,python=sys.version,cache_reuse='APFS copy-on-write cp -cR of both already-built .lake directories; no symlinks or hardlinks to live output directories. Direct replay uses copied build environment, not a fresh build/audit.',source_directory=str(root))
+(run/'integration.json').write_text(json.dumps(metadata,indent=2)+'\n');(run/'tracked-before.json').write_text(json.dumps(tracked_hashes,indent=2)+'\n')
+print('isolated source:',root,flush=True)
+call(['lake','env','lean','--version'],root/'lean',env,name='lean-version')
+receipt=run/'constitution-receipt.json'
+call([sys.executable,'scripts/check_release_ready.py','--record-constitution','--output',str(receipt)],root,env,name='real-wrapper')
+assert call(['git','status','--porcelain=v1','--untracked-files=all'],root)==b''
+assert all(sha((root/name).read_bytes())==value for name,value in tracked_hashes.items())
+assert all(sha((live/name).read_bytes())==value for name,value in source_record['sources'].items())
+assert all(sha((live/name).read_bytes())==value for name,value in proof_sources.items())
+metadata['result']=json.loads(receipt.read_bytes());metadata['tracked_source_count']=len(tracked_hashes);metadata['tracked_sources_unchanged']=True;metadata['live_owned_and_proof_sources_unchanged']=True;metadata['receipt_sha256']=sha(receipt.read_bytes())
+(run/'integration.json').write_text(json.dumps(metadata,indent=2)+'\n');(run/'commands.json').write_text(json.dumps(records,indent=2)+'\n')
+print(json.dumps({'run_directory':str(run),'synthetic_commit':commit,'result':metadata['result'],'source_files':len(tracked_hashes)}),flush=True)

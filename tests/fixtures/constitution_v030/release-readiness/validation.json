@@ -1,0 +1,104 @@
+{
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "observations": [
+    {
+      "name": "release-tests",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_release_ready.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 61.32,
+      "stdout": "validation/release-tests.stdout.txt",
+      "stderr": "validation/release-tests.stderr.txt"
+    },
+    {
+      "name": "constitutional-tests",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_constitution.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 122.621,
+      "stdout": "validation/constitutional-tests.stdout.txt",
+      "stderr": "validation/constitutional-tests.stderr.txt"
+    },
+    {
+      "name": "ci-routing-tests",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_ci_profiles.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 1.166,
+      "stdout": "validation/ci-routing-tests.stdout.txt",
+      "stderr": "validation/ci-routing-tests.stderr.txt"
+    },
+    {
+      "name": "new-cli-missing-context",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_release_ready.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.082,
+      "stdout": "validation/new-cli-missing-context.stdout.txt",
+      "stderr": "validation/new-cli-missing-context.stderr.txt"
+    },
+    {
+      "name": "legacy-cli-missing-context",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py",
+        "--require-release-ready"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.073,
+      "stdout": "validation/legacy-cli-missing-context.stdout.txt",
+      "stderr": "validation/legacy-cli-missing-context.stderr.txt"
+    },
+    {
+      "name": "ordinary-constitution",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.501,
+      "stdout": "validation/ordinary-constitution.stdout.txt",
+      "stderr": "validation/ordinary-constitution.stderr.txt"
+    },
+    {
+      "name": "docs",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 2.742,
+      "stdout": "validation/docs.stdout.txt",
+      "stderr": "validation/docs.stderr.txt"
+    },
+    {
+      "name": "whitespace",
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.078,
+      "stdout": "validation/whitespace.stdout.txt",
+      "stderr": "validation/whitespace.stderr.txt"
+    }
+  ],
+  "scope": "Actual local commands. Synthetic readiness test services/hosted context are explicitly simulated; no actual release readiness or publication is established."
+}
