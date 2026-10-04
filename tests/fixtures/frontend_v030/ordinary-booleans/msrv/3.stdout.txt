@@ -1,0 +1,123 @@
+
+running 3 tests
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+test raw_capability_boundary_explicitly_rejects_quantum_mixed_and_bits_targets ... ok
+test unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked ... ok
+test open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments ... ok
+test static_zero_one_two_folds_and_selection_produce_runtime_bits ... ok
+test false_and_measurement_is_eager_and_cannot_hide_observation_effects ... ok
+test repeated_shared_calls_keep_each_invocations_classical_values ... ok
+test ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening ... ok
+test all_four_truth_rows_match_independent_constants_in_both_profiles ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.87s
+
+
+running 20 tests
+test common_token_stream_includes_sized_punctuation_without_trivia_joining ... ok
+test basis_requires_rejects_before_documentation_attachment ... ok
+test accepts_comments_and_reports_utf8_byte_offsets ... ok
+test basis_operators_have_documented_precedence_and_left_associativity ... ok
+test common_natural_and_count_syntax_keeps_precedence_and_source_spans ... ok
+test classical_boolean_operators_have_precedence_and_left_associativity ... ok
+test coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans ... ok
+test canonical_bit_literals_share_spelling_with_basis_bits ... ok
+test invisible_separators_and_bad_bit_literals_have_precise_errors ... ok
+test malformed_syntax_has_precise_error_spans ... ok
+test reserved_std_module_keywords_allow_further_identifier_components ... ok
+test static_operation_errors_point_to_the_unconsumed_token_or_eof ... ok
+test parses_phase_oracle_and_measurement_feedback ... ok
+test parses_bell_modules_and_keeps_owned_resource_syntax_distinct ... ok
+test unicode_format_characters_are_comment_text_but_not_source_tokens ... ok
+test nested_operator_chains_share_the_ast_depth_limit ... ok
+test all_static_constructor_token_prefixes_parse_without_panicking ... ok
+test classical_operator_chains_and_basis_patterns_obey_depth_limits ... ok
+test deep_syntax_is_rejected_without_exhausting_the_stack ... ok
+test example_and_stdlib_token_prefixes_parse_without_panicking ... ok
+
+test result: ok. 20 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s
+
+
+running 8 tests
+test common_ast_keeps_argument_count_exact_patterns_and_original_spans ... ok
+test sized_wildcards_cannot_erase_nested_or_zero_width_owners_even_in_zero_folds ... ok
+test exact_shape_owner_and_unused_declaration_failures_remain_located ... ok
+test sized_inputs_retain_whole_parameter_trees_and_independent_swap_action ... ok
+test sized_nonlinear_wildcards_are_shared_by_parameters_let_and_zero_fold ... ok
+test static_substitutions_and_provider_bindings_keep_declaration_and_source_identity ... ok
+test discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase ... ok
+test finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.02s
+
+
+running 7 tests
+test first_invalid_sibling_follows_source_order_not_sorted_definition_identity ... ok
+test private_siblings_are_providers_but_not_host_entries_or_external_imports ... ok
+test duplicate_and_import_alias_collisions_remain_located_rejections ... ok
+test every_unused_sibling_is_checked_including_dead_static_arms_and_empty_folds ... ok
+test sibling_and_unused_provider_cycles_do_not_become_self_recursion ... ok
+test sibling_order_and_module_partition_preserve_phase_and_labelled_axes ... ok
+test same_named_providers_keep_distinct_meanings_and_specialization_identity ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+
+running 6 tests
+test basis_context_is_closed_and_has_its_own_callable_shadowing ... ok
+test branch_local_shadows_expire_but_moved_outer_names_remain_reserved ... ok
+test ordinary_basis_and_computed_names_resolve_in_the_declaration_module ... ok
+test basis_domains_and_branch_results_preserve_exact_product_trees ... ok
+test computed_certificates_preserve_effects_and_outer_name_restrictions ... ok
+test declared_effects_survive_arguments_tuples_conditions_and_both_arms ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.68s
+
+
+running 10 tests
+test ordinary_boolean_operands_require_cbits_and_have_checked_dependencies ... ok
+test entry_point_accepts_nested_classical_products ... ok
+test basis_calls_ignore_outer_cbit_names_but_respect_basis_binders ... ok
+test computed_auxiliary_shadow_preserves_the_outer_owner ... ok
+test zero_wire_ownership_requires_explicit_consumption ... ok
+test boolean_operands_are_eager_and_preserve_pending_quantum_ownership ... ok
+test basis_lifts_destructure_exact_product_patterns ... ok
+test basis_call_arity_is_distinct_from_lift_injectivity ... ok
+test basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits ... ok
+test ordinary_bit_literals_and_operators_have_their_truth_tables ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.11s
+
+
+running 8 tests
+test nary_type_capacity_and_rejected_deep_drops_are_bounded ... ok
+test formerly_silent_reassociation_now_rejects ... ok
+test same_shape_wrong_permutation_does_not_pass_identity_evidence ... ok
+test flat_arity_and_nested_depth_have_distinct_bounds ... ok
+test nary_static_meanings_retain_shape_and_order ... ok
+test nary_owners_include_units_pending_fields_and_branch_frames ... ok
+test explicit_layout_is_exact_and_preserves_an_entangled_reference ... ok
+test documented_type_categories_and_explicit_only_conversions ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.80s
+
+
+running 8 tests
+test exact_pattern_shapes_reject_quantum_bit_and_equal_width_products ... ok
+test sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule ... ok
+test unit_basis_patterns_keep_exact_unary_function_and_predicate_arity ... ok
+test runtime_parameter_pattern_now_uses_the_common_exact_shape_rule ... ok
+test coherent_unit_lift_retains_exact_scalar_and_reference_action ... ok
+test effectful_unit_rhs_is_retained_before_the_empty_result_is_bound ... ok
+test coherent_control_exposes_unit_phase_for_lift_and_computed_pattern ... ok
+test finite_named_unit_parameters_and_nested_patterns_are_ordinary_values ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.36s
+

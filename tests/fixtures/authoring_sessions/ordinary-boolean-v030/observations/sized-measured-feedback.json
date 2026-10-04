@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sized",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-boolean-v030/attempt-01/measured-feedback/main.qli",
+    "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T20:37:25.487317+00:00",
+  "elapsed_seconds": 0.004615292011294514,
+  "stdout_raw": "",
+  "stderr": "main:220..244: unsupported: sized preparation profile: unsupported runtime expression\n",
+  "source_sha256": "a8c318147ae20ca1e43dfaa06d5310d6e490a6698a6866e2ab6e7edb7c72ddc3",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "aa1d49498f9bc7b7e75509680c8cde6d516d074c9aa889dc8b043cdb7216f4fd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "mode": "sized",
+  "scope": "Diagnostic/native check at the stages actually reached.",
+  "transcript": "main:220..244: unsupported: sized preparation profile: unsupported runtime expression\n"
+}

@@ -1,0 +1,20 @@
+{
+  "status": "interrupted after first seven successful checks",
+  "passed_commands": [
+    "check_verification_inventory.py",
+    "check_production_coverage.py",
+    "test_check_production_coverage.py",
+    "test_run_native_ci.py",
+    "check_authoring_sessions.py",
+    "check_constitution.py",
+    "check_docs.py"
+  ],
+  "failure": {
+    "command": [
+      "mdbook",
+      "--version"
+    ],
+    "error": "FileNotFoundError: mdbook is not on PATH"
+  },
+  "scope": "Earlier individual stdout/stderr files retained; this failed driver made no book-build claim"
+}

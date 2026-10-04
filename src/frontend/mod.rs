@@ -9,6 +9,7 @@ pub mod core;
 pub mod diagnostic;
 pub mod documentation;
 pub mod lexer;
+mod ordinary;
 pub mod parser;
 pub mod project;
 mod resolve;

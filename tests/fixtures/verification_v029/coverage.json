@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "f9e9fc8486ec83a506d8c3aa1106c48bf543ade1627bf8d9eecd9579c939631f",
+  "surface_sha256": "5a6fbf9c955c8cf1a41096a51020b7f1e4def62af976d05ae0c39387e5377896",
   "groups": [
     {
       "id": "raw-core",
@@ -165,7 +165,8 @@
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/review_v021.rs",
-        "tests/static_operations.rs"
+        "tests/static_operations.rs",
+        "tests/ordinary_booleans.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -766,7 +767,8 @@
       "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/sized_source.rs"
+        "tests/sized_source.rs",
+        "tests/ordinary_booleans.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1011,7 +1013,8 @@
       "evidence": [
         "tests/review_v021.rs",
         "tests/static_operations.rs",
-        "scripts/test_source_kernel.py"
+        "scripts/test_source_kernel.py",
+        "tests/ordinary_booleans.rs"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -1347,12 +1350,15 @@
         "HierarchyProposal::qpe_binding",
         "qleisli sized check/run/sample/emit-proposal",
         "HierarchyProposal::validate_initialization_moves_native",
-        "sized check/run/sample through native-only reports"
+        "sized check/run/sample through native-only reports",
+        "ElaboratedProgram::lower_raw",
+        "RawSourceProposal::validate_source_steps"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
-        "tests/sized_source.rs"
+        "tests/sized_source.rs",
+        "tests/ordinary_booleans.rs"
       ],
       "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
@@ -2135,6 +2141,22 @@
             "pub fn parse(",
             "pub fn instantiate("
           ]
+        },
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "markers": [
+            "pub struct RawSourceProposal",
+            "pub fn validate_source_steps(",
+            "native::Proposal::from_raw"
+          ]
+        },
+        {
+          "path": "src/frontend/sized/raw/preservation.rs",
+          "markers": [
+            "pub(super) fn validate(",
+            "RawOp::ClassicalAnd",
+            "RawOp::ClassicalXor"
+          ]
         }
       ],
       "tests": [
@@ -2145,13 +2167,21 @@
         {
           "path": "tests/sized_cli.rs",
           "test": "sized_cli_emits_only_an_untrusted_proposal_without_a_kernel"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "all_four_truth_rows_match_independent_constants_in_both_profiles"
+        },
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "test": "raw_source_replay_rejects_native_valid_semantic_and_structural_mutations"
         }
       ],
-      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal",
+      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal; ElaboratedProgram::lower_raw produces a source-bound ordinary finite proposal for explicit native acceptance",
       "checked_artifact": "Untrusted hierarchy payload, producer comparison request and source metadata",
       "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
-      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.",
-      "gaps": "Producer consistency is not independent source meaning. Native initialization-move binding is an additional check on already checked artifacts, not general source preservation."
+      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation",
+      "gaps": "Producer consistency is not independent source meaning. Native initialization-move binding is an additional check on already checked artifacts, not general source preservation.; mixed quantum/Boolean Raw support, runtime invocation and CLI integration remain incomplete"
     },
     {
       "id": "checked-views",

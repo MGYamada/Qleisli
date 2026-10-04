@@ -245,6 +245,20 @@ impl Projection<'_, '_> {
         let kind = match &expr.kind {
             source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)),
             source::ExprKind::Unit => ExprKind::Unit,
+            source::ExprKind::Bit(value) => ExprKind::Boolean(Boolean::Constant(*value), vec![]),
+            source::ExprKind::Not(input) => {
+                ExprKind::Boolean(Boolean::Not, vec![self.expr(input)?])
+            }
+            source::ExprKind::And(left, right) | source::ExprKind::Xor(left, right) => {
+                ExprKind::Boolean(
+                    if matches!(expr.kind, source::ExprKind::And(..)) {
+                        Boolean::And
+                    } else {
+                        Boolean::Xor
+                    },
+                    vec![self.expr(left)?, self.expr(right)?],
+                )
+            }
             source::ExprKind::Tuple(fields) => ExprKind::Tuple(
                 fields
                     .iter()

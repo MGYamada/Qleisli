@@ -100,3 +100,6 @@ tests/fixtures/review_v030alpha/hosted-distribution-37218876223/failure-excerpt.
 tests/fixtures/frontend_v030/runtime-parameter-patterns/*/*.stdout.txt -text -whitespace
 tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/test-repair.patch -text -whitespace
 tests/fixtures/review_v030alpha/hosted-lint-37221444899/failure-excerpt.txt -text -whitespace
+# Preserve exact Boolean first-run transcripts and the explicit test repair diff.
+tests/fixtures/frontend_v030/ordinary-booleans/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ordinary-booleans/test-repair.patch -text -whitespace

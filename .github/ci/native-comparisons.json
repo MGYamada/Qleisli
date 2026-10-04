@@ -831,6 +831,20 @@
         [
           "cargo",
           "+1.98.1",
+          "test",
+          "--test",
+          "ordinary_booleans"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--lib",
+          "raw_source_replay"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
           "build",
           "--locked",
           "--offline",

@@ -1,0 +1,18 @@
+{
+  "original_study_files": 66,
+  "all_unchanged": true,
+  "study_manifest_sha256": "4bcf054c74ff38a3230acded6b93107c394b51a342cecc543b04e39bc5c0ce41",
+  "first_source_manifest_sha256": "21063a9fac152575394e42f68a338b72fb43a9db9351c0a71684ee5e7d232863",
+  "product_version": "0.3.0-alpha",
+  "source_history": "Original authoring and test-attempt snapshots retained; no historical migration or fixed799 replay file edited",
+  "checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit": 0,
+      "output": "Checked 1721 local links, 12 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules."
+    }
+  ]
+}

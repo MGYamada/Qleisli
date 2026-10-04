@@ -139,3 +139,11 @@ Its 39 first finite/sized checks retain the original diagnostics; separate
 follow-ups preserve three unchanged named-control IR artifacts. Parameter trees
 remain distinct from argument lists, and the later bounded tests separate source
 checking, native acceptance and independent phase/reference expectations.
+
+The [ordinary Boolean study](ordinary-boolean-v030/session.json) preserves twelve
+informed first projects and thirty-three actual pre-change CLI observations.
+Nine closed execution probes agree with independent expectations; the sized
+failures distinguish projection and transport limits from source typing.
+These historical results remain unchanged while common Boolean preparation and
+source-bound execution are implemented. Mixed quantum execution and open
+classical invocation remain separate unfinished parts of that work.

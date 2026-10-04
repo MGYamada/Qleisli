@@ -3,6 +3,7 @@
 use super::Span;
 
 pub(super) use crate::frontend::ast::Compare;
+pub(super) use crate::frontend::ordinary::Boolean;
 use crate::frontend::resolve::locals::UseSiteId;
 pub(super) use crate::frontend::resolve::locals::{BinderKey, ResolvedUse, Table};
 use std::sync::Arc;
@@ -113,6 +114,7 @@ pub(super) struct Expr {
 #[derive(Clone, Debug)]
 pub(super) enum ExprKind {
     Unit,
+    Boolean(Boolean, Vec<Expr>),
     Name(Reference),
     Tuple(Vec<Expr>),
     Call(Reference, Vec<Argument>, Vec<Expr>),

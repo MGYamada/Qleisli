@@ -1,0 +1,53 @@
+
+running 3 tests
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+test raw_capability_boundary_explicitly_rejects_quantum_mixed_and_bits_targets ... ok
+test unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked ... FAILED
+test open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments ... ok
+test static_zero_one_two_folds_and_selection_produce_runtime_bits ... ok
+test all_four_truth_rows_match_independent_constants_in_both_profiles ... FAILED
+test ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening ... FAILED
+test false_and_measurement_is_eager_and_cannot_hide_observation_effects ... ok
+test repeated_shared_calls_keep_each_invocations_classical_values ... FAILED
+
+failures:
+
+---- unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked stdout ----
+
+thread 'unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked' (12696604) panicked at tests/ordinary_booleans.rs:59:5:
+assertion `left == right` failed: main:117..118: ownership: unbound or consumed value q
+  left: "ownership"
+ right: "type"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- all_four_truth_rows_match_independent_constants_in_both_profiles stdout ----
+
+thread 'all_four_truth_rows_match_independent_constants_in_both_profiles' (12696597) panicked at tests/ordinary_booleans.rs:22:10:
+called `Result::unwrap()` on an `Err` value: Error { code: "visibility", module: Some("main"), span: Span { start: 0, end: 0 }, message: "dependency main::main is private" }
+
+---- ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening stdout ----
+
+thread 'ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening' (12696600) panicked at tests/ordinary_booleans.rs:22:10:
+called `Result::unwrap()` on an `Err` value: Error { code: "visibility", module: Some("main"), span: Span { start: 0, end: 0 }, message: "dependency main::main is private" }
+
+---- repeated_shared_calls_keep_each_invocations_classical_values stdout ----
+
+thread 'repeated_shared_calls_keep_each_invocations_classical_values' (12696602) panicked at tests/ordinary_booleans.rs:22:10:
+called `Result::unwrap()` on an `Err` value: Error { code: "visibility", module: Some("main"), span: Span { start: 0, end: 0 }, message: "dependency main::main is private" }
+
+
+failures:
+    all_four_truth_rows_match_independent_constants_in_both_profiles
+    ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening
+    repeated_shared_calls_keep_each_invocations_classical_values
+    unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked
+
+test result: FAILED. 4 passed; 4 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.48s
+

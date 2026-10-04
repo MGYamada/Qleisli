@@ -117,8 +117,12 @@ PATHS = {
     'sized-proposal': path_rule('untrusted-proposal', 'sized-source-proposal', '', [
         ('src/bin/qleisli/sized.rs', ['if let Some(path) = o.output', 'untrusted-proposal', 'source_meaning_verified']),
         ('src/frontend/sized.rs', ['pub fn parse(', 'pub fn instantiate(']),
+        ('src/frontend/sized/raw.rs', ['pub struct RawSourceProposal', 'pub fn validate_source_steps(', 'native::Proposal::from_raw']),
+        ('src/frontend/sized/raw/preservation.rs', ['pub(super) fn validate(', 'RawOp::ClassicalAnd', 'RawOp::ClassicalXor']),
     ], [('tests/sized_source.rs', 'untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming'),
-        ('tests/sized_cli.rs', 'sized_cli_emits_only_an_untrusted_proposal_without_a_kernel')]),
+        ('tests/sized_cli.rs', 'sized_cli_emits_only_an_untrusted_proposal_without_a_kernel'),
+        ('tests/ordinary_booleans.rs', 'all_four_truth_rows_match_independent_constants_in_both_profiles'),
+        ('src/frontend/sized/raw.rs', 'raw_source_replay_rejects_native_valid_semantic_and_structural_mutations')]),
     'checked-views': path_rule('checked-view', 'contract function named-qpe-components', '', [
         ('src/contract/mod.rs', ['pub fn check_binding(', 'pub fn check_entry(']),
         ('src/contract/function.rs', ['pub fn check_binding(']),

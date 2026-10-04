@@ -14,8 +14,8 @@ use crate::frontend::resolve::{DefId, Target};
 use crate::frontend::types::Kind as TypeKind;
 use std::sync::Arc;
 
-/// Concrete exact source tree. Accessors retain the current sized profile's
-/// public tags: bit/bits denote quantum owners, cbit/cbits ordinary data.
+/// Concrete exact source tree. Bit/Bits kind tags are shared by ordinary and
+/// quantum leaves; `is_quantum` retains their distinct ownership category.
 /// Its private shared representation makes Q explicit; no constructor is public.
 pub type SourceType = crate::frontend::types::Type<u32>;
 impl SourceType {
@@ -179,6 +179,7 @@ pub struct SourceStep {
 }
 #[derive(Clone, Debug)]
 enum StepKind {
+    Boolean(Boolean),
     Primitive(Primitive, Vec<u32>),
     Call {
         definition: usize,
@@ -191,6 +192,7 @@ enum StepKind {
 impl SourceStep {
     pub fn kind(&self) -> &'static str {
         match self.kind {
+            StepKind::Boolean(_) => "boolean",
             StepKind::Primitive(..) => "primitive",
             StepKind::Call { .. } => "call",
             StepKind::Apply(_) => "apply",
@@ -201,6 +203,23 @@ impl SourceStep {
     pub fn primitive(&self) -> Option<&str> {
         match &self.kind {
             StepKind::Primitive(name, _) => Some(name.signature().path),
+            _ => None,
+        }
+    }
+    pub(super) fn boolean(&self) -> Option<Boolean> {
+        match self.kind {
+            StepKind::Boolean(operation) => Some(operation),
+            _ => None,
+        }
+    }
+    /// Ordinary Boolean source operation, without exposing internal SSA IDs.
+    pub fn boolean_operator(&self) -> Option<&'static str> {
+        self.boolean().map(Boolean::operator)
+    }
+    /// Source literal value, present only for a Boolean constant step.
+    pub fn boolean_literal(&self) -> Option<bool> {
+        match self.boolean() {
+            Some(Boolean::Constant(value)) => Some(value),
             _ => None,
         }
     }
@@ -319,6 +338,11 @@ impl ElaboratedProgram {
     /// acceptance and retains this source-order program for preservation checks.
     pub fn lower(&self) -> Result<super::HierarchyProposal> {
         super::lower::lower(self)
+    }
+    /// Produce a bounded Raw proposal from this retained specialization.
+    /// This performs no native acceptance or source-preservation proof.
+    pub fn lower_raw(&self) -> Result<super::RawSourceProposal> {
+        super::raw::lower(self)
     }
     pub fn instantiation(&self) -> &Instantiation {
         &self.instance
@@ -1011,6 +1035,44 @@ impl Builder<'_> {
         let span = expr.span;
         match &expr.kind {
             ExprKind::Unit => Ok(SourceValue::unit()),
+            ExprKind::Boolean(operation, operands) => {
+                use crate::frontend::ordinary::{self, OperandFailure};
+                let values = ordinary::evaluate(
+                    *operation,
+                    operands.iter(),
+                    &mut (&mut *self, &mut *scope, &mut *frame),
+                    |(builder, scope, frame), operand| builder.expr(operand, scope, frame, depth),
+                    |value| value.ty.clone(),
+                    |_, failure| match failure {
+                        OperandFailure::Arity { expected, actual } => error(
+                            "type",
+                            span,
+                            format!(
+                                "Boolean operation requires {expected} operands, found {actual}"
+                            ),
+                        ),
+                        OperandFailure::Type(ty) => error(
+                            "type",
+                            span,
+                            format!(
+                                "{} requires ordinary Bit operands, found {:?}",
+                                operation.operator(),
+                                ty.sized_debug()
+                            ),
+                        ),
+                    },
+                )?;
+                self.step(
+                    StepKind::Boolean(*operation),
+                    vec![SourceType::bit(); operation.arity()],
+                    operation.result_type(),
+                    Effect::Unitary,
+                    values,
+                    frame,
+                    span,
+                    0,
+                )
+            }
             ExprKind::Name(name) => {
                 let b = name.get(&scope.values).cloned().ok_or_else(|| {
                     error(

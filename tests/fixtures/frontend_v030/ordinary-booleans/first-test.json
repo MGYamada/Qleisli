@@ -1,0 +1,10 @@
+{
+  "source_path": "tests/ordinary_booleans.rs",
+  "sha256": "a50ae3f9b5cd3ece6f46c7f21e5e7ce43ee12296a728a69782610d074bd59ca2",
+  "observation": "latest/3.stdout.txt",
+  "failures": [
+    "Three shared closed-wrapper cases selected a private sized host entry; the source needs explicit pub rather than weakened visibility.",
+    "A zero-fold body implicitly captured q; existing ownership/capture rejection precedes Boolean type checking. Preserve that case and add a separate wrong-type zero-fold case."
+  ],
+  "scope": "Test source corrections only; no production rule is weakened"
+}

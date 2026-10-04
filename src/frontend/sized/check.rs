@@ -634,6 +634,35 @@ impl Checker<'_> {
         let span = expr.span;
         let result = match &expr.kind {
             ExprKind::Unit => Ty::unit(),
+            ExprKind::Boolean(operation, operands) => {
+                use crate::frontend::ordinary::{self, OperandFailure};
+                ordinary::evaluate(
+                    *operation,
+                    operands.iter(),
+                    &mut (&mut *self, &mut *scope),
+                    |(checker, scope), operand| checker.expr(operand, scope, None),
+                    Clone::clone,
+                    |_, failure| match failure {
+                        OperandFailure::Arity { expected, actual } => err(
+                            "type",
+                            span,
+                            format!(
+                                "Boolean operation requires {expected} operands, found {actual}"
+                            ),
+                        ),
+                        OperandFailure::Type(ty) => err(
+                            "type",
+                            span,
+                            format!(
+                                "{} requires ordinary Bit operands, found {:?}",
+                                operation.operator(),
+                                ty.sized_debug()
+                            ),
+                        ),
+                    },
+                )?;
+                operation.result_type()
+            }
             ExprKind::Name(name) => {
                 let binding = name.get(&scope.values).cloned().ok_or_else(|| {
                     err(

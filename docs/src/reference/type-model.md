@@ -184,11 +184,30 @@ reject an unsupported lowering profile. It must not silently map `Bits<1>` to
 Bit or `Bits<0>` to Unit to obtain evidence.
 
 The current finite profile supports ordinary Unit/Bit values and products, but
-does not yet lower Bits atoms. The sized profile checks ordinary Bit/Bits and
-Unit, supports its existing measurement/readout paths and lowers ordinary
-Unit computations. Sized runtime Bit literals/Boolean evaluation, general
-classical entry lowering, general product and `Q<Unit>` bases, and reusing basis
-functions as runtime computations remain unfinished profile obligations.
+does not yet lower Bits atoms. Both profiles use the same exact Bit judgment
+and eager, left-to-right operand evaluation for `0`, `1`, `not`, `and` and `xor`.
+Both operands of `and` evaluate even when its left value is zero. Quantum
+operands, `Bits<1>`, static naturals and products are not coerced to Bit.
+
+The sized Rust API's `ElaboratedProgram::lower_raw` produces an untrusted finite
+proposal for ordinary Unit/Bit/products, including specialized ordinary helper
+calls and static folds. Its `source()` retains whole parameter/result trees and
+the original source instance. Native `Kernel::accept` must check `proposal()`
+before execution. `validate_source_steps` separately compares the exact accepted
+Raw instructions with the retained source-step graph; it does not prove the
+preceding source elaboration or grant native acceptance. Ordinary open inputs
+are represented and checked, but `sim::run_closed` still requires a closed
+artifact. A closed source wrapper is a distinct specialization of an open
+function, not execution of that original open artifact.
+
+This Raw adapter currently rejects quantum/Bits values, primitives and operation
+providers. Mixed classical/quantum execution, measured Boolean postprocessing,
+explicit runtime invocation and CLI integration remain unfinished. The existing
+hierarchy `lower()` path retains its quantum and ordered-readout contracts and
+rejects Boolean steps at their source locations; a failed native hierarchy
+decision is never retried as weaker Raw validity. General product and `Q<Unit>`
+bases, reusing basis functions as runtime computations and full common checking
+also remain unfinished profile obligations.
 Successful generic checking does not imply successful concrete lowering.
 These limits do not establish separate type universes or close the remaining
 [#27](https://github.com/MGYamada/Qleisli/issues/27) work.

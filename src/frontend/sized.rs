@@ -12,6 +12,7 @@ mod lower;
 mod parser;
 mod primitive;
 mod qpe;
+mod raw;
 
 use super::resolve::{DefId, Failure, FailureKind, Resolution};
 use std::collections::BTreeMap;
@@ -25,6 +26,7 @@ pub use elaborate::{
 pub use lower::{
     FramePort, HierarchyProposal, InitializationMove, PreparationValidation, SourceEvent,
 };
+pub use raw::RawSourceProposal;
 
 pub(super) fn primitive_path(path: &str) -> Option<&'static str> {
     primitive::Primitive::lookup(path).map(|p| p.signature().path)

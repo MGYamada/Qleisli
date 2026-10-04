@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-boolean-v030/attempt-01/constants",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-04T20:37:21.189765+00:00",
+  "elapsed_seconds": 0.41931191697949544,
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+  "stderr": "",
+  "source_sha256": "4759a8848d928d55e74d9112ed230dcec935e25f41a41044d16a58810dfc400f",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "aa1d49498f9bc7b7e75509680c8cde6d516d074c9aa889dc8b043cdb7216f4fd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "mode": "closed",
+  "scope": "Closed observe-main wrapper only; no ordinary-input assignment API.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  }
+}

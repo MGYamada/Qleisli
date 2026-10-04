@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share ordinary Boolean type checking, eager operand evaluation and Raw
+  instruction emission across finite and sized source preparation. Add a
+  source-bound ordinary Unit/Bit/product Raw proposal and independent step
+  replay; mixed quantum execution and CLI integration remain unfinished (#32).
 - Accept exact ordinary function parameter patterns through the common parser
   and finite/sized checking. Keep whole argument types, source arity and effects;
   reject duplicate names and implicit quantum-owner discard (#32, #43).

@@ -1231,6 +1231,17 @@ pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
             ));
         }
     }
+    for definition in source.definitions() {
+        for step in definition.steps() {
+            if step.boolean().is_some() {
+                return Err(Error::new(
+                    "unsupported",
+                    step.span(),
+                    "hierarchical transport does not support ordinary Boolean source steps; select an explicitly supported finite target",
+                ).in_module(step.module()));
+            }
+        }
+    }
     Ok(())
 }
 

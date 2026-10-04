@@ -629,8 +629,8 @@
     {
       "id": "sized-source",
       "producer": "Retained ordinary sized-source modules and explicit natural/operation bindings",
-      "consumer": "Rust ParsedProgram/Instantiation, independent retained-trace validation, untrusted candidate discovery and additive qleisli sized CLI",
-      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem.",
+      "consumer": "Rust ParsedProgram/Instantiation, independent retained-trace validation, untrusted candidate discovery and additive qleisli sized CLI; source-bound finite ordinary Raw proposals with independent step replay",
+      "obligation": "Guarded linear-size implications, lexical quantum ownership/effects, complete dependency/provider identity and source-order proposals; permitted fresh initialization moves require retained-frame checks before execution. Native hierarchy/named checking and exact reconstruction remain mandatory; no general source-preservation theorem. Raw validity and exact source-step correspondence remain separate; the latter does not discharge AST-to-step preservation.",
       "reference": "docs/sized-corpus-source.md",
       "replacement": [
         "VM-28"
@@ -3222,7 +3222,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "b06662afe8e73a2b03e518cb5cf86335543228e0070fe87e951b6d2434e6f639",
+      "sha256": "cb07a0907559728938642a81b89cd8b505bb80e1c2f60537d5deaddffb3a2f94",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3397,7 +3397,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "c7b00487d60e4dd63bc4f7738a9f91bf905fbdfa44b185892da5784118663004",
+      "sha256": "58c38c5da572b42e5c79bf46b15e11170928851ca47e9157bd824d040ce0ce43",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3411,6 +3411,16 @@
           "project",
           "sized"
         ],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/ordinary.rs",
+      "sha256": "b551edb7bb76bb223f577a3a7b9daeb40b92444a08e4cdb5b5f77f3748ad5363",
+      "group": "source",
+      "surface": {
+        "declarations": [],
         "functions": [],
         "capacity_constants": []
       }
@@ -3577,7 +3587,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "e2928779d30d4b45e7227a77f5bb013fa827e5ed62af112803de747fdf9a10a7",
+      "sha256": "458dc1aeafa386e5655aebab8c2a9ba80dcafe8b98087edc7d538256b60b9523",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3615,7 +3625,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "79110e1bdf64af8dc17251b149d1955a152ae895cc0b02dda609531f93e49456",
+      "sha256": "7894dd2ce419f2adf389860e74a44d3502182e66ac4190b4fbab1c0bd95b969f",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3629,7 +3639,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "ce48e618321e083622d8072e183a87b33f0faa983909f39b63a456fbc2ff9ca8",
+      "sha256": "54ad09a978068d5db589d95f875939cec31484f7f898e7dab54e919ae8297e5c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3639,7 +3649,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "f095dc55e81c12eff8b1a36baabc2878ddf85f9da35b73293cb9bb3b808bb870",
+      "sha256": "2915b7ed85898a028b29300ab756db25e98faae2ec8e4a7258256de514ef89f1",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3651,6 +3661,8 @@
           "SourceValue"
         ],
         "functions": [
+          "pub fn boolean_literal(&self) -> Option<bool>",
+          "pub fn boolean_operator(&self) -> Option<&'static str>",
           "pub fn call_instances(&self) -> usize",
           "pub fn called_definition(&self) -> Option<usize>",
           "pub fn check_lowering_profile(&self) -> Result<()>",
@@ -3670,6 +3682,7 @@
           "pub fn kind(&self) -> &'static str",
           "pub fn kind(&self) -> &'static str",
           "pub fn lower(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
           "pub fn module(&self) -> &str",
           "pub fn module(&self) -> &str",
           "pub fn natural_arguments(&self) -> &[u32]",
@@ -3733,7 +3746,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "c2e7766861cb8c468fbdd19f42b1549eb5407c0ace8950f2e4a5a5aa79770469",
+      "sha256": "ed28c8af68dd35e48d5d696d4ebab8d85cd4248fe6e5c103dd013df5faa95f03",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3788,7 +3801,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "fa4375a8c98b8b3f7a30d14a8e17dd9a0eb3c4f4e59285760c6b86da69ea0a7c",
+      "sha256": "de7361898e66d33da0b11a7292be555d3582f4fc8cf75b827c5ce155c517c43b",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3824,6 +3837,43 @@
         "capacity_constants": []
       },
       "group": "sized-source"
+    },
+    {
+      "path": "src/frontend/sized/raw.rs",
+      "sha256": "6658fee53a7341c87883e9ad7ca5b90e91dde71af3499daed372533a6a9e5bbf",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [
+          "RawSourceProposal"
+        ],
+        "functions": [
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn proposal(&self) -> &native::Proposal",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_OPERATIONS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/raw/preservation.rs",
+      "sha256": "d26e921ed18167c56e40a9168dbd740265da10925c1e02dbbf5648a3628078a3",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      }
     },
     {
       "path": "src/frontend/types.rs",
@@ -4748,13 +4798,15 @@
         "HierarchyProposal::qpe_binding",
         "qleisli sized check/run/sample/emit-proposal",
         "HierarchyProposal::validate_initialization_moves_native",
-        "sized check/run/sample through native-only reports"
+        "sized check/run/sample through native-only reports",
+        "ElaboratedProgram::lower_raw",
+        "RawSourceProposal::validate_source_steps"
       ],
-      "status": "compatible default plus explicit selected native route; full authority transfer remains v0.5.0",
+      "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
       "request": "Original module bytes, selected public entry and complete natural/operation bindings",
-      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence.",
-      "encoding": "Explicit Q<Bit>/Q<Bits<n>>, CBit/CBits and arity-preserving tuples; zero-width owners remain linear; actual calls/repeats/owner frames preserved",
-      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile",
+      "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite ordinary proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration.",
+      "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite ordinary Unit/Bit/product Raw adapter; no implicit same-width coercions",
+      "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile; ordinary Raw proposals support Unit/Bit/products and calls only; mixed execution and explicit runtime invocation remain unfinished",
       "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent",
       "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts.",
       "replacement": [

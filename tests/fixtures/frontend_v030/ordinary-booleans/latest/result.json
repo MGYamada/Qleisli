@@ -1,0 +1,80 @@
+{
+  "base_commit": "10553a9f94f6fd6a4555961244e0e9be41154f8f",
+  "driver_sha256": "21f9614fac4ee9639b845d31190848d60dfd64ccde74d2a6c2760a3ec86dc980",
+  "commands": [
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.02092899999115616,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.021064915985334665,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.24097949999850243,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "ordinary_booleans",
+        "--test",
+        "runtime_parameter_patterns",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "frontend_types",
+        "--test",
+        "tuple_shapes",
+        "--test",
+        "parser",
+        "--test",
+        "sized_declarations",
+        "--test",
+        "source_judgments",
+        "--test",
+        "specification_boundaries"
+      ],
+      "exit": 101,
+      "elapsed_seconds": 6.851491832989268,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    }
+  ],
+  "source_manifest_sha256": "154ddcfd78a33f4186fe27d71c3ea100ac6e430b0dfb4b3e6d7f631e7638c688",
+  "source_count": 254,
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing checker; no new Lean build/audit/replay",
+  "target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "build_jobs": 2,
+  "free_bytes_before": 26337280000,
+  "free_bytes_after": 26173440000,
+  "scope": "Nine focused integration targets, one native-valid mutation replay regression, all-target Clippy and formatting; not all-target runtime or release validation"
+}

@@ -1,0 +1,2 @@
+    Checking qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `dev` profile [unoptimized] target(s) in 4.68s

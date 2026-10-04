@@ -1,0 +1,33 @@
+{
+  "tool_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+  "commands": [
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit": 0,
+      "stdout": "mdbook v0.5.4\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit": 0,
+      "stdout": "",
+      "stderr": " INFO Book building has started\n INFO Running the html backend\n INFO HTML book written to `/Users/masa/git/Qleisli/docs/../target/mdbook`\n"
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit": 0,
+      "stdout": "rendered book: 20 HTML files, 741 local links, 266 anchors checked\n",
+      "stderr": ""
+    }
+  ]
+}

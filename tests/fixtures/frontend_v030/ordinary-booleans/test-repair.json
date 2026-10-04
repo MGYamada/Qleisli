@@ -1,0 +1,36 @@
+{
+  "format": "qleisli.ordinary-boolean-test-repair",
+  "version": 1,
+  "before": {
+    "path": "tests/fixtures/frontend_v030/ordinary-booleans/first-test.rs.txt",
+    "sha256": "a50ae3f9b5cd3ece6f46c7f21e5e7ce43ee12296a728a69782610d074bd59ca2"
+  },
+  "after": {
+    "path": "tests/ordinary_booleans.rs",
+    "sha256": "3822852bfa431c6316dce81992d614dd1927a70b11314b5efaa73db182871f1b"
+  },
+  "patch": {
+    "path": "tests/fixtures/frontend_v030/ordinary-booleans/test-repair.patch",
+    "sha256": "6d2a683a655b80763e66bedd99c5a043ce32fa4691ce5edae7cad5d459f71a4e"
+  },
+  "reason": "First actual run reported 4 passes and 4 failures: three failed external selection of private test entries, and one expected Boolean type rejection before the existing fold-capture ownership rejection. Production code is unchanged by these repairs.",
+  "repairs": [
+    {
+      "test": "all_four_truth_rows_match_independent_constants_in_both_profiles",
+      "change": "Explicitly publish the main wrapper selected through the public sized instantiate API."
+    },
+    {
+      "test": "ordinary_aliases_copy_drop_and_exact_unit_products_survive_raw_flattening",
+      "change": "Explicitly publish both main wrappers selected through the public sized instantiate API."
+    },
+    {
+      "test": "repeated_shared_calls_keep_each_invocations_classical_values",
+      "change": "Explicitly publish the main wrapper selected through the public sized instantiate API."
+    },
+    {
+      "test": "unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked",
+      "change": "Preserve the quantum capture source and assert its earlier ownership failure; add a distinct zero-iteration body using not () to exercise generic Boolean type rejection."
+    }
+  ],
+  "validation": "Rustfmt and diff check only; repaired tests have not been executed by this agent."
+}

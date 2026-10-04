@@ -738,73 +738,60 @@ impl Lowerer<'_, '_> {
                 self.sealed(module, expr.span, "std::quantum", "split", vec![joined])
             }
             ExprKind::Unit => Ok(Value::Unit),
-            ExprKind::Bit(value) => {
+            ExprKind::Bit(_) | ExprKind::Not(_) | ExprKind::And(..) | ExprKind::Xor(..) => {
+                use crate::frontend::ordinary::{self, Boolean, OperandFailure};
+                let (operation, operands): (_, Vec<&Expr>) = match &expr.kind {
+                    ExprKind::Bit(value) => (Boolean::Constant(*value), vec![]),
+                    ExprKind::Not(input) => (Boolean::Not, vec![input]),
+                    ExprKind::And(left, right) => (Boolean::And, vec![left, right]),
+                    ExprKind::Xor(left, right) => (Boolean::Xor, vec![left, right]),
+                    _ => unreachable!("matched Boolean source expression"),
+                };
+                let values = ordinary::evaluate(
+                    operation,
+                    operands.into_iter(),
+                    &mut (&mut *self, &mut *env),
+                    |(lowerer, env), operand| lowerer.expr(module, operand, env),
+                    Value::ty,
+                    |(lowerer, _), failure| {
+                        let message = match failure {
+                            OperandFailure::Arity { expected, actual } => format!(
+                                "Boolean operation requires {expected} operands, found {actual}"
+                            ),
+                            OperandFailure::Type(ty) if operation == Boolean::Not => format!(
+                                "not requires a Bit operand: expected `Bit`, found `{}`",
+                                ty.runtime()
+                            ),
+                            OperandFailure::Type(ty) => format!(
+                                "and/xor require Bit operands: expected `Bit`, found `{}`",
+                                ty.runtime()
+                            ),
+                        };
+                        lowerer.error(module, expr.span, ErrorCode::TypeMismatch, message)
+                    },
+                )?;
+                let inputs = values
+                    .into_iter()
+                    .map(|value| match value {
+                        Value::Classical(id) => Ok(id),
+                        _ => Err(self.error(
+                            module,
+                            expr.span,
+                            ErrorCode::InvalidIr,
+                            "Boolean operand lost its classical representation",
+                        )),
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
                 let output = self.classical();
-                self.operations.push(RawOp::ClassicalConst {
-                    value: *value,
-                    output,
-                });
-                Ok(Value::Classical(output))
-            }
-            ExprKind::Not(input) => {
-                let value = self.expr(module, input, env)?;
-                let Value::Classical(input) = value else {
-                    return Err(self.error(
+                let operation = ordinary::emit(operation, &inputs, output).ok_or_else(|| {
+                    self.error(
                         module,
                         expr.span,
-                        ErrorCode::TypeMismatch,
-                        format!(
-                            "not requires a Bit operand: expected `Bit`, found `{}`",
-                            value.ty().runtime()
-                        ),
-                    ));
-                };
-                let output = self.classical();
-                self.operations.push(RawOp::ClassicalNot { input, output });
-                Ok(Value::Classical(output))
-            }
-            ExprKind::And(left, right) | ExprKind::Xor(left, right) => {
-                let value = self.expr(module, left, env)?;
-                let Value::Classical(left) = value else {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::TypeMismatch,
-                        format!(
-                            "and/xor require Bit operands: expected `Bit`, found `{}`",
-                            value.ty().runtime()
-                        ),
-                    ));
-                };
-                // Both operands are evaluated, left to right. In particular,
-                // false AND must still execute effects in its right operand.
-                let value = self.expr(module, right, env)?;
-                let Value::Classical(right) = value else {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::TypeMismatch,
-                        format!(
-                            "and/xor require Bit operands: expected `Bit`, found `{}`",
-                            value.ty().runtime()
-                        ),
-                    ));
-                };
-                let output = self.classical();
-                self.operations
-                    .push(if matches!(expr.kind, ExprKind::And(..)) {
-                        RawOp::ClassicalAnd {
-                            left,
-                            right,
-                            output,
-                        }
-                    } else {
-                        RawOp::ClassicalXor {
-                            left,
-                            right,
-                            output,
-                        }
-                    });
+                        ErrorCode::InvalidIr,
+                        "Boolean operand count changed during lowering",
+                    )
+                })?;
+                self.operations.push(operation);
                 Ok(Value::Classical(output))
             }
             ExprKind::Name(name) => {
