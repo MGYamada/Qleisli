@@ -85,9 +85,7 @@ def unique_strings(value):
 def migrated_sources(corpus, paths, expected):
     """Advance current identities without rewriting historical authoring records."""
     require(unique_strings(paths), "invalid/duplicate source migration")
-    resolved = {local(corpus, p) for p in paths}
-    require(len(resolved) == len(paths), "duplicate source migration path")
-    require(resolved ==
+    require({local(corpus, p) for p in paths} ==
             {p.resolve() for p in (corpus / "migrations").rglob("migration.json")},
             "unrecorded source migration")
     current = dict(expected)
@@ -121,8 +119,6 @@ def migrated_sources(corpus, paths, expected):
         observations = data["observations"]
         require(unique_strings(observations) and observations,
                 "missing/duplicate migration observations")
-        require(len({local(path.parent, name) for name in observations}) == len(observations),
-                "duplicate migration observation path")
         for name in observations:
             observation = migration_json(local(path.parent, name))
             require(isinstance(observation, dict) and observation.get("sources") ==

@@ -1,0 +1,18 @@
+{
+  "source_commit": "18f55693e31585dde67eeddeb064e77c138f9a57",
+  "snapshot": "/private/tmp/qleisli-predicate-corpus-fixed",
+  "binary": "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+  "binary_sha256": "58a68f1f89bac25e221d5e392587560c994144df359360b1073150a2d5ab1959",
+  "kernel": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "driver_sha256": "bca4490fd1f7b0ae9316a5bcdcd5c1d6a88fa3052df18ff23f23f712e39840ad",
+  "cases": [
+    "quantum_katas/grover2",
+    "qualtran/and_phase",
+    "qualtran/reflection2",
+    "pennylane_demos/vqe_excitation",
+    "pennylane_demos/phase_lock",
+    "quantum_katas/deutsch_jozsa3"
+  ],
+  "scope": "Existing affected corpus cases, non-exhaustive semantic probes; no new maximum case."
+}

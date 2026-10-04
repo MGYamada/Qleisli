@@ -1,0 +1,81 @@
+{
+  "format": 1,
+  "status": "passed",
+  "failures": [],
+  "cases": [
+    {
+      "id": "quantum_katas/deutsch_jozsa3",
+      "semantic_probes": 52,
+      "shipped_main": "passed",
+      "host_observables": {}
+    }
+  ],
+  "semantic_faults": [
+    {
+      "id": "majority_replaced_by_parity",
+      "reference": "quantum_katas/deutsch_jozsa3",
+      "typecheck": "passed",
+      "semantic_mismatch": "quantum_katas/deutsch_jozsa3 column 0: (False, True, False): 0 != 0.25"
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    },
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "effect",
+      "exit_code": 1
+    }
+  ],
+  "created_utc": "2026-10-04T15:59:09.134387+00:00",
+  "exhaustive_unitary_entries": false,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "manifest_sha256": "ef40157fef11b3cc84fccdefc25884f8cb48227962de4d8d1d6c143a9004669d",
+  "compiler_sha256": "58a68f1f89bac25e221d5e392587560c994144df359360b1073150a2d5ab1959",
+  "oracle_script_sha256": "bca4490fd1f7b0ae9316a5bcdcd5c1d6a88fa3052df18ff23f23f712e39840ad",
+  "source_sha256": {
+    "quantum_katas/deutsch_jozsa3/kernel.qli": "f3235adb5697826c472fb01b251494daee7c9b8bb524a53b3cdb2cc931afec91",
+    "quantum_katas/deutsch_jozsa3/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+    "semantic_faults/majority_replaced_by_parity/kernel.qli": "c00074dfe4ae380db2a86f633092afcc2d35fb5d8d14f19753b7305b58484d0d",
+    "semantic_faults/majority_replaced_by_parity/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+    "negative/duplicate_owner/main.qli": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
+    "negative/measured_owner/main.qli": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
+    "negative/measurement_adjoint/main.qli": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
+    "negative/dirty_auxiliary/main.qli": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901"
+  },
+  "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+  "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+  "semantic_fault_source_sha256": {
+    "semantic_faults/majority_replaced_by_parity/kernel.qli": "c00074dfe4ae380db2a86f633092afcc2d35fb5d8d14f19753b7305b58484d0d",
+    "semantic_faults/majority_replaced_by_parity/main.qli": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff"
+  },
+  "expected_ids": {
+    "cases": [
+      "quantum_katas/deutsch_jozsa3"
+    ],
+    "semantic_faults": [
+      "majority_replaced_by_parity"
+    ],
+    "negative_cases": [
+      "duplicate_owner",
+      "measured_owner",
+      "measurement_adjoint",
+      "dirty_auxiliary"
+    ]
+  },
+  "project_version": "0.3.0-alpha"
+}

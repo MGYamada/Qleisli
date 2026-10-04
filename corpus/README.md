@@ -130,6 +130,15 @@ Without `--exhaustive`, execution uses all computational inputs plus selected
 interference entries; it is a smaller regression run, not the full matrix check.
 A single case can be selected with `--case qualtran/add2`.
 
+Language migrations retain the original authoring sessions and observations.
+The ordered `source_migrations` entries in [manifest.json](manifest.json)
+continue those identities through complete project snapshots, predecessor and
+replacement hashes, and observed checks bound to the replacement sources.
+The validator rejects missing migrations, stale predecessors and incomplete or
+contradictory observations. These records preserve provenance; the semantic
+runner still checks the translated programs independently. The first such
+record is the [explicit predicate-domain migration](migrations/predicate-domain-v030/README.md).
+
 Original Q#/Python files under `upstream/` are frozen, unmodified reference
 material. They are not QLI inputs and are never executed by the harness.
 Only source, metadata, licenses and upstream readmes/notices were copied; no

@@ -3,6 +3,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import json
+import hashlib
 import math
 from pathlib import Path
 import shutil
@@ -152,6 +153,159 @@ class IntakeTests(unittest.TestCase):
         (self.root / "qualtran/equals2/extra.qli").write_text("// unrecorded module\n")
         with self.assertRaisesRegex(ValueError, "missing authoring snapshots"):
             corpus.check_manifest(self.root)
+
+
+class MigrationTests(unittest.TestCase):
+    """Small synthetic records test chaining, not genuine compiler acceptance."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.project = "qualtran/example"
+        self.before = {self.project + "/" + name: self.digest("before " + name)
+                       for name in ("main.qli", "kernel.qli")}
+        self.paths = []
+
+    @staticmethod
+    def digest(text):
+        return hashlib.sha256(text.encode()).hexdigest()
+
+    def write(self, path, value):
+        path.write_text(json.dumps(value))
+
+    def migration(self, name, before):
+        root = self.root / "migrations" / name
+        root.mkdir(parents=True)
+        files = {}
+        for rel, digest in before.items():
+            path = root / "sources" / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(name + " " + rel)
+            files[rel] = {"before": digest, "after": corpus.sha256(path)}
+        after = {rel: r["after"] for rel, r in files.items()}
+        self.write(root / "checks.json", {
+            "sources": after,
+            "results": [{"project": self.project, "argv": ["synthetic-check"],
+                         "cwd": str(root), "exit_code": 0, "stderr": "",
+                         "stdout": json.dumps({"outcome": "ok"})}],
+        })
+        self.write(root / "migration.json", {
+            "format": 1, "kind": "explicit-source-migration", "issue": 25,
+            "project_version": "0.3.0-alpha", "created_utc": "2026-10-05T00:00:00Z",
+            "context": "Synthetic validator regression, not compiler evidence.",
+            "projects": [self.project], "files": files, "observations": ["checks.json"],
+        })
+        self.paths.append(str((root / "migration.json").relative_to(self.root)))
+        return root, after
+
+    def check(self):
+        return corpus.migrated_sources(self.root, self.paths, self.before)
+
+    def mutate(self, path, action):
+        data = json.loads(path.read_text())
+        action(data)
+        self.write(path, data)
+
+    def test_ordered_successive_migrations_preserve_predecessors(self):
+        _, after = self.migration("first", self.before)
+        _, final = self.migration("second", after)
+        self.assertEqual(self.check(), final)
+        self.paths.reverse()
+        with self.assertRaisesRegex(ValueError, "stale migration predecessor"):
+            self.check()
+
+    def test_removed_or_duplicate_migration_rejects(self):
+        self.migration("first", self.before)
+        original = list(self.paths)
+        self.paths = []
+        with self.assertRaisesRegex(ValueError, "unrecorded source migration"):
+            self.check()
+        self.paths = original * 2
+        with self.assertRaisesRegex(ValueError, "duplicate source migration"):
+            self.check()
+
+    def test_stale_predecessor_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: next(iter(m["files"].values())).update(before="0" * 64))
+        with self.assertRaisesRegex(ValueError, "stale migration predecessor"):
+            self.check()
+
+    def test_alias_paths_cannot_duplicate_migrations_or_observations(self):
+        root, _ = self.migration("first", self.before)
+        self.paths.append("migrations/first/../first/migration.json")
+        with self.assertRaisesRegex(ValueError, "duplicate source migration path"):
+            self.check()
+        self.paths.pop()
+        self.mutate(root / "migration.json", lambda m: m.update(observations=["checks.json", "./checks.json"]))
+        with self.assertRaisesRegex(ValueError, "duplicate migration observation path"):
+            self.check()
+
+    def test_missing_project_file_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: m["files"].pop(self.project + "/kernel.qli"))
+        with self.assertRaisesRegex(ValueError, "incomplete migration project snapshots"):
+            self.check()
+
+    def test_unknown_project_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: m.update(projects=["unknown/project"]))
+        with self.assertRaisesRegex(ValueError, "unknown/duplicate migrated project"):
+            self.check()
+
+    def test_changed_snapshot_rejects(self):
+        root, _ = self.migration("first", self.before)
+        (root / "sources" / self.project / "kernel.qli").write_text("altered")
+        with self.assertRaisesRegex(ValueError, "migration snapshot changed"):
+            self.check()
+
+    def test_extra_snapshot_rejects(self):
+        root, _ = self.migration("first", self.before)
+        (root / "sources" / self.project / "extra.qli").write_text("extra")
+        with self.assertRaisesRegex(ValueError, "migration snapshot inventory changed"):
+            self.check()
+
+    def test_missing_observations_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: m.update(observations=[]))
+        with self.assertRaisesRegex(ValueError, "missing/duplicate migration observations"):
+            self.check()
+
+    def test_stale_observation_identity_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m.update(sources=self.before))
+        with self.assertRaisesRegex(ValueError, "observation source identity mismatch"):
+            self.check()
+
+    def test_incomplete_observation_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m.update(results=[]))
+        with self.assertRaisesRegex(ValueError, "incomplete migration observations"):
+            self.check()
+
+    def test_missing_command_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m["results"][0].pop("argv"))
+        with self.assertRaisesRegex(ValueError, "missing migration command observation"):
+            self.check()
+
+    def test_contradictory_observation_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m["results"][0].update(exit_code=1))
+        with self.assertRaisesRegex(ValueError, "contradictory migration observation"):
+            self.check()
+
+    def test_duplicate_json_fields_rejects(self):
+        root, _ = self.migration("first", self.before)
+        path = root / "migration.json"
+        path.write_text(path.read_text()[:-1] + ', "format": 1}')
+        with self.assertRaisesRegex(ValueError, "duplicate migration JSON field"):
+            self.check()
+
+    def test_malformed_path_list_rejects(self):
+        self.paths = [{}]
+        with self.assertRaisesRegex(ValueError, "invalid/duplicate source migration"):
+            self.check()
 
 
 class OracleTests(unittest.TestCase):

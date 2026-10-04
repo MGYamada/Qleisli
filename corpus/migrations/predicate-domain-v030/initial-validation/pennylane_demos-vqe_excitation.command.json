@@ -1,0 +1,17 @@
+{
+  "case": "pennylane_demos/vqe_excitation",
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+    "--case",
+    "pennylane_demos/vqe_excitation",
+    "--report",
+    "/private/tmp/qleisli-predicate-corpus-replay/pennylane_demos-vqe_excitation.json"
+  ],
+  "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+  "exit_code": 1,
+  "seconds": 0.1468787079793401,
+  "stdout": "pennylane_demos-vqe_excitation.stdout",
+  "stderr": "pennylane_demos-vqe_excitation.stderr"
+}

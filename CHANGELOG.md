@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain immutable corpus authoring records across source migrations, checking
+  ordered predecessor hashes, complete project snapshots and source-bound
+  observations. Record the six predicate-domain migrations and their original
+  provenance-check failures without rewriting earlier trials (#25).
 - Prove exchange of original hierarchy entry bodies with their distinct routed
   control/target frames, same-artifact typing, fresh wiring summaries and
   computed two-sided inverses. Retain exact provider and evaluation premises,
