@@ -285,19 +285,12 @@ class SyntheticRelease(unittest.TestCase):
             checker.record_constitution(self.root,Path(self.temp.name)/'changed.json',self.env)
 
     def cli(self, *args, env=None):
-        # Preserve OS/tool lookup, but supply trust context only from this test.
-        # An empty override must not re-import the caller's hosted CI context.
-        actual={key:value for key,value in os.environ.items() if not key.startswith(('GITHUB_','RELEASE_'))}
-        actual.update(self.env if env is None else env)
+        actual=dict(os.environ); actual.update(self.env if env is None else env)
         return subprocess.run([sys.executable,str(SCRIPT),'--root',str(self.root),*args],env=actual,capture_output=True,text=True)
 
     def test_actual_cli_rejects_missing_context_and_unreviewed_requirements(self):
-        # Reproduce ambient PR-job variables even when this suite runs locally.
-        ambient=dict(self.env,GITHUB_EVENT_NAME='pull_request',GITHUB_REF='refs/pull/1/merge',
-                     GITHUB_JOB='check-docs',RELEASE_TRUSTED_BASE=self.base)
-        with patch.dict(os.environ,ambient):
-            result=self.cli('--base-ref',self.base,env={})
-        self.assertNotEqual(result.returncode,0); self.assertIn('trusted same-run',result.stderr)
+        env={key:value for key,value in os.environ.items() if not key.startswith(('GITHUB_','RELEASE_'))}
+        result=self.cli('--base-ref',self.base,env=env); self.assertNotEqual(result.returncode,0); self.assertIn('trusted same-run',result.stderr)
         self.git('rm',checker.REQUIREMENTS); empty=self.commit(); self.head=empty; self.env['GITHUB_SHA']=empty
         result=self.cli('--base-ref',empty); self.assertNotEqual(result.returncode,0); self.assertIn('missing reviewed release/requirements.json',result.stderr)
 

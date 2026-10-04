@@ -1,0 +1,40 @@
+2026-10-04T16:45:54.4313442Z .E.E
+2026-10-04T16:45:54.4313708Z ======================================================================
+2026-10-04T16:45:54.4314291Z ERROR: test_reference_openqasm_parser (__main__.ExternalFormats.test_reference_openqasm_parser)
+2026-10-04T16:45:54.4314720Z ----------------------------------------------------------------------
+2026-10-04T16:45:54.4315090Z Traceback (most recent call last):
+2026-10-04T16:45:54.4315420Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_interop_external.py", line 55, in test_reference_openqasm_parser
+2026-10-04T16:45:54.4315996Z     self.check_qasm(self.emit("qli-to-qasm", FIXTURES / "terminal"), ["h", "cx"], [1, 0])
+2026-10-04T16:45:54.4316359Z                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:45:54.4316746Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_interop_external.py", line 32, in emit
+2026-10-04T16:45:54.4317134Z     return run(OPTIONS.example, mode, str(path))
+2026-10-04T16:45:54.4317389Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:45:54.4317774Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_interop_external.py", line 27, in run
+2026-10-04T16:45:54.4318228Z     return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+2026-10-04T16:45:54.4318708Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:45:54.4319020Z   File "/usr/lib/python3.12/subprocess.py", line 571, in run
+2026-10-04T16:45:54.4319321Z     raise CalledProcessError(retcode, process.args,
+2026-10-04T16:45:54.4319996Z subprocess.CalledProcessError: Command '('target/debug/examples/interop', 'qli-to-qasm', '/home/runner/work/Qleisli/Qleisli/tests/fixtures/interop/terminal')' returned non-zero exit status 1.
+2026-10-04T16:45:54.4320906Z 
+2026-10-04T16:45:54.4321002Z ======================================================================
+2026-10-04T16:45:54.4321420Z ERROR: test_standard_llvm_and_qir_structure (__main__.ExternalFormats.test_standard_llvm_and_qir_structure)
+2026-10-04T16:45:54.4321864Z ----------------------------------------------------------------------
+2026-10-04T16:45:54.4322137Z Traceback (most recent call last):
+2026-10-04T16:45:54.4322421Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_interop_external.py", line 95, in test_standard_llvm_and_qir_structure
+2026-10-04T16:45:54.4322760Z     self.check_qir(self.emit("qli-to-qir", FIXTURES / "terminal"), 2, 2)
+2026-10-04T16:45:54.4322962Z                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:45:54.4323199Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_interop_external.py", line 32, in emit
+2026-10-04T16:45:54.4323443Z     return run(OPTIONS.example, mode, str(path))
+2026-10-04T16:45:54.4323604Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:45:54.4323823Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_interop_external.py", line 27, in run
+2026-10-04T16:45:54.4324113Z     return subprocess.run(args, check=True, capture_output=True, text=True).stdout
+2026-10-04T16:45:54.4324337Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-04T16:45:54.4324529Z   File "/usr/lib/python3.12/subprocess.py", line 571, in run
+2026-10-04T16:45:54.4324718Z     raise CalledProcessError(retcode, process.args,
+2026-10-04T16:45:54.4325323Z subprocess.CalledProcessError: Command '('target/debug/examples/interop', 'qli-to-qir', '/home/runner/work/Qleisli/Qleisli/tests/fixtures/interop/terminal')' returned non-zero exit status 1.
+2026-10-04T16:45:54.4325675Z 
+2026-10-04T16:45:54.4325757Z ----------------------------------------------------------------------
+2026-10-04T16:45:54.4325933Z Ran 4 tests in 69.760s
+2026-10-04T16:45:54.4326008Z 
+2026-10-04T16:45:54.4326056Z FAILED (errors=2)
+2026-10-04T16:45:54.4519902Z ##[error]Process completed with exit code 1.

@@ -86,3 +86,6 @@ tests/fixtures/frontend_v030/ordinary-types-independent/isolated-final/tests.std
 tests/fixtures/frontend_v030/ordinary-types-independent/test-first/stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-current-rejection/stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/ordinary-types-independent/unit-pattern-fixed/stdout.txt -text -whitespace
+# Hosted log excerpts preserve timestamped blank lines exactly.
+tests/fixtures/review_v030alpha/hosted-canonical-integration/interop-failure.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-canonical-integration/release-test-failure.txt -text -whitespace

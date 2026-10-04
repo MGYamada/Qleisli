@@ -1,0 +1,38 @@
+{
+  "format": "qleisli.fixture-files",
+  "version": 1,
+  "files": {
+    "README.md": {
+      "bytes": 2688,
+      "sha256": "5b96dcfdeba4ae9e830a2e530510c78a0249bd13def316b9245bee69a44552bc"
+    },
+    "after.json": {
+      "bytes": 1133,
+      "sha256": "f6baab6fd0b1a221a16d5575c32941d125180e7a2ae7b945b4a1e15c7f4e43d2"
+    },
+    "after.stderr": {
+      "bytes": 3308,
+      "sha256": "dc520a0024663584b3cccde629267db516f64ad8ffdb47511d9dc5bbc53fb76d"
+    },
+    "after.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "before-test_check_release_ready.py.txt": {
+      "bytes": 22194,
+      "sha256": "fa3c9105fb1554247852055d2dd6bf6fc4453120e52035c6052f77214cfc4695"
+    },
+    "before.json": {
+      "bytes": 1343,
+      "sha256": "2769b4397759f93e034d1774c3d1b48fb45086fb097d132117350d0495e6124c"
+    },
+    "before.stderr": {
+      "bytes": 1203,
+      "sha256": "ad524e868d6b634ee1d83eb961a6939cc36e61444aef63ce8d71841ee2b36561"
+    },
+    "before.stdout": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
