@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Keep the native round-trip fixture recorder warning-free under the actual
+  Rust 1.85 Clippy toolchain while preserving its emitted proposal bytes.
 - Separate append-only admitted guarantee identities from current evidence in
   ledger schema v4. Require explicit admission registrations, exact verifier
   coverage, trusted-base continuity and stable snapshots during replay; retain

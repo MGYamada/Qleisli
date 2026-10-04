@@ -21,7 +21,6 @@ use qleisli::ir::{
     QuantumPort, RawOp, RawProgram, SingleGate, TokenId, WireId,
 };
 use std::collections::{BTreeMap, BTreeSet};
-use std::fmt::Write as _;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
@@ -384,10 +383,10 @@ fn certified(receipt: &Arc<FunctionEvidence>, output: u32) -> RawOp {
 fn record_case(name: &str, bytes: &[u8], counts: &BTreeMap<&'static str, usize>) {
     // The fixture recorder preserves these exact accepted proposals separately
     // from the immutable 799-pair baseline. The gate itself always runs in CI.
-    let mut hex = String::with_capacity(bytes.len() * 2);
-    for byte in bytes {
-        write!(hex, "{byte:02x}").expect("writing to String cannot fail");
-    }
+    let hex = bytes
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
     println!("ROUNDTRIP_ARTIFACT\t{name}\t{hex}");
     println!("ROUNDTRIP_COVERAGE\t{name}\t{counts:?}");
 }
