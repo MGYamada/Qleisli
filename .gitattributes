@@ -76,3 +76,5 @@ tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/legacy
 tests/fixtures/frontend_v030/predicate-domain-independent/baseline-action/noninjective_and_and_constant_predicates_remain_legal_in_both_forms.stdout -text -whitespace
 tests/fixtures/frontend_v030/predicate-domain-independent/first-current/test.stdout -text -whitespace
 tests/fixtures/frontend_v030/predicate-domain/validation/remaining-focused-tests.stdout.txt -text -whitespace
+tests/fixtures/constitution_v030/routed-control-commutation/ArtifactData.lean.txt -text -whitespace
+tests/fixtures/constitution_v030/routed-control-commutation/contract.md -text -whitespace

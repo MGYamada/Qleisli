@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prove exchange of original hierarchy entry bodies with their distinct routed
+  control/target frames, same-artifact typing, fresh wiring summaries and
+  computed two-sided inverses. Retain exact provider and evaluation premises,
+  arbitrary reference amplitudes, and valid noncommuting/output-route
+  counterexamples; source access rules remain separate (#303).
 - Require one explicit, exact basis-domain parameter for both forms of
   `with_computed`; reject nullary and multi-parameter predicates without
   implicit tuple packing. Preserve ordinary call arity, noninjective predicates,

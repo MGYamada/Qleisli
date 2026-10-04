@@ -1,0 +1,14 @@
+{
+  "argv": [
+    "cargo",
+    "build",
+    "--offline",
+    "--lib"
+  ],
+  "cwd": "/private/tmp/qleisli-routed-control-replay-20261005",
+  "started_at": "2026-10-04T15:31:57.450380+00:00",
+  "elapsed_seconds": 8.393809583038092,
+  "exit_code": 0,
+  "stdout": "rust-build.stdout.txt",
+  "stderr": "rust-build.stderr.txt"
+}

@@ -372,7 +372,7 @@ decision packet and must update both lowering profiles together.
 | Scope exit | Every local linear owner is returned or explicitly consumed by an admitted operation. Lexical identities prevent shadowing from reviving an old owner. |
 | Zero-width owners | Same move/use/return rules as other owners; zero physical width grants no discard, copy or phase-erasure rule. |
 
-Two local proof components support the access work in
+Local proof components support the access work in
 [#303](https://github.com/MGYamada/Qleisli/issues/303). The protected-phase
 theorem exchanges adjacent literal phases in their original physical action.
 `Qleisli.SharedControlCommutation` additionally proves exact matrix equality
@@ -385,6 +385,21 @@ arbitrary owner/axis routing, or authorize source reordering. Width premises
 do not discharge `Q<Unit>` ownership, and neither helper proof is an additional
 constitutional guarantee. The bounded examples and proof records are retained
 in `tests/fixtures/constitution_v030/shared-control-commutation/`.
+
+`Qleisli.RoutedControlCommutation` extends this connection to two original
+hierarchy entry bodies with distinct intermediate routes. Its explicit
+premises bind the original definition records, same-artifact node typing,
+fresh wiring summaries, computed two-sided inverse permutations, and provider
+evaluations. Literal coordinate decompositions identify a common control,
+disjoint ordered targets and untouched factors. The resulting exact matrix
+equality preserves arbitrary external-reference amplitudes. Typing alone does
+not establish those coordinate decompositions or matching provider meanings.
+The emitted-source examples in
+`tests/fixtures/constitution_v030/routed-control-commutation/` distinguish the
+conditional Lean theorem from runtime checks and bounded matrix observations.
+Their zero-axis sources use `Q<Bits<0>>`, not an identification with `Q<Unit>`.
+The source-footprint, general lowering, and acceptance/work-preservation
+obligations remain open; this proof adds no guarantee admission.
 
 Diagnostics must distinguish syntax, unresolved/ambiguous name, kind or stage,
 type/tree/size mismatch, missing capability, ownership, effect, unsupported

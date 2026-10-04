@@ -2659,7 +2659,7 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "16bace47612e801e1bea12653b4874c659bb008e4c1355cf555be6ed023bf770",
+      "sha256": "e17337ddfb483a61294092afa29462aab6ff9d958a1cd2417116f30edb706ee8",
       "group": "raw-core",
       "surface": null
     },
@@ -2763,6 +2763,12 @@
       "path": "lean/Qleisli/RawStreamedInstrument.lean",
       "sha256": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
       "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RoutedControlCommutation.lean",
+      "sha256": "a93c475ed72105bdf559b355367c44fa1bc8f8e482189156d7c0619c39eddf0a",
+      "group": "hierarchy",
       "surface": null
     },
     {
