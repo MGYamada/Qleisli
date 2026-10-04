@@ -1,0 +1,91 @@
+{
+  "observations": [
+    {
+      "case": "aliased_owner",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "auxiliary_hh",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "basis_type_parameter",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "controlled_is_not_apply",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "dropped_owner",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "meaning_pair_predicate",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "missing_adjoint",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "missing_import",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "product_association",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "sealed_provider",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "spent_owner",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "case": "static_nat",
+      "before_exit": 1,
+      "after_exit": 1,
+      "stdout_equal": false,
+      "stderr_equal": true
+    }
+  ],
+  "unchanged": 11,
+  "intended_diagnostic_changes": 1,
+  "acceptance_changes": 0
+}

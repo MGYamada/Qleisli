@@ -58,3 +58,4 @@ tests/fixtures/frontend_v030/shared-resolution/unit-contract-clippy.log -text -w
 # Preserve independently captured mutation patches, including blank context lines.
 tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/*/evidence/*.patch -text -whitespace
 tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/*/final-evidence/*.patch -text -whitespace
+tests/fixtures/frontend_v030/profile-diagnostics/hosted/14.stdout -text -whitespace

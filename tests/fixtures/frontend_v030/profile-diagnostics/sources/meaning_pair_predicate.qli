@@ -1,0 +1,2 @@
+basis fn phase(a: Bit,b: Bit) -> (Bit,(Bit,Bit)) { (0,(0,a and b)) }
+meaning Mark11: (Bit,Bit) = phase_by(phase);

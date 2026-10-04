@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Align the retained finite-profile corpus regression with the shared parser:
+  static `Nat` parameters parse once, then reject as unsupported with the exact
+  parameter span. Preserve the original source and historical diagnostics (#32).
 - Check current-artifact continuity for the two admitted QLV1 guarantees against
   an elaborated historical baseline. Allow unchanged-meaning formatting and
   theorem proof maintenance, reject witness/decoder weakening and concurrent

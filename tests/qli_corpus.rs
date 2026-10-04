@@ -3,7 +3,9 @@
 mod common;
 
 use common::SourceRoot;
+use qleisli::frontend::ast::StaticParamKind;
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
+use qleisli::frontend::parser::parse_module;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -13,7 +15,8 @@ type Distribution = BTreeMap<Vec<bool>, f64>;
 const STATES: &[&str] = &["zero", "one", "plus", "minus", "y_plus", "y_minus", "magic"];
 const REJECTED: &[(&str, &str)] = &[
     ("basis_type_parameter", "parse"),
-    ("static_nat", "parse"),
+    // Shared syntax represents Nat; the finite lowering profile still rejects it.
+    ("static_nat", "unsupported"),
     ("meaning_pair_predicate", "type_mismatch"),
     ("product_association", "type_mismatch"),
     ("sealed_provider", "type_mismatch"),
@@ -264,6 +267,20 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
             root.0.join("main.qli").canonicalize().unwrap()
         );
         assert!(source.get(location.span.start..location.span.end).is_some());
+        if name == "static_nat" {
+            // Preserve the source limitation without requiring a second parser.
+            let module = parse_module(&source).unwrap();
+            let parameter = &module.decls[0].static_params[0];
+            assert_eq!(parameter.kind, StaticParamKind::Natural);
+            assert_eq!(parameter.name.text, "n");
+            assert_eq!(location.span, parameter.name.span);
+            assert_eq!((location.line, location.column), (1, 25));
+            assert_eq!(&source[location.span.start..location.span.end], "n");
+            assert_eq!(
+                error.message,
+                "finite profile does not support static Nat parameters"
+            );
+        }
         // Precise binding provenance is tested in authoring_ergonomics.rs.
     }
     distribution(

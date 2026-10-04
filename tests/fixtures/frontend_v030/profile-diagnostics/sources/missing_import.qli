@@ -1,0 +1,1 @@
+observe fn main() -> CBit { measure_z(init0()) }
