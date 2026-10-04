@@ -1,0 +1,2 @@
+unitary fn drop(q: Q<Unit>) -> Unit { () }
+observe fn main() -> Unit { () }

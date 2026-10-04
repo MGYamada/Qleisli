@@ -61,6 +61,7 @@ pub(super) fn env_size(env: &Env) -> usize {
 pub(super) enum Value {
     Unit,
     Classical(ClassicalId),
+    /// Retains the complete Q type, including zero-width basis owners.
     Quantum(Slot, Ty),
     Pair(Box<Value>, Box<Value>),
     Tuple(Vec<Value>),
@@ -78,10 +79,11 @@ impl Value {
                 Self::Tuple(fields) => {
                     pending.extend(fields.iter().map(|field| (field, depth + 1)))
                 }
-                Self::Quantum(_, basis) => {
-                    let basis = basis.tree_size();
-                    size.nodes += basis.nodes;
-                    size.depth = size.depth.max(depth + basis.depth);
+                Self::Quantum(_, ty) => {
+                    let ty = ty.tree_size();
+                    // The value node itself already counts the Q owner.
+                    size.nodes += ty.nodes - 1;
+                    size.depth = size.depth.max(depth + ty.depth - 1);
                 }
                 _ => {}
             }
@@ -91,21 +93,25 @@ impl Value {
 
     pub(super) fn ty(&self) -> Ty {
         match self {
-            Self::Unit => Ty::Unit,
-            Self::Classical(_) => Ty::CBit,
-            Self::Quantum(_, basis) => Ty::Q(Box::new(basis.clone())),
+            Self::Unit => Ty::unit(),
+            Self::Classical(_) => Ty::bit(),
+            Self::Quantum(_, ty) => ty.clone(),
             Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),
-            Self::Tuple(fields) => Ty::Tuple(fields.iter().map(Self::ty).collect()),
+            Self::Tuple(fields) => Ty::tuple(fields.iter().map(Self::ty).collect()),
         }
     }
 
     pub(super) fn owns_quantum(&self) -> bool {
         match self {
-            Self::Quantum(..) => true,
+            Self::Quantum(_, ty) => ty.linear(),
             Self::Pair(a, b) => a.owns_quantum() || b.owns_quantum(),
             Self::Tuple(fields) => fields.iter().any(Self::owns_quantum),
             _ => false,
         }
+    }
+
+    pub(super) fn quantum(slot: Slot, basis: Ty) -> Self {
+        Self::Quantum(slot, Ty::quantum(basis))
     }
 
     pub(super) fn pair(a: Self, b: Self) -> Self {

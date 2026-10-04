@@ -1,0 +1,208 @@
+{
+  "baseline": "44e23e4",
+  "scope": "22 syntax/profile cases; 12 source checks; eight proposals. Source check success uses the explicitly selected native kernel; proposal comparison alone grants no acceptance or source-preservation proof.",
+  "observations": [
+    {
+      "label": "basis-generic-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "basis-zero-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "basis-zero-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "exact-tuple-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "exact-tuple-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "legacy-bit-copy-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "legacy-bit-copy-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "no-implicit-prepare-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "no-implicit-prepare-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "no-implicit-read-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "no-implicit-read-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "observed-bit-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "observed-bit-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "ordinary-bit-identity-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "ordinary-bit-identity-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "ordinary-bit-zero-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "ordinary-bit-zero-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-nested-q-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-nested-q-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-unit-drop-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-unit-drop-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-unit-duplicate-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-unit-duplicate-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-unit-identity-check",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "quantum-unit-identity-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-bits-one-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-quantum-unit-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-runtime-in-size-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-symbolic-equality-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-target-data-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-unit-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-zero-as-unit-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-zero-drop-observer",
+      "equal_exit_stdout_stderr": true
+    },
+    {
+      "label": "sized-zero-identity-observer",
+      "equal_exit_stdout_stderr": true
+    }
+  ],
+  "proposals": [
+    {
+      "name": "shared",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51",
+      "after_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+    },
+    {
+      "name": "contextual-type-name",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51",
+      "after_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+    },
+    {
+      "name": "static-fold",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "6dd874961b67a4d273723183e043e75835de0a5ffded4b2c9daeeb06cc8365e3",
+      "after_sha256": "6dd874961b67a4d273723183e043e75835de0a5ffded4b2c9daeeb06cc8365e3"
+    },
+    {
+      "name": "empty-owner",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "01e914469e7b8a02992e706476b425452962dc5f871a026ba6362e447852502a",
+      "after_sha256": "01e914469e7b8a02992e706476b425452962dc5f871a026ba6362e447852502a"
+    },
+    {
+      "name": "h",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "0886d8473a30dcec073fa80978ad776c0b9bedcdc79c77a1a507735a414a5493",
+      "after_sha256": "0886d8473a30dcec073fa80978ad776c0b9bedcdc79c77a1a507735a414a5493"
+    },
+    {
+      "name": "pair",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "3dc68a3c1456584fe390709317137d0eaac97fd36766c4e9dd7d9e2618eb6e0b",
+      "after_sha256": "3dc68a3c1456584fe390709317137d0eaac97fd36766c4e9dd7d9e2618eb6e0b"
+    },
+    {
+      "name": "register-two",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "ded742ce716cd684d8a29ac9ace595ea4ca87135264adbb2f4caabcf1e743f35",
+      "after_sha256": "ded742ce716cd684d8a29ac9ace595ea4ca87135264adbb2f4caabcf1e743f35"
+    },
+    {
+      "name": "measured-one",
+      "before_exit": 0,
+      "after_exit": 0,
+      "equal_proposal_bytes": true,
+      "before_sha256": "867094908467ec83cefc3bf2d772dd61e31c34e2aaad759b1c9029455c8e1a75",
+      "after_sha256": "867094908467ec83cefc3bf2d772dd61e31c34e2aaad759b1c9029455c8e1a75"
+    }
+  ]
+}

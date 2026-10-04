@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"result does not match the function return type: expected `CBit`, found `Q<Bit>`","primary":{"path":"main.qli","start":37,"end":38,"line":1,"column":38},"related":[]}],"result":null}

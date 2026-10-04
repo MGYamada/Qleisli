@@ -1,0 +1,2 @@
+finite: ok declarations=1
+sized: error type 43..44 type or tuple/size shape mismatch: expected Tuple([]), found CBits(Linear { constant: 0, terms: {} })

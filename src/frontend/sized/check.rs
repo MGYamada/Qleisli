@@ -7,26 +7,14 @@ use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 
-#[derive(Clone, Debug, PartialEq, Eq)]
-enum Ty {
-    Bit,
-    Bits(Linear),
-    CBit,
-    CBits(Linear),
-    Tuple(Vec<Ty>),
-}
+use crate::frontend::types::Kind;
+type Ty = crate::frontend::types::Type<Linear>;
 impl Ty {
     fn cells(&self) -> usize {
-        1 + match self {
-            Self::Tuple(fields) => fields.iter().map(Self::cells).sum(),
-            _ => 0,
-        }
+        self.owner_shape_size().nodes
     }
     fn depth(&self) -> usize {
-        1 + match self {
-            Self::Tuple(fields) => fields.iter().map(Self::depth).max().unwrap_or(0),
-            _ => 0,
-        }
+        self.owner_shape_size().depth
     }
     fn bounded(&self, span: Span) -> Result<()> {
         if self.cells() > 4096 || self.depth() > 64 {
@@ -37,20 +25,6 @@ impl Ty {
             ))
         } else {
             Ok(())
-        }
-    }
-    fn linear(&self) -> bool {
-        match self {
-            Self::Bit | Self::Bits(_) => true,
-            Self::Tuple(xs) => xs.iter().any(Self::linear),
-            _ => false,
-        }
-    }
-    fn quantum_group(&self) -> bool {
-        match self {
-            Self::Bit | Self::Bits(_) => true,
-            Self::Tuple(fields) => !fields.is_empty() && fields.iter().all(Self::quantum_group),
-            Self::CBit | Self::CBits(_) => false,
         }
     }
 }
@@ -96,16 +70,20 @@ fn all_access() -> BTreeSet<String> {
 }
 fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
     Ok(match b {
-        Basis::Bit => Ty::Bit,
-        Basis::Bits(n) => Ty::Bits(linear::natural(n, &scope.naturals, &scope.context)?),
+        Basis::Bit => Ty::quantum(Ty::bit()),
+        Basis::Bits(n) => Ty::quantum(Ty::bits(linear::natural(
+            n,
+            &scope.naturals,
+            &scope.context,
+        )?)),
     })
 }
 fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
     let result = match t {
         Type::Quantum(b) => basis(b, scope)?,
-        Type::CBit => Ty::CBit,
-        Type::CBits(n) => Ty::CBits(linear::natural(n, &scope.naturals, &scope.context)?),
-        Type::Tuple(xs) => Ty::Tuple(
+        Type::CBit => Ty::bit(),
+        Type::CBits(n) => Ty::bits(linear::natural(n, &scope.naturals, &scope.context)?),
+        Type::Tuple(xs) => Ty::tuple(
             xs.iter()
                 .map(|x| ty(x, scope, span))
                 .collect::<Result<_>>()?,
@@ -115,20 +93,11 @@ fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
     Ok(result)
 }
 fn equivalent(a: &Ty, b: &Ty, context: &Context, span: Span) -> Result<bool> {
-    Ok(match (a, b) {
-        (Ty::Bit, Ty::Bit) | (Ty::CBit, Ty::CBit) => true,
-        (Ty::Bits(a), Ty::Bits(b)) | (Ty::CBits(a), Ty::CBits(b)) => {
+    a.equivalent_by(b, &mut |a, b| {
+        Ok(
             context.proves_le(a, b, span, "while checking type size equality")?
-                && context.proves_le(b, a, span, "while checking type size equality")?
-        }
-        (Ty::Tuple(a), Ty::Tuple(b)) if a.len() == b.len() => {
-            let mut equal = true;
-            for (a, b) in a.iter().zip(b) {
-                equal &= equivalent(a, b, context, span)?;
-            }
-            equal
-        }
-        _ => false,
+                && context.proves_le(b, a, span, "while checking type size equality")?,
+        )
     })
 }
 fn expect(actual: &Ty, expected: &Ty, context: &Context, span: Span) -> Result<()> {
@@ -138,7 +107,11 @@ fn expect(actual: &Ty, expected: &Ty, context: &Context, span: Span) -> Result<(
         Err(err(
             "type",
             span,
-            format!("type or tuple/size shape mismatch: expected {expected:?}, found {actual:?}"),
+            format!(
+                "type or tuple/size shape mismatch: expected {:?}, found {:?}",
+                expected.sized_debug(),
+                actual.sized_debug()
+            ),
         ))
     }
 }
@@ -278,14 +251,14 @@ fn bind_name(name: &str, t: Ty, span: Span, scope: &mut Scope) -> Result<()> {
 }
 fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
     fn go(pattern: &Pattern, t: Ty, scope: &mut Scope, names: &mut BTreeSet<String>) -> Result<()> {
-        match (pattern, t) {
-            (Pattern::Name(name, span), t) => {
+        match (pattern, t.kind) {
+            (Pattern::Name(name, span), kind) => {
                 if !names.insert(name.clone()) {
                     return Err(err("name", *span, "duplicate name in binding pattern"));
                 }
-                bind_name(name, t, *span, scope)
+                bind_name(name, Ty { kind }, *span, scope)
             }
-            (Pattern::Tuple(patterns, span), Ty::Tuple(fields))
+            (Pattern::Tuple(patterns, span), Kind::Tuple(fields))
                 if patterns.len() == fields.len() =>
             {
                 for (p, t) in patterns.iter().zip(fields) {
@@ -598,7 +571,7 @@ impl Checker<'_> {
         let (inputs, result, effect) = self.specialize(&path, args, scope, span, true)?;
         let group = match inputs.as_slice() {
             [input] => input.clone(),
-            _ => Ty::Tuple(inputs.clone()),
+            _ => Ty::tuple(inputs.clone()),
         };
         if effect != Effect::Unitary || inputs.is_empty() || !group.quantum_group() {
             return Err(err(
@@ -672,8 +645,8 @@ impl Checker<'_> {
                 binding.ty
             }
             ExprKind::Tuple(fields) => {
-                let types = match expected {
-                    Some(Ty::Tuple(ts)) if ts.len() == fields.len() => Some(ts),
+                let types = match expected.map(|t| &t.kind) {
+                    Some(Kind::Tuple(ts)) if ts.len() == fields.len() => Some(ts),
                     _ => None,
                 };
                 let mut result = Vec::new();
@@ -690,7 +663,7 @@ impl Checker<'_> {
                     }
                     result.push(field);
                 }
-                Ty::Tuple(result)
+                Ty::tuple(result)
             }
             ExprKind::Call(name, args, runtime) => {
                 if let Some(op) = scope.operations.get(name).cloned() {
@@ -737,9 +710,9 @@ impl Checker<'_> {
                         "controlled application takes control and target",
                     ));
                 }
-                self.expr(&inputs[0], scope, Some(&Ty::Bit))?;
+                self.expr(&inputs[0], scope, Some(&Ty::quantum(Ty::bit())))?;
                 self.expr(&inputs[1], scope, Some(&op.ty))?;
-                Ty::Tuple(vec![Ty::Bit, op.ty])
+                Ty::tuple(vec![Ty::quantum(Ty::bit()), op.ty])
             }
             ExprKind::If(predicate, yes, no) => {
                 let mut a = scope.clone();
@@ -909,11 +882,11 @@ fn primitive_signature(
     }
     fn shape(t: TypeShape, ns: &[Linear], span: Span) -> Result<Ty> {
         Ok(match t {
-            TypeShape::Bit => Ty::Bit,
-            TypeShape::CBit => Ty::CBit,
-            TypeShape::Bits(n) => Ty::Bits(size(n, ns, span)?),
-            TypeShape::CBits(n) => Ty::CBits(size(n, ns, span)?),
-            TypeShape::Tuple(fields) => Ty::Tuple(
+            TypeShape::Bit => Ty::quantum(Ty::bit()),
+            TypeShape::CBit => Ty::bit(),
+            TypeShape::Bits(n) => Ty::quantum(Ty::bits(size(n, ns, span)?)),
+            TypeShape::CBits(n) => Ty::bits(size(n, ns, span)?),
+            TypeShape::Tuple(fields) => Ty::tuple(
                 fields
                     .iter()
                     .map(|t| shape(*t, ns, span))
@@ -1015,7 +988,7 @@ pub(super) fn instantiate(
                 let output = ty(&provider.result, &provider_scope, provider.span)?;
                 if provider.effect != Effect::Unitary
                     || provider.arguments.len() != 1
-                    || !matches!(output, Ty::Bit | Ty::Bits(_))
+                    || !output.is_quantum_owner()
                 {
                     return Err(err(
                         "type",

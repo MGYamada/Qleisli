@@ -149,7 +149,7 @@ impl Lowerer<'_, '_> {
                 basis: basis.clone(),
             },
         );
-        Value::Quantum(slot, basis)
+        Value::quantum(slot, basis)
     }
 
     fn input(
@@ -160,14 +160,14 @@ impl Lowerer<'_, '_> {
         quantum: &mut Vec<QuantumPort>,
         classical: &mut Vec<ClassicalId>,
     ) -> Result<Value, CompileError> {
-        Ok(match ty {
-            Ty::Unit => Value::Unit,
-            Ty::CBit => {
+        Ok(match &ty.kind {
+            Kind::Unit => Value::Unit,
+            Kind::Bit => {
                 let id = self.classical();
                 classical.push(id);
                 Value::Classical(id)
             }
-            Ty::Q(basis) => {
+            Kind::Q(basis) => {
                 let wires = (0..basis.basis_bits().expect("basis type"))
                     .map(|_| self.wire())
                     .collect();
@@ -190,18 +190,13 @@ impl Lowerer<'_, '_> {
                 });
                 value
             }
-            Ty::Pair(a, b) => {
-                let a = self.input(a, module, span, quantum, classical)?;
-                let b = self.input(b, module, span, quantum, classical)?;
-                Value::pair(a, b)
-            }
-            Ty::Tuple(fields) => Value::Tuple(
+            Kind::Tuple(fields) => Value::tuple(
                 fields
                     .iter()
                     .map(|field| self.input(field, module, span, quantum, classical))
                     .collect::<Result<_, _>>()?,
             ),
-            Ty::Bit => unreachable!("ordinary signature"),
+            Kind::Bits(n) => match *n {},
         })
     }
 
@@ -272,9 +267,10 @@ impl Lowerer<'_, '_> {
                     span,
                     ErrorCode::TypeMismatch,
                     format!(
-                        "argument `{}` has the wrong type: expected `{ty}`, found `{}`",
+                        "argument `{}` has the wrong type: expected `{}`, found `{}`",
                         name.text,
-                        value.ty()
+                        ty.runtime(),
+                        value.ty().runtime()
                     ),
                 ));
             }
@@ -294,7 +290,11 @@ impl Lowerer<'_, '_> {
                 &key.0,
                 body.result.span,
                 ErrorCode::TypeMismatch,
-                format!("result does not match the function return type: expected `{return_ty}`, found `{}`", value.ty()),
+                format!(
+                    "result does not match the function return type: expected `{}`, found `{}`",
+                    return_ty.runtime(),
+                    value.ty().runtime()
+                ),
             ));
         }
         self.no_owned_bindings(
@@ -488,7 +488,7 @@ impl Lowerer<'_, '_> {
                         module,
                         pattern.span,
                         ErrorCode::TypeMismatch,
-                        format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{actual}`{help}", patterns.len()),
+                        format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{}`{help}", patterns.len(), actual.runtime()),
                     ));
                 };
                 for (pattern, field) in patterns.iter().zip(fields) {
@@ -710,7 +710,7 @@ impl Lowerer<'_, '_> {
                 self.check_transformed(
                     module,
                     expr.span,
-                    &Ty::pair(Ty::Bit, basis),
+                    &Ty::pair(Ty::bit(), basis),
                     &steps,
                     expected.as_ref(),
                 )?;
@@ -737,7 +737,7 @@ impl Lowerer<'_, '_> {
                         ErrorCode::TypeMismatch,
                         format!(
                             "not requires a CBit operand: expected `CBit`, found `{}`",
-                            value.ty()
+                            value.ty().runtime()
                         ),
                     ));
                 };
@@ -754,7 +754,7 @@ impl Lowerer<'_, '_> {
                         ErrorCode::TypeMismatch,
                         format!(
                             "and/xor require CBit operands: expected `CBit`, found `{}`",
-                            value.ty()
+                            value.ty().runtime()
                         ),
                     ));
                 };
@@ -768,7 +768,7 @@ impl Lowerer<'_, '_> {
                         ErrorCode::TypeMismatch,
                         format!(
                             "and/xor require CBit operands: expected `CBit`, found `{}`",
-                            value.ty()
+                            value.ty().runtime()
                         ),
                     ));
                 };
@@ -925,7 +925,7 @@ impl Lowerer<'_, '_> {
                         ErrorCode::TypeMismatch,
                         format!(
                             "if requires a CBit condition: expected `CBit`, found `{}`",
-                            value.ty()
+                            value.ty().runtime()
                         ),
                     ));
                 };
@@ -1007,7 +1007,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         let target = self.compiler.resolve(module, name)?;
-        let ty = Ty::Q(Box::new(basis.clone()));
+        let ty = Ty::quantum(basis.clone());
         match &target {
             Callee::User(key) => {
                 if self.compiler.declarations[key].kind != FnKind::Unitary {
@@ -1050,7 +1050,7 @@ impl Lowerer<'_, '_> {
                         "static sealed operation requires a unary unitary quantum primitive",
                     ));
                 }
-                if !matches!(gate.as_str(), "id" | "phase_eighth") && *basis != Ty::Bit {
+                if !matches!(gate.as_str(), "id" | "phase_eighth") && *basis != Ty::bit() {
                     return Err(self.error(
                         module,
                         name.span,
@@ -1191,7 +1191,7 @@ impl Lowerer<'_, '_> {
         if bits > reg.wires.len() {
             self.add_effect(module, span, Effect::Iso);
         }
-        Ok(Value::Quantum(slot, basis))
+        Ok(Value::quantum(slot, basis))
     }
 
     #[allow(clippy::too_many_arguments)]
@@ -1228,13 +1228,13 @@ impl Lowerer<'_, '_> {
         self.compiler.charge(module, function.span, size)?;
         let predicate = self.compiler.basis[&key].clone();
         let mut params = predicate.params.into_iter();
-        let mut domain = params.next().unwrap_or(Ty::Unit);
+        let mut domain = params.next().unwrap_or(Ty::unit());
         for param in params {
             domain = Ty::pair(domain, param);
             self.compiler
                 .check_tree(module, function.span, domain.tree_size())?;
         }
-        if domain != self.registers[&source_slot].basis || predicate.result != Ty::Bit {
+        if domain != self.registers[&source_slot].basis || predicate.result != Ty::bit() {
             return Err(self.error(
                 module,
                 function.span,
@@ -1243,7 +1243,7 @@ impl Lowerer<'_, '_> {
             ));
         }
         let wire = self.wire();
-        let ancilla = self.register(Ty::Bit, vec![wire]);
+        let ancilla = self.register(Ty::bit(), vec![wire]);
         let ancilla_slot = self.quantum(module, span, &ancilla, true)?;
         let initial_token = self.registers[&ancilla_slot].token;
         // This first source form exposes only the ancilla and classical outer
@@ -1277,7 +1277,7 @@ impl Lowerer<'_, '_> {
         }
         self.effect = previous_effect;
         self.effect_source = previous_effect_source;
-        if result != Value::Quantum(ancilla_slot, Ty::Bit) {
+        if result != Value::quantum(ancilla_slot, Ty::bit()) {
             return Err(self.error(
                 module,
                 body.span,

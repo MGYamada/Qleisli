@@ -1,0 +1,48 @@
+[
+  {
+    "name": "compile-only",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--no-run"
+    ],
+    "exit_code": 0,
+    "stdout": "compile-only.stdout",
+    "stderr": "compile-only.stderr"
+  },
+  {
+    "name": "format",
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "format.stdout",
+    "stderr": "format.stderr"
+  },
+  {
+    "name": "whitespace",
+    "argv": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "stdout": "whitespace.stdout",
+    "stderr": "whitespace.stderr"
+  },
+  {
+    "name": "docs",
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "stdout": "docs.stdout",
+    "stderr": "docs.stderr"
+  }
+]

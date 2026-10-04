@@ -72,7 +72,7 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::TypeMismatch,
-                format!("if arms must return the same type: expected `{}` from the then arm, found `{}` in the else arm", then_result.ty(), else_result.ty()),
+                format!("if arms must return the same type: expected `{}` from the then arm, found `{}` in the else arm", then_result.ty().runtime(), else_result.ty().runtime()),
             ));
         }
         let mut quantum_phis = Vec::new();
@@ -198,7 +198,7 @@ impl Lowerer<'_, '_> {
                 });
                 Ok(Value::Classical(output))
             }
-            (Value::Quantum(a, basis), Value::Quantum(b, _)) => {
+            (Value::Quantum(a, ty), Value::Quantum(b, _)) => {
                 let a = a_regs.remove(&a).ok_or_else(|| {
                     self.error(
                         module,
@@ -217,7 +217,7 @@ impl Lowerer<'_, '_> {
                 })?;
                 let slot = self.slot();
                 self.merge_register(module, span, slot, a, b, quantum)?;
-                Ok(Value::Quantum(slot, basis))
+                Ok(Value::Quantum(slot, ty))
             }
             (Value::Pair(a1, a2), Value::Pair(b1, b2)) => {
                 let a =

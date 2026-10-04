@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"Bit is a basis type; ordinary functions use CBit or Q<basis type>","primary":{"path":"main.qli","start":23,"end":26,"line":1,"column":24},"related":[]}],"result":null}

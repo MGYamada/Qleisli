@@ -1,0 +1,566 @@
+[
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "build.stdout",
+    "stderr": "build.stderr"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/observe.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-types-before/observe"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "observer-build.stdout",
+    "stderr": "observer-build.stderr"
+  },
+  {
+    "label": "basis-generic-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/basis-generic/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "basis-generic-observer.stdout",
+    "stderr": "basis-generic-observer.stderr"
+  },
+  {
+    "label": "basis-zero-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/basis-zero/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "basis-zero-observer.stdout",
+    "stderr": "basis-zero-observer.stderr"
+  },
+  {
+    "label": "basis-zero-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/basis-zero",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "basis-zero-check.stdout",
+    "stderr": "basis-zero-check.stderr"
+  },
+  {
+    "label": "exact-tuple-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/exact-tuple/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "exact-tuple-observer.stdout",
+    "stderr": "exact-tuple-observer.stderr"
+  },
+  {
+    "label": "exact-tuple-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/exact-tuple",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "exact-tuple-check.stdout",
+    "stderr": "exact-tuple-check.stderr"
+  },
+  {
+    "label": "legacy-bit-copy-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/legacy-bit-copy/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "legacy-bit-copy-observer.stdout",
+    "stderr": "legacy-bit-copy-observer.stderr"
+  },
+  {
+    "label": "legacy-bit-copy-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/legacy-bit-copy",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "legacy-bit-copy-check.stdout",
+    "stderr": "legacy-bit-copy-check.stderr"
+  },
+  {
+    "label": "no-implicit-prepare-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/no-implicit-prepare/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "no-implicit-prepare-observer.stdout",
+    "stderr": "no-implicit-prepare-observer.stderr"
+  },
+  {
+    "label": "no-implicit-prepare-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/no-implicit-prepare",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "no-implicit-prepare-check.stdout",
+    "stderr": "no-implicit-prepare-check.stderr"
+  },
+  {
+    "label": "no-implicit-read-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/no-implicit-read/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "no-implicit-read-observer.stdout",
+    "stderr": "no-implicit-read-observer.stderr"
+  },
+  {
+    "label": "no-implicit-read-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/no-implicit-read",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "no-implicit-read-check.stdout",
+    "stderr": "no-implicit-read-check.stderr"
+  },
+  {
+    "label": "observed-bit-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/observed-bit/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "observed-bit-observer.stdout",
+    "stderr": "observed-bit-observer.stderr"
+  },
+  {
+    "label": "observed-bit-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/observed-bit",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "observed-bit-check.stdout",
+    "stderr": "observed-bit-check.stderr"
+  },
+  {
+    "label": "ordinary-bit-identity-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/ordinary-bit-identity/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "ordinary-bit-identity-observer.stdout",
+    "stderr": "ordinary-bit-identity-observer.stderr"
+  },
+  {
+    "label": "ordinary-bit-identity-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/ordinary-bit-identity",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "ordinary-bit-identity-check.stdout",
+    "stderr": "ordinary-bit-identity-check.stderr"
+  },
+  {
+    "label": "ordinary-bit-zero-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/ordinary-bit-zero/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "ordinary-bit-zero-observer.stdout",
+    "stderr": "ordinary-bit-zero-observer.stderr"
+  },
+  {
+    "label": "ordinary-bit-zero-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/ordinary-bit-zero",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "ordinary-bit-zero-check.stdout",
+    "stderr": "ordinary-bit-zero-check.stderr"
+  },
+  {
+    "label": "quantum-nested-q-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-nested-q/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "quantum-nested-q-observer.stdout",
+    "stderr": "quantum-nested-q-observer.stderr"
+  },
+  {
+    "label": "quantum-nested-q-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-nested-q",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "quantum-nested-q-check.stdout",
+    "stderr": "quantum-nested-q-check.stderr"
+  },
+  {
+    "label": "quantum-unit-drop-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-unit-drop/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "quantum-unit-drop-observer.stdout",
+    "stderr": "quantum-unit-drop-observer.stderr"
+  },
+  {
+    "label": "quantum-unit-drop-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-unit-drop",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "quantum-unit-drop-check.stdout",
+    "stderr": "quantum-unit-drop-check.stderr"
+  },
+  {
+    "label": "quantum-unit-duplicate-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-unit-duplicate/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "quantum-unit-duplicate-observer.stdout",
+    "stderr": "quantum-unit-duplicate-observer.stderr"
+  },
+  {
+    "label": "quantum-unit-duplicate-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-unit-duplicate",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 1,
+    "stdout": "quantum-unit-duplicate-check.stdout",
+    "stderr": "quantum-unit-duplicate-check.stderr"
+  },
+  {
+    "label": "quantum-unit-identity-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-unit-identity/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "quantum-unit-identity-observer.stdout",
+    "stderr": "quantum-unit-identity-observer.stderr"
+  },
+  {
+    "label": "quantum-unit-identity-check",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/quantum-unit-identity",
+      "--format=json",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "quantum-unit-identity-check.stdout",
+    "stderr": "quantum-unit-identity-check.stderr"
+  },
+  {
+    "label": "sized-bits-one-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-bits-one/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-bits-one-observer.stdout",
+    "stderr": "sized-bits-one-observer.stderr"
+  },
+  {
+    "label": "sized-quantum-unit-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-quantum-unit/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-quantum-unit-observer.stdout",
+    "stderr": "sized-quantum-unit-observer.stderr"
+  },
+  {
+    "label": "sized-runtime-in-size-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-runtime-in-size/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-runtime-in-size-observer.stdout",
+    "stderr": "sized-runtime-in-size-observer.stderr"
+  },
+  {
+    "label": "sized-symbolic-equality-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-symbolic-equality/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-symbolic-equality-observer.stdout",
+    "stderr": "sized-symbolic-equality-observer.stderr"
+  },
+  {
+    "label": "sized-target-data-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-target-data/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-target-data-observer.stdout",
+    "stderr": "sized-target-data-observer.stderr"
+  },
+  {
+    "label": "sized-unit-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-unit/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-unit-observer.stdout",
+    "stderr": "sized-unit-observer.stderr"
+  },
+  {
+    "label": "sized-zero-as-unit-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-zero-as-unit/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-zero-as-unit-observer.stdout",
+    "stderr": "sized-zero-as-unit-observer.stderr"
+  },
+  {
+    "label": "sized-zero-drop-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-zero-drop/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-zero-drop-observer.stdout",
+    "stderr": "sized-zero-drop-observer.stderr"
+  },
+  {
+    "label": "sized-zero-identity-observer",
+    "argv": [
+      "/private/tmp/qleisli-types-before/observe",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/initial-study/sized-zero-identity/main.qli"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "sized-zero-identity-observer.stdout",
+    "stderr": "sized-zero-identity-observer.stderr"
+  },
+  {
+    "label": "shared-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/shared.qli",
+      "--output=/private/tmp/qleisli-types-before/shared.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "shared-proposal.stdout",
+    "stderr": "shared-proposal.stderr"
+  },
+  {
+    "label": "contextual-type-name-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli",
+      "--output=/private/tmp/qleisli-types-before/contextual-type-name.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "contextual-type-name-proposal.stdout",
+    "stderr": "contextual-type-name-proposal.stderr"
+  },
+  {
+    "label": "static-fold-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/static-fold.qli",
+      "--nat=n=1",
+      "--output=/private/tmp/qleisli-types-before/static-fold.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "static-fold-proposal.stdout",
+    "stderr": "static-fold-proposal.stderr"
+  },
+  {
+    "label": "empty-owner-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-parser/empty-owner.qli",
+      "--output=/private/tmp/qleisli-types-before/empty-owner.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "empty-owner-proposal.stdout",
+    "stderr": "empty-owner-proposal.stderr"
+  },
+  {
+    "label": "h-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/h.qli",
+      "--output=/private/tmp/qleisli-types-before/h.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "h-proposal.stdout",
+    "stderr": "h-proposal.stderr"
+  },
+  {
+    "label": "pair-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/pair.qli",
+      "--output=/private/tmp/qleisli-types-before/pair.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "pair-proposal.stdout",
+    "stderr": "pair-proposal.stderr"
+  },
+  {
+    "label": "register-two-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/register-two.qli",
+      "--output=/private/tmp/qleisli-types-before/register-two.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "register-two-proposal.stdout",
+    "stderr": "register-two-proposal.stderr"
+  },
+  {
+    "label": "measured-one-proposal",
+    "argv": [
+      "/private/tmp/qleisli-types-baseline-jppd9fkt/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-types/proposal-sources/measured-one.qli",
+      "--output=/private/tmp/qleisli-types-before/measured-one.proposal.json"
+    ],
+    "cwd": "/private/tmp/qleisli-types-baseline-jppd9fkt",
+    "exit_code": 0,
+    "stdout": "measured-one-proposal.stdout",
+    "stderr": "measured-one-proposal.stderr"
+  }
+]

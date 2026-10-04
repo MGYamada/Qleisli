@@ -77,18 +77,18 @@ mod tests {
                 Some(Value::pair(Value::Unit, Value::Classical(ClassicalId(1)))),
                 false,
             ),
-            (Some(Value::Quantum(slot, Ty::Unit)), true),
-            (Some(Value::Quantum(slot, Ty::Bit)), true),
+            (Some(Value::quantum(slot, Ty::unit())), true),
+            (Some(Value::quantum(slot, Ty::bit())), true),
             (
                 Some(Value::pair(
                     Value::Classical(ClassicalId(0)),
-                    Value::Quantum(slot, Ty::Unit),
+                    Value::quantum(slot, Ty::unit()),
                 )),
                 true,
             ),
             (
                 Some(Value::pair(
-                    Value::Quantum(slot, Ty::Unit),
+                    Value::quantum(slot, Ty::unit()),
                     Value::Classical(ClassicalId(0)),
                 )),
                 true,

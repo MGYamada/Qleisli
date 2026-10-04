@@ -1,0 +1,1 @@
+use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>) -> CBits<1> { let c = measure_z(q); let z = empty_bits(); prepend_bit[0](c,z) }

@@ -66,13 +66,13 @@ impl Lowerer<'_, '_> {
         self.compiler.charge(module, function.span, size)?;
         let predicate = self.compiler.basis[&key].clone();
         let mut params = predicate.params.into_iter();
-        let mut domain = params.next().unwrap_or(Ty::Unit);
+        let mut domain = params.next().unwrap_or(Ty::unit());
         for param in params {
             domain = Ty::pair(domain, param);
             self.compiler
                 .check_tree(module, function.span, domain.tree_size())?;
         }
-        if domain != source_reg.basis || predicate.result != Ty::Bit {
+        if domain != source_reg.basis || predicate.result != Ty::bit() {
             return Err(self.error(
                 module,
                 function.span,
@@ -139,7 +139,7 @@ impl Lowerer<'_, '_> {
         body: &Block,
         env: &Env,
     ) -> Result<Vec<CircuitStep>, CompileError> {
-        let joint = Ty::Q(Box::new(Ty::pair(basis.clone(), Ty::Bit)));
+        let joint = Ty::quantum(Ty::pair(basis.clone(), Ty::bit()));
         self.compiler
             .check_tree(module, body.span, joint.tree_size())?;
         self.compiler.charge(
@@ -204,7 +204,7 @@ impl Lowerer<'_, '_> {
                 "certified with_computed body must be unitary",
             ));
         }
-        let expected = Ty::pair(Ty::Q(Box::new(basis.clone())), Ty::Q(Box::new(Ty::Bit)));
+        let expected = Ty::pair(Ty::quantum(basis.clone()), Ty::quantum(Ty::bit()));
         if result.ty() != expected {
             return Err(inner.error(
                 module,

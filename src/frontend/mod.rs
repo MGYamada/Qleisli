@@ -13,6 +13,7 @@ pub mod parser;
 pub mod project;
 mod scanner;
 pub mod sized;
+mod types;
 
 /// Language edition for the current grammar, in-memory source APIs and bundled
 /// library. This is independent of the product version and Rust's Cargo edition.

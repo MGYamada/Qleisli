@@ -10,57 +10,47 @@ const MAX_DEPTH: usize = 16;
 const MAX_STEPS: usize = 10_000;
 const MAX_CELLS: usize = 100_000;
 
-/// Concrete type tree. Width one registers remain distinct from single bits.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct SourceType {
-    kind: TypeKind,
-}
-#[derive(Clone, Debug, PartialEq, Eq)]
-enum TypeKind {
-    Bit,
-    Bits(u32),
-    CBit,
-    CBits(u32),
-    Tuple(Vec<SourceType>),
-}
+use crate::frontend::types::Kind as TypeKind;
+
+/// Concrete exact source tree. Accessors retain the current sized profile's
+/// public tags: bit/bits denote quantum owners, cbit/cbits ordinary data.
+/// Its private shared representation makes Q explicit; no constructor is public.
+pub type SourceType = crate::frontend::types::Type<u32>;
 impl SourceType {
     fn value_cells(&self) -> usize {
         self.cells() + 1 + self.fields().iter().map(Self::value_cells).sum::<usize>()
     }
     pub fn kind(&self) -> &'static str {
-        match self.kind {
-            TypeKind::Bit => "bit",
-            TypeKind::Bits(_) => "bits",
-            TypeKind::CBit => "cbit",
-            TypeKind::CBits(_) => "cbits",
+        match &self.kind {
+            TypeKind::Q(basis) => match basis.kind {
+                TypeKind::Bit => "bit",
+                TypeKind::Bits(_) => "bits",
+                _ => unreachable!("sized quantum profile has only Bit/Bits owners"),
+            },
+            TypeKind::Bit => "cbit",
+            TypeKind::Bits(_) => "cbits",
             TypeKind::Tuple(_) => "tuple",
+            TypeKind::Unit => unreachable!("sized Unit is not admitted by the profile"),
         }
     }
     pub fn width(&self) -> Option<u32> {
-        match self.kind {
-            TypeKind::Bit | TypeKind::CBit => Some(1),
-            TypeKind::Bits(n) | TypeKind::CBits(n) => Some(n),
+        match &self.kind {
+            TypeKind::Bit => Some(1),
+            TypeKind::Bits(n) => Some(*n),
+            TypeKind::Q(basis) => match basis.kind {
+                TypeKind::Bit => Some(1),
+                TypeKind::Bits(n) => Some(n),
+                _ => unreachable!("sized quantum profile has only Bit/Bits owners"),
+            },
             TypeKind::Tuple(_) => None,
+            TypeKind::Unit => unreachable!("sized Unit is not admitted by the profile"),
         }
     }
     pub fn fields(&self) -> &[SourceType] {
-        match &self.kind {
-            TypeKind::Tuple(fields) => fields,
-            _ => &[],
-        }
+        self.tuple_fields().unwrap_or(&[])
     }
     pub fn is_quantum(&self) -> bool {
-        matches!(self.kind, TypeKind::Bit | TypeKind::Bits(_))
-    }
-    fn quantum_group(&self) -> bool {
-        match &self.kind {
-            TypeKind::Bit | TypeKind::Bits(_) => true,
-            TypeKind::Tuple(fields) => !fields.is_empty() && fields.iter().all(Self::quantum_group),
-            TypeKind::CBit | TypeKind::CBits(_) => false,
-        }
-    }
-    fn linear(&self) -> bool {
-        self.is_quantum() || self.fields().iter().any(Self::linear)
+        self.is_quantum_owner()
     }
     fn quantum_width(&self) -> usize {
         if self.is_quantum() {
@@ -70,18 +60,14 @@ impl SourceType {
         }
     }
     fn cells(&self) -> usize {
-        1 + self.fields().iter().map(Self::cells).sum::<usize>()
+        self.owner_shape_size().nodes
     }
 }
 fn bit() -> SourceType {
-    SourceType {
-        kind: TypeKind::Bit,
-    }
+    SourceType::quantum(SourceType::bit())
 }
 fn tuple(fields: Vec<SourceType>) -> SourceType {
-    SourceType {
-        kind: TypeKind::Tuple(fields),
-    }
+    SourceType::tuple(fields)
 }
 
 /// Quantum owner or copyable classical value in one definition's local namespace.
@@ -476,10 +462,12 @@ fn predicate(p: &Predicate, values: &BTreeMap<String, u32>) -> Result<bool> {
 fn concrete_type(t: &ast::Type, values: &BTreeMap<String, u32>, span: Span) -> Result<SourceType> {
     let ty = SourceType {
         kind: match t {
-            ast::Type::Quantum(Basis::Bit) => TypeKind::Bit,
-            ast::Type::Quantum(Basis::Bits(n)) => TypeKind::Bits(natural(n, values)?),
-            ast::Type::CBit => TypeKind::CBit,
-            ast::Type::CBits(n) => TypeKind::CBits(natural(n, values)?),
+            ast::Type::Quantum(Basis::Bit) => TypeKind::Q(Box::new(SourceType::bit())),
+            ast::Type::Quantum(Basis::Bits(n)) => {
+                TypeKind::Q(Box::new(SourceType::bits(natural(n, values)?)))
+            }
+            ast::Type::CBit => TypeKind::Bit,
+            ast::Type::CBits(n) => TypeKind::Bits(natural(n, values)?),
             ast::Type::Tuple(fields) => TypeKind::Tuple(
                 fields
                     .iter()
@@ -1426,10 +1414,10 @@ fn primitive(
     fn shape(t: TypeShape, ns: &[u32], span: Span) -> Result<SourceType> {
         Ok(SourceType {
             kind: match t {
-                TypeShape::Bit => TypeKind::Bit,
-                TypeShape::CBit => TypeKind::CBit,
-                TypeShape::Bits(n) => TypeKind::Bits(size(n, ns, span)?),
-                TypeShape::CBits(n) => TypeKind::CBits(size(n, ns, span)?),
+                TypeShape::Bit => TypeKind::Q(Box::new(SourceType::bit())),
+                TypeShape::CBit => TypeKind::Bit,
+                TypeShape::Bits(n) => TypeKind::Q(Box::new(SourceType::bits(size(n, ns, span)?))),
+                TypeShape::CBits(n) => TypeKind::Bits(size(n, ns, span)?),
                 TypeShape::Tuple(fields) => TypeKind::Tuple(
                     fields
                         .iter()

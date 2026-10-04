@@ -152,11 +152,11 @@ impl Compiler<'_> {
                 value.clone()
             }
             BasisExprKind::Bit(bit) => BasisValue {
-                ty: Ty::Bit,
+                ty: Ty::bit(),
                 label: u16::from(*bit),
             },
             BasisExprKind::Unit => BasisValue {
-                ty: Ty::Unit,
+                ty: Ty::unit(),
                 label: 0,
             },
             BasisExprKind::Tuple(fields) => {
@@ -187,7 +187,7 @@ impl Compiler<'_> {
                 let a = self.eval_basis(module, a, env, depth + 1)?;
                 self.require_bit(module, expr.span, &a)?;
                 BasisValue {
-                    ty: Ty::Bit,
+                    ty: Ty::bit(),
                     label: a.label ^ 1,
                 }
             }
@@ -201,7 +201,10 @@ impl Compiler<'_> {
                 } else {
                     a.label & b.label
                 };
-                BasisValue { ty: Ty::Bit, label }
+                BasisValue {
+                    ty: Ty::bit(),
+                    label,
+                }
             }
             BasisExprKind::Call { callee, args } => {
                 if env.contains_key(&callee.text) {
@@ -277,7 +280,7 @@ impl Compiler<'_> {
         span: Span,
         value: &BasisValue,
     ) -> Result<(), CompileError> {
-        if value.ty == Ty::Bit {
+        if value.ty == Ty::bit() {
             Ok(())
         } else {
             Err(self.error(

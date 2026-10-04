@@ -1,0 +1,325 @@
+//! Common untrusted source type identity, independent of lowering and evidence.
+//!
+//! A size parameter is an implementation representation (symbolic or closed),
+//! not a source Basis parameter. Ordinary Bit and Q<Bit> share the same basis
+//! tree; their ownership differs only at Q. Profile adapters retain the current
+//! source restrictions and legacy diagnostics during this internal migration.
+use std::convert::Infallible;
+use std::fmt;
+
+/// Concrete or symbolic exact type tree. Construction remains frontend-private.
+#[derive(Clone, Debug)]
+pub struct Type<N> {
+    pub(super) kind: Kind<N>,
+}
+
+#[derive(Clone, Debug)]
+pub(super) enum Kind<N> {
+    Unit,
+    Bit,
+    Bits(N),
+    Q(Box<Type<N>>),
+    Tuple(Vec<Type<N>>),
+}
+
+/// Evaluation category is not a second ordinary finite type universe.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) enum Stage {
+    Basis,
+    Runtime,
+}
+
+#[derive(Default, Clone, Copy, Debug, PartialEq, Eq)]
+pub(super) struct TreeSize {
+    pub nodes: usize,
+    pub depth: usize,
+}
+
+impl<N> Type<N> {
+    pub(super) fn unit() -> Self {
+        Self { kind: Kind::Unit }
+    }
+    pub(super) fn bit() -> Self {
+        Self { kind: Kind::Bit }
+    }
+    pub(super) fn bits(size: N) -> Self {
+        Self {
+            kind: Kind::Bits(size),
+        }
+    }
+    pub(super) fn quantum(basis: Self) -> Self {
+        debug_assert!(basis.is_basis(), "Q requires a finite ordinary basis tree");
+        Self {
+            kind: Kind::Q(Box::new(basis)),
+        }
+    }
+    pub(super) fn tuple(fields: Vec<Self>) -> Self {
+        Self {
+            kind: Kind::Tuple(fields),
+        }
+    }
+    pub(super) fn pair(a: Self, b: Self) -> Self {
+        Self::tuple(vec![a, b])
+    }
+    pub(super) fn tuple_fields(&self) -> Option<&[Self]> {
+        match &self.kind {
+            Kind::Tuple(fields) => Some(fields),
+            _ => None,
+        }
+    }
+    pub(super) fn into_pair(self) -> Option<Vec<Self>> {
+        match self.kind {
+            Kind::Tuple(fields) if fields.len() == 2 => Some(fields),
+            _ => None,
+        }
+    }
+    pub(super) fn is_quantum_owner(&self) -> bool {
+        matches!(self.kind, Kind::Q(_))
+    }
+    pub(super) fn is_basis(&self) -> bool {
+        !self.linear()
+    }
+    pub(super) fn linear(&self) -> bool {
+        let mut pending = vec![self];
+        while let Some(ty) = pending.pop() {
+            match &ty.kind {
+                Kind::Q(_) => return true,
+                Kind::Tuple(fields) => pending.extend(fields),
+                _ => {}
+            }
+        }
+        false
+    }
+    /// The existing sized provider profile requires a nonempty tree of owners.
+    pub(super) fn quantum_group(&self) -> bool {
+        let mut pending = vec![self];
+        while let Some(ty) = pending.pop() {
+            match &ty.kind {
+                Kind::Q(_) => {}
+                Kind::Tuple(fields) if !fields.is_empty() => pending.extend(fields),
+                _ => return false,
+            }
+        }
+        true
+    }
+    /// Full source-type representation, including Q and its basis subtree.
+    pub(super) fn tree_size(&self) -> TreeSize {
+        self.size(false)
+    }
+    /// Preserve the existing sized profile's value-cell budget: one owner is
+    /// one cell, independently of the added explicit Q representation node.
+    /// This is accounting, never type equality or quantum-owner elimination.
+    pub(super) fn owner_shape_size(&self) -> TreeSize {
+        self.size(true)
+    }
+    fn size(&self, owners_atomic: bool) -> TreeSize {
+        let mut size = TreeSize::default();
+        let mut pending = vec![(self, 1)];
+        while let Some((ty, depth)) = pending.pop() {
+            size.nodes += 1;
+            size.depth = size.depth.max(depth);
+            match &ty.kind {
+                Kind::Q(inner) if !owners_atomic => pending.push((inner, depth + 1)),
+                Kind::Tuple(fields) => pending.extend(fields.iter().map(|f| (f, depth + 1))),
+                _ => {}
+            }
+        }
+        size
+    }
+    /// Compare tags, immediate arity, order and nesting; delegate only static
+    /// size equality. A mismatch must not suppress errors in later sibling size
+    /// obligations: the sized checker previously checked every paired sibling.
+    pub(super) fn equivalent_by<E>(
+        &self,
+        other: &Self,
+        sizes: &mut impl FnMut(&N, &N) -> Result<bool, E>,
+    ) -> Result<bool, E> {
+        let mut equal = true;
+        let mut pending = vec![(self, other)];
+        while let Some((a, b)) = pending.pop() {
+            match (&a.kind, &b.kind) {
+                (Kind::Unit, Kind::Unit) | (Kind::Bit, Kind::Bit) => {}
+                (Kind::Bits(a), Kind::Bits(b)) => equal &= sizes(a, b)?,
+                (Kind::Q(a), Kind::Q(b)) => pending.push((a, b)),
+                (Kind::Tuple(a), Kind::Tuple(b)) if a.len() == b.len() => {
+                    pending.extend(a.iter().zip(b).rev())
+                }
+                _ => equal = false,
+            }
+        }
+        Ok(equal)
+    }
+    pub(super) fn display(&self, stage: Stage) -> DisplayType<'_, N> {
+        DisplayType(self, stage)
+    }
+    pub(super) fn sized_debug(&self) -> SizedDebug<'_, N> {
+        SizedDebug(self)
+    }
+}
+
+impl<N: PartialEq> PartialEq for Type<N> {
+    fn eq(&self, other: &Self) -> bool {
+        self.equivalent_by(other, &mut |a, b| Ok::<_, Infallible>(a == b))
+            .unwrap()
+    }
+}
+impl<N: Eq> Eq for Type<N> {}
+
+/// Legacy finite source rendering. Bit in a basis stage or inside Q stays Bit;
+/// ordinary Bit keeps the current CBit spelling until the surface cutover.
+pub(super) struct DisplayType<'a, N>(&'a Type<N>, Stage);
+impl<N: fmt::Display> fmt::Display for DisplayType<'_, N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        enum Part<'a, N> {
+            Type(&'a Type<N>, Stage),
+            Text(&'static str),
+        }
+        let mut pending = vec![Part::Type(self.0, self.1)];
+        while let Some(part) = pending.pop() {
+            match part {
+                Part::Text(s) => f.write_str(s)?,
+                Part::Type(ty, stage) => match &ty.kind {
+                    Kind::Unit => f.write_str("Unit")?,
+                    Kind::Bit => f.write_str(if stage == Stage::Basis { "Bit" } else { "CBit" })?,
+                    Kind::Bits(n) => write!(
+                        f,
+                        "{}<{n}>",
+                        if stage == Stage::Basis {
+                            "Bits"
+                        } else {
+                            "CBits"
+                        }
+                    )?,
+                    Kind::Q(inner) => {
+                        f.write_str("Q<")?;
+                        pending.extend([Part::Text(">"), Part::Type(inner, Stage::Basis)]);
+                    }
+                    Kind::Tuple(fields) => {
+                        f.write_str("(")?;
+                        pending.push(Part::Text(")"));
+                        for (i, field) in fields.iter().enumerate().rev() {
+                            pending.push(Part::Type(field, stage));
+                            if i > 0 {
+                                pending.push(Part::Text(","));
+                            }
+                        }
+                    }
+                },
+            }
+        }
+        Ok(())
+    }
+}
+
+/// Diagnostic adapter for the current sized checker's printed type names.
+/// It cannot participate in equality, ownership, signature selection or caches.
+pub(super) struct SizedDebug<'a, N>(&'a Type<N>);
+impl<N: fmt::Debug> fmt::Debug for SizedDebug<'_, N> {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match &self.0.kind {
+            Kind::Unit => f.write_str("Unit"),
+            Kind::Bit => f.write_str("CBit"),
+            Kind::Bits(n) => f.debug_tuple("CBits").field(n).finish(),
+            Kind::Q(inner) => match &inner.kind {
+                Kind::Bit => f.write_str("Bit"),
+                Kind::Bits(n) => f.debug_tuple("Bits").field(n).finish(),
+                _ => f.debug_tuple("Q").field(inner).finish(),
+            },
+            Kind::Tuple(fields) => {
+                struct Fields<'a, N>(&'a [Type<N>]);
+                impl<N: fmt::Debug> fmt::Debug for Fields<'_, N> {
+                    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                        f.debug_list()
+                            .entries(self.0.iter().map(Type::sized_debug))
+                            .finish()
+                    }
+                }
+                f.debug_tuple("Tuple").field(&Fields(fields)).finish()
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    type T = Type<u32>;
+
+    #[test]
+    fn equal_width_does_not_identify_type_or_owner_trees() {
+        for (a, b) in [
+            (T::bit(), T::bits(1)),
+            (T::unit(), T::bits(0)),
+            (T::unit(), T::tuple(vec![])),
+            (T::pair(T::unit(), T::bit()), T::pair(T::bit(), T::unit())),
+            (
+                T::pair(T::pair(T::bit(), T::bit()), T::bit()),
+                T::pair(T::bit(), T::pair(T::bit(), T::bit())),
+            ),
+            (
+                T::tuple(vec![T::bit(), T::bit(), T::bit()]),
+                T::pair(T::pair(T::bit(), T::bit()), T::bit()),
+            ),
+            (
+                T::quantum(T::pair(T::bit(), T::bit())),
+                T::pair(T::quantum(T::bit()), T::quantum(T::bit())),
+            ),
+            (T::bit(), T::quantum(T::bit())),
+        ] {
+            assert_eq!(a, a.clone());
+            assert_ne!(a, b);
+            assert_ne!(b, a);
+        }
+    }
+
+    #[test]
+    fn linearity_retains_zero_width_owners_inside_mixed_products() {
+        for owner in [T::quantum(T::unit()), T::quantum(T::bits(0))] {
+            assert!(owner.linear());
+            assert!(owner.quantum_group());
+            assert!(T::pair(T::bit(), owner.clone()).linear());
+            assert!(!T::pair(T::bit(), owner).quantum_group());
+        }
+        assert!(!T::tuple(vec![]).quantum_group());
+        assert!(!T::pair(T::unit(), T::bits(0)).linear());
+    }
+
+    #[test]
+    fn size_obligations_keep_order_and_errors_after_a_sibling_mismatch() {
+        let a = T::tuple(vec![T::bit(), T::bits(3), T::quantum(T::bits(7))]);
+        let b = T::tuple(vec![T::unit(), T::bits(4), T::quantum(T::bits(8))]);
+        let mut visited = Vec::new();
+        let result = a.equivalent_by(&b, &mut |a, b| {
+            visited.push((*a, *b));
+            if *a == 7 {
+                Err("bounded size solver failed")
+            } else {
+                Ok(false)
+            }
+        });
+        assert_eq!(result, Err("bounded size solver failed"));
+        assert_eq!(visited, [(3, 4), (7, 8)]);
+        // A mismatched constructor must never ask width arithmetic to equate it.
+        assert!(
+            !T::bit()
+                .equivalent_by(&T::bits(1), &mut |_, _| -> Result<bool, ()> {
+                    panic!("constructor mismatch must not invoke the size solver")
+                })
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn size_solver_cannot_equate_different_tuple_or_quantum_shapes() {
+        let a = T::quantum(T::bits(7));
+        let b = T::quantum(T::bits(8));
+        let same_size = &mut |_: &u32, _: &u32| Ok::<_, ()>(true);
+        assert!(a.equivalent_by(&b, same_size).unwrap());
+        assert!(!a.equivalent_by(&T::bits(7), same_size).unwrap());
+        assert!(
+            !T::pair(a, b.clone())
+                .equivalent_by(&T::tuple(vec![b]), same_size)
+                .unwrap()
+        );
+    }
+}

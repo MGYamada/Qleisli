@@ -68,130 +68,37 @@ impl fmt::Display for CompileError {
 
 impl std::error::Error for CompileError {}
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-enum Ty {
-    Unit,
-    Bit,
-    CBit,
-    Q(Box<Ty>),
-    Pair(Box<Ty>, Box<Ty>),
-    Tuple(Vec<Ty>),
-}
+use super::types::{Kind, Stage, TreeSize};
+// Registers are outside the finite source profile; the uninhabited size keeps
+// that restriction explicit while using the same exact type tree as sized code.
+type Ty = super::types::Type<std::convert::Infallible>;
 
 impl fmt::Display for Ty {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Preserve exact arity and nesting, including Unit. Iterative rendering
-        // also keeps error reporting independent of the Rust call-stack depth.
-        enum Part<'a> {
-            Type(&'a Ty),
-            Text(&'static str),
-        }
-        let mut pending = vec![Part::Type(self)];
-        while let Some(part) = pending.pop() {
-            match part {
-                Part::Text(text) => f.write_str(text)?,
-                Part::Type(ty) => match ty {
-                    Ty::Unit => f.write_str("Unit")?,
-                    Ty::Bit => f.write_str("Bit")?,
-                    Ty::CBit => f.write_str("CBit")?,
-                    Ty::Q(inner) => {
-                        f.write_str("Q<")?;
-                        pending.extend([Part::Text(">"), Part::Type(inner)]);
-                    }
-                    Ty::Pair(a, b) => {
-                        f.write_str("(")?;
-                        pending.extend([
-                            Part::Text(")"),
-                            Part::Type(b),
-                            Part::Text(","),
-                            Part::Type(a),
-                        ]);
-                    }
-                    Ty::Tuple(fields) => {
-                        f.write_str("(")?;
-                        pending.push(Part::Text(")"));
-                        for (index, field) in fields.iter().enumerate().rev() {
-                            pending.push(Part::Type(field));
-                            if index > 0 {
-                                pending.push(Part::Text(","));
-                            }
-                        }
-                    }
-                },
-            }
-        }
-        Ok(())
+        self.display(Stage::Basis).fmt(f)
     }
 }
-
 impl Ty {
-    fn tree_size(&self) -> TreeSize {
-        let mut size = TreeSize::default();
-        let mut pending = vec![(self, 1)];
-        while let Some((ty, depth)) = pending.pop() {
-            size.nodes += 1;
-            size.depth = size.depth.max(depth);
-            match ty {
-                Self::Q(inner) => pending.push((inner, depth + 1)),
-                Self::Pair(a, b) => pending.extend([(a.as_ref(), depth + 1), (b, depth + 1)]),
-                Self::Tuple(fields) => {
-                    pending.extend(fields.iter().map(|field| (field, depth + 1)))
-                }
-                _ => {}
-            }
-        }
-        size
-    }
-
     fn basis_bits(&self) -> Option<usize> {
-        match self {
-            Self::Unit => Some(0),
-            Self::Bit => Some(1),
-            Self::Pair(a, b) => Some(a.basis_bits()? + b.basis_bits()?),
-            Self::Tuple(fields) => fields
+        match &self.kind {
+            Kind::Unit => Some(0),
+            Kind::Bit => Some(1),
+            Kind::Bits(n) => match *n {},
+            Kind::Tuple(fields) => fields
                 .iter()
                 .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
-            _ => None,
+            Kind::Q(_) => None,
         }
     }
-
     fn classical(&self) -> bool {
-        match self {
-            Self::Unit | Self::CBit => true,
-            Self::Pair(a, b) => a.classical() && b.classical(),
-            Self::Tuple(fields) => fields.iter().all(Self::classical),
-            _ => false,
-        }
+        !self.linear()
     }
-
-    fn pair(a: Self, b: Self) -> Self {
-        Self::Pair(Box::new(a), Box::new(b))
-    }
-
-    fn tuple(mut fields: Vec<Self>) -> Self {
-        if fields.len() == 2 {
-            let b = fields.pop().expect("second field");
-            Self::pair(fields.pop().expect("first field"), b)
-        } else {
-            Self::Tuple(fields)
-        }
-    }
-
     fn fields(&self) -> Option<Vec<&Self>> {
-        match self {
-            Self::Pair(a, b) => Some(vec![a, b]),
-            Self::Tuple(fields) => Some(fields.iter().collect()),
-            _ => None,
-        }
+        self.tuple_fields().map(|fields| fields.iter().collect())
     }
-}
-
-/// Count representation nodes, including zero-bit Unit products. Walking is
-/// iterative so checking a newly constructed tree never needs its call depth.
-#[derive(Default)]
-struct TreeSize {
-    nodes: usize,
-    depth: usize,
+    fn runtime(&self) -> super::types::DisplayType<'_, std::convert::Infallible> {
+        self.display(Stage::Runtime)
+    }
 }
 
 fn total_size(sizes: impl IntoIterator<Item = usize>) -> usize {
@@ -391,16 +298,18 @@ impl Compiler<'_> {
         ))
     }
 
-    fn ty(&mut self, module: &str, ty: &Type, basis_only: bool) -> Result<Ty, CompileError> {
+    fn ty(&mut self, module: &str, ty: &Type, stage: Stage) -> Result<Ty, CompileError> {
         let result = match &ty.kind {
-            TypeKind::Unit => Ty::Unit,
-            TypeKind::Bit if basis_only => Ty::Bit,
-            TypeKind::CBit if !basis_only => Ty::CBit,
-            TypeKind::Q(inner) if !basis_only => Ty::Q(Box::new(self.ty(module, inner, true)?)),
+            TypeKind::Unit => Ty::unit(),
+            TypeKind::Bit if stage == Stage::Basis => Ty::bit(),
+            TypeKind::CBit if stage == Stage::Runtime => Ty::bit(),
+            TypeKind::Q(inner) if stage == Stage::Runtime => {
+                Ty::quantum(self.ty(module, inner, Stage::Basis)?)
+            }
             TypeKind::Tuple(fields) => Ty::tuple(
                 fields
                     .iter()
-                    .map(|field| self.ty(module, field, basis_only))
+                    .map(|field| self.ty(module, field, stage))
                     .collect::<Result<_, _>>()?,
             ),
             _ => {
@@ -413,7 +322,7 @@ impl Compiler<'_> {
             }
         };
         self.check_tree(module, ty.span, result.tree_size())?;
-        if basis_only && result.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
+        if stage == Stage::Basis && result.basis_bits().is_some_and(|bits| bits > MAX_BITS) {
             return Err(self.error(
                 module,
                 ty.span,
@@ -456,7 +365,15 @@ impl Compiler<'_> {
                     PatternKind::Wildcard => {}
                 }
             }
-            let ty = self.ty(&key.0, &param.ty, decl.kind == FnKind::Basis)?;
+            let ty = self.ty(
+                &key.0,
+                &param.ty,
+                if decl.kind == FnKind::Basis {
+                    Stage::Basis
+                } else {
+                    Stage::Runtime
+                },
+            )?;
             if decl.kind == FnKind::Basis && !matches!(param.pattern.kind, PatternKind::Name(_)) {
                 // Reuse the coherent basis-pattern binding judgment. A zero
                 // label suffices to validate shape; enumeration binds all labels.
@@ -466,7 +383,15 @@ impl Compiler<'_> {
         }
         Ok((
             params,
-            self.ty(&key.0, &decl.return_type, decl.kind == FnKind::Basis)?,
+            self.ty(
+                &key.0,
+                &decl.return_type,
+                if decl.kind == FnKind::Basis {
+                    Stage::Basis
+                } else {
+                    Stage::Runtime
+                },
+            )?,
         ))
     }
 

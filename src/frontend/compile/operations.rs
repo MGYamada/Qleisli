@@ -45,11 +45,13 @@ pub(super) fn access_index(access: Access) -> usize {
     }
 }
 pub(super) fn contract_basis(ty: &Ty) -> BasisType {
-    match ty {
-        Ty::Unit => BasisType::Unit,
-        Ty::Bit => BasisType::Bit,
-        Ty::Pair(a, b) => BasisType::pair(contract_basis(a), contract_basis(b)),
-        Ty::Tuple(fields) => BasisType::Tuple(fields.iter().map(contract_basis).collect()),
+    match &ty.kind {
+        Kind::Unit => BasisType::Unit,
+        Kind::Bit => BasisType::Bit,
+        Kind::Tuple(fields) if fields.len() == 2 => {
+            BasisType::pair(contract_basis(&fields[0]), contract_basis(&fields[1]))
+        }
+        Kind::Tuple(fields) => BasisType::Tuple(fields.iter().map(contract_basis).collect()),
         _ => unreachable!("checked basis"),
     }
 }
@@ -124,7 +126,7 @@ impl Compiler<'_> {
     }
     pub(super) fn compile_meaning(&mut self, key: &Key) -> Result<(), CompileError> {
         let decl = self.declarations[key];
-        let basis = self.ty(&key.0, &decl.return_type, true)?;
+        let basis = self.ty(&key.0, &decl.return_type, Stage::Basis)?;
         contract_basis(&basis)
             .bits()
             .map_err(|e| self.op_error(&key.0, decl.span, e))?;
@@ -154,7 +156,7 @@ impl Compiler<'_> {
         let result = if *permutation {
             basis.clone()
         } else {
-            Ty::pair(Ty::Bit, Ty::pair(Ty::Bit, Ty::Bit))
+            Ty::pair(Ty::bit(), Ty::pair(Ty::bit(), Ty::bit()))
         };
         if f.params != [basis.clone()] || f.result != result {
             return Err(self.error(
@@ -217,7 +219,7 @@ impl Compiler<'_> {
                     "finite profile does not support Nat parameters",
                 ));
             };
-            let basis = self.ty(&key.0, source_basis, true)?;
+            let basis = self.ty(&key.0, source_basis, Stage::Basis)?;
             contract_basis(&basis)
                 .bits()
                 .map_err(|e| self.op_error(&key.0, source_basis.span, e))?;
@@ -322,7 +324,7 @@ impl Compiler<'_> {
             ));
         }
         let (params, result) = self.signature(&key)?;
-        let Ty::Q(basis) = &result else {
+        let Kind::Q(basis) = &result.kind else {
             return Err(self.error(
                 module,
                 name.span,
@@ -447,7 +449,7 @@ impl Compiler<'_> {
         let (access, node) = match kind {
             StaticOpKind::Inverse(..) => ([caps[1], caps[0], caps[2]], Node::Inverse(a)),
             StaticOpKind::Controlled(..) => {
-                basis = Ty::pair(Ty::Bit, basis);
+                basis = Ty::pair(Ty::bit(), basis);
                 ([caps[2]; 3], Node::Controlled(a))
             }
             StaticOpKind::Repeat(count, ..) => {
@@ -649,7 +651,7 @@ impl Operation {
             .map_err(|e| compiler.op_error(module, span, e))?;
         compiler.charge(module, span, total_size(steps.iter().map(circuit::size)))?;
         let basis = if access == Access::Controlled {
-            Ty::pair(Ty::Bit, self.basis.clone())
+            Ty::pair(Ty::bit(), self.basis.clone())
         } else {
             self.basis.clone()
         };

@@ -1,0 +1,1 @@
+pub unitary fn keep[static n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<1+n>> { q }

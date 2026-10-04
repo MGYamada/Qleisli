@@ -17,7 +17,7 @@ impl Lowerer<'_, '_> {
         value: &Value,
         bit_only: bool,
     ) -> Result<Slot, CompileError> {
-        let Value::Quantum(slot, basis) = value else {
+        let Value::Quantum(slot, ty) = value else {
             return Err(self.error(
                 module,
                 span,
@@ -25,18 +25,18 @@ impl Lowerer<'_, '_> {
                 format!(
                     "operation requires quantum ownership: expected `{}`, found `{}`",
                     if bit_only { "Q<Bit>" } else { "Q<A>" },
-                    value.ty()
+                    value.ty().runtime()
                 ),
             ));
         };
-        if bit_only && *basis != Ty::Bit {
+        if bit_only && *ty != Ty::quantum(Ty::bit()) {
             return Err(self.error(
                 module,
                 span,
                 ErrorCode::TypeMismatch,
                 format!(
                     "operation requires Q<Bit>: expected `Q<Bit>`, found `{}`",
-                    value.ty()
+                    value.ty().runtime()
                 ),
             ));
         }
@@ -69,7 +69,7 @@ impl Lowerer<'_, '_> {
                 {
                     return Err(self.error(&origin.module, origin.span, ErrorCode::TypeMismatch,
                         format!("binding `{}` contains a tuple of owners: expected `{}`, found `{}`; help: destructure the tuple at this binding (for cnot, `let (a, b) = cnot(a, b);`); a single name binds the whole returned tuple",
-                            origin.name, if bit_only {"Q<Bit>"} else {"Q<A>"}, value.ty())));
+                            origin.name, if bit_only {"Q<Bit>"} else {"Q<A>"}, value.ty().runtime())));
                 }
             }
         }
@@ -126,7 +126,7 @@ impl Lowerer<'_, '_> {
         match name {
             "init0" => {
                 let wire = self.wire();
-                let value = self.register(Ty::Bit, vec![wire]);
+                let value = self.register(Ty::bit(), vec![wire]);
                 let slot = self.quantum(module, span, &value, true)?;
                 self.operations.push(RawOp::Init0 {
                     output: self.registers[&slot].token,
@@ -244,7 +244,7 @@ impl Lowerer<'_, '_> {
                 let slot =
                     self.quantum_argument(module, span, &value, false, source_args.first())?;
                 let reg = self.registers.remove(&slot).expect("owned register");
-                let Ty::Pair(a, b) = reg.basis else {
+                let Some(mut fields) = reg.basis.into_pair() else {
                     return Err(self.error(
                         module,
                         span,
@@ -252,9 +252,11 @@ impl Lowerer<'_, '_> {
                         "split requires Q<(A, B)>",
                     ));
                 };
+                let b = fields.pop().expect("second field");
+                let a = fields.pop().expect("first field");
                 let width = a.basis_bits().expect("basis type");
-                let left = self.register(*a, reg.wires[..width].to_vec());
-                let right = self.register(*b, reg.wires[width..].to_vec());
+                let left = self.register(a, reg.wires[..width].to_vec());
+                let right = self.register(b, reg.wires[width..].to_vec());
                 let left_slot = self.quantum(module, span, &left, false)?;
                 let right_slot = self.quantum(module, span, &right, false)?;
                 self.operations.push(RawOp::Split {
@@ -322,7 +324,7 @@ impl Lowerer<'_, '_> {
                     Ok(Value::Unit)
                 } else {
                     let wire = self.wire();
-                    let value = self.register(Ty::Bit, vec![wire]);
+                    let value = self.register(Ty::bit(), vec![wire]);
                     let slot = self.quantum(module, span, &value, true)?;
                     self.operations.push(RawOp::Reset {
                         input: reg.token,

@@ -164,7 +164,7 @@ impl Lowerer<'_, '_> {
                 "contract functions must be closed",
             ));
         }
-        let expected = Ty::Q(Box::new(basis.clone()));
+        let expected = Ty::quantum(basis.clone());
         let (params, result) = self.compiler.signature(&key)?;
         if params != [expected.clone()] || result != expected {
             return Err(self.error(

@@ -1,0 +1,2 @@
+finite: ok declarations=1
+sized: error type 47..48 type or tuple/size shape mismatch: expected Bit, found Bits(Linear { constant: 1, terms: {} })

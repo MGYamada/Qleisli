@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share exact type trees, structural comparison and linear-owner classification
+  across finite, symbolic-sized and concrete-sized checking. Preserve existing
+  source profile restrictions, capacities and public type accessors; ordinary
+  Bit/Bits surface migration remains separate (#27).
 - Prove that the encoded native-contract wrapper computes the original root's
   exact matrix, including zero-width phase and ordered axes. Connect actual
   byte acceptance to the original `BodyMeaning` and encoded equation for any

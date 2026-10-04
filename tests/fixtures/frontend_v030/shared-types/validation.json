@@ -1,0 +1,45 @@
+{
+  "scope": "Focused shared internal type migration validation; no complete Rust/corpus/Lean replay.",
+  "integration": {
+    "record": "integration.json",
+    "passed": 191,
+    "ignored": 8,
+    "targets": 20
+  },
+  "shared_type_unit": {
+    "record": "unit.json",
+    "passed": 4,
+    "ignored": 0
+  },
+  "finite_compile_unit": {
+    "record": "finite-unit.json",
+    "passed": 8,
+    "ignored": 0
+  },
+  "total_executed_tests": {
+    "passed": 203,
+    "failed": 0,
+    "ignored": 8
+  },
+  "compile_only": {
+    "record": "final-checks.json",
+    "executables": 69
+  },
+  "comparison": "comparison.json",
+  "independent_review": {
+    "kind": "Independent read-only agent review, not a human adequacy/admission judgment",
+    "reviewer": "/root/review_platform",
+    "scope": [
+      "explicit Q / finite stage mapping",
+      "zero-owner and branch phi paths",
+      "finite Pair mapping and value construction",
+      "sized owner-cell/depth accounting",
+      "public SourceType accessors",
+      "remaining runtime versus basis diagnostic callsites",
+      "independent byte comparison of 34 observations and eight proposals"
+    ],
+    "unresolved_concrete_findings": 0,
+    "tests_rerun_by_reviewer": false,
+    "known_observable_change": "Public SourceType Rust Debug representation changes; accessor/CLI compatibility is checked separately."
+  }
+}
