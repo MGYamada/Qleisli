@@ -269,9 +269,58 @@ class ConstitutionalRecords(unittest.TestCase):
         checker.check_constitution(self.root, base_ref=recorded_base)
 
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
+    def test_admitted_base_allows_later_continuity_baseline_without_re_admission(self):
+        self.git("init", "--quiet")
+        later = {name: (self.root / name).read_bytes() for name in checker.CONTINUITY_PATHS}
+        current_bytes = (self.root / checker.CURRENT_PATH).read_bytes()
+        old_current = json.loads(current_bytes)
+        old_current["version"] = 1
+        old_current.pop("continuity", None)
+        self.write_json(checker.CURRENT_PATH, old_current)
+        old_ledger = copy.deepcopy(self.ledger)
+        old_ledger["current_evidence"]["sha256"] = self.digest(checker.CURRENT_PATH)
+        self.write_json(checker.LEDGER_PATH, old_ledger)
+        for name in later:
+            (self.root / name).unlink()
+        base = self.commit()
+        for name, data in later.items():
+            (self.root / name).write_bytes(data)
+        (self.root / checker.CURRENT_PATH).write_bytes(current_bytes)
+        self.write_json(checker.LEDGER_PATH, self.ledger)
+        checker.check_constitution(self.root, base_ref=base)
+        self.assertEqual((self.root / checker.ADMISSION_PATH).read_bytes(),
+                         (ROOT / checker.ADMISSION_PATH).read_bytes())
+
+    @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
+    def test_existing_continuity_anchor_cannot_reintroduce_missing_generation_evidence(self):
+        self.git("init", "--quiet")
+        name = f"{checker.CONTINUITY_ROOT}/historical-build.stdout.txt"
+        original = (self.root / name).read_bytes()
+        (self.root / name).unlink()
+        base = self.commit()
+        (self.root / name).write_bytes(original)
+        self.rejected("recorded stage is missing.*historical-build.stdout", base_ref=base)
+
+    @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
+    def test_continuity_preexisting_file_is_protected_even_before_baseline_anchor(self):
+        self.git("init", "--quiet")
+        name = f"{checker.CONTINUITY_ROOT}/Extract.lean"
+        later = {path: (self.root / path).read_bytes() for path in checker.CONTINUITY_PATHS if path != name}
+        for path in later:
+            (self.root / path).unlink()
+        base = self.commit()
+        for path, data in later.items():
+            (self.root / path).write_bytes(data)
+        # Editing the proposed extractor and all its editable local hashes
+        # cannot erase the already recorded source selected by the trusted base.
+        path = self.root / name
+        path.write_bytes(path.read_bytes() + b"\n-- replaced extractor\n")
+        self.rejected("protected artifact changed.*Extract.lean", base_ref=base)
+
+    @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_ratified_v1_base_allows_initial_interpretation_adoption_without_later_files(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS)}
         for name in later:
             (self.root / name).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(self.bootstrap_bytes)
@@ -285,7 +334,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_v1_transition_preserves_exact_bootstrap_bytes(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS)}
         for name in later:
             (self.root / name).unlink()
         (self.root / checker.LEDGER_PATH).write_bytes(self.bootstrap_bytes + b"\n")
@@ -311,7 +360,7 @@ class ConstitutionalRecords(unittest.TestCase):
     @unittest.skipUnless(shutil.which("git"), "trusted-base checks need Git")
     def test_previously_populated_v1_ledger_cannot_be_discarded_during_upgrade(self):
         self.git("init", "--quiet")
-        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS)}
+        later = {name: (self.root / name).read_bytes() for name in (*checker.INTERPRETATION_PATHS, *checker.GUARANTEE_PATHS, *checker.CONTINUITY_PATHS)}
         for field in checker.LEDGER_LISTS:
             with self.subTest(field=field):
                 for name in later:

@@ -62,7 +62,15 @@ GUARANTEE_PATHS = (
     "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt",
     "tests/fixtures/constitution_v030/ownership-rename-registry.json",
 )
-FROZEN_PATHS = RATIFICATION_PATHS + INTERPRETATION_PATHS + GUARANTEE_PATHS
+CONTINUITY_ROOT = "tests/fixtures/constitution_v030/initial-guarantees-continuity"
+CONTINUITY_BASELINE = f"{CONTINUITY_ROOT}/baseline.json"
+CONTINUITY_PATHS = tuple(f"{CONTINUITY_ROOT}/{name}" for name in (
+    "baseline.json", "Extract.lean", "reviewed-expressions.json.gz",
+    "historical-setup.json", "historical-build-command.json",
+    "historical-build.stdout.txt", "historical-build.stderr.txt",
+    "historical-extraction-command.json", "empty.stderr.txt",
+))
+FROZEN_PATHS = RATIFICATION_PATHS + INTERPRETATION_PATHS + GUARANTEE_PATHS + CONTINUITY_PATHS
 INTERPRETATIONS = {
     "QS-2026-01": ("QS", "1. Candidate QS-2026-01 — Meaning of accepted programs"),
     "PR-2026-01": ("PR", "2. Candidate PR-2026-01 — Accepted target realizations"),
@@ -290,11 +298,11 @@ def check_base(root, base_ref):
     if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", commit) is None:
         raise PacketError("trusted base did not resolve to one commit")
     previous = {name: base_file(root, commit, name) for name in (*FROZEN_PATHS, LEDGER_PATH)}
-    # Ratification and the first interpretations are distinct, explicitly
-    # recorded stages. A ratified v1 base need not contain later interpretation
-    # files, but an existing interpretation event cannot lose its own records.
+    # Each stage protects its own recorded artifacts. In particular, the first
+    # continuity baseline postdates admission; an admitted base without that
+    # later evidence is a valid migration source, not an incomplete admission.
     for anchor, names in ((EVENT_PATH, RATIFICATION_PATHS), (ADOPTION_PATH, INTERPRETATION_PATHS),
-                          (ADMISSION_PATH, GUARANTEE_PATHS)):
+                          (ADMISSION_PATH, GUARANTEE_PATHS), (CONTINUITY_BASELINE, CONTINUITY_PATHS)):
         already_recorded = previous[anchor] is not None
         for name in names:
             before = previous[name]

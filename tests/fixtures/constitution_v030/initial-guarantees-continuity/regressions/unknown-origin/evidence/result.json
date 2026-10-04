@@ -1,0 +1,48 @@
+{
+  "case": "unknown-origin",
+  "mutation": "Import the byte-identical Protocol.Validity declarations through Protocol.OtherValidity while retaining public namespaces; the historical source itself is untouched.",
+  "commands": [
+    {
+      "step": "build",
+      "argv": [
+        "lake",
+        "build",
+        "Qleisli.NativeValidity"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/unknown-origin/lean",
+      "started_at": "2026-10-04T13:16:57.054093+00:00",
+      "elapsed_seconds": 12.861,
+      "exit_code": 0,
+      "stdout": "build.stdout.txt",
+      "stderr": "build.stderr.txt"
+    },
+    {
+      "step": "extract",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../evidence/Extract.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/unknown-origin/lean",
+      "started_at": "2026-10-04T13:17:09.916970+00:00",
+      "elapsed_seconds": 4.738,
+      "exit_code": 1,
+      "stdout": "extract.stdout.txt",
+      "stderr": "extract.stderr.txt"
+    }
+  ],
+  "extractor_sha256": "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a",
+  "expected": "NativeValidity build succeeds; fixed extractor rejects unknown declaration origin.",
+  "files": {
+    "build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "extract.stdout.txt": "41f99e1c94e14aa167c449ead5010e7eef147e2542deee92d5ddefbb77edf7d7",
+    "Extract.lean": "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a",
+    "NativeValidity.lean.txt": "932f39282aabc6440eecd4b88d0bdeacf750c0efa38ad0200e7daa9c0a97daf1",
+    "build.stdout.txt": "7b42f2a8b8bb59da87309d056cb86e380ba14975546319c41c9e191bc40f5efb",
+    "mutation.patch": "6d19657306b4d4bd31a1ffcded1e9cdfaecc0a40805abd1200ada460b980c33b",
+    "extract.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "OtherValidity.lean.txt": "a93b958c7696a618f157c2a71f3188d0f9d0491f66d73d8409aff4aec0ff518b"
+  }
+}

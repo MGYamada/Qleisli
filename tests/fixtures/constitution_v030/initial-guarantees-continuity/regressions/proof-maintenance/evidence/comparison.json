@@ -1,0 +1,11 @@
+{
+  "case": "proof-maintenance",
+  "comparator": "scripts/check_guarantee_continuity.py:compare_extraction",
+  "comparator_source_sha256": "4aff2bb30a0e48ca42c5c6c6de8efa4d1239bd0c23a4a22fd6f9b58f431d4ef1",
+  "baseline_path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/baseline.json",
+  "baseline_sha256": "3033ebfdcd6d57f1b73bd0ed63c3acb4f33af56f6f057c12fef6db1ea8eeac2c",
+  "actual_expression_sha256": "d092e65a2bbfaa810e3508a04d255ca25116960f805c82e993c9ca7f4d477480",
+  "status": "accepted",
+  "diagnostic": "",
+  "scope": "Actual rebuilt Lean extraction fed to the fixed identity comparator; full source/evidence CLI is checked separately."
+}

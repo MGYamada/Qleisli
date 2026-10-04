@@ -1,0 +1,20 @@
+--- a/lean-kernel/Protocol/Validity.lean
++++ b/lean-kernel/Protocol/Validity.lean
+@@ -81,7 +81,7 @@
+   requirement : Option QleisliKernel.Qirf.Validity.Request
+   afterArtifact : Nat
+   afterRequest : Nat
+-  packetBound : packet bytes = .ok (body,requestBytes)
++  packetBound : True
+   artifactBound : (Qirf.read body).run work = (.ok (artifact,order),afterArtifact)
+   requestBound : (readRequest requestBytes).run afterArtifact = (.ok requirement,afterRequest)
+   accepted : (QleisliKernel.Qirf.Validity.inspect artifact order requirement).run afterRequest = (.ok (),left)
+@@ -103,7 +103,7 @@
+   subst a
+   have final := result.2
+   subst d
+-  exact ⟨⟨input.1,input.2,decoded.1,decoded.2,requirement,b,c,bound,hd,hr,ha,result.1.symm⟩⟩
++  exact ⟨⟨input.1,input.2,decoded.1,decoded.2,requirement,b,c,True.intro,hd,hr,ha,result.1.symm⟩⟩
+ 
+ /-- The decoded ordinary root of the original packet is linearly safe.
+ No optional request, Rust decision, or external semantic witness is required. -/

@@ -1,0 +1,46 @@
+{
+  "format": "qleisli.continuity-regression-storage",
+  "version": 1,
+  "compressed_streams": {
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/packet-binding-true/evidence/extract.stdout.txt": {
+      "stored_as": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/packet-binding-true/evidence/extract.json.gz",
+      "compression": "gzip",
+      "uncompressed_sha256": "beb9a9e526e1fb80adbcac8d19eeed38700cd114c85a42633f0113d69a4d1e28"
+    },
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/private-u32-offset/evidence/extract.stdout.txt": {
+      "stored_as": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/private-u32-offset/evidence/extract.json.gz",
+      "compression": "gzip",
+      "uncompressed_sha256": "123f6bcb8be3634a54e6909b9d704be3d4b49ac26abf78afd4bc4a96419341e0"
+    },
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/proof-maintenance/evidence/extract.stdout.txt": {
+      "stored_as": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/proof-maintenance/evidence/extract.json.gz",
+      "compression": "gzip",
+      "uncompressed_sha256": "d092e65a2bbfaa810e3508a04d255ca25116960f805c82e993c9ca7f4d477480"
+    },
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/packet-binding-true/final-evidence/extract.stdout.txt": {
+      "stored_as": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/packet-binding-true/final-evidence/extract.json.gz",
+      "compression": "gzip",
+      "uncompressed_sha256": "849bbcdfa3825890a492923c1a113edcd8e0231cee47070574243c756648f0d7"
+    },
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/private-u32-offset/final-evidence/extract.stdout.txt": {
+      "stored_as": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/private-u32-offset/final-evidence/extract.json.gz",
+      "compression": "gzip",
+      "uncompressed_sha256": "f7e8f6e909ca4d761f54b93dc20f8fd6ed9f94f09b59271fdf3b290ba73e309b"
+    },
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/proof-maintenance/final-evidence/extract.stdout.txt": {
+      "stored_as": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/proof-maintenance/final-evidence/extract.json.gz",
+      "compression": "gzip",
+      "uncompressed_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b"
+    }
+  },
+  "captured_path_relocations": {
+    "/private/tmp/qleisli-continuity-independent-regressions": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions"
+  },
+  "initial_artifact_copies_by_sha256": {
+    "3033ebfdcd6d57f1b73bd0ed63c3acb4f33af56f6f057c12fef6db1ea8eeac2c": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/initial-baseline.json",
+    "c74a335d949a6a89d747a807e9fe74cefdac070a62e32a16d5943ac577703895": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/initial-historical-extraction-command.json",
+    "4aff2bb30a0e48ca42c5c6c6de8efa4d1239bd0c23a4a22fd6f9b58f431d4ef1": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/initial-comparator.py.txt",
+    "e0a53b1592cc3dc1591539e0da7a78ec4fcb5747d0a2053b955718225b68ef6c": "tests/fixtures/constitution_v030/initial-guarantees-continuity/regressions/proof-maintenance/evidence/extract.json.gz"
+  },
+  "initial_recovery_note": "The first baseline, its extraction command record, and comparator text were reconstructed by reversing only the final checker-dependency traversal identity update; every recovered byte sequence matched its previously recorded SHA-256 exactly. This is preservation of initial artifacts, not a new execution claim."
+}

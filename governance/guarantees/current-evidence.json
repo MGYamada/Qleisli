@@ -1,6 +1,6 @@
 {
   "format": "qleisli.scoped-guarantee-current-evidence",
-  "version": 1,
+  "version": 2,
   "edition": "2026",
   "reviewed_proposal": {
     "path": "governance/proposals/initial-guarantees.json",
@@ -318,6 +318,40 @@
       "seconds": 17.136190833,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
+    }
+  },
+  "continuity": {
+    "format": "qleisli.current-artifact-identity-transport",
+    "version": 1,
+    "baseline": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/baseline.json",
+      "sha256": "b188c3290182fea743b35aa1e79c1a6815fbfcbfbe7223c063bd7395786c7ad0"
+    },
+    "extractor": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean",
+      "sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77"
+    },
+    "source_revision_sha256": "1132c5d56826b0fefb361128c41103abfc50a0bf03ff2b442bb420d1665a7e13",
+    "command": {
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean"
+      ],
+      "cwd": "lean",
+      "exit_code": 0
+    },
+    "stdout": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/current-expressions.json.gz",
+      "compression": "gzip",
+      "sha256": "915be2d4f48f7e96d39f20735f665827bbfbc5ccb0d3d8705e6d6e72ffe34aa9",
+      "uncompressed_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b"
+    },
+    "stderr": {
+      "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/empty.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   }
 }

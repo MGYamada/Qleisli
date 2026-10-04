@@ -1,0 +1,12 @@
+--- a/lean/Qleisli/NativeValidity.lean
++++ b/lean/Qleisli/NativeValidity.lean
+@@ -30,6 +30,8 @@
+       ∃ program, binding.artifact.programs[binding.artifact.root]? = some program ∧
+         QleisliKernel.Semantics.ClassicalScope.ScopeSafe program := by
+   obtain ⟨binding,checked,_,meaning⟩ := check_sound _ _ _ _ ok
+-  exact ⟨binding,checked.root.program,meaning.root.original,meaning.root.scopes⟩
++  exact id ⟨binding,checked.root.program,meaning.root.original,meaning.root.scopes⟩
++
++theorem continuity_unused_example : True := by trivial
+ 
+ end Qleisli.NativeValidity

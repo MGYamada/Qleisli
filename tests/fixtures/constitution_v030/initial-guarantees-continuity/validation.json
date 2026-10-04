@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.current-artifact-continuity-validation",
+  "version": 1,
+  "status": "checked-conservative-identity-transport-not-new-admission",
+  "files": {
+    "scripts/check_guarantee_continuity.py": "7997ecf7c6d11921b9d485cf91acef74fea8b2f8395438571f33948446793e92",
+    "scripts/check_initial_guarantees.py": "230119ff57b24cd50d71f4d9e922222f2e2714ac226c1e706c690c4bce76774d",
+    "scripts/test_check_initial_guarantees.py": "563eb05086a6a59cbcb561ff9f0a9c979469ed387941b66fc0d9e78cde9fa972",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/baseline.json": "b188c3290182fea743b35aa1e79c1a6815fbfcbfbe7223c063bd7395786c7ad0",
+    "governance/guarantees/current-evidence.json": "d0fb9ff93148a0aa680a3164789011d7e1438e74ac7472433dbf63fe01a7ebe1"
+  },
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_initial_guarantees.py"
+      ],
+      "cwd": "repository root",
+      "exit_code": 0,
+      "tests_passed": 33,
+      "reported_seconds": 18.262
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_initial_guarantees.py",
+        "--verify-lean"
+      ],
+      "cwd": "repository root",
+      "exit_code": 0,
+      "reported_mode": "current-Lean-identity-transport-and-source-identity"
+    }
+  ],
+  "capture_note": "This summary records the actual command results observed through the execution tool after the final checker race correction. It does not invent a wall-clock timestamp or persist a machine-authenticated execution event. Historical/current extraction streams and independent Lean mutation runs have their separate source-bound records.",
+  "scope": "Exact current ordinary QLV1 checker/predicate/witness identity and current proof replay for the two already admitted scoped guarantees; no new human adoption, broader QS/PR/RS discharge, byte/IO or production-wide proof, or release approval."
+}

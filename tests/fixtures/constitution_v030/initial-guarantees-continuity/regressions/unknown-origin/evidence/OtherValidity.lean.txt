@@ -1,0 +1,118 @@
+import Protocol.Qirf
+import QleisliKernel.Qirf.Ownership
+
+/-! Bounded VM-28 transport, separate from the pure acceptance definitions.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
+namespace QleisliKernel.Protocol.Validity
+open Lean
+
+def maxFileBytes : Nat := 16777216
+def maxPacketBytes : Nat := 12 + 2 * maxFileBytes
+
+private def fields (value : Json) (names : List String) : Except String Unit := do
+  let actual := (← value.getObj?).toList.map (·.1)
+  if actual.length != names.length || !actual.all names.contains then throw "unexpected/missing request fields"
+
+def request (bytes : ByteArray) : Except String QleisliKernel.Qirf.Validity.Request := do
+  let some text := String.fromUTF8? bytes | throw "invalid request UTF-8"
+  let value ← FiniteCodec.parseWithDepth text 128
+  fields value ["format","version","signature","meaning","source_snapshot"]
+  if (← (← value.getObjVal? "format").getStr?) != "qleisli.request" ||
+      (← (← value.getObjVal? "version").getNat?) != 1 then throw "unknown request"
+  let signature ← Qirf.basis 129 (← value.getObjVal? "signature")
+  let meaning ← value.getObjVal? "meaning"
+  fields meaning ["tag","table"]
+  let table ← (← (← meaning.getObjVal? "table").getArr?).toList.mapM Json.getNat?
+  let target ← match ← (← meaning.getObjVal? "tag").getStr? with
+    | "permutation" =>
+      if table.all (· ≤ 65535) then pure (QleisliKernel.Qirf.Target.permutation table)
+      else throw "permutation exceeds u16"
+    | "phase8" =>
+      if table.all (· ≤ 255) then pure (.phase8 table) else throw "phase exceeds u8"
+    | _ => throw "unknown request meaning"
+  let sources ← match ← value.getObjVal? "source_snapshot" with
+    | .null => pure none
+    | values => do
+      let sources ← (← values.getArr?).mapM fun source => do
+        fields source ["path","text"]
+        return (← (← source.getObjVal? "path").getStr?,← (← source.getObjVal? "text").getStr?)
+      if sources.size > 128 || !sources.all QleisliKernel.Qirf.sourceValid ||
+          !Raw.unique (sources.toList.map (·.1)) ||
+          (sources.toList.map (fun source => source.2.utf8ByteSize)).sum > 1048576 then
+        throw "invalid source snapshot"
+      pure (some sources)
+  return ⟨signature,target,sources⟩
+
+private def u32 (bytes : ByteArray) (offset : Nat) : Nat :=
+  (List.range 4).foldl (fun n i => n + (bytes[offset+i]!).toNat * 256^i) 0
+
+/-- QLV1, two little-endian u32 lengths, original QIRF bytes, then original
+request bytes. A zero request length means absent; exact EOF is mandatory. -/
+def packet (bytes : ByteArray) : Except String (ByteArray × Option ByteArray) := do
+  if bytes.size < 12 || bytes.size > maxPacketBytes || bytes.extract 0 4 != "QLV1".toUTF8 then
+    throw "invalid packet header"
+  let a := u32 bytes 4
+  let r := u32 bytes 8
+  if a == 0 || a > maxFileBytes || r > maxFileBytes || bytes.size != 12+a+r then
+    throw "invalid packet length"
+  return (bytes.extract 12 (12+a),if r == 0 then none else some (bytes.extract (12+a) bytes.size))
+/-- Decode only the optional caller request. It cannot carry stage results. -/
+def readRequest (required : Option ByteArray) : QleisliKernel.Finite.WorkM (Option QleisliKernel.Qirf.Validity.Request) :=
+  match required with
+  | none => pure none
+  | some bytes => do
+    let r ← QleisliKernel.Finite.lift ((request bytes).mapError fun _ => .invalid)
+    pure (some r)
+
+def check (bytes : ByteArray) : QleisliKernel.Finite.WorkM Bool := do
+  let (bytes,required) ← QleisliKernel.Finite.lift ((packet bytes).mapError fun _ => .invalid)
+  let (artifact,order) ← Qirf.read bytes
+  let requirement ← readRequest required
+  QleisliKernel.Qirf.Validity.inspect artifact order requirement
+  return requirement.isSome
+
+/-- The success theorem is tied to the immutable packet passed to the native
+entry point. Decoder/compiler correspondence is not silently assumed. -/
+structure Acceptance (bytes : ByteArray) (hasRequest : Bool) (work left : Nat) where
+  body : ByteArray
+  requestBytes : Option ByteArray
+  artifact : QleisliKernel.Qirf.Artifact
+  order : Array Nat
+  requirement : Option QleisliKernel.Qirf.Validity.Request
+  afterArtifact : Nat
+  afterRequest : Nat
+  packetBound : packet bytes = .ok (body,requestBytes)
+  artifactBound : (Qirf.read body).run work = (.ok (artifact,order),afterArtifact)
+  requestBound : (readRequest requestBytes).run afterArtifact = (.ok requirement,afterRequest)
+  accepted : (QleisliKernel.Qirf.Validity.inspect artifact order requirement).run afterRequest = (.ok (),left)
+  requested : requirement.isSome = hasRequest
+
+open QleisliKernel.Finite in
+theorem check_acceptance (bytes : ByteArray) (hasRequest : Bool) (work left : Nat)
+    (ok : (check bytes).run work = (.ok hasRequest,left)) :
+    Nonempty (Acceptance bytes hasRequest work left) := by
+  obtain ⟨input,a,hp,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨decoded,b,hd,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨requirement,c,hr,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,d,ha,h⟩ := bind_success _ _ _ _ _ h
+  have result := pure_success _ _ _ _ h
+  have original := lift_success _ _ _ _ hp
+  have bound : packet bytes = .ok input := by
+    cases decoded : packet bytes <;> simp_all [Except.mapError]
+  have budget := original.2
+  subst a
+  have final := result.2
+  subst d
+  exact ⟨⟨input.1,input.2,decoded.1,decoded.2,requirement,b,c,bound,hd,hr,ha,result.1.symm⟩⟩
+
+/-- The decoded ordinary root of the original packet is linearly safe.
+No optional request, Rust decision, or external semantic witness is required. -/
+theorem check_ownershipSafe (bytes : ByteArray) (hasRequest : Bool) (work left : Nat)
+    (ok : (check bytes).run work = (.ok hasRequest,left)) :
+    ∃ binding : Acceptance bytes hasRequest work left,
+      ∃ program, binding.artifact.programs[binding.artifact.root]? = some program ∧
+        Semantics.Ownership.OwnershipSafe program := by
+  obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
+  exact ⟨binding,QleisliKernel.Qirf.Validity.inspect_ownershipSafe _ _ _ _ _ binding.accepted⟩
+
+end QleisliKernel.Protocol.Validity

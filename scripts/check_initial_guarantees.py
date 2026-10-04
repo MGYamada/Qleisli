@@ -6,7 +6,8 @@ validates the separate human admission event. The default checks historical
 evidence and current source identities only. It does not replay Lean,
 authenticate human approval, review mathematical adequacy, or itself admit a
 constitutional guarantee. --verify-lean also checks the recorded
-type/axiom output against the already-built Lean environment; it does not build
+type/axiom output and exact elaborated identity transport against the
+already-built Lean environment; it does not build
 or independently certify that environment. Run the normal builds/audits first.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
@@ -22,6 +23,7 @@ import sys
 import tarfile
 
 import check_schema_registry as registry
+import check_guarantee_continuity as continuity
 from check_constitution import ADOPTION_PATH, ADOPTION_SHA256, REVIEWED_PATH, REVIEWED_SHA256, require_fields
 from check_ratification_packet import ROOT, SHA256, PacketError, checked_file, exact_keys, json_object, read_file
 
@@ -126,7 +128,7 @@ def check_declaration(root, declaration, path, kind, reader=read_file):
             f"missing {kind} declaration {declaration} in {path}")
 
 
-def validate_review(root, reader=read_file):
+def validate_review(root, reader=read_file, *, check_sources=True):
     checked_file(root, REVIEW_PATH, REVIEW_SHA256)
     output = checked_file(root, REVIEW_STDOUT, REVIEW_OUTPUT_SHA256).decode("utf-8")
     for declaration in (NATIVE_CHECK, ACCEPTANCE, NATIVE_CHECK + "_acceptance",
@@ -135,10 +137,12 @@ def validate_review(root, reader=read_file):
     for entry in ENTRIES.values():
         require(output.count("def " + entry["predicate"] + " :") == 1,
                 f"review output lacks independent predicate {entry['predicate']}")
-        check_declaration(root, entry["theorem"], entry["theorem_source"], "theorem", reader)
-        check_declaration(root, entry["predicate"], entry["predicate_source"], "def", reader)
-    check_declaration(root, NATIVE_CHECK, NATIVE_SOURCE, "def", reader)
-    check_declaration(root, ACCEPTANCE, NATIVE_SOURCE, "structure", reader)
+        if check_sources:
+            check_declaration(root, entry["theorem"], entry["theorem_source"], "theorem", reader)
+            check_declaration(root, entry["predicate"], entry["predicate_source"], "def", reader)
+    if check_sources:
+        check_declaration(root, NATIVE_CHECK, NATIVE_SOURCE, "def", reader)
+        check_declaration(root, ACCEPTANCE, NATIVE_SOURCE, "structure", reader)
     expected_axioms = "[propext, Classical.choice.{u}, Quot.sound.{u}]"
     for declaration in (NATIVE_CHECK + "_acceptance", *(entry["theorem"] for entry in ENTRIES.values())):
         require(f"'{declaration}' depends on axioms: {expected_axioms}" in output,
@@ -350,7 +354,7 @@ def validate_evidence(root, proposal, *, record=None, archive=None):
     manifest = json_object(files[REGISTRY_PATH], "schema registry")
     registry.verify_manifest(manifest, registry.manifest_export(manifest), revision)
     validate_audit_record(files[audit_path], revision, record["files"][REGISTRY_PATH])
-    validate_review(root, read_file if archive is None else archive["reader"])
+    validate_review(root, read_file if archive is None else archive["reader"], check_sources=not current_record)
     return record
 
 
@@ -430,11 +434,11 @@ def acceptance_declaration(data):
     return ("".join(lines[start:end]).rstrip() + "\n").encode("utf-8")
 
 
-def validate_current(root, proposal, archive):
-    current = json_object(read_file(root, CURRENT_PATH), "current guarantee evidence")
-    exact_keys(current, {"format", "version", "edition", "reviewed_proposal", "semantic_baseline", "binding_review", "validation"}, "current guarantee evidence")
+def validate_current(root, proposal, archive, *, data=None):
+    current = json_object(read_file(root, CURRENT_PATH) if data is None else data, "current guarantee evidence")
+    exact_keys(current, {"format", "version", "edition", "reviewed_proposal", "semantic_baseline", "binding_review", "continuity", "validation"}, "current guarantee evidence")
     require_fields({key: current[key] for key in ("format", "version", "edition", "reviewed_proposal")},
-                   dict(format="qleisli.scoped-guarantee-current-evidence", version=1, edition="2026",
+                   dict(format="qleisli.scoped-guarantee-current-evidence", version=2, edition="2026",
                         reviewed_proposal=dict(path=PROPOSAL_PATH, sha256=PROPOSAL_SHA256)), "current guarantee evidence")
     baseline = current["semantic_baseline"]
     exact_keys(baseline, {"path", "sha256"}, "semantic baseline binding")
@@ -442,12 +446,9 @@ def validate_current(root, proposal, archive):
     data = checked_file(root, SEMANTIC_PATH, baseline["sha256"])
     expected = expected_semantic_baseline(archive, proposal)
     require(json_object(data, "semantic baseline") == expected, "semantic baseline differs from the admitted historical dependency closure")
-    for name, sha in expected["files"].items():
-        require(digest(read_file(root, name)) == sha,
-                f"admitted semantic dependency changed: {name}; a checked current-artifact semantic transport is required and is not implemented by this schema")
-    for declaration in expected["binding_declarations"]:
-        require(digest(acceptance_declaration(read_file(root, declaration["path"]))) == declaration["source_sha256"],
-                "admitted Acceptance binding fields changed; current-artifact semantic transport is required")
+    # The original source manifest remains an immutable historical record.
+    # Actual current meanings are bound by the elaborated identity transport;
+    # source formatting and theorem proof-body changes need not repin history.
     for name in ("lean/lean-toolchain", "lean-kernel/lean-toolchain"):
         require(read_file(root, name).decode("utf-8").strip() == TOOLCHAIN,
                 "the admitted semantic baseline requires the recorded Lean/Std toolchain; toolchain changes need reviewed transport support")
@@ -464,7 +465,9 @@ def validate_current(root, proposal, archive):
                    dict(argv=BINDING_ARGV, cwd="lean", exit_code=0, stdout=BINDING_STDOUT, stderr=BINDING_STDERR),
                    "binding review command")
     duration(command["seconds"], "binding review command")
-    return validate_evidence(root, proposal, record=current["validation"])
+    record = validate_evidence(root, proposal, record=current["validation"])
+    continuity.validate(root, current["continuity"], record["source_revision"], archive)
+    return record
 
 
 def check(root=ROOT, *, verify_lean=False, require_adopted=False):
@@ -473,23 +476,28 @@ def check(root=ROOT, *, verify_lean=False, require_adopted=False):
     archive = historical_sources(root, proposal)
     validate_proposal(root, proposal, archive["reader"])
     validate_evidence(root, proposal, archive=archive)
-    record = validate_current(root, proposal, archive)
+    current_bytes = read_file(root, CURRENT_PATH)
+    record = validate_current(root, proposal, archive, data=current_bytes)
     if require_adopted:
         raise PacketError("this historical proposal checker cannot establish human admission; use check_constitution.py for the separately recorded event and live ledger")
     if verify_lean:
         replay_review(root)
         replay_review(root, BINDING_ARGV, BINDING_STDOUT, BINDING_STDERR)
+        current = json_object(current_bytes, "current guarantee evidence")
+        continuity.replay(root, current["continuity"], record["source_revision"], archive)
         # Detect source/record changes while the external command was running.
         checked_file(root, PROPOSAL_PATH, PROPOSAL_SHA256)
-        validate_current(root, proposal, archive)
-    return {"mode": "current-Lean-review-output-and-source-identity" if verify_lean else "source-identity-only",
+        require(read_file(root, CURRENT_PATH) == current_bytes, "current evidence changed during Lean replay")
+        validate_current(root, proposal, archive, data=current_bytes)
+        require(read_file(root, CURRENT_PATH) == current_bytes, "current evidence changed during Lean replay")
+    return {"mode": "current-Lean-identity-transport-and-source-identity" if verify_lean else "source-identity-only",
             "scoped_guarantees": 2, "admitted_by_this_check": 0, "source_revision": record["source_revision"]["sha256"]}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
-    parser.add_argument("--verify-lean", action="store_true", help="compare actual type/axiom output in the already-built Lean environment")
+    parser.add_argument("--verify-lean", action="store_true", help="check actual type/axiom output and elaborated current-artifact identity in the already-built Lean environment")
     parser.add_argument("--require-adopted", action="store_true", help="fail: use check_constitution.py to validate the separate human admission event")
     args = parser.parse_args(argv)
     try:

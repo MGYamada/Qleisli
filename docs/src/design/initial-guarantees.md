@@ -109,19 +109,34 @@ reviewed source and registry are retained beside the first validation record;
 evidence and acceptance sources. An unrelated source change can update that
 binding after checking without rewriting the protected meaning or human act.
 
-The current checker also protects the independent semantic dependency closure
-and every field of the actual `Acceptance` witness. The proof lane elaborates
-and compares `Acceptance` and the decoded `Artifact` structure, as well as the
-original theorem review. This matters because an unchanged theorem's outer
-type can hide a weakened witness field. The retained enforcement counterexample
+The current checker protects the elaborated independent semantic dependency
+closure and every field of the actual `Acceptance` witness. Its fixed extractor
+compares exact definition bodies, types, constructors and recursor rules with a
+baseline rebuilt from the approved historical source archive. The proof lane
+also retains the original theorem and `Acceptance`/`Artifact` reviews. This
+matters because an unchanged theorem's outer type can hide a weakened witness
+field. The retained enforcement counterexample
 at `tests/fixtures/constitution_v030/witness-weakening/` compiled after replacing
-the original-packet binding with `True`; the repaired checker rejects that same
+the original-packet binding with `True`; the live Lean comparison rejects that
 change even when mutable source identities are refreshed. It is a regression
 in evidence enforcement, not a counterexample to the admitted theorems.
 
-Changing the protected representation currently fails closed. A future checked
-semantic transport must justify continuity before that protection is changed;
-an updated hash or an implication about an obsolete checker is insufficient.
+This first identity transport permits formatting and theorem proof-body changes
+that preserve the exact elaborated closure. The actual current checker's body
+may change within the protected dependency closure; its type and successful
+input-byte/original-root theorem types remain fixed and checked. Binder and
+universe names, module origins, definition proof subterms and semantic
+representations remain conservatively protected. Representation-changing
+transport is still unimplemented. The historical/current extraction and compiled
+weakening, decoder and proof-refactor examples are preserved in
+`tests/fixtures/constitution_v030/initial-guarantees-continuity/`.
+
+Default checks validate recorded identities only. `--verify-lean` executes the
+fixed extractor in the built/audited current environment and fixes the current
+evidence record for the whole run, rejecting concurrent source/evidence
+replacement. A recorded hash or implication about an obsolete checker cannot
+substitute for that check. The original admission, two scoped guarantees and
+three broader pending duties are unchanged.
 
 ## Authoritative proposal record
 

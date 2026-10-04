@@ -22,8 +22,14 @@ binds two declarations, independent predicates and current proof evidence to
 the current Lean source closure. The always-run job checks identities and rejection regressions;
 `model`/`full` also compare elaborated types, axioms and the complete Acceptance
 and Artifact structure fields after building and auditing the Lean environment.
-The independent semantic dependency closure and original byte-binding witness
-cannot be weakened by refreshing mutable source hashes. Historical reviewed meanings remain protected
+The fixed continuity extractor additionally compares the actual elaborated
+definition/constructor/recursor closure with the separately rebuilt historical
+baseline. This permits unchanged-meaning source formatting and theorem proof
+maintenance while rejecting witness, decoder or predicate weakening. Current
+checker-success types still quantify the actual input bytes and original root;
+recorded extraction alone is not a live proof check. Source and evidence records
+must remain unchanged throughout replay. Representation-changing transport is
+not yet supported. Historical reviewed meanings remain protected
 separately from current implementation evidence. These checks preserve the
 recorded admission; they cannot supply the human adequacy judgment or complete
 production-wide QS, PR or RS.

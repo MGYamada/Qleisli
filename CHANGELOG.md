@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check current-artifact continuity for the two admitted QLV1 guarantees against
+  an elaborated historical baseline. Allow unchanged-meaning formatting and
+  theorem proof maintenance, reject witness/decoder weakening and concurrent
+  evidence replacement, and preserve the original human admission (#141).
 - Share declaration identities, import visibility and dependency graph traversal
   across finite compilation and sized checking/elaboration. Retain existing
   profile differences, canonical evidence names and provider identities; local

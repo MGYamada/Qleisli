@@ -1,0 +1,38 @@
+{
+  "format": "qleisli.scoped-guarantee-continuity-baseline",
+  "version": 1,
+  "edition": "2026",
+  "lean_toolchain": "leanprover/lean4:v4.30.0",
+  "reviewed_proposal": {
+    "path": "governance/proposals/initial-guarantees.json",
+    "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
+  },
+  "source_archive": {
+    "path": "tests/fixtures/constitution_v030/initial-guarantees/reviewed-source.tar.gz",
+    "sha256": "8cdfc71a2ca583a3c41a46717b847e6ba904ccffdbb57a768b360d0c88c9e6f3"
+  },
+  "historical_source_revision_sha256": "421ff6eb8911da073fb864d4cc0deaa56b29fe4e4efb0252c72504cec2136bad",
+  "extractor": {
+    "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean",
+    "sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77"
+  },
+  "expressions": {
+    "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/reviewed-expressions.json.gz",
+    "sha256": "915be2d4f48f7e96d39f20735f665827bbfbc5ccb0d3d8705e6d6e72ffe34aa9",
+    "uncompressed_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b"
+  },
+  "declarations": 1244,
+  "project_declarations": 965,
+  "external_dependency_manifests": {
+    "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936",
+    "lean-kernel/lake-manifest.json": "5eb05929ae45cf44747aceac9fd93aaa01ea3e7e12ac19c159d280fc5abe8e28"
+  },
+  "generation_evidence": {
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/historical-build-command.json": "cf971862e9ec9f997a53626a2831841d4a2fdc37d0767859a4f0de471b6ccae2",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/historical-build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/historical-build.stdout.txt": "f7e732fb4684568ab51a7458e70b49d83c13ad2d6c59f58592732b5aa634359d",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/historical-extraction-command.json": "9064153528e516f94bfe40470326bfdd9f344ef612b5157bea3961bd6726caa5",
+    "tests/fixtures/constitution_v030/initial-guarantees-continuity/historical-setup.json": "ff17b4facd9100b72705387c9616b5aac4bfc5a37c44c1158a44c947e7da7476"
+  },
+  "scope": "Identity transport of elaborated definitions, constructors, recursors and theorem types from the approved source archive. Only theorem proof bodies and expression metadata are omitted; definition proof subterms, binder and universe names, and module origins remain exact. The current checker body may evolve but its type and the actual checker-success theorem types remain fixed. No representation-changing transport, new guarantee admission or release approval."
+}

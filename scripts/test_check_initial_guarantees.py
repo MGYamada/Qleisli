@@ -4,6 +4,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 
 import copy
+import gzip
 import json
 import os
 from pathlib import Path
@@ -29,6 +30,10 @@ def copy_evidence_fixture(destination):
         checker.VALIDATION_PATH, checker.PROPOSAL_PATH, checker.ADOPTION_PATH, checker.REVIEWED_PATH,
         checker.ARCHIVE_PATH, checker.ARCHIVED_REGISTRY_PATH, checker.SEMANTIC_PATH,
         checker.BINDING_SOURCE, checker.BINDING_STDOUT, checker.BINDING_STDERR}
+    continuity = checker.continuity
+    baseline = json.loads((ROOT / continuity.BASELINE_PATH).read_bytes())
+    names.update({continuity.BASELINE_PATH, continuity.EXTRACTOR_PATH, continuity.REVIEWED_PATH,
+                  continuity.CURRENT_PATH, continuity.STDERR_PATH, *baseline["generation_evidence"]})
     for name in names:
         path = destination / name
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -41,6 +46,7 @@ def copy_evidence_fixture(destination):
     current = json.loads((ROOT / checker.CURRENT_PATH).read_bytes())
     current["validation"] = copy.deepcopy(record)
     current["validation"]["status"] = "checked-current-evidence"
+    current["continuity"]["source_revision_sha256"] = record["source_revision"]["sha256"]
     (destination / checker.CURRENT_PATH).write_text(json.dumps(current), encoding="utf-8")
     return record, proposal
 
@@ -67,7 +73,7 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         current["validation"]["status"] = "checked-current-evidence"
         self.write_json(checker.CURRENT_PATH, current)
 
-    def refresh_test_current_identity(self):
+    def refresh_test_current_identity(self, *, continuity_replayed=False):
         """Synthesize updated records for identity-only tests, not real proof evidence."""
         revision = checker.registry.source_revision(self.root)
         manifest = json.loads((self.root / checker.REGISTRY_PATH).read_bytes())
@@ -85,6 +91,12 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         del record["files"][checker.AUDIT_PATH]
         record["files"][checker.CURRENT_AUDIT_PATH] = checker.digest((self.root / checker.CURRENT_AUDIT_PATH).read_bytes())
         self.write_record(record)
+        if continuity_replayed:
+            # Synthetic metadata for unit tests only; real evidence is obtained
+            # by the fixed extractor in the built/audited current environment.
+            current = json.loads((self.root / checker.CURRENT_PATH).read_bytes())
+            current["continuity"]["source_revision_sha256"] = revision["sha256"]
+            self.write_json(checker.CURRENT_PATH, current)
         return revision
 
     def test_default_checks_identity_without_lean_or_a_local_native_binary(self):
@@ -296,13 +308,18 @@ class InitialGuaranteeEvidence(unittest.TestCase):
     def test_replay_runs_only_fixed_review_command_and_compares_both_streams(self):
         stdout = (self.root / checker.REVIEW_STDOUT).read_bytes()
         def successful(argv, **kwargs):
-            output = checker.REVIEW_STDOUT if argv == checker.REVIEW_ARGV else checker.BINDING_STDOUT
-            return subprocess.CompletedProcess(argv, 0, (self.root / output).read_bytes(), b"")
+            if argv == checker.continuity.ARGV:
+                data = gzip.decompress((self.root / checker.continuity.CURRENT_PATH).read_bytes())
+            else:
+                output = checker.REVIEW_STDOUT if argv == checker.REVIEW_ARGV else checker.BINDING_STDOUT
+                data = (self.root / output).read_bytes()
+            return subprocess.CompletedProcess(argv, 0, data, b"")
         with patch.object(checker.subprocess, "run", side_effect=successful) as run:
             checked = checker.check(self.root, verify_lean=True)
             self.assertEqual(run.call_args_list, [call(checker.REVIEW_ARGV, cwd=self.root / "lean", capture_output=True, check=False),
-                                                 call(checker.BINDING_ARGV, cwd=self.root / "lean", capture_output=True, check=False)])
-        self.assertEqual(checked["mode"], "current-Lean-review-output-and-source-identity")
+                                                 call(checker.BINDING_ARGV, cwd=self.root / "lean", capture_output=True, check=False),
+                                                 call(checker.continuity.ARGV, cwd=self.root / "lean", capture_output=True, check=False)])
+        self.assertEqual(checked["mode"], "current-Lean-identity-transport-and-source-identity")
         for code, out, err in ((1, stdout, b"proof failed"), (0, stdout + b"changed", b""), (0, stdout, b"warning")):
             with self.subTest(code=code, stderr=err):
                 result = subprocess.CompletedProcess(checker.REVIEW_ARGV, code, out, err)
@@ -313,8 +330,12 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         def edit_source(argv, **kwargs):
             path = self.root / checker.NATIVE_SOURCE
             path.write_bytes(path.read_bytes() + b"\n-- changed during Lean\n")
-            output = checker.REVIEW_STDOUT if argv == checker.REVIEW_ARGV else checker.BINDING_STDOUT
-            return subprocess.CompletedProcess(argv, 0, (self.root / output).read_bytes(), b"")
+            if argv == checker.continuity.ARGV:
+                data = gzip.decompress((self.root / checker.continuity.CURRENT_PATH).read_bytes())
+            else:
+                output = checker.REVIEW_STDOUT if argv == checker.REVIEW_ARGV else checker.BINDING_STDOUT
+                data = (self.root / output).read_bytes()
+            return subprocess.CompletedProcess(argv, 0, data, b"")
         with patch.object(checker.subprocess, "run", side_effect=edit_source):
             self.rejected("stale source identity", verify_lean=True)
 
@@ -322,7 +343,7 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         before = (self.root / checker.VALIDATION_PATH).read_bytes()
         path = self.root / "lean/Qleisli/NativeValidity.lean"
         path.write_bytes(path.read_bytes() + b"\n-- implementation-only proof maintenance\n")
-        revision = self.refresh_test_current_identity()
+        revision = self.refresh_test_current_identity(continuity_replayed=True)
         result = checker.check(self.root)
         self.assertEqual(result["source_revision"], revision["sha256"])
         self.assertNotEqual(result["source_revision"], self.record["source_revision"]["sha256"])
@@ -333,7 +354,7 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         path = self.root / "lean-kernel/QleisliKernel/Semantics/Raw.lean"
         path.write_bytes(path.read_bytes() + b"\n-- semantic-source change requires transport review\n")
         self.refresh_test_current_identity()
-        self.rejected("admitted semantic dependency changed.*transport")
+        self.rejected("stale continuity extraction")
 
     def test_rebound_current_source_cannot_silently_replace_the_standard_library_basis(self):
         (self.root / "lean/lean-toolchain").write_text("leanprover/lean4:v4.31.0\n")
@@ -374,7 +395,7 @@ class InitialGuaranteeEvidence(unittest.TestCase):
                                                 "requirement,b,c,True.intro,hd,hr,ha,result.1.symm")
                 path.write_text(weakened)
                 self.refresh_test_current_identity()
-                self.rejected("Acceptance binding fields changed")
+                self.rejected("stale continuity extraction")
 
     def test_artifact_root_representation_cannot_escape_the_semantic_baseline(self):
         path = self.root / "lean-kernel/QleisliKernel/Semantics/Qirf.lean"
@@ -383,7 +404,7 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         self.assertNotEqual(changed, original)
         path.write_text(changed)
         self.refresh_test_current_identity()
-        self.rejected("admitted semantic dependency changed")
+        self.rejected("stale continuity extraction")
 
     def test_elaborated_binding_review_detects_changed_field_meaning_even_when_outer_types_match(self):
         first = subprocess.CompletedProcess(checker.REVIEW_ARGV, 0, (self.root / checker.REVIEW_STDOUT).read_bytes(), b"")
@@ -410,6 +431,105 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         current["binding_review"]["command"]["argv"] = ["true"]
         self.write_json(checker.CURRENT_PATH, current)
         self.rejected("binding review command")
+
+
+    def test_semantic_source_formatting_and_proof_body_changes_use_identity_transport(self):
+        before = (self.root / checker.PROPOSAL_PATH).read_bytes()
+        path = self.root / "lean-kernel/QleisliKernel/Semantics/Ownership.lean"
+        path.write_bytes(path.read_bytes().replace(b"def OwnershipSafe", b"def   OwnershipSafe"))
+        path = self.root / checker.NATIVE_SOURCE
+        path.write_text(path.read_text().replace("exact ⟨binding,", "exact id ⟨binding,"))
+        self.refresh_test_current_identity(continuity_replayed=True)
+        # This verifies the identity-record protocol, not Lean proof execution.
+        # The fixture's isolated real Lean tests cover an actual proof refactor.
+        self.assertEqual(checker.check(self.root)["mode"], "source-identity-only")
+        self.assertEqual((self.root / checker.PROPOSAL_PATH).read_bytes(), before)
+
+    def test_continuity_evidence_cannot_omit_rebind_or_select_another_extractor(self):
+        original = (self.root / checker.CURRENT_PATH).read_bytes()
+        for action in ("omit", "stale", "extractor", "baseline", "command", "stdout", "stderr", "promote"):
+            with self.subTest(action=action):
+                current = json.loads(original)
+                binding = current["continuity"]
+                if action == "omit":
+                    del current["continuity"]
+                elif action == "stale":
+                    binding["source_revision_sha256"] = "0" * 64
+                elif action in {"extractor", "baseline"}:
+                    binding[action]["sha256"] = "0" * 64
+                elif action == "command":
+                    binding["command"]["argv"] = ["true"]
+                elif action in {"stdout", "stderr"}:
+                    binding[action]["path"] = "../../other"
+                else:
+                    binding["discharged_guarantees"] = ["QS-2026-01"]
+                self.write_json(checker.CURRENT_PATH, current)
+                self.rejected()
+
+    def test_historical_continuity_artifacts_are_confined_and_cannot_be_rebound(self):
+        for name in (checker.continuity.BASELINE_PATH, checker.continuity.EXTRACTOR_PATH,
+                     checker.continuity.REVIEWED_PATH, checker.continuity.CURRENT_PATH,
+                     checker.continuity.STDERR_PATH):
+            with self.subTest(name=name):
+                path = self.root / name
+                original = path.read_bytes()
+                path.write_bytes(original + b"changed")
+                self.rejected("SHA-256 mismatch")
+                path.unlink()
+                path.symlink_to(ROOT / name)
+                self.rejected("cannot read")
+                path.unlink()
+                path.write_bytes(original)
+
+    def test_actual_extraction_must_match_full_closed_meaning_even_with_rebound_records(self):
+        continuity = checker.continuity
+        output = gzip.decompress((self.root / continuity.CURRENT_PATH).read_bytes())
+        rows = json.loads(output)
+        def run_with_extraction(data, code=0, stderr=b""):
+            def run(argv, **kwargs):
+                if argv == continuity.ARGV:
+                    return subprocess.CompletedProcess(argv, code, data, stderr)
+                path = checker.REVIEW_STDOUT if argv == checker.REVIEW_ARGV else checker.BINDING_STDOUT
+                return subprocess.CompletedProcess(argv, 0, (self.root / path).read_bytes(), b"")
+            return run
+        for action in ("root-omission", "declaration-omission", "theorem-substitution", "definition-weakening", "origin", "universe", "constructor"):
+            with self.subTest(action=action):
+                modified = copy.deepcopy(rows)
+                if action == "root-omission":
+                    modified["roots"].pop()
+                elif action == "declaration-omission":
+                    modified["declarations"].pop()
+                else:
+                    # Every nested Expr and origin is part of the exact snapshot;
+                    # changing a type, body, constructor or binder cannot hide
+                    # behind pretty-printing or another closed theorem.
+                    selected = next(row for row in modified["declarations"] if row["project"])
+                    selected["module" if action == "origin" else "declaration"] = [action]
+                data = json.dumps(modified).encode()
+                with patch.object(checker.subprocess, "run", side_effect=run_with_extraction(data)):
+                    self.rejected("current elaborated meaning", verify_lean=True)
+        for code, err in ((1, b"unknown origin"), (0, b"warning")):
+            with patch.object(checker.subprocess, "run", side_effect=run_with_extraction(output, code, err)):
+                self.rejected("extraction failed|diagnostics", verify_lean=True)
+
+    def test_live_replay_rejects_simultaneous_source_and_evidence_rebinding(self):
+        def rebind_after_extraction(argv, **kwargs):
+            if argv == checker.continuity.ARGV:
+                data = gzip.decompress((self.root / checker.continuity.CURRENT_PATH).read_bytes())
+                path = self.root / checker.NATIVE_SOURCE
+                path.write_bytes(path.read_bytes() + b"\n-- concurrently rebound source\n")
+                self.refresh_test_current_identity(continuity_replayed=True)
+                return subprocess.CompletedProcess(argv, 0, data, b"")
+            output = checker.REVIEW_STDOUT if argv == checker.REVIEW_ARGV else checker.BINDING_STDOUT
+            return subprocess.CompletedProcess(argv, 0, (self.root / output).read_bytes(), b"")
+        with patch.object(checker.subprocess, "run", side_effect=rebind_after_extraction):
+            self.rejected("current evidence changed during Lean replay", verify_lean=True)
+
+    def test_dependency_manifest_change_cannot_create_a_new_external_trust_boundary(self):
+        path = self.root / "lean/lake-manifest.json"
+        path.write_bytes(path.read_bytes() + b" ")
+        self.refresh_test_current_identity(continuity_replayed=True)
+        self.rejected("external dependency manifest changed")
 
 
 if __name__ == "__main__":
