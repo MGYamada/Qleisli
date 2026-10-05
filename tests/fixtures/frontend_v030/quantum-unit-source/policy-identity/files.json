@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "scope": "Source-only policy/identity record, excluding this manifest.",
+  "files": {
+    "README.md": "a382a5631e9804c7a9effae768c195bc1c905b36b465db0a2ae53af220a94990",
+    "actual/1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/1.stdout.txt": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+    "actual/2.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/2.stdout.txt": "7140b625c917644231ddc76b36302c88a0e15dadf4517f03273f686fa897ddca",
+    "actual/3.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/3.stdout.txt": "a444e3cf88c936ba9e3082817919c9a217ab2a3baf26dd9e3db8e75a7e4583d3",
+    "actual/4.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual/4.stdout.txt": "3db74f9c5bdaaa695b31216512c48baafc39ec1b6e7f4ea12e540d02890ffcc9",
+    "actual/commands.json": "c66483aba9164346fc7506798fbedbf03cb87ded56547f40cf94584191f47dc4",
+    "actual/inputs-after.json": "f2be5afe0bb02ca492b764714cf0a91af848cff4174596c19c605d1c2aea758f",
+    "actual/inputs-before.json": "f2be5afe0bb02ca492b764714cf0a91af848cff4174596c19c605d1c2aea758f",
+    "actual/result.json": "a35d411787cbfbc4764b83d940f6e540667c0d4a2d7b2a58c78d4391ba5f8392",
+    "record.py": "6a3cd3be82ff08c5a3361b65e6414a924879207f249c7ca031a245f599df10b1"
+  }
+}

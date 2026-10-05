@@ -1,0 +1,37 @@
+94	2026-10-04T23:13:10.2132283Z ##[group]Fetching the repository
+95	2026-10-04T23:13:10.2141615Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +dca850b5e8b543af36cf1a907826a7a819dd9a4b:refs/remotes/pull/307/merge
+96	2026-10-04T23:13:11.8912252Z From https://github.com/MGYamada/Qleisli
+97	2026-10-04T23:13:11.8913310Z  * [new ref]         dca850b5e8b543af36cf1a907826a7a819dd9a4b -> pull/307/merge
+98	2026-10-04T23:13:11.8917397Z ##[endgroup]
+99	2026-10-04T23:13:11.8918257Z ##[group]Determining the checkout info
+121	2026-10-04T23:13:12.5005510Z 
+122	2026-10-04T23:13:12.5006370Z HEAD is now at dca850b Merge d753962de3eedd39629c8441f2b82521ce01d70f into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+123	2026-10-04T23:13:12.5028819Z ##[endgroup]
+124	2026-10-04T23:13:12.5079385Z [command]/usr/bin/git log -1 --format=%H
+125	2026-10-04T23:13:12.5107620Z dca850b5e8b543af36cf1a907826a7a819dd9a4b
+126	2026-10-04T23:13:12.5645237Z ##[group]Run leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596
+127	2026-10-04T23:13:12.5645683Z with:
+471	2026-10-04T23:15:28.9286299Z 
+472	2026-10-04T23:15:28.9327441Z ##[group]Run cargo +1.98.1 fetch
+473	2026-10-04T23:15:28.9327772Z [36;1mcargo +1.98.1 fetch[0m
+474	2026-10-04T23:15:28.9390498Z shell: /usr/bin/bash -e {0}
+485	2026-10-04T23:15:29.1644763Z   Downloaded windows-sys v0.61.2
+486	2026-10-04T23:15:29.2397467Z ##[group]Run python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
+487	2026-10-04T23:15:29.2398609Z [36;1mpython3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"[0m
+488	2026-10-04T23:15:29.2461756Z shell: /usr/bin/bash -e {0}
+491	2026-10-04T23:15:29.2462901Z ##[endgroup]
+492	2026-10-04T23:16:01.4166455Z command failed (101): ['cargo', 'rustdoc', '--offline', '--locked', '--lib', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/package-docs'), '--', '-D', 'warnings']; see /home/runner/work/_temp/qleisli-distribution-artifacts-gtvdis81/logs/10.stderr
+493	2026-10-04T23:16:01.4171903Z Distribution validation failed; report: /home/runner/work/_temp/qleisli-distribution.json
+494	2026-10-04T23:16:01.4464930Z ##[error]Process completed with exit code 1.
+495	2026-10-04T23:16:01.4534275Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+496	2026-10-04T23:16:01.4534681Z with:
+497	2026-10-04T23:16:01.4534962Z   name: distribution-dca850b5e8b543af36cf1a907826a7a819dd9a4b
+498	2026-10-04T23:16:01.4536280Z   path: /home/runner/work/_temp/qleisli-distribution.json
+499	/home/runner/work/_temp/qleisli-distribution-artifacts-*/logs/
+500	/home/runner/work/_temp/qleisli-distribution-artifacts-*/*.crate
+501	/home/runner/work/_temp/qleisli-distribution-artifacts-*/*-source.tar
+524	2026-10-04T23:16:04.0672937Z Finalizing artifact upload
+525	2026-10-04T23:16:04.3034451Z Artifact distribution-dca850b5e8b543af36cf1a907826a7a819dd9a4b.zip successfully finalized. Artifact ID 11317129248
+526	2026-10-04T23:16:04.3036821Z Artifact distribution-dca850b5e8b543af36cf1a907826a7a819dd9a4b has been successfully uploaded! Final size is 34134611 bytes. Artifact ID is 11317129248
+527	2026-10-04T23:16:04.3044186Z Artifact download URL: https://github.com/MGYamada/Qleisli/actions/runs/37242938514/artifacts/11317129248
+528	2026-10-04T23:16:04.3296356Z Post job cleanup.

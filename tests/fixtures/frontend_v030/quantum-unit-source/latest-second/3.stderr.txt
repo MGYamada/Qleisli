@@ -1,0 +1,17 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+error[E0282]: type annotations needed
+    --> src/frontend/sized/elaborate.rs:1169:25
+     |
+1169 |                     let values = inputs
+     |                         ^^^^^^
+...
+1174 |                         primitive(kind, &naturals, values.first().map(|value| &value.ty), span)?;
+     |                                                    ------ type must be known at this point
+     |
+help: consider giving `values` an explicit type
+     |
+1169 |                     let values: Vec<_> = inputs
+     |                               ++++++++
+
+For more information about this error, try `rustc --explain E0282`.
+error: could not compile `qleisli` (lib) due to 1 previous error

@@ -1,0 +1,70 @@
+{
+  "scope": "Source/evidence identity, supplied-base continuity, maintained inventory/route metadata and handoff documentation; no fresh proof replay or release approval.",
+  "trusted_base": "d753962de3eedd39629c8441f2b82521ce01d70f",
+  "trusted_base_origin": "Exact previously reviewed commit supplied by the parent task; not inferred from the current checkout.",
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "recorder_sha256": "6a3cd3be82ff08c5a3361b65e6414a924879207f249c7ca031a245f599df10b1",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "d753962de3eedd39629c8441f2b82521ce01d70f"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:36:45.208470+00:00",
+      "elapsed_seconds": 1.169301624991931,
+      "exit_code": 0,
+      "stdout": "1.stdout.txt",
+      "stdout_sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "stderr": "1.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:36:46.378891+00:00",
+      "elapsed_seconds": 0.5101609170087613,
+      "exit_code": 0,
+      "stdout": "2.stdout.txt",
+      "stdout_sha256": "7140b625c917644231ddc76b36302c88a0e15dadf4517f03273f686fa897ddca",
+      "stderr": "2.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:36:46.890013+00:00",
+      "elapsed_seconds": 0.1284556249738671,
+      "exit_code": 0,
+      "stdout": "3.stdout.txt",
+      "stdout_sha256": "a444e3cf88c936ba9e3082817919c9a217ab2a3baf26dd9e3db8e75a7e4583d3",
+      "stderr": "3.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T00:36:47.020216+00:00",
+      "elapsed_seconds": 1.9033494159812108,
+      "exit_code": 0,
+      "stdout": "4.stdout.txt",
+      "stdout_sha256": "3db74f9c5bdaaa695b31216512c48baafc39ec1b6e7f4ea12e540d02890ffcc9",
+      "stderr": "4.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

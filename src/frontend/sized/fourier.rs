@@ -77,7 +77,10 @@ fn spend(work: &mut usize, amount: usize) -> Option<()> {
     Some(())
 }
 fn h_leaf(node: &Node, body: &Value) -> Option<()> {
-    if node.before.len() != 1 || node.after.len() != 1 || !node.before[0].bit || !node.after[0].bit
+    if node.before.len() != 1
+        || node.after.len() != 1
+        || node.before[0].kind != PortKind::Bit
+        || node.after[0].kind != PortKind::Bit
     {
         return None;
     }
@@ -132,7 +135,7 @@ fn structural_route(node: &Node, body: &Value) -> Option<Vec<usize>> {
         "pack_empty_bits"
             if node.before.is_empty()
                 && node.after.len() == 1
-                && !node.after[0].bit
+                && node.after[0].kind == PortKind::Bits
                 && node.after[0].axes.is_empty() =>
         {
             return Some(vec![]);
@@ -140,7 +143,7 @@ fn structural_route(node: &Node, body: &Value) -> Option<Vec<usize>> {
         "unpack_empty_bits"
             if node.after.is_empty()
                 && node.before.len() == 1
-                && !node.before[0].bit
+                && node.before[0].kind == PortKind::Bits
                 && node.before[0].axes.is_empty() =>
         {
             return Some(vec![]);
@@ -151,9 +154,9 @@ fn structural_route(node: &Node, body: &Value) -> Option<Vec<usize>> {
     let position = nat(op, "position")?;
     if register.len() != 1
         || pair.len() != 2
-        || register[0].bit
-        || !pair[0].bit
-        || pair[1].bit
+        || register[0].kind != PortKind::Bits
+        || pair[0].kind != PortKind::Bit
+        || pair[1].kind != PortKind::Bits
         || register[0].axes.len() != width
         || position >= width
         || pair[0].axes.len() != 1
@@ -217,7 +220,7 @@ fn node_trace(
         "dyadic_phase" => {
             if node.before != node.after
                 || node.before.len() != 1
-                || !node.before[0].bit
+                || node.before[0].kind != PortKind::Bit
                 || nat(body, "target")? != node.before[0].owner as usize
             {
                 return None;
@@ -246,7 +249,7 @@ fn node_trace(
             let mut output_start = 0;
             for (out, &input) in node.after.iter().zip(&owners) {
                 let input_start: usize = node.before[..input].iter().map(|p| p.axes.len()).sum();
-                if out.bit != node.before[input].bit
+                if out.kind != node.before[input].kind
                     || out.axes.len() != node.before[input].axes.len()
                     || route[output_start..output_start + out.axes.len()]
                         != (input_start..input_start + out.axes.len()).collect::<Vec<_>>()
@@ -337,7 +340,7 @@ fn node_trace(
             if !body.field("polarity").ok()?.boolean().ok()?
                 || node.before != node.after
                 || node.before.is_empty()
-                || !node.before[0].bit
+                || node.before[0].kind != PortKind::Bit
                 || node.before[1..] != d.before
                 || d.before != d.after
                 || t.route != (0..t.route.len()).collect::<Vec<_>>()
@@ -460,7 +463,7 @@ impl Builder<'_, '_> {
             .ok_or_else(|| limit("owner identities exhausted"))?;
         Ok(Port {
             owner: self.lower.owner,
-            bit,
+            kind: if bit { PortKind::Bit } else { PortKind::Bits },
             axes,
         })
     }
@@ -605,8 +608,8 @@ impl Lower<'_> {
         let node = &self.graph.nodes[original];
         if node.before.len() != 1
             || node.after.len() != 1
-            || node.before[0].bit
-            || node.after[0].bit
+            || node.before[0].kind != PortKind::Bits
+            || node.after[0].kind != PortKind::Bits
             || node.before[0].axes.len() != node.after[0].axes.len()
         {
             return Ok(original);
@@ -848,7 +851,7 @@ mod tests {
         };
         let input = Port {
             owner: 1,
-            bit: true,
+            kind: PortKind::Bit,
             axes: vec![0],
         };
         let output = Port {
@@ -872,7 +875,7 @@ mod tests {
         let (mut lower, _, _) = factor(&source);
         let input = Port {
             owner: 900,
-            bit: true,
+            kind: PortKind::Bit,
             axes: vec![7],
         };
         let output = Port {

@@ -9,7 +9,10 @@ use crate::contract::{
     exact::{Exact, Matrix},
 };
 use crate::interchange::{self, RootInterface, Version};
-use crate::ir::{BasisShape, Effect, QuantumPort, RawOp, RawProgram, SingleGate, TokenId, WireId};
+use crate::ir::{
+    BasisShape, CircuitAction, CircuitStep, Effect, QuantumPort, RawOp, RawProgram, SingleGate,
+    TokenId, WireId,
+};
 use std::collections::{BTreeMap, BTreeSet};
 #[path = "fourier.rs"]
 mod fourier;
@@ -141,10 +144,30 @@ fn tagged(tag: &str, fields: &[(&str, String)]) -> String {
     object(&result)
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum PortKind {
+    Unit,
+    Bit,
+    Bits,
+}
+impl PortKind {
+    fn from_source(ty: &SourceType) -> Result<Self> {
+        if !ty.is_quantum() {
+            return Err(fail("quantum port requires a quantum source type"));
+        }
+        match ty.kind() {
+            "unit" => Ok(Self::Unit),
+            "bit" => Ok(Self::Bit),
+            "bits" => Ok(Self::Bits),
+            _ => Err(fail("unsupported quantum port basis")),
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Port {
     owner: u32,
-    bit: bool,
+    kind: PortKind,
     axes: Vec<u32>,
 }
 impl Port {
@@ -153,10 +176,10 @@ impl Port {
             ("owner", self.owner.to_string()),
             (
                 "basis",
-                array([if self.bit {
-                    tagged("bit", &[])
-                } else {
-                    tagged("bits", &[("width", self.axes.len().to_string())])
+                array([match self.kind {
+                    PortKind::Unit => tagged("unit", &[]),
+                    PortKind::Bit => tagged("bit", &[]),
+                    PortKind::Bits => tagged("bits", &[("width", self.axes.len().to_string())]),
                 }]),
             ),
             ("axes", numbers(self.axes.iter().map(|n| *n as usize))),
@@ -199,9 +222,14 @@ fn validate(ports: &[Port]) -> Result<()> {
     let wires = axes(ports);
     if wires.len() > 16
         || wires.iter().collect::<BTreeSet<_>>().len() != wires.len()
-        || ports
-            .iter()
-            .any(|p| p.axes.len() > 8 || p.bit && p.axes.len() != 1)
+        || ports.iter().any(|p| {
+            p.axes.len() > 8
+                || match p.kind {
+                    PortKind::Unit => !p.axes.is_empty(),
+                    PortKind::Bit => p.axes.len() != 1,
+                    PortKind::Bits => false,
+                }
+        })
     {
         return Err(fail(
             "proposal aliases axes or exceeds the selected quantum profile",
@@ -344,7 +372,7 @@ impl Graph {
             || before
                 .iter()
                 .zip(&after)
-                .any(|(a, b)| a.bit != b.bit || a.axes.len() != b.axes.len())
+                .any(|(a, b)| a.kind != b.kind || a.axes.len() != b.axes.len())
         {
             return Err(fail("proposal rename changes an owner type"));
         }
@@ -556,7 +584,7 @@ fn bind(value: &SourceValue, items: Vec<Item>, values: &mut BTreeMap<u32, Item>)
         match &item {
             Item::Quantum(p)
                 if v.ty().is_quantum()
-                    && p.bit == (v.ty().kind() == "bit")
+                    && p.kind == PortKind::from_source(v.ty())?
                     && p.axes.len() == v.ty().width().unwrap() as usize => {}
             Item::Classical(bits)
                 if !v.ty().is_quantum() && bits.len() == v.ty().width().unwrap_or(0) as usize => {}
@@ -591,16 +619,20 @@ struct Lower<'a> {
 }
 impl Lower<'_> {
     fn fresh(&mut self, ty: &SourceType, axes: Vec<u32>) -> Result<Port> {
-        if !ty.is_quantum() || axes.len() != ty.width().unwrap() as usize {
+        let kind = PortKind::from_source(ty)?;
+        if Some(axes.len() as u32) != ty.width() {
             return Err(fail("invalid quantum port source type"));
         }
+        self.fresh_port(kind, axes)
+    }
+    fn fresh_port(&mut self, kind: PortKind, axes: Vec<u32>) -> Result<Port> {
         self.owner = self
             .owner
             .checked_add(1)
             .ok_or_else(|| limit("owner identities exhausted"))?;
         Ok(Port {
             owner: self.owner,
-            bit: ty.kind() == "bit",
+            kind,
             axes,
         })
     }
@@ -634,6 +666,7 @@ impl Lower<'_> {
                     Primitive::H
                     | Primitive::X
                     | Primitive::Phase
+                    | Primitive::PhaseEighth
                     | Primitive::Cnot
                     | Primitive::ControlledPhase => true,
                     Primitive::Init0
@@ -778,6 +811,68 @@ impl Lower<'_> {
             "finite",
             vec![],
         )
+    }
+    /// A closed scalar with no boundary owners, built from existing checked
+    /// structural and finite nodes. Its internal Unit owner is still explicit;
+    /// an empty physical coordinate list never erases its exact phase.
+    fn closed_scalar(&mut self) -> Result<usize> {
+        let input = self.fresh_port(PortKind::Unit, vec![])?;
+        let output = self.fresh_port(PortKind::Unit, vec![])?;
+        let pack = self
+            .graph
+            .structural(vec![], vec![input.clone()], "pack_unit", &[])?;
+        let raw = RawProgram {
+            quantum_inputs: vec![QuantumPort {
+                token: TokenId(input.owner),
+                wires: vec![],
+                shape: BasisShape::UNIT,
+            }],
+            classical_inputs: vec![],
+            operations: vec![RawOp::ApplyUnitary {
+                input: TokenId(input.owner),
+                output: TokenId(output.owner),
+                steps: vec![CircuitStep {
+                    controls: vec![],
+                    action: CircuitAction::Monomial {
+                        indices: vec![],
+                        permutation: vec![0],
+                        phases: vec![1],
+                    },
+                }],
+            }],
+            quantum_outputs: vec![TokenId(output.owner)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let proposal = interchange::native::Proposal::from_raw(
+            &raw,
+            Some(&RootInterface {
+                input: BasisType::Unit,
+                output: BasisType::Unit,
+            }),
+            Version::V2,
+            None,
+        )
+        .map_err(|e| fail(e.to_string()))?;
+        let program = std::str::from_utf8(proposal.artifact())
+            .map_err(|_| fail("finite scalar program is not UTF-8"))?;
+        let matrix = Matrix::new(1, 1, vec![Exact::phase(1)]).map_err(|e| fail(e.to_string()))?;
+        let description =
+            interchange::finite_matrix::encode(&matrix).map_err(|e| fail(e.to_string()))?;
+        let description = std::str::from_utf8(&description)
+            .map_err(|_| fail("finite scalar description is not UTF-8"))?;
+        let leaf = self.graph.add(
+            vec![input],
+            vec![output.clone()],
+            tagged("leaf", &[("program", quote(program))]),
+            tagged("finite", &[("description", quote(description))]),
+            "finite",
+            vec![],
+        )?;
+        let unpack = self
+            .graph
+            .structural(vec![output], vec![], "unpack_unit", &[])?;
+        self.graph.sequence(vec![pack, leaf, unpack])
     }
     fn closed_gate(&mut self, gate: SingleGate, p: &Port) -> Result<usize> {
         self.owner = self
@@ -978,6 +1073,21 @@ impl Lower<'_> {
                 )?;
                 Ok((node, after))
             }
+            Primitive::PhaseEighth => {
+                if before.len() != 1 || !ns.is_empty() {
+                    return Err(fail(
+                        "scalar phase requires one quantum atom and no static arguments",
+                    ));
+                }
+                let after = self.output_ports(step.output(), vec![before[0].axes.clone()])?;
+                // Keep the source atom's exact basis and owner separately from
+                // the fresh internal zero-axis Unit owner of the scalar.
+                let identity = self.graph.identity(before.clone())?;
+                let scalar = self.closed_scalar()?;
+                let action = self.graph.tensor(identity, scalar)?;
+                let rename = self.graph.rename(before, after.clone())?;
+                Ok((self.graph.sequence(vec![action, rename])?, after))
+            }
             Primitive::Phase | Primitive::ControlledPhase | Primitive::Cnot => {
                 let controlled = name != Primitive::Phase;
                 let target = &before[usize::from(controlled)];
@@ -1118,6 +1228,7 @@ impl Lower<'_> {
                         | Primitive::X
                         | Primitive::Cnot
                         | Primitive::Phase
+                        | Primitive::PhaseEighth
                         | Primitive::ControlledPhase
                         | Primitive::TakeBit
                         | Primitive::PutBit
@@ -1161,6 +1272,7 @@ impl Lower<'_> {
             | Primitive::X
             | Primitive::Cnot
             | Primitive::Phase
+            | Primitive::PhaseEighth
             | Primitive::ControlledPhase
             | Primitive::Init0
             | Primitive::MeasureZ
@@ -1281,12 +1393,12 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
         if needed {
             let input = Port {
                 owner: 1,
-                bit: true,
+                kind: PortKind::Bit,
                 axes: vec![0],
             };
             let output = Port {
                 owner: 2,
-                bit: true,
+                kind: PortKind::Bit,
                 axes: vec![0],
             };
             let child = lower.finite_gate(gate, &input, &output)?;

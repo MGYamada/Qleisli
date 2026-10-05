@@ -1,0 +1,11 @@
+{
+  "attempt": "initial",
+  "all_commands_passed": false,
+  "command_count": 8,
+  "selected_inputs_count": 127,
+  "selected_inputs_changed": [],
+  "commands_sha256": "b2af6993b02818c1e0946109c0847c5f8a2fb7a048cadbe5a83a29569c8e7f95",
+  "inputs_before_sha256": "220a59e5eeaa75c001c5f990bc90eedb3b1eeadeccda4618172acdce7244d405",
+  "inputs_after_sha256": "220a59e5eeaa75c001c5f990bc90eedb3b1eeadeccda4618172acdce7244d405",
+  "scope": "Actual documentation/authoring-integrity checks and scheduler unit tests. The selected manifest loader does not execute native comparisons; no Rust or Lean build was requested by this driver."
+}

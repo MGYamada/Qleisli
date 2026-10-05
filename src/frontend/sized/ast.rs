@@ -74,6 +74,7 @@ pub(super) enum Count {
 
 #[derive(Clone, Debug)]
 pub(super) enum Basis {
+    Unit,
     Bit,
     Bits(Natural),
 }

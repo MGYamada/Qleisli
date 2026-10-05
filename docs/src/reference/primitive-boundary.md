@@ -32,8 +32,8 @@ correctness of every library implementation or name containing `std`. The
 native Lean checker alone issues production acceptance. Rust catalogs,
 recognizers, lowering, simulation and target emission supply no such authority.
 
-The two source catalogs contain **17 finite entries and 13 sized entries**.
-Five fully qualified names overlap: `std::quantum::{h,x,cnot,init0}` and
+The two source catalogs contain **17 finite entries and 14 sized entries**.
+Six fully qualified names overlap: `std::quantum::{h,x,cnot,init0,phase_eighth}` and
 `std::observe::measure_z`. Their union contains **25 distinct names**, not 25
 independent semantic axioms. The source of this count is
 `src/frontend/core.rs::PRIMITIVES` and the `primitives!` declaration in
@@ -95,6 +95,7 @@ parameters below are static natural arguments.
 | `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | The same exact bit flip; a finite leaf is bound to actual source ports. |
 | `std::quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled X over the ordered control/target owners, followed by explicit owner routing. |
 | `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | `diag(1, exp(2πij/2^k))`; emits a dyadic-phase hierarchy proposal. |
+| `std::quantum::phase_eighth` | One `Q<A> -> Q<A>` for current atoms `A = Unit, Bit, Bits<n>`; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
 | `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled application of that exact phase, with the first owner as control; both owners return in order. |
 | `std::quantum::init0` | `() -> Q<Bit>`; Iso | Fresh-zero preparation in the instrument profile. The current lowerer rejects initialization after observation where the needed preservation is unavailable. |
 | `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
@@ -110,8 +111,12 @@ not make arbitrary classical copying, dropping or packing into a reversible
 classical computation. The empty ordinary result has type `Unit` and value
 `()`. `Bits<0>` and `Q<Bits<0>>` are distinct from Unit and from each other.
 
-The actual checks are in `src/frontend/sized/check.rs::primitive_signature`
-and `src/frontend/sized/elaborate.rs::primitive`. Concrete phase arguments require
+The fixed signature checks are in `src/frontend/sized/check.rs::primitive_signature`
+and `src/frontend/sized/elaborate.rs::primitive`. The shared
+`primitive.rs::quantum_endomorphism` checks the scalar primitive's exact
+input-dependent type in both symbolic and concrete paths. It takes no static
+arguments and exactly one quantum atom, evaluated once; ordinary Unit and
+tuples of separate owners reject. Concrete phase arguments require
 `k <= 8` and `j < 2^k`; concrete register operations require `k < n <= 8`;
 classical prepend requires `n < 8`. These are current preparation capacities,
 not general-size semantic theorems. Aggregate elaboration and backend-profile

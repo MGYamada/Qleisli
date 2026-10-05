@@ -1,6 +1,6 @@
 //! Independent structural validation of stable fresh-initialization extraction.
 //! This validates one preparation pass, not source-to-unitary translation.
-use super::{HierarchyProposal, Instrument, Item, Port};
+use super::{HierarchyProposal, Instrument, Item, Port, PortKind};
 use crate::frontend::sized::primitive::Primitive;
 use crate::frontend::sized::{Error, Result, SourceStep, SourceValue, Span};
 use crate::interchange::json::{self, Value};
@@ -35,16 +35,14 @@ fn port(v: &Value) -> Result<Port> {
     let basis = array(field(v, "basis")?)?;
     if basis.len() != 1 {
         return Err(invalid(
-            "preparation frame must retain complete Bit/Bits owners",
+            "preparation frame must retain complete Unit/Bit/Bits owners",
         ));
     }
-    let bit = tag(&basis[0])? == "bit";
-    let width = if bit {
-        1
-    } else if tag(&basis[0])? == "bits" {
-        number(field(&basis[0], "width")?)?
-    } else {
-        return Err(invalid("unsupported frame basis"));
+    let (kind, width) = match tag(&basis[0])? {
+        "unit" => (PortKind::Unit, 0),
+        "bit" => (PortKind::Bit, 1),
+        "bits" => (PortKind::Bits, number(field(&basis[0], "width")?)?),
+        _ => return Err(invalid("unsupported frame basis")),
     };
     let axes = indices(field(v, "axes")?)?
         .into_iter()
@@ -55,7 +53,7 @@ fn port(v: &Value) -> Result<Port> {
     }
     Ok(Port {
         owner: u32::try_from(number(field(v, "owner")?)?).map_err(|_| invalid("owner overflow"))?,
-        bit,
+        kind,
         axes,
     })
 }
@@ -109,7 +107,16 @@ impl FramePort<'_> {
         self.0.owner
     }
     pub fn is_bit(&self) -> bool {
-        self.0.bit
+        self.0.kind == PortKind::Bit
+    }
+    /// Exact atom constructor. The ordered axes give the width of `bits`;
+    /// `unit` and zero-width `bits` remain distinct logical owner types.
+    pub fn basis_kind(&self) -> &'static str {
+        match self.0.kind {
+            PortKind::Unit => "unit",
+            PortKind::Bit => "bit",
+            PortKind::Bits => "bits",
+        }
     }
     pub fn axes(&self) -> &[u32] {
         &self.0.axes
@@ -202,6 +209,7 @@ fn trace_kind(primitive: Primitive) -> &'static str {
         | Primitive::X
         | Primitive::Cnot
         | Primitive::Phase
+        | Primitive::PhaseEighth
         | Primitive::ControlledPhase
         | Primitive::TakeBit
         | Primitive::PutBit
@@ -216,6 +224,7 @@ fn structural(primitive: Primitive) -> bool {
         | Primitive::X
         | Primitive::Cnot
         | Primitive::Phase
+        | Primitive::PhaseEighth
         | Primitive::ControlledPhase
         | Primitive::Init0
         | Primitive::MeasureZ
@@ -340,8 +349,16 @@ fn assign(
     for (v, item) in vs.into_iter().zip(items) {
         let valid = match item {
             Item::Quantum(p) => {
+                // Derive the expected tag independently from the retained
+                // source type, not from the proposal producer's conversion.
+                let kind = match v.ty().kind() {
+                    "unit" => Some(PortKind::Unit),
+                    "bit" => Some(PortKind::Bit),
+                    "bits" => Some(PortKind::Bits),
+                    _ => None,
+                };
                 v.ty().is_quantum()
-                    && p.bit == (v.ty().kind() == "bit")
+                    && Some(p.kind) == kind
                     && Some(p.axes.len() as u32) == v.ty().width()
             }
             Item::Classical(xs) => !v.ty().is_quantum() && Some(xs.len() as u32) == v.ty().width(),
@@ -522,7 +539,7 @@ impl Replay<'_> {
                     || !e.inputs.is_empty()
                     || e.outputs.len() != 1
                     || outputs.len() != 1
-                    || !outputs[0].bit
+                    || outputs[0].kind != PortKind::Bit
                     || outputs[0].axes.len() != 1
                     || !self.measured.is_empty()
                 {
@@ -540,7 +557,7 @@ impl Replay<'_> {
                 if step.primitive_kind() != Some(Primitive::MeasureZ)
                     || e.node.is_some()
                     || selected.len() != 1
-                    || !selected[0].bit
+                    || selected[0].kind != PortKind::Bit
                     || e.inputs.len() != 1
                     || e.outputs.len() != 1
                 {

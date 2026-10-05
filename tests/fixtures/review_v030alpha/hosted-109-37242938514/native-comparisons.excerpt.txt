@@ -1,0 +1,66 @@
+96	2026-10-04T23:13:10.7098557Z ##[group]Fetching the repository
+97	2026-10-04T23:13:10.7106165Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +dca850b5e8b543af36cf1a907826a7a819dd9a4b:refs/remotes/pull/307/merge
+98	2026-10-04T23:13:12.9528996Z From https://github.com/MGYamada/Qleisli
+99	2026-10-04T23:13:12.9530904Z  * [new ref]         dca850b5e8b543af36cf1a907826a7a819dd9a4b -> pull/307/merge
+100	2026-10-04T23:13:12.9536204Z ##[endgroup]
+101	2026-10-04T23:13:12.9537846Z ##[group]Determining the checkout info
+123	2026-10-04T23:13:13.3643429Z 
+124	2026-10-04T23:13:13.3643813Z HEAD is now at dca850b Merge d753962de3eedd39629c8441f2b82521ce01d70f into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+125	2026-10-04T23:13:13.3652401Z ##[endgroup]
+126	2026-10-04T23:13:13.3694007Z [command]/usr/bin/git log -1 --format=%H
+127	2026-10-04T23:13:13.3717123Z dca850b5e8b543af36cf1a907826a7a819dd9a4b
+128	2026-10-04T23:13:13.4530353Z ##[group]Run actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830
+129	2026-10-04T23:13:13.4530814Z with:
+161	2026-10-04T23:13:24.2671496Z 
+162	2026-10-04T23:13:24.2740570Z ##[group]Run cargo +1.98.1 fetch
+163	2026-10-04T23:13:24.2740975Z [36;1mcargo +1.98.1 fetch[0m
+164	2026-10-04T23:13:24.2785175Z shell: /usr/bin/bash -e {0}
+542	2026-10-04T23:20:23.1526565Z OK
+543	2026-10-04T23:20:23.1658459Z ##[group]Run python3 scripts/run_native_ci.py --workers "4" --output "$RUNNER_TEMP/native-comparisons"
+544	2026-10-04T23:20:23.1659474Z [36;1mpython3 scripts/run_native_ci.py --workers "4" --output "$RUNNER_TEMP/native-comparisons"[0m
+545	2026-10-04T23:20:23.1701584Z shell: /usr/bin/bash -e {0}
+613	2026-10-04T23:30:24.7302880Z passed: lean-kernel-self-test (81.9s)
+614	2026-10-04T23:31:58.9843916Z failed: native-acceptance (172.4s)
+615	2026-10-04T23:31:58.9847590Z {"command": ["cargo", "+1.98.1", "test", "--test", "native_acceptance", "--", "--include-ignored"], "executed_command": ["cargo", "test", "--test", "native_acceptance", "--", "--include-ignored"]}
+616	2026-10-04T23:31:58.9848938Z    Compiling qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+684	2026-10-04T23:31:59.0535011Z      Running tests/ordinary_types.rs (target/debug/deps/ordinary_types-5c5471140b82033f)
+685	2026-10-04T23:31:59.0535519Z 
+686	2026-10-04T23:31:59.0535653Z running 14 tests
+687	2026-10-04T23:31:59.0536098Z test existing_execution_profile_limits_remain_explicit ... FAILED
+688	2026-10-04T23:31:59.0536969Z test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+689	2026-10-04T23:31:59.0537999Z test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+690	2026-10-04T23:31:59.0538854Z test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+691	2026-10-04T23:31:59.0539591Z test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+692	2026-10-04T23:31:59.0540325Z test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+693	2026-10-04T23:31:59.0541126Z test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+694	2026-10-04T23:31:59.0541913Z test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+703	2026-10-04T23:31:59.0547285Z 
+704	2026-10-04T23:31:59.0547567Z ---- existing_execution_profile_limits_remain_explicit stdout ----
+705	2026-10-04T23:31:59.0548116Z 
+706	2026-10-04T23:31:59.0548602Z thread 'existing_execution_profile_limits_remain_explicit' (78078) panicked at tests/ordinary_types.rs:369:84:
+707	2026-10-04T23:31:59.0560683Z called `Result::unwrap_err()` on an `Ok` value: ParsedProgram { sources: {"main": "pub unitary fn f() -> Bit { 0 }\n"}, syntax: {"main": Module { uses: [], decls: [Decl { public: true, kind: Unitary, name: Ident { text: "f", span: Span { start: 15, end: 16 } }, static_params: [], requires: [], params: [], return_type: Type { kind: Bit, span: Span { start: 22, end: 25 } }, body: Quantum(Block { implicit_result: false, statements: [], result: Expr { kind: Bit(false), span: Span { start: 28, end: 29 } }, span: Span { start: 26, end: 31 } }), span: Span { start: 0, end: 31 } }], span: Span { start: 0, end: 32 } }}, modules: {"main": Module { functions: [Function { lexical: Some(Table { definition: DefId(0), binders: [], uses: [], scopes: [None, Some(ScopeId { definition: DefId(0), ordinal: 0 })] }), name: "f", effect: Unitary, parameters: [], arguments: [], result: Type { kind: Bit }, requires: [], body: Block { statements: [], result: Expr { kind: Boolean(Constant(false), []), span: Span { start: 28, end: 29 } }, span: Span { start: 26, end: 31 } }, span: Span { start: 0, end: 31 } }] }}, resolution: Resolution { modules: [ModuleNames { name: "main", declarations: {"f": DefId(0)} }], names: {"main": ModuleId(0)}, declarations: [Declaration { module: ModuleId(0), name: ("main", "f"), ast_index: 0, public: true, kind: Unitary }], scopes: {ModuleId(0): Scope { imports: {}, edges: [] }} } }
+708	2026-10-04T23:31:59.0567099Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+709	2026-10-04T23:31:59.0567569Z 
+710	2026-10-04T23:31:59.0567576Z 
+711	2026-10-04T23:31:59.0567699Z failures:
+712	2026-10-04T23:31:59.0568087Z     existing_execution_profile_limits_remain_explicit
+713	2026-10-04T23:31:59.0568427Z 
+714	2026-10-04T23:31:59.0568830Z test result: FAILED. 13 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.43s
+715	2026-10-04T23:31:59.0569380Z 
+716	2026-10-04T23:31:59.0569619Z error: test failed, to rerun pass `--test ordinary_types`
+717	2026-10-04T23:31:59.0569990Z 
+718	2026-10-04T23:33:32.6206061Z passed: native-paths (273.4s)
+719	2026-10-04T23:33:32.9894346Z Native CI: failed or incomplete comparison: native-acceptance
+720	2026-10-04T23:33:32.9992555Z ##[error]Process completed with exit code 1.
+721	2026-10-04T23:33:33.0068784Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+722	2026-10-04T23:33:33.0069176Z with:
+723	2026-10-04T23:33:33.0069495Z   name: native-comparisons-dca850b5e8b543af36cf1a907826a7a819dd9a4b-1
+724	2026-10-04T23:33:33.0069919Z   path: /home/runner/work/_temp/native-comparisons/
+725	2026-10-04T23:33:33.0070236Z   if-no-files-found: error
+726	2026-10-04T23:33:33.0070481Z   compression-level: 6
+727	2026-10-04T23:33:33.0070714Z   overwrite: false
+742	2026-10-04T23:33:34.1907284Z Finalizing artifact upload
+743	2026-10-04T23:33:34.4492909Z Artifact native-comparisons-dca850b5e8b543af36cf1a907826a7a819dd9a4b-1.zip successfully finalized. Artifact ID 11318287765
+744	2026-10-04T23:33:34.4494610Z Artifact native-comparisons-dca850b5e8b543af36cf1a907826a7a819dd9a4b-1 has been successfully uploaded! Final size is 244663 bytes. Artifact ID is 11318287765
+745	2026-10-04T23:33:34.4501023Z Artifact download URL: https://github.com/MGYamada/Qleisli/actions/runs/37242938514/artifacts/11318287765
+746	2026-10-04T23:33:34.4693122Z Post job cleanup.

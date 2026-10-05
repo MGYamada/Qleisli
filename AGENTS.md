@@ -3,15 +3,17 @@
 ## Keep this file small
 
 Keep AGENTS.md and CLAUDE.md identical: **100 lines / 6,000 UTF-8 bytes** each.
-`scripts/check_docs.py` checks limits and equality. Replace or shorten rules;
-keep rules/links here, specifications in docs, decisions in Issues, results
-beside fixtures and history in Git. No release/publication histories.
-Raise limits only on explicit user instruction.
+`scripts/check_docs.py` checks limits and equality. Keep rules/links here,
+specifications in docs, decisions in Issues, results beside fixtures, history
+in Git. No release/publication histories. Shorten rules to fit; raise limits
+only on explicit user instruction.
 
 ## Start from the design
 
-User instructions take precedence. Read the [ratification](docs/src/design/ratification.md),
-[README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
+User instructions take precedence. At startup, model change or context reset,
+follow [constitutional handoff](governance/README.md#agent-startup-and-handoff).
+AI cannot adopt interpretations or guarantees.
+Read [README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
 [adopted cutover](https://github.com/MGYamada/Qleisli/issues/276) and
 [algorithm drafts](docs/src/imaginary-v1/index.md).
 Read specifications before behavior changes; English is authoritative
@@ -41,7 +43,7 @@ meanings independent of acceptance and under specification review.
 New M2 acceptance logic belongs in Mathlib-free `lean-kernel/`; Rust handles
 parsing, diagnostics, transport, evidence generation and simulation. Independently
 check IR at every Rust/Lean boundary; prove actual executable definitions.
-Follow [the adopted v0.2.9 cutover](https://github.com/MGYamada/Qleisli/issues/276):
+Follow the adopted cutover above:
 Lean alone issues new accepted handles; remove legacy paths after replacement
 checks. Full Soundness remains v0.5.0; external schemas await binding gates.
 
@@ -63,8 +65,8 @@ and preserve licenses/notices (Katas MIT; the other two Apache-2.0).
 Library work follows [STDLIB.md](STDLIB.md) and existing source contracts.
 
 Prioritize shared executable corpus source without waiting for general proofs.
-Follow [the adopted cutover](https://github.com/MGYamada/Qleisli/issues/276)
-and [sized evidence](corpus/sized/README.md). Validate small qubit systems only;
+Follow the adopted cutover and [sized evidence](corpus/sized/README.md).
+Validate small qubit systems only;
 do not newly generate/check maximum-size cases. A version or bounded component
 does not complete feature/R14/H1–H5 or theorem gates.
 

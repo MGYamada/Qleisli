@@ -1972,7 +1972,7 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
     let source = "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{let copy=q; q}";
     parse_module(source).unwrap();
     reject(source, "ownership");
-    let source = "pub unitary fn f(q:Q<Unit>)->Q<Unit>{q}";
+    let source = "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{q}";
     let ast = parse_module(source).unwrap();
     let error = ParsedProgram::parse(sources(source)).unwrap_err();
     assert_eq!(error.code(), "unsupported");

@@ -109,3 +109,8 @@ tests/fixtures/frontend_v030/mixed-booleans/test-repair.patch -text -whitespace
 tests/fixtures/frontend_v030/selected-source-cli/*/*stdout.txt -text -whitespace
 # Retain the exact reviewed diff, including its blank context-line prefixes.
 tests/fixtures/constitution_v030/issue-count-109/documentation-results/0.stdout.txt -text -whitespace
+# Preserve quantum-Unit validation output and explicit repair patch context.
+tests/fixtures/frontend_v030/quantum-unit-source/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/quantum-unit-source/*.patch -text -whitespace
+# Hosted failure excerpts retain their original timestamped blank lines.
+tests/fixtures/review_v030alpha/hosted-109-37242938514/*.excerpt.txt -text -whitespace

@@ -1,0 +1,21 @@
+{
+  "mode": "selected-function-only",
+  "function": "run_native_ci.load_tasks",
+  "manifest": ".github/ci/native-comparisons.json",
+  "manifest_sha256": "591fdfe72583f5800a35d93eb3cf3f68dc1c58160cd2d5df707b2ba3497b41d5",
+  "task_count": 67,
+  "command_count": 88,
+  "quantum_unit_source_commands": [
+    {
+      "task_id": "native-acceptance",
+      "argv": [
+        "cargo",
+        "+1.98.1",
+        "test",
+        "--test",
+        "quantum_unit_source"
+      ]
+    }
+  ],
+  "native_build_or_comparison_execution": false
+}

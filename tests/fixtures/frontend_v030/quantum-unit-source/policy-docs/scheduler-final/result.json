@@ -1,0 +1,11 @@
+{
+  "attempt": "scheduler-final",
+  "all_commands_passed": true,
+  "command_count": 1,
+  "selected_inputs_count": 127,
+  "selected_inputs_changed": [],
+  "commands_sha256": "3443fbec1cdd00853946a9b5ef2a34fafef70588377b072b5ce48c7ff6b5aa19",
+  "inputs_before_sha256": "df77b52fb049f1ef2d495edd2254ff7a0b181070177a75fe6003b400bdad7827",
+  "inputs_after_sha256": "df77b52fb049f1ef2d495edd2254ff7a0b181070177a75fe6003b400bdad7827",
+  "scope": "Actual documentation/authoring-integrity checks and scheduler unit tests. The selected manifest loader does not execute native comparisons; no Rust or Lean build was requested by this driver."
+}

@@ -35,6 +35,50 @@ The human transcripts are provenance, not cryptographic signatures. Their clock
 fields are subsequent observations, not timestamps of the human messages. A
 hash binds bytes; it cannot establish who authored them.
 
+## Agent startup and handoff
+
+Before development starts or resumes after a model change, new session or
+context reset, reconstruct constitutional state from repository originals.
+This is a working procedure under the adopted governance, not a new binding
+interpretation or a change to the Constitution.
+
+1. Read the [Constitution](../CONSTITUTION.md), [governance](../GOVERNANCE.md),
+   [authority hierarchy](../docs/src/reference/authority.md) and
+   [ratification](ratification-2026.json). Read the current
+   [ledger](guarantees.json), its referenced adopted interpretation texts and
+   human adoption records, and the admitted guarantee proposals, admission
+   records and current evidence relevant to the work. Conversation summaries,
+   prior model conclusions and historical candidate labels do not replace
+   those originals or the subsequent actual adoption records.
+2. Run `python3 scripts/check_constitution.py` from the repository root.
+   Also use `--base-ref` with the exact previously reviewed commit supplied by
+   the task or review process to check continuity. Record that commit; an
+   unchecked current HEAD or a newly edited expected hash is not an independent
+   trusted base. If no trusted base is available, report that continuity was
+   not checked against one rather than inventing a baseline.
+3. Before dependent changes, report the applicable adopted interpretations,
+   protected guarantees, remaining pending obligations, and the check result
+   and base used. Preserve each recorded scope and premise. Source/evidence
+   identity checks are not a fresh Lean replay, a human adequacy judgment,
+   full QS/PR/RS discharge or release approval.
+4. If required records are missing, conflicting or fail verification, report
+   the concrete problem and stop changes that depend on that unresolved state.
+   Do not invent approval, weaken a guarantee, change proof status or rewrite
+   protected text, records or expected hashes merely to make a check pass.
+   Constitutional judgments remain with the human Guardian; ordinary technical
+   repairs within adopted requirements remain ordinary maintenance.
+
+A model or agent change does not require re-ratification or re-adoption of
+valid existing decisions. It also does not resume paused development or widen
+the user's authorization. Ordinary implementation covered by existing
+interpretations requires no fresh Guardian ruling merely because the model
+changed. New binding interpretations and guarantee admissions still require
+the responsible human's explicit judgment on the concrete reviewed proposal;
+admission also requires the applicable checked proof or evidence. AI output,
+silence, general permission to develop and passing CI cannot supply that act.
+
+## Integrity checks and limits
+
 Run `python3 scripts/check_constitution.py` to validate the adopted identities
 and current ledger. `--base-ref COMMIT` additionally protects existing
 records against the selected base. The earlier bootstrap ledger remains at

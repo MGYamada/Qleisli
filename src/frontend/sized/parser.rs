@@ -185,11 +185,12 @@ impl Projection<'_, '_> {
 
     fn basis(&self, ty: &source::Type) -> Result<Basis> {
         match &ty.kind {
+            source::TypeKind::Unit => Ok(Basis::Unit),
             source::TypeKind::Bit => Ok(Basis::Bit),
             source::TypeKind::Bits(n) => Ok(Basis::Bits(self.natural(n))),
             _ => Err(unsupported(
                 ty.span,
-                "operation/quantum basis must be Bit or Bits<n>",
+                "operation/quantum basis must be Unit, Bit or Bits<n>",
             )),
         }
     }
@@ -362,13 +363,13 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
     ) -> Result<()> {
         use crate::frontend::types::Kind;
         if let Kind::Q(basis) = &ty.kind {
-            if !matches!(basis.kind, Kind::Bit | Kind::Bits(_)) {
+            if !matches!(basis.kind, Kind::Unit | Kind::Bit | Kind::Bits(_)) {
                 let source::TypeKind::Q(inner) = &source.kind else {
                     unreachable!()
                 };
                 return Err(unsupported(
                     inner.span,
-                    "operation/quantum basis must be Bit or Bits<n>",
+                    "operation/quantum basis must be Unit, Bit or Bits<n>",
                 ));
             }
         }

@@ -1,0 +1,74 @@
+{
+  "format": "qleisli.fixed-request-authoring-provenance",
+  "version": 1,
+  "packet_assembled_at_utc": "2026-10-05T00:38:38Z",
+  "assembly_time_note": "Clock observation during packet assembly, not an execution timestamp for the preserved probes.",
+  "original_observation_directory": "/private/tmp/qleisli-unit-transformed-requests",
+  "original_files": [
+    "before-test.rs.txt",
+    "observations.json",
+    "apply.json",
+    "inverse.json",
+    "eight.json",
+    "controlled_once.json",
+    "controlled_four.json"
+  ],
+  "original_observation_scope": "Five successful emit-proposal commands; all results are untrusted-proposal with native_check_scope none. The exact argv/stdout/stderr/exit observations and emitted proposal bytes are preserved unchanged.",
+  "original_binary_identity": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "d6f3c3b31a7e8744e996f4ce48eb081c29177f2e7c563b465c67c8fb5526d29f",
+    "provenance": "Copied from the original observations, not re-hashed from a later rebuilt binary."
+  },
+  "original_source_identity": {
+    "observed_path": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+    "sha256": "1714283d4f67d4024d2b3bc859283bea450a0f98675b379828504809201b29e0",
+    "current_repository_reference": "tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli"
+  },
+  "original_provenance_limits": [
+    "No per-command timestamp was recorded.",
+    "No complete environment or source-build manifest was recorded in observations.json.",
+    "An emitted producer equation is not an independent requested meaning or native acceptance evidence."
+  ],
+  "oracle_authoring": {
+    "mathematical_scalar": "zeta_8 = exp(i*pi/4); exact test coefficient Exact::phase(1)",
+    "intended_operators": {
+      "apply": "U = zeta_8",
+      "inverse": "U^-1 = conjugate(zeta_8)",
+      "eight": "U^8 = 1",
+      "controlled_once": "diag(1,zeta_8)",
+      "controlled_four": "diag(1,zeta_8^4) = diag(1,-1)"
+    },
+    "inspected_placement": "Owner labels, interface order and existing call/rename/sequence placement were inspected in the five emitted artifacts. The fixed scalar coefficient and inverse/power/control constructors were authored independently in operation_request, not read from a candidate comparison_request.",
+    "controlled_negative": "A changed scalar provider and its producer equation both use identity; fresh native acceptance for that changed equation precedes rejection against the unchanged independently authored controlled request.",
+    "numerical_limit": "Reference-slice f64 execution checks are separate bounded observations, not exact mathematical proof or source-preservation discharge."
+  },
+  "later_validation": {
+    "test_source": {
+      "path": "tests/quantum_unit_source.rs",
+      "sha256": "0857d5b8922669215775962e7286be24ef6d2bfd49ce4a4d2f24d042ecb9f607"
+    },
+    "result": {
+      "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-fixed-requests/result.json",
+      "sha256": "df961dcf0b91d9892e956e3c9c6b3082f5c81c714eb1713e23032066422b290a"
+    },
+    "source_manifest": {
+      "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-fixed-requests/sources.json",
+      "sha256": "a615de916190042c6e997e30d80c37a7e9e4e134e35f53bee10cd01c6e600359"
+    },
+    "integration_stdout": {
+      "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-fixed-requests/3.stdout.txt",
+      "sha256": "efdbc6d95f37d92a381b24bc1b161b7cece29813e98333785cbf3e60ab4931be"
+    },
+    "integration_stderr": {
+      "path": "tests/fixtures/frontend_v030/quantum-unit-source/latest-fixed-requests/3.stderr.txt",
+      "sha256": "583d4a233c2c637d38e8f2359800e6086fdb581e01bbf73da74aad2fab1cfefa"
+    },
+    "reported_target_result": "quantum_unit_source: 12 passed, 0 failed, 0 ignored; includes the new changed-provider controlled-request regression.",
+    "scope": "Nine focused integration targets, sized library tests, existing ignored native CLI tests, all-target Clippy, library rustdoc and formatting; not all-target runtime or release validation",
+    "kernel_status": "Reused existing checker; no new Lean build/audit/replay",
+    "separation": "This existing later run is referenced, not reproduced or backdated as part of the five emit-only observations."
+  },
+  "constitutional_scope": "No new guarantee admission or broader QS/PR/quantitative RS/EXACT discharge, full source theorem, fresh Lean replay, hosted CI success or release approval is claimed.",
+  "license": "Apache-2.0",
+  "copyright": "Copyright 2026 Masahiko G. Yamada."
+}

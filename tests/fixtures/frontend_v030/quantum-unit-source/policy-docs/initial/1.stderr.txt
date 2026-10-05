@@ -1,0 +1,40 @@
+......F...F....
+======================================================================
+FAIL: test_native_handles_and_original_input_replay_are_required (__main__.NativeCI.test_native_handles_and_original_input_replay_are_required)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_run_native_ci.py", line 76, in test_native_handles_and_original_input_replay_are_required
+    self.assertEqual(task['commands'], [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+        ['cargo', '+1.98.1', 'test', '--test', 'native_acceptance', '--', '--include-ignored'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<10 lines>...
+        ['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}'],
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ])
+    ^^
+AssertionError: Lists differ: [['ca[375 chars]t', 'quantum_unit_source'], ['cargo', '+1.98.1[459 chars]d}']] != [['ca[375 chars]t', 'runtime_parameter_patterns'], ['cargo', '[396 chars]d}']]
+
+First differing element 5:
+['cargo', '+1.98.1', 'test', '--test', 'quantum_unit_source']
+['cargo', '+1.98.1', 'test', '--test', 'runtime_parameter_patterns']
+
+First list contains 1 additional elements.
+First extra element 12:
+['python3', 'scripts/test_native_acceptance_replay.py', '--record', '{record}']
+
+Diff is 1013 characters long. Set self.maxDiff to None to see it.
+
+======================================================================
+FAIL: test_retains_every_pre_206_command_and_environment (__main__.NativeCI.test_retains_every_pre_206_command_and_environment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_run_native_ci.py", line 29, in test_retains_every_pre_206_command_and_environment
+    self.assertEqual(sum(len(task["commands"]) for task in tasks), 87)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 88 != 87
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.595s
+
+FAILED (failures=2)

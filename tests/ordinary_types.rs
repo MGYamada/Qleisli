@@ -360,15 +360,20 @@ fn existing_execution_profile_limits_remain_explicit() {
             "{error}"
         );
     }
-    for source in [
-        source!("bit-zero"),
-        source!("bit-boolean-keywords"),
-        source!("quantum-unit"),
-    ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
-        assert_eq!(error.code(), "unsupported", "{error}");
-    }
+    let program = elaborate(source!("bit-zero"));
+    program.lower_raw().unwrap();
+    assert_eq!(program.lower().unwrap_err().code(), "unsupported");
+    // The original Boolean example contains a runtime if, which remains
+    // outside the sized projection even though its Boolean operands are supported.
+    let error = ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        source!("bit-boolean-keywords").into(),
+    )]))
+    .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    let program = elaborate(source!("quantum-unit"));
+    program.lower().unwrap();
+    assert_eq!(program.lower_raw().unwrap_err().code(), "unsupported");
     let error = elaborate(source!("unit-forget-readout"))
         .lower()
         .unwrap_err();

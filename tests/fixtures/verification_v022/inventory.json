@@ -3639,7 +3639,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "7894dd2ce419f2adf389860e74a44d3502182e66ac4190b4fbab1c0bd95b969f",
+      "sha256": "3aef104b7e6910f2befac3bcd2c95052a8a0c50b11dae386385bfd214d814777",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3653,7 +3653,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "54ad09a978068d5db589d95f875939cec31484f7f898e7dab54e919ae8297e5c",
+      "sha256": "74f8240fc2201cde44ec233e1f1ce65ffc076216bee1eb06137e760b302ade2b",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3663,7 +3663,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "ba14cdbf3e8bf7c6c2c54967513cc2b114524a340c0472c92b935f71f0aac2c7",
+      "sha256": "0668dfe08db1e7b564f8c73cef28645a141c35bf7795d7b8b5b0668908b5a62f",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3731,7 +3731,7 @@
     },
     {
       "path": "src/frontend/sized/fourier.rs",
-      "sha256": "5601777215b5ceef2b0d2530e17f790ac8aa0d88b2e92c34e422532e73ae1622",
+      "sha256": "2761a265a0a81ed110e53ea8fe0a16362c0f3e856498f796fc0fb6dcb0548530",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3762,7 +3762,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "814080dccc4362efe15783312a52bad87d038984979fb0e1489fc879b6436499",
+      "sha256": "a989b218e134007c58076f441cbdbb31604b8e6ffbf528bef1f05206d1208f41",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3785,7 +3785,7 @@
     },
     {
       "path": "src/frontend/sized/lower/preservation.rs",
-      "sha256": "898ca8c9ffa99015c8c8361449273ab8d8572f8c4cd4d7977f7152ac502cafc9",
+      "sha256": "4c8d0f034a89e5480f49fe1d884258a7ab1e7dd52884270fd29eca1e1dc7a22a",
       "surface": {
         "declarations": [
           "FramePort",
@@ -3795,6 +3795,7 @@
         ],
         "functions": [
           "pub fn axes(&self) -> &[u32]",
+          "pub fn basis_kind(&self) -> &'static str",
           "pub fn call_path(&self) -> &[usize]",
           "pub fn crossed_events(&self) -> &[usize]",
           "pub fn definition(&self) -> usize",
@@ -3817,7 +3818,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "de7361898e66d33da0b11a7292be555d3582f4fc8cf75b827c5ce155c517c43b",
+      "sha256": "2ad3556645b8a0550308835beef87883ecd4b4f3fb000c6cfa35555b812249ca",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3827,12 +3828,13 @@
     },
     {
       "path": "src/frontend/sized/primitive.rs",
-      "sha256": "9ed3bbdf2099486eda1bb771159a9856f01ede7f53b5febb131284e2e9542e2c",
+      "sha256": "8030cf950ca583bea919860911baaea13e493ad585536ec171d873d1bdd36e6f",
       "group": "sized-source",
       "surface": {
         "declarations": [],
         "functions": [
           "pub fn lookup(path: &str) -> Option<Self>",
+          "pub fn runtime_arity(self) -> usize",
           "pub fn signature(self) -> Signature"
         ],
         "capacity_constants": []
@@ -3856,7 +3858,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "bb981f599caf04ff1d8384ba96e9fc471fc43266bcd7e09176ec791e284b2a1a",
+      "sha256": "c5f077928213413dce2caa88969b68956ba976cacd4cbf68612cc13cfe608459",
       "group": "sized-source",
       "surface": {
         "declarations": [

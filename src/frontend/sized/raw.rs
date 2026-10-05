@@ -18,7 +18,7 @@ const MAX_LIVE_QUBITS: usize = 16;
 
 /// An immutable finite transport proposal alongside its exact source instance.
 ///
-/// The current adapter supports Unit/Bit/Q<Bit>/products, specialized ordinary
+/// The current adapter supports Unit/Bit/`Q<Bit>`/products, specialized ordinary
 /// calls and the explicitly supported finite primitives. Native Raw validity
 /// and source-step correspondence are distinct checks; neither proves source
 /// elaboration preserves meaning. Whole argument/result trees remain beside

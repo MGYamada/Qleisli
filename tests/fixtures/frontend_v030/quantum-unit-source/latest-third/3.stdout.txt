@@ -1,0 +1,43 @@
+
+running 7 tests
+test bell_measurements_and_boolean_postprocessing_preserve_correlations_and_order ... ok
+test eager_zero_and_measurement_retains_actual_quantum_work_before_boolean_use ... ok
+test pending_first_argument_keeps_entangled_owner_during_later_argument_measurement ... ok
+test ignored_measurement_and_unit_return_keep_observation_before_later_logic ... ok
+test repeated_calls_and_static_folds_allocate_fresh_quantum_and_classical_ids ... ok
+test representable_phases_match_independent_exact_targets_and_interference ... ok
+test unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.05s
+
+
+running 14 tests
+test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+test existing_execution_profile_limits_remain_explicit ... FAILED
+test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+test unit_returning_quantum_consumption_survives_lowering_and_source_event_checks ... ok
+test sized_unit_patterns_consume_only_actual_unit_values ... ok
+test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+test finite_measurement_and_feedforward_keep_their_correlated_action ... ok
+test finite_boolean_actions_match_an_independent_truth_result ... ok
+test source_bearing_native_evidence_retains_the_actual_canonical_source ... ok
+test finite_bit_values_copy_drop_call_and_use_zero_one_literals ... ok
+
+failures:
+
+---- existing_execution_profile_limits_remain_explicit stdout ----
+
+thread 'existing_execution_profile_limits_remain_explicit' (13253483) panicked at tests/ordinary_types.rs:369:84:
+called `Result::unwrap_err()` on an `Ok` value: ParsedProgram { sources: {"main": "pub unitary fn f() -> Bit { 0 }\n"}, syntax: {"main": Module { uses: [], decls: [Decl { public: true, kind: Unitary, name: Ident { text: "f", span: Span { start: 15, end: 16 } }, static_params: [], requires: [], params: [], return_type: Type { kind: Bit, span: Span { start: 22, end: 25 } }, body: Quantum(Block { implicit_result: false, statements: [], result: Expr { kind: Bit(false), span: Span { start: 28, end: 29 } }, span: Span { start: 26, end: 31 } }), span: Span { start: 0, end: 31 } }], span: Span { start: 0, end: 32 } }}, modules: {"main": Module { functions: [Function { lexical: Some(Table { definition: DefId(0), binders: [], uses: [], scopes: [None, Some(ScopeId { definition: DefId(0), ordinal: 0 })] }), name: "f", effect: Unitary, parameters: [], arguments: [], result: Type { kind: Bit }, requires: [], body: Block { statements: [], result: Expr { kind: Boolean(Constant(false), []), span: Span { start: 28, end: 29 } }, span: Span { start: 26, end: 31 } }, span: Span { start: 0, end: 31 } }] }}, resolution: Resolution { modules: [ModuleNames { name: "main", declarations: {"f": DefId(0)} }], names: {"main": ModuleId(0)}, declarations: [Declaration { module: ModuleId(0), name: ("main", "f"), ast_index: 0, public: true, kind: Unitary }], scopes: {ModuleId(0): Scope { imports: {}, edges: [] }} } }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    existing_execution_profile_limits_remain_explicit
+
+test result: FAILED. 13 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.46s
+

@@ -1,7 +1,7 @@
 //! Generic preparation checks. No value here crosses the verified IR boundary.
 use super::ast::*;
 use super::linear::{self, Context, Linear};
-use super::primitive::{Guard, Primitive, Size, TypeShape};
+use super::primitive::{Guard, Primitive, Size, TypeRule, TypeShape, quantum_endomorphism};
 use super::{Error, OperationBinding, ParsedProgram, Result, Span};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
@@ -71,6 +71,7 @@ fn all_access() -> BTreeSet<String> {
 }
 fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
     Ok(match b {
+        Basis::Unit => Ty::quantum(Ty::unit()),
         Basis::Bit => Ty::quantum(Ty::bit()),
         Basis::Bits(n) => Ty::quantum(Ty::bits(linear::natural(
             n,
@@ -714,23 +715,26 @@ impl Checker<'_> {
                     op.ty
                 } else {
                     let target = self.resolve(name, scope, span)?;
-                    let (inputs, result, effect) = match target {
+                    match target {
                         Target::Primitive(_) => {
                             let primitive =
                                 Primitive::lookup(&self.program.resolution.target_path(target))
                                     .expect("resolved primitive");
-                            primitive_signature(primitive, args, scope, span)?
+                            self.primitive_call(primitive, args, runtime, scope, span)?
                         }
-                        Target::Declaration(id) => self.specialize(id, args, scope, span, true)?,
-                    };
-                    self.effect(effect, span)?;
-                    if inputs.len() != runtime.len() {
-                        return Err(err("type", span, "runtime argument arity mismatch"));
+                        Target::Declaration(id) => {
+                            let (inputs, result, effect) =
+                                self.specialize(id, args, scope, span, true)?;
+                            self.effect(effect, span)?;
+                            if inputs.len() != runtime.len() {
+                                return Err(err("type", span, "runtime argument arity mismatch"));
+                            }
+                            for (expr, t) in runtime.iter().zip(&inputs) {
+                                self.expr(expr, scope, Some(t))?;
+                            }
+                            result
+                        }
                     }
-                    for (expr, t) in runtime.iter().zip(&inputs) {
-                        self.expr(expr, scope, Some(t))?;
-                    }
-                    result
                 }
             }
             ExprKind::Adjoint(arg, input) => {
@@ -832,6 +836,43 @@ impl Checker<'_> {
         }
         Ok(result)
     }
+
+    fn primitive_call(
+        &mut self,
+        primitive: Primitive,
+        args: &[Argument],
+        runtime: &[Expr],
+        scope: &mut Scope,
+        span: Span,
+    ) -> Result<Ty> {
+        let signature = primitive.signature();
+        if matches!(signature.types, TypeRule::QuantumEndomorphism) {
+            if args.len() != signature.natural_arity {
+                return Err(err(
+                    "static",
+                    span,
+                    "primitive static argument arity mismatch",
+                ));
+            }
+            if runtime.len() != signature.types.runtime_arity() {
+                return Err(err("type", span, "runtime argument arity mismatch"));
+            }
+            self.effect(signature.effect, span)?;
+            // Infer and consume the sole argument once; its exact Q basis is
+            // the result type, independently of physical width or context.
+            let input = self.expr(&runtime[0], scope, None)?;
+            return quantum_endomorphism(&input, span);
+        }
+        let (inputs, result, effect) = primitive_signature(primitive, args, scope, span)?;
+        self.effect(effect, span)?;
+        if inputs.len() != runtime.len() {
+            return Err(err("type", span, "runtime argument arity mismatch"));
+        }
+        for (expr, ty) in runtime.iter().zip(&inputs) {
+            self.expr(expr, scope, Some(ty))?;
+        }
+        Ok(result)
+    }
 }
 fn access(op: &Operation, kind: &str, span: Span) -> Result<()> {
     if op.access.contains(kind) {
@@ -880,6 +921,13 @@ fn primitive_signature(
     span: Span,
 ) -> Result<(Vec<Ty>, Ty, Effect)> {
     let signature = primitive.signature();
+    let TypeRule::Fixed(inputs, output) = signature.types else {
+        return Err(err(
+            "type",
+            span,
+            "primitive requires an inferred quantum input type",
+        ));
+    };
     if args.len() != signature.natural_arity {
         return Err(err(
             "static",
@@ -936,12 +984,11 @@ fn primitive_signature(
         })
     }
     Ok((
-        signature
-            .inputs
+        inputs
             .iter()
             .map(|t| shape(*t, &ns, span))
             .collect::<Result<_>>()?,
-        shape(signature.output, &ns, span)?,
+        shape(output, &ns, span)?,
         signature.effect,
     ))
 }

@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Require constitutional state to be reread and checked at agent startup and
+  after model/session/context changes. Preserve adopted human decisions,
+  pending obligations and paused work across handoffs.
+- Admit exact `Q<Unit>` and `Op<Unit>` in the common selected-source projection,
+  preserving zero-width ownership separately from ordinary Unit and Bits(0).
+  Carry the existing scalar `phase_eighth` through checked hierarchy structure,
+  including adjoint, repetition and control (#27, #32, #43).
 - Include #311 in the maintainer-confirmed 109-Issue release scope and progress
   denominator. Require its criteria and evidence in release readiness; preserve
   the original 108 targets and historical validation records (#142).

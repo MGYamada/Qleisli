@@ -1,6 +1,6 @@
 //! Untrusted concrete, source-order ownership proposal. No verified IR is made.
 use super::ast::{self, *};
-use super::primitive::{Primitive, Size, TypeShape};
+use super::primitive::{Primitive, Size, TypeRule, TypeShape, quantum_endomorphism};
 use super::{Error, Instantiation, ParsedProgram, Result, Span};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -14,7 +14,7 @@ use crate::frontend::resolve::{DefId, Target};
 use crate::frontend::types::Kind as TypeKind;
 use std::sync::Arc;
 
-/// Concrete exact source tree. Bit/Bits kind tags are shared by ordinary and
+/// Concrete exact source tree. Unit/Bit/Bits kind tags are shared by ordinary and
 /// quantum leaves; `is_quantum` retains their distinct ownership category.
 /// Its private shared representation makes Q explicit; no constructor is public.
 pub type SourceType = crate::frontend::types::Type<u32>;
@@ -25,9 +25,10 @@ impl SourceType {
     pub fn kind(&self) -> &'static str {
         match &self.kind {
             TypeKind::Q(basis) => match basis.kind {
+                TypeKind::Unit => "unit",
                 TypeKind::Bit => "bit",
                 TypeKind::Bits(_) => "bits",
-                _ => unreachable!("sized quantum profile has only Bit/Bits owners"),
+                _ => unreachable!("sized quantum profile has only Unit/Bit/Bits owners"),
             },
             TypeKind::Bit => "bit",
             TypeKind::Bits(_) => "bits",
@@ -40,9 +41,10 @@ impl SourceType {
             TypeKind::Bit => Some(1),
             TypeKind::Bits(n) => Some(*n),
             TypeKind::Q(basis) => match basis.kind {
+                TypeKind::Unit => Some(0),
                 TypeKind::Bit => Some(1),
                 TypeKind::Bits(n) => Some(n),
-                _ => unreachable!("sized quantum profile has only Bit/Bits owners"),
+                _ => unreachable!("sized quantum profile has only Unit/Bit/Bits owners"),
             },
             TypeKind::Tuple(_) => None,
             TypeKind::Unit => Some(0),
@@ -688,6 +690,7 @@ impl Builder<'_> {
                         self.provider_type(operations[&name.name].target(), function.span)?;
                     let required = concrete_type(
                         &ast::Type::quantum(match basis {
+                            Basis::Unit => ast::Type::unit(),
                             Basis::Bit => ast::Type::bit(),
                             Basis::Bits(n) => ast::Type::bits(n.clone()),
                         }),
@@ -1137,6 +1140,19 @@ impl Builder<'_> {
                 if let Target::Primitive(_) = target {
                     let kind = Primitive::lookup(&self.program.resolution.target_path(target))
                         .expect("resolved primitive");
+                    let signature = kind.signature();
+                    if matches!(signature.types, TypeRule::QuantumEndomorphism) {
+                        if arguments.len() != signature.natural_arity {
+                            return Err(error(
+                                "static",
+                                span,
+                                "concrete primitive natural arity mismatch",
+                            ));
+                        }
+                        if inputs.len() != signature.types.runtime_arity() {
+                            return Err(error("type", span, "concrete operation arity mismatch"));
+                        }
+                    }
                     let naturals = arguments
                         .iter()
                         .map(|a| {
@@ -1150,11 +1166,12 @@ impl Builder<'_> {
                             natural(n, &scope.naturals)
                         })
                         .collect::<Result<Vec<_>>>()?;
-                    let values = inputs
+                    let values: Vec<SourceValue> = inputs
                         .iter()
                         .map(|e| self.expr(e, scope, frame, depth))
                         .collect::<Result<_>>()?;
-                    let (types, output, effect) = primitive(kind, &naturals, span)?;
+                    let (types, output, effect) =
+                        primitive(kind, &naturals, values.first().map(|value| &value.ty), span)?;
                     self.step(
                         StepKind::Primitive(kind, naturals),
                         types,
@@ -1497,6 +1514,7 @@ fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Fr
 fn primitive(
     kind: Primitive,
     ns: &[u32],
+    input: Option<&SourceType>,
     span: Span,
 ) -> Result<(Vec<SourceType>, SourceType, Effect)> {
     let signature = kind.signature();
@@ -1507,6 +1525,15 @@ fn primitive(
             "concrete primitive natural arity mismatch",
         ));
     }
+    let (inputs, output) = match signature.types {
+        TypeRule::Fixed(inputs, output) => (inputs, output),
+        TypeRule::QuantumEndomorphism => {
+            let input =
+                input.ok_or_else(|| error("type", span, "concrete operation arity mismatch"))?;
+            let output = quantum_endomorphism(input, span)?;
+            return Ok((vec![output.clone()], output, signature.effect));
+        }
+    };
     // These are concrete preparation capacities, not generic source premises.
     match kind {
         Primitive::Phase | Primitive::ControlledPhase => {
@@ -1530,6 +1557,7 @@ fn primitive(
         }
         Primitive::H
         | Primitive::X
+        | Primitive::PhaseEighth
         | Primitive::Cnot
         | Primitive::Init0
         | Primitive::MeasureZ
@@ -1563,12 +1591,11 @@ fn primitive(
         })
     }
     Ok((
-        signature
-            .inputs
+        inputs
             .iter()
             .map(|t| shape(*t, ns, span))
             .collect::<Result<_>>()?,
-        shape(signature.output, ns, span)?,
+        shape(output, ns, span)?,
         signature.effect,
     ))
 }

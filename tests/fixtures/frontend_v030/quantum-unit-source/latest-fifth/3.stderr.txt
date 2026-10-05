@@ -1,0 +1,6 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 0.58s
+     Running tests/mixed_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/mixed_booleans-7ae832804b646e0e)
+     Running tests/ordinary_types.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/ordinary_types-fb2e3dcfbcace39b)
+     Running tests/quantum_unit_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_unit_source-73a50a1479d81920)
+error: test failed, to rerun pass `--test quantum_unit_source`

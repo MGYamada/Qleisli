@@ -112,6 +112,23 @@ that action and the owner/evidence interface. A pure introduction or elimination
 map for a Unit owner needs its own explicit checked rule; ordinary `()` supplies
 neither such a map nor an implicit `Q<A> -> A` conversion.
 
+The selected-source projection supports `Q<Unit>` and `Op<Unit>` alongside
+`Q<Bit>` and `Q<Bits<n>>`. Helpers and operation providers retain the exact
+basis and linear owner even when the physical axis list is empty. The existing
+`std::quantum::phase_eighth(q)` consumes one such quantum atom and returns its
+exact type with scalar action `exp(i*pi/4) I`. It evaluates its sole argument
+once, takes no static arguments and has Unitary effect. An ordinary value or a
+tuple of separate owners is not a valid argument. This scalar is distinct from
+`phase[1,3]`, whose Bit action is `diag(1, exp(i*pi/4))`.
+
+Hierarchy lowering retains that scalar through explicit checked Unit structure
+and a finite scalar leaf, tensored with the original owner's identity. The
+internal Unit owner adds no physical wire and does not change the source
+basis. Adjoint conjugates the scalar, eight repetitions give identity, and
+coherent control of four repetitions gives Z on the control. Removing a Unit
+factor cannot remove the scalar. This implements existing semantics without
+exposing new public introduction/elimination names.
+
 Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.
 That pattern matches only ordinary `Unit`, not an empty tuple, `Bits<0>`,
@@ -167,10 +184,12 @@ The retired type and literal spellings reject with migration diagnostics; they
 are not accepted aliases. Empty parentheses remain value and pattern syntax,
 and an empty argument list remains nullary. In a type position, write `Unit`.
 
-The public sized `SourceType` view uses `kind() == "bit"` or `"bits"` for an
+The public sized `SourceType` view uses `kind() == "unit"`, `"bit"` or `"bits"` for an
 ordinary or quantum leaf. Callers must use `is_quantum()` to distinguish their
-ownership; the kind string alone is insufficient. Ordinary Unit has kind
-`"unit"`, width zero and no tuple fields. Native classical port tags are
+ownership; the kind string alone is insufficient. Ordinary Unit and `Q<Unit>`
+both have kind `"unit"`, width zero and no tuple fields, but only the latter
+has a quantum owner. The hierarchy's Unit owner port, Bits(0) owner port and
+empty quantum-port list are three distinct interfaces. Native classical port tags are
 unchanged by this source/API migration.
 
 Measurement explicitly consumes a supported `Q<A>` and produces ordinary data
@@ -221,7 +240,7 @@ controlled-phase primitives and operation providers. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
-decision is never retried as weaker Raw validity. General product and `Q<Unit>`
+decision is never retried as weaker Raw validity. General product quantum
 bases, reusing basis functions as runtime computations and full common checking
 also remain unfinished profile obligations.
 Successful generic checking does not imply successful concrete lowering.
