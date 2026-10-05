@@ -6,6 +6,18 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Include #317 in the maintainer-confirmed 111-Issue scope and release gate.
+  Reject prior 110-Issue candidates that omit semantic stdlib namespace criteria
+  or acceptance evidence; preserve all earlier targets and historical records.
+- Lower principal Iso selected-source roots through the existing fresh-zero,
+  unitary hierarchy and zero-measurement readout transport, retaining quantum
+  result trees, Unit-owner phase and complete caller frames. Return the single
+  unnormalized coefficient vector from `run`; require a principal Observe
+  entry for sampling and named QPE. Raw quantum Unit support and general source
+  preservation remain unfinished; no native primitive or guarantee is added
+  (#43).
+  Report incompatible native hierarchy checker versions explicitly while
+  retaining strict rejection of generic success and malformed response frames.
 - Infer ordinary function effects from typed bodies and callees, with optional
   prefixes checked as upper-bound assertions. Reject contradictions with an
   explicit semantic diagnostic that `"externally unitary"` is unsupported,

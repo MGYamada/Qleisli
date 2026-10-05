@@ -1,0 +1,33 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+error[E0599]: no associated function or constant named `ZERO` found for struct `exact::Exact` in the current scope
+   --> src/frontend/sized/lower/preservation/isometry_tests.rs:42:35
+    |
+ 42 |     let mut entries = vec![Exact::ZERO; n * n];
+    |                                   ^^^^ associated function or constant not found in `exact::Exact`
+    |
+   ::: src/contract/exact.rs:192:1
+    |
+192 | pub struct Exact {
+    | ---------------- associated function or constant `ZERO` not found for this struct
+
+error[E0308]: mismatched types
+   --> src/frontend/sized/lower/preservation/isometry_tests.rs:49:50
+    |
+ 49 |         entries[row * n + column] = Exact::phase(phase);
+    |                                     ------------ ^^^^^ expected `i32`, found `u8`
+    |                                     |
+    |                                     arguments to this function are incorrect
+    |
+note: associated function defined here
+   --> src/contract/exact.rs:257:12
+    |
+257 |     pub fn phase(k: i32) -> Self {
+    |            ^^^^^ ------
+help: you can convert a `u8` to an `i32`
+    |
+ 49 |         entries[row * n + column] = Exact::phase(phase.into());
+    |                                                       +++++++
+
+Some errors have detailed explanations: E0308, E0599.
+For more information about an error, try `rustc --explain E0308`.
+error: could not compile `qleisli` (lib test) due to 2 previous errors

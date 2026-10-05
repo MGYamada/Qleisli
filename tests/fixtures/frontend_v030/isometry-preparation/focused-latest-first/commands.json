@@ -1,0 +1,60 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--lib",
+      "isometry_"
+    ],
+    "exit_code": 0,
+    "seconds": 0.8305222500348464,
+    "recorded_utc": "2026-10-05T13:29:10.532334+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "isometry_source",
+      "--test",
+      "body_effects",
+      "--test",
+      "selected_source_cli",
+      "--test",
+      "sized_source",
+      "--test",
+      "quantum_unit_maps",
+      "--test",
+      "quantum_tuple_unitors"
+    ],
+    "exit_code": 0,
+    "seconds": 15.747866333986167,
+    "recorded_utc": "2026-10-05T13:29:26.282378+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "quantum_unit_maps",
+      "--test",
+      "quantum_tuple_unitors",
+      "--",
+      "--ignored"
+    ],
+    "exit_code": 101,
+    "seconds": 0.11260362504981458,
+    "recorded_utc": "2026-10-05T13:29:26.395244+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  }
+]

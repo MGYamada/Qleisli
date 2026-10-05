@@ -1129,10 +1129,6 @@ fn inverse_fourier_source_proposal(
 fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     for (source, reason) in [
         (
-            "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
-            "iso roots",
-        ),
-        (
             "pub unitary fn f(c: Bit) -> Bit { c }",
             "classical entry values",
         ),
@@ -1162,6 +1158,26 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         assert!(error.span().end > error.span().start && error.span().end <= source.len());
         assert_eq!(prepared.lower().unwrap_err(), error);
     }
+    // Preparation now has an explicit hierarchy path with empty readout; the
+    // source remains Iso rather than acquiring an observation effect.
+    let preparation = ParsedProgram::parse(sources(
+        "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
+    ))
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
+    preparation.check_lowering_profile().unwrap();
+    assert_eq!(
+        preparation.hierarchy_eligibility().unwrap(),
+        HierarchyEligibility::Eligible
+    );
+    assert_eq!(
+        preparation.definitions()[preparation.root()].effect(),
+        "iso"
+    );
+    assert!(preparation.lower().unwrap().is_instrument());
     // A broader assertion on H does not make its body an Iso root.
     ParsedProgram::parse(sources(
         "use std::quantum::h; pub iso fn f(q:Q<Bit>)->Q<Bit>{h(q)}",

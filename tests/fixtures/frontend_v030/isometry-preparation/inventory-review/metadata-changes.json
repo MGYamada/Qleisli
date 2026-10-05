@@ -1,0 +1,43 @@
+{
+  "format": "qleisli.isometry-inventory-metadata-change",
+  "version": 1,
+  "changed_source_hashes": [
+    {
+      "path": "src/bin/qleisli/source_plan.rs",
+      "old_sha256": "3ef62ca05c821d055abd3cd4329c12e6840e356f058050280251beaf04173856",
+      "new_sha256": "99003d69faab808ce6be69216c39329aa3210ef41f7a6bcd0561db2a419556e1",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "old_sha256": "1bb7eaac8a908467888faf2840affa74d42559afaac200e4995b093161603893",
+      "new_sha256": "9def83629b1d194c47f43a47055c8211fd5b45845a3d86cde9979e4789c6e028",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/lower/preservation.rs",
+      "old_sha256": "086eb537d40a6ff5a15a604b065d61e948e96de068b874a96756e8ba1c319ce7",
+      "new_sha256": "02c7d4d6ca8d3be5d317f992aff49071e2db469cad0714a8a7eae95fddd65437",
+      "surface_unchanged": true
+    }
+  ],
+  "new_private_test_source": {
+    "path": "src/frontend/sized/lower/preservation/isometry_tests.rs",
+    "sha256": "78ea50877a924c9f5c460307cd7a012845b9a3add953bb08b90a4ab3843d3067",
+    "group": "sized-source",
+    "surface": {
+      "declarations": [],
+      "functions": [],
+      "capacity_constants": []
+    }
+  },
+  "inventory_old_sha256": "02de52acaae11b4b33ed87eced0799dbd84d381b79997e709325f6a221fff060",
+  "inventory_new_sha256": "d70c7a1d3be42231af082aaa96baeffde77c367b128d9e5444564b3f922d1d6b",
+  "preserved": "Existing public signatures, constructors, capacities, groups, boundary entry points/statuses, native modes, path classifications, proof/cutover gates, guarantee and publication scope unchanged.",
+  "coverage_surface": {
+    "old_sha256": "5334172535f6b0a7fec2c91e5b88c48f68093be89cd98c450092f73bba7584b0",
+    "new_sha256": "f53d84437a10bd19318fe4edb1152eca0432b2dcb0a6a9afef3cdd137322f882"
+  },
+  "coverage_old_sha256": "276416e4ecbab51dec4aca69006c6992610bcb5997dbe490e513b448953ef799",
+  "coverage_new_sha256": "ce0308085da1510cbbae6c3336625a67e964d7f4708b55b0762610ab147b9098"
+}

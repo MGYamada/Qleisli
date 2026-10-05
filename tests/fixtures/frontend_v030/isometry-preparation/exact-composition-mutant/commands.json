@@ -1,0 +1,16 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--lib",
+      "isometry_"
+    ],
+    "exit_code": 0,
+    "seconds": 5.952685584023129,
+    "recorded_utc": "2026-10-05T13:26:50.428341+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  }
+]

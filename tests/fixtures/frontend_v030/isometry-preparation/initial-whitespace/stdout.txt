@@ -1,0 +1,45 @@
+tests/fixtures/frontend_v030/isometry-preparation/exact-composition-first/00.stdout.txt:9: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/exact-composition-multi-init-first/00.stdout.txt:11: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/exact-composition-mutant/00.stdout.txt:10: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/exact-native-first/00.stdout.txt:33: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-diagnostic-final/00.stdout.txt:12: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-diagnostic-final/01.stdout.txt:130: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-diagnostic-final/02.stdout.txt:18: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-final/00.stdout.txt:11: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-final/01.stdout.txt:43: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-first/00.stdout.txt:11: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-first/01.stdout.txt:122: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-first/02.stdout.txt:42: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-native-selected/00.stdout.txt:11: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-native-selected/01.stdout.txt:122: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-native-selected/02.stdout.txt:18: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-version-final/00.stdout.txt:12: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-version-final/01.stdout.txt:123: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-latest-version-final/02.stdout.txt:18: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-msrv-diagnostic-final/00.stdout.txt:12: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-msrv-diagnostic-final/01.stdout.txt:130: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-msrv-diagnostic-final/02.stdout.txt:18: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-msrv-final/00.stdout.txt:12: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-msrv-final/01.stdout.txt:123: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/focused-msrv-final/02.stdout.txt:18: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/full-latest-first/00.stdout.txt:133: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/full-latest-permitted/00.stdout.txt:1069: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/full-msrv-profile-permitted/00.stdout.txt:1310: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/full-msrv-profile-permitted/01.stdout.txt:8: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:102: trailing whitespace.
++2026-10-05T14:37:39.0764573Z 
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:106: trailing whitespace.
++2026-10-05T14:37:39.0766482Z 
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:109: trailing whitespace.
++2026-10-05T14:37:39.0783236Z 
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:111: trailing whitespace.
++2026-10-05T14:37:39.0783943Z 
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:113: trailing whitespace.
++2026-10-05T14:37:39.0784318Z 
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:115: trailing whitespace.
++2026-10-05T14:37:39.0784601Z 
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt:117: trailing whitespace.
++2026-10-05T14:37:39.0785271Z 
+tests/fixtures/frontend_v030/isometry-preparation/remainder-latest-diagnostic-final/00.stdout.txt:32: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/remainder-latest-profile-repaired/00.stdout.txt:236: new blank line at EOF.
+tests/fixtures/frontend_v030/isometry-preparation/remainder-latest-profile-repaired/01.stdout.txt:25: new blank line at EOF.

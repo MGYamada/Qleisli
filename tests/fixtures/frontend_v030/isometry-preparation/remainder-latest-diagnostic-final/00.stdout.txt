@@ -1,0 +1,32 @@
+
+running 2 tests
+test sized_cli_reports_unsupported_lowering_before_starting_a_kernel ... ok
+test native_failure_diagnostics_preserve_codes_profile_and_producer_or_caller_scope ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.33s
+
+
+running 8 tests
+test python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations ... ignored, requires the development Python 3.11+ oracle
+test python_concrete_execution_does_not_replace_generic_size_obligations ... ignored, requires the development Python 3.11+ oracle
+test python_ghz_and_arithmetic_corpus_agree_with_rust_preparation ... ignored, requires the development Python 3.11+ oracle
+test python_static_comparisons_keep_type_angles_separate_in_both_dialects ... ignored, requires the development Python 3.11+ oracle
+test rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively ... ignored, requires the separately built and audited Lean kernel
+test lowering_profile_diagnostics_are_available_before_proposal_generation ... FAILED
+test transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership ... ok
+test ghz_and_arithmetic_corpus_prepare_and_lower_through_rust ... ok
+
+failures:
+
+---- lowering_profile_diagnostics_are_available_before_proposal_generation stdout ----
+
+thread 'lowering_profile_diagnostics_are_available_before_proposal_generation' (15404773) panicked at tests/sized_review_dialects.rs:115:59:
+called `Result::unwrap_err()` on an `Ok` value: ()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    lowering_profile_diagnostics_are_available_before_proposal_generation
+
+test result: FAILED. 2 passed; 1 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.18s
+

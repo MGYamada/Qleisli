@@ -57,6 +57,19 @@ pub(super) struct Response {
 }
 
 fn response_indices(bytes: &[u8], mode: Mode) -> Result<Response> {
+    // Main rejects a product-version mismatch before dispatching to a mode,
+    // using the common failure frame. Only this exact failure is recognized;
+    // a generic success frame never authorizes hierarchical reconstruction.
+    if bytes == b"qleisli.qirf-native 1\nerror\nversion\n" {
+        return Err(Error::new(
+            "version",
+            format!(
+                "Lean {}: native checker product version does not match {}",
+                mode.description(),
+                env!("CARGO_PKG_VERSION")
+            ),
+        ));
+    }
     let text =
         std::str::from_utf8(bytes).map_err(|_| Error::format("invalid runtime response UTF-8"))?;
     let mut lines = text.split('\n');
@@ -161,6 +174,36 @@ pub(super) fn check(executable: &Path, bytes: Vec<u8>, mode: Mode) -> Result<Res
 #[cfg(test)]
 mod response_diagnostics_tests {
     use super::{Mode, response_indices};
+
+    #[test]
+    fn isometry_hierarchy_version_failure_is_explicit_and_never_accepts_generic_frames() {
+        for mode in [
+            Mode::Inspect,
+            Mode::Request,
+            Mode::Fourier,
+            Mode::Instrument,
+            Mode::QpeInstrument,
+        ] {
+            let error = response_indices(b"qleisli.qirf-native 1\nerror\nversion\n", mode)
+                .err()
+                .unwrap();
+            assert_eq!(error.code, "version");
+            assert!(
+                error
+                    .to_string()
+                    .contains("native checker product version does not match")
+            );
+            for frame in [
+                b"qleisli.qirf-native 1\nerror\nversion\nextra\n".as_slice(),
+                b"qleisli.qirf-native 1\nerror\nversion".as_slice(),
+                b"qleisli.qirf-native 1\nerror\ninvalid_ir\n".as_slice(),
+                b"qleisli.qirf-native 1\nok\n".as_slice(),
+                b"qleisli.qirf-native 2\nerror\nversion\n".as_slice(),
+            ] {
+                assert_eq!(response_indices(frame, mode).err().unwrap().code, "format");
+            }
+        }
+    }
 
     #[test]
     fn native_v3_requires_bounded_exact_work_and_rejects_legacy_acceptance() {

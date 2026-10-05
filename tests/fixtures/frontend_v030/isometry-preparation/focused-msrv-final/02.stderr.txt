@@ -1,0 +1,4 @@
+    Finished `test` profile [unoptimized] target(s) in 0.07s
+     Running tests/quantum_tuple_unitors.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_tuple_unitors-39b70723170b736e)
+     Running tests/quantum_unit_maps.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/quantum_unit_maps-234d7c5f32184ed1)
+     Running tests/sized_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_source-757a219cd8492aaa)

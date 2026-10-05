@@ -61,6 +61,9 @@ impl HierarchyProposal {
     pub fn lowering_precursor(&self) -> &[u8] {
         &self.precursor
     }
+    /// Whether the proposal uses initialization/unitary/readout transport.
+    /// This includes principal Iso roots with no measurements and does not
+    /// classify the source effect or establish an isometry theorem.
     pub fn is_instrument(&self) -> bool {
         self.instrument
     }
@@ -1426,9 +1429,19 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
         )));
     }
     if root.effect() == "iso" {
-        return Ok(HierarchyEligibility::Ineligible(unsupported(
-            "selected sized lowering profile supports unitary roots and initialize/unitary/readout observe roots; iso roots are unsupported",
-        )));
+        let classical: Vec<_> = leaves(root.output())
+            .into_iter()
+            .filter(|output| !output.ty().is_quantum())
+            .collect();
+        if !classical.is_empty()
+            && (classical.len() != 1
+                || classical[0].ty().kind() != "bits"
+                || classical[0].ty().width() != Some(0))
+        {
+            return Ok(HierarchyEligibility::Ineligible(unsupported(
+                "selected isometry lowering requires quantum results with at most one ordinary Bits<0> result",
+            )));
+        }
     }
     if root.effect() == "unitary"
         && leaves(root.output())
@@ -1548,10 +1561,22 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
             .into_iter()
             .filter(|v| !v.ty().is_quantum())
             .collect();
-        if classical.len() != 1 || output_classical_types[0].ty().kind() != "bits" {
+        let isometry = root.effect() == "iso";
+        if isometry {
+            if !state.measured.is_empty()
+                || (!classical.is_empty() && classical != [Vec::<u32>::new()])
+            {
+                return Err(fail(
+                    "isometry source cannot contain observation or a nonempty classical result",
+                ));
+            }
+        } else if classical.len() != 1 || output_classical_types[0].ty().kind() != "bits" {
             return Err(fail("instrument root must return exactly one Bits value"));
         }
-        let pack = &classical[0];
+        // The native readout carrier has one empty outcome when no axis is
+        // measured. It does not add a source Observe effect or a quantum action.
+        let empty_outcome = Vec::new();
+        let pack = classical.first().unwrap_or(&empty_outcome);
         let measurement_values: Vec<_> = state.measured.iter().map(|(_, id)| *id).collect();
         if pack != &measurement_values {
             return Err(fail(

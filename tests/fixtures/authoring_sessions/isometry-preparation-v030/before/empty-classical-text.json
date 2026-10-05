@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/empty-classical/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:97..161: unsupported: finite source lowering requires Unit, Bit, Q<Bit> or exact products; Bits and other quantum bases need explicit target support\n",
+  "native_invocations": 0,
+  "seconds": 0.03850908303866163,
+  "recorded_utc": "2026-10-05T13:00:37.027427+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "main:97..161: unsupported: finite source lowering requires Unit, Bit, Q<Bit> or exact products; Bits and other quantum bases need explicit target support\n"
+}

@@ -1,0 +1,44 @@
+{
+  "format": "qleisli.isometry-inventory-diff-audit",
+  "version": 1,
+  "metadata_scope_exact": true,
+  "unchanged_inventory_sections": [
+    "authority",
+    "boundaries",
+    "capacities",
+    "comparison",
+    "corpus",
+    "enums",
+    "format",
+    "groups",
+    "native_packaging",
+    "packet",
+    "release",
+    "version"
+  ],
+  "unchanged_coverage_fields": [
+    "authority",
+    "boundaries",
+    "classification_scope",
+    "external_schemas_enabled",
+    "format",
+    "gates",
+    "groups",
+    "migration",
+    "paths",
+    "validation",
+    "version"
+  ],
+  "source_count_before": 250,
+  "source_count_after": 251,
+  "proof_status": "S05-C1-C5 open; no constitutional guarantee discharged by this inventory",
+  "open_gates": [
+    "S05-C1",
+    "S05-C2",
+    "S05-C3",
+    "S05-C4",
+    "S05-C5"
+  ],
+  "guarantee_scope_unchanged": true,
+  "performed": "Exact JSON comparison against HEAD plus fixed inventory/coverage guards; no commands from records were executed."
+}

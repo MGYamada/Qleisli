@@ -1,0 +1,13 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::quantum::phase_eighth;
+use std::quantum::finish;
+use std::quantum::h;
+pub fn entry(q: Q<Unit>) -> (Q<Bit>, Q<Bit>) {
+    let a = init0();
+    let u = phase_eighth(q);
+    let b = init0();
+    finish(u);
+    let a = h(a);
+    (b, a)
+}

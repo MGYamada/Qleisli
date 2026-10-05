@@ -62,12 +62,12 @@ impl Failure {
         }));
         failure
     }
-    fn hierarchy(error: interchange::Error, instrument: bool, scope: RequestScope) -> Self {
+    fn hierarchy(error: interchange::Error, profile: &str, scope: RequestScope) -> Self {
         let mut failure = Self::from(error);
         failure.legacy = format!(
             "{}; sized {} profile, {} contract",
             failure.legacy,
-            if instrument { "instrument" } else { "unitary" },
+            profile,
             scope.name()
         );
         failure.message = failure.legacy.clone();
@@ -338,13 +338,14 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
         None
     };
     // Selection is already fixed. Neither lowering nor checking can reroute it.
-    let proposal = source.lower()?;
-    if !proposal.is_instrument() && (options.provider.is_some() || options.command == "sample") {
+    let root = &source.definitions()[source.root()];
+    if root.effect() != "observe" && (options.provider.is_some() || options.command == "sample") {
         return Err(Failure::new(
             "unsupported",
             "named QPE and sampling require an observing entry",
         ));
     }
+    let proposal = source.lower()?;
     let request = if let Some(path) = &options.provider {
         PreparedRequest::NamedQpe(proposal.qpe_binding(&read(path)?)?)
     } else {
@@ -416,12 +417,20 @@ fn hierarchy_execute(
     let scope = request.scope();
     let contract = scope.contract();
     let verification = scope.report();
+    let isometry = proposal.source().definitions()[proposal.source().root()].effect() == "iso";
     let kernel = hierarchical::Kernel::new(kernel);
     let limits = ExecutionLimits {
         max_amplitudes: 1 << 20,
         max_steps: 10_000_000,
     };
-    let checking_error = |error| Failure::hierarchy(error, proposal.is_instrument(), scope);
+    let profile = if isometry {
+        "isometry"
+    } else if proposal.is_instrument() {
+        "instrument"
+    } else {
+        "unitary"
+    };
+    let checking_error = |error| Failure::hierarchy(error, profile, scope);
     if proposal.is_instrument() {
         let checked = match request {
             PreparedRequest::NamedQpe(binding) => kernel.check_qpe_instrument_native(
@@ -436,8 +445,13 @@ fn hierarchy_execute(
         .map_err(checking_error)?;
         proposal.validate_initialization_moves_native(&checked)?;
         if options.command == "check" {
+            let profile = if isometry {
+                "sized-isometry"
+            } else {
+                "sized-instrument"
+            };
             return Ok(format!(
-                "{{\"status\":\"checked\",\"profile\":\"sized-instrument\",\"contract\":\"{contract}\",{verification}}}"
+                "{{\"status\":\"checked\",\"profile\":\"{profile}\",\"contract\":\"{contract}\",{verification}}}"
             ));
         }
         let input = input.expect("prepared execution input");
@@ -459,6 +473,20 @@ fn hierarchy_execute(
             ));
         }
         let output = checked.execute_instrument(input, 1, limits)?;
+        if isometry {
+            if output.measured_bits != 0 || output.branches.len() != 1 {
+                return Err(Failure::new(
+                    "execution",
+                    "empty-readout execution has an incompatible result shape",
+                ));
+            }
+            // Preserve the actual unnormalized coefficient vector, including
+            // its scalar phase. Shape checking is not an isometry proof.
+            return Ok(format!(
+                "{{\"quantum_bits\":{},\"amplitudes\":{:?},{verification}}}",
+                output.residual_quantum_bits, output.branches[0]
+            ));
+        }
         Ok(format!(
             "{{\"measured_bits\":{},\"residual_bits\":{},\"branches\":{:?},{verification}}}",
             output.measured_bits, output.residual_quantum_bits, output.branches

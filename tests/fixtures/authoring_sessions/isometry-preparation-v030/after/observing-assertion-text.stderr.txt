@@ -1,0 +1,1 @@
+main:137..155: effect: body effect `Observe` exceeds asserted `Iso` effect of `entry`. Semantic error: "externally unitary" is not supported; an external unitarity claim cannot override the effect inferred from the body

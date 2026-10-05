@@ -6,6 +6,9 @@ use crate::frontend::sized::{Error, Result, SourceStep, SourceType, SourceValue,
 use crate::interchange::json::{self, Value};
 use std::collections::{BTreeMap, BTreeSet};
 
+#[cfg(test)]
+mod isometry_tests;
+
 pub(super) fn invalid(message: impl Into<String>) -> Error {
     Error::new("preservation", Span::default(), message)
 }
@@ -971,13 +974,18 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
             }
         })
         .collect();
-    if classical
-        != [replay
-            .measured
-            .iter()
-            .map(|(_, id)| *id)
-            .collect::<Vec<_>>()]
-    {
+    let isometry = proposal.source.definitions()[proposal.source.root()].effect() == "iso";
+    let return_matches = if isometry {
+        replay.measured.is_empty() && (classical.is_empty() || classical == [Vec::<u32>::new()])
+    } else {
+        classical
+            == [replay
+                .measured
+                .iter()
+                .map(|(_, id)| *id)
+                .collect::<Vec<_>>()]
+    };
+    if !return_matches {
         return Err(invalid("source return differs from chronological readout"));
     }
     if quantum(&returned)

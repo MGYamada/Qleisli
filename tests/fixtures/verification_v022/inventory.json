@@ -2998,7 +2998,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "3ef62ca05c821d055abd3cd4329c12e6840e356f058050280251beaf04173856",
+      "sha256": "99003d69faab808ce6be69216c39329aa3210ef41f7a6bcd0561db2a419556e1",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3833,7 +3833,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "1bb7eaac8a908467888faf2840affa74d42559afaac200e4995b093161603893",
+      "sha256": "9def83629b1d194c47f43a47055c8211fd5b45845a3d86cde9979e4789c6e028",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3856,7 +3856,7 @@
     },
     {
       "path": "src/frontend/sized/lower/preservation.rs",
-      "sha256": "086eb537d40a6ff5a15a604b065d61e948e96de068b874a96756e8ba1c319ce7",
+      "sha256": "02c7d4d6ca8d3be5d317f992aff49071e2db469cad0714a8a7eae95fddd65437",
       "surface": {
         "declarations": [
           "FramePort",
@@ -3887,6 +3887,16 @@
         "capacity_constants": []
       },
       "group": "sized-source"
+    },
+    {
+      "path": "src/frontend/sized/lower/preservation/isometry_tests.rs",
+      "sha256": "78ea50877a924c9f5c460307cd7a012845b9a3add953bb08b90a4ab3843d3067",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     },
     {
       "path": "src/frontend/sized/parser.rs",
@@ -4219,7 +4229,7 @@
     },
     {
       "path": "src/interchange/hierarchical/runtime.rs",
-      "sha256": "13f6896df695d0b215ab75b526f70725b8e7218444c2489fc1c73fae1750c2fd",
+      "sha256": "0ee4c7afb8363d9e38699c1783345e0e78adbed3f172d891a31c46f1d46ebfda",
       "group": "transport",
       "surface": {
         "declarations": [],

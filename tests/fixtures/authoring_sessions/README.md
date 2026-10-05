@@ -71,6 +71,13 @@ tests protect against lost/edited snapshots and contradictory records. Both
 commands run in the docs CI job; Rust tests replay the QPE snapshot and repair
 regressions. Existing records are retained even when diagnostics evolve.
 
+The [Iso preparation study](isometry-preparation-v030/README.md) retains fourteen
+first projects and 56 before/after checks with actual native invocation counts.
+Eight supported Iso roots now use existing preparation and empty-readout
+transport; the pure control and five rejection cases retain their behavior.
+Independent exact requests, reference coefficients and real failed validation
+attempts are recorded separately from these check-only observations.
+
 The [corpus-first Xor/GHZ continuation](sized-corpus-v021/session.json) preserves
 both actual sources before experimental compilation. Initial direct lowering
 hit the checker budget at Xor width four; an intermediate normalized producer

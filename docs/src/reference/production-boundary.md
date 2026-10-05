@@ -72,8 +72,10 @@ matrix or encoded contract, with continuous work states. These are necessary
 success facts, not a converse characterization of every parser constraint.
 The leaf conclusion retains complex phase; its arbitrary finite-reference laws
 require no separability or normalization premise. The encoded branch retains
-the root structural/ownership/scope meaning and actual contract-check success,
-without asserting the missing original-root encoded matrix equation.
+the original root's `BodyMeaning`, complete Basis interface and checked encoded
+equation through `EncodedMeaning`, `encoded_meaning` and `check_encoded_sound`.
+Those bounded original-root results do not establish source, deployed-binary
+or host execution correspondence.
 
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a
@@ -107,6 +109,26 @@ caller composition and named-QPE requests have distinct scopes. Neither
 source-step comparison nor general lowering preservation follows merely from
 an accepted proposal. See [selected-source execution](type-model.md#selected-source-execution)
 for the remaining invocation and checking-profile boundaries.
+
+Principal Iso source roots in the selected hierarchy use the existing
+`check_instrument_native` boundary for fresh-zero preparation, checked unitary
+evolution and a readout with zero measurements. The quantum entry/result trees,
+zero-width owners and complete live frame remain part of the proposal and its
+initialization-move comparison. At most one ordinary `Bits<0>` result may
+accompany the quantum results; the transport's empty outcome does not create
+a source Observe effect. Iso execution returns its single unnormalized branch
+with scalar phase retained. Sampling requires a principal Observe source root,
+independently of the chosen native transport or optional source annotation.
+
+This adapter reuses component checks and introduces no new native primitive,
+accepted-handle authority, formal theorem or constitutional guarantee. The
+ordinary QLV1 ownership/scope admissions do not extend to this hierarchy path.
+An independent hierarchy request must fit the supported composition language;
+a whole-root finite-matrix request cannot replace a composite root's required
+child structure. Producer consistency, the bounded initialization/source-step
+comparison and numerical execution observations retain their separate scopes.
+General source preservation and the complete native analytic/operator and
+runtime correspondence duties remain pending.
 
 ## Durable coverage check
 

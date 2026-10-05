@@ -1,4 +1,8 @@
 # Keep frozen sources byte-identical, including upstream whitespace.
+# Retain raw Iso validation EOFs and hosted timestamped blank lines.
+tests/fixtures/frontend_v030/isometry-preparation/*/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/isometry-preparation/hosted-predecessor/aggregate-docs.log.txt -text -whitespace
+tests/fixtures/frontend_v030/isometry-preparation/initial-whitespace/stdout.txt -text -whitespace
 tests/fixtures/authoring_sessions/body-effects-v030/baseline/*.stdout.txt -text -whitespace
 tests/fixtures/authoring_sessions/body-effects-v030/baseline/*.stderr.txt -text -whitespace
 tests/fixtures/authoring_sessions/body-effects-v030/after-body-inference/*.stdout.txt -text -whitespace

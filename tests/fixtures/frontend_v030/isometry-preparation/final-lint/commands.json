@@ -1,0 +1,90 @@
+[
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.030566499975975603,
+    "recorded_utc": "2026-10-05T15:43:56.157364+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 0.7669205410056747,
+    "recorded_utc": "2026-10-05T15:43:56.924792+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "toolchain": "msrv",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5338018750189804,
+    "recorded_utc": "2026-10-05T15:43:57.458839+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.032521207991521806,
+    "recorded_utc": "2026-10-05T15:43:57.491661+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 1.526934582972899,
+    "recorded_utc": "2026-10-05T15:43:59.018854+00:00",
+    "stdout": "04.stdout.txt",
+    "stderr": "04.stderr.txt"
+  },
+  {
+    "toolchain": "latest",
+    "command": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.5279567920370027,
+    "recorded_utc": "2026-10-05T15:43:59.547068+00:00",
+    "stdout": "05.stdout.txt",
+    "stderr": "05.stderr.txt"
+  }
+]
