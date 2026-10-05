@@ -1,0 +1,26 @@
+{
+  "status": "compile-error-repaired-not-yet-revalidated",
+  "failure": "validation/latest-attempt-01/03-check-all-targets.stderr.txt",
+  "actual_exit_code": 101,
+  "cause": "ambiguous_associated_items: Self::Name can refer to enum variant Name or PatternView associated type Name",
+  "repair": "Use the already fixed concrete BindingName in the sized PatternView spelling signature. No rule, representation, caller, capacity or order change.",
+  "before": {
+    "src/frontend/compile/lower/mod.rs": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a",
+    "src/frontend/mod.rs": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422",
+    "src/frontend/sized/ast.rs": "152702f67d874b44d8f364110ed0e07aa90d6d3455efc3277d78fb02c1f9a525",
+    "src/frontend/sized/check.rs": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+    "src/frontend/pattern.rs": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede"
+  },
+  "after": {
+    "src/frontend/compile/lower/mod.rs": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a",
+    "src/frontend/mod.rs": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422",
+    "src/frontend/sized/ast.rs": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+    "src/frontend/sized/check.rs": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+    "src/frontend/pattern.rs": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede"
+  },
+  "changed_paths": [
+    "src/frontend/sized/ast.rs"
+  ],
+  "observed_utc": "2026-10-05T16:47:50.024565+00:00",
+  "first_logs_preserved": true
+}

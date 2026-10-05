@@ -1,0 +1,122 @@
+{
+  "format": "qleisli.hosted-capture-transport",
+  "version": 1,
+  "recorded_at_utc": "2026-10-05 16:29:41 UTC",
+  "requests": [
+    {
+      "tool": "github_fetch",
+      "arguments": {
+        "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083"
+      },
+      "returned_file": "run.api.json",
+      "response": "Exact structuredContent.content UTF-8 string; HTTP headers unavailable"
+    },
+    {
+      "tool": "github_fetch_workflow_run_jobs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "run_id": 37336154083
+      },
+      "returned_file": "jobs.connector.json",
+      "response": "Entire returned connector wrapper serialized as JSON+LF; latest attempt, first page only"
+    },
+    {
+      "tool": "github_fetch",
+      "arguments": {
+        "url": "https://api.github.com/repos/MGYamada/Qleisli/git/commits/7549cecca246b9335a3e1b8f9e4a176df8827d0a"
+      },
+      "returned_file": "merge.api.json",
+      "response": "Exact structuredContent.content UTF-8 string; HTTP headers unavailable"
+    },
+    {
+      "tool": "github_fetch_file",
+      "arguments": {
+        "repository_full_name": "MGYamada/Qleisli",
+        "path": ".github/workflows/ci.yml",
+        "ref": "9256fe9ef4ffa722066b0569ee37341cf65dea0d"
+      },
+      "returned_file": "workflow-9256fe9.yml",
+      "git_blob_sha": "71f1b0196d1098c2cd5fdab35d8786699d4f25f4",
+      "encoding": "utf-8"
+    },
+    {
+      "tool": "github_fetch_workflow_job_logs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "job_id": 111851329117
+      },
+      "returned_file": "logs/changes-111851329117.log.txt.gz",
+      "response": "Complete connector decoded UTF-8 log; gzip restores exact returned bytes, not HTTP ZIP bytes",
+      "isError": false
+    },
+    {
+      "tool": "github_fetch_workflow_job_logs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "job_id": 111851435760
+      },
+      "returned_file": "logs/check-docs-111851435760.log.txt.gz",
+      "response": "Complete connector decoded UTF-8 log; gzip restores exact returned bytes, not HTTP ZIP bytes",
+      "isError": false
+    },
+    {
+      "tool": "github_fetch_workflow_job_logs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "job_id": 111851435887
+      },
+      "returned_file": "logs/check-lean-kernel-111851435887.log.txt.gz",
+      "response": "Complete connector decoded UTF-8 log; gzip restores exact returned bytes, not HTTP ZIP bytes",
+      "isError": false
+    },
+    {
+      "tool": "github_fetch_workflow_job_logs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "job_id": 111851435941
+      },
+      "returned_file": "logs/check-interop-111851435941.log.txt.gz",
+      "response": "Complete connector decoded UTF-8 log; gzip restores exact returned bytes, not HTTP ZIP bytes",
+      "isError": false
+    },
+    {
+      "tool": "github_fetch_workflow_job_logs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "job_id": 111851435978
+      },
+      "returned_file": "logs/check-macos-source-111851435978.log.txt.gz",
+      "response": "Complete connector decoded UTF-8 log; gzip restores exact returned bytes, not HTTP ZIP bytes",
+      "isError": false
+    },
+    {
+      "tool": "github_fetch_workflow_job_logs",
+      "arguments": {
+        "repo_full_name": "MGYamada/Qleisli",
+        "job_id": 111851436073
+      },
+      "returned_file": "logs/check-lean-111851436073.log.txt.gz",
+      "response": "Complete connector decoded UTF-8 log; gzip restores exact returned bytes, not HTTP ZIP bytes",
+      "isError": false
+    }
+  ],
+  "failed_local_preparation": {
+    "error": "ReferenceError: TextEncoder is not defined",
+    "scope": "First serialization attempt failed before writing any file or re-requesting GitHub; repaired the local UTF-8 hex encoder. This was not a CI result."
+  },
+  "readback": "All ten complete returned payloads compared byte-for-byte before compressing log data; see byte-readback.json.",
+  "performed": [
+    "Read-only GitHub API/connector requests",
+    "Read-only local artifact checks",
+    "Writes confined to this new evidence directory"
+  ],
+  "not_performed": [
+    "CI rerun/cancellation",
+    "Subsequent status poll",
+    "Artifact archive downloads",
+    "Cargo/Lean/native CLI execution",
+    "Git/GitHub mutations",
+    "Source edits",
+    "Release readiness certification"
+  ]
+}

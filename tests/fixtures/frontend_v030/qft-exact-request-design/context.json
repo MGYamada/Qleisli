@@ -1,0 +1,76 @@
+{
+  "format": "qleisli.read-only-qft-request-design",
+  "version": 1,
+  "status": "local-non-normative-candidate",
+  "observer": "/root/isometry_cli_tests",
+  "observed_utc": "2026-10-05T16:45:23.853211+00:00",
+  "repository_head_observed": "b544cd2d96dcc94e0ef29b28e6b08979bca5d9b1",
+  "head_role": "Existing local HEAD only; concurrent uncommitted pattern work is separate. No compiled HEAD attestation.",
+  "edition": "2026",
+  "issue": {
+    "number": 317,
+    "url": "https://github.com/MGYamada/Qleisli/issues/317",
+    "updated_at_readback": "2026-10-05T16:39:37Z",
+    "unchecked_acceptance_criteria": 24,
+    "snapshot": "issue-317.connector.json",
+    "body_copy": "issue-317.md",
+    "serialization": "Normalized complete tool-result object, JSON indent2 and LF; body copied as the exact UTF-8 connector body string including its original trailing newlines. Neither file represents original HTTP response bytes."
+  },
+  "continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "constitutional_check": "constitutional-check.json",
+  "pending_interpretations": [
+    "QS-2026-01",
+    "PR-2026-01",
+    "RS-2026-01",
+    "EXACT-2026-01"
+  ],
+  "protected_guarantees": [
+    "QS-QLV1-OWNERSHIP-2026-01",
+    "QS-QLV1-SCOPE-2026-01"
+  ],
+  "bounds": {
+    "allowed_future_widths": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "new_maximum_cases": false,
+    "named_qft0": false
+  },
+  "performed": [
+    "read-only source/API inspection",
+    "read-only GitHub Issue retrieval",
+    "source/file SHA-256 metadata capture",
+    "constitutional source/evidence identity and continuity check",
+    "local candidate record writing"
+  ],
+  "not_performed": [
+    "QFT check/run/sample/emit-proposal command",
+    "native checker invocation",
+    "Cargo or Lean build",
+    "new primitive or schema implementation",
+    "mathematical probe",
+    "new proof or replay",
+    "human adoption or guarantee admission",
+    "GitHub mutation",
+    "canonical std exposure or issue completion"
+  ],
+  "observed_binary_files": [
+    {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "bytes": 22252976,
+      "sha256": "3ba4bff2b98644f56d82d02800a784dc9c49a25bb6e66cdb784eb6b2401345f1",
+      "invoked": false,
+      "note": "Observed bytes only. No command execution, build-to-HEAD provenance or portable binary attestation."
+    },
+    {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "bytes": 91666928,
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "invoked": false,
+      "note": "Observed bytes only. No command execution, build-to-HEAD provenance or portable binary attestation."
+    }
+  ],
+  "source_identity_scope": "inputs.json is a bounded inspected subset. Producer payload contains no original source identity; association is provenance, not a source-preservation proof."
+}

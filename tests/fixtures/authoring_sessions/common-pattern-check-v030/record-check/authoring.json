@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_authoring_sessions.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-05T16:38:37.518460+00:00",
+  "seconds": 0.4209226669627242,
+  "stdout": {
+    "path": "authoring.stdout.txt",
+    "sha256": "3f61e6f0a4857d2a5cef1cee286ece264c94d8486c848f5c5960ecfb61b7c5a8"
+  },
+  "stderr": {
+    "path": "authoring.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "Record/doc integrity only; no recorded command executed, no Cargo/Lean build, replay, functional oracle or proof."
+}

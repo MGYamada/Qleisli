@@ -1,0 +1,45 @@
+{
+  "status": "prepared-not-executed",
+  "source_declared_test_counts": {
+    "unit_patterns": 8,
+    "runtime_parameter_patterns": 8,
+    "frontend_types": 3,
+    "ordinary_types": 14,
+    "body_effects": 13,
+    "source_collection": 2,
+    "shared_resolution": 3,
+    "sized_declarations": 7,
+    "selected_source_cli": 9,
+    "sized_source": 41,
+    "project": 11
+  },
+  "source_declared_lib_type_tests": 4,
+  "counts_note": "These counts come from inspected test declarations, not execution results. Actual cfg/filter/ignored and pass counts must come from retained run output.",
+  "test_scope": [
+    "Exact Unit/tuple shape and one typed parameter per argument",
+    "Linear wildcard including Q<Unit>/Q<Bits<0>>; consume-before-rebind; no hiding live owner",
+    "Static/runtime uniqueness and lexical identity remain caller-specific",
+    "Complete unused siblings, both static arms and zero-fold bodies remain checked",
+    "Native-selected scope, independent small reference/phase oracles and producer/caller-request distinction",
+    "Shared retained source/provenance and actual profile-specific diagnostic ordering"
+  ],
+  "default_ignored_tests": {
+    "tests/sized_source.rs": [
+      "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+      "direct_finite_source_gates_preserve_entangled_h_x_references",
+      "rust_source_proposals_check_natively_and_preserve_small_system_coefficients"
+    ]
+  },
+  "explicit_skips": {
+    "tests/project.rs": {
+      "long_acyclic_import_chain_loads_on_a_small_stack": "Creates 3000 source files for unrelated import-depth stress; pattern binding does not change traversal.",
+      "deep_import_cycle_reports_the_back_edge_and_cycle_path": "Creates 3000 source files for unrelated import-cycle stress; pattern binding does not change traversal."
+    }
+  },
+  "excluded_suites": {
+    "frontend_ownership_differential": "Generates 4000 small random sources; outside this bounded unit, not reported as passing or replaced by a new mirror test."
+  },
+  "root_approved_exclusions": true,
+  "fixture_closure": "Declared incomplete map; all-target compile/lint uses additional test fixtures not fully covered by this selected source map.",
+  "approval_scope": "Ordinary target-selection coordination from root; no human constitutional judgment, proof or release authorization."
+}

@@ -12,6 +12,7 @@ pub mod effects;
 pub mod lexer;
 mod ordinary;
 pub mod parser;
+mod pattern;
 pub mod project;
 mod raw_state;
 mod resolve;

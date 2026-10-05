@@ -1,0 +1,51 @@
+{
+  "format": "qleisli.local-design-packet-map",
+  "version": 1,
+  "status": "first-candidate-frozen",
+  "scope": "Candidate prose/readbacks/identity metadata only; no experiment executed. Does not authenticate authority or prove semantic preservation.",
+  "excluded": [
+    "packet-files.json"
+  ],
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 995,
+      "sha256": "f080d0b9f1b0bc89d3354c6c2835654e6fe6af03271bbaea2cb278498301e9dd"
+    },
+    {
+      "path": "constitutional-check.json",
+      "bytes": 776,
+      "sha256": "c73bd312e7ff1224df56abe23bdf7fa2d266658596d5690b45c00aa34423cc02"
+    },
+    {
+      "path": "context.json",
+      "bytes": 2911,
+      "sha256": "d2726953e7639b2533d6a1995ee73c3a5babebcf386a066d693d897029aa5afd"
+    },
+    {
+      "path": "draft-01.md",
+      "bytes": 15531,
+      "sha256": "eb5a4631e99902eb1d7c2439ff31adad36781f75783ed49990d6e9715ea5b471"
+    },
+    {
+      "path": "inputs.json",
+      "bytes": 8970,
+      "sha256": "ef645c211c608c0d176ac9814fdcbfee8529dda2f171545bd313f862dc0f481c"
+    },
+    {
+      "path": "issue-317.connector.json",
+      "bytes": 33743,
+      "sha256": "30669232d8b46688eb46547606d6d0e6eeaa6599e810046ceba092c97af28208"
+    },
+    {
+      "path": "issue-317.md",
+      "bytes": 31668,
+      "sha256": "40a9e4537553692d931ac7a1b3840a4595bd92f7881f22a28a63bc0f097c31d1"
+    },
+    {
+      "path": "local-record-checks.json",
+      "bytes": 807,
+      "sha256": "0a8344d749922e44b32839cb4c1fd766a10c29c9c97f192547e2735df3ee67f0"
+    }
+  ]
+}

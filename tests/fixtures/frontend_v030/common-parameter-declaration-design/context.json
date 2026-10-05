@@ -1,0 +1,68 @@
+{
+  "format": "qleisli.common-parameter-declaration-read-only-candidate",
+  "version": 1,
+  "status": "local-non-normative-not-implemented",
+  "observer": "/root/isometry_cli_tests",
+  "observed_utc": "2026-10-05T16:55:05.485360+00:00",
+  "last_read_only_observed_head": "b544cd2d96dcc94e0ef29b28e6b08979bca5d9b1",
+  "head_note": "Root concurrent runtime-pattern implementation remains uncommitted. Source file observations do not attest a compiled HEAD or full runtime closure.",
+  "edition": "2026",
+  "issue": {
+    "number": 32,
+    "url": "https://github.com/MGYamada/Qleisli/issues/32",
+    "updated_at_readback": "2026-10-05T16:39:34Z",
+    "snapshot": "issue-32.connector.json",
+    "serialization": "Normalized complete tool result, JSON indentation2 with LF. Not original HTTP response bytes."
+  },
+  "input_identity_scope": "Fixed 40-file inspected subset, not complete production/runtime dependency closure. Existing fixtures retained in place unchanged.",
+  "performed": [
+    "read-only current code/Reference/contract inspection",
+    "read-only GitHub Issue32 retrieval",
+    "read-only git rev-parse HEAD",
+    "existing source/diagnostic record reading",
+    "SHA-256 source/file metadata capture",
+    "new local candidate writing"
+  ],
+  "not_performed": [
+    "new source experiment or source repair",
+    "Cargo/Lean build or checker replay",
+    "test execution",
+    "qleisli CLI/native command",
+    "production source change",
+    "existing metadata/fixture update",
+    "Git/Issue mutation",
+    "policy adoption",
+    "primitive or native rule change",
+    "proof/guarantee admission",
+    "common checker or Issue completion"
+  ],
+  "observation_classification": {
+    "actual_existing_records": "Two duplicate-runtime-parameter JSON observations, exit1 and zero native invocations, span99..100; historical lexical static-shadow stdout. Read only, not rerun.",
+    "code_derived": "Current signature/declaration/profile/projection ordering, spans, sets, type and scope stages.",
+    "predicted_not_run": "All proposed new source/counterexample outcomes in candidate-01.md.",
+    "pending": "Any diagnostic/profile or local static-shadow convergence beyond pure extraction."
+  },
+  "proposed_unit": "Shared iterative declaration spelling claiming over original common Ident/Pattern, per existing static/runtime parameter stage; retain caller-specific sets, type/scope work, complete declaration coverage and error adapters.",
+  "scope_limits": [
+    "No all-signature preflight reorder before earlier finite native checks",
+    "No other AST, certificate, selected-body exemption or identity reconstructed from name/span",
+    "No Basis/Meaning policy change or symbolic/closed type evidence conflation",
+    "No maximum-size generation",
+    "No canonical std/QFT exposure"
+  ],
+  "constitutional_state": {
+    "applicable": [
+      "QS-2026-01",
+      "PR-2026-01",
+      "RS-2026-01",
+      "EXACT-2026-01"
+    ],
+    "broad_status": "pending",
+    "protected": [
+      "QS-QLV1-OWNERSHIP-2026-01",
+      "QS-QLV1-SCOPE-2026-01"
+    ],
+    "last_check": "Prior task check_constitution.py --base-ref faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2 passed. No new policy validation command was run for this candidate."
+  },
+  "inspection_limits": "Initial path probes referenced absent chapter/test names and returned shell/rg errors; actual available paths were subsequently read. Those probes are not successful validation commands."
+}

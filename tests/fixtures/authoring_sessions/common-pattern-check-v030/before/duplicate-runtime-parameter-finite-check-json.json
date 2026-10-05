@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/duplicate-runtime-parameter",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.006429291039239615,
+  "recorded_utc": "2026-10-05T16:33:54.124273+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "duplicate-runtime-parameter-finite-check-json.stdout.txt",
+  "stderr_raw": "duplicate-runtime-parameter-finite-check-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "duplicate parameter name",
+        "primary": {
+          "path": "main.qli",
+          "start": 99,
+          "end": 100,
+          "line": 2,
+          "column": 25
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

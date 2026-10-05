@@ -226,3 +226,14 @@ The [authorized replay](common-source-collection-v030/results-after.md) preserve
 all 23 original stdout/stderr/status/native-count observations and the exact
 untrusted proposal bytes, including both diagnostic-order controls. Rebuilt CLI
 and current source identities are recorded separately from the frozen baseline.
+
+The [common declaration/pattern study](common-pattern-check-v030/session.json)
+preserves eight complete first projects and forty actual check/emit observations
+before sharing checker judgments. [Results](common-pattern-check-v030/results-before.md)
+retain profile-specific diagnostics, zero-width logical owners, unused invalid
+declarations and complete source/CLI/native identity. Emitted proposals remain
+untrusted; this baseline does not complete a common checker or source preservation.
+The [separate after capture](common-pattern-check-v030/results-after.md) preserves
+all forty original raw outputs, exits, native argv/counts and proposal bytes.
+Original session records remain fixed; the additional capture is indexed by
+its own summary, with no runtime, new mathematical guarantee or completion claim.

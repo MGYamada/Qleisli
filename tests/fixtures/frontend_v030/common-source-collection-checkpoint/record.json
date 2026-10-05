@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.ordinary-implementation-tracker-readbacks",
+  "version": 1,
+  "local_commit": "b544cd2d96dcc94e0ef29b28e6b08979bca5d9b1",
+  "published_commit": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+  "issues": [
+    32,
+    317,
+    142
+  ],
+  "exactFreshReadbacks": true,
+  "selected": 111,
+  "completed": 14,
+  "percentage": 12.61,
+  "remaining": 97,
+  "issue317UncheckedCriteria": 24,
+  "scope": "Actual ordinary implementation tracking. Local commit not yet published; prior CI remains nonterminal. No issue closure, acceptance-criterion waiver, new interpretation/guarantee, proof discharge or release approval."
+}

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "kind": "additive local candidate correction; not adoption or proof",
+  "supersedes_for_review": "contract.md",
+  "original_draft_sha256": "1cefa991578f813aef2e6ca749981953fb598c626b993f41605b2b6136f90796",
+  "candidate": "contract-v2.md",
+  "candidate_sha256": "e178b5f0ca7c465eaed0e01cc48879c963b674c2ec6db032c7fb4f9fcf4ad0ae",
+  "preserved_first_snapshot_sha256": "959167bf7fe35f0c54aa7ae3ef3e5dface031e89d3157322c2e601551914ba90",
+  "correction": "Reject complete preparation before publishing checked preparation/proposal; do not assert zero native calls for an earlier finite entry. No program runtime execution was performed in this experiment.",
+  "evidence_read_only": {
+    "session": "tests/fixtures/authoring_sessions/common-pattern-check-v030/session.json",
+    "observation_count": 40,
+    "classification": {
+      "check_succeeded": 8,
+      "untrusted_proposal_emitted": 2,
+      "rejected": 30
+    },
+    "finite_unused_sibling_native_invocations": 1,
+    "selected_unused_sibling_native_invocations": 0,
+    "note": "Existing observations read and counted; no new CLI, Cargo, Lean, or runtime execution by this reviewer."
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.local-design-record-checks",
+  "version": 1,
+  "first_attempt": {
+    "exit_code": 1,
+    "stage": "body-string equality assertion",
+    "raw_output": "Traceback (most recent call last):\n  File \"<stdin>\", line 16, in <module>\nAssertionError\n",
+    "cause": "apply_patch serialization trimmed trailing blank lines; expected body plus LF did not equal the saved file. No source/CLI/native experiment was involved.",
+    "repair": "Rewrote body copy as the exact connector body string; serialization description updated."
+  },
+  "final": {
+    "json_parsing": "pass",
+    "exact_connector_body_transcription": "pass",
+    "open_acceptance_criteria": 24,
+    "local_text_whitespace": "pass",
+    "scope": "Local record sanity only, not executable request acceptance or proof."
+  }
+}

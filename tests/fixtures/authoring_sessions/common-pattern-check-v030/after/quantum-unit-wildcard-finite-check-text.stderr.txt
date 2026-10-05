@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/quantum-unit-wildcard/main.qli:2:14: ownership: wildcard would discard quantum ownership

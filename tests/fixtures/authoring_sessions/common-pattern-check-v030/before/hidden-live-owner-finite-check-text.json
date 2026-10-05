@@ -1,0 +1,18 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/hidden-live-owner",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.005841791979037225,
+  "recorded_utc": "2026-10-05T16:33:57.336832+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "hidden-live-owner-finite-check-text.stdout.txt",
+  "stderr_raw": "hidden-live-owner-finite-check-text.stderr.txt",
+  "stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/hidden-live-owner/main.qli:3:9: ownership: binding would hide unconsumed quantum ownership\n",
+  "proposal_emitted": false,
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/hidden-live-owner/main.qli:3:9: ownership: binding would hide unconsumed quantum ownership\n"
+}

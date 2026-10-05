@@ -1,0 +1,45 @@
+{
+  "status": "read-only-reference-to-separate-root-performed-results",
+  "observed_at_utc": "2026-10-05T16:55:14.814274+00:00",
+  "root_review_record": "tests/fixtures/frontend_v030/common-pattern-design/metadata-review/results.json",
+  "root_record_time_utc": "2026-10-05T16:49:39.712363+00:00",
+  "record_file_hashes": {
+    "after.coverage-regression.stderr.txt": "e269e66833b388e0094c23daae4694b4692e3e8a894128b34c77952d4b844c0b",
+    "after.coverage-regression.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.coverage.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.coverage.stdout.txt": "6bf1f5e58aa6cc2f70c03b3667c992750442dcbe69f91e676bd363c8bde5d930",
+    "after.inventory-regression.stderr.txt": "04eb3dc258bef8dee089f7fe6ba8bac17281dc03f01538cb11dbc837a2b14d4e",
+    "after.inventory-regression.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.inventory.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.inventory.stdout.txt": "34d429a631330194e5babaadd8bad8e4e9ff2ddc2c769c51bfd67f8ad52f0081",
+    "before.coverage.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.coverage.stdout.txt": "91292f6f8e7ac6cbb02f14ddec7ef5f09dff5aae896780b3f0bceece024ad42c",
+    "before.inventory.stderr.txt": "04315e5bd91fa1eb83f5b55b535b039361b9be5c464723e6e02bbb8f291d6eee",
+    "before.inventory.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "commands.after.json": "65cc579948704cdc0ae4d9d235dc9d22a5d79bf05428f5a691590dcf737e75a9",
+    "commands.before.json": "daa80b756f833238d7bdd70f4ec50e7964f21f32ac6077ee16ae828ad035fce8",
+    "coverage.after.json": "050fdfacc99128188d614bfb4835cb26bae68f1772b2bdbb38472b12040685be",
+    "coverage.before.json": "f151d70adcb54b0d17ac920874577c8560dc6683f8a0319a2f4bb9e5583cb291",
+    "driver.py": "58e70a11308f79b0feef331ece930083bd31cddccb9083595c6796f7c92021fd",
+    "files.json": "c4e7435165498b70f23db8d2516f1e68f0ae31aa70b3925aa7073f2553df8a5e",
+    "inventory.after.json": "fd624ec30b369d29e82216748a47ea13ea722931402b25268ecc120d27c730bc",
+    "inventory.before.json": "b2c4b57cfa85d784018e9c6f06a4421b09fe312388cd3a188f126588b65bd5b5",
+    "metadata-changes.json": "8028a47cd78eb35d80c56b8dfc7ac4bc34066d4bf24cb15785b6408a89087ee4",
+    "results.json": "fae904133d8bcc50413308a011b3a5759bc241d5a73a455842177c70c308e718",
+    "source-inputs.before.json": "082ae47f245280a9424c5777ecc1848b32db4a01448352e930dfb80884eaab36"
+  },
+  "source_file_count": 253,
+  "active_inventory_sha256": "fd624ec30b369d29e82216748a47ea13ea722931402b25268ecc120d27c730bc",
+  "active_coverage_sha256": "050fdfacc99128188d614bfb4835cb26bae68f1772b2bdbb38472b12040685be",
+  "actual_regression_counts": {
+    "inventory": 17,
+    "coverage": 14
+  },
+  "earlier_draft_hashes": {
+    "README.md": "29854c9986f5662725ce36edef780d251c70fd2d3a9efbee37e369fb1fecda65",
+    "driver.py": "291531c7afcef9f00b16b365c0e7412a4f5fa429138f8f15051d4343d48ee1d8",
+    "prepared-files.json": "2d3db80658fd47c31f6dbe40c28693e9afc856539960362cd6347ad80970f732"
+  },
+  "scope": "Retained actual guard/regression results and their mapped source/active metadata identity; no new execution, approval or proof claim.",
+  "identity_limits": "The root packet does not freeze regression-script bytes at historical execution. This reference pins the retained packet and current source/metadata; it does not manufacture complete historical fixture/script/build closure."
+}

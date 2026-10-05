@@ -1,0 +1,23 @@
+{
+  "id": "03.book-regression",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_book.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T16:57:52.502270+00:00",
+  "elapsed_seconds": 0.13269533298444003,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "03.book-regression.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "03.book-regression.stderr.txt",
+    "sha256": "991618c95b4a91fba650266403a1e40606f888fe0c8e5a51095901b903cd3485",
+    "bytes": 111
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.ordinary-before-code-pattern-contract",
+  "version": 1,
+  "candidate_sha256": "e178b5f0ca7c465eaed0e01cc48879c963b674c2ec6db032c7fb4f9fcf4ad0ae",
+  "historical_first_candidate_sha256": "1cefa991578f813aef2e6ca749981953fb598c626b993f41605b2b6136f90796",
+  "baseline_commit": "b544cd2d96dcc94e0ef29b28e6b08979bca5d9b1",
+  "baseline_observations": 40,
+  "successful_checks": 8,
+  "untrusted_emissions": 2,
+  "rejections": 30,
+  "first_source_barrier_completed_before_code": true,
+  "exact_fresh_readbacks": true,
+  "issue317_unchecked_criteria": 24,
+  "scope": "Ordinary compatible runtime-binding refactor within current rules. No signature/static-policy/common-checker completion, primitive, interpretation adoption, guarantee admission or release claim.",
+  "pre_post_readback_note": "A root ad-hoc content assertion incorrectly required the unchanged phrase 'Whole current preparation' to be absent. All191 baseline digests/byte counts had already passed. Root then checked the actual revised rejection wording and exact v2 digest before posting; no original bytes were repaired."
+}

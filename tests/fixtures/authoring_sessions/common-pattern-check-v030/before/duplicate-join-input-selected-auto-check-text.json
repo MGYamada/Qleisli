@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/duplicate-join-input/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.0050598750240169466,
+  "recorded_utc": "2026-10-05T16:33:58.411203+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "duplicate-join-input-selected-auto-check-text.stdout.txt",
+  "stderr_raw": "duplicate-join-input-selected-auto-check-text.stderr.txt",
+  "stderr": "main:155..156: ownership: unbound or consumed value q\n",
+  "proposal_emitted": false,
+  "transcript": "main:155..156: ownership: unbound or consumed value q\n"
+}

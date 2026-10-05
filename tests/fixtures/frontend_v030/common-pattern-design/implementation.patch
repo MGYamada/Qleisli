@@ -1,0 +1,379 @@
+diff --git a/src/frontend/compile/lower/mod.rs b/src/frontend/compile/lower/mod.rs
+index cd4c65e1..c773ef8d 100644
+--- a/src/frontend/compile/lower/mod.rs
++++ b/src/frontend/compile/lower/mod.rs
+@@ -17,8 +17,10 @@ mod value;
+ use value::{Binding, Env, Register, Slot, Value, env_size};
+ 
+ use super::*;
++use crate::frontend::pattern::{self, BindingContext};
+ use crate::frontend::raw_state::RawState;
+ use crate::ir::*;
++use std::borrow::Cow;
+ 
+ #[derive(Clone, Copy)]
+ struct CallSite<'a> {
+@@ -99,6 +101,100 @@ struct Lowerer<'c, 'p> {
+     abstract_check: bool,
+ }
+ 
++struct PatternBinding<'a, 'c, 'p> {
++    lowerer: &'a mut Lowerer<'c, 'p>,
++    module: &'a str,
++    env: &'a mut Env,
++}
++impl BindingContext<Pattern> for PatternBinding<'_, '_, '_> {
++    type Value = Value;
++    type Size = std::convert::Infallible;
++    type Error = CompileError;
++
++    fn linear(&self, value: &Value) -> bool {
++        value.owns_quantum()
++    }
++
++    fn pattern_type<'v>(&self, value: &'v Value) -> Cow<'v, Ty> {
++        Cow::Owned(value.ty())
++    }
++
++    fn consume_fields(&mut self, value: Value) -> Vec<Value> {
++        value.into_fields().expect("checked nonempty tuple shape")
++    }
++
++    fn bind_name(&mut self, name: &Ident, _span: Span, value: Value) -> Result<(), CompileError> {
++        let binder = self.lowerer.compiler.locals.binder(name);
++        if self
++            .lowerer
++            .compiler
++            .locals
++            .info(binder)
++            .shadowed
++            .and_then(|old| self.env.get(self.lowerer.compiler.locals.key(old)))
++            .and_then(Binding::as_ref)
++            .is_some_and(Value::owns_quantum)
++        {
++            return Err(self.lowerer.error(
++                self.module,
++                name.span,
++                ErrorCode::Ownership,
++                "binding would hide unconsumed quantum ownership",
++            ));
++        }
++        if let Some(origins) = self.lowerer.tuple_binding_origins.last_mut() {
++            // Names (including non-tuples) shadow outer diagnostic metadata.
++            // No quantum slot/type tree is copied here.
++            origins.insert(
++                name.text.clone(),
++                matches!(&value, Value::Pair(..) | Value::Tuple(_)).then(|| TupleBindingOrigin {
++                    module: self.module.to_owned(),
++                    span: name.span,
++                    name: name.text.clone(),
++                }),
++            );
++        }
++        self.lowerer.bind_env(name, Binding::Live(value), self.env);
++        Ok(())
++    }
++
++    fn wildcard_error(&self, span: Span) -> CompileError {
++        self.lowerer.error(
++            self.module,
++            span,
++            ErrorCode::Ownership,
++            "wildcard would discard quantum ownership",
++        )
++    }
++
++    fn duplicate_error(&self, span: Span) -> CompileError {
++        self.lowerer.error(
++            self.module,
++            span,
++            ErrorCode::Ownership,
++            "duplicate name in a binding pattern",
++        )
++    }
++
++    fn shape_error(&self, span: Span, arity: usize, value: &Value, actual: &Ty) -> CompileError {
++        let help = if matches!(value, Value::Quantum(..)) {
++            "; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately"
++        } else {
++            ""
++        };
++        self.lowerer.error(
++            self.module,
++            span,
++            ErrorCode::TypeMismatch,
++            if arity == 0 {
++                format!("empty pattern requires ordinary Unit, found `{}`", actual.runtime())
++            } else {
++                format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {arity} immediate fields, found `{}`{help}", actual.runtime())
++            },
++        )
++    }
++}
++
+ impl Lowerer<'_, '_> {
+     fn bind_env(&self, name: &Ident, value: Binding, env: &mut Env) {
+         let id = self.compiler.locals.binder(name);
+@@ -416,90 +512,16 @@ impl Lowerer<'_, '_> {
+         env: &mut Env,
+         names: &mut BTreeSet<String>,
+     ) -> Result<(), CompileError> {
+-        match &pattern.kind {
+-            PatternKind::Wildcard => {
+-                if value.owns_quantum() {
+-                    return Err(self.error(
+-                        module,
+-                        pattern.span,
+-                        ErrorCode::Ownership,
+-                        "wildcard would discard quantum ownership",
+-                    ));
+-                }
+-            }
+-            PatternKind::Name(name) => {
+-                if !names.insert(name.text.clone()) {
+-                    return Err(self.error(
+-                        module,
+-                        name.span,
+-                        ErrorCode::Ownership,
+-                        "duplicate name in a binding pattern",
+-                    ));
+-                }
+-                let binder = self.compiler.locals.binder(name);
+-                if self
+-                    .compiler
+-                    .locals
+-                    .info(binder)
+-                    .shadowed
+-                    .and_then(|old| env.get(self.compiler.locals.key(old)))
+-                    .and_then(Binding::as_ref)
+-                    .is_some_and(Value::owns_quantum)
+-                {
+-                    return Err(self.error(
+-                        module,
+-                        name.span,
+-                        ErrorCode::Ownership,
+-                        "binding would hide unconsumed quantum ownership",
+-                    ));
+-                }
+-                if let Some(origins) = self.tuple_binding_origins.last_mut() {
+-                    // Names (including non-tuples) shadow outer diagnostic
+-                    // metadata. No quantum slot/type tree is copied here.
+-                    origins.insert(
+-                        name.text.clone(),
+-                        matches!(&value, Value::Pair(..) | Value::Tuple(_)).then(|| {
+-                            TupleBindingOrigin {
+-                                module: module.to_owned(),
+-                                span: name.span,
+-                                name: name.text.clone(),
+-                            }
+-                        }),
+-                    );
+-                }
+-                self.bind_env(name, Binding::Live(value), env);
+-            }
+-            PatternKind::Tuple(patterns) => {
+-                let actual = value.ty();
+-                let help = if matches!(value, Value::Quantum(..)) {
+-                    "; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately"
+-                } else {
+-                    ""
+-                };
+-                if actual.pattern_fields(patterns.len()).is_none() {
+-                    return Err(self.error(
+-                        module,
+-                        pattern.span,
+-                        ErrorCode::TypeMismatch,
+-                        if patterns.is_empty() {
+-                            format!("empty pattern requires ordinary Unit, found `{}`", actual.runtime())
+-                        } else {
+-                            format!("tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {} immediate fields, found `{}`{help}", patterns.len(), actual.runtime())
+-                        },
+-                    ));
+-                }
+-                if patterns.is_empty() {
+-                    // The shared shape check established ordinary Unit. Any
+-                    // expression effects were already emitted before binding.
+-                    return Ok(());
+-                }
+-                let fields = value.into_fields().expect("checked nonempty tuple shape");
+-                for (pattern, field) in patterns.iter().zip(fields) {
+-                    self.bind(module, pattern, field, env, names)?;
+-                }
+-            }
+-        }
+-        Ok(())
++        pattern::bind(
++            pattern,
++            value,
++            names,
++            &mut PatternBinding {
++                lowerer: self,
++                module,
++                env,
++            },
++        )
+     }
+ 
+     fn expr(&mut self, module: &str, expr: &Expr, env: &mut Env) -> Result<Value, CompileError> {
+diff --git a/src/frontend/mod.rs b/src/frontend/mod.rs
+index 15f4ac1b..7af461ba 100644
+--- a/src/frontend/mod.rs
++++ b/src/frontend/mod.rs
+@@ -12,6 +12,7 @@ pub mod effects;
+ pub mod lexer;
+ mod ordinary;
+ pub mod parser;
++mod pattern;
+ pub mod project;
+ mod raw_state;
+ mod resolve;
+diff --git a/src/frontend/sized/ast.rs b/src/frontend/sized/ast.rs
+index 14aef654..3f8ca725 100644
+--- a/src/frontend/sized/ast.rs
++++ b/src/frontend/sized/ast.rs
+@@ -4,6 +4,7 @@ use super::Span;
+ 
+ pub(super) use crate::frontend::ast::Compare;
+ pub(super) use crate::frontend::ordinary::Boolean;
++use crate::frontend::pattern::{Node as PatternNode, PatternView};
+ use crate::frontend::resolve::locals::UseSiteId;
+ pub(super) use crate::frontend::resolve::locals::{BinderKey, ResolvedUse, Table};
+ use std::sync::Arc;
+@@ -100,6 +101,22 @@ pub(super) enum Pattern {
+     Wildcard(Span),
+     Tuple(Vec<Pattern>, Span),
+ }
++// A borrowed bridge over the existing projection, not another AST or cache.
++impl PatternView for Pattern {
++    type Name = BindingName;
++
++    fn node(&self) -> PatternNode<'_, Self> {
++        match self {
++            Self::Name(name, span) => PatternNode::Name(name, *span),
++            Self::Wildcard(span) => PatternNode::Wildcard(*span),
++            Self::Tuple(fields, span) => PatternNode::Tuple(fields, *span),
++        }
++    }
++
++    fn spelling(name: &Self::Name) -> &str {
++        &name.name
++    }
++}
+ #[derive(Clone, Debug)]
+ pub(super) struct Expr {
+     pub kind: ExprKind,
+diff --git a/src/frontend/sized/check.rs b/src/frontend/sized/check.rs
+index aa3e3eab..7c41e71a 100644
+--- a/src/frontend/sized/check.rs
++++ b/src/frontend/sized/check.rs
+@@ -3,11 +3,13 @@ use super::ast::*;
+ use super::linear::{self, Context, Linear};
+ use super::primitive::{Guard, Primitive, Size, TypeRule, TypeShape, dependent_output};
+ use super::{BasisBinding, Error, OperationBinding, ParsedProgram, Result, Span};
++use std::borrow::Cow;
+ use std::cell::Cell;
+ use std::collections::{BTreeMap, BTreeSet};
+ use std::rc::Rc;
+ use std::sync::Arc;
+ 
++use crate::frontend::pattern::{self, BindingContext};
+ use crate::frontend::resolve::{self, DefId, Failure, Profile, Target};
+ use crate::frontend::types::Kind;
+ type Ty = crate::frontend::types::Type<Linear>;
+@@ -351,44 +353,60 @@ fn bind_name(name: &BindingName, t: Ty, span: Span, scope: &mut Scope) -> Result
+         .insert(name.key().clone(), Binding { identity, ty: t });
+     Ok(())
+ }
+-fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
+-    fn go(pattern: &Pattern, t: Ty, scope: &mut Scope, names: &mut BTreeSet<String>) -> Result<()> {
+-        match (pattern, t.kind) {
+-            (Pattern::Wildcard(span), kind) => {
+-                if (Ty { kind }).linear() {
+-                    return Err(err(
+-                        "ownership",
+-                        *span,
+-                        "wildcard would discard quantum ownership",
+-                    ));
+-                }
+-                Ok(())
+-            }
+-            (Pattern::Name(name, span), kind) => {
+-                if !names.insert(name.name.clone()) {
+-                    return Err(err("name", *span, "duplicate name in binding pattern"));
+-                }
+-                bind_name(name, Ty { kind }, *span, scope)
+-            }
+-            (Pattern::Tuple(patterns, span), kind) => {
+-                let t = Ty { kind };
+-                if t.pattern_fields(patterns.len()).is_none() {
+-                    return Err(err(
+-                        "type",
+-                        *span,
+-                        "binding pattern does not preserve tuple arity and nesting",
+-                    ));
+-                }
+-                if let Kind::Tuple(fields) = t.kind {
+-                    for (p, t) in patterns.iter().zip(fields) {
+-                        go(p, t, scope, names)?;
+-                    }
+-                }
+-                Ok(())
+-            }
++struct PatternBinding<'a> {
++    scope: &'a mut Scope,
++}
++impl BindingContext<Pattern> for PatternBinding<'_> {
++    type Value = Ty;
++    type Size = Linear;
++    type Error = Error;
++
++    fn linear(&self, value: &Ty) -> bool {
++        value.linear()
++    }
++
++    fn pattern_type<'v>(&self, value: &'v Ty) -> Cow<'v, Ty> {
++        Cow::Borrowed(value)
++    }
++
++    fn consume_fields(&mut self, value: Ty) -> Vec<Ty> {
++        match value.kind {
++            Kind::Tuple(fields) => fields,
++            _ => unreachable!("checked nonempty tuple shape"),
+         }
+     }
+-    go(pattern, t, scope, &mut BTreeSet::new())
++
++    fn bind_name(&mut self, name: &BindingName, span: Span, value: Ty) -> Result<()> {
++        bind_name(name, value, span, self.scope)
++    }
++
++    fn wildcard_error(&self, span: Span) -> Error {
++        err(
++            "ownership",
++            span,
++            "wildcard would discard quantum ownership",
++        )
++    }
++
++    fn duplicate_error(&self, span: Span) -> Error {
++        err("name", span, "duplicate name in binding pattern")
++    }
++
++    fn shape_error(&self, span: Span, _arity: usize, _value: &Ty, _actual: &Ty) -> Error {
++        err(
++            "type",
++            span,
++            "binding pattern does not preserve tuple arity and nesting",
++        )
++    }
++}
++fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
++    pattern::bind(
++        pattern,
++        t,
++        &mut BTreeSet::new(),
++        &mut PatternBinding { scope },
++    )
+ }
+ /// Host entry selection has no module privilege. Providers are selected in the
+ /// entry module's context, with the same visibility rule as source imports.

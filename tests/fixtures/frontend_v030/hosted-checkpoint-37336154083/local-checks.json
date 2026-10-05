@@ -1,0 +1,46 @@
+{
+  "format": "qleisli.hosted-checkpoint-local-checks",
+  "version": 1,
+  "scope": "These check the newly saved evidence packet/documentation. They do not execute the hosted workflow, native checker, Cargo or Lean.",
+  "checks": [
+    {
+      "argv": [
+        "python3",
+        "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/artifact-audit.py"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"artifact_audit\": \"passed\", \"checked_logs\": 6, \"completed_producers\": 5, \"nonterminal_producers\": [\"check-distribution\", \"check-rust\", \"check-rust-msrv\"]}\n",
+      "record_origin": "Transcription of the actual local tool stdout; artifact audit data retained separately."
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "chunk_id": "293419",
+      "wall_time_seconds": 2.091750208,
+      "exit_code": 0,
+      "original_token_count": 28,
+      "output": "Checked 1863 local links, 19 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n"
+    },
+    {
+      "method": "Fixed local subprocess loop: git diff --no-index --check /dev/null <each new non-gzip file>",
+      "accepted_exit_codes": [
+        0,
+        1
+      ],
+      "require_empty_stdout_and_stderr": true,
+      "chunk_id": "b671fa",
+      "wall_time_seconds": 0.054341416,
+      "exit_code": 0,
+      "original_token_count": 34,
+      "output": "{\"checked_text_files\": 12, \"passed\": true, \"scope\": \"Untracked new record text only; gzip restores original log whitespace unchanged.\"}\n"
+    }
+  ],
+  "not_run": [
+    "Cargo/builds/tests/lints",
+    "Lean build/audit/replay",
+    "Native CLI commands",
+    "Hosted status follow-up polling"
+  ]
+}

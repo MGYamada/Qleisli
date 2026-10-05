@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share actual runtime wildcard, duplicate-name and exact tuple/Unit binding
+  rules between finite lowering and sized generic checking. Retain existing
+  value moves, owner identities, capacity checks and diagnostic order; the
+  borrowed sized pattern bridge does not complete declaration/body convergence
+  or expose canonical std APIs (#32, #317).
 - Share retained original source, common syntax and provenance through a private
   immutable collection. Preserve complete declaration checks, source budgets,
   diagnostic order and the fixed ordinary std registry; retain selected file

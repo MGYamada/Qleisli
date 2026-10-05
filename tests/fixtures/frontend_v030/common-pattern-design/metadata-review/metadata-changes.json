@@ -1,0 +1,41 @@
+{
+  "source_changes": [
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "before": "4b3c2e10b4bb6cdb3c7290d5ed946c6a76226f6944c666c5607c2e48c8c4f6b3",
+      "after": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/mod.rs",
+      "before": "5c363bfa4f54957bdce8080eb3626cc4174a12c7a52d870b4c9cfe29044d034b",
+      "after": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "before": "86a2369075ef364acda2b8dc3478fbc4c1b77a5a589f5ce4ed61c236b432f9f8",
+      "after": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before": "3465ad448404df6b4d2f5f1ab9c5d0503a527cf4540fc29e37c580d48139a90d",
+      "after": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "surface_unchanged": true
+    }
+  ],
+  "added_private_source": "src/frontend/pattern.rs",
+  "added_surface": {
+    "declarations": [],
+    "functions": [],
+    "capacity_constants": []
+  },
+  "old_source_count": 252,
+  "new_source_count": 253,
+  "old_surface_sha256": "683d27715d20cc2eaa9e387c2699d07a7b1f6cf666e30e57d8ad57967dc3a0df",
+  "new_surface_sha256": "2967dfbeaac04aa49b93d58641f6001794a44348d3e6c69c58c3592a4d0ab3e4",
+  "other_parsed_inventory_and_coverage_fields_unchanged": true,
+  "constitutional_authority_and_proof_status_unchanged": true,
+  "serialization_note": "Existing literal Unicode serialization is retained; comparison is of parsed metadata as well as exact before/after bytes."
+}

@@ -1,0 +1,22 @@
+{
+  "status": "static-preparation-inspection-passed",
+  "syntax": "ast.parse only; no driver imports/functions/subprocess calls executed",
+  "planned_command_count": 13,
+  "planned_python_stage_ids": [
+    "03.book-regression",
+    "04.authoring",
+    "05.authoring-regression",
+    "06.editions",
+    "07.edition-regression",
+    "08.docs",
+    "09.docs-regression",
+    "10.constitution",
+    "11.inventory",
+    "12.coverage"
+  ],
+  "metadata_packet_files_bound": 23,
+  "metadata_source_files_still_match": 253,
+  "old_v1_draft_unchanged": true,
+  "v2_prepared_hashes_match": true,
+  "scope": "Preparation integrity only; no policy validation performed."
+}

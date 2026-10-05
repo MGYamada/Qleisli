@@ -11,6 +11,14 @@ classification are shared. Static/owner/effect checking and lowering are not
 yet fully unified. A parsed AST does not accept a program or confer native
 verification evidence.
 
+Runtime wildcard, duplicate-name and exact tuple/Unit shape judgments share
+one binding traversal in finite lowering and sized generic checking. Values
+and names retain their existing lexical and dynamic identities, eager argument
+evaluation, accounting and located diagnostics. The sized checker borrows its
+existing pattern projection; declaration/static-name policy, concrete sized
+elaboration and basis-pattern checking remain separate. This bounded sharing
+does not establish complete common checking or source preservation.
+
 One private source collection retains each complete original text, common AST
 and provenance together. Filesystem entries retain the selected source path;
 in-memory entries carry no invented file or manifest. The finite loader consumes

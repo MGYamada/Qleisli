@@ -4,6 +4,7 @@ use super::Span;
 
 pub(super) use crate::frontend::ast::Compare;
 pub(super) use crate::frontend::ordinary::Boolean;
+use crate::frontend::pattern::{Node as PatternNode, PatternView};
 use crate::frontend::resolve::locals::UseSiteId;
 pub(super) use crate::frontend::resolve::locals::{BinderKey, ResolvedUse, Table};
 use std::sync::Arc;
@@ -99,6 +100,22 @@ pub(super) enum Pattern {
     Name(BindingName, Span),
     Wildcard(Span),
     Tuple(Vec<Pattern>, Span),
+}
+// A borrowed bridge over the existing projection, not another AST or cache.
+impl PatternView for Pattern {
+    type Name = BindingName;
+
+    fn node(&self) -> PatternNode<'_, Self> {
+        match self {
+            Self::Name(name, span) => PatternNode::Name(name, *span),
+            Self::Wildcard(span) => PatternNode::Wildcard(*span),
+            Self::Tuple(fields, span) => PatternNode::Tuple(fields, *span),
+        }
+    }
+
+    fn spelling(name: &BindingName) -> &str {
+        &name.name
+    }
 }
 #[derive(Clone, Debug)]
 pub(super) struct Expr {

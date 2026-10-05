@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/quantum-unit-wildcard",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.006284874980337918,
+  "recorded_utc": "2026-10-05T16:33:59.012131+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "quantum-unit-wildcard-finite-check-json.stdout.txt",
+  "stderr_raw": "quantum-unit-wildcard-finite-check-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "wildcard would discard quantum ownership",
+        "primary": {
+          "path": "main.qli",
+          "start": 88,
+          "end": 89,
+          "line": 2,
+          "column": 14
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "format": "qleisli.hosted-complete-decoded-logs",
+  "version": 1,
+  "compression": "gzip, level9, mtime0; decoding restores the exact connector-returned UTF-8 byte string",
+  "files": [
+    {
+      "file": "logs/changes-111851329117.log.txt.gz",
+      "decoded_sha256": "f16b6d54705474ff21f68f9ba7ca33cf7b149d328c33747dcbcd397ac51fbaa5",
+      "decoded_bytes": 1267662,
+      "decoded_lines": 10336,
+      "compressed_sha256": "d30d9775b3976c3f432f97fcaad806631a6ad06de6029288da5e7d0898620f6d",
+      "compressed_bytes": 101369,
+      "complete_log": true,
+      "trailing_whitespace_preserved": true
+    },
+    {
+      "file": "logs/check-docs-111851435760.log.txt.gz",
+      "decoded_sha256": "3d2dbcc8c8e71713aa50c9194dd34bbb7d62cc65dc832d3ff018821c9c3f2d83",
+      "decoded_bytes": 54827,
+      "decoded_lines": 713,
+      "compressed_sha256": "e595122a014e5d7397ea9320507d9dfd6275b3b4f69e10acfd48572e015035a9",
+      "compressed_bytes": 12886,
+      "complete_log": true,
+      "trailing_whitespace_preserved": true
+    },
+    {
+      "file": "logs/check-interop-111851435941.log.txt.gz",
+      "decoded_sha256": "f625936fd5542e29da3bfc39bf73b8fe64a45b3f847b00c0cf27f4a1d60430b7",
+      "decoded_bytes": 52576,
+      "decoded_lines": 612,
+      "compressed_sha256": "948b0533aec2e11302a2e30be58888e9e8361c24647de9156eadd548383ab0a2",
+      "compressed_bytes": 12773,
+      "complete_log": true,
+      "trailing_whitespace_preserved": true
+    },
+    {
+      "file": "logs/check-lean-111851436073.log.txt.gz",
+      "decoded_sha256": "cd2a75a504fdf89fd7199ed61e2c705351f52235d321ee1054b686ea973c54d6",
+      "decoded_bytes": 29582,
+      "decoded_lines": 341,
+      "compressed_sha256": "93798cc63d66f7f97a15a71bf90f58a3f443cec6ec2ec051a4e875e5d3e40322",
+      "compressed_bytes": 7490,
+      "complete_log": true,
+      "trailing_whitespace_preserved": true
+    },
+    {
+      "file": "logs/check-lean-kernel-111851435887.log.txt.gz",
+      "decoded_sha256": "d69ecf7e214c1bfac2c94822d13cf767a87f9952c4a7eed9795aa2e0b4bdd808",
+      "decoded_bytes": 61668,
+      "decoded_lines": 744,
+      "compressed_sha256": "cd0a4e06cd11e4b17c2ea2d14153ad5790fb471f1b08dd0b13123330dfe1cbac",
+      "compressed_bytes": 15062,
+      "complete_log": true,
+      "trailing_whitespace_preserved": true
+    },
+    {
+      "file": "logs/check-macos-source-111851435978.log.txt.gz",
+      "decoded_sha256": "cac2f9fd976a62d4c6199085041e4483c0cc6d60b892bbdd5b12058db55e58f9",
+      "decoded_bytes": 68539,
+      "decoded_lines": 806,
+      "compressed_sha256": "1a7eb69773d9bcb920337424d81a4b2187a490e6ce94a803f4e11767447fe728",
+      "compressed_bytes": 15975,
+      "complete_log": true,
+      "trailing_whitespace_preserved": true
+    }
+  ]
+}

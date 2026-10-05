@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-05T16:36:55.112785+00:00",
+  "exit_code": 0,
+  "seconds": 1.1762440410093404,
+  "stdout": {
+    "path": "constitution.stdout.txt",
+    "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35"
+  },
+  "stderr": {
+    "path": "constitution.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "scope": "Source identity and continuity guard only. No Lean replay, fresh human adoption or proof discharge; fixed argv authored here, no record command executed."
+}

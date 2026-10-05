@@ -3,11 +3,13 @@ use super::ast::*;
 use super::linear::{self, Context, Linear};
 use super::primitive::{Guard, Primitive, Size, TypeRule, TypeShape, dependent_output};
 use super::{BasisBinding, Error, OperationBinding, ParsedProgram, Result, Span};
+use std::borrow::Cow;
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 use std::sync::Arc;
 
+use crate::frontend::pattern::{self, BindingContext};
 use crate::frontend::resolve::{self, DefId, Failure, Profile, Target};
 use crate::frontend::types::Kind;
 type Ty = crate::frontend::types::Type<Linear>;
@@ -351,44 +353,60 @@ fn bind_name(name: &BindingName, t: Ty, span: Span, scope: &mut Scope) -> Result
         .insert(name.key().clone(), Binding { identity, ty: t });
     Ok(())
 }
-fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
-    fn go(pattern: &Pattern, t: Ty, scope: &mut Scope, names: &mut BTreeSet<String>) -> Result<()> {
-        match (pattern, t.kind) {
-            (Pattern::Wildcard(span), kind) => {
-                if (Ty { kind }).linear() {
-                    return Err(err(
-                        "ownership",
-                        *span,
-                        "wildcard would discard quantum ownership",
-                    ));
-                }
-                Ok(())
-            }
-            (Pattern::Name(name, span), kind) => {
-                if !names.insert(name.name.clone()) {
-                    return Err(err("name", *span, "duplicate name in binding pattern"));
-                }
-                bind_name(name, Ty { kind }, *span, scope)
-            }
-            (Pattern::Tuple(patterns, span), kind) => {
-                let t = Ty { kind };
-                if t.pattern_fields(patterns.len()).is_none() {
-                    return Err(err(
-                        "type",
-                        *span,
-                        "binding pattern does not preserve tuple arity and nesting",
-                    ));
-                }
-                if let Kind::Tuple(fields) = t.kind {
-                    for (p, t) in patterns.iter().zip(fields) {
-                        go(p, t, scope, names)?;
-                    }
-                }
-                Ok(())
-            }
+struct PatternBinding<'a> {
+    scope: &'a mut Scope,
+}
+impl BindingContext<Pattern> for PatternBinding<'_> {
+    type Value = Ty;
+    type Size = Linear;
+    type Error = Error;
+
+    fn linear(&self, value: &Ty) -> bool {
+        value.linear()
+    }
+
+    fn pattern_type<'v>(&self, value: &'v Ty) -> Cow<'v, Ty> {
+        Cow::Borrowed(value)
+    }
+
+    fn consume_fields(&mut self, value: Ty) -> Vec<Ty> {
+        match value.kind {
+            Kind::Tuple(fields) => fields,
+            _ => unreachable!("checked nonempty tuple shape"),
         }
     }
-    go(pattern, t, scope, &mut BTreeSet::new())
+
+    fn bind_name(&mut self, name: &BindingName, span: Span, value: Ty) -> Result<()> {
+        bind_name(name, value, span, self.scope)
+    }
+
+    fn wildcard_error(&self, span: Span) -> Error {
+        err(
+            "ownership",
+            span,
+            "wildcard would discard quantum ownership",
+        )
+    }
+
+    fn duplicate_error(&self, span: Span) -> Error {
+        err("name", span, "duplicate name in binding pattern")
+    }
+
+    fn shape_error(&self, span: Span, _arity: usize, _value: &Ty, _actual: &Ty) -> Error {
+        err(
+            "type",
+            span,
+            "binding pattern does not preserve tuple arity and nesting",
+        )
+    }
+}
+fn bind(pattern: &Pattern, t: Ty, scope: &mut Scope) -> Result<()> {
+    pattern::bind(
+        pattern,
+        t,
+        &mut BTreeSet::new(),
+        &mut PatternBinding { scope },
+    )
 }
 /// Host entry selection has no module privilege. Providers are selected in the
 /// entry module's context, with the same visibility rule as source imports.

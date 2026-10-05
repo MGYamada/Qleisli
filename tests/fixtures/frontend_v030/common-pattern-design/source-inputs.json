@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "observed_utc": "2026-10-05T16:35:39.129319+00:00",
+  "observed_head": "b544cd2d96dcc94e0ef29b28e6b08979bca5d9b1",
+  "files": {
+    "src/frontend/ast.rs": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+    "src/frontend/types.rs": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+    "src/frontend/resolve/locals.rs": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+    "src/frontend/compile/mod.rs": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+    "src/frontend/compile/lower/mod.rs": "4b3c2e10b4bb6cdb3c7290d5ed946c6a76226f6944c666c5607c2e48c8c4f6b3",
+    "src/frontend/compile/lower/value.rs": "5b6db4005beffeb1818ef6bbac976fcaee8526cc806a44b7cceb95433e69e3c8",
+    "src/frontend/compile/lower/scope.rs": "1c27d0f3b4d84c03b2bd091857a99815fdebca4225d83f2290c1c43911205359",
+    "src/frontend/compile/basis.rs": "302b8c13d53af4d1a65d8a418599ff44933774ca12dab7f93e712a928adfd86a",
+    "src/frontend/sized/ast.rs": "86a2369075ef364acda2b8dc3478fbc4c1b77a5a589f5ce4ed61c236b432f9f8",
+    "src/frontend/sized/check.rs": "3465ad448404df6b4d2f5f1ab9c5d0503a527cf4540fc29e37c580d48139a90d",
+    "src/frontend/sized/parser.rs": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+    "src/frontend/sized/elaborate.rs": "2c5bc3b41d2b9095ff867bea17a69a33ef4ffc0c0cdcb72b8a2297f31961d947",
+    "src/frontend/source.rs": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+    "governance/README.md": "457c42a5f3564d074593968b1a2aeafbf9683c145b11cc47e9166e8f678c0e62",
+    "CONSTITUTION.md": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+    "governance/guarantees.json": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d"
+  },
+  "scope": "Source identities read for the local candidate; no build/test/CLI execution, human adoption, proof or compilation attestation."
+}

@@ -1,0 +1,43 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/legal-rebinding/main.qli",
+    "--ir-profile=auto",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/after/legal-rebinding-selected-auto-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "timeout": false,
+  "seconds": 0.018021625000983477,
+  "recorded_utc": "2026-10-05T16:49:24.968259+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "identity_digest": "db83a13e721b9b12c7e7a83ccc7f8c9fe953021e78fc20e022957f4885cce60c",
+  "cli_sha256": "58acd18d36849646e4d3d7819651fbb98128c3f5436f86e737b769b86c67c969",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout_raw": "legal-rebinding-selected-auto-emit-proposal-json.stdout.txt",
+  "stderr_raw": "legal-rebinding-selected-auto-emit-proposal-json.stderr.txt",
+  "native_log": "legal-rebinding-selected-auto-emit-proposal-json.native.jsonl",
+  "native_invocations": 0,
+  "native_argv": [],
+  "proposal_emitted": true,
+  "equality": {
+    "exit_code": true,
+    "stdout": true,
+    "stderr": true,
+    "proposal_presence": true,
+    "proposal_bytes": true,
+    "native_argv": true,
+    "native_count": true
+  },
+  "output_path_substitution": {
+    "stdout": false,
+    "stderr": false
+  },
+  "baseline_event": "before/legal-rebinding-selected-auto-emit-proposal-json.json",
+  "proposal_file": "after/legal-rebinding-selected-auto-emit-proposal-json.proposal.json",
+  "proposal_sha256": "0886d8473a30dcec073fa80978ad776c0b9bedcdc79c77a1a507735a414a5493",
+  "proposal_bytes": 3271,
+  "proposal_authority": "Untrusted producer output, not native acceptance or source preservation."
+}
