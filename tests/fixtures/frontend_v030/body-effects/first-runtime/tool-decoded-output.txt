@@ -1,0 +1,36 @@
+    Finished `test` profile [unoptimized] target(s) in 6.22s
+     Running tests/basis_polymorphism.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/basis_polymorphism-6d169daf7ebe7ac0)
+
+running 10 tests
+test same_algorithm_retains_small_reference_action_and_unit_scalar_phase ... FAILED
+test closed_bindings_preserve_tags_order_and_nesting_and_require_eof ... ok
+test unused_source_type_arguments_obey_the_same_closed_binding_capacity ... ok
+test common_syntax_retains_basis_names_and_contextual_type_arguments ... ok
+test entry_and_provider_bindings_are_explicit_and_deterministic ... ok
+test exact_type_substitutions_are_distinct_specialization_cache_keys ... ok
+test selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis ... FAILED
+test unused_and_zero_iteration_bodies_do_not_gain_missing_access ... ok
+test names_forward_the_resolved_type_without_width_coercion ... ok
+test all_first_opaque_rejections_reach_their_actual_rules_before_binding ... ok
+
+failures:
+
+---- same_algorithm_retains_small_reference_action_and_unit_scalar_phase stdout ----
+
+thread 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase' (14042748) panicked at tests/basis_polymorphism.rs:308:56:
+explicit audited native checker
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis stdout ----
+
+thread 'selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis' (14042749) panicked at tests/basis_polymorphism.rs:251:53:
+explicit audited native checker
+
+
+failures:
+    same_algorithm_retains_small_reference_action_and_unit_scalar_phase
+    selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis
+
+test result: FAILED. 8 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `--test basis_polymorphism`

@@ -13,7 +13,7 @@ use std::observe::measure_z;
 
 /// Apply H tensor H to a two-bit register, preserving both owners and order.
 /// This unitary has no input-state promise and uses no auxiliary.
-pub unitary fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+pub fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let (a, b) = split(q);
     join(h(a), h(b))
 }
@@ -27,7 +27,7 @@ basis fn nonzero2((a, b): (Bit, Bit)) -> Bit { not (not a and not b) }
 /// Consume and return the two data owners with no input-state promise.
 /// The protected computed scope checks zero return of its temporary auxiliary;
 /// the name of this routine and this documentation do not grant that evidence.
-pub unitary fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+pub fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let q = hadamard2(q);
     let q = with_computed(q, nonzero2) { |ancilla| z(ancilla) };
     hadamard2(q)
@@ -35,13 +35,13 @@ pub unitary fn reflect_uniform2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
 
 /// Measure the X eigenvalue (-1)^b and return the classical result b.
 /// Consume the target owner; interpret the measurement with all references.
-pub observe fn measure_x(q: Q<Bit>) -> Bit {
+pub fn measure_x(q: Q<Bit>) -> Bit {
     measure_z(h(q))
 }
 
 /// Measure both bits in Z and consume both quantum owners.
 /// Return (left result, right result), corresponding to register weights 1,2.
-pub observe fn measure_z2(q: Q<(Bit, Bit)>) -> (Bit, Bit) {
+pub fn measure_z2(q: Q<(Bit, Bit)>) -> (Bit, Bit) {
     let (a, b) = split(q);
     (measure_z(a), measure_z(b))
 }
@@ -50,7 +50,7 @@ pub observe fn measure_z2(q: Q<(Bit, Bit)>) -> (Bit, Bit) {
 /// For result s, the data projector is (I + (-1)^s Z tensor Z)/2.
 /// Preserve coherence within each parity subspace and return ((a,b),s).
 /// Inputs must be distinct owners, but may be entangled with each other or a reference.
-pub observe fn parity_zz(a: Q<Bit>, b: Q<Bit>) -> ((Q<Bit>, Q<Bit>), Bit) {
+pub fn parity_zz(a: Q<Bit>, b: Q<Bit>) -> ((Q<Bit>, Q<Bit>), Bit) {
     let meter = init0();
     let (a, meter) = cnot(a, meter);
     let (b, meter) = cnot(b, meter);

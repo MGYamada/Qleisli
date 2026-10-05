@@ -13,7 +13,7 @@ use std::quantum::join;
 /// Map |y> to |(y + 1) mod 4> with amplitude +1 for every two-bit input.
 /// The first bit has weight 1 and the second weight 2; overflow wraps.
 /// Consume and return both owners with no auxiliary or measurement.
-pub unitary fn increment2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+pub fn increment2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     let (low, high) = split(q);
     let (low, high) = cnot(low, high);
     join(x(low), high)
@@ -22,7 +22,7 @@ pub unitary fn increment2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
 /// Map |x,y> to |x,(y + x) mod 4> with amplitude +1 for all x,y in 0..4.
 /// The first pair stores x and the second y, each least-significant bit first.
 /// Return all four owners in those positions; no auxiliary or input promise.
-pub unitary fn add2(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {
+pub fn add2(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {
     let (a, b) = split(q);
     let (a0, a1) = split(a);
     let (b0, b1) = split(b);
@@ -37,7 +37,7 @@ pub unitary fn add2(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit)
 /// Every basis image has amplitude +1; no residue-range promise is needed.
 /// Input bits (a,b,c,d) have weights (1,2,4,8); return owners as (d,a,b,c).
 /// This whole-space permutation uses no auxiliary and performs no measurement.
-pub unitary fn mul2_mod15(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {
+pub fn mul2_mod15(q: Q<((Bit, Bit), (Bit, Bit))>) -> Q<((Bit, Bit), (Bit, Bit))> {
     let (ab, cd) = split(q);
     let (a, b) = split(ab);
     let (c, d) = split(cd);

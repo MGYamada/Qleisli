@@ -424,7 +424,7 @@ fn dependency_source_changes_invalidate_the_previous_compilation() {
 fn exact_source_types_declared_effects_and_ordinary_targets_are_required() {
     for (declaration, code) in [
         (
-            "iso fn implementation(q: Q<Bit>) -> Q<Bit> { z(q) }",
+            "observe fn implementation(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());z(q)}",
             ErrorCode::Effect,
         ),
         (

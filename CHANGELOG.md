@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Infer ordinary function effects from typed bodies and callees, with optional
+  prefixes checked as upper-bound assertions. Reject contradictions with an
+  explicit semantic diagnostic that `"externally unitary"` is unsupported,
+  without Issue links. Export immutable body facts and checked documentation;
+  remove redundant prefixes from ten derived stdlib functions while preserving
+  mathematical contracts, source bodies and native acceptance (#315).
 - Add bounded opaque Basis parameters and explicit exact type/provider bindings
   to the common selected-source path. Check generic bodies before specialization,
   preserve exact trees in caches and charge retained substitutions; general

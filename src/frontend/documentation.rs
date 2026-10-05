@@ -132,10 +132,29 @@ pub(crate) fn attach(
 /// Render a parsed source file, including private functions. This does not
 /// resolve names, verify contracts, execute examples or establish correctness.
 pub fn render_markdown(source: &str) -> Result<String, ParseError> {
+    render(source, false, |_| None)
+}
+
+/// Only immutable source-checking results call this renderer with their own
+/// retained bytes and facts. The public source-only renderer cannot assert them.
+pub(super) fn render_checked_markdown(
+    source: &str,
+    effect: impl Fn(&str) -> Option<super::effects::FunctionEffect>,
+) -> Result<String, ParseError> {
+    render(source, true, effect)
+}
+
+fn render(
+    source: &str,
+    checked: bool,
+    effect: impl Fn(&str) -> Option<super::effects::FunctionEffect>,
+) -> Result<String, ParseError> {
     let documented = parse_documented_module(source)?;
-    let mut output = String::from(
-        "# Module documentation\n\nSource documentation only; no type, ownership or contract verification is implied.\n\n",
-    );
+    let mut output = String::from(if checked {
+        "# Module documentation\n\nChecked source interface; effects are inferred from typed bodies. This metadata does not establish exact Meaning, access evidence, source preservation or constitutional discharge.\n\n"
+    } else {
+        "# Module documentation\n\nSource documentation only; no type, ownership or contract verification is implied.\n\n"
+    });
     render_comments(&mut output, &documented.module_docs);
     let mut last_import_span = None;
     for (item, docs) in documented.syntax.uses.iter().zip(&documented.import_docs) {
@@ -163,6 +182,17 @@ pub fn render_markdown(source: &str) -> Result<String, ParseError> {
             _ => decl.return_type.span.end,
         };
         render_source(&mut output, source[decl.span.start..end].trim_end());
+        if let Some(fact) = effect(&decl.name.text) {
+            output.push_str(&format!(
+                "Inferred quantum effect: `{:?}`.\n\n",
+                fact.inferred()
+            ));
+            if let Some(asserted) = fact.asserted() {
+                output.push_str(&format!(
+                    "Checked upper-bound assertion: `{asserted:?}`.\n\n"
+                ));
+            }
+        }
         render_comments(&mut output, docs);
     }
     Ok(output)

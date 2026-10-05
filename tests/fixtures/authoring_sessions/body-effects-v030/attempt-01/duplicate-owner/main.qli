@@ -1,0 +1,1 @@
+pub fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,q)}

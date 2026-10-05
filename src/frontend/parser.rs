@@ -134,6 +134,7 @@ impl Parser {
                 || self.at(&TokenKind::Iso)
                 || self.at(&TokenKind::Unitary)
                 || self.at(&TokenKind::Observe)
+                || self.at(&TokenKind::Fn)
                 || self.at(&TokenKind::Meaning)
             {
                 decls.push(self.decl()?);
@@ -277,6 +278,8 @@ impl Parser {
             FnKind::Unitary
         } else if self.consume(&TokenKind::Observe).is_some() {
             FnKind::Observe
+        } else if self.at(&TokenKind::Fn) {
+            FnKind::Inferred
         } else {
             return Err(self.error("expected `basis`, `iso`, `unitary`, or `observe` after `pub`"));
         };

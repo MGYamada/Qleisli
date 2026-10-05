@@ -45,6 +45,8 @@ pub enum FnKind {
     /// A finite mathematical target, never a callable runtime function.
     Meaning,
     Basis,
+    /// An ordinary body-bearing function with no effect assertion.
+    Inferred,
     Iso,
     Unitary,
     Observe,

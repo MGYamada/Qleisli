@@ -1,0 +1,72 @@
+{
+  "mode": "latest-fix",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2013596670003608,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.022116374981123954,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "body_effects",
+        "--test",
+        "compile",
+        "--test",
+        "sized_source"
+      ],
+      "exit_code": 0,
+      "seconds": 15.604664249985944,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::"
+      ],
+      "exit_code": 0,
+      "seconds": 7.186544249998406,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "seconds": 6.8535734579782,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    }
+  ],
+  "sources_stable": true,
+  "scope": "Bounded existing and new source tests; ignored cases stay ignored. No new maximum-size quantum case, full Lean replay, source-preservation theorem or release claim."
+}

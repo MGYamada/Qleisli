@@ -25,7 +25,7 @@ fn cli(root: &SourceRoot) -> Command {
 fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     for (source, reason) in [
         (
-            "use std::quantum::h; pub iso fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
+            "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
             "iso roots",
         ),
         (

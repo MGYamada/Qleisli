@@ -222,9 +222,9 @@ fn temporary_binders_do_not_consume_shadowed_outer_owners() {
 fn exact_basis_shape_and_declared_unitary_effect_are_required() {
     for declaration in [
         "unitary fn specified(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> { q }",
-        "iso fn specified(q: Q<Bit>) -> Q<Bit> { q }",
+        "observe fn specified(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q}",
     ] {
-        let code = if declaration.starts_with("iso") {
+        let code = if declaration.starts_with("observe") {
             ErrorCode::Effect
         } else {
             ErrorCode::TypeMismatch

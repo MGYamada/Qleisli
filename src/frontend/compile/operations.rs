@@ -316,12 +316,14 @@ impl Compiler<'_> {
         };
         let decl = self.declarations[&key];
         let key_name = self.resolution.declaration(key).name.clone();
-        if decl.kind != FnKind::Unitary {
+        if self.effects.get(&key).map(|fact| fact.inferred()) != Some(Effect::Unitary) {
             return Err(self.error(
                 module,
                 name.span,
                 ErrorCode::Effect,
-                "static provider must be declared unitary",
+                crate::frontend::effects::unitary_required(
+                    "static provider's inferred body effect must be Unitary",
+                ),
             ));
         }
         if !decl.static_params.is_empty() {

@@ -422,6 +422,7 @@ fn visible_definition<'a>(
 
 pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
     let mut edges = BTreeMap::new();
+    let mut effect_bodies = BTreeMap::new();
     let names: Vec<_> = program.modules.keys().cloned().collect();
     for module in &names {
         let owner = program.resolution.module(module).expect("known module");
@@ -456,6 +457,7 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
                     definition: id,
                     function,
                     edges: BTreeSet::new(),
+                    effects: crate::frontend::effects::BodyEffects::new(function.span),
                 };
                 checker.block(&function.body, &mut scope, Some(&expected))?;
                 if scope.values.values().any(|binding| binding.ty.linear()) {
@@ -465,12 +467,13 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
                         "function leaves live quantum arguments unconsumed",
                     ));
                 }
-                Ok(checker.edges)
+                Ok((checker.edges, checker.effects))
             })();
+            let (dependencies, body) = result.map_err(|e| e.in_module(module))?;
+            effect_bodies.insert(id, body);
             edges.insert(
                 id,
-                result
-                    .map_err(|e| e.in_module(module))?
+                dependencies
                     .into_iter()
                     .map(|id| (id, Span::default()))
                     .collect(),
@@ -488,6 +491,61 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
         )
         .in_module(&program.resolution.declaration(id).name.0));
     }
+    let effects = crate::frontend::effects::infer(&effect_bodies).ok_or_else(|| {
+        err(
+            "effect",
+            Span::default(),
+            "unresolved typed effect dependency",
+        )
+    })?;
+    // Preserve source-order diagnostics. An annotation never supplies a class
+    // to either this solution or a callee during the preceding typed pass.
+    for module in &names {
+        let owner = program.resolution.module(module).expect("known module");
+        for function in &program.modules[module].functions {
+            let id = program
+                .resolution
+                .local(owner, &function.name)
+                .expect("known function");
+            let declaration =
+                &program.syntax[module].decls[program.resolution.declaration(id).ast_index];
+            let fact =
+                crate::frontend::effects::FunctionEffect::checked(declaration.kind, effects[&id])
+                    .ok_or_else(|| {
+                    err(
+                        "effect",
+                        effect_bodies[&id].origin(&effects),
+                        crate::frontend::effects::assertion_error(
+                            &function.name,
+                            declaration.kind,
+                            effects[&id],
+                        ),
+                    )
+                    .in_module(module)
+                })?;
+            for (provider, span) in &effect_bodies[&id].unitary {
+                if effects[provider] != Effect::Unitary {
+                    return Err(err(
+                        "effect",
+                        *span,
+                        crate::frontend::effects::unitary_required(
+                            "operation provider's inferred body effect must be Unitary",
+                        ),
+                    )
+                    .in_module(module));
+                }
+            }
+            program.effects.insert(id, fact);
+        }
+    }
+    for (id, declaration) in program.resolution.declarations() {
+        program
+            .modules
+            .get_mut(&declaration.name.0)
+            .expect("known module")
+            .functions[declaration.ast_index]
+            .effect = effects[&id];
+    }
     Ok(())
 }
 
@@ -496,18 +554,12 @@ struct Checker<'a> {
     function: &'a Function,
     definition: DefId,
     edges: BTreeSet<DefId>,
+    effects: crate::frontend::effects::BodyEffects,
 }
 impl Checker<'_> {
-    fn effect(&self, effect: Effect, span: Span) -> Result<()> {
-        if effect <= self.function.effect {
-            Ok(())
-        } else {
-            Err(err(
-                "effect",
-                span,
-                "declared effect is narrower than the called operation",
-            ))
-        }
+    fn effect(&mut self, effect: Effect, span: Span) -> Result<()> {
+        self.effects.add(effect, span);
+        Ok(())
     }
     fn resolve(&mut self, name: &Reference, _scope: &Scope, span: Span) -> Result<Target> {
         let target = match name.target(
@@ -705,6 +757,7 @@ impl Checker<'_> {
             ));
         };
         let (inputs, result, effect) = self.specialize(id, args, scope, span, true)?;
+        self.effects.require_unitary(id, span);
         let group = match inputs.as_slice() {
             [input] => input.clone(),
             _ => Ty::tuple(inputs.clone()),
@@ -855,6 +908,7 @@ impl Checker<'_> {
                         Target::Declaration(id) => {
                             let (inputs, result, effect) =
                                 self.specialize(id, args, scope, span, true)?;
+                            self.effects.call(id, span);
                             self.effect(effect, span)?;
                             if inputs.len() != runtime.len() {
                                 return Err(err("type", span, "runtime argument arity mismatch"));

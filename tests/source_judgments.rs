@@ -24,12 +24,14 @@ fn rejected(source: &str, expected: ErrorCode) {
 #[test]
 fn declared_effects_survive_arguments_tuples_conditions_and_both_arms() {
     let declarations = r#"
-observe fn strong(v: Unit) -> Unit { v }
-observe fn condition(b: Bit) -> Bit { b }
+use std::quantum::init0;
+use std::observe::measure_z;
+observe fn strong(v: Unit) -> Unit { let result=measure_z(init0()); v }
+observe fn condition(b: Bit) -> Bit { let result=measure_z(init0()); b }
 unitary fn keep(v: Unit) -> Unit { v }
 "#;
-    // Each callee emits no operations. Its declared effect must nevertheless
-    // reach the caller through every ordinary composition rule.
+    // Actual observation must reach the caller through every composition rule,
+    // even in a classical condition or an unselected arm.
     for body in [
         "keep(strong(()))",
         "let pair = (strong(()),()); ()",
@@ -47,11 +49,12 @@ unitary fn keep(v: Unit) -> Unit { v }
         ));
     }
 
-    let root = SourceRoot::new(&format!(
-        "{declarations} observe fn main() -> Unit {{ keep(strong(())) }}"
-    ));
+    let root = SourceRoot::new(
+        "observe fn strong(v:Unit)->Unit{v} unitary fn keep(v:Unit)->Unit{v}
+         observe fn main()->Unit{keep(strong(()))}",
+    );
     let program = compile_project(&root.0).unwrap();
-    assert_eq!(program.program().declared_effect, Effect::Observe);
+    assert_eq!(program.program().declared_effect, Effect::Unitary);
     assert_eq!(program.derived_effect(), Effect::Unitary);
     assert!(program.program().operations.is_empty());
     assert!(program.program().quantum_outputs.is_empty());
@@ -163,7 +166,8 @@ unitary fn forget(b: Bit) -> Unit { () }
                 with_computed(q,p) {{ |a| forget(b); phase(a) }}
             }}"
         );
-        if classification == "unitary" {
+        // Every prefix is only an upper bound on the same Unitary body.
+        {
             accepted(&source);
             let root = SourceRoot::new(&format!(
                 "{source}
@@ -195,12 +199,16 @@ unitary fn forget(b: Bit) -> Unit { () }
                     ..
                 }]
             ));
-        } else {
-            // Expanded gates alone qualify, but the source declaration still
-            // exceeds the computed body's required Unitary classification.
-            rejected(&source, ErrorCode::Effect);
         }
     }
+    rejected(
+        &format!(
+            "{prefix} use std::quantum::init0; use std::observe::measure_z;
+            observe fn phase(a:Q<Bit>)->Q<Bit>{{let b=measure_z(init0());z(a)}}
+            unitary fn oracle(q:Q<Bit>)->Q<Bit>{{with_computed(q,p){{|a|phase(a)}}}}"
+        ),
+        ErrorCode::Effect,
+    );
     rejected(
         &format!(
             "{prefix} use std::quantum::init0;

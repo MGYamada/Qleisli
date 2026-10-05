@@ -15,7 +15,7 @@ use super::ast::*;
 use super::diagnostic::{Diagnostic, coordinates};
 use super::project::{Project, SourcePolicy};
 use super::resolve::{self, DefId, Resolution, Target};
-use crate::{AcceptedProgram, ir::Effect};
+use crate::AcceptedProgram;
 
 const MAX_BITS: usize = 12;
 const MAX_WORK: usize = 1_000_000;
@@ -143,6 +143,7 @@ struct Compiler<'a> {
     declarations: BTreeMap<Key, &'a Decl>,
     basis: BTreeMap<Key, BasisFunction>,
     checked: BTreeMap<Key, AcceptedProgram>,
+    effects: BTreeMap<Key, super::effects::FunctionEffect>,
     // Private to this immutable loaded project. Dependencies are checked once
     // in topological order and never replaced, so a cache hit keeps its exact
     // source/raw binding without rescanning those frozen snapshots.
@@ -455,14 +456,6 @@ impl Compiler<'_> {
     }
 }
 
-fn effect(kind: FnKind) -> Effect {
-    match kind {
-        FnKind::Basis | FnKind::Meaning | FnKind::Unitary => Effect::Unitary,
-        FnKind::Iso => Effect::Iso,
-        FnKind::Observe => Effect::Observe,
-    }
-}
-
 fn called_names<'a>(decl: &'a Decl, locals: &Forest<'_>) -> Vec<&'a Ident> {
     enum Node<'a> {
         Expr(&'a Expr),
@@ -768,6 +761,62 @@ fn process_loaded_project_with_kernel(
     require_entry: bool,
     kernel: Option<&crate::interchange::native::Kernel>,
 ) -> Result<Option<AcceptedProgram>, CompileError> {
+    process_loaded_project_details(root, project, require_entry, kernel).map(|result| result.entry)
+}
+
+struct ProjectResult {
+    entry: Option<AcceptedProgram>,
+    effects: BTreeMap<String, super::effects::FunctionEffect>,
+}
+
+/// Immutable interface facts bound to the source collection actually checked.
+/// These facts grant no execution handle, arbitrary Meaning or access evidence.
+#[derive(Clone, Debug)]
+pub struct ProjectEffects {
+    project: Project,
+    functions: BTreeMap<String, super::effects::FunctionEffect>,
+}
+
+impl ProjectEffects {
+    pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect> {
+        self.functions.get(path).copied()
+    }
+
+    /// Render the retained checked source, including inferred effects on
+    /// ordinary functions. Basis/Meaning declarations have no quantum fact.
+    pub fn documentation(&self, module: &str) -> Option<Result<String, super::parser::ParseError>> {
+        self.project.modules.get(module).map(|source| {
+            super::documentation::render_checked_markdown(&source.source, |name| {
+                self.function_effect(&format!("{module}::{name}"))
+            })
+        })
+    }
+}
+
+/// Derive interface facts through the same whole-project source checks and
+/// native verification of concrete functions as `check_project_with_kernel`.
+/// Generic body facts remain conditional on their checked source premises.
+pub fn project_effects_with_kernel(
+    root: &Path,
+    policy: SourcePolicy,
+    kernel: &crate::interchange::native::Kernel,
+) -> Result<ProjectEffects, Diagnostic> {
+    let project = Project::load_detailed_with_policy(root, policy)
+        .map_err(|failure| failure.into_diagnostic())?;
+    let result = process_loaded_project_details(root, &project, false, Some(kernel))
+        .map_err(Diagnostic::from_compile)?;
+    Ok(ProjectEffects {
+        project,
+        functions: result.effects,
+    })
+}
+
+fn process_loaded_project_details(
+    root: &Path,
+    project: &Project,
+    require_entry: bool,
+    kernel: Option<&crate::interchange::native::Kernel>,
+) -> Result<ProjectResult, CompileError> {
     let resolution = project.resolution().map_err(|failure| {
         let failure = failure.into_diagnostic();
         let location = failure.primary.expect("located resolution error");
@@ -809,6 +858,7 @@ fn process_loaded_project_with_kernel(
         locals: Forest::default(),
         basis: BTreeMap::new(),
         checked: BTreeMap::new(),
+        effects: BTreeMap::new(),
         function_evidence: BTreeMap::new(),
         function_sources: None,
         meanings: BTreeMap::new(),
@@ -843,7 +893,7 @@ fn process_loaded_project_with_kernel(
         entry.and_then(|id| compiler.declarations.get(&id).map(|decl| (id, *decl)))
     {
         let (_, result) = compiler.signature(&entry)?;
-        if decl.kind != FnKind::Observe
+        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning)
             || !decl.params.is_empty()
             || !decl.static_params.is_empty()
             || !result.classical()
@@ -852,7 +902,7 @@ fn process_loaded_project_with_kernel(
                 "main",
                 decl.span,
                 ErrorCode::InvalidEntry,
-                "main must be observe fn main() with a classical result",
+                "main must be an ordinary fn main() with a closed classical result",
             ));
         }
     } else if require_entry {
@@ -862,7 +912,7 @@ fn process_loaded_project_with_kernel(
             span: Span::default(),
             line: 1,
             column: 1,
-            message: "expected observe fn main() with a classical result".to_owned(),
+            message: "expected ordinary fn main() with a closed classical result".to_owned(),
         });
     }
     // All basis functions precede their callers; ordinary functions may only
@@ -897,7 +947,15 @@ fn process_loaded_project_with_kernel(
             compiler.checked.insert(*key, program);
         }
     }
-    Ok(main)
+    let effects = compiler
+        .effects
+        .iter()
+        .map(|(key, fact)| (compiler.resolution.path(*key), *fact))
+        .collect();
+    Ok(ProjectResult {
+        entry: main,
+        effects,
+    })
 }
 
 #[cfg(test)]
@@ -943,6 +1001,7 @@ mod snapshot_tests {
             locals: Forest::default(),
             basis: BTreeMap::new(),
             checked: BTreeMap::new(),
+            effects: BTreeMap::new(),
             function_evidence: BTreeMap::new(),
             function_sources: None,
             meanings: BTreeMap::new(),

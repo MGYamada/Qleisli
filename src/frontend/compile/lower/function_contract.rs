@@ -154,12 +154,14 @@ impl Lowerer<'_, '_> {
                 "apply_contract requires ordinary declared unitary functions",
             ));
         };
-        if self.compiler.declarations[&key].kind != FnKind::Unitary {
+        if self.compiler.effects.get(&key).map(|fact| fact.inferred()) != Some(Effect::Unitary) {
             return Err(self.error(
                 module,
                 name.span,
                 ErrorCode::Effect,
-                "apply_contract requires declared unitary functions",
+                crate::frontend::effects::unitary_required(
+                    "apply_contract requires inferred Unitary functions",
+                ),
             ));
         }
         if !self.compiler.declarations[&key].static_params.is_empty() {

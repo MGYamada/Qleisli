@@ -503,7 +503,17 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
             "{callee_kind} fn id(q: Q<Bit>) -> Q<Bit> {{ q }}
              {caller_kind} fn caller(q: Q<Bit>) -> Q<Bit> {{ id(q) }}"
         );
-        let error = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        // A broader assertion on an identity cannot inflate its principal
+        // body effect or force a narrower caller to reject.
+        check_project(&SourceRoot::new(&source).0).unwrap();
+    }
+    for source in [
+        "use std::quantum::init0; iso fn prepare()->Q<Bit>{init0()}
+         unitary fn caller()->Q<Bit>{prepare()}",
+        "use std::observe::measure_z; observe fn measure(q:Q<Bit>)->Bit{measure_z(q)}
+         iso fn caller(q:Q<Bit>)->Bit{measure(q)}",
+    ] {
+        let error = check_project(&SourceRoot::new(source).0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Effect, "{error}");
     }
 }

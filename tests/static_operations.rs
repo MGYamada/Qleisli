@@ -264,7 +264,7 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
             ErrorCode::Effect,
         ),
         (
-            "iso fn u(q:Q<Bit>) -> Q<Bit> { q } unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u,q)}",
+            "observe fn u(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u,q)}",
             ErrorCode::Effect,
         ),
         (

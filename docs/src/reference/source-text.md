@@ -11,6 +11,48 @@ classification are shared. Static/owner/effect checking and lowering are not
 yet fully unified. A parsed AST does not accept a program or confer native
 verification evidence.
 
+## Ordinary function effects and assertions
+
+An ordinary body-bearing function may use `fn`, `unitary fn`, `iso fn` or
+`observe fn`. Its principal quantum effect is derived from the completely
+checked body and checked callees at fixed ordinary inputs. The order is
+`Unitary <= Iso <= Observe`; composition takes the least upper bound. Copying
+an ordinary Bit does not copy a quantum owner or add a quantum effect.
+
+An optional prefix is a checked upper-bound assertion, never an inference
+seed. A body inferred as Observe cannot assert Unitary or Iso. A body inferred
+as Unitary may carry an Iso or Observe assertion, but its principal effect
+remains Unitary for calls, provider eligibility and checked interface metadata.
+Type, ownership, access and termination checks still apply independently;
+an annotation cannot supply a missing check or arbitrary mathematical Meaning.
+
+Both arms of a supported branch and the body of a zero-iteration static fold
+participate in checking and effect inference. Sized decreasing self-recursion
+uses the least effect solution only after the existing decrease check; mutual
+recursion remains unsupported. An unsupported or unresolved body publishes no
+checked effect fact. These source checks are not accepted IR handles or a
+source-preservation proof, and finite and sized lowering remain distinct.
+
+**`"externally unitary"` is not supported.** The current compositional rules
+retain internal observation, reset and discard as Observe. Even if a separate
+argument claims the induced public channel is unitary, an ordinary annotation
+cannot replace those rules with an external certificate. A contradictory
+annotation is therefore an effect/semantic error. Its diagnostic states the
+inferred and asserted effects and explains this unsupported semantic boundary,
+without a GitHub Issue reference. This does not prove that the public channel
+is mathematically non-unitary; it means the proposed external justification
+is unavailable. Externally isometric justification is likewise unsupported.
+
+The Rust interface exposes immutable `ProjectEffects` from
+`project_effects_with_kernel` for finite projects, and `ParsedProgram` facts
+for sized source. `function_effect` separates the principal effect from an
+optional checked assertion. Their `documentation` methods render those facts
+from the retained source bytes; changing a source file afterward cannot rebind
+the report. Concrete finite declarations still undergo native verification;
+generic facts remain conditional on their checked source premises. The
+source-only `doc` command and `render_markdown` keep their explicit lack of
+semantic checking and do not manufacture inferred facts.
+
 ## Bytes, characters and positions
 
 Source is UTF-8. Every source span is a half-open byte interval in the original

@@ -75,12 +75,7 @@ pub(super) enum Count {
 pub(super) type Type = crate::frontend::types::Type<Natural>;
 /// The common exact type tree, projected specifically in the basis stage.
 pub(super) type Basis = Type;
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub(super) enum Effect {
-    Unitary,
-    Iso,
-    Observe,
-}
+pub(super) use crate::ir::Effect;
 #[derive(Clone, Debug)]
 pub(super) enum Parameter {
     Natural(BindingName),

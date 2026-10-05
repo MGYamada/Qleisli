@@ -98,8 +98,22 @@ pub struct ParsedProgram {
     syntax: BTreeMap<String, super::ast::Module>,
     modules: BTreeMap<String, ast::Module>,
     resolution: Resolution,
+    effects: BTreeMap<DefId, super::effects::FunctionEffect>,
 }
 impl ParsedProgram {
+    /// Render only this preparation's immutable retained bytes and body facts.
+    /// Generic facts remain conditional on checked source premises, not IR evidence.
+    pub fn documentation(
+        &self,
+        module: &str,
+    ) -> Option<std::result::Result<String, super::parser::ParseError>> {
+        self.sources.get(module).map(|source| {
+            super::documentation::render_checked_markdown(source, |name| {
+                self.function_effect(&format!("{module}::{name}"))
+            })
+        })
+    }
+
     /// The retained common source AST. It is untrusted syntax, not checked IR.
     pub fn syntax(&self, module: &str) -> Option<&super::ast::Module> {
         self.syntax.get(module)
@@ -173,6 +187,7 @@ impl ParsedProgram {
             syntax,
             modules,
             resolution,
+            effects: BTreeMap::new(),
         };
         check::program(&mut program)?;
         Ok(program)
@@ -257,6 +272,14 @@ impl ParsedProgram {
     /// Complete original text, including comments and line endings.
     pub fn source(&self, module: &str) -> Option<&str> {
         self.sources.get(module).map(String::as_str)
+    }
+
+    /// Principal and asserted effects from complete generic source checking.
+    /// Private definitions are inspectable metadata, not selectable entries.
+    /// This does not supply native acceptance or mathematical Meaning evidence.
+    pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect> {
+        let id = self.resolution.qualified(path).ok()?;
+        self.effects.get(&id).copied()
     }
     pub fn module_names(&self) -> impl Iterator<Item = &str> {
         self.sources.keys().map(String::as_str)

@@ -8,6 +8,7 @@ pub mod compile;
 pub mod core;
 pub mod diagnostic;
 pub mod documentation;
+pub mod effects;
 pub mod lexer;
 mod ordinary;
 pub mod parser;

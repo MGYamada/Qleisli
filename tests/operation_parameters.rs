@@ -348,7 +348,7 @@ fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
         ErrorCode::TypeMismatch,
     );
     rejects(
-        "iso fn wrong(q:Q<Bit>)->Q<Bit>{q}
+        "observe fn wrong(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q}
         unitary fn bad(q:Q<Bit>)->Q<Bit>{use_op[wrong](q)}",
         ErrorCode::Effect,
     );
@@ -378,7 +378,7 @@ fn pending_call_frames_declared_effects_and_local_shadowing_are_preserved() {
         ErrorCode::TypeMismatch,
     );
     rejects(
-        "observe fn obs[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+        "observe fn obs[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){let b=measure_z(init0());U(q)}
         unitary fn bad(q:Q<Bit>)->Q<Bit>{obs[ident](q)}",
         ErrorCode::Effect,
     );

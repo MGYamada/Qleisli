@@ -139,7 +139,7 @@ component proofs, independent semantic oracles and audit jobs remain required.
 
 `release-readiness` runs after the eight real validation jobs for tags and for
 an explicitly selected `workflow_dispatch.release_readiness`. Ordinary PRs and
-manual full validation do not require completion of the 109 selected issues.
+manual full validation do not require completion of the 110 selected issues.
 The gate requires both the full suite profile and full proof lane. The legacy
 `check_constitution.py --require-release-ready` delegates to the same checker;
 it rejects missing caller context instead of treating the three broader pending

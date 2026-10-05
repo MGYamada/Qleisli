@@ -102,10 +102,11 @@ impl Projection<'_, '_> {
         }
     }
     fn function(&self, declaration: &source::Decl) -> Result<Function> {
-        let effect = match declaration.kind {
-            source::FnKind::Unitary => Effect::Unitary,
-            source::FnKind::Iso => Effect::Iso,
-            source::FnKind::Observe => Effect::Observe,
+        match declaration.kind {
+            source::FnKind::Unitary
+            | source::FnKind::Iso
+            | source::FnKind::Observe
+            | source::FnKind::Inferred => {}
             _ => {
                 return Err(unsupported(
                     declaration.span,
@@ -176,7 +177,7 @@ impl Projection<'_, '_> {
         Ok(Function {
             lexical: self.index.map(|index| Arc::new(index.table.clone())),
             name: declaration.name.text.clone(),
-            effect,
+            effect: Effect::Unitary, // Private typed-pass placeholder, never published.
             parameters,
             arguments,
             result: self.ty(&declaration.return_type)?,

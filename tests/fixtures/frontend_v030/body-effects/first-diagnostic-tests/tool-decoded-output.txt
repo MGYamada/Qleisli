@@ -1,0 +1,32 @@
+warning: field `asserted_effect` is never read
+   --> src/frontend/sized/ast.rs:143:9
+    |
+139 | pub(super) struct Function {
+    |                   -------- field in this struct
+...
+143 |     pub asserted_effect: Option<Effect>,
+    |         ^^^^^^^^^^^^^^^
+    |
+    = note: `Function` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `qleisli` (lib) generated 1 warning
+error[E0433]: cannot find module or crate `serde_json` in this scope
+   --> tests/body_effects.rs:105:45
+    |
+105 |             let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    |                                             ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+    |
+    = help: if you wanted to use a crate named `serde_json`, use `cargo add serde_json` to add it to your `Cargo.toml`
+
+error[E0433]: cannot find module or crate `serde_json` in this scope
+   --> tests/body_effects.rs:105:25
+    |
+105 |             let result: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
+    |                         ^^^^^^^^^^ use of unresolved module or unlinked crate `serde_json`
+    |
+    = help: if you wanted to use a crate named `serde_json`, use `cargo add serde_json` to add it to your `Cargo.toml`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `qleisli` (test "body_effects") due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...

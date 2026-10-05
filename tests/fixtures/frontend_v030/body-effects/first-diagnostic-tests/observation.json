@@ -1,0 +1,5 @@
+{
+  "exit_code": 101,
+  "representation": "Tool-decoded output from Cargo; not original split stdout/stderr.",
+  "scope": "New regression target failed to compile because it referred to serde_json, which is not a project dependency. No runtime tests ran; reuse the existing project JSON reader instead of adding a dependency. The unused private projected assertion field is removed, retaining assertion identity in the checked source facts."
+}

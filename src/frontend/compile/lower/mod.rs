@@ -309,7 +309,9 @@ impl Lowerer<'_, '_> {
             }
         }
         self.no_owned_bindings(&key_name.0, body.span, &env, parameter_names)?;
-        if self.effect > effect(decl.kind) {
+        let inferred = self.effect;
+        let Some(fact) = crate::frontend::effects::FunctionEffect::checked(decl.kind, inferred)
+        else {
             let (module, span) = self
                 .effect_source
                 .as_ref()
@@ -320,20 +322,16 @@ impl Lowerer<'_, '_> {
                 module,
                 span,
                 ErrorCode::Effect,
-                format!(
-                    "body effect `{:?}` exceeds declared `{:?}` effect of `{}`",
-                    self.effect,
-                    effect(decl.kind),
-                    decl.name.text
-                ),
+                crate::frontend::effects::assertion_error(&decl.name.text, decl.kind, inferred),
             ));
-        }
+        };
+        self.compiler.effects.insert(*key, fact);
         self.effect = previous_effect;
         self.effect_source = previous_effect_source;
         let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
             (site.module, site.span)
         });
-        self.add_effect(module, span, effect(decl.kind));
+        self.add_effect(module, span, inferred);
         Ok(value)
     }
 
@@ -1017,12 +1015,16 @@ impl Lowerer<'_, '_> {
         let ty = Ty::quantum(basis.clone());
         match &target {
             Callee::User(key) => {
-                if self.compiler.declarations[key].kind != FnKind::Unitary {
+                if self.compiler.effects.get(key).map(|fact| fact.inferred())
+                    != Some(Effect::Unitary)
+                {
                     return Err(self.error(
                         module,
                         name.span,
                         ErrorCode::Effect,
-                        "static operation requires a unitary function",
+                        crate::frontend::effects::unitary_required(
+                            "static operation requires a function with inferred Unitary effect",
+                        ),
                     ));
                 }
                 if !self.compiler.declarations[key].static_params.is_empty() {
@@ -1417,7 +1419,7 @@ fn lower_function_inner(
         operations: lower.raw.operations,
         quantum_outputs,
         classical_outputs,
-        declared_effect: effect(decl.kind),
+        declared_effect: lower.effect,
     };
     if abstract_check {
         return Ok(None);

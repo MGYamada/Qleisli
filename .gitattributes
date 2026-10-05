@@ -1,4 +1,15 @@
 # Keep frozen sources byte-identical, including upstream whitespace.
+tests/fixtures/authoring_sessions/body-effects-v030/baseline/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/baseline/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/after-body-inference/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/body-effects-v030/after-body-inference/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/**/tool-decoded-output.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/validation-*/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/validation-*/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/active-clients-before/*.rs.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/first-legacy-test/compile.rs.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/first-profile-test/sized_source.rs.txt -text -whitespace
+tests/fixtures/frontend_v030/body-effects/stdlib-before/*.qli.txt -text -whitespace
 corpus/** text eol=lf
 corpus/upstream/** -text -whitespace
 
