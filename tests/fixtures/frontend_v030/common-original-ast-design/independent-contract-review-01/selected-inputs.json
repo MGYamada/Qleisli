@@ -1,0 +1,330 @@
+{
+  "format": "qleisli.independent-original-ast-contract-review-inputs",
+  "version": 1,
+  "recorded_utc": "2026-10-05T21:55:32.659225+00:00",
+  "auditor": "/root/isometry_cli_tests",
+  "root_contract_authored_by_auditor": false,
+  "prior_non_normative_candidate_and_dataflow_authored_by_auditor": true,
+  "scope": "Selected read-only originals; complete first-packet map and all FIRST41 identities rechecked, plus all 72 stored statuses/raw hashes/journal counts. No recorded commands executed.",
+  "source_catalog_counts": {
+    "finite": 17,
+    "selected": 18,
+    "intersection": 8,
+    "union": 27
+  },
+  "first_evidence_counts": {
+    "first_originals": 41,
+    "packet_map_members": 417,
+    "checks": 72,
+    "success": 18,
+    "refusal": 54,
+    "pre_execv_forwarding_rows": 304
+  },
+  "files": {
+    "docs/src/reference/architecture.md": {
+      "sha256": "cf75d6e2fcc763b15e17d4d61f6eebdf4333a42e3f16a039453eb2a6ce7c6980",
+      "bytes": 10074,
+      "mode": 420
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f",
+      "bytes": 28267,
+      "mode": 420
+    },
+    "docs/src/reference/production-boundary.md": {
+      "sha256": "f51d75a0ad542be6d03c9528d7f9d2f0340003d144d87ff5d4a5a64b983dfa4d",
+      "bytes": 15303,
+      "mode": 420
+    },
+    "docs/src/reference/source-text.md": {
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449",
+      "bytes": 18322,
+      "mode": 420
+    },
+    "docs/src/reference/type-model.md": {
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97",
+      "bytes": 28842,
+      "mode": 420
+    },
+    "src/frontend/ast.rs": {
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "bytes": 7260,
+      "mode": 420
+    },
+    "src/frontend/compile/basis.rs": {
+      "sha256": "302b8c13d53af4d1a65d8a418599ff44933774ca12dab7f93e712a928adfd86a",
+      "bytes": 13179,
+      "mode": 420
+    },
+    "src/frontend/compile/lower/certified.rs": {
+      "sha256": "b6550482f5306014cf2dab857e223544f4ca214fe12acf06d5cee9dd93a22a2a",
+      "bytes": 8638,
+      "mode": 420
+    },
+    "src/frontend/compile/lower/primitives.rs": {
+      "sha256": "ba9791c919ca0dbe702f14c5358b0faa2f2a01a28ceb5236089d6e2ab30e1856",
+      "bytes": 13841,
+      "mode": 420
+    },
+    "src/frontend/compile/mod.rs": {
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "bytes": 41710,
+      "mode": 420
+    },
+    "src/frontend/compile/operations.rs": {
+      "sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a",
+      "bytes": 33453,
+      "mode": 420
+    },
+    "src/frontend/compile/profile.rs": {
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "bytes": 5886,
+      "mode": 420
+    },
+    "src/frontend/core.rs": {
+      "sha256": "a5b5793259b45cb20f586708aba9c96f5b4085f517654c8bb8964a522208ca90",
+      "bytes": 3945,
+      "mode": 420
+    },
+    "src/frontend/effects.rs": {
+      "sha256": "ab63fc73f1233e2e8f963603dee2b07562fa740ad3bf30ea7c2cc881f4fdc0f0",
+      "bytes": 4837,
+      "mode": 420
+    },
+    "src/frontend/formals.rs": {
+      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+      "bytes": 3523,
+      "mode": 420
+    },
+    "src/frontend/project.rs": {
+      "sha256": "c5df842b7f21c80c2cacaf086317a0bf6012b8db84aff7b8e88b06e79d210d94",
+      "bytes": 25413,
+      "mode": 420
+    },
+    "src/frontend/resolve/locals.rs": {
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "bytes": 29846,
+      "mode": 420
+    },
+    "src/frontend/resolve.rs": {
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
+      "bytes": 15766,
+      "mode": 420
+    },
+    "src/frontend/sized/ast.rs": {
+      "sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1",
+      "bytes": 4764,
+      "mode": 420
+    },
+    "src/frontend/sized/check.rs": {
+      "sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17",
+      "bytes": 56513,
+      "mode": 420
+    },
+    "src/frontend/sized/elaborate.rs": {
+      "sha256": "2c5bc3b41d2b9095ff867bea17a69a33ef4ffc0c0cdcb72b8a2297f31961d947",
+      "bytes": 65744,
+      "mode": 420
+    },
+    "src/frontend/sized/linear.rs": {
+      "sha256": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979",
+      "bytes": 12700,
+      "mode": 420
+    },
+    "src/frontend/sized/lower.rs": {
+      "sha256": "9def83629b1d194c47f43a47055c8211fd5b45845a3d86cde9979e4789c6e028",
+      "bytes": 64151,
+      "mode": 420
+    },
+    "src/frontend/sized/parser.rs": {
+      "sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0",
+      "bytes": 15670,
+      "mode": 420
+    },
+    "src/frontend/sized/primitive.rs": {
+      "sha256": "0e70474274063528868b99a43eeea6ad6b856de0f1a2a5d2e4eac0a5c393d700",
+      "bytes": 8169,
+      "mode": 420
+    },
+    "src/frontend/sized/raw.rs": {
+      "sha256": "28d2d849c5cc93d626ed0156073f31cad289724f3d199c6d277991002fa0a233",
+      "bytes": 23387,
+      "mode": 420
+    },
+    "src/frontend/sized.rs": {
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "bytes": 20355,
+      "mode": 420
+    },
+    "src/frontend/source.rs": {
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+      "bytes": 6142,
+      "mode": 420
+    },
+    "src/frontend/types.rs": {
+      "sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+      "bytes": 17970,
+      "mode": 420
+    },
+    "stdlib/Qargo.toml": {
+      "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689",
+      "bytes": 151,
+      "mode": 420
+    },
+    "stdlib/src/arithmetic.qli": {
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "bytes": 2016,
+      "mode": 420
+    },
+    "stdlib/src/basis.qli": {
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "bytes": 825,
+      "mode": 420
+    },
+    "stdlib/src/routines.qli": {
+      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "bytes": 2436,
+      "mode": 420
+    },
+    "stdlib/src/transforms.qli": {
+      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+      "bytes": 1433,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/bundled-import-control/main.qli": {
+      "sha256": "c4d979366fb8df8d39f3cafec2fda56cbbbbd236630b81b0add835e78c787e7f",
+      "bytes": 216,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-unary-predicate/main.qli": {
+      "sha256": "1e838d842f563553ba096adfdacb558f6a61d323c9ab7a44efd2cecae5c4ea1c",
+      "bytes": 294,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-wrong-arity/main.qli": {
+      "sha256": "f1f4bda3caa0b62754378dd8191c1b1b68272d32ef977108e60ff3d583db40da",
+      "bytes": 292,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/dead-arm-missing-adjoint/main.qli": {
+      "sha256": "4678727c5105bd9cbf9d339be6b0f7325d1f512c35a918666702bb108afb2e3e",
+      "bytes": 252,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/mixed-qif-and-generic/main.qli": {
+      "sha256": "4c2a054b06d74981d8d81c9df3acf8c18f5494eb792a80985815764478ff16a5",
+      "bytes": 443,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/natural-runtime-shadow-invalid/main.qli": {
+      "sha256": "3c328c01da89b2e58e5761d60b24debac58e6b4e2d7e68d1d31997314d2b41d3",
+      "bytes": 174,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/owner-shadow-live-invalid/main.qli": {
+      "sha256": "95a8b43b15f745d43932df3e82a7d782696c825ea846c2bb210d1fb43a2c3110",
+      "bytes": 159,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/owner-shadow-move-valid/main.qli": {
+      "sha256": "9fe7b20c66853df89d8c15ba5e3e891f3632512d2462582e9551f2ee93c96982",
+      "bytes": 152,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-bad-result/main.qli": {
+      "sha256": "8db9627ad650d95f6270ceb6d7b6cd837ca48339f41258410a94852b360ae332",
+      "bytes": 157,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-valid/main.qli": {
+      "sha256": "e68075dbd173d87ebc882cbca4213f3f8b4b43600f4db093085a0ed35e757d3c",
+      "bytes": 344,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-zero-fold-owner/main.qli": {
+      "sha256": "a27e600d1aae20f4132f549c31b7b26457cedcdb92b7239541b189f7e39e4602",
+      "bytes": 192,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-formal-apply-only/main.qli": {
+      "sha256": "8d651244c6aeb1815ef97a9384920dd8d7d3523ecae234cb1d76c6a90be17f0a",
+      "bytes": 229,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-formal-controlled/main.qli": {
+      "sha256": "de78cf70578e178ebbb056c9a9613ed8dcc88ff2f1e6d88daed598f8319ab24d",
+      "bytes": 234,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-effect/main.qli": {
+      "sha256": "ad66c1502fb3cfd330ac74eb135bedf120ec8c9247fd46700273db443d24016e",
+      "bytes": 449,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-shape/main.qli": {
+      "sha256": "c07f32038264f6f67279ee48f1d29a7c9b0e9c18100377e7764f2fc831fb066e",
+      "bytes": 363,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-call-invalid/main.qli": {
+      "sha256": "460e71bf96e37ad323fd1631ad97842f5f9980870c0dffbde2b12e222195beb7",
+      "bytes": 191,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-policy/main.qli": {
+      "sha256": "ad57599143f62281ba88bb4a8ada63278f4a0d40f23377cd9c6cec5f54028b47",
+      "bytes": 188,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/static-shadows-global-valid/main.qli": {
+      "sha256": "9a6b921ea2e683dbde64309c4426c61be44c466138c3234b3b534320a17fa4cc",
+      "bytes": 226,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/before/summary.json": {
+      "sha256": "0dcda5d65b9616146adf376a9e0812cde461dc6fe136beabc62b4502d988850f",
+      "bytes": 18791,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/first-files.json": {
+      "sha256": "753edf0e0fe01b6b3a2f597250b237cd8a0574e07ac0f67da3d483e77d1ea2db",
+      "bytes": 10658,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/first-packet-01.json": {
+      "sha256": "7851a047e02b3684426ae6777e194ef65e052672c0826c5aad20c0a762b86ad9",
+      "bytes": 107806,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/independent-first-audit-01/review.md": {
+      "sha256": "3b14727474d84cae28bf52fece492ce47ca210b216967b998fb3ac9f8778732c",
+      "bytes": 5386,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/registry-inputs.json": {
+      "sha256": "511d68af1834ca8c2063b3b0a1c6307ad499a5e978c0361c79df6311bd6c93d1",
+      "bytes": 2541,
+      "mode": 420
+    },
+    "tests/fixtures/authoring_sessions/common-original-ast-v030/results-first.md": {
+      "sha256": "b05f29a4338edc04fd8ca1be7213551eb3c19811f7f71b3ebfead23a54838756",
+      "bytes": 4020,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/original-ast-checking-candidate-01.md": {
+      "sha256": "096bff87770b84d867973b522238dfaa20f11a3fa36e038b39856128530792c9",
+      "bytes": 13247,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/original-ast-checking-dataflow-01.md": {
+      "sha256": "e7f9c9b09165e4c59af1074d3c5270332f2893789b4da33947fc9b4bda9d0847",
+      "bytes": 11160,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md": {
+      "sha256": "60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1",
+      "bytes": 22769,
+      "mode": 420
+    }
+  }
+}

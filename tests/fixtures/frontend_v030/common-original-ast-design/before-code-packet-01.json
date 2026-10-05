@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.original-ast-before-code-packet",
+  "version": 1,
+  "files": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/before-code-record-01.json": {
+      "sha256": "c454771719048eab2908d9d61fddaeac64591327630123410c87b747d310177a",
+      "bytes": 1388,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md": {
+      "sha256": "60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1",
+      "bytes": 22769,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/independent-contract-review-01/review.md": {
+      "sha256": "ae78efd82726ee154f8ad0dbfbb8858cbca1693bd5df5c4a6d2e7e11e8e39730",
+      "bytes": 7014,
+      "mode": 420
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/independent-contract-review-01/selected-inputs.json": {
+      "sha256": "5dfbe9781886537f68326b98890d1887b160048e6f73cd0251c1c1d2afe93a63",
+      "bytes": 12877,
+      "mode": 420
+    }
+  },
+  "self_excluded": "tests/fixtures/frontend_v030/common-original-ast-design/before-code-packet-01.json",
+  "scope": "Exact ordinary contract, separate independent preparation review and actual Issue32 before-code recording. No implemented checker, proof, guarantee or release claim."
+}

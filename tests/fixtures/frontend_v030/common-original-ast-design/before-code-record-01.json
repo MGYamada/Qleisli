@@ -1,0 +1,32 @@
+{
+  "format": "qleisli.ordinary-before-code-contract-record",
+  "version": 1,
+  "issue": 32,
+  "issue_updated_at": "2026-10-05T21:56:23Z",
+  "recording_kind": "Ordinary implementation/migration under the approved plan, not a human constitutional act.",
+  "contract": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
+    "sha256": "60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1",
+    "prepared_by": "/root/isometry_docs, from root's proposed ordinary choices",
+    "root_review": "Complete 336-line candidate read; exact reviewed text posted in Issue32 before production edits.",
+    "historical_candidate_notice_preserved": true
+  },
+  "independent_review": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/independent-contract-review-01/review.md",
+    "sha256": "ae78efd82726ee154f8ad0dbfbb8858cbca1693bd5df5c4a6d2e7e11e8e39730",
+    "scope": "Read-only preparation/code/spec comparison; no implementation review or execution."
+  },
+  "issue_readback": {
+    "body_chars": 124390,
+    "original_checklist_count": 10,
+    "body_exactly_matches_written_text": true,
+    "production_edits_at_recording": "none for this unit"
+  },
+  "scope": {
+    "selected_issues": 111,
+    "confirmed_completed": 14,
+    "percent": "12.61%",
+    "new_guarantee_or_interpretation": false,
+    "release_approval": false
+  }
+}
