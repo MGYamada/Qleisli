@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-observer-arrow/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:0..0: visibility: dependency main::entry is private\n",
+  "native_invocations": 0,
+  "seconds": 0.0050858749891631305,
+  "transcript": "main:0..0: visibility: dependency main::entry is private\n",
+  "recorded_utc": "2026-10-05T12:08:27.684873+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/existing-observer-arrow-text.json",
+    "sha256": "13cfc78916d9a59be23222a114dee70a59266a1ff6fc9e6592f1b91059e8c78f"
+  }
+}

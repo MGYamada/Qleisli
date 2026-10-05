@@ -57,6 +57,13 @@ For the next session:
    backlog. A GitHub Issue needs no duplicate
    backlog entry, update or A020 ID.
 
+The [operator-arrow study](operator-arrow-v030/README.md) retains twelve
+programs, three honest source snapshots and 72 actual check observations.
+It records private-entry/import repairs, the current Iso-root/quantum-Unit
+profile limit and parser rejection of unadopted arrow/capture candidates.
+Its context clarification and raw-event companions preserve the actual read
+and metadata-repair chronology. Check success is not a semantic oracle.
+
 `python3 scripts/check_authoring_sessions.py` checks hashes, source inventories,
 context/observation presence and consistent recorded exits. It does not replay
 commands, authenticate provenance or certify program meaning. Seven checker

@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Fixed bounded first observations; records never select executable commands.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+"""
+
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import time
+
+root = Path(__file__).resolve().parent
+repo = root.parents[3]
+binary = Path('/private/tmp/qleisli-bounded-validation-target/debug/qleisli')
+native = repo / 'lean-kernel/.lake/build/bin/qleisli-kernel'
+wrapper = root.parent / 'body-effects-v030/native-log.py'
+records = root / 'before'
+records.mkdir()
+digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+source_map = {str(p.relative_to(repo)): digest(p)
+              for p in sorted((repo / 'src').rglob('*.rs'))}
+identity = {'binary': str(binary), 'binary_sha256': digest(binary),
+    'native': str(native), 'native_sha256': digest(native), 'source_files': source_map,
+    'scope': 'Actual current CLI observation. A source/hash map is not compilation attestation, semantic correspondence, a benchmark or a proof.'}
+(records / 'identity.json').write_text(json.dumps(identity, indent=2) + '\n')
+(records / 'executed-driver.py.txt').write_bytes(Path(__file__).read_bytes())
+session_path = root / 'session.json'
+session = json.loads(session_path.read_text())
+attempt = session['attempts'][0]
+bound = {'existing-static-endo', 'wrong-endo-provider', 'candidate-comma-operator',
+         'candidate-arrow-operator', 'candidate-prepare-operator'}
+for project in sorted((root / 'attempt-01').iterdir()):
+    for format in ['text', 'json']:
+        assert digest(binary) == identity['binary_sha256']
+        name = project.name + '-' + format
+        log = records / (name + '.native.jsonl')
+        log.touch()
+        argv = [str(binary), 'check', '--entry=main::entry',
+                '--module=main=' + str(project / 'main.qli')]
+        if project.name in bound:
+            argv += ['--operation=U=main::provider']
+        if format == 'json':
+            argv += ['--format=json']
+        env = dict(os.environ, QLEISLI_KERNEL=str(wrapper),
+            QLEISLI_STUDY_NATIVE=str(native), QLEISLI_STUDY_NATIVE_LOG=str(log))
+        start = time.monotonic()
+        result = subprocess.run(argv, env=env, capture_output=True, timeout=60)
+        (records / (name + '.stdout.txt')).write_bytes(result.stdout)
+        (records / (name + '.stderr.txt')).write_bytes(result.stderr)
+        observation = {'command': argv, 'exit_code': result.returncode,
+            'stderr': result.stderr.decode(), 'native_invocations': len(log.read_text().splitlines()),
+            'seconds': time.monotonic() - start}
+        if format == 'json':
+            observation['stdout'] = json.loads(result.stdout)
+        else:
+            observation['transcript'] = result.stdout.decode() + result.stderr.decode()
+        path = records / (name + '.json')
+        path.write_text(json.dumps(observation, indent=2) + '\n')
+        attempt['observations'].append(str(path.relative_to(root)))
+        session_path.write_text(json.dumps(session, indent=2) + '\n')
+        assert digest(binary) == identity['binary_sha256']
+        print(name, result.returncode, observation['native_invocations'], flush=True)
+assert source_map == {str(p.relative_to(repo)): digest(p)
+                      for p in sorted((repo / 'src').rglob('*.rs'))}
+assert digest(native) == identity['native_sha256']

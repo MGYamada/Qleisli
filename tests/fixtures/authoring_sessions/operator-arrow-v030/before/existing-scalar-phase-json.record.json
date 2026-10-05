@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-scalar-phase/main.qli",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.0045469580218195915,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "visibility",
+        "severity": "error",
+        "message": "dependency main::entry is private",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-scalar-phase/main.qli",
+          "start": 0,
+          "end": 0
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "recorded_utc": "2026-10-05T12:08:27.686001+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/existing-scalar-phase-json.json",
+    "sha256": "ff67530e494573e7da59163811936e846675402f33a020419dcef62f81b0f019"
+  }
+}

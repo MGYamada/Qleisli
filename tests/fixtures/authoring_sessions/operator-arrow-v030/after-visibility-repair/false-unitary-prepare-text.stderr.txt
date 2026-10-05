@@ -1,0 +1,1 @@
+main:33..36: parse: expected `fn`, found `pub`

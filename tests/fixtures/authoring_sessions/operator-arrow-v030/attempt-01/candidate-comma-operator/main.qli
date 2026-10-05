@@ -1,0 +1,2 @@
+fn provider(q:Q<(Unit,Bit)>)->Q<Bit>{let (u,b)=split(q);finish(u);b}
+fn entry[static U:Op<(Unit,Bit),Bit>](q:Q<(Unit,Bit)>)->Q<Bit> requires Apply(U){U(q)}
