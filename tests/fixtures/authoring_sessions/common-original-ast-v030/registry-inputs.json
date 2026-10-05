@@ -1,0 +1,68 @@
+{
+  "format": "qleisli.original-ast-registry-controls",
+  "version": 1,
+  "status": "unchanged-input-data-only-unexecuted",
+  "registry": [
+    {
+      "module": "std::arithmetic",
+      "registry_path": "<bundled>/std/arithmetic.qli",
+      "repository_path": "stdlib/src/arithmetic.qli",
+      "bytes": 2016,
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a"
+    },
+    {
+      "module": "std::basis",
+      "registry_path": "<bundled>/std/basis.qli",
+      "repository_path": "stdlib/src/basis.qli",
+      "bytes": 825,
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877"
+    },
+    {
+      "module": "std::routines",
+      "registry_path": "<bundled>/std/routines.qli",
+      "repository_path": "stdlib/src/routines.qli",
+      "bytes": 2436,
+      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b"
+    },
+    {
+      "module": "std::transforms",
+      "registry_path": "<bundled>/std/transforms.qli",
+      "repository_path": "stdlib/src/transforms.qli",
+      "bytes": 1433,
+      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba"
+    }
+  ],
+  "manifest": {
+    "repository_path": "stdlib/Qargo.toml",
+    "registry_path": "<bundled>/std/Qargo.toml",
+    "bytes": 151,
+    "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689"
+  },
+  "inspected_context": {
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/original-ast-checking-candidate-01.md": {
+      "bytes": 13247,
+      "sha256": "096bff87770b84d867973b522238dfaa20f11a3fa36e038b39856128530792c9"
+    },
+    "tests/fixtures/frontend_v030/common-frontend-next-unit-01/original-ast-checking-dataflow-01.md": {
+      "bytes": 11160,
+      "sha256": "e7f9c9b09165e4c59af1074d3c5270332f2893789b4da33947fc9b4bda9d0847"
+    },
+    "docs/src/reference/source-text.md": {
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    "docs/src/reference/type-model.md": {
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    "src/frontend/source.rs": {
+      "bytes": 6142,
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3"
+    },
+    "STDLIB.md": {
+      "bytes": 12173,
+      "sha256": "e64b5b0732a9c7488968a11463c132ee52b10bc52a4c52b13b9ddfd4b86b9895"
+    }
+  },
+  "scope": "No bundle/corpus copies, source changes, registry injection, semantic checking or canonical exposure."
+}

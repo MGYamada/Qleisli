@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn step(q: Q<Bit>) -> Q<Bit> { q }
+fn generic[static step: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(step) { step(q) }
+pub fn main() -> Unit { () }

@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.root-tool-terminal-observation",
+  "version": 1,
+  "session_id": 89505,
+  "terminal_chunk": "8da3f8",
+  "exit_code": 0,
+  "result_path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/summary.json",
+  "result_sha256": "0dcda5d65b9616146adf376a9e0812cde461dc6fe136beabc62b4502d988850f",
+  "subsequent_clock_observation_utc": "2026-10-05 19:25:35 UTC",
+  "timestamp_note": "This is a subsequent tool-clock observation, not an independently attested child exit timestamp.",
+  "authority": "Transcription of the actual root tool terminal result; no new checker/evidence execution or human adoption."
+}

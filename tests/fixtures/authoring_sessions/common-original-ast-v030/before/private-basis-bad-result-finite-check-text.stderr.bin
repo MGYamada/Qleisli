@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-bad-result/main.qli:2:46: type_mismatch: basis result does not match its declared type: expected `Bit`, found `(Bit,Bit)`

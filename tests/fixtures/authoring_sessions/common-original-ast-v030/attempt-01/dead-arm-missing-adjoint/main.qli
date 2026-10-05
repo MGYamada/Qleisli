@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn unused[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>>
+requires Apply(U) {
+    if static 0 == 0 { q } else { adjoint(U,q) }
+}
+pub fn main() -> Unit { () }

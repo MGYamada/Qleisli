@@ -1,0 +1,193 @@
+{
+  "format": "qleisli.original-ast-first-read-audit",
+  "version": 1,
+  "recorded_utc": "2026-10-05T19:29:11.204786+00:00",
+  "reviewer_role": "Author of source/collector; separate read/hash audit of root actual observations, not independent source oracle",
+  "audit_kind": "read/hash/JSON/raw-only-no-execution",
+  "selected_files": [
+    {
+      "path": "stdlib/Qargo.toml",
+      "bytes": 151,
+      "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689",
+      "mode": 420
+    },
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "bytes": 2016,
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "mode": 420
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "bytes": 825,
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "mode": 420
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "bytes": 2436,
+      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "mode": 420
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "bytes": 1433,
+      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/executed-driver.py.txt",
+      "bytes": 15432,
+      "sha256": "fd071d35bd2d9113296ef6f410485c93cf659be046eedf945e4aecdc1087844a",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/files.json",
+      "bytes": 71129,
+      "sha256": "4336906b401c93ec97b28d8c14c0d2577a7cabb9cb4d82d6078bf8a3a1c33b63",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/identity.before.json",
+      "bytes": 187589,
+      "sha256": "299070e410417109911b2cae63965590a6b98ec78fc582f339139442580324bc",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/identity.final.json",
+      "bytes": 187332,
+      "sha256": "aae2c39c521e5a96822176c14cfebd21613584cdc3310a4c401d8f4817e8172b",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/started.json",
+      "bytes": 424,
+      "sha256": "534590cf5629dc91399efe43e6be549424d6268f02726b07cef696e0de98f3f3",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/summary.json",
+      "bytes": 18791,
+      "sha256": "0dcda5d65b9616146adf376a9e0812cde461dc6fe136beabc62b4502d988850f",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/capture-design-01/README.md",
+      "bytes": 2825,
+      "sha256": "4ba120ae17d5a4b49b47e2d5ba94c29fd7507ac2a637c9aee28e081764f332a2",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/capture-design-01/driver.py",
+      "bytes": 15432,
+      "sha256": "fd071d35bd2d9113296ef6f410485c93cf659be046eedf945e4aecdc1087844a",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/capture-design-01/inputs.json",
+      "bytes": 218055,
+      "sha256": "b90d74d718a745df76d42accca5f6ca71232a2c90857b1471d795f7c75a30ebd",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/first-files.json",
+      "bytes": 10658,
+      "sha256": "753edf0e0fe01b6b3a2f597250b237cd8a0574e07ac0f67da3d483e77d1ea2db",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/registry-inputs.json",
+      "bytes": 2541,
+      "sha256": "511d68af1834ca8c2063b3b0a1c6307ad499a5e978c0361c79df6311bd6c93d1",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/session.before.json",
+      "bytes": 2910,
+      "sha256": "520b60a5f2289ca7049944bd25265313d8d65f915187cfa7afe344306fe43400",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/session.json",
+      "bytes": 7883,
+      "sha256": "f9e116070f4cf3fb9d4d897a90d69a2b0152de22e2b942bbc7c48abb0382c951",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+      "bytes": 465,
+      "sha256": "3b249471941bf1ec91c0d7506c7ba38b39d7c365efdc23b45ba4e195a486f3fd",
+      "mode": 493
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/07-rebuilt-cli.json",
+      "bytes": 976,
+      "sha256": "759d00cfa3bc88e1cba988d84b2e9690657684a5cdf39143dcf27c0fbd11acca",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/inputs-after.json",
+      "bytes": 110516,
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/inputs-before.json",
+      "bytes": 110516,
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/results.json",
+      "bytes": 12967,
+      "sha256": "52d39b3fcb9f3ce618910ede307a944a5d903930ef1e2f655cec585ae8102551",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/bounded_process.py",
+      "bytes": 4402,
+      "sha256": "0ce0b915687f1df32c2d9775353fb1c01aa2a5ad45642b2c2379bfcfa84be4be",
+      "mode": 420
+    }
+  ],
+  "verified_record_sets": {
+    "first_files": 41,
+    "before_files": 366,
+    "output_manifest_members": 365,
+    "literal_observations": 72,
+    "current_rust_build_inputs": 107,
+    "current_msrv_selected_inputs": 715,
+    "msrv_records": 29,
+    "registry_sources": 4
+  },
+  "aggregates": {
+    "success": 18,
+    "nonzero": 54,
+    "finite": {
+      "success": 14,
+      "nonzero": 22,
+      "forwarded_attempts": 300
+    },
+    "selected": {
+      "success": 4,
+      "nonzero": 32,
+      "forwarded_attempts": 4
+    },
+    "forwarded_attempts": 304
+  },
+  "identity_marker": "7e04f20f0c908fd56720a50655bc56c072c80ceb",
+  "cli_sha256": "d219e3cb0e546c8173ab1215ffd94cacc7c032ce9abd145b98949bbb2c4d089e",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "limits_verified": {
+    "outer_seconds": 55,
+    "regular_file_bytes": 1048576,
+    "all_recorded_captures_completed_without_operational_failure": true
+  },
+  "root_terminal_report": {
+    "session_id": 89505,
+    "exit_code": 0,
+    "scope": "Parent report; not independently authenticated by this audit."
+  },
+  "findings": "No actionable capture-integrity mismatch; documented profile/projection/shadow/loader distinctions preserved.",
+  "scope": "Map anchors selected records; FIRST/input/output manifests bind audited complete sets. No native-start attestation, semantic oracle, constitutional adoption, guarantee or Issue completion."
+}

@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::arithmetic::increment2;
+use std::basis::xor2;
+use std::routines::hadamard2;
+use std::transforms::qft2;
+pub fn main() -> Unit { () }
