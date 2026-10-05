@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.additive-technical-review-packet",
+  "version": 1,
+  "recorded_utc": "2026-10-05T18:26:20.452463+00:00",
+  "files": [
+    {
+      "path": "audit.json",
+      "bytes": 8809,
+      "sha256": "adc14277d6c2e7ebbe6bce03a1740c2b627038f68ce2ef73fb5bd26d65b21799"
+    },
+    {
+      "path": "review.md",
+      "bytes": 5118,
+      "sha256": "2aceed9c31b049b25d907f1204a4181b250724814dcfd5d71d156a968da265bf"
+    }
+  ],
+  "scope": "Read-only actual generated4/two native results audit. No import, generation, native/CLI/build/rerun/proof/adoption/status changes or raw copies. Map excludes itself."
+}

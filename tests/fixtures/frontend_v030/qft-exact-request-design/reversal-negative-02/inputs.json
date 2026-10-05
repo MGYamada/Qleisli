@@ -1,0 +1,206 @@
+{
+  "kind": "author-follow-up-read-only-input-subset",
+  "recorded_utc": "2026-10-05T18:15:32.164463+00:00",
+  "author": "/root/isometry_cli_tests",
+  "original_candidate_authorship": "Same agent authored native-valid-negatives-design-01; this is not independent review of that candidate.",
+  "executed_artifacts": false,
+  "cli_native_build_test_git_issue_execution": false,
+  "scope": "Selected predicates and actual retained readbacks; no complete closure or build/compiled-HEAD attestation.",
+  "candidate": {
+    "path": "tests/fixtures/frontend_v030/qft-exact-request-design/reversal-negative-02/candidate.md",
+    "bytes": 8868,
+    "sha256": "491058d547c040583ddf65bfd986afcdbb025eceb13e9de78e2b57f9ca26d904"
+  },
+  "inspected_files": [
+    {
+      "path": "lean-kernel/QleisliKernel/Layout.lean",
+      "bytes": 10217,
+      "sha256": "3252fa96de9ccddc41f7a4e40e1a6df8c9c55dbf62c88bd45db0115a887c48b4"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Ports.lean",
+      "bytes": 8708,
+      "sha256": "d7e58e94cfafc9e2ad6fa2b12304440b8100cc7c7a8fc241af8d6ffc798adc19"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Structural.lean",
+      "bytes": 9390,
+      "sha256": "5d12fbf817f76943850a72a376cc0cc66155507c81796a55fa04c6be43d76d2c"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/NodeTyping.lean",
+      "bytes": 26463,
+      "sha256": "9f9b47b7f2501baa6fa0eeee32e8a7b80abe6d440a98c6d6321efcb8a67a0157"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/ContractTyping.lean",
+      "bytes": 33194,
+      "sha256": "1e4efe077528b3c3b631735bdfa41aeafa508ea263af3e11d3d8e4f2a7640f3c"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Rule.lean",
+      "bytes": 7241,
+      "sha256": "becc740a86dd09df2e499b133a1bf9426bb97dcf03835a2acd81647e8e0f7840"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/TypedRule.lean",
+      "bytes": 5243,
+      "sha256": "2d2d3b0dfc5867ddd1a8dc5f0ae83cd477933568c53cac199c918d222ae3242a"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Power.lean",
+      "bytes": 15403,
+      "sha256": "6dca41ad09443838f98096a101f374da36ab71698d8d2a3458c6026cb004c911"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean",
+      "bytes": 8584,
+      "sha256": "6493361fb5384c72c0f3a192fe81d75a7c0a0eea2d266ff04bed0bc3a6048cc7"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean",
+      "bytes": 9946,
+      "sha256": "97edcde096268a7169a4ba8524c739d398d0b42d4c111f9c1e724ca9c54f8078"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean",
+      "bytes": 29904,
+      "sha256": "d00cc81b1540183bde439efe946c4b044b42f2b587d6b58e89bf5d8c05114b5b"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/generate.py",
+      "bytes": 22995,
+      "sha256": "b48204fbe6e1e7e72151bafa9518fc3d3d0123122efff534f92350a6d0393b6f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/generate_negatives.py",
+      "bytes": 20634,
+      "sha256": "ea80dd386daf7a63a88f78b76934b641a70d7020c2f1cbec8a798d9f9492c58c"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/capture_negatives.py",
+      "bytes": 12606,
+      "sha256": "9ad07dc381597c83ef47a7f6065ca86eae55656691447bb0a0108177c6580aed"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/script-inputs.json",
+      "bytes": 11019,
+      "sha256": "44f482ed6189f530221ca65eec01041d4954b0e42007846026404b52b554f70b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.proposal.json",
+      "bytes": 95799,
+      "sha256": "f9fd660f60420b72c84bf8dba422b4dfda3c8a2573945bee1a04ddd3fb86a30e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.association.json",
+      "bytes": 39311,
+      "sha256": "57057909c393db86954f05aedb9a90f05205508dd636343ec2cf51f79811fb7d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/prepared-files.json",
+      "bytes": 1998,
+      "sha256": "4b19c4e1d824b3d75ddbc1afcba450810059af839cc067b443654f393000367d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/requests/n2.json",
+      "bytes": 1612,
+      "sha256": "b0468aee9db0078a20fec5eff0502a071da9d696cbcbaa8f4cf4478c878f2233"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/cancelled-real-reversal.proposal.json",
+      "bytes": 95799,
+      "sha256": "95710d34cbbdc9dcb4164d05385d1ee55517265bf59c7cabfcc3270e08ab1d73"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/cancelled-real-reversal.delta.json",
+      "bytes": 2613,
+      "sha256": "c2d91ae30317c8840eb544028daad8f5a44d59872415609bf569b02c62250696"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/summary.json",
+      "bytes": 1821,
+      "sha256": "65d4d238ee440ccaf0b5b5ee129ed11cf3a198e494bdf1041a9e017987403a28"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-request-skipped.json",
+      "bytes": 263,
+      "sha256": "bfd4e5055f890817c92fdc520ebd5bc0bb65404633acaddb37f95656ba936478"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/result.json",
+      "bytes": 3959,
+      "sha256": "adee25441e4b914642cc81caef539befc57d4ab6c838f47f9c55038ee66a2de3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/result.json",
+      "bytes": 1581,
+      "sha256": "fa008382366957aa130cad9e21a1e3917785ec7584c291cc45c6a4074ba2e97b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-inspect/native/call-01/stdout.bin",
+      "bytes": 54,
+      "sha256": "2f8e7e4148e17b15de3d2acd12b7dcbcff300359bcea267b1ac57769c1d41fa2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/result.json",
+      "bytes": 4105,
+      "sha256": "6fd5b2dab27dd6f5b46735a998c4ab87f88f0ef707e3a754ebf12f55aeaa4ddb"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/result.json",
+      "bytes": 1598,
+      "sha256": "3232a1547c2fa76eefad9ed3c5b0fab437990b87ee1f36323e09ae75fb90c7fc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/wrong-controlled-phase-request/native/call-01/stdout.bin",
+      "bytes": 51,
+      "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/result.json",
+      "bytes": 3951,
+      "sha256": "5a6c0ac9f158560247aaa0f6abfa0c8456e67b45d632812546c3262ad2ccc311"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/result.json",
+      "bytes": 1582,
+      "sha256": "966b2774040dee209ef154651e03883ea74c484642deac5dc2a77939989b963f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-inspect/native/call-01/stdout.bin",
+      "bytes": 54,
+      "sha256": "2f8e7e4148e17b15de3d2acd12b7dcbcff300359bcea267b1ac57769c1d41fa2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/result.json",
+      "bytes": 4094,
+      "sha256": "c93bc725f33047ba4146e74d4182f6d87374b651da14d766e07706dab0efd09c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/result.json",
+      "bytes": 1597,
+      "sha256": "6973c36b120f8d04c10552c6fe1c8ab9b1af824ec890ccbacef786b6e10a5046"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/high-h-replaced-by-x-request/native/call-01/stdout.bin",
+      "bytes": 51,
+      "sha256": "bdc63ad998f49c489623249b0064b47ce8a38b92dae3f298118e58e63b6b9d86"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/result.json",
+      "bytes": 3973,
+      "sha256": "180478dc49df9b62474e49a7f34515b71b319bc5e1e5e9db540171fc857a3a9b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/result.json",
+      "bytes": 1582,
+      "sha256": "9490b205d1bcb4dedd6b0c1d766402307e512afacecf69416e7d4c783c553849"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-capture-01/cancelled-real-reversal-inspect/native/call-01/stdout.bin",
+      "bytes": 45,
+      "sha256": "3871e53881bb59f9d0ddd377b7b9efc28b7f84189de6c00830b16c0c2bd142d4"
+    }
+  ]
+}

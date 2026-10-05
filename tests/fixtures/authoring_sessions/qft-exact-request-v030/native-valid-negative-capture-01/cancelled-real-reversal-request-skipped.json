@@ -1,0 +1,8 @@
+{
+  "case": "cancelled-real-reversal",
+  "inspection_successful": false,
+  "request_executed": false,
+  "classification": "request-check-skipped-inspection-not-successful",
+  "reason": "client incomplete/operational failure",
+  "semantic_negative_claim": false
+}

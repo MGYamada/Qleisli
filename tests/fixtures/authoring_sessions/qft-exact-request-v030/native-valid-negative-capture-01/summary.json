@@ -1,0 +1,45 @@
+{
+  "recorded_utc": "2026-10-05T18:11:50.695676+00:00",
+  "status": "fixed-bounded-capture-completed",
+  "client_observations": 5,
+  "maximum_client_calls": 6,
+  "actual_native_calls": 5,
+  "events": [
+    "wrong-controlled-phase-inspect/result.json",
+    "wrong-controlled-phase-request/result.json",
+    "cancelled-real-reversal-inspect/result.json",
+    "high-h-replaced-by-x-inspect/result.json",
+    "high-h-replaced-by-x-request/result.json"
+  ],
+  "outcomes": [
+    {
+      "case": "wrong-controlled-phase",
+      "inspection_successful": true,
+      "inspection_validation": "complete fresh success observed",
+      "request_executed": true,
+      "classification": "predicted-native-contract-rejection-observed",
+      "claim_scope": "Bounded actual payload/request gate observation; public contract code does not identify an internal predicate uniquely."
+    },
+    {
+      "case": "cancelled-real-reversal",
+      "inspection_successful": false,
+      "request_executed": false,
+      "classification": "request-check-skipped-inspection-not-successful",
+      "reason": "client incomplete/operational failure",
+      "semantic_negative_claim": false
+    },
+    {
+      "case": "high-h-replaced-by-x",
+      "inspection_successful": true,
+      "inspection_validation": "complete fresh success observed",
+      "request_executed": true,
+      "classification": "predicted-native-contract-rejection-observed",
+      "claim_scope": "Bounded actual payload/request gate observation; public contract code does not identify an internal predicate uniquely."
+    }
+  ],
+  "identity_barriers": "pass",
+  "independent_request_unchanged": true,
+  "expected_outcomes_changed": false,
+  "source_meaning_verified": false,
+  "scope": "Recorder completion only; raw errors/unexpected successes remain without repair/retry."
+}

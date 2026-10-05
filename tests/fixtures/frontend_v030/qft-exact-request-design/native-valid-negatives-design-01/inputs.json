@@ -1,0 +1,210 @@
+{
+  "format": "qleisli.local-unexecuted-negative-design-inputs",
+  "version": 1,
+  "recorded_utc": "2026-10-05T17:57:54.509805+00:00",
+  "author": "/root/isometry_cli_tests",
+  "scope": "Read-only metadata/source subset, width2 preparation; not a complete build/source/dependency identity or independent mathematical review.",
+  "parent_reported_original_packet_commit": "37dc408",
+  "git_identity_read_by_author": false,
+  "selected_inspected_files": [
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.proposal.json",
+      "bytes": 32126,
+      "sha256": "daf3a59659d75ef19a543decb5061b2326b39bd2aff704e04a146470e5b89b70"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/requests/n2.json",
+      "bytes": 1612,
+      "sha256": "b0468aee9db0078a20fec5eff0502a071da9d696cbcbaa8f4cf4478c878f2233"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/request-contract.json",
+      "bytes": 2788,
+      "sha256": "c4b4760cdb260e5c55befaee8e8e190cc38e983dc0a6bde2ca8d6dc2665b0bb6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/attempt-01/transform.qli",
+      "bytes": 1638,
+      "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-inspect/result.json",
+      "bytes": 3775,
+      "sha256": "e084bc66e395ad1e6bbf4f0fa53d174562fd3e7a4a6acdbca5e9fccfc1d3196c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n2-request/result.json",
+      "bytes": 3919,
+      "sha256": "d2466f9bc4947f337fd08805556e5ae8410dae40a1eba460473cccd6e7ae4a47"
+    },
+    {
+      "path": "lean-kernel/Protocol/Raw.lean",
+      "bytes": 10511,
+      "sha256": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417"
+    },
+    {
+      "path": "lean-kernel/Protocol/Qirf.lean",
+      "bytes": 5640,
+      "sha256": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a"
+    },
+    {
+      "path": "lean-kernel/Protocol/HierarchicalFinite.lean",
+      "bytes": 11587,
+      "sha256": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce"
+    },
+    {
+      "path": "lean-kernel/Cli/Hierarchical.lean",
+      "bytes": 10724,
+      "sha256": "f9d879abcaf460695bcf1203613203bc15fb2e8f5cb981f43a45520b8cf498ff"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Rule.lean",
+      "bytes": 7241,
+      "sha256": "becc740a86dd09df2e499b133a1bf9426bb97dcf03835a2acd81647e8e0f7840"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean",
+      "bytes": 29904,
+      "sha256": "d00cc81b1540183bde439efe946c4b044b42f2b587d6b58e89bf5d8c05114b5b"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Gradient.lean",
+      "bytes": 13567,
+      "sha256": "ccb7ed04759bd76270f08cfd841dc62fad081a0f83f1de218ebef449cb51c1b7"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/FourierRoot.lean",
+      "bytes": 9946,
+      "sha256": "97edcde096268a7169a4ba8524c739d398d0b42d4c111f9c1e724ca9c54f8078"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Ports.lean",
+      "bytes": 8708,
+      "sha256": "d7e58e94cfafc9e2ad6fa2b12304440b8100cc7c7a8fc241af8d6ffc798adc19"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Wiring.lean",
+      "bytes": 8584,
+      "sha256": "6493361fb5384c72c0f3a192fe81d75a7c0a0eea2d266ff04bed0bc3a6048cc7"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/Hadamard.lean",
+      "bytes": 5182,
+      "sha256": "56f42f53dd9ffcdf8000dc09939cfeeadf6d1923757a70e90cbcbf975814dfdf"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/FourierBody.lean",
+      "bytes": 7800,
+      "sha256": "dab9d37274e5b7d614c9086b13d1306fae609ee6e8f06f4c8b22c8827866592b"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Hierarchical/FourierControl.lean",
+      "bytes": 5490,
+      "sha256": "a6b834a16be24bde9850532d72b66f991cc11736dac767b7a2543a9cb9ffd313"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Finite.lean",
+      "bytes": 28262,
+      "sha256": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/Exact.lean",
+      "bytes": 1392,
+      "sha256": "b71ab642412cf61879f0da753c8fd342bcf7a33f602b24784ccca747fcfe4303"
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Semantics/RawTrace.lean",
+      "bytes": 7119,
+      "sha256": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab"
+    },
+    {
+      "path": "src/interchange/hierarchical.rs",
+      "bytes": 23436,
+      "sha256": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1"
+    },
+    {
+      "path": "src/frontend/compile/lower/primitives.rs",
+      "bytes": 13841,
+      "sha256": "ba9791c919ca0dbe702f14c5358b0faa2f2a01a28ceb5236089d6e2ab30e1856"
+    }
+  ],
+  "embedded_original_strings": [
+    {
+      "artifact_path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.proposal.json",
+      "table": "definitions",
+      "index": 3,
+      "body_field": "program",
+      "utf8_bytes": 415,
+      "sha256": "a9b652473b8773393a02421a9d03fba1ddd2c13a1a2be1b30e53b5b3eef4d67e"
+    },
+    {
+      "artifact_path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.proposal.json",
+      "table": "definitions",
+      "index": 16,
+      "body_field": "program",
+      "utf8_bytes": 415,
+      "sha256": "86b7f5aecbe0e81352ab1007ea6e8635ba2dd92dd25d9f48e582e4c2970a1390"
+    },
+    {
+      "artifact_path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.proposal.json",
+      "table": "meanings",
+      "index": 3,
+      "body_field": "description",
+      "utf8_bytes": 737,
+      "sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a"
+    },
+    {
+      "artifact_path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n2.proposal.json",
+      "table": "meanings",
+      "index": 16,
+      "body_field": "description",
+      "utf8_bytes": 737,
+      "sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a"
+    }
+  ],
+  "original_artifact_observations": {
+    "definitions": 32,
+    "meanings": 32,
+    "proofs": 32,
+    "encodings": 13,
+    "entry": {
+      "implementation": 31,
+      "proof": 31
+    },
+    "effects_all_unitary": true,
+    "all_proof_witnesses_plain_empty": true,
+    "all_encodings_identity_equal_sides": true,
+    "D3_h_substring_count": 1
+  },
+  "candidate_note": {
+    "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/candidate.md",
+    "bytes": 8556,
+    "sha256": "a918580039258342416f7ad807ccbdc8ffa545428dbeb1ecff4ec9c8ccfb09ef"
+  },
+  "canonical_adapter_barrier": {
+    "frozen_by_this_record": false,
+    "final_association_required_before_generation": true,
+    "predicted_post_DMP_from_earlier_read": [
+      33,
+      33,
+      33
+    ],
+    "prediction_is_not_approved_target": true,
+    "earlier_read_path": "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/adapter.py",
+    "later_metadata_observation": "Earlier successfully read path absent during identity follow-up; no final adapter hash attested here."
+  },
+  "performed": [
+    "Selected rg/sed reads",
+    "Read retained JSON files as data",
+    "SHA-256/length observations and immediate selected subset stability comparison",
+    "Checked existing embedded h substring cardinality and actual original gate fields"
+  ],
+  "not_performed": [
+    "No generator or adapter import/execution",
+    "No payload mutation/serialization",
+    "No qleisli CLI, native checker, request check, numerical probe, Cargo/Lean build or tests",
+    "No Git/GitHub mutation or adopted policy/guarantee change"
+  ],
+  "discovery_limits": "Some guessed optional paths and a shell glob were absent; only listed successfully inspected files are covered. Earlier truncated filename listings were not treated as complete inventories.",
+  "native_results_scope": "Only earlier root-recorded original n2 result files were read; this author started no native process."
+}

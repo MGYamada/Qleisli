@@ -1,0 +1,7936 @@
+{
+  "format": "qleisli.hierarchical-ir",
+  "version": 1,
+  "profile": "qpe-dyadic8-v1",
+  "definitions": [
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 2,
+          "tag": "take_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 2,
+          "tag": "put_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 142,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "program": "{\"evidence\":[],\"format\":\"qleisli.finite-ir\",\"profile\":\"finite-meaning-v1\",\"programs\":[{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"gate\":\"h\",\"input\":141,\"output\":142,\"tag\":\"gate\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":141,\"wires\":[2]}],\"quantum_outputs\":[142]}],\"root\":0,\"root_interface\":{\"input\":{\"tag\":\"bit\"},\"output\":{\"tag\":\"bit\"}},\"sources\":[],\"version\":2}\n",
+        "tag": "leaf"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 142,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          3,
+          4
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 5,
+        "right": 6,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 1,
+          "tag": "take_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 1,
+          "tag": "put_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "j": 1,
+        "k": 2,
+        "tag": "dyadic_phase",
+        "target": 139
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "take_bit",
+          "width": 1
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "put_bit",
+          "width": 1
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "j": 1,
+        "k": 3,
+        "tag": "dyadic_phase",
+        "target": 137
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 13,
+        "right": 14,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          11,
+          15,
+          12
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 10,
+        "right": 16,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          8,
+          17,
+          9
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "definition": 18,
+        "polarity": true,
+        "tag": "control"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 143,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "program": "{\"evidence\":[],\"format\":\"qleisli.finite-ir\",\"profile\":\"finite-meaning-v1\",\"programs\":[{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"gate\":\"h\",\"input\":139,\"output\":143,\"tag\":\"gate\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":139,\"wires\":[1]}],\"quantum_outputs\":[143]}],\"root\":0,\"root_interface\":{\"input\":{\"tag\":\"bit\"},\"output\":{\"tag\":\"bit\"}},\"sources\":[],\"version\":2}\n",
+        "tag": "leaf"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 143,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          21,
+          22
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 23,
+        "right": 24,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "count": 2,
+        "definition": 16,
+        "tag": "repeat"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "definition": 26,
+        "polarity": true,
+        "tag": "control"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 144,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "program": "{\"evidence\":[],\"format\":\"qleisli.finite-ir\",\"profile\":\"finite-meaning-v1\",\"programs\":[{\"classical_inputs\":[],\"classical_outputs\":[],\"declared_effect\":\"unitary\",\"operations\":[{\"gate\":\"h\",\"input\":137,\"output\":144,\"tag\":\"gate\"}],\"quantum_inputs\":[{\"shape\":{\"bits\":1},\"token\":137,\"wires\":[0]}],\"quantum_outputs\":[144]}],\"root\":0,\"root_interface\":{\"input\":{\"tag\":\"bit\"},\"output\":{\"tag\":\"bit\"}},\"sources\":[],\"version\":2}\n",
+        "tag": "leaf"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 144,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          29,
+          30
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 31,
+        "right": 14,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 33,
+        "right": 14,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          11,
+          32,
+          34,
+          12
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 28,
+        "right": 35,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          8,
+          25,
+          27,
+          36,
+          9
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 20,
+        "right": 37,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          1,
+          7,
+          19,
+          38,
+          2
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "take_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 147,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 148,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "take_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 147,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 148,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 1,
+          "tag": "put_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          43,
+          44
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "left": 42,
+        "right": 45,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                2,
+                1,
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "operation": {
+          "position": 2,
+          "tag": "put_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                2,
+                1,
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "children": [
+          41,
+          46,
+          47,
+          48
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 134,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                2,
+                1,
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "tag": "sequence",
+        "children": [
+          54,
+          39,
+          40,
+          49,
+          50,
+          53
+        ]
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "tag": "rewire",
+        "permutation": {
+          "owners": [
+            0
+          ],
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": []
+        }
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 134,
+              "axes": [
+                2,
+                1,
+                0
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "tag": "rewire",
+        "permutation": {
+          "owners": [
+            0
+          ],
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": []
+        }
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "effect": "unitary",
+      "body": {
+        "tag": "sequence",
+        "children": [
+          52,
+          0
+        ]
+      }
+    }
+  ],
+  "meanings": [
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 2,
+          "tag": "take_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 2,
+          "tag": "put_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 142,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "description": "{\"cols\":2,\"domain\":\"zeta8-dyadic-v1\",\"entries\":[[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"-1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}]],\"format\":\"qleisli.finite-matrix\",\"rows\":2,\"version\":1}\n",
+        "tag": "finite"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 142,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          3,
+          4
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 5,
+        "right": 6,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 1,
+          "tag": "take_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 1,
+          "tag": "put_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "j": 1,
+        "k": 2,
+        "tag": "phase"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "take_bit",
+          "width": 1
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "put_bit",
+          "width": 1
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "j": 1,
+        "k": 3,
+        "tag": "phase"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 13,
+        "right": 14,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          11,
+          15,
+          12
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 10,
+        "right": 16,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          8,
+          17,
+          9
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "child": 18,
+        "polarity": true,
+        "tag": "control"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 143,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "description": "{\"cols\":2,\"domain\":\"zeta8-dyadic-v1\",\"entries\":[[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"-1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}]],\"format\":\"qleisli.finite-matrix\",\"rows\":2,\"version\":1}\n",
+        "tag": "finite"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 143,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          21,
+          22
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 23,
+        "right": 24,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "child": 16,
+        "count": 2,
+        "tag": "power"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "child": 26,
+        "polarity": true,
+        "tag": "control"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 144,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "description": "{\"cols\":2,\"domain\":\"zeta8-dyadic-v1\",\"entries\":[[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}],[{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":1,\"numerator\":\"-1\"},{\"denominator_bits\":0,\"numerator\":\"0\"},{\"denominator_bits\":0,\"numerator\":\"0\"}]],\"format\":\"qleisli.finite-matrix\",\"rows\":2,\"version\":1}\n",
+        "tag": "finite"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 144,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          29,
+          30
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 31,
+        "right": 14,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 137,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 135,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 0
+                }
+              ],
+              "axes": []
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 33,
+        "right": 14,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          11,
+          32,
+          34,
+          12
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 139,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 136,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 28,
+        "right": 35,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          8,
+          25,
+          27,
+          36,
+          9
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 141,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                2
+              ]
+            },
+            {
+              "owner": 138,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                0,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 20,
+        "right": 37,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          1,
+          7,
+          19,
+          38,
+          2
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "take_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 147,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 148,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 0,
+          "tag": "take_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 147,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                1
+              ]
+            },
+            {
+              "owner": 148,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ],
+              "axes": [
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 1,
+          "tag": "put_bit",
+          "width": 2
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          43,
+          44
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "left": 42,
+        "right": 45,
+        "tag": "tensor"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 145,
+              "basis": [
+                {
+                  "tag": "bit"
+                }
+              ],
+              "axes": [
+                0
+              ]
+            },
+            {
+              "owner": 146,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 2
+                }
+              ],
+              "axes": [
+                2,
+                1
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                2,
+                1,
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "operation": {
+          "position": 2,
+          "tag": "put_bit",
+          "width": 3
+        },
+        "tag": "structural"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                2,
+                1,
+                0
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "children": [
+          41,
+          46,
+          47,
+          48
+        ],
+        "tag": "sequence"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 134,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                2,
+                1,
+                0
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "permutation": {
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": [],
+          "owners": [
+            0
+          ]
+        },
+        "tag": "rewire"
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "tag": "sequence",
+        "children": [
+          54,
+          39,
+          40,
+          49,
+          50,
+          53
+        ]
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 101,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "tag": "rewire",
+        "permutation": {
+          "owners": [
+            0
+          ],
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": []
+        }
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 134,
+              "axes": [
+                2,
+                1,
+                0
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "tag": "rewire",
+        "permutation": {
+          "owners": [
+            0
+          ],
+          "axes": [
+            0,
+            1,
+            2
+          ],
+          "classical": []
+        }
+      }
+    },
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0,
+                1,
+                2
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 140,
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 3
+                }
+              ],
+              "axes": [
+                0,
+                1,
+                2
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "tag": "sequence",
+        "children": [
+          52,
+          0
+        ]
+      }
+    }
+  ],
+  "encodings": [
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 101,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              0,
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 101,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              0,
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 140,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              0,
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 140,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              0,
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 141,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              2
+            ]
+          },
+          {
+            "owner": 138,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              0,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 141,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              2
+            ]
+          },
+          {
+            "owner": 138,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              0,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 141,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 141,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 142,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 142,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 138,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              0,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 138,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              0,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 139,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          },
+          {
+            "owner": 136,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 139,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          },
+          {
+            "owner": 136,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 139,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 139,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 136,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 136,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 137,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          },
+          {
+            "owner": 135,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 0
+              }
+            ],
+            "axes": []
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 137,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          },
+          {
+            "owner": 135,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 0
+              }
+            ],
+            "axes": []
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 137,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 137,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 135,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 0
+              }
+            ],
+            "axes": []
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 135,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 0
+              }
+            ],
+            "axes": []
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 143,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 143,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 144,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 144,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 145,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          },
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 145,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          },
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 145,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 145,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              1,
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 147,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          },
+          {
+            "owner": 148,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ],
+            "axes": [
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 147,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              1
+            ]
+          },
+          {
+            "owner": 148,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 1
+              }
+            ],
+            "axes": [
+              2
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              2,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              2,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 145,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          },
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              2,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 145,
+            "basis": [
+              {
+                "tag": "bit"
+              }
+            ],
+            "axes": [
+              0
+            ]
+          },
+          {
+            "owner": 146,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 2
+              }
+            ],
+            "axes": [
+              2,
+              1
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 101,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 101,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 134,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 134,
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ],
+            "axes": [
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    },
+    {
+      "logical": {
+        "quantum": [
+          {
+            "owner": 0,
+            "axes": [
+              0,
+              1,
+              2
+            ],
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "physical": {
+        "quantum": [
+          {
+            "owner": 0,
+            "axes": [
+              0,
+              1,
+              2
+            ],
+            "basis": [
+              {
+                "tag": "bits",
+                "width": 3
+              }
+            ]
+          }
+        ],
+        "classical": []
+      },
+      "body": {
+        "tag": "identity"
+      }
+    }
+  ],
+  "proofs": [
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 0,
+      "meaning": 0,
+      "input_encoding": 0,
+      "output_encoding": 1,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 1,
+      "meaning": 1,
+      "input_encoding": 1,
+      "output_encoding": 2,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 2,
+      "meaning": 2,
+      "input_encoding": 2,
+      "output_encoding": 1,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "finite"
+      },
+      "premises": [],
+      "implementation": 3,
+      "meaning": 3,
+      "input_encoding": 3,
+      "output_encoding": 4,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 4,
+      "meaning": 4,
+      "input_encoding": 4,
+      "output_encoding": 3,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        3,
+        4
+      ],
+      "implementation": 5,
+      "meaning": 5,
+      "input_encoding": 3,
+      "output_encoding": 3,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 6,
+      "meaning": 6,
+      "input_encoding": 5,
+      "output_encoding": 5,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        5,
+        6
+      ],
+      "implementation": 7,
+      "meaning": 7,
+      "input_encoding": 2,
+      "output_encoding": 2,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 8,
+      "meaning": 8,
+      "input_encoding": 5,
+      "output_encoding": 6,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 9,
+      "meaning": 9,
+      "input_encoding": 6,
+      "output_encoding": 5,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "phase"
+      },
+      "premises": [],
+      "implementation": 10,
+      "meaning": 10,
+      "input_encoding": 7,
+      "output_encoding": 7,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 11,
+      "meaning": 11,
+      "input_encoding": 8,
+      "output_encoding": 9,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 12,
+      "meaning": 12,
+      "input_encoding": 9,
+      "output_encoding": 8,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "phase"
+      },
+      "premises": [],
+      "implementation": 13,
+      "meaning": 13,
+      "input_encoding": 10,
+      "output_encoding": 10,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 14,
+      "meaning": 14,
+      "input_encoding": 11,
+      "output_encoding": 11,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        13,
+        14
+      ],
+      "implementation": 15,
+      "meaning": 15,
+      "input_encoding": 9,
+      "output_encoding": 9,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        11,
+        15,
+        12
+      ],
+      "implementation": 16,
+      "meaning": 16,
+      "input_encoding": 8,
+      "output_encoding": 8,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        10,
+        16
+      ],
+      "implementation": 17,
+      "meaning": 17,
+      "input_encoding": 6,
+      "output_encoding": 6,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        8,
+        17,
+        9
+      ],
+      "implementation": 18,
+      "meaning": 18,
+      "input_encoding": 5,
+      "output_encoding": 5,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "control"
+      },
+      "premises": [
+        18
+      ],
+      "implementation": 19,
+      "meaning": 19,
+      "input_encoding": 2,
+      "output_encoding": 2,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 20,
+      "meaning": 20,
+      "input_encoding": 3,
+      "output_encoding": 3,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "finite"
+      },
+      "premises": [],
+      "implementation": 21,
+      "meaning": 21,
+      "input_encoding": 7,
+      "output_encoding": 12,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 22,
+      "meaning": 22,
+      "input_encoding": 12,
+      "output_encoding": 7,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        21,
+        22
+      ],
+      "implementation": 23,
+      "meaning": 23,
+      "input_encoding": 7,
+      "output_encoding": 7,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 24,
+      "meaning": 24,
+      "input_encoding": 8,
+      "output_encoding": 8,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        23,
+        24
+      ],
+      "implementation": 25,
+      "meaning": 25,
+      "input_encoding": 6,
+      "output_encoding": 6,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "repeat"
+      },
+      "premises": [
+        16
+      ],
+      "implementation": 26,
+      "meaning": 26,
+      "input_encoding": 8,
+      "output_encoding": 8,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "control"
+      },
+      "premises": [
+        26
+      ],
+      "implementation": 27,
+      "meaning": 27,
+      "input_encoding": 6,
+      "output_encoding": 6,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 28,
+      "meaning": 28,
+      "input_encoding": 7,
+      "output_encoding": 7,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "finite"
+      },
+      "premises": [],
+      "implementation": 29,
+      "meaning": 29,
+      "input_encoding": 10,
+      "output_encoding": 13,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 30,
+      "meaning": 30,
+      "input_encoding": 13,
+      "output_encoding": 10,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        29,
+        30
+      ],
+      "implementation": 31,
+      "meaning": 31,
+      "input_encoding": 10,
+      "output_encoding": 10,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        31,
+        14
+      ],
+      "implementation": 32,
+      "meaning": 32,
+      "input_encoding": 9,
+      "output_encoding": 9,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 33,
+      "meaning": 33,
+      "input_encoding": 10,
+      "output_encoding": 10,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        33,
+        14
+      ],
+      "implementation": 34,
+      "meaning": 34,
+      "input_encoding": 9,
+      "output_encoding": 9,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        11,
+        32,
+        34,
+        12
+      ],
+      "implementation": 35,
+      "meaning": 35,
+      "input_encoding": 8,
+      "output_encoding": 8,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        28,
+        35
+      ],
+      "implementation": 36,
+      "meaning": 36,
+      "input_encoding": 6,
+      "output_encoding": 6,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        8,
+        25,
+        27,
+        36,
+        9
+      ],
+      "implementation": 37,
+      "meaning": 37,
+      "input_encoding": 5,
+      "output_encoding": 5,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        20,
+        37
+      ],
+      "implementation": 38,
+      "meaning": 38,
+      "input_encoding": 2,
+      "output_encoding": 2,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        1,
+        7,
+        19,
+        38,
+        2
+      ],
+      "implementation": 39,
+      "meaning": 39,
+      "input_encoding": 1,
+      "output_encoding": 1,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 40,
+      "meaning": 40,
+      "input_encoding": 1,
+      "output_encoding": 0,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 41,
+      "meaning": 41,
+      "input_encoding": 0,
+      "output_encoding": 14,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 42,
+      "meaning": 42,
+      "input_encoding": 15,
+      "output_encoding": 15,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 43,
+      "meaning": 43,
+      "input_encoding": 16,
+      "output_encoding": 17,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 44,
+      "meaning": 44,
+      "input_encoding": 17,
+      "output_encoding": 18,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        43,
+        44
+      ],
+      "implementation": 45,
+      "meaning": 45,
+      "input_encoding": 16,
+      "output_encoding": 18,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "tensor"
+      },
+      "premises": [
+        42,
+        45
+      ],
+      "implementation": 46,
+      "meaning": 46,
+      "input_encoding": 14,
+      "output_encoding": 19,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "structural"
+      },
+      "premises": [],
+      "implementation": 47,
+      "meaning": 47,
+      "input_encoding": 19,
+      "output_encoding": 20,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 48,
+      "meaning": 48,
+      "input_encoding": 20,
+      "output_encoding": 0,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        41,
+        46,
+        47,
+        48
+      ],
+      "implementation": 49,
+      "meaning": 49,
+      "input_encoding": 0,
+      "output_encoding": 0,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 50,
+      "meaning": 50,
+      "input_encoding": 0,
+      "output_encoding": 21,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        54,
+        39,
+        40,
+        49,
+        50,
+        53
+      ],
+      "implementation": 51,
+      "meaning": 51,
+      "input_encoding": 22,
+      "output_encoding": 22,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 52,
+      "meaning": 52,
+      "input_encoding": 22,
+      "output_encoding": 0,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "rewire"
+      },
+      "premises": [],
+      "implementation": 53,
+      "meaning": 53,
+      "input_encoding": 21,
+      "output_encoding": 22,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    },
+    {
+      "kind": "equation",
+      "rule": {
+        "tag": "sequence"
+      },
+      "premises": [
+        52,
+        0
+      ],
+      "implementation": 54,
+      "meaning": 54,
+      "input_encoding": 22,
+      "output_encoding": 1,
+      "witness": {
+        "template_version": 1,
+        "parameters": [],
+        "references": []
+      }
+    }
+  ],
+  "entry": {
+    "implementation": 51,
+    "proof": 51
+  }
+}

@@ -1,0 +1,1 @@
+{"action":"inspect","status":"error","stage":"hierarchical-kernel-api","code":"invalid_ir","message":"Lean artifact inspection: the native checker rejected the artifact or request","json_pointer":""}

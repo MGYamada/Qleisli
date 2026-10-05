@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-05T18:02:14.505749+00:00",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli-qft-native-gate-design",
+    "inspect",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.proposal.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "fixed_native_capture_directory": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/native",
+  "independent_request_unchanged": false,
+  "generated_payload_untrusted": true
+}

@@ -1,0 +1,15 @@
+{
+  "recorded_utc": "2026-10-05T18:22:40.604917+00:00",
+  "reviewed_prerequisites": {
+    "client_sha256": "683b29749f752652b3ddb8dba7fac0ea2d832f848178963f3056d2f5c03d8294",
+    "negative_design_map_sha256": "44f482ed6189f530221ca65eec01041d4954b0e42007846026404b52b554f70b",
+    "canonical_design_map_sha256": "4f2aecefe901fac484b1663376985a00e771d142648a004dcf8ba5f19f64f094",
+    "canonical_prepared_map_sha256": "4b19c4e1d824b3d75ddbc1afcba450810059af839cc067b443654f393000367d",
+    "positive_inspect_result_sha256": "34312e7a25b1b50b849c9a4fe154f91880112739cc60cbbf6aa4d3b6323dd9d0",
+    "positive_request_result_sha256": "27013f54b52d9debedf651c17836a8480d5588787d4a1067b41756225d8ebd21",
+    "reversal_design_map_sha256": "006d38a3faf0dae0cb251bedf167bc6cd19d904bcdd4f61b1601557ec2e0e7b2"
+  },
+  "case": "cancelled-actual-reversal-by-structural-composition",
+  "width": 2,
+  "status": "untrusted-generation-started"
+}

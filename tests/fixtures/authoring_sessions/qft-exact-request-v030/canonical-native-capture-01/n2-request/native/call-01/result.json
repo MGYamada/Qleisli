@@ -1,0 +1,40 @@
+{
+  "started_utc": "2026-10-05T18:02:14.944617+00:00",
+  "wrapper_argv": [
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+    "--hierarchy-fourier-pending",
+    "0.3.0-alpha"
+  ],
+  "requested_native_argv": [
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--hierarchy-fourier-pending",
+    "0.3.0-alpha"
+  ],
+  "ordinal": 1,
+  "actual_native_spawned": true,
+  "actual_native_returncode": 0,
+  "interpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "identity_scope": "File observations only, not running-image/build attestation.",
+  "stdin_bytes": 12312,
+  "stdin_sha256": "9a78549424b682cf5aa901eb554f8c0ed493d9ed05c79776529e86733243059d",
+  "stdin_limited_prefix": false,
+  "finished_utc": "2026-10-05T18:02:15.066512+00:00",
+  "capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.05268583301221952,
+    "stdin_written": 12312,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout_bytes": 69,
+  "stderr_bytes": 0,
+  "stdout_sha256": "a9957b8bec429a1532cf06ab164b5743a627721dd4ee90d1a895c22f29aa26b6",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "wrapper_exit_code": 0
+}

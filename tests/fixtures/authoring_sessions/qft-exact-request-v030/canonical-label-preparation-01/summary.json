@@ -1,0 +1,15 @@
+{
+  "recorded_utc": "2026-10-05T18:01:42.532928+00:00",
+  "widths": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "status": "four-untrusted-label-adapted-packets-prepared",
+  "native_calls": 0,
+  "original_payloads_and_requests_unchanged": true,
+  "source_meaning_verified": false,
+  "adapter_preservation_proved": false,
+  "scope": "Local structure/data checks only; fresh native inspect and request still required."
+}

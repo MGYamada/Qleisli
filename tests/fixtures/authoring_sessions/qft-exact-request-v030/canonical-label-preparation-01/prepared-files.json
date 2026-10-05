@@ -1,0 +1,68 @@
+{
+  "format": "qleisli.untrusted-canonical-label-prepared-files",
+  "version": 1,
+  "reviewed_design_map_sha256": "4f2aecefe901fac484b1663376985a00e771d142648a004dcf8ba5f19f64f094",
+  "files": [
+    {
+      "path": "n0.association.json",
+      "bytes": 8011,
+      "sha256": "22462d49165edbe358b0d7daad765134aa33c9749794d81370734c239742b939",
+      "mode": 420
+    },
+    {
+      "path": "n0.proposal.json",
+      "bytes": 2903,
+      "sha256": "eea7a1ebfa05191cba5185d2852462458efbf64bae39fe45e58c74aed1b0b5b6",
+      "mode": 420
+    },
+    {
+      "path": "n1.association.json",
+      "bytes": 23159,
+      "sha256": "444c6f9a7e2751a98cbe51160453f387a202c40ebbd35cda9a37a084424906c3",
+      "mode": 420
+    },
+    {
+      "path": "n1.proposal.json",
+      "bytes": 47806,
+      "sha256": "3796c67efd2431c3bca7091287564adde0ceef410c199c2ec4549f0da835f7ea",
+      "mode": 420
+    },
+    {
+      "path": "n2.association.json",
+      "bytes": 39311,
+      "sha256": "57057909c393db86954f05aedb9a90f05205508dd636343ec2cf51f79811fb7d",
+      "mode": 420
+    },
+    {
+      "path": "n2.proposal.json",
+      "bytes": 95799,
+      "sha256": "f9fd660f60420b72c84bf8dba422b4dfda3c8a2573945bee1a04ddd3fb86a30e",
+      "mode": 420
+    },
+    {
+      "path": "n3.association.json",
+      "bytes": 58716,
+      "sha256": "fb1357d33f65278fd53461b02c3b672794a726b1640f6d3e66b91b099f75cbfa",
+      "mode": 420
+    },
+    {
+      "path": "n3.proposal.json",
+      "bytes": 154572,
+      "sha256": "2ed23b36b4ab90316cb5ad5dde9045749ee1a283216150e2fa1489e2216f637e",
+      "mode": 420
+    },
+    {
+      "path": "started.json",
+      "bytes": 201,
+      "sha256": "932fc9417503d13d4a1f1cc49d95747ffe3de3df379493ae196b2aebe0d39e89",
+      "mode": 420
+    },
+    {
+      "path": "summary.json",
+      "bytes": 410,
+      "sha256": "029736de8b20430ad0e66c65ee23425e6719023dfac13001b4a9a806ffba00bf",
+      "mode": 420
+    }
+  ],
+  "scope": "Generated data identity only; no native acceptance or source preservation."
+}

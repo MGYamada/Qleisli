@@ -1,0 +1,500 @@
+{
+  "format": "qleisli.read-only-generated-and-native-capture-review",
+  "version": 1,
+  "reviewer": "/root/isometry_docs",
+  "recorded_utc": "2026-10-05T18:04:57.547850+00:00",
+  "prepared_map": {
+    "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/prepared-files.json",
+    "bytes": 1998,
+    "sha256": "4b19c4e1d824b3d75ddbc1afcba450810059af839cc067b443654f393000367d",
+    "mode": 420
+  },
+  "prepared_members": 10,
+  "prepared_before_after_equal": true,
+  "generated_reviews": [
+    {
+      "width": 0,
+      "payload": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n0.proposal.json",
+        "bytes": 2903,
+        "sha256": "eea7a1ebfa05191cba5185d2852462458efbf64bae39fe45e58c74aed1b0b5b6",
+        "mode": 420
+      },
+      "association": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n0.association.json",
+        "bytes": 8011,
+        "sha256": "22462d49165edbe358b0d7daad765134aa33c9749794d81370734c239742b939",
+        "mode": 420
+      },
+      "root_indices_DMP": [
+        0,
+        0,
+        0
+      ],
+      "root_children": null,
+      "changed_existing_indices": {
+        "definitions": [
+          0
+        ],
+        "meanings": [
+          0
+        ],
+        "encodings": [
+          0
+        ],
+        "proofs": []
+      },
+      "table_lengths": {
+        "definitions": 1,
+        "meanings": 1,
+        "encodings": 1,
+        "proofs": 1
+      },
+      "finite_strings_preserved": 0,
+      "complete_request_header_equal": true,
+      "association_records_match_actual_data": true
+    },
+    {
+      "width": 1,
+      "payload": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n1.proposal.json",
+        "bytes": 47806,
+        "sha256": "3796c67efd2431c3bca7091287564adde0ceef410c199c2ec4549f0da835f7ea",
+        "mode": 420
+      },
+      "association": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n1.association.json",
+        "bytes": 23159,
+        "sha256": "444c6f9a7e2751a98cbe51160453f387a202c40ebbd35cda9a37a084424906c3",
+        "mode": 420
+      },
+      "root_indices_DMP": [
+        14,
+        14,
+        14
+      ],
+      "root_children": [
+        17,
+        10,
+        11,
+        12,
+        13,
+        16
+      ],
+      "changed_existing_indices": {
+        "definitions": [
+          14
+        ],
+        "meanings": [
+          14
+        ],
+        "encodings": [],
+        "proofs": [
+          14
+        ]
+      },
+      "table_lengths": {
+        "definitions": 18,
+        "meanings": 18,
+        "encodings": 8,
+        "proofs": 18
+      },
+      "finite_strings_preserved": 2,
+      "complete_request_header_equal": true,
+      "association_records_match_actual_data": true
+    },
+    {
+      "width": 2,
+      "payload": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.proposal.json",
+        "bytes": 95799,
+        "sha256": "f9fd660f60420b72c84bf8dba422b4dfda3c8a2573945bee1a04ddd3fb86a30e",
+        "mode": 420
+      },
+      "association": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n2.association.json",
+        "bytes": 39311,
+        "sha256": "57057909c393db86954f05aedb9a90f05205508dd636343ec2cf51f79811fb7d",
+        "mode": 420
+      },
+      "root_indices_DMP": [
+        31,
+        31,
+        31
+      ],
+      "root_children": [
+        34,
+        24,
+        25,
+        29,
+        30,
+        33
+      ],
+      "changed_existing_indices": {
+        "definitions": [
+          31
+        ],
+        "meanings": [
+          31
+        ],
+        "encodings": [],
+        "proofs": [
+          31
+        ]
+      },
+      "table_lengths": {
+        "definitions": 35,
+        "meanings": 35,
+        "encodings": 14,
+        "proofs": 35
+      },
+      "finite_strings_preserved": 4,
+      "complete_request_header_equal": true,
+      "association_records_match_actual_data": true
+    },
+    {
+      "width": 3,
+      "payload": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n3.proposal.json",
+        "bytes": 154572,
+        "sha256": "2ed23b36b4ab90316cb5ad5dde9045749ee1a283216150e2fa1489e2216f637e",
+        "mode": 420
+      },
+      "association": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/n3.association.json",
+        "bytes": 58716,
+        "sha256": "fb1357d33f65278fd53461b02c3b672794a726b1640f6d3e66b91b099f75cbfa",
+        "mode": 420
+      },
+      "root_indices_DMP": [
+        51,
+        51,
+        51
+      ],
+      "root_children": [
+        54,
+        39,
+        40,
+        49,
+        50,
+        53
+      ],
+      "changed_existing_indices": {
+        "definitions": [
+          51
+        ],
+        "meanings": [
+          51
+        ],
+        "encodings": [],
+        "proofs": [
+          51
+        ]
+      },
+      "table_lengths": {
+        "definitions": 55,
+        "meanings": 55,
+        "encodings": 23,
+        "proofs": 55
+      },
+      "finite_strings_preserved": 6,
+      "complete_request_header_equal": true,
+      "association_records_match_actual_data": true
+    }
+  ],
+  "capture_summary": {
+    "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/summary.json",
+    "bytes": 738,
+    "sha256": "c282db366cee95fb988233edb6c9a28778ce178598359a1ba0fb8f0d00194992",
+    "mode": 420
+  },
+  "observations": [
+    {
+      "width": 0,
+      "action": "inspect",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-inspect/result.json",
+        "bytes": 3813,
+        "sha256": "dd9ee7c4ebaabbe9ba3047e02530872868b50b0bb98435b558a76dcb32884aab",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-pending",
+      "stdin_magic": "QLH1",
+      "stdin_bytes": 304,
+      "stdin_sha256": "fd3082c91be7bd2702f7bbd3d70b3994eb0f808d54e462ee5739e089ffbf888b",
+      "native_stdout_bytes": 45,
+      "native_stdout_sha256": "14e08fd532d9840b9fb62d76b0dffffb6906522c05ad85998dc449661d440ee2",
+      "structural_work": 2190,
+      "exact_work": 0,
+      "original_finite_indices": [],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 0,
+      "action": "request",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n0-request/result.json",
+        "bytes": 3934,
+        "sha256": "91d74f155279019f1fa0fe39c4ee4df3f98a2ea0823ac4f764ccfc97915dd238",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-request-pending",
+      "stdin_magic": "QLR1",
+      "stdin_bytes": 484,
+      "stdin_sha256": "c7642f2d8e05a1e440e426410d2e1adee592f4a76958d8875974d5368bca5cfe",
+      "native_stdout_bytes": 55,
+      "native_stdout_sha256": "67249a7734f9b9740c4a1b19ada5ad1eb4540855422bb24a36e34f7268127caa",
+      "structural_work": 3051,
+      "exact_work": 0,
+      "original_finite_indices": [],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 1,
+      "action": "inspect",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-inspect/result.json",
+        "bytes": 3820,
+        "sha256": "186d438674fb3e4b9500784f2fa2f97269c49ac5510a22848277593388bceb54",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-pending",
+      "stdin_magic": "QLH1",
+      "stdin_bytes": 5992,
+      "stdin_sha256": "ef3a40cb58f66aca6549c4c15aee85406867944485e37d6e378295de6b3a4eea",
+      "native_stdout_bytes": 50,
+      "native_stdout_sha256": "748951c78e69a75fa7c773a19343b7e0b7360eb22c4ac16171129b3ec7eafce0",
+      "structural_work": 76754,
+      "exact_work": 131,
+      "original_finite_indices": [
+        3
+      ],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 1,
+      "action": "request",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n1-request/result.json",
+        "bytes": 3940,
+        "sha256": "48ace63a9372aff0adc88fef626ddab5748b6220d79a4840265d731ca5ff71f2",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-fourier-pending",
+      "stdin_magic": "QLF1",
+      "stdin_bytes": 6184,
+      "stdin_sha256": "921ed7149f0bb306ee1d1e03d0c351dac4f5710696761037b14a3312ea8ced3c",
+      "native_stdout_bytes": 62,
+      "native_stdout_sha256": "0539d55dc5bae5ae92de40d7e6f0aa59c743dfd55c1b669407851b877cfac818",
+      "structural_work": 83723,
+      "exact_work": 246,
+      "original_finite_indices": [
+        3
+      ],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 2,
+      "action": "inspect",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-inspect/result.json",
+        "bytes": 3823,
+        "sha256": "34312e7a25b1b50b849c9a4fe154f91880112739cc60cbbf6aa4d3b6323dd9d0",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-pending",
+      "stdin_magic": "QLH1",
+      "stdin_bytes": 12092,
+      "stdin_sha256": "3d5d0a0f3ad443fac2bdd3b69bfd6728cebc3d749078d03f487ac23e339fe776",
+      "native_stdout_bytes": 54,
+      "native_stdout_sha256": "2f8e7e4148e17b15de3d2acd12b7dcbcff300359bcea267b1ac57769c1d41fa2",
+      "structural_work": 171493,
+      "exact_work": 262,
+      "original_finite_indices": [
+        3,
+        16
+      ],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 2,
+      "action": "request",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n2-request/result.json",
+        "bytes": 3943,
+        "sha256": "27013f54b52d9debedf651c17836a8480d5588787d4a1067b41756225d8ebd21",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-fourier-pending",
+      "stdin_magic": "QLF1",
+      "stdin_bytes": 12312,
+      "stdin_sha256": "9a78549424b682cf5aa901eb554f8c0ed493d9ed05c79776529e86733243059d",
+      "native_stdout_bytes": 69,
+      "native_stdout_sha256": "a9957b8bec429a1532cf06ab164b5743a627721dd4ee90d1a895c22f29aa26b6",
+      "structural_work": 188575,
+      "exact_work": 492,
+      "original_finite_indices": [
+        3,
+        16
+      ],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 3,
+      "action": "inspect",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-inspect/result.json",
+        "bytes": 3823,
+        "sha256": "cd5d198c86a794395a309e457f5cd0962e51c1f60fd6f903fe9822c30d840141",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-pending",
+      "stdin_magic": "QLH1",
+      "stdin_bytes": 19428,
+      "stdin_sha256": "9a635912298363871059666cc1e31f4b66647c757d122e78b18efe15fea0ddc6",
+      "native_stdout_bytes": 57,
+      "native_stdout_sha256": "31debb82d9ab658c951596245762ea5d34f17c70c9343a0d37453ef6ed1c0b86",
+      "structural_work": 290376,
+      "exact_work": 393,
+      "original_finite_indices": [
+        3,
+        21,
+        29
+      ],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    },
+    {
+      "width": 3,
+      "action": "request",
+      "result": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-native-capture-01/n3-request/result.json",
+        "bytes": 3944,
+        "sha256": "472ae6cf74eb88cde108fbe53648975a42faac5a534df55998d70898d248bdda",
+        "mode": 420
+      },
+      "client_exit": 0,
+      "native_exit": 0,
+      "mode": "--hierarchy-fourier-pending",
+      "stdin_magic": "QLF1",
+      "stdin_bytes": 19684,
+      "stdin_sha256": "ade91e7a0e9dc5fe8f1ac8000200e119d94648b2e4fb9523cddcd23b9697108b",
+      "native_stdout_bytes": 75,
+      "native_stdout_sha256": "9c453df3e8e04e653f51cbe8cf01577985995dec82494f1899b945ea9c7af8c4",
+      "structural_work": 322178,
+      "exact_work": 738,
+      "original_finite_indices": [
+        3,
+        21,
+        29
+      ],
+      "fully_written_stdin": true,
+      "operational_errors_or_cap_flags": false,
+      "strict_pending_frame_complete": true
+    }
+  ],
+  "original_map_checks": [
+    {
+      "map": {
+        "path": "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/canonical-inputs.json",
+        "bytes": 5540,
+        "sha256": "4f2aecefe901fac484b1663376985a00e771d142648a004dcf8ba5f19f64f094",
+        "mode": 420
+      },
+      "rows": 19,
+      "mismatches": 0
+    },
+    {
+      "map": {
+        "path": "tests/fixtures/frontend_v030/qft-exact-request-design/original-capture-packet-01.json",
+        "bytes": 49025,
+        "sha256": "1cafaa493f6a7e9969533c61e0e6669f22c399535cffbbf747a1253484f2914d",
+        "mode": 420
+      },
+      "rows": 188,
+      "mismatches": 0
+    },
+    {
+      "map": {
+        "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-inputs.json",
+        "bytes": 18793,
+        "sha256": "3adc26126aeb1ee9fbe96b9688e6a67151ef19e5ee0d2d01b35aea06c32f0dd7",
+        "mode": 420
+      },
+      "rows": 61,
+      "mismatches": 0
+    },
+    {
+      "map": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-files.json",
+        "bytes": 3051,
+        "sha256": "5414941b13b959b3e80b799c4a93720b766864b257046aa5b39be7237b5aa978",
+        "mode": 420
+      },
+      "rows": 15,
+      "mismatches": 0
+    },
+    {
+      "map": {
+        "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/identity-before.json",
+        "bytes": 51909,
+        "sha256": "e7e6099b12a5f820acfd42575e251bca5289b06e51db798d8375802ceb86e8e5",
+        "mode": 420
+      },
+      "rows": 233,
+      "mismatches": 0
+    }
+  ],
+  "original_inventories_equal": true,
+  "binary_file_observations": [
+    {
+      "label": "cli",
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "bytes": 22257136,
+      "sha256": "db571ad2fcdac89e52e0835a61732b72bb00df7b04ae4ecba33a34888c366a8a"
+    },
+    {
+      "label": "client",
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli-qft-native-gate-design",
+      "bytes": 1299840,
+      "sha256": "683b29749f752652b3ddb8dba7fac0ea2d832f848178963f3056d2f5c03d8294"
+    },
+    {
+      "label": "native",
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "bytes": 91666928,
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  ],
+  "binary_before_after_equal": true,
+  "candidate_scripts_imported_or_executed": false,
+  "reviewer_native_cli_build_execution": false,
+  "scope": "Data comparison and raw-record audit only, without raw copies or normalization. Fresh acceptance observations bind four generated IR/request instances under existing native profiles; they do not prove source/adapter preservation, native/decoder/runtime correspondence, whole-family integration, resource bounds, canonical std API or constitutional discharge."
+}

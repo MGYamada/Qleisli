@@ -1,0 +1,8 @@
+{
+  "recorded_utc": "2026-10-05T18:22:40.747957+00:00",
+  "case": "cancelled-actual-reversal-by-structural-composition",
+  "status": "one-untrusted-n2-structural-reversal-prepared",
+  "native_checker_invoked_by_generator": false,
+  "independent_request_unchanged": true,
+  "scope": "Generation completion only; fresh inspect/request required."
+}

@@ -1,0 +1,16 @@
+{
+  "status": "actual-startup-identity-check-only",
+  "argv": [
+    "python3",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_utc": "2026-10-05T18:16:08.646243+00:00",
+  "finished_utc": "2026-10-05T18:16:09.665398+00:00",
+  "exit_code": 0,
+  "stdout_sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Identity/ledger continuity only; no native, CLI, build, fresh Lean replay, proof discharge, human adoption or release approval."
+}

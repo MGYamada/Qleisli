@@ -1,0 +1,17 @@
+{
+  "recorded_utc": "2026-10-05T18:02:12.576742+00:00",
+  "widths": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "actions": [
+    "inspect",
+    "request"
+  ],
+  "reviewed_client_sha256": "683b29749f752652b3ddb8dba7fac0ea2d832f848178963f3056d2f5c03d8294",
+  "reviewed_design_map_sha256": "4f2aecefe901fac484b1663376985a00e771d142648a004dcf8ba5f19f64f094",
+  "reviewed_prepared_map_sha256": "4b19c4e1d824b3d75ddbc1afcba450810059af839cc067b443654f393000367d",
+  "status": "capture-started-no-outcome-predicted"
+}

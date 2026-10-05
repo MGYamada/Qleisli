@@ -1,0 +1,955 @@
+{
+  "case": "cancelled-actual-reversal-by-structural-composition",
+  "width": 2,
+  "status": "untrusted-prepared-not-native-checked",
+  "positive_payload_sha256": "f9fd660f60420b72c84bf8dba422b4dfda3c8a2573945bee1a04ddd3fb86a30e",
+  "mutant_payload_sha256": "07cb642595afd732756b0c49ebf0ccdc36c938d379de56c5ae3532bc4460b901",
+  "frozen_request_sha256": "b0468aee9db0078a20fec5eff0502a071da9d696cbcbaa8f4cf4478c878f2233",
+  "entry": {
+    "implementation": 31,
+    "proof": 31
+  },
+  "root_DMP": [
+    31,
+    31,
+    31
+  ],
+  "post_DMP": [
+    33,
+    33,
+    33
+  ],
+  "prefix_DMP": [
+    32,
+    32,
+    32
+  ],
+  "reused_actual_reversal_DMP": [
+    29,
+    29,
+    29
+  ],
+  "added_return_DMP": [
+    35,
+    35,
+    35
+  ],
+  "added_post_sequence_DMP": [
+    36,
+    36,
+    36
+  ],
+  "encodings_input_canonical_original": [
+    12,
+    13,
+    0
+  ],
+  "changed_original_field_paths": [
+    [
+      "definitions",
+      31,
+      "body",
+      "children",
+      5
+    ],
+    [
+      "meanings",
+      31,
+      "body",
+      "children",
+      5
+    ],
+    [
+      "proofs",
+      31,
+      "premises",
+      5
+    ]
+  ],
+  "original_row_digests": [
+    {
+      "table": "definitions",
+      "index": 0,
+      "changed": false,
+      "before_sha256": "ac93292c0ed28d3d5f4690716ec45f9bc1f38b8182a05b8dbdbc7817a7364aa3",
+      "after_sha256": "ac93292c0ed28d3d5f4690716ec45f9bc1f38b8182a05b8dbdbc7817a7364aa3"
+    },
+    {
+      "table": "definitions",
+      "index": 1,
+      "changed": false,
+      "before_sha256": "f87c254945a0be4862e5d29bff3ddd4947b4209e9ebab8bb42a72fa0a8e422dd",
+      "after_sha256": "f87c254945a0be4862e5d29bff3ddd4947b4209e9ebab8bb42a72fa0a8e422dd"
+    },
+    {
+      "table": "definitions",
+      "index": 2,
+      "changed": false,
+      "before_sha256": "b46ffd9d89d8c832516b5035b307d431c349bbb171278142967ebfddedbf3395",
+      "after_sha256": "b46ffd9d89d8c832516b5035b307d431c349bbb171278142967ebfddedbf3395"
+    },
+    {
+      "table": "definitions",
+      "index": 3,
+      "changed": false,
+      "before_sha256": "e41a075e115696b5c5cb1b7be0d058d61b1987f533a68343769f186245956afa",
+      "after_sha256": "e41a075e115696b5c5cb1b7be0d058d61b1987f533a68343769f186245956afa"
+    },
+    {
+      "table": "definitions",
+      "index": 4,
+      "changed": false,
+      "before_sha256": "019cda54bb5f4971e073a698a8cf8762567f1ae4d4244483f6feb5e12e559f6a",
+      "after_sha256": "019cda54bb5f4971e073a698a8cf8762567f1ae4d4244483f6feb5e12e559f6a"
+    },
+    {
+      "table": "definitions",
+      "index": 5,
+      "changed": false,
+      "before_sha256": "c702121ecddf00989d90ed4c7b34e4e6a920004d42b7fadbf0a6aa1cd50274ee",
+      "after_sha256": "c702121ecddf00989d90ed4c7b34e4e6a920004d42b7fadbf0a6aa1cd50274ee"
+    },
+    {
+      "table": "definitions",
+      "index": 6,
+      "changed": false,
+      "before_sha256": "786dbfdb67f466414ca3e28a9e8825db48010ab2833dbfa8fdad19025a3a52d0",
+      "after_sha256": "786dbfdb67f466414ca3e28a9e8825db48010ab2833dbfa8fdad19025a3a52d0"
+    },
+    {
+      "table": "definitions",
+      "index": 7,
+      "changed": false,
+      "before_sha256": "fc0235969212937d894ce4f45816aea6b85e7e6f07b4d8a444f5e4ebb40fe45d",
+      "after_sha256": "fc0235969212937d894ce4f45816aea6b85e7e6f07b4d8a444f5e4ebb40fe45d"
+    },
+    {
+      "table": "definitions",
+      "index": 8,
+      "changed": false,
+      "before_sha256": "77e3345d105768571dd2499dcc6c6538bc5d67a33f5d98bf22d97771199daebd",
+      "after_sha256": "77e3345d105768571dd2499dcc6c6538bc5d67a33f5d98bf22d97771199daebd"
+    },
+    {
+      "table": "definitions",
+      "index": 9,
+      "changed": false,
+      "before_sha256": "49b9472b2d9999736f9d7ff67b6a567c79cc0e970314023417f424da4afad67e",
+      "after_sha256": "49b9472b2d9999736f9d7ff67b6a567c79cc0e970314023417f424da4afad67e"
+    },
+    {
+      "table": "definitions",
+      "index": 10,
+      "changed": false,
+      "before_sha256": "f3eeb06f76d08f54f87881a3bc54adb896cf7e8133acdeec1f04e65f8e2b4877",
+      "after_sha256": "f3eeb06f76d08f54f87881a3bc54adb896cf7e8133acdeec1f04e65f8e2b4877"
+    },
+    {
+      "table": "definitions",
+      "index": 11,
+      "changed": false,
+      "before_sha256": "7f9c12fb996c5a9b013c55468b658b363d999ace1d4c8aec560fcfaf004a4df5",
+      "after_sha256": "7f9c12fb996c5a9b013c55468b658b363d999ace1d4c8aec560fcfaf004a4df5"
+    },
+    {
+      "table": "definitions",
+      "index": 12,
+      "changed": false,
+      "before_sha256": "a7879640c769fea5384a4319db961782c69e5a372bb0a74570b6c4499e95c6ad",
+      "after_sha256": "a7879640c769fea5384a4319db961782c69e5a372bb0a74570b6c4499e95c6ad"
+    },
+    {
+      "table": "definitions",
+      "index": 13,
+      "changed": false,
+      "before_sha256": "a15805c3785fb10a5234e8aea75e4771e1c8b95da37a7b16120abfd24f79d7b9",
+      "after_sha256": "a15805c3785fb10a5234e8aea75e4771e1c8b95da37a7b16120abfd24f79d7b9"
+    },
+    {
+      "table": "definitions",
+      "index": 14,
+      "changed": false,
+      "before_sha256": "39b2ceda6eff98b7939582ebf6071f735829ade827670effc63b14619d86eb39",
+      "after_sha256": "39b2ceda6eff98b7939582ebf6071f735829ade827670effc63b14619d86eb39"
+    },
+    {
+      "table": "definitions",
+      "index": 15,
+      "changed": false,
+      "before_sha256": "9e5cf192b0e7605a7b488b5f84f51fec15bc4bff2d38ee3666e08e5f6eb4ed8e",
+      "after_sha256": "9e5cf192b0e7605a7b488b5f84f51fec15bc4bff2d38ee3666e08e5f6eb4ed8e"
+    },
+    {
+      "table": "definitions",
+      "index": 16,
+      "changed": false,
+      "before_sha256": "8c85bc669f615421c30b5e62e9007a2b6435dabea5a6d189eb34bdd8642e5f33",
+      "after_sha256": "8c85bc669f615421c30b5e62e9007a2b6435dabea5a6d189eb34bdd8642e5f33"
+    },
+    {
+      "table": "definitions",
+      "index": 17,
+      "changed": false,
+      "before_sha256": "c8e007b660868a71755d20a305568944e32c717c632e64892d82aebba360829d",
+      "after_sha256": "c8e007b660868a71755d20a305568944e32c717c632e64892d82aebba360829d"
+    },
+    {
+      "table": "definitions",
+      "index": 18,
+      "changed": false,
+      "before_sha256": "b9bc551a51b1c93355f6df714cc2d15908061c5d638eabf3f7b2a9568166a518",
+      "after_sha256": "b9bc551a51b1c93355f6df714cc2d15908061c5d638eabf3f7b2a9568166a518"
+    },
+    {
+      "table": "definitions",
+      "index": 19,
+      "changed": false,
+      "before_sha256": "825907549b4dc279efaf586809def9d0225ea1a87ef6df582d6ba92d751e5cc9",
+      "after_sha256": "825907549b4dc279efaf586809def9d0225ea1a87ef6df582d6ba92d751e5cc9"
+    },
+    {
+      "table": "definitions",
+      "index": 20,
+      "changed": false,
+      "before_sha256": "da8c1ee0abbffcd38431495c67dc79b590d6d533f308ffb235623c7e61908497",
+      "after_sha256": "da8c1ee0abbffcd38431495c67dc79b590d6d533f308ffb235623c7e61908497"
+    },
+    {
+      "table": "definitions",
+      "index": 21,
+      "changed": false,
+      "before_sha256": "8f3205babb1cb46c4adfdd2150fd995c1748331fe27f1a14ee7f121c25b44e04",
+      "after_sha256": "8f3205babb1cb46c4adfdd2150fd995c1748331fe27f1a14ee7f121c25b44e04"
+    },
+    {
+      "table": "definitions",
+      "index": 22,
+      "changed": false,
+      "before_sha256": "7c432e399efb19fd576485cfe5f86388a23f6ebf8bced311db8710570c418e8d",
+      "after_sha256": "7c432e399efb19fd576485cfe5f86388a23f6ebf8bced311db8710570c418e8d"
+    },
+    {
+      "table": "definitions",
+      "index": 23,
+      "changed": false,
+      "before_sha256": "0fa698e737db697500569e1fef66aba3ebc8ce54102f7e11ad52c6ad3029ff94",
+      "after_sha256": "0fa698e737db697500569e1fef66aba3ebc8ce54102f7e11ad52c6ad3029ff94"
+    },
+    {
+      "table": "definitions",
+      "index": 24,
+      "changed": false,
+      "before_sha256": "596886fab062499dd56e8358178dfb4daf1789f1259b128b57c6d9a94f0845b1",
+      "after_sha256": "596886fab062499dd56e8358178dfb4daf1789f1259b128b57c6d9a94f0845b1"
+    },
+    {
+      "table": "definitions",
+      "index": 25,
+      "changed": false,
+      "before_sha256": "0049d71b32cb9dc996187438c4a056a779e1f3be5868337a5fa7679e0d51c254",
+      "after_sha256": "0049d71b32cb9dc996187438c4a056a779e1f3be5868337a5fa7679e0d51c254"
+    },
+    {
+      "table": "definitions",
+      "index": 26,
+      "changed": false,
+      "before_sha256": "d668ba0bd39bdf21c5b0d07d50298ecf9fb439174cb8eb0f5390a46ea35d9e1a",
+      "after_sha256": "d668ba0bd39bdf21c5b0d07d50298ecf9fb439174cb8eb0f5390a46ea35d9e1a"
+    },
+    {
+      "table": "definitions",
+      "index": 27,
+      "changed": false,
+      "before_sha256": "b470b505bbf169cae3c08a6714f2b3d95de10c45c4d9301e70cde21f7c04dc9a",
+      "after_sha256": "b470b505bbf169cae3c08a6714f2b3d95de10c45c4d9301e70cde21f7c04dc9a"
+    },
+    {
+      "table": "definitions",
+      "index": 28,
+      "changed": false,
+      "before_sha256": "7b3c6bb0bebb1f36d7bb64a9cee42e16b114ebe8d1c0c2b1de5e009290b67b4f",
+      "after_sha256": "7b3c6bb0bebb1f36d7bb64a9cee42e16b114ebe8d1c0c2b1de5e009290b67b4f"
+    },
+    {
+      "table": "definitions",
+      "index": 29,
+      "changed": false,
+      "before_sha256": "00a69a3c8c75439ad283ea612264277c52609cf49dedfe47effadd817b9296ab",
+      "after_sha256": "00a69a3c8c75439ad283ea612264277c52609cf49dedfe47effadd817b9296ab"
+    },
+    {
+      "table": "definitions",
+      "index": 30,
+      "changed": false,
+      "before_sha256": "635be397e50865718b86b8041721ef6a6b9a7e0e1f16cd5980063f9dc4923672",
+      "after_sha256": "635be397e50865718b86b8041721ef6a6b9a7e0e1f16cd5980063f9dc4923672"
+    },
+    {
+      "table": "definitions",
+      "index": 31,
+      "changed": true,
+      "before_sha256": "3dd369cc87f6a1e0c93f32033227901d584bc40c778578d0533ade7873314e93",
+      "after_sha256": "5de121566b12e827819c0c83434f6bf80a87f8039bdaab95fcaedab35930f47c"
+    },
+    {
+      "table": "definitions",
+      "index": 32,
+      "changed": false,
+      "before_sha256": "60c5b87876062e15a35166e34b1dc1a58d16b2197f238c9eb9711301033c1bd3",
+      "after_sha256": "60c5b87876062e15a35166e34b1dc1a58d16b2197f238c9eb9711301033c1bd3"
+    },
+    {
+      "table": "definitions",
+      "index": 33,
+      "changed": false,
+      "before_sha256": "037375eafedcef27f4c93cdfe5efd385d966ad27a61191411bc6b2d3dee86101",
+      "after_sha256": "037375eafedcef27f4c93cdfe5efd385d966ad27a61191411bc6b2d3dee86101"
+    },
+    {
+      "table": "definitions",
+      "index": 34,
+      "changed": false,
+      "before_sha256": "0d69b11f3f3e481bce8a4a4729f62edd6c28e3e6b75a35d56b241b3789b00fed",
+      "after_sha256": "0d69b11f3f3e481bce8a4a4729f62edd6c28e3e6b75a35d56b241b3789b00fed"
+    },
+    {
+      "table": "meanings",
+      "index": 0,
+      "changed": false,
+      "before_sha256": "a00a8a9ae9fdc21397d730d9f75fa10f32a9e0e74abb1f1bfcba7b15c17b5f8b",
+      "after_sha256": "a00a8a9ae9fdc21397d730d9f75fa10f32a9e0e74abb1f1bfcba7b15c17b5f8b"
+    },
+    {
+      "table": "meanings",
+      "index": 1,
+      "changed": false,
+      "before_sha256": "e46bf5f6c518dfb4ff19b712ff69be6a013a590d76106d09ddfc5d34faeddfff",
+      "after_sha256": "e46bf5f6c518dfb4ff19b712ff69be6a013a590d76106d09ddfc5d34faeddfff"
+    },
+    {
+      "table": "meanings",
+      "index": 2,
+      "changed": false,
+      "before_sha256": "a0950217c8017682bb28827d938a597a964d7170548aac530a8074592af4b9a1",
+      "after_sha256": "a0950217c8017682bb28827d938a597a964d7170548aac530a8074592af4b9a1"
+    },
+    {
+      "table": "meanings",
+      "index": 3,
+      "changed": false,
+      "before_sha256": "ad1b51c33a50587c258c7adb258c06213d01dfdd4ad08b4350f37de6f4a64f3f",
+      "after_sha256": "ad1b51c33a50587c258c7adb258c06213d01dfdd4ad08b4350f37de6f4a64f3f"
+    },
+    {
+      "table": "meanings",
+      "index": 4,
+      "changed": false,
+      "before_sha256": "7e35ca5a065bba3b0c0ecdc6ee2283b46447e580a0b6909f4845fa1603b48031",
+      "after_sha256": "7e35ca5a065bba3b0c0ecdc6ee2283b46447e580a0b6909f4845fa1603b48031"
+    },
+    {
+      "table": "meanings",
+      "index": 5,
+      "changed": false,
+      "before_sha256": "0f541f4036e0f7e7a31268ab6156d4102d4153f6694dacca22b0cb5075833e0e",
+      "after_sha256": "0f541f4036e0f7e7a31268ab6156d4102d4153f6694dacca22b0cb5075833e0e"
+    },
+    {
+      "table": "meanings",
+      "index": 6,
+      "changed": false,
+      "before_sha256": "da0d6b51fec5b70b4e322771a4dd1fb2b971ce1bcdc11e8b9395b96c731ebd7d",
+      "after_sha256": "da0d6b51fec5b70b4e322771a4dd1fb2b971ce1bcdc11e8b9395b96c731ebd7d"
+    },
+    {
+      "table": "meanings",
+      "index": 7,
+      "changed": false,
+      "before_sha256": "a3b94c7af6dc603b89f0cf5fc28a03f6ebe0f08adc03d0c3d83ad506e8365b46",
+      "after_sha256": "a3b94c7af6dc603b89f0cf5fc28a03f6ebe0f08adc03d0c3d83ad506e8365b46"
+    },
+    {
+      "table": "meanings",
+      "index": 8,
+      "changed": false,
+      "before_sha256": "1082a64b1858325adf47dbd664e3d6076b3439f1d27edf77a4441e76f9b9ea87",
+      "after_sha256": "1082a64b1858325adf47dbd664e3d6076b3439f1d27edf77a4441e76f9b9ea87"
+    },
+    {
+      "table": "meanings",
+      "index": 9,
+      "changed": false,
+      "before_sha256": "6f3f8e091e46eff9880f377c01ed029e6374c616f86067f864b64dede0a8275b",
+      "after_sha256": "6f3f8e091e46eff9880f377c01ed029e6374c616f86067f864b64dede0a8275b"
+    },
+    {
+      "table": "meanings",
+      "index": 10,
+      "changed": false,
+      "before_sha256": "3422e43ea25e3ccf9e997e9cf10a5ffa588e6430b6840cd00b5ff0a191c71103",
+      "after_sha256": "3422e43ea25e3ccf9e997e9cf10a5ffa588e6430b6840cd00b5ff0a191c71103"
+    },
+    {
+      "table": "meanings",
+      "index": 11,
+      "changed": false,
+      "before_sha256": "1f05e9608084e8912b789a8099d28672da685c6e872dac1c0c8ddc6af3cedc29",
+      "after_sha256": "1f05e9608084e8912b789a8099d28672da685c6e872dac1c0c8ddc6af3cedc29"
+    },
+    {
+      "table": "meanings",
+      "index": 12,
+      "changed": false,
+      "before_sha256": "8a09fadc77ed6b46550a2545fe1d1236dfbe70aebdab46be7fb697bf665860fa",
+      "after_sha256": "8a09fadc77ed6b46550a2545fe1d1236dfbe70aebdab46be7fb697bf665860fa"
+    },
+    {
+      "table": "meanings",
+      "index": 13,
+      "changed": false,
+      "before_sha256": "75032656ff0a1afa1f2fe558010439560622f5d50c48a77583b703f4798e1387",
+      "after_sha256": "75032656ff0a1afa1f2fe558010439560622f5d50c48a77583b703f4798e1387"
+    },
+    {
+      "table": "meanings",
+      "index": 14,
+      "changed": false,
+      "before_sha256": "76223575e41f8f489376c6ae685574564453ec873554f88205f1f51d59d6f5cf",
+      "after_sha256": "76223575e41f8f489376c6ae685574564453ec873554f88205f1f51d59d6f5cf"
+    },
+    {
+      "table": "meanings",
+      "index": 15,
+      "changed": false,
+      "before_sha256": "7f097d039564ec4888260bb6b3aee5443f3fa356e157a93ecd790bbde373d857",
+      "after_sha256": "7f097d039564ec4888260bb6b3aee5443f3fa356e157a93ecd790bbde373d857"
+    },
+    {
+      "table": "meanings",
+      "index": 16,
+      "changed": false,
+      "before_sha256": "27666dcad09b30d967e0f6b1ca30edbac491504aee17c360fa2dd26c879a6bfc",
+      "after_sha256": "27666dcad09b30d967e0f6b1ca30edbac491504aee17c360fa2dd26c879a6bfc"
+    },
+    {
+      "table": "meanings",
+      "index": 17,
+      "changed": false,
+      "before_sha256": "5d99184c572630b24721fe05179ed336ab416481a2568a11387ee6d4a8606ac2",
+      "after_sha256": "5d99184c572630b24721fe05179ed336ab416481a2568a11387ee6d4a8606ac2"
+    },
+    {
+      "table": "meanings",
+      "index": 18,
+      "changed": false,
+      "before_sha256": "ae24577fb0c912a43dd4ba6a6e9f32bae538f5d31245e5f55d15aac3e743d8a3",
+      "after_sha256": "ae24577fb0c912a43dd4ba6a6e9f32bae538f5d31245e5f55d15aac3e743d8a3"
+    },
+    {
+      "table": "meanings",
+      "index": 19,
+      "changed": false,
+      "before_sha256": "d63ec55056f92fd3ad1f94057e70207b80ea34973bd5b18bb5b066cf5223a3ba",
+      "after_sha256": "d63ec55056f92fd3ad1f94057e70207b80ea34973bd5b18bb5b066cf5223a3ba"
+    },
+    {
+      "table": "meanings",
+      "index": 20,
+      "changed": false,
+      "before_sha256": "de18fcb75e6e20373e4500f97dc3e4c7377e7f670d8738c974a335c84b445c0e",
+      "after_sha256": "de18fcb75e6e20373e4500f97dc3e4c7377e7f670d8738c974a335c84b445c0e"
+    },
+    {
+      "table": "meanings",
+      "index": 21,
+      "changed": false,
+      "before_sha256": "8f50e45615e09a412f3cd60e72685e6a71fd9df68ee783135cc9a9a940e3d4da",
+      "after_sha256": "8f50e45615e09a412f3cd60e72685e6a71fd9df68ee783135cc9a9a940e3d4da"
+    },
+    {
+      "table": "meanings",
+      "index": 22,
+      "changed": false,
+      "before_sha256": "299a1923338d3baaa276a8d2265656bbcb01e318e7208efd8e71d9308c635743",
+      "after_sha256": "299a1923338d3baaa276a8d2265656bbcb01e318e7208efd8e71d9308c635743"
+    },
+    {
+      "table": "meanings",
+      "index": 23,
+      "changed": false,
+      "before_sha256": "b0183fa913a9754f736333410cca2544305c2058f5fdc3e5d10cf2a48067c2f2",
+      "after_sha256": "b0183fa913a9754f736333410cca2544305c2058f5fdc3e5d10cf2a48067c2f2"
+    },
+    {
+      "table": "meanings",
+      "index": 24,
+      "changed": false,
+      "before_sha256": "b029e7f045c99665540e0d8947df9a57d539dc93a037cd722f46a15461b46140",
+      "after_sha256": "b029e7f045c99665540e0d8947df9a57d539dc93a037cd722f46a15461b46140"
+    },
+    {
+      "table": "meanings",
+      "index": 25,
+      "changed": false,
+      "before_sha256": "4e98a7f9877f336327f132b10d3abc7edb225336b8fb52b607aa92d8f95a1d81",
+      "after_sha256": "4e98a7f9877f336327f132b10d3abc7edb225336b8fb52b607aa92d8f95a1d81"
+    },
+    {
+      "table": "meanings",
+      "index": 26,
+      "changed": false,
+      "before_sha256": "a6527eca3a1c8177f4ee3543289c2cb8c7a4ca7a763cf10e6a600a44c4e6d80d",
+      "after_sha256": "a6527eca3a1c8177f4ee3543289c2cb8c7a4ca7a763cf10e6a600a44c4e6d80d"
+    },
+    {
+      "table": "meanings",
+      "index": 27,
+      "changed": false,
+      "before_sha256": "fbc404c06c78c677d1c4ecafb7af96bce51bbff7c33a86a8d2ee7d491637d178",
+      "after_sha256": "fbc404c06c78c677d1c4ecafb7af96bce51bbff7c33a86a8d2ee7d491637d178"
+    },
+    {
+      "table": "meanings",
+      "index": 28,
+      "changed": false,
+      "before_sha256": "2b8728bae75dab15b9285642819d7b39f18dc5c219c6b1932db27f54b109e8a0",
+      "after_sha256": "2b8728bae75dab15b9285642819d7b39f18dc5c219c6b1932db27f54b109e8a0"
+    },
+    {
+      "table": "meanings",
+      "index": 29,
+      "changed": false,
+      "before_sha256": "549dc2b1ce082d819aec767d91e93b692a4023c7c75bbdd8fb50b54ca5dfd9fa",
+      "after_sha256": "549dc2b1ce082d819aec767d91e93b692a4023c7c75bbdd8fb50b54ca5dfd9fa"
+    },
+    {
+      "table": "meanings",
+      "index": 30,
+      "changed": false,
+      "before_sha256": "c1c3f6ab31c27c1c2b978578ccd7eae821242832b60bda8d765d123dc9b07d72",
+      "after_sha256": "c1c3f6ab31c27c1c2b978578ccd7eae821242832b60bda8d765d123dc9b07d72"
+    },
+    {
+      "table": "meanings",
+      "index": 31,
+      "changed": true,
+      "before_sha256": "f569ac22b1fdba09a291cf2389f52d7575ff4875d6938463c041058d98bfa11c",
+      "after_sha256": "db7805372afb4b886e3395ad82924834a517e2493c0455bccac05e01c040a654"
+    },
+    {
+      "table": "meanings",
+      "index": 32,
+      "changed": false,
+      "before_sha256": "72b9c912d19338390a5fe3160e42e72043498b5d028a7ceee9e702edf653ebdb",
+      "after_sha256": "72b9c912d19338390a5fe3160e42e72043498b5d028a7ceee9e702edf653ebdb"
+    },
+    {
+      "table": "meanings",
+      "index": 33,
+      "changed": false,
+      "before_sha256": "a68d9eb4de18156880361bc86a2a4e5d6e6a784df5668e5cbd93b169da6ae6d8",
+      "after_sha256": "a68d9eb4de18156880361bc86a2a4e5d6e6a784df5668e5cbd93b169da6ae6d8"
+    },
+    {
+      "table": "meanings",
+      "index": 34,
+      "changed": false,
+      "before_sha256": "e7fd6d81d3beafcc14c2e99773c390f79b646d381b769c5c97c45b7a2bde804c",
+      "after_sha256": "e7fd6d81d3beafcc14c2e99773c390f79b646d381b769c5c97c45b7a2bde804c"
+    },
+    {
+      "table": "encodings",
+      "index": 0,
+      "changed": false,
+      "before_sha256": "8e783fd2dae3936c65dc1d00ebc76865cb5ab822dc31225c0d092cfb9e4486cd",
+      "after_sha256": "8e783fd2dae3936c65dc1d00ebc76865cb5ab822dc31225c0d092cfb9e4486cd"
+    },
+    {
+      "table": "encodings",
+      "index": 1,
+      "changed": false,
+      "before_sha256": "235d2579d7b610438fe53316a5dcb5de5b3f7e0bcf3923aee1fa0ab7503f2e72",
+      "after_sha256": "235d2579d7b610438fe53316a5dcb5de5b3f7e0bcf3923aee1fa0ab7503f2e72"
+    },
+    {
+      "table": "encodings",
+      "index": 2,
+      "changed": false,
+      "before_sha256": "dd00a5dae4ad84db8bdfe5367cd1035f53a590be3cd325d15979df2f5805b449",
+      "after_sha256": "dd00a5dae4ad84db8bdfe5367cd1035f53a590be3cd325d15979df2f5805b449"
+    },
+    {
+      "table": "encodings",
+      "index": 3,
+      "changed": false,
+      "before_sha256": "6710be3445c5f3598080411dded52662ece0ce8cbbf251bba1e1a455ef5e449f",
+      "after_sha256": "6710be3445c5f3598080411dded52662ece0ce8cbbf251bba1e1a455ef5e449f"
+    },
+    {
+      "table": "encodings",
+      "index": 4,
+      "changed": false,
+      "before_sha256": "eb494b3e37e86b9b90e0af064fe310d55ebd1064fec25f35c2dca2bdf99a16b7",
+      "after_sha256": "eb494b3e37e86b9b90e0af064fe310d55ebd1064fec25f35c2dca2bdf99a16b7"
+    },
+    {
+      "table": "encodings",
+      "index": 5,
+      "changed": false,
+      "before_sha256": "75f83df69b7a5c649544a60cd999dbdd695669e65aee823a7f382d95788e4f24",
+      "after_sha256": "75f83df69b7a5c649544a60cd999dbdd695669e65aee823a7f382d95788e4f24"
+    },
+    {
+      "table": "encodings",
+      "index": 6,
+      "changed": false,
+      "before_sha256": "7342dd1de38982dedb9b5ad7fbdb161971e0f9a8b0115f14e6e6ba4eb4070144",
+      "after_sha256": "7342dd1de38982dedb9b5ad7fbdb161971e0f9a8b0115f14e6e6ba4eb4070144"
+    },
+    {
+      "table": "encodings",
+      "index": 7,
+      "changed": false,
+      "before_sha256": "e803485ad166099e1b207d1a3a97c1249c80c1e1563abb098e049a82c7df9695",
+      "after_sha256": "e803485ad166099e1b207d1a3a97c1249c80c1e1563abb098e049a82c7df9695"
+    },
+    {
+      "table": "encodings",
+      "index": 8,
+      "changed": false,
+      "before_sha256": "417c84975ed2d471814e9a3cc02b5330bf2d03f549da8601dd9a2eeb23e3003e",
+      "after_sha256": "417c84975ed2d471814e9a3cc02b5330bf2d03f549da8601dd9a2eeb23e3003e"
+    },
+    {
+      "table": "encodings",
+      "index": 9,
+      "changed": false,
+      "before_sha256": "4dc7423a347dba584c7128f626d0880d3b0e08f54d983b339a7652421cb11f80",
+      "after_sha256": "4dc7423a347dba584c7128f626d0880d3b0e08f54d983b339a7652421cb11f80"
+    },
+    {
+      "table": "encodings",
+      "index": 10,
+      "changed": false,
+      "before_sha256": "346e13b1731d8c5d1bd76a6e28c11ee93b921749dea6ddcfc7a81bfafccbac6b",
+      "after_sha256": "346e13b1731d8c5d1bd76a6e28c11ee93b921749dea6ddcfc7a81bfafccbac6b"
+    },
+    {
+      "table": "encodings",
+      "index": 11,
+      "changed": false,
+      "before_sha256": "417133ed65e5c4fae9716a4bd4e60dfe6594edc1be3b385ebd87f8ec96f65cf8",
+      "after_sha256": "417133ed65e5c4fae9716a4bd4e60dfe6594edc1be3b385ebd87f8ec96f65cf8"
+    },
+    {
+      "table": "encodings",
+      "index": 12,
+      "changed": false,
+      "before_sha256": "8d0c44ddca337a0f22c850f7c19590adc1224c908e8ccfe80a5dbfe246b2690f",
+      "after_sha256": "8d0c44ddca337a0f22c850f7c19590adc1224c908e8ccfe80a5dbfe246b2690f"
+    },
+    {
+      "table": "encodings",
+      "index": 13,
+      "changed": false,
+      "before_sha256": "f1967a94173477e7c1d50a8f60bab7574f8571518648e54fd7beafba6ba56920",
+      "after_sha256": "f1967a94173477e7c1d50a8f60bab7574f8571518648e54fd7beafba6ba56920"
+    },
+    {
+      "table": "proofs",
+      "index": 0,
+      "changed": false,
+      "before_sha256": "12b0a2bef515ae80c9a03a3b6e9d368e97d1fe8f606ff3d8118355bc5bf2d335",
+      "after_sha256": "12b0a2bef515ae80c9a03a3b6e9d368e97d1fe8f606ff3d8118355bc5bf2d335"
+    },
+    {
+      "table": "proofs",
+      "index": 1,
+      "changed": false,
+      "before_sha256": "8366e00b51e7212a6f0d8c1c966c2d19908c7b68b5cd92845c6a222be911e7ce",
+      "after_sha256": "8366e00b51e7212a6f0d8c1c966c2d19908c7b68b5cd92845c6a222be911e7ce"
+    },
+    {
+      "table": "proofs",
+      "index": 2,
+      "changed": false,
+      "before_sha256": "c75010704a713043fa61ddddf35441b46db7fa6450edbf183cab3a5d87a4f28e",
+      "after_sha256": "c75010704a713043fa61ddddf35441b46db7fa6450edbf183cab3a5d87a4f28e"
+    },
+    {
+      "table": "proofs",
+      "index": 3,
+      "changed": false,
+      "before_sha256": "e47fb1e2bf69b0cca6c86aec52492b7631834cf716eead8c0d7e429c05d9a4f9",
+      "after_sha256": "e47fb1e2bf69b0cca6c86aec52492b7631834cf716eead8c0d7e429c05d9a4f9"
+    },
+    {
+      "table": "proofs",
+      "index": 4,
+      "changed": false,
+      "before_sha256": "cf14f0ec6ba8258dacf6607764dbcbc864e9e0005d37eec6d95ae07c937c55f0",
+      "after_sha256": "cf14f0ec6ba8258dacf6607764dbcbc864e9e0005d37eec6d95ae07c937c55f0"
+    },
+    {
+      "table": "proofs",
+      "index": 5,
+      "changed": false,
+      "before_sha256": "4b5abb2405652900fbcc506831a2be91891e959863dfb20dac4434befa90a62b",
+      "after_sha256": "4b5abb2405652900fbcc506831a2be91891e959863dfb20dac4434befa90a62b"
+    },
+    {
+      "table": "proofs",
+      "index": 6,
+      "changed": false,
+      "before_sha256": "987ecad2bbed54197343f874ff96fecd7a5308c664df5a876c6ff373cce8b333",
+      "after_sha256": "987ecad2bbed54197343f874ff96fecd7a5308c664df5a876c6ff373cce8b333"
+    },
+    {
+      "table": "proofs",
+      "index": 7,
+      "changed": false,
+      "before_sha256": "2dba9ad8e334d8b220514787bf6f4129cb54cb918e62652ddf17612e82e3bad7",
+      "after_sha256": "2dba9ad8e334d8b220514787bf6f4129cb54cb918e62652ddf17612e82e3bad7"
+    },
+    {
+      "table": "proofs",
+      "index": 8,
+      "changed": false,
+      "before_sha256": "d7f5cf061c1929b944e15096b8ada9802b48c3fa85389fcc2095fbfccf2a85e5",
+      "after_sha256": "d7f5cf061c1929b944e15096b8ada9802b48c3fa85389fcc2095fbfccf2a85e5"
+    },
+    {
+      "table": "proofs",
+      "index": 9,
+      "changed": false,
+      "before_sha256": "8bf572b530633d1b8228900f5eecb8412c85f0c708e675473f9029af8056943a",
+      "after_sha256": "8bf572b530633d1b8228900f5eecb8412c85f0c708e675473f9029af8056943a"
+    },
+    {
+      "table": "proofs",
+      "index": 10,
+      "changed": false,
+      "before_sha256": "dd10fe7842cf7fb628287369ab74d5295bce43a272dce84cf22afc4eb5ce35a3",
+      "after_sha256": "dd10fe7842cf7fb628287369ab74d5295bce43a272dce84cf22afc4eb5ce35a3"
+    },
+    {
+      "table": "proofs",
+      "index": 11,
+      "changed": false,
+      "before_sha256": "d82a1ecf80d3cc63ef0cd55dbce2d13829ef85b5bb9d9f786f793f0153a47695",
+      "after_sha256": "d82a1ecf80d3cc63ef0cd55dbce2d13829ef85b5bb9d9f786f793f0153a47695"
+    },
+    {
+      "table": "proofs",
+      "index": 12,
+      "changed": false,
+      "before_sha256": "97df9f5652c6fb5a322eef372372599d5dd974bd26288b200acc4e12e4120918",
+      "after_sha256": "97df9f5652c6fb5a322eef372372599d5dd974bd26288b200acc4e12e4120918"
+    },
+    {
+      "table": "proofs",
+      "index": 13,
+      "changed": false,
+      "before_sha256": "15eaf4bfa0ca3369bbc38cf27628d0344d0c5b855e5507cdcb4659e5e4ac15c7",
+      "after_sha256": "15eaf4bfa0ca3369bbc38cf27628d0344d0c5b855e5507cdcb4659e5e4ac15c7"
+    },
+    {
+      "table": "proofs",
+      "index": 14,
+      "changed": false,
+      "before_sha256": "3f967b0a10cd73afc3e5e80d2ccce91e9648c58d8bc264059b0dc6d39e1c7325",
+      "after_sha256": "3f967b0a10cd73afc3e5e80d2ccce91e9648c58d8bc264059b0dc6d39e1c7325"
+    },
+    {
+      "table": "proofs",
+      "index": 15,
+      "changed": false,
+      "before_sha256": "622b7da4cd2835dd6b9900800c39b489ef87dac292ef5ddb7c1e425d36bcb65d",
+      "after_sha256": "622b7da4cd2835dd6b9900800c39b489ef87dac292ef5ddb7c1e425d36bcb65d"
+    },
+    {
+      "table": "proofs",
+      "index": 16,
+      "changed": false,
+      "before_sha256": "d74ac1cef1975383e665c42999df74219cf7fb00fdbda847c29887c50b761ac0",
+      "after_sha256": "d74ac1cef1975383e665c42999df74219cf7fb00fdbda847c29887c50b761ac0"
+    },
+    {
+      "table": "proofs",
+      "index": 17,
+      "changed": false,
+      "before_sha256": "6a9f5129fa6d655387e8c64f0856df606499561c350ceb01b3b4347263f29889",
+      "after_sha256": "6a9f5129fa6d655387e8c64f0856df606499561c350ceb01b3b4347263f29889"
+    },
+    {
+      "table": "proofs",
+      "index": 18,
+      "changed": false,
+      "before_sha256": "4d1e64c5ff10ad79f2cc85202286a9b0b74dc46f2ad80880055883355f2953fb",
+      "after_sha256": "4d1e64c5ff10ad79f2cc85202286a9b0b74dc46f2ad80880055883355f2953fb"
+    },
+    {
+      "table": "proofs",
+      "index": 19,
+      "changed": false,
+      "before_sha256": "dbfd48df669ce80b37174850caf5e1f43a0f7adb761f06e388b97a627f9723dd",
+      "after_sha256": "dbfd48df669ce80b37174850caf5e1f43a0f7adb761f06e388b97a627f9723dd"
+    },
+    {
+      "table": "proofs",
+      "index": 20,
+      "changed": false,
+      "before_sha256": "f22c49cd6296dab791d4cb0ea7e1a5bb133e404d4e731f210007ae08b025493d",
+      "after_sha256": "f22c49cd6296dab791d4cb0ea7e1a5bb133e404d4e731f210007ae08b025493d"
+    },
+    {
+      "table": "proofs",
+      "index": 21,
+      "changed": false,
+      "before_sha256": "9abfa2ac9528be0829be8fbc5ce7cd143c090f378d64db6a2b86d20f8ea42735",
+      "after_sha256": "9abfa2ac9528be0829be8fbc5ce7cd143c090f378d64db6a2b86d20f8ea42735"
+    },
+    {
+      "table": "proofs",
+      "index": 22,
+      "changed": false,
+      "before_sha256": "4881a94ce649a723f4f804020417df99fc850e6b9ef91ac997c2f7e16cf870fc",
+      "after_sha256": "4881a94ce649a723f4f804020417df99fc850e6b9ef91ac997c2f7e16cf870fc"
+    },
+    {
+      "table": "proofs",
+      "index": 23,
+      "changed": false,
+      "before_sha256": "3699e1db10c6a57eb97bb7b1b6ed9e07835a5ff6859bba894be7e7cb89bd3aea",
+      "after_sha256": "3699e1db10c6a57eb97bb7b1b6ed9e07835a5ff6859bba894be7e7cb89bd3aea"
+    },
+    {
+      "table": "proofs",
+      "index": 24,
+      "changed": false,
+      "before_sha256": "a7d99702ccc80df6e71c8d837d7b4d93d25907251d2a8f30cca484930c349052",
+      "after_sha256": "a7d99702ccc80df6e71c8d837d7b4d93d25907251d2a8f30cca484930c349052"
+    },
+    {
+      "table": "proofs",
+      "index": 25,
+      "changed": false,
+      "before_sha256": "f108ad230bdad7773f02a66cf12af2a7600d641ff1da9319053c0a66312c8016",
+      "after_sha256": "f108ad230bdad7773f02a66cf12af2a7600d641ff1da9319053c0a66312c8016"
+    },
+    {
+      "table": "proofs",
+      "index": 26,
+      "changed": false,
+      "before_sha256": "cd99d458732b1d31201a27c82fb77c2f2db69e216d189578a8515346cd6b91d4",
+      "after_sha256": "cd99d458732b1d31201a27c82fb77c2f2db69e216d189578a8515346cd6b91d4"
+    },
+    {
+      "table": "proofs",
+      "index": 27,
+      "changed": false,
+      "before_sha256": "0765a04e897a923a129dbef852f14b0879af40f69b9a67cfd83a350b88428d4c",
+      "after_sha256": "0765a04e897a923a129dbef852f14b0879af40f69b9a67cfd83a350b88428d4c"
+    },
+    {
+      "table": "proofs",
+      "index": 28,
+      "changed": false,
+      "before_sha256": "b8f88526223d488694ed01ff4df3b4227b25588e2196ed60783236d75917904e",
+      "after_sha256": "b8f88526223d488694ed01ff4df3b4227b25588e2196ed60783236d75917904e"
+    },
+    {
+      "table": "proofs",
+      "index": 29,
+      "changed": false,
+      "before_sha256": "e525cf8d88dd1c58de20cc6c3b1a624ee35af4b734de72388a31b88e869081b6",
+      "after_sha256": "e525cf8d88dd1c58de20cc6c3b1a624ee35af4b734de72388a31b88e869081b6"
+    },
+    {
+      "table": "proofs",
+      "index": 30,
+      "changed": false,
+      "before_sha256": "a5b3d3ef93bfa9d5e82f334bc33728ea88386b255384ae0e582d00f5ae2f65dd",
+      "after_sha256": "a5b3d3ef93bfa9d5e82f334bc33728ea88386b255384ae0e582d00f5ae2f65dd"
+    },
+    {
+      "table": "proofs",
+      "index": 31,
+      "changed": true,
+      "before_sha256": "f15c4c57779c531de2b9baa6a3952fc6c4317a7c9a2c3e41651512278593a641",
+      "after_sha256": "8d2d62fe82592c7c2cb68397a6212778e57b0bc9b6aa181a89711628748ef68d"
+    },
+    {
+      "table": "proofs",
+      "index": 32,
+      "changed": false,
+      "before_sha256": "28a4f5c71867b61c29ba6192f3a3cbea3235586deb05dcc1bc709774ed0f58ff",
+      "after_sha256": "28a4f5c71867b61c29ba6192f3a3cbea3235586deb05dcc1bc709774ed0f58ff"
+    },
+    {
+      "table": "proofs",
+      "index": 33,
+      "changed": false,
+      "before_sha256": "77180b83947d211d52795e5a6a8a0f32a089f42728e36e2f49597ef611bade99",
+      "after_sha256": "77180b83947d211d52795e5a6a8a0f32a089f42728e36e2f49597ef611bade99"
+    },
+    {
+      "table": "proofs",
+      "index": 34,
+      "changed": false,
+      "before_sha256": "deff091e33545ad949efc13fe81a682483d93e136cf41525352dc8e2b9e717c2",
+      "after_sha256": "deff091e33545ad949efc13fe81a682483d93e136cf41525352dc8e2b9e717c2"
+    }
+  ],
+  "retained_finite_strings": [
+    {
+      "table": "definitions",
+      "index": 3,
+      "field": "program",
+      "bytes": 415,
+      "sha256": "a9b652473b8773393a02421a9d03fba1ddd2c13a1a2be1b30e53b5b3eef4d67e"
+    },
+    {
+      "table": "definitions",
+      "index": 16,
+      "field": "program",
+      "bytes": 415,
+      "sha256": "86b7f5aecbe0e81352ab1007ea6e8635ba2dd92dd25d9f48e582e4c2970a1390"
+    },
+    {
+      "table": "meanings",
+      "index": 3,
+      "field": "description",
+      "bytes": 737,
+      "sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a"
+    },
+    {
+      "table": "meanings",
+      "index": 16,
+      "field": "description",
+      "bytes": 737,
+      "sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a"
+    }
+  ],
+  "table_lengths_before": {
+    "definitions": 35,
+    "meanings": 35,
+    "encodings": 14,
+    "proofs": 35
+  },
+  "table_lengths_after": {
+    "definitions": 37,
+    "meanings": 37,
+    "encodings": 14,
+    "proofs": 37
+  },
+  "expected_fresh_inspect": "success-required-before-request",
+  "expected_frozen_request": "reject-contract",
+  "expected_suffix_coordinates": [
+    0,
+    1
+  ],
+  "native_checked": false,
+  "source_meaning_verified": false,
+  "scope": "Local graph/delta checks only; actual bounded gates, source preservation and Fourier proof remain separate."
+}

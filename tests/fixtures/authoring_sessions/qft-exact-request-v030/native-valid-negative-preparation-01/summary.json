@@ -1,0 +1,13 @@
+{
+  "recorded_utc": "2026-10-05T18:11:12.819169+00:00",
+  "status": "three-untrusted-n2-negatives-prepared",
+  "cases": [
+    "wrong-controlled-phase",
+    "cancelled-real-reversal",
+    "high-h-replaced-by-x"
+  ],
+  "native_checker_invoked_by_generator": false,
+  "independent_request_unchanged": true,
+  "source_meaning_verified": false,
+  "scope": "Generation completion only; each later fresh inspection/request is still mandatory."
+}

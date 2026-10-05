@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.additive-technical-review-packet",
+  "version": 1,
+  "recorded_utc": "2026-10-05T18:21:56.471764+00:00",
+  "files": [
+    {
+      "path": "audit.json",
+      "bytes": 1351,
+      "sha256": "4cf1b441471d66f5f7983f0eb01e3441aaa80e46fe09744efaf4816eaab6b429"
+    },
+    {
+      "path": "review.md",
+      "bytes": 3765,
+      "sha256": "6cb61ba81569f43b8095a6ad99137227af4a9d1bb444a8b41d15590cd6d24d94"
+    }
+  ],
+  "scope": "Unexecuted concept and existing data/predicate review only; no candidate import, generation, native, CLI, build, proof or Issue status change. Map excludes itself."
+}

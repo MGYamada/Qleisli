@@ -1,0 +1,93 @@
+{
+  "recorded_utc": "2026-10-05T18:23:41.301183+00:00",
+  "width": 2,
+  "case": "cancelled-actual-reversal-by-structural-composition",
+  "action": "inspect",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli-qft-native-gate-design",
+    "inspect",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-preparation-02/cancelled-actual-reversal-by-structural-composition.proposal.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.19391966698458418,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "api_record": {
+    "action": "inspect",
+    "status": "ok",
+    "payload_bytes": 100368,
+    "request_bytes": null,
+    "retained_payload_equal": true,
+    "retained_request_equal": true,
+    "structural_work": 183768,
+    "exact_work": 262
+  },
+  "raw_stdout": {
+    "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/stdout.bin",
+    "bytes": 181,
+    "sha256": "5469c30f9d6f5b06514c2364f1619417582190cbc43f4e362c3caa9468bb1daa"
+  },
+  "raw_stderr": {
+    "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/stderr.bin",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "forwarder_attempts": 1,
+  "actual_native_calls": 1,
+  "native_records": [
+    {
+      "directory": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-reversal-capture-02/cancelled-actual-reversal-by-structural-composition-inspect/native/call-01",
+      "process_started_record": true,
+      "result": {
+        "started_utc": "2026-10-05T18:23:41.143151+00:00",
+        "wrapper_argv": [
+          "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+          "--hierarchy-pending",
+          "0.3.0-alpha"
+        ],
+        "requested_native_argv": [
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--hierarchy-pending",
+          "0.3.0-alpha"
+        ],
+        "ordinal": 1,
+        "actual_native_spawned": true,
+        "actual_native_returncode": 0,
+        "interpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+        "identity_scope": "File observations only, not running-image/build attestation.",
+        "stdin_bytes": 12612,
+        "stdin_sha256": "6903fb80b86a710cd6dd868538b38bb3692856b3677081bd27337570ae62fa28",
+        "stdin_limited_prefix": false,
+        "finished_utc": "2026-10-05T18:23:41.289798+00:00",
+        "capture": {
+          "spawned": true,
+          "returncode": 0,
+          "reason": null,
+          "error": null,
+          "seconds": 0.08067250001477078,
+          "stdin_written": 12612,
+          "stdout_limited": false,
+          "stderr_limited": false
+        },
+        "native_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+        "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+        "stdout_bytes": 54,
+        "stderr_bytes": 0,
+        "stdout_sha256": "21cfbc9e218688f7be5c0cebc1e1f422dd1f8fde09651a40e9739c7b78c230b2",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wrapper_exit_code": 0
+      }
+    }
+  ],
+  "observed_stage": "actual-native-process-observed",
+  "scope": "Actual fresh observations only; no source/adapter/general Fourier proof or guarantee discharge."
+}

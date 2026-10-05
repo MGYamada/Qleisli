@@ -1,0 +1,31 @@
+{
+  "recorded_utc": "2026-10-05T18:23:41.897230+00:00",
+  "status": "fixed-bounded-capture-completed",
+  "maximum_client_calls": 2,
+  "client_observations": 2,
+  "actual_native_calls": 2,
+  "outcomes": [
+    {
+      "action": "inspect",
+      "classification": "complete-fresh-inspection-success",
+      "reason": "complete fresh success observed",
+      "success": true
+    },
+    {
+      "action": "request",
+      "classification": "predicted-native-contract-rejection-observed",
+      "reason": "actual native refusal: contract",
+      "code": "contract",
+      "success": false
+    }
+  ],
+  "events": [
+    "cancelled-actual-reversal-by-structural-composition-inspect/result.json",
+    "cancelled-actual-reversal-by-structural-composition-request/result.json"
+  ],
+  "identity_barriers": "pass",
+  "independent_request_unchanged": true,
+  "expected_outcomes_changed": false,
+  "source_meaning_verified": false,
+  "scope": "Recorder completion only; semantic, capacity, format and unclassified native refusals remain separate from operational faults; raw unexpected outcomes retained."
+}

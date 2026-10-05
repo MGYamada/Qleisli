@@ -1,0 +1,75 @@
+{
+  "case": "high-h-replaced-by-x",
+  "width": 2,
+  "status": "untrusted-negative-prepared-not-native-checked",
+  "positive_payload_sha256": "f9fd660f60420b72c84bf8dba422b4dfda3c8a2573945bee1a04ddd3fb86a30e",
+  "mutant_payload_sha256": "e5d34abb2bb43bcb47eb5e11c892166c4af0dd5d202a287db92d1b2e5b36d15b",
+  "frozen_request_sha256": "b0468aee9db0078a20fec5eff0502a071da9d696cbcbaa8f4cf4478c878f2233",
+  "post_DMP_from_actual_association": [
+    33,
+    33,
+    33
+  ],
+  "changed_field_paths": [
+    [
+      "definitions",
+      3,
+      "body",
+      "program"
+    ],
+    [
+      "meanings",
+      3,
+      "body",
+      "description"
+    ]
+  ],
+  "all_proofs_encodings_unchanged": true,
+  "finite_strings": [
+    {
+      "table": "definitions",
+      "index": 3,
+      "field": "program",
+      "changed": true,
+      "before_bytes": 415,
+      "after_bytes": 415,
+      "before_sha256": "a9b652473b8773393a02421a9d03fba1ddd2c13a1a2be1b30e53b5b3eef4d67e",
+      "after_sha256": "1dbbb85ee7d005a7dc3d1a0eb1cc33c59dfbf589fb03c77187f1f84124b01fa9"
+    },
+    {
+      "table": "definitions",
+      "index": 16,
+      "field": "program",
+      "changed": false,
+      "before_bytes": 415,
+      "after_bytes": 415,
+      "before_sha256": "86b7f5aecbe0e81352ab1007ea6e8635ba2dd92dd25d9f48e582e4c2970a1390",
+      "after_sha256": "86b7f5aecbe0e81352ab1007ea6e8635ba2dd92dd25d9f48e582e4c2970a1390"
+    },
+    {
+      "table": "meanings",
+      "index": 3,
+      "field": "description",
+      "changed": true,
+      "before_bytes": 737,
+      "after_bytes": 736,
+      "before_sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a",
+      "after_sha256": "b15853c31ec052c7682269ebb4e79c9be6464623abbf5b5d13a508466e425094"
+    },
+    {
+      "table": "meanings",
+      "index": 16,
+      "field": "description",
+      "changed": false,
+      "before_bytes": 737,
+      "after_bytes": 737,
+      "before_sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a",
+      "after_sha256": "eab90807ea4a9f2a2f4934f21473d534090cd21827345cbc1d953a03d39dcf2a"
+    }
+  ],
+  "expected_fresh_inspect": "success-required-before-request",
+  "expected_frozen_request": "reject-contract",
+  "source_meaning_verified": false,
+  "native_checked": false,
+  "claim_scope": "Local field/graph assertions only, not acceptance or a semantic proof."
+}

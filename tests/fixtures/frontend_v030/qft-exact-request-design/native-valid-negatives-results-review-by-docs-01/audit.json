@@ -1,0 +1,388 @@
+{
+  "format": "qleisli.additive-native-negative-observation-audit",
+  "version": 1,
+  "recorded_utc": "2026-10-05T18:19:08.723486+00:00",
+  "performed": "Read/hash/parse already generated data and actual five captures; no import, generation, native/CLI execution or build. Recorded argv are data only.",
+  "map_checks": [
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/native-valid-negative-preparation-01/prepared-files.json",
+      "sha256": "ff11ae3c90effdb327f646c23490381bf36efb540daad8f44c8c81dc4822c582",
+      "members": 8,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/script-inputs.json",
+      "sha256": "44f482ed6189f530221ca65eec01041d4954b0e42007846026404b52b554f70b",
+      "members": 35,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-design-01/inputs.json",
+      "sha256": "d3d6c9cb774c1180d2b017f88bb0f64792a8d7e06d588031a54b324086b47175",
+      "members": 24,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-design-01/canonical-inputs.json",
+      "sha256": "4f2aecefe901fac484b1663376985a00e771d142648a004dcf8ba5f19f64f094",
+      "members": 19,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/original-capture-packet-01.json",
+      "sha256": "1cafaa493f6a7e9969533c61e0e6669f22c399535cffbbf747a1253484f2914d",
+      "members": 188,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-inputs.json",
+      "sha256": "3adc26126aeb1ee9fbe96b9688e6a67151ef19e5ee0d2d01b35aea06c32f0dd7",
+      "members": 61,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/first-files.json",
+      "sha256": "5414941b13b959b3e80b799c4a93720b766864b257046aa5b39be7237b5aa978",
+      "members": 15,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/identity-before.json",
+      "sha256": "e7e6099b12a5f820acfd42575e251bca5289b06e51db798d8375802ceb86e8e5",
+      "members": 233,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-exact-request-v030/canonical-label-preparation-01/prepared-files.json",
+      "sha256": "4b19c4e1d824b3d75ddbc1afcba450810059af839cc067b443654f393000367d",
+      "members": 10,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-valid-negatives-review-by-docs-01/packet-files.json",
+      "sha256": "4f6a252bfcfe85768800562c183a0cc8f104a6a40652eb85f3ce6c0366ec4339",
+      "members": 2,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-results-review-by-docs-01/packet-files.json",
+      "sha256": "141ed06acf5f4ca15903c4845582c4249b25f331e75a88bb3d687a4824b52ef9",
+      "members": 2,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/canonical-label-review-by-docs-01/packet-files.json",
+      "sha256": "f1ec2ad91515e7353a948527baa03469b72131e99b2750bfa7105614a8d09899",
+      "members": 6,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/original-results-review-01/packet-files.json",
+      "sha256": "8148aa7f337c7c7a00baa358421a06e531ac50105150a97259a088abc065d6cc",
+      "members": 2,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/request-contract-review-01/packet-files.json",
+      "sha256": "4c23f09b10d1959e542c76c74cc8ed39397b6b0591e18bcb8f82789d0066f288",
+      "members": 7,
+      "mismatches": 0
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/independent-review-by-docs-01/packet-files.json",
+      "sha256": "a6ee12bfdc6bf31045996143fd58b3e25992292f80c53a85288c747d246e06f4",
+      "members": 3,
+      "mismatches": 0
+    }
+  ],
+  "source_inventory_counts": {
+    "rust_sources": 98,
+    "lean_sources": 112,
+    "stdlib_inputs": 5
+  },
+  "binary_file_observations": [
+    {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "bytes": 22257136,
+      "sha256": "db571ad2fcdac89e52e0835a61732b72bb00df7b04ae4ecba33a34888c366a8a",
+      "mode": 493
+    },
+    {
+      "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+      "bytes": 91666928,
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "mode": 493
+    },
+    {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli-qft-native-gate-design",
+      "bytes": 1299840,
+      "sha256": "683b29749f752652b3ddb8dba7fac0ea2d832f848178963f3056d2f5c03d8294",
+      "mode": 493
+    }
+  ],
+  "deltas": [
+    {
+      "case": "wrong-controlled-phase",
+      "payload_sha256": "36dba8e5a02784c8f8ed04e63ad67a683d345f390a0911354b7c9ca8f20dc723",
+      "changed_field_paths": [
+        [
+          "definitions",
+          10,
+          "body",
+          "j"
+        ],
+        [
+          "meanings",
+          10,
+          "body",
+          "j"
+        ]
+      ],
+      "all_proofs_encodings_unchanged": true,
+      "interfaces_and_other_rows_unchanged": true,
+      "finite_strings": [
+        {
+          "table": "definitions",
+          "index": 3,
+          "field": "program",
+          "changed": false
+        },
+        {
+          "table": "definitions",
+          "index": 16,
+          "field": "program",
+          "changed": false
+        },
+        {
+          "table": "meanings",
+          "index": 3,
+          "field": "description",
+          "changed": false
+        },
+        {
+          "table": "meanings",
+          "index": 16,
+          "field": "description",
+          "changed": false
+        }
+      ]
+    },
+    {
+      "case": "cancelled-real-reversal",
+      "payload_sha256": "95710d34cbbdc9dcb4164d05385d1ee55517265bf59c7cabfcc3270e08ab1d73",
+      "changed_field_paths": [
+        [
+          "definitions",
+          33,
+          "body",
+          "permutation",
+          "axes",
+          0
+        ],
+        [
+          "definitions",
+          33,
+          "body",
+          "permutation",
+          "axes",
+          1
+        ],
+        [
+          "meanings",
+          33,
+          "body",
+          "permutation",
+          "axes",
+          0
+        ],
+        [
+          "meanings",
+          33,
+          "body",
+          "permutation",
+          "axes",
+          1
+        ]
+      ],
+      "all_proofs_encodings_unchanged": true,
+      "interfaces_and_other_rows_unchanged": true,
+      "finite_strings": [
+        {
+          "table": "definitions",
+          "index": 3,
+          "field": "program",
+          "changed": false
+        },
+        {
+          "table": "definitions",
+          "index": 16,
+          "field": "program",
+          "changed": false
+        },
+        {
+          "table": "meanings",
+          "index": 3,
+          "field": "description",
+          "changed": false
+        },
+        {
+          "table": "meanings",
+          "index": 16,
+          "field": "description",
+          "changed": false
+        }
+      ]
+    },
+    {
+      "case": "high-h-replaced-by-x",
+      "payload_sha256": "e5d34abb2bb43bcb47eb5e11c892166c4af0dd5d202a287db92d1b2e5b36d15b",
+      "changed_field_paths": [
+        [
+          "definitions",
+          3,
+          "body",
+          "program"
+        ],
+        [
+          "meanings",
+          3,
+          "body",
+          "description"
+        ]
+      ],
+      "all_proofs_encodings_unchanged": true,
+      "interfaces_and_other_rows_unchanged": true,
+      "finite_strings": [
+        {
+          "table": "definitions",
+          "index": 3,
+          "field": "program",
+          "changed": true
+        },
+        {
+          "table": "definitions",
+          "index": 16,
+          "field": "program",
+          "changed": false
+        },
+        {
+          "table": "meanings",
+          "index": 3,
+          "field": "description",
+          "changed": true
+        },
+        {
+          "table": "meanings",
+          "index": 16,
+          "field": "description",
+          "changed": false
+        }
+      ]
+    }
+  ],
+  "observations": [
+    {
+      "case": "wrong-controlled-phase",
+      "action": "inspect",
+      "result_sha256": "adee25441e4b914642cc81caef539befc57d4ab6c838f47f9c55038ee66a2de3",
+      "actual_native_pid": 16779,
+      "client_native_wrapper_returncode": 0,
+      "native_mode": "--hierarchy-pending",
+      "stdin_bytes": 12092,
+      "stdin_sha256": "4923870c6110f280ff8597db1c2188d232da6cbc373620391631a2f2c53f0173",
+      "stdin_completely_written": true,
+      "operational_failure_observed": false,
+      "client_code": null,
+      "native_frame_ascii": "qleisli.hierarchy-pending 3\npending\n171493\n262\n2\n3\n16\n",
+      "request_tail_equals_actual_positive": null
+    },
+    {
+      "case": "wrong-controlled-phase",
+      "action": "request",
+      "result_sha256": "6fd5b2dab27dd6f5b46735a998c4ab87f88f0ef707e3a754ebf12f55aeaa4ddb",
+      "actual_native_pid": 16786,
+      "client_native_wrapper_returncode": 1,
+      "native_mode": "--hierarchy-fourier-pending",
+      "stdin_bytes": 12312,
+      "stdin_sha256": "fbb21232bbcf224fb63ef78415a84bcced8c52c5aef62bf61669833da2c74b51",
+      "stdin_completely_written": true,
+      "operational_failure_observed": false,
+      "client_code": "contract",
+      "native_frame_ascii": "qleisli.hierarchy-fourier-pending 3\nerror\ncontract\n",
+      "request_tail_equals_actual_positive": true
+    },
+    {
+      "case": "cancelled-real-reversal",
+      "action": "inspect",
+      "result_sha256": "180478dc49df9b62474e49a7f34515b71b319bc5e1e5e9db540171fc857a3a9b",
+      "actual_native_pid": 16792,
+      "client_native_wrapper_returncode": 1,
+      "native_mode": "--hierarchy-pending",
+      "stdin_bytes": 12092,
+      "stdin_sha256": "59bb5f34d0c5ea19b128d21c9f92cfb30477063666af65dc45397e276abc113f",
+      "stdin_completely_written": true,
+      "operational_failure_observed": false,
+      "client_code": "invalid_ir",
+      "native_frame_ascii": "qleisli.hierarchy-pending 3\nerror\ninvalid_ir\n",
+      "request_tail_equals_actual_positive": null
+    },
+    {
+      "case": "high-h-replaced-by-x",
+      "action": "inspect",
+      "result_sha256": "5a6c0ac9f158560247aaa0f6abfa0c8456e67b45d632812546c3262ad2ccc311",
+      "actual_native_pid": 16795,
+      "client_native_wrapper_returncode": 0,
+      "native_mode": "--hierarchy-pending",
+      "stdin_bytes": 12091,
+      "stdin_sha256": "3a6aaaaf32e10b6946c996fa943267e8c37cb66052249f95d3506ca959d05e54",
+      "stdin_completely_written": true,
+      "operational_failure_observed": false,
+      "client_code": null,
+      "native_frame_ascii": "qleisli.hierarchy-pending 3\npending\n171493\n262\n2\n3\n16\n",
+      "request_tail_equals_actual_positive": null
+    },
+    {
+      "case": "high-h-replaced-by-x",
+      "action": "request",
+      "result_sha256": "c93bc725f33047ba4146e74d4182f6d87374b651da14d766e07706dab0efd09c",
+      "actual_native_pid": 16800,
+      "client_native_wrapper_returncode": 1,
+      "native_mode": "--hierarchy-fourier-pending",
+      "stdin_bytes": 12311,
+      "stdin_sha256": "3d0507a031c72000a1bfcce3feeee45b688300f9371fd4f5891d9896fc2e7683",
+      "stdin_completely_written": true,
+      "operational_failure_observed": false,
+      "client_code": "contract",
+      "native_frame_ascii": "qleisli.hierarchy-fourier-pending 3\nerror\ncontract\n",
+      "request_tail_equals_actual_positive": true
+    }
+  ],
+  "capture_record_inventory_count": 53,
+  "capture_record_inventory_sha256": "0f70b9e70920ecaec5f30a3637437f3b66e5183c0d57c7e4223f7ad5c1cc278e",
+  "request_sha256": "b0468aee9db0078a20fec5eff0502a071da9d696cbcbaa8f4cf4478c878f2233",
+  "positive_request_tail_bytes": 212,
+  "positive_request_tail_sha256": "d558b77f3204b0486076ff1336f5a218eea914e78bc3508d44d88fc12572b9c5",
+  "summary_sha256": "65d4d238ee440ccaf0b5b5ee129ed11cf3a198e494bdf1041a9e017987403a28",
+  "skipped_record_sha256": "bfd4e5055f890817c92fdc520ebd5bc0bb65404633acaddb37f95656ba936478",
+  "additive_correction": "The summary reason client incomplete/operational failure is a generic false-success reason. Complete raw native invalid_ir + exit 1 and fully written input establish ordinary-artifact rejection, not an observed operational failure. Request correctly skipped; no valid Fourier-negative claim for this mutant.",
+  "discovery_and_audit_failures": [
+    {
+      "operation": "Read guessed study/original-capture-packet-01.json",
+      "exit_code": 1,
+      "failure": "FileNotFoundError; actual existing design/original-capture-packet-01.json subsequently found with rg and verified. No source/result repair."
+    },
+    {
+      "operation": "rg request.rs plus guessed bridge/wire.rs",
+      "exit_code": 2,
+      "failure": "Nonexistent bridge/wire.rs; actual request.rs framing read directly afterward. No code execution."
+    },
+    {
+      "operation": "First read-only data audit map reader",
+      "exit_code": 1,
+      "failure": "TypeError: string indices must be integers, not str; historical review maps use dictionary file rows. No audit output was saved and no producer/result bytes changed. Reader corrected to support both declared map representations; subsequent audit passes."
+    }
+  ],
+  "no_internal_failure_predicate_attributed": true,
+  "guarantee_status_changed": false,
+  "issue_progress": "Parent recorded 14/111 (12.61%); #317 all24 criteria remain open; no new credit."
+}

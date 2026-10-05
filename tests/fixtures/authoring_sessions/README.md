@@ -257,3 +257,12 @@ contract rejections. Full endpoints differ from the frozen canonical owner/axis
 labels; neither output nor request was repaired in that capture. Later explicit
 label routes require separate fresh checks. No source/family theorem, canonical
 stdlib exposure, specialization equivalence or Issue completion follows.
+
+The separate [canonical boundary results](qft-exact-request-v030/results-canonical.md)
+retain eight successful fresh native inspections/request checks at widths0–3.
+The [first negative results](qft-exact-request-v030/results-negatives-01.md) and
+[typed reversal follow-up](qft-exact-request-v030/results-reversal-02.md) retain
+three valid-artifact wrong-target refusals and the original invalid-rewire
+failure with its request skipped. These bounded observations do not establish
+source preservation, a general family or completion of the standard-library
+migration.
