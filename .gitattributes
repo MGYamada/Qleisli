@@ -149,3 +149,8 @@ tests/fixtures/constitution_v030/issue-315-scope/issue-315.md -text -whitespace
 tests/fixtures/constitution_v030/issue-315-scope/tool-observations.txt -text -whitespace
 tests/fixtures/constitution_v030/issue-315-scope/validation.json -text -whitespace
 tests/fixtures/constitution_v030/issue-315-scope-whitespace/*stdout.txt -text -whitespace
+# Retain the actual failed and repaired ordered-kind fixture test transcripts.
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/failure-excerpt.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/*/*stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/issue-44-before.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/migration.patch -text -whitespace

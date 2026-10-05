@@ -461,8 +461,8 @@ fn every_import_resolves_and_mutual_cycles_are_rejected() {
 #[test]
 fn forwarding_checks_callee_size_and_access_premises() {
     let ordered = BTreeMap::from([
-        ("dep".into(), "pub unitary fn use_op[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }".into()),
-        ("main".into(), "use dep::use_op; pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { use_op[n,U](q) }".into()),
+        ("dep".into(), "pub unitary fn use_op[static U: Op<Bits<n>>, static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }".into()),
+        ("main".into(), "use dep::use_op; pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { use_op[U,n](q) }".into()),
     ]);
     ParsedProgram::parse(ordered).unwrap();
     let dep = "pub unitary fn g[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { controlled(U)(c,q) }";

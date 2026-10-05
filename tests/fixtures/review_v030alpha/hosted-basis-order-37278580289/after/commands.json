@@ -1,0 +1,130 @@
+[
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "basis_polymorphism"
+    ],
+    "toolchain": "latest",
+    "exit_code": 0,
+    "seconds": 3.029201874975115,
+    "stdout": "00-latest.stdout.txt",
+    "stderr": "00-latest.stderr.txt"
+  },
+  {
+    "argv": [
+      "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "basis_polymorphism"
+    ],
+    "toolchain": "msrv",
+    "exit_code": 0,
+    "seconds": 2.644510917016305,
+    "stdout": "01-msrv.stdout.txt",
+    "stderr": "01-msrv.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "clippy",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "basis_polymorphism",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "toolchain": "latest",
+    "exit_code": 0,
+    "seconds": 0.8077405410003848,
+    "stdout": "02-latest.stdout.txt",
+    "stderr": "02-latest.stderr.txt"
+  },
+  {
+    "argv": [
+      "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+      "clippy",
+      "--offline",
+      "--test",
+      "sized_source",
+      "--test",
+      "basis_polymorphism",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "toolchain": "msrv",
+    "exit_code": 0,
+    "seconds": 0.3957696669967845,
+    "stdout": "03-msrv.stdout.txt",
+    "stderr": "03-msrv.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/bin/cargo",
+      "fmt",
+      "--check"
+    ],
+    "toolchain": "latest",
+    "exit_code": 0,
+    "seconds": 0.47868791699875146,
+    "stdout": "04-latest.stdout.txt",
+    "stderr": "04-latest.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "toolchain": "latest",
+    "exit_code": 0,
+    "seconds": 1.2240709580364637,
+    "stdout": "05-latest.stdout.txt",
+    "stderr": "05-latest.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "toolchain": "latest",
+    "exit_code": 0,
+    "seconds": 0.45658133301185444,
+    "stdout": "06-latest.stdout.txt",
+    "stderr": "06-latest.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "toolchain": "latest",
+    "exit_code": 0,
+    "seconds": 0.13656141696264967,
+    "stdout": "07-latest.stdout.txt",
+    "stderr": "07-latest.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "toolchain": "latest",
+    "exit_code": 1,
+    "seconds": 2.0178542920039035,
+    "stdout": "08-latest.stdout.txt",
+    "stderr": "08-latest.stderr.txt"
+  }
+]

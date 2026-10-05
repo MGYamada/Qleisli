@@ -10,6 +10,8 @@ development milestones from the scope of their evidence.
   to the common selected-source path. Check generic bodies before specialization,
   preserve exact trees in caches and charge retained substitutions; general
   Meaning refinement and final directory-profile integration remain open (#44).
+  Migrate the active sized forwarding fixture to the adopted ordered-kind rule,
+  retaining its original failure and forward-reference rejection coverage.
 - Include #315 in the maintainer-confirmed 110-Issue scope and release gate.
   Reject prior 108/109-Issue candidates that omit the added criteria or evidence;
   ordinary-source effect inference and stdlib migration remain required work.
