@@ -1,0 +1,9 @@
+{
+  "files": {
+    "README.md": "872759dcdba85b095f87c4369ff5ac3b000e7445c05ffcc0c544f0327cf4503d",
+    "review.json": "37f466812124ac07944d52f7071bdfe98e9ef2e71debddc9627b03a06a2d5b13"
+  },
+  "format": "qleisli.bounded-record-files",
+  "scope": "Every current packet file except this inventory itself; historical packets outside this directory are unchanged. This is file identity, not proof or release certification.",
+  "version": 1
+}

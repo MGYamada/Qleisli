@@ -1,0 +1,26 @@
+{
+  "algorithm": "sha256-json-sort_keys-indent2-newline-path-content-map-v1",
+  "files": {
+    ".github/ci/README.md": "e37d07bdf605860e3e4af6c22d2edb76fc9c9f79024def7f42ed97d228b30211",
+    ".github/ci/profiles.json": "7af3a55bc9718b5aa74769e646f3f7133acdfd572132074bfb75d96a15044fef",
+    "CONSTITUTION.md": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+    "GOVERNANCE.md": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+    "docs/src/design/ratification.md": "83e71973dd71642b44a0e414c9b13219ebd606d4c829e0315d054ddfb756eacb",
+    "governance/guarantees.json": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d",
+    "governance/guarantees/current-evidence.json": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575",
+    "governance/guarantees/initial-2026-admission.json": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2",
+    "governance/interpretations/exactness-2026-adoption.json": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59",
+    "governance/interpretations/initial-2026-adoption.json": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e",
+    "governance/interpretations/initial-2026-reviewed.txt": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3",
+    "governance/proposals/exactness-2026.md": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179",
+    "governance/proposals/initial-guarantees.json": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02",
+    "governance/ratification-2026.json": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+    "scripts/check_release_ready.py": "3e5d863a8dfd8e0681e4de26f706963a83cab59617da7196f2b0e4445293ecfe",
+    "scripts/ci_profiles.py": "2be854473e309a9ad3ed1bd4a5efe41ccfb347bdea24e4cae63fbbee4d334f5e",
+    "scripts/test_check_release_ready.py": "ed4f13970391447281355cab697dbda732586bccd1e5f7d29340cc1d745bbf63",
+    "scripts/test_ci_profiles.py": "c27bb358750c80fc61c423e9580022c0880b1735cc19215c54acf2b1944b7101",
+    "tests/fixtures/constitution_v030/issue-317-scope/issue-317.md": "b4ab70a17959bf57f47e7380d9c52769352a4c6e6a888a151f56c61876f112ab",
+    "tests/fixtures/constitution_v030/issue-317-scope/request.json": "9c2c98c87ba7d6479324cb6976a16316ac65b0499510289215956408202cbd42"
+  },
+  "sha256": "aa0da132be9d99213785d6a94540548f6520656e57bfab2ab4ad8004241f54ed"
+}

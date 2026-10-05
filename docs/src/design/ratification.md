@@ -139,5 +139,5 @@ The remaining [constitutional CI work](https://github.com/MGYamada/Qleisli/issue
 must connect binding interpretations, formal obligations, checked proofs and
 current production/artifact identity. Hash checks alone do not complete it.
 The [release umbrella](https://github.com/MGYamada/Qleisli/issues/142) tracks all
-109 selected issues, including #311, and the separate implementation, proof and
-publication gates.
+111 selected issues, including #311, #315 and #317, and the separate
+implementation, proof and publication gates.

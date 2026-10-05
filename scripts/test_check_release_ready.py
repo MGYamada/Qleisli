@@ -263,13 +263,17 @@ class SyntheticRelease(unittest.TestCase):
                 self.acceptance=copy.deepcopy(original); self.update_acceptance(change); self.reject('ID')
 
     def test_prior_108_issue_candidate_cannot_omit_exactness_requirement_or_acceptance(self):
-        self.assertEqual(len(checker.ISSUES), 110)
+        self.assertEqual(len(checker.ISSUES), 111)
         self.assertIn(311, checker.GROUPS['G02'])
-        self.omitted_issue_packet_rejects({311, 315}, 108)
+        self.omitted_issue_packet_rejects({311, 315, 317}, 108)
 
     def test_prior_109_issue_candidate_cannot_omit_body_derived_effect_work(self):
         self.assertIn(315, checker.GROUPS['G10'])
-        self.omitted_issue_packet_rejects({315}, 109)
+        self.omitted_issue_packet_rejects({315, 317}, 109)
+
+    def test_prior_110_issue_candidate_cannot_omit_semantic_stdlib_work(self):
+        self.assertIn(317, checker.GROUPS['G10'])
+        self.omitted_issue_packet_rejects({317}, 110)
 
     def omitted_issue_packet_rejects(self, omitted, previous_count):
         current_requirements = copy.deepcopy(self.requirements)
@@ -277,7 +281,7 @@ class SyntheticRelease(unittest.TestCase):
         previous_ids = checker.ISSUES - omitted
         self.assertEqual(len(previous_ids), previous_count)
         cases = [
-            ('previous groups and criteria', True, True, '13 groups/110 Issues'),
+            ('previous groups and criteria', True, True, '13 groups/111 Issues'),
             ('updated groups without new Issue criteria', False, True,
              'reviewed Issues: missing or unexpected IDs'),
             ('updated requirements without new Issue acceptance', False, False,

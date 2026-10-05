@@ -34,7 +34,7 @@ GROUPS = {
     "G07": [37, 64, 81, 87, 88, 125, 194, 195, 215],
     "G08": [25, 32, 33, 34, 35, 57, 67, 68, 80, 82, 196, 250],
     "G09": [120, 121, 122, 123, 124, 126, 127, 161, 162, 163, 164, 165],
-    "G10": [41, 58, 65, 131, 167, 315],
+    "G10": [41, 58, 65, 131, 167, 315, 317],
     "G11": [169, 170, 171, 172, 173, 174, 230, 231, 255],
     "G12": [133, 224, 225, 226, 237, 245, 270, 272], "G13": [48, 234, 253, 254],
 }
@@ -174,7 +174,7 @@ def requirements(root, base, snapshot):
     require(data["release_line"] == "0.3.0" and data["identities"] == IDENTITIES,
             "reviewed release/edition/schema identities differ")
     require(type(data["identities"]["qrate_schema"]) is int, "qrate schema must be an integer")
-    require(data["groups"] == GROUPS, "reviewed requirements must retain all 13 groups/110 Issues")
+    require(data["groups"] == GROUPS, "reviewed requirements must retain all 13 groups/111 Issues")
     require(all(type(number) is int for numbers in data["groups"].values() for number in numbers),
             "group Issue identities must be integers")
     # References in the reviewed requirements resolve against immutable Git blobs.

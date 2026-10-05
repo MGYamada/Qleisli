@@ -139,7 +139,7 @@ component proofs, independent semantic oracles and audit jobs remain required.
 
 `release-readiness` runs after the eight real validation jobs for tags and for
 an explicitly selected `workflow_dispatch.release_readiness`. Ordinary PRs and
-manual full validation do not require completion of the 110 selected issues.
+manual full validation do not require completion of the 111 selected issues.
 The gate requires both the full suite profile and full proof lane. The legacy
 `check_constitution.py --require-release-ready` delegates to the same checker;
 it rejects missing caller context instead of treating the three broader pending
@@ -149,9 +149,9 @@ The human/workflow caller supplies an exact trusted base commit through the
 manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
 tag. There is no fallback to candidate HEAD. Before using this gate for a real
 release, review and commit `release/requirements.json` at that base: the exact
-13 groups/110 IDs (including #311 and #315), complete applicable criteria, immutable Issue snapshot
-references and an explicit review record. The checker reads these from Git
-blobs at the base. A candidate `release/acceptance.json` supplies evidence for
+13 groups/111 IDs (including #311, #315 and #317), complete applicable criteria,
+immutable Issue snapshot references and an explicit review record. The checker
+reads these from Git blobs at the base. A candidate `release/acceptance.json` supplies evidence for
 exactly those criteria. GitHub remains the only decisions/progress ledger;
 these files are verification indices, not another backlog. There is currently
 no real completed index. Missing reviewed requirements or acceptance evidence

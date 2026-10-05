@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.selected-scope-expansion",
+  "version": 1,
+  "observed_utc": "2026-10-05 15:11:15 UTC",
+  "requested_scope": 111,
+  "previous_scope": 110,
+  "added_issue": 317,
+  "group": "G10",
+  "target": "0.3.0",
+  "edition": "2026",
+  "original_selected_count": 108,
+  "subsequent_additions": [
+    311,
+    315,
+    317
+  ],
+  "human_request": {
+    "kind": "direct-user-message",
+    "text": "新しいissue #317を立てました。追加してください"
+  },
+  "issue": {
+    "url": "https://github.com/MGYamada/Qleisli/issues/317",
+    "title": "0.3.0 important: make stdlib namespaces semantic and retire ad-hoc public APIs",
+    "created_at": "2026-10-05T15:08:05Z",
+    "criterion_count": 20
+  },
+  "effect": "Accounting and a required release-gate inclusion; no criterion of #317 is satisfied merely by adding it. Constitution, human interpretations, admitted guarantees and existing original criteria remain unchanged. GitHub remains the work ledger."
+}
