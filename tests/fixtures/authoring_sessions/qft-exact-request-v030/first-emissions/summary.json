@@ -1,0 +1,15 @@
+{
+  "recorded_utc": "2026-10-05T17:34:36.442832+00:00",
+  "status": "four-fixed-emission-calls-captured",
+  "events": [
+    "first-emissions/n0.json",
+    "first-emissions/n1.json",
+    "first-emissions/n2.json",
+    "first-emissions/n3.json"
+  ],
+  "identity_barriers": "pass",
+  "checked_or_executed_meaning": false,
+  "independent_requests_used": false,
+  "native_attempts_observed": 0,
+  "actual_native_checker_forwarded": false
+}

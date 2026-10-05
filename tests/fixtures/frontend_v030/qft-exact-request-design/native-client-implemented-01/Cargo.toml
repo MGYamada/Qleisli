@@ -1,0 +1,16 @@
+[package]
+name = "qleisli-qft-native-gate-design"
+version = "0.3.0-alpha"
+edition = "2024"
+rust-version = "1.85"
+license = "Apache-2.0"
+publish = false
+description = "Unexecuted bounded direct-native hierarchy client design"
+
+[dependencies]
+qleisli = { path = "../../../../..", version = "=0.3.0-alpha" }
+
+[workspace]
+
+[lints.rust]
+unsafe_code = "forbid"

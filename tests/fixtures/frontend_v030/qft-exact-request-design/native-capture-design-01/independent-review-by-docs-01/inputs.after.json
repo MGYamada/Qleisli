@@ -1,0 +1,66 @@
+{
+  "format": "qleisli.read-only-native-capture-review-inputs-after",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T17:46:34.547718+00:00",
+  "files": {
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-originals.py": {
+      "sha256": "8661863f76a65688f5878be552b08cf009153e42b51b1f885c8a2f0a8950e8cd",
+      "bytes": 10158
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py": {
+      "sha256": "f163dcca0807a47bdcbdf4a076f50e871e7e18224aca41383485338007493737",
+      "bytes": 5935
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/bounded_process.py": {
+      "sha256": "0ce0b915687f1df32c2d9775353fb1c01aa2a5ad45642b2c2379bfcfa84be4be",
+      "bytes": 4402
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/README.md": {
+      "sha256": "5306c1b7385ff95fcaacd1dd5431cc56d3b6dfffa2aaee19813c2c14567d8619",
+      "bytes": 6477
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-inputs.json": {
+      "sha256": "3adc26126aeb1ee9fbe96b9688e6a67151ef19e5ee0d2d01b35aea06c32f0dd7",
+      "bytes": 18793
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/src/main.rs": {
+      "sha256": "9c41554a2340f33ce573ae712a0b505ad6179e3a9c41f28a07141026ecce51b2",
+      "bytes": 6692
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/Cargo.toml": {
+      "sha256": "24ee359343c0fe6e49dc28cc6849c531ba82686a02f0bccd5373640a50afbc44",
+      "bytes": 355
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/Cargo.lock": {
+      "sha256": "906da964f930b9eeba2b724124d034ee20140b24b68381517028c955200d1099",
+      "bytes": 5482
+    },
+    "tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/build-attempt-01/result.json": {
+      "sha256": "261f8c06c769a30d40a43ee4df1cd4a042b0e4daa3d86816fdfc335dcab2dc4f",
+      "bytes": 3150
+    },
+    "src/interchange/hierarchical.rs": {
+      "sha256": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1",
+      "bytes": 23436
+    },
+    "src/interchange/hierarchical/bridge/request.rs": {
+      "sha256": "3b2b8dd2f2b0fa7a0084d4af650339f46aa1f2226c49c53756ec457a412c4719",
+      "bytes": 8661
+    },
+    "src/interchange/hierarchical/runtime.rs": {
+      "sha256": "0ee4c7afb8363d9e38699c1783345e0e78adbed3f172d891a31c46f1d46ebfda",
+      "bytes": 14310
+    },
+    "governance/guarantees.json": {
+      "sha256": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d",
+      "bytes": 5535
+    }
+  },
+  "selected_input_mismatches": {},
+  "frozen_packet_rows": 61,
+  "frozen_packet_mismatches": [],
+  "first_identity_rows": 233,
+  "first_identity_mismatches": [],
+  "selected_binary_mismatches": {},
+  "scope": "Independent source/read-only byte review only; no command or process behavior exercised."
+}

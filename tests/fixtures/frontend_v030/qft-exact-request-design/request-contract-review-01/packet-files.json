@@ -1,0 +1,36 @@
+{
+  "format": "qleisli.local-review-packet-files",
+  "version": 1,
+  "files": {
+    "constitution.json": {
+      "sha256": "f0257e96805ff5d3284f99c9be035de4ad0e9157cf359790d3f045552f44c9d5",
+      "bytes": 766
+    },
+    "constitution.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "constitution.stdout.txt": {
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "bytes": 420
+    },
+    "inputs.after.json": {
+      "sha256": "ddde6a01251eeeaf28fa8d8ec367442e265c09a023e7a3ff0ca90f2bdf8c384c",
+      "bytes": 7754
+    },
+    "inputs.before.json": {
+      "sha256": "184ef358ceae75a712a8625375101013b4e84b8cdd4b80e43926e2ec68c7427a",
+      "bytes": 8027
+    },
+    "review-record.json": {
+      "sha256": "6fd7e49f7050f7d22f92f0d1f6e9fd397c7add7aabd9c3e12a029778987ca004",
+      "bytes": 2682
+    },
+    "review.md": {
+      "sha256": "6a3566ece06097c79c87b7259fcdedc8a13ec0ae84eeec02c0a47ff15062c2f5",
+      "bytes": 5980
+    }
+  },
+  "self_excluded": "packet-files.json",
+  "scope": "Small local record identities, not proof/build closure or authentication."
+}

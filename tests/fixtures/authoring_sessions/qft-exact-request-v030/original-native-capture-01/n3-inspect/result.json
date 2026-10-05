@@ -1,0 +1,92 @@
+{
+  "recorded_utc": "2026-10-05T17:46:52.272418+00:00",
+  "width": 3,
+  "action": "inspect",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli-qft-native-gate-design",
+    "inspect",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/first-emissions/n3.proposal.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.15597004198934883,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "api_record": {
+    "action": "inspect",
+    "status": "ok",
+    "payload_bytes": 52423,
+    "request_bytes": null,
+    "retained_payload_equal": true,
+    "retained_request_equal": true,
+    "structural_work": 272786,
+    "exact_work": 393
+  },
+  "raw_stdout": {
+    "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/stdout.bin",
+    "bytes": 180,
+    "sha256": "d4c9616720d3db7b338b385ee91ef96378dc4ee09ecc07bb6ed85f20da7d0d52"
+  },
+  "raw_stderr": {
+    "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/stderr.bin",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "forwarder_attempts": 1,
+  "actual_native_calls": 1,
+  "native_records": [
+    {
+      "directory": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/original-native-capture-01/n3-inspect/native/call-01",
+      "process_started_record": true,
+      "result": {
+        "started_utc": "2026-10-05T17:46:52.150338+00:00",
+        "wrapper_argv": [
+          "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+          "--hierarchy-pending",
+          "0.3.0-alpha"
+        ],
+        "requested_native_argv": [
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--hierarchy-pending",
+          "0.3.0-alpha"
+        ],
+        "ordinal": 1,
+        "actual_native_spawned": true,
+        "actual_native_returncode": 0,
+        "interpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+        "identity_scope": "File observations only, not running-image/build attestation.",
+        "stdin_bytes": 18512,
+        "stdin_sha256": "91fadffa41d4aa3bab5e1bf1ba11d50035a5e25de11cbfcdda6e05dc7983a324",
+        "stdin_limited_prefix": false,
+        "finished_utc": "2026-10-05T17:46:52.264789+00:00",
+        "capture": {
+          "spawned": true,
+          "returncode": 0,
+          "reason": null,
+          "error": null,
+          "seconds": 0.049392583954613656,
+          "stdin_written": 18512,
+          "stdout_limited": false,
+          "stderr_limited": false
+        },
+        "native_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+        "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+        "stdout_bytes": 57,
+        "stderr_bytes": 0,
+        "stdout_sha256": "cc1209d03a0a3204fe51e50256a404f5c84a496c43582ed048b767b05b6864ba",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "wrapper_exit_code": 0
+      }
+    }
+  ],
+  "observed_stage": "actual-native-process-observed",
+  "stage_scope": "Logs and exact API diagnostic only; no inferred success or source preservation."
+}

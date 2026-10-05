@@ -1,0 +1,88 @@
+{
+  "format": "qleisli.hierarchy-request",
+  "version": 1,
+  "profile": "qpe-dyadic8-v1",
+  "kind": "equation",
+  "effect": "unitary",
+  "interface": {
+    "inputs": {
+      "quantum": [
+        {
+          "owner": 0,
+          "axes": [
+            0
+          ],
+          "basis": [
+            {
+              "tag": "bits",
+              "width": 1
+            }
+          ]
+        }
+      ],
+      "classical": []
+    },
+    "outputs": {
+      "quantum": [
+        {
+          "owner": 0,
+          "axes": [
+            0
+          ],
+          "basis": [
+            {
+              "tag": "bits",
+              "width": 1
+            }
+          ]
+        }
+      ],
+      "classical": []
+    }
+  },
+  "meanings": [
+    {
+      "interface": {
+        "inputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ]
+            }
+          ],
+          "classical": []
+        },
+        "outputs": {
+          "quantum": [
+            {
+              "owner": 0,
+              "axes": [
+                0
+              ],
+              "basis": [
+                {
+                  "tag": "bits",
+                  "width": 1
+                }
+              ]
+            }
+          ],
+          "classical": []
+        }
+      },
+      "body": {
+        "tag": "qft",
+        "width": 1
+      }
+    }
+  ],
+  "entry": 0
+}

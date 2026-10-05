@@ -1,0 +1,19 @@
+{
+  "started_utc": "2026-10-05T17:46:50.623367+00:00",
+  "wrapper_argv": [
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/log-native.py",
+    "--hierarchy-pending",
+    "0.3.0-alpha"
+  ],
+  "requested_native_argv": [
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--hierarchy-pending",
+    "0.3.0-alpha"
+  ],
+  "ordinal": 1,
+  "actual_native_spawned": false,
+  "actual_native_returncode": null,
+  "interpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "identity_scope": "File observations only, not running-image/build attestation."
+}

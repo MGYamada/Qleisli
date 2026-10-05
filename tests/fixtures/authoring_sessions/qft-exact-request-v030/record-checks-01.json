@@ -1,0 +1,31 @@
+{
+  "format": "qleisli.local-record-check-observations",
+  "version": 1,
+  "first_clock_observation_after_all_terminal_outputs_utc": "2026-10-05T17:49:03Z",
+  "timestamp_note": "Subsequent tool clock observation, not a timestamp of each command's start or finish.",
+  "records": [
+    {
+      "argv": ["python3", "scripts/check_authoring_sessions.py"],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "Checked 36 authoring records, 51 snapshots and 682 observations; no recorded command executed.\n",
+      "stderr": ""
+    },
+    {
+      "argv": ["python3", "scripts/check_editions.py"],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "Edition 2026: 2597 .qli and 5 .qlt files covered by 663 explicit manifests; no repository-root manifest.\nHistorical in-memory inputs: 42 exact source files and 14 unused manifests retained by hash; not valid filesystem source projects.\n",
+      "stderr": ""
+    },
+    {
+      "argv": ["python3", "scripts/check_docs.py"],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "Checked 1941 local links, 19 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 206 Lean root modules.\n",
+      "stderr": ""
+    }
+  ],
+  "recording": "Exact returned terminal text/status transcribed after the real commands, without rerunning them or claiming a subprocess capture that did not occur.",
+  "scope": "Local record, edition and documentation checks after the first actual emissions/original native captures. No new Cargo/Lean replay, rendered-book run, native check, mathematical guarantee, source preservation or release gate is supplied by these commands."
+}

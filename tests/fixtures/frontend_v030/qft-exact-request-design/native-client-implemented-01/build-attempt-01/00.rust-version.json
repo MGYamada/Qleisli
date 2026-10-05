@@ -1,0 +1,13 @@
+{
+  "name": "00.rust-version",
+  "argv": [
+    "rustup",
+    "run",
+    "1.85.0",
+    "rustc",
+    "--version"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_utc": "2026-10-05T17:38:25.471842+00:00",
+  "exit_code": 0
+}

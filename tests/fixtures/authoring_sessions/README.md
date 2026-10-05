@@ -248,3 +248,12 @@ The [separate after comparison](common-parameter-declaration-v030/results-after.
 matches all forty raw outputs, exits and native argv/counts, while preserving
 the original session. Both actual Rust versions pass the existing bounded
 declaration/type/effect suites; complete common checking remains unfinished.
+
+The [local exact-QFT request study](qft-exact-request-v030/session.json) preserves
+the unchanged licensed family and four independent requests before emission.
+[Actual first results](qft-exact-request-v030/results-first.md) retain four tiny
+emissions, four fresh native inspections and four unchanged-request native
+contract rejections. Full endpoints differ from the frozen canonical owner/axis
+labels; neither output nor request was repaired in that capture. Later explicit
+label routes require separate fresh checks. No source/family theorem, canonical
+stdlib exposure, specialization equivalence or Issue completion follows.

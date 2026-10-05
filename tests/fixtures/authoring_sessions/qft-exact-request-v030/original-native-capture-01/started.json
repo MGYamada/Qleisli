@@ -1,0 +1,16 @@
+{
+  "recorded_utc": "2026-10-05T17:46:49.035234+00:00",
+  "widths": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "actions": [
+    "inspect",
+    "request"
+  ],
+  "reviewed_client_sha256": "683b29749f752652b3ddb8dba7fac0ea2d832f848178963f3056d2f5c03d8294",
+  "reviewed_capture_inputs_sha256": "3adc26126aeb1ee9fbe96b9688e6a67151ef19e5ee0d2d01b35aea06c32f0dd7",
+  "status": "capture-started-no-outcome-predicted"
+}

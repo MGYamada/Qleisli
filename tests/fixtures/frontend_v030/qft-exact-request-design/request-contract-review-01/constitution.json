@@ -1,0 +1,23 @@
+{
+  "format": "qleisli.read-only-request-review-startup",
+  "observed_at_utc": "2026-10-05T17:30:23.960015+00:00",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "scope": "Required constitutional continuity/source identity only; no fresh Lean, QFT harness, CLI or native execution.",
+  "files": {
+    "constitution.stdout.txt": {
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "bytes": 420
+    },
+    "constitution.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}

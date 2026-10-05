@@ -1,0 +1,11 @@
+Diff in /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01/src/main.rs:145:
+         Action::Inspect => kernel.inspect_native(&payload),
+         Action::Request => kernel.check_against_native(
+             &payload,
+-            request.as_deref().expect("request action requires a request"),
++            request
++                .as_deref()
++                .expect("request action requires a request"),
+         ),
+     }
+     .map_err(Failure::kernel)?;

@@ -1,0 +1,24 @@
+{
+  "identity_before": {
+    "path": "identity-before.json",
+    "bytes": 51909,
+    "sha256": "e7e6099b12a5f820acfd42575e251bca5289b06e51db798d8375802ceb86e8e5"
+  },
+  "first_files": {
+    "path": "first-files.json",
+    "bytes": 3051,
+    "sha256": "5414941b13b959b3e80b799c4a93720b766864b257046aa5b39be7237b5aa978"
+  },
+  "cli_sha256": "db571ad2fcdac89e52e0835a61732b72bb00df7b04ae4ecba33a34888c366a8a",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "native_sentinel": {
+    "path": "native-sentinel.py",
+    "bytes": 779,
+    "sha256": "14ed2f48b675cdfca28747e3a6928aca686ddc78979cfc5b63a34a8b26dc532e"
+  },
+  "native_environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/native-sentinel.py",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-exact-request-v030/native-sentinel.py"
+  },
+  "note": "Byte observations and hash barriers, not build-to-HEAD attestation."
+}

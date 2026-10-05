@@ -1,0 +1,21 @@
+{
+  "recorded_utc": "2026-10-05T17:46:52.738607+00:00",
+  "status": "eight-fixed-original-calls-captured",
+  "client_observations": 8,
+  "actual_native_calls": 8,
+  "events": [
+    "n0-inspect/result.json",
+    "n0-request/result.json",
+    "n1-inspect/result.json",
+    "n1-request/result.json",
+    "n2-inspect/result.json",
+    "n2-request/result.json",
+    "n3-inspect/result.json",
+    "n3-request/result.json"
+  ],
+  "identity_barriers": "pass",
+  "adapter_or_mutant_created": false,
+  "expected_outcomes_changed": false,
+  "source_meaning_verified": false,
+  "scope": "Capture completion only; request rejection is retained data, not recorder failure or proof."
+}

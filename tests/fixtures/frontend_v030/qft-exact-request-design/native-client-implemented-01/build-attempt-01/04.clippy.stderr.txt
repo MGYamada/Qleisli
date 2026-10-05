@@ -1,0 +1,3 @@
+    Checking qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Checking qleisli-qft-native-gate-design v0.3.0-alpha (/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-client-implemented-01)
+    Finished `dev` profile [unoptimized] target(s) in 2.07s

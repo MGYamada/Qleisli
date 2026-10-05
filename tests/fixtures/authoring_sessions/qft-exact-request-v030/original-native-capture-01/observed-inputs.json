@@ -1,0 +1,21 @@
+{
+  "recorded_utc": "2026-10-05T17:46:49.197010+00:00",
+  "client": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli-qft-native-gate-design",
+    "bytes": 1299840,
+    "sha256": "683b29749f752652b3ddb8dba7fac0ea2d832f848178963f3056d2f5c03d8294"
+  },
+  "native": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "bytes": 91666928,
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "capture_inputs": {
+    "path": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qft-exact-request-design/native-capture-design-01/capture-inputs.json",
+    "bytes": 18793,
+    "sha256": "3adc26126aeb1ee9fbe96b9688e6a67151ef19e5ee0d2d01b35aea06c32f0dd7"
+  },
+  "interpreter": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+  "python_version": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "scope": "File observations and barriers; not compiled-HEAD/running-image attestation."
+}
