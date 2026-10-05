@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Local ordinary generic QFT family including a typed zero-width owner, before canonical stdlib integration; Issue 317",
+  "baseline_commit": "238e1f0869c96c8da18f215a4569dd68e2cc98b9",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; exact deployed model/sampling unknown; informed repository study",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Licensed current generic translation copied before any check; ordinary inferred effect and outer zero-width identity branch. Current executable spelling, not canonical bundled exposure.",
+      "sha256": {
+        "transform.qli": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc"
+      },
+      "observations": [
+        "first-checks/n0-text.json",
+        "first-checks/n0-json.json",
+        "first-checks/n1-text.json",
+        "first-checks/n1-json.json",
+        "first-checks/n2-text.json",
+        "first-checks/n2-json.json",
+        "first-checks/n3-text.json",
+        "first-checks/n3-json.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "After eight successful first checks, add bounded analytic coefficient and retained-reference probe clients. Original QFT bytes copied unchanged; this is an informed extension, not a source repair.",
+      "sha256": {
+        "transform.qli": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+        "reference.qli": "28989c572d79ab94bda01ab84180e8fab4ed1c56bc8841e1769d2deef5f15ef5"
+      },
+      "observations": []
+    }
+  ]
+}

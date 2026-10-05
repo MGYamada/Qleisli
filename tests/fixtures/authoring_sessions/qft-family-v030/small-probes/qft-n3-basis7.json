@@ -1,0 +1,108 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "--entry=transform::qft",
+    "--module=transform=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/transform.qli",
+    "--module=reference=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/reference.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/native-log.py",
+    "--format=json",
+    "--nat=n=3",
+    "--basis=7"
+  ],
+  "exit_code": 0,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "quantum_bits": 3,
+      "amplitudes": [
+        [
+          0.35355339059327384,
+          0.0
+        ],
+        [
+          0.25,
+          -0.25000000000000006
+        ],
+        [
+          -3.925231146709438e-17,
+          -0.35355339059327384
+        ],
+        [
+          -0.25000000000000006,
+          -0.24999999999999994
+        ],
+        [
+          -0.35355339059327384,
+          0.0
+        ],
+        [
+          -0.25,
+          0.25000000000000006
+        ],
+        [
+          3.925231146709438e-17,
+          0.35355339059327384
+        ],
+        [
+          0.25000000000000006,
+          0.24999999999999994
+        ]
+      ],
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "transform::qft",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": "",
+  "native_invocations": 1,
+  "seconds": 0.11763666704064235,
+  "recorded_utc": "2026-10-05T15:54:15.610563+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "independent_expected_coefficients": [
+    [
+      0.35355339059327373,
+      0.0
+    ],
+    [
+      0.24999999999999992,
+      -0.25000000000000006
+    ],
+    [
+      -1.5154230984121132e-16,
+      -0.35355339059327373
+    ],
+    [
+      -0.24999999999999992,
+      -0.25000000000000006
+    ],
+    [
+      -0.35355339059327373,
+      3.0308461968242264e-16
+    ],
+    [
+      -0.2499999999999995,
+      0.25000000000000044
+    ],
+    [
+      -1.7341005394987604e-16,
+      0.35355339059327373
+    ],
+    [
+      0.250000000000001,
+      0.24999999999999895
+    ]
+  ],
+  "maximum_complex_coefficient_error": 1.3743915342634358e-15
+}

@@ -1,0 +1,9 @@
+{
+  "checks": 4,
+  "basis_columns": 15,
+  "reference_columns": 4,
+  "maximum_complex_coefficient_error": 1.3743915342634358e-15,
+  "comparison_tolerance": 1e-11,
+  "oracle": "Independent analytic positive Fourier coefficients and explicitly specified reference preparations.",
+  "scope": "Small numerical corroboration, not exact native Fourier requests or a constitutional guarantee."
+}

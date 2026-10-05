@@ -1,0 +1,32 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--no-index",
+      "--check",
+      "--",
+      "/dev/null",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/independent-review.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "",
+    "interpretation": "Exit 1 with empty --check output records a new file differing from /dev/null, with no whitespace diagnostic."
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--no-index",
+      "--check",
+      "--",
+      "/dev/null",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/policy-results.md"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "",
+    "interpretation": "Exit 1 with empty --check output records a new file differing from /dev/null, with no whitespace diagnostic."
+  }
+]

@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=transform::qft",
+    "--module=transform=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/attempt-01/transform.qli",
+    "--nat=n=1",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "native_invocations": 1,
+  "seconds": 0.08396445901598781,
+  "recorded_utc": "2026-10-05T15:51:41.021869+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-unitary",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "transform::qft",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  }
+}

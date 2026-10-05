@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+"""Record documentation/integrity checks without replaying QFT commands.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+"""
+
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import time
+
+root = Path(__file__).resolve().parent
+repo = root.parents[3]
+out = root / "policy-validation-final"
+out.mkdir()
+sha = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+frozen = {}
+for record in ("first-files.json", "probe-files.json"):
+    frozen.update(json.loads((root / record).read_text())["files"])
+assert all(sha(root / name) == digest for name, digest in frozen.items())
+(out / "executed-driver.py.txt").write_bytes(Path(__file__).read_bytes())
+rows = []
+env = dict(os.environ, PYTHONDONTWRITEBYTECODE="1")
+commands = [
+    [sys.executable, "scripts/check_authoring_sessions.py"],
+    [sys.executable, "scripts/check_docs.py"],
+    [sys.executable, "scripts/check_editions.py"],
+    ["git", "diff", "--check", "--", "tests/fixtures/authoring_sessions/README.md"],
+]
+for command in commands:
+    start = time.monotonic()
+    result = subprocess.run(command, cwd=repo, env=env, capture_output=True, timeout=120)
+    index = f"{len(rows):02d}"
+    (out / (index + ".stdout.txt")).write_bytes(result.stdout)
+    (out / (index + ".stderr.txt")).write_bytes(result.stderr)
+    rows.append({"command": command, "exit_code": result.returncode,
+                 "seconds": time.monotonic() - start,
+                 "recorded_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+                 "stdout": index + ".stdout.txt", "stderr": index + ".stderr.txt"})
+    (out / "commands.json").write_text(json.dumps(rows, indent=2) + "\n")
+    print(command, result.returncode, flush=True)
+    assert result.returncode == 0, f"{command}: {result.stdout!r} {result.stderr!r}"
+
+# The packet is untracked during this study, so a normal git diff would omit it.
+# Check each previously authored packet file against /dev/null, retaining actual
+# exit codes/output rather than staging or claiming tracked-only coverage.
+whitespace = []
+for path in sorted(root.rglob("*")):
+    if not path.is_file() or out in path.parents:
+        continue
+    command = ["git", "diff", "--no-index", "--check", "--", "/dev/null", str(path)]
+    result = subprocess.run(command, cwd=repo, env=env, capture_output=True, timeout=10)
+    whitespace.append({"command": command, "exit_code": result.returncode,
+                       "stdout": result.stdout.decode(), "stderr": result.stderr.decode(),
+                       "exit_code_note": "--no-index returns 1 for a new file differing from /dev/null; empty --check output means no whitespace diagnostic."})
+    (out / "packet-whitespace.json").write_text(json.dumps(whitespace, indent=2) + "\n")
+    assert result.returncode in (0, 1) and not result.stdout and not result.stderr, (
+        f"{path}: {result.returncode} {result.stdout!r} {result.stderr!r}"
+    )
+assert all(sha(root / name) == digest for name, digest in frozen.items())
+(out / "summary.json").write_text(json.dumps({
+    "checks_passed": len(rows), "packet_whitespace_files": len(whitespace),
+    "frozen_first_and_probe_files_unchanged": True,
+    "native_or_cli_replay": False, "builds": False,
+    "scope": "Actual documentation/integrity checks after receiving review. These do not add semantic execution evidence or constitutional authority.",
+}, indent=2) + "\n")
+print("policy and untracked-packet whitespace checks passed", flush=True)

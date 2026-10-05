@@ -205,3 +205,12 @@ the failed identity check remain intact. The 44 appended repetitions identify
 a fixed CLI before and after each invocation. Their agreement does not remove
 the first run's provenance limitation. Exact unitor, scalar and reference laws
 were authored before execution and require separate validation.
+
+The [local QFT family study](qft-family-v030/session.json) preserves a licensed
+generic translation before checking and a separate reference-client extension.
+All 31 bounded observations at widths 0–3 pass: twelve checks, fifteen complete
+basis columns and four coherent/reference probes. [Results](qft-family-v030/results.md)
+and the [received independent review](qft-family-v030/independent-review.json)
+retain producer-consistency and numerical scope. No canonical stdlib exposure,
+independent named exact Fourier request or general proof follows; the unit-norm
+probes alone do not establish arbitrary unnormalized-input behavior.

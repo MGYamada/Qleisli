@@ -1,0 +1,13 @@
+{
+  "files": {
+    "attempt-01/transform.qli": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+    "attempt-01/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "context.md": "f055723959fcd301bbb6ad4f4aaf4cf14f923c4122609c18b806660ea6890587",
+    "identity-before.json": "49c078bc4420aed22e2024eeb895a8fc691c057ded1125f6430b888d4cb54ab9",
+    "README.md": "e1a2cc08aaeeb117e8275ba68b35ad59c33991c0bcfd79c673d7b7be64aacd4e",
+    "session-before.json": "c6379999d4de775f357c6b13d3a8ec78cce08f484f661942862e36e6b43e27c8",
+    "native-log.py": "d8fc13ce2406e26792aa9c4085363d4ba27ee9d0a806ce75fc3417ef829818d6",
+    "observe.py": "57e815524243d7e05712a22c98f64ccec0295dc81b347407063d4b56fb7e0222"
+  },
+  "scope": "Sources, manifest, context, identity and initial session frozen before first source check. The mutable session.json only appends actual observations."
+}

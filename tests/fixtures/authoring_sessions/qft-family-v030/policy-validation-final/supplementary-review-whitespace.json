@@ -1,0 +1,17 @@
+[
+  {
+    "command": [
+      "git",
+      "diff",
+      "--no-index",
+      "--check",
+      "--",
+      "/dev/null",
+      "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/qft-family-v030/independent-review.json"
+    ],
+    "exit_code": 1,
+    "stdout": "",
+    "stderr": "",
+    "interpretation": "Git --no-index exit 1 with no --check output is a new-file difference, with no whitespace diagnostic."
+  }
+]

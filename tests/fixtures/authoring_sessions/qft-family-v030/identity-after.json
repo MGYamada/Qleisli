@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.qft-family-study-identity-after",
+  "version": 1,
+  "recorded_utc": "2026-10-05T15:55:35.363223+00:00",
+  "head_after": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+  "baseline_commit": "238e1f0869c96c8da18f215a4569dd68e2cc98b9",
+  "cli_sha256": "a2755f3c13068f30f92d92d12d88a4b81a8ae7c0fbd69374aed632e3fb23bacc",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "parent_source_files_unchanged": true,
+  "current_stdlib_sources_unchanged": true,
+  "note": "The parent committed Issue317 records during this local study. Captured Rust/test/Cargo and stdlib input bytes and existing binaries remained unchanged throughout; a metadata-only HEAD advance is not a new build or source attestation."
+}

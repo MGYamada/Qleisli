@@ -1,0 +1,2 @@
+Edition 2026: 2561 .qli and 5 .qlt files covered by 636 explicit manifests; no repository-root manifest.
+Historical in-memory inputs: 42 exact source files and 14 unused manifests retained by hash; not valid filesystem source projects.

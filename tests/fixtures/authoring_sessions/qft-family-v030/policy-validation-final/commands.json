@@ -1,0 +1,49 @@
+[
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.27674762497190386,
+    "recorded_utc": "2026-10-05T16:06:56.897531+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.6317742909886874,
+    "recorded_utc": "2026-10-05T16:06:58.529676+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "command": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_editions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 3.625910750008188,
+    "recorded_utc": "2026-10-05T16:07:02.155863+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "command": [
+      "git",
+      "diff",
+      "--check",
+      "--",
+      "tests/fixtures/authoring_sessions/README.md"
+    ],
+    "exit_code": 0,
+    "seconds": 0.014788582979235798,
+    "recorded_utc": "2026-10-05T16:07:02.170924+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  }
+]
