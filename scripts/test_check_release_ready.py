@@ -263,32 +263,40 @@ class SyntheticRelease(unittest.TestCase):
                 self.acceptance=copy.deepcopy(original); self.update_acceptance(change); self.reject('ID')
 
     def test_prior_108_issue_candidate_cannot_omit_exactness_requirement_or_acceptance(self):
-        self.assertEqual(len(checker.ISSUES), 109)
+        self.assertEqual(len(checker.ISSUES), 110)
         self.assertIn(311, checker.GROUPS['G02'])
+        self.omitted_issue_packet_rejects({311, 315}, 108)
+
+    def test_prior_109_issue_candidate_cannot_omit_body_derived_effect_work(self):
+        self.assertIn(315, checker.GROUPS['G10'])
+        self.omitted_issue_packet_rejects({315}, 109)
+
+    def omitted_issue_packet_rejects(self, omitted, previous_count):
         current_requirements = copy.deepcopy(self.requirements)
         current_acceptance = copy.deepcopy(self.acceptance)
-        previous_ids = checker.ISSUES - {311}
-        self.assertEqual(len(previous_ids), 108)
+        previous_ids = checker.ISSUES - omitted
+        self.assertEqual(len(previous_ids), previous_count)
         cases = [
-            ('previous groups and criteria', True, True, '13 groups/109 Issues'),
-            ('updated groups without Issue 311 criteria', False, True,
+            ('previous groups and criteria', True, True, '13 groups/110 Issues'),
+            ('updated groups without new Issue criteria', False, True,
              'reviewed Issues: missing or unexpected IDs'),
-            ('updated requirements without Issue 311 acceptance', False, False,
+            ('updated requirements without new Issue acceptance', False, False,
              'acceptance Issues: missing or unexpected IDs'),
         ]
         for label, old_groups, old_criteria, diagnostic in cases:
             with self.subTest(case=label):
                 self.requirements = copy.deepcopy(current_requirements)
                 if old_groups:
-                    self.requirements['groups']['G02'].remove(311)
+                    for group in self.requirements['groups'].values():
+                        group[:] = [number for number in group if number not in omitted]
                 if old_criteria:
                     self.requirements['issues'] = [row for row in self.requirements['issues']
-                                                   if row['id'] != 311]
+                                                   if row['id'] not in omitted]
                     self.assertEqual({row['id'] for row in self.requirements['issues']}, previous_ids)
                 self.write(checker.REQUIREMENTS, encoded(self.requirements))
                 self.base = self.commit()
                 self.acceptance = copy.deepcopy(current_acceptance)
-                self.acceptance['issues'] = [row for row in self.acceptance['issues'] if row['id'] != 311]
+                self.acceptance['issues'] = [row for row in self.acceptance['issues'] if row['id'] not in omitted]
                 self.assertEqual({row['id'] for row in self.acceptance['issues']}, previous_ids)
                 self.acceptance['requirements_sha256'] = checker.digest(encoded(self.requirements))
                 self.write(checker.ACCEPTANCE, encoded(self.acceptance))

@@ -149,7 +149,7 @@ The human/workflow caller supplies an exact trusted base commit through the
 manual `release_base` input or repository variable `QLEISLI_RELEASE_BASE` for a
 tag. There is no fallback to candidate HEAD. Before using this gate for a real
 release, review and commit `release/requirements.json` at that base: the exact
-13 groups/109 IDs (including #311), complete applicable criteria, immutable Issue snapshot
+13 groups/110 IDs (including #311 and #315), complete applicable criteria, immutable Issue snapshot
 references and an explicit review record. The checker reads these from Git
 blobs at the base. A candidate `release/acceptance.json` supplies evidence for
 exactly those criteria. GitHub remains the only decisions/progress ledger;

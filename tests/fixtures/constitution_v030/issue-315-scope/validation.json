@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.bounded-validation",
+  "version": 1,
+  "scope": "release-selected-scope-addition",
+  "issues": 110,
+  "added": 315,
+  "group": "G10",
+  "command": [
+    "python3",
+    "scripts/test_check_release_ready.py"
+  ],
+  "exit_code": 0,
+  "tests_passed": 30,
+  "runtime_seconds": 72.162,
+  "context": "synthetic release candidate/provenance only",
+  "reference": {
+    "repository": "MGYamada/Qleisli",
+    "issue_number": 315,
+    "observed_updated_at": "2026-10-05T06:09:17Z"
+  },
+  "claims_excluded": [
+    "ordinary source effect inference complete",
+    "Issue 315 complete",
+    "release ready",
+    "new proof or guarantee admission"
+  ]
+}
+
