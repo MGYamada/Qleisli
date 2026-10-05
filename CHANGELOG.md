@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add bounded opaque Basis parameters and explicit exact type/provider bindings
+  to the common selected-source path. Check generic bodies before specialization,
+  preserve exact trees in caches and charge retained substitutions; general
+  Meaning refinement and final directory-profile integration remain open (#44).
 - Include #315 in the maintainer-confirmed 110-Issue scope and release gate.
   Reject prior 108/109-Issue candidates that omit the added criteria or evidence;
   ordinary-source effect inference and stdlib migration remain required work.

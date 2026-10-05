@@ -776,7 +776,7 @@ impl Operation {
 pub(super) fn called_static_names<'a>(op: &'a StaticOp, names: &mut Vec<&'a Ident>) {
     match &op.kind {
         StaticOpKind::Name(n) => names.push(n),
-        StaticOpKind::Natural(_) => {}
+        StaticOpKind::Type(_) | StaticOpKind::Natural(_) => {}
         StaticOpKind::Specialize { name, arguments } => {
             names.push(name);
             for argument in arguments {

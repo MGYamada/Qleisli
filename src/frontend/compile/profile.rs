@@ -6,6 +6,12 @@ type Failure = (Span, &'static str);
 pub(super) fn check(declaration: &Decl) -> Result<(), Failure> {
     for parameter in &declaration.static_params {
         match &parameter.kind {
+            StaticParamKind::Basis => {
+                return Err((
+                    parameter.name.span,
+                    "finite profile does not support opaque Basis parameters",
+                ));
+            }
             StaticParamKind::Natural => {
                 return Err((
                     parameter.name.span,
@@ -40,6 +46,12 @@ pub(super) fn check(declaration: &Decl) -> Result<(), Failure> {
 }
 fn ty(ty: &Type) -> Result<(), Failure> {
     match &ty.kind {
+        TypeKind::Named(_) => {
+            return Err((
+                ty.span,
+                "named Basis types are outside the finite lowering profile",
+            ));
+        }
         TypeKind::Bits(_) => {
             return Err((
                 ty.span,
@@ -64,7 +76,7 @@ fn ty(ty: &Type) -> Result<(), Failure> {
 }
 fn operation(operation: &StaticOp) -> Result<(), Failure> {
     match &operation.kind {
-        StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
+        StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
             return Err((
                 operation.span,
                 "static argument is outside the finite lowering profile",

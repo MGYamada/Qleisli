@@ -121,6 +121,9 @@ impl Projection<'_, '_> {
                     source::StaticParamKind::Natural => {
                         Parameter::Natural(self.binding(&parameter.name))
                     }
+                    source::StaticParamKind::Basis => {
+                        Parameter::Basis(self.binding(&parameter.name))
+                    }
                     source::StaticParamKind::Operation {
                         basis: ty,
                         meaning: None,
@@ -237,6 +240,7 @@ impl Projection<'_, '_> {
     }
     fn argument(&self, operation: &source::StaticOp) -> Result<Argument> {
         Ok(match &operation.kind {
+            source::StaticOpKind::Type(ty) => Argument::Basis(self.basis(ty)?, operation.span),
             source::StaticOpKind::Name(name) => Argument::Natural(Natural {
                 kind: NatKind::Name(self.ident(name)),
                 span: name.span,
@@ -368,6 +372,25 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
     type Error = Error;
     fn resolve_size(&mut self, size: &source::Natural) -> Result<Natural> {
         Ok(self.natural(size))
+    }
+    fn resolve_basis(&mut self, name: &source::Ident) -> Result<Type> {
+        let reference = self.ident(name);
+        if let Some(index) = self.index {
+            let usage = index.table.usage(reference.site.unwrap());
+            if !matches!(usage.target, ResolvedUse::Local(id) if index.table.binder(id).kind == crate::frontend::resolve::locals::BindingKind::StaticBasis)
+            {
+                return Err(Error::new(
+                    "type",
+                    name.span,
+                    format!("{} names no Basis parameter", name.text),
+                ));
+            }
+        }
+        Ok(Type::parameter(crate::frontend::types::TypeParameter {
+            key: reference.local,
+            name: name.text.clone(),
+            span: name.span,
+        }))
     }
     fn quantum_basis_error(&mut self, span: Span) -> Error {
         Error::new(

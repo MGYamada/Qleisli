@@ -30,3 +30,26 @@ is unchanged. These checks do not rebuild Lean, establish source preservation,
 admit a constitutional guarantee or close #44/#27/#43.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Later implementation observations
+
+The ten appended `implementation/` probes reuse unchanged `attempt-02` source.
+Six abstract negatives now reach their actual generic type, access or ownership
+rule without a native invocation. The concrete control and the same opaque
+repeat body at `Bit` and `Bits<1>` each pass with one native invocation.
+Explicit command inputs supply type bindings; these are not inferred from width.
+
+The first opaque-forward follow-up fails at project admission: its additional
+provider manifest incorrectly used `schema` rather than `schema-version`.
+The observer's positive expectation was premature; its failed assertion,
+actual output, inputs and original provider bytes remain in `implementation/`.
+The historical result's scope text describes the intended outcomes; the recorded
+rows and this correction state the actual outcomes. Only the provider manifest
+is repaired. `implementation-provider-repaired/` retains the succeeding run and
+its one native invocation; the original client's source remains unchanged.
+
+The additional provider has a separate `B` parameter and explicit own binding.
+These observations establish no general source or specialization theorem.
+Independent small complex-reference and Unit-phase tests live in
+`tests/basis_polymorphism.rs`; #44 remains open for Meaning integration and
+its complete acceptance criteria. No fresh Lean replay or guarantee is claimed.

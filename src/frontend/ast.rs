@@ -83,6 +83,7 @@ pub enum TypeKind {
     Unit,
     Bit,
     Bits(Natural),
+    Named(Ident),
     Q(Box<Type>),
     Tuple(Vec<Type>),
 }
@@ -236,6 +237,7 @@ pub struct StaticParam {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StaticParamKind {
     Natural,
+    Basis,
     Operation { basis: Type, meaning: Option<Ident> },
 }
 
@@ -254,6 +256,7 @@ pub struct StaticOp {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StaticOpKind {
     Name(Ident),
+    Type(Type),
     Bind {
         implementation: Ident,
         meaning: Ident,

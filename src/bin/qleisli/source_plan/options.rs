@@ -6,14 +6,16 @@ use super::super::options::natural;
 
 pub(super) const USAGE: &str =
     "usage: qleisli <check|run|sample|emit-proposal> --entry=module::function
-  --module=name=PATH (repeat) --nat=name=N (repeat)
+  --module=name=PATH (repeat) --type=name=TYPE --nat=name=N (repeat)
   [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)
+  [--operation-type=name.parameter=TYPE] (repeat)
   [--ir-profile=auto|raw|hierarchy] [--lean-kernel=PATH]
   [--request=PATH | --qpe-provider=PATH] [--format=json]
   [--basis=N] [--shots=N --seed=N] [--output=PATH]
   --kernel is an alias for --lean-kernel; otherwise use QLEISLI_KERNEL.
   Raw run/sample require zero runtime parameters and no quantum result.
   --basis is hierarchy run/sample-only (default 0); it is never ordinary input.
+  --type binds an exact closed ordinary Basis; it does not select runtime input.
   Selected-source sample requires shots in 1..1024 and a seed.
   emit-proposal requires output and no kernel/request/provider; it is untrusted.
   Module-map checking covers every declaration, native checking the selected instance.
@@ -37,8 +39,10 @@ pub(super) struct Options {
     pub entry: String,
     pub modules: BTreeMap<String, PathBuf>,
     pub ns: BTreeMap<String, u32>,
+    pub types: BTreeMap<String, String>,
     pub ops: BTreeMap<String, String>,
     pub op_ns: BTreeMap<String, BTreeMap<String, u32>>,
+    pub op_types: BTreeMap<String, BTreeMap<String, String>>,
     pub kernel: Option<PathBuf>,
     pub request: Option<PathBuf>,
     pub provider: Option<PathBuf>,
@@ -58,8 +62,10 @@ pub(super) fn selected(args: &[OsString]) -> bool {
                 "--entry",
                 "--module",
                 "--nat",
+                "--type",
                 "--operation",
                 "--operation-nat",
+                "--operation-type",
                 "--ir-profile",
                 "--request",
                 "--qpe-provider",
@@ -89,8 +95,10 @@ pub(super) fn parse(args: &[OsString]) -> Option<Options> {
             flag
         };
         if value.is_empty()
-            || !matches!(flag, "module" | "nat" | "operation" | "operation-nat")
-                && !singleton.insert(flag)
+            || !matches!(
+                flag,
+                "module" | "nat" | "type" | "operation" | "operation-nat" | "operation-type"
+            ) && !singleton.insert(flag)
         {
             return None;
         }
@@ -108,6 +116,15 @@ pub(super) fn parse(args: &[OsString]) -> Option<Options> {
             "nat" => {
                 let (key, value) = value.split_once('=')?;
                 if key.is_empty() || result.ns.insert(key.into(), natural(value)?).is_some() {
+                    return None;
+                }
+            }
+            "type" => {
+                let (key, value) = value.split_once('=')?;
+                if key.is_empty()
+                    || value.is_empty()
+                    || result.types.insert(key.into(), value.into()).is_some()
+                {
                     return None;
                 }
             }
@@ -130,6 +147,22 @@ pub(super) fn parse(args: &[OsString]) -> Option<Options> {
                         .entry(operation.into())
                         .or_default()
                         .insert(name.into(), natural(value)?)
+                        .is_some()
+                {
+                    return None;
+                }
+            }
+            "operation-type" => {
+                let (key, value) = value.split_once('=')?;
+                let (operation, name) = key.split_once('.')?;
+                if operation.is_empty()
+                    || name.is_empty()
+                    || value.is_empty()
+                    || result
+                        .op_types
+                        .entry(operation.into())
+                        .or_default()
+                        .insert(name.into(), value.into())
                         .is_some()
                 {
                     return None;
@@ -159,6 +192,10 @@ pub(super) fn parse(args: &[OsString]) -> Option<Options> {
         || result.modules.is_empty()
         || result.request.is_some() && result.provider.is_some()
         || result.op_ns.keys().any(|key| !result.ops.contains_key(key))
+        || result
+            .op_types
+            .keys()
+            .any(|key| !result.ops.contains_key(key))
         || result.ir_profile == IrProfile::Raw
             && (result.request.is_some() || result.provider.is_some())
     {

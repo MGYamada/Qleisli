@@ -94,7 +94,7 @@ impl Ty {
             Kind::Tuple(fields) => fields
                 .iter()
                 .try_fold(0, |bits, field| Some(bits + field.basis_bits()?)),
-            Kind::Q(_) => None,
+            Kind::Q(_) | Kind::Parameter(_) => None,
         }
     }
     fn classical(&self) -> bool {
@@ -172,6 +172,14 @@ impl super::types::SourceTypeContext for FiniteTypeContext<'_, '_> {
             size.span,
             ErrorCode::Unsupported,
             "register types are outside the finite lowering profile",
+        ))
+    }
+    fn resolve_basis(&mut self, name: &Ident) -> Result<Ty, CompileError> {
+        Err(self.compiler.error(
+            self.module,
+            name.span,
+            ErrorCode::Unsupported,
+            "named Basis types are outside the finite lowering profile",
         ))
     }
     fn quantum_basis_error(&mut self, span: Span) -> CompileError {
@@ -422,7 +430,7 @@ impl Compiler<'_> {
             for name in called_names(decl, &self.locals).into_iter().chain(
                 decl.static_params.iter().filter_map(|p| match &p.kind {
                     StaticParamKind::Operation { meaning, .. } => meaning.as_ref(),
-                    StaticParamKind::Natural => None,
+                    StaticParamKind::Natural | StaticParamKind::Basis => None,
                 }),
             ) {
                 if static_names.contains(&name.text) {

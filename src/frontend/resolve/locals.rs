@@ -33,6 +33,7 @@ pub(in crate::frontend) enum BindingKind {
     Runtime,
     Basis,
     StaticNatural,
+    StaticBasis,
     StaticOperation,
     FoldIndex,
 }
@@ -265,7 +266,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
         let previous = self.names.insert(name.text.clone(), id);
         if matches!(
             kind,
-            BindingKind::StaticNatural | BindingKind::StaticOperation
+            BindingKind::StaticNatural | BindingKind::StaticBasis | BindingKind::StaticOperation
         ) {
             self.static_parameters.insert(name.text.clone(), id);
         }
@@ -318,6 +319,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                 &parameter.name,
                 match parameter.kind {
                     StaticParamKind::Natural => BindingKind::StaticNatural,
+                    StaticParamKind::Basis => BindingKind::StaticBasis,
                     StaticParamKind::Operation { .. } => BindingKind::StaticOperation,
                 },
             );
@@ -375,6 +377,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                     PatternKind::Wildcard => {}
                 },
                 Task::Type(ty) => match &ty.kind {
+                    TypeKind::Named(name) => tasks.push(Task::Reference(name)),
                     TypeKind::Bits(n) => tasks.push(Task::Natural(n)),
                     TypeKind::Tuple(fields) => tasks.extend(fields.iter().rev().map(Task::Type)),
                     TypeKind::Q(inner) => tasks.push(Task::Type(inner)),
@@ -397,6 +400,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                     Task::Natural(&predicate.left),
                 ]),
                 Task::Operation(operation) => match &operation.kind {
+                    StaticOpKind::Type(ty) => tasks.push(Task::Type(ty)),
                     StaticOpKind::Name(name) => tasks.push(Task::Reference(name)),
                     StaticOpKind::Bind {
                         implementation,

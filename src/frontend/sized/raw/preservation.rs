@@ -144,7 +144,7 @@ impl Replay<'_> {
                             .map(|(value, ty)| (value, ty, depth + 1)),
                     );
                 }
-                Kind::Bit | Kind::Bits(_) | Kind::Q(_) => {
+                Kind::Bit | Kind::Bits(_) | Kind::Q(_) | Kind::Parameter(_) => {
                     return Err(site.error(
                         "unsupported",
                         "Raw replay supports only Unit, Bit, Q<Bit> and their exact products",

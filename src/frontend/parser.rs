@@ -51,6 +51,28 @@ pub(crate) fn parse_bounded_module(source: &str) -> Result<Module, ParseError> {
     parse_documented(source, Some((10_000, 64))).map(|documented| documented.syntax)
 }
 
+/// Parse a complete host-supplied ordinary type description with the source
+/// grammar and the same token/depth limits. Trailing syntax is never ignored.
+pub(crate) fn parse_closed_basis(source: &str) -> Result<Type, ParseError> {
+    if source.len() > 65_536 {
+        return Err(ParseError {
+            message: "source exceeds 64 KiB limit".into(),
+            span: Span::new(0, source.len()),
+        });
+    }
+    let (tokens, _) = super::lexer::lex_documented_bounded(source, 10_000, 64)?;
+    let mut parser = Parser {
+        tokens,
+        pos: 0,
+        nesting: 0,
+        remaining_import_prefix_identifiers: MAX_IMPORT_PREFIX_IDENTIFIERS,
+        remaining_import_prefix_bytes: MAX_IMPORT_PREFIX_BYTES,
+    };
+    let ty = parser.basis_type()?;
+    parser.expect(&TokenKind::Eof)?;
+    Ok(ty)
+}
+
 fn parse_documented(
     source: &str,
     limits: Option<(usize, usize)>,
@@ -282,6 +304,9 @@ impl Parser {
                 let kind = if self.word("Nat") {
                     self.bump();
                     StaticParamKind::Natural
+                } else if self.word("Basis") {
+                    self.bump();
+                    StaticParamKind::Basis
                 } else {
                     self.expect(&TokenKind::Op)?;
                     self.expect(&TokenKind::LAngle)?;
@@ -394,6 +419,23 @@ impl Parser {
 
     fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
         let start = self.current().span;
+        // Type descriptions are contextual static arguments. An ordinary call
+        // named `type` remains an ordinary call; no expression becomes a type.
+        if self.word("type")
+            && self
+                .tokens
+                .get(self.pos + 1)
+                .is_some_and(|t| t.kind == TokenKind::LParen)
+        {
+            self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let ty = self.basis_type()?;
+            let end = self.expect(&TokenKind::RParen)?.span;
+            return Ok(StaticOp {
+                kind: StaticOpKind::Type(ty),
+                span: start.cover(end),
+            });
+        }
         if Self::natural_name(&self.current().kind).is_some()
             || matches!(
                 self.current().kind,
@@ -677,6 +719,13 @@ impl Parser {
                 span: open.span.cover(close.span),
             });
         }
+        if matches!(self.current().kind, TokenKind::Ident(_)) {
+            let name = self.ident()?;
+            return Ok(Type {
+                span: name.span,
+                kind: TypeKind::Named(name),
+            });
+        }
         self.tuple_type(false)
     }
 
@@ -711,6 +760,13 @@ impl Parser {
             return Ok(Type {
                 kind: TypeKind::Bit,
                 span: token.span,
+            });
+        }
+        if matches!(self.current().kind, TokenKind::Ident(_)) {
+            let name = self.ident()?;
+            return Ok(Type {
+                span: name.span,
+                kind: TypeKind::Named(name),
             });
         }
         self.tuple_type(true)

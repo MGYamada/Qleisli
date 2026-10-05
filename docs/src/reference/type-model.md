@@ -6,8 +6,9 @@ This chapter specifies the **0.3.0 target contract** under the adopted
 [authority hierarchy](authority.md). The current alpha frontend uses the
 canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` spellings described
 below. Both checking profiles classify the common source type tree and retain
-its exact ownership boundaries. General basis polymorphism and convergence of
-the execution profiles remain in progress. The
+its exact ownership boundaries. The selected-source path implements bounded
+opaque Basis specialization; convergence of the execution profiles and general
+Meaning/capability integration remain in progress. The
 [foundation packet](../design/type-foundation.md) preserves the original
 experiments; their historical failures are not current acceptance results.
 
@@ -238,6 +239,8 @@ call arity errors identify the resolved declaration, its ordered static
 parameter names/categories and the supplied count. These diagnostics do not
 choose missing values or providers; even an unused static parameter must be
 bound. Natural-binding errors precede operation-binding errors as before.
+Basis bindings precede naturals when the declaration introduces Basis parameters;
+Nat/Op-only declarations retain their previous diagnostic priority.
 The concrete catalogue of future inference/coherence conveniences remains in
 [#197](https://github.com/MGYamada/Qleisli/issues/197).
 
@@ -253,6 +256,55 @@ Specialization then checks closed substitutions, exact type trees, provider
 identity, premises and aggregate work. Specialization keys retain those inputs
 and source/dependency identity; width alone is not a key. Instance success is
 not a proof about every member of a generic family.
+
+### Opaque Basis specialization in the selected profile
+
+The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity
+is its resolved declaration binder, not its spelling or an inferred width.
+An abstract ordinary A may be copied; its quantum owner may only be moved and
+returned or passed to operations justified by explicit access constraints.
+Abstract decomposition, reflection, quantum preparation and favorable-instance
+rescue of an invalid generic body are unavailable. Kinds refer only to preceding
+parameters. All supplied declarations, branches and zero-iteration fold bodies
+are checked before any selected type/provider binding is considered.
+
+Source calls forward a resolved opaque parameter by name. An explicit concrete
+static argument is `type(T)`:
+
+```qli
+inner[A,U](q)
+inner[type(Bit),identity_bit](q)
+```
+
+This description creates no runtime type
+value or quantum owner. A runtime function named `type` remains an ordinary
+function; existing contextual static Nat names such as Bit retain their category.
+No argument is inferred from expected width, type or an available provider.
+
+The Rust API uses `BasisBinding::parse`, `instantiate_with_types` and
+`OperationBinding::with_types`. The existing `instantiate` and provider `new`
+methods supply empty type maps. Entry types use `--type=A=Bit` or an exact
+closed ordinary product in the common CLI. A provider binds its own declaration's
+types separately with `--operation-type=U.B=Bit`. Missing, extra and wrong-category
+bindings reject; a provider does not inherit the caller's parameters by name.
+`--basis=N` retains its distinct hierarchy runtime-input role.
+
+Closed descriptions use the same type grammar, require EOF and reject unknown
+names, quantum owners, unresolved sizes and invalid bounded arithmetic. This
+selected profile retains eight total basis bits, 4096 type nodes and depth 64.
+Substitution expansion is checked before copied trees are allocated, and retained
+type bindings and cache data count against the existing 100000-cell preparation
+budget. The existing 1024 calls/folds, call depth 16 and 10000 steps remain.
+These preparation limits are not a discharged quantitative RS theorem.
+
+Each specialization keeps exact constructor tags, tuple order/nesting, selected
+type/Nat/provider bindings, original source/dependencies and local identities.
+Width alone never selects a cache entry or conversion. Concrete instances lower
+to the existing native representation and receive a fresh Lean decision; no new
+native primitive or accepted-handle constructor is introduced. General Meaning
+refinement, directory-profile integration and source-preservation proofs remain
+their separately recorded obligations. A selected native success certifies only
+its actual checked artifact/contract under the disclosed boundary.
 
 ## Migration and native boundary
 
@@ -326,7 +378,8 @@ controlled-phase primitives and operation providers. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
-decision is never retried as weaker Raw validity. General Basis polymorphism,
+decision is never retried as weaker Raw validity. General Meaning-refined Basis
+polymorphism,
 reusing basis functions as runtime computations and full common checking
 remain unfinished profile obligations. Packaged hierarchy bases retain the
 selected-source concrete width limits and charge every basis-tree node,
@@ -340,7 +393,8 @@ These limits do not establish separate type universes or close the remaining
 
 The ordinary `check`, `run`, `sample` and `emit-proposal` commands accept an
 explicit `--entry=module::function` and repeated `--module=name=PATH` bindings,
-with the existing `--nat`, `--operation` and `--operation-nat` forms. The legacy
+with explicit `--type`, `--nat`, `--operation`, `--operation-type` and
+`--operation-nat` forms. The legacy
 `sized` prefix delegates to the same selected-source execution plan. This is
 an adapter transition; it does not complete the final grammar/CLI migration.
 Directory/qrate input retains its existing project loader and checks all

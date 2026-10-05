@@ -23,8 +23,10 @@ source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; -
   Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.
   Bounded projects allow max(64, project byte limit / 1024) directory entries.
   --legacy-source-limits cannot be combined with explicit byte limits.
-selected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION
+selected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION
   --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy
+  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.
+  --type binds exact ordinary Basis types; it is distinct from runtime --basis.
   --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL
   --request=PATH or --qpe-provider=PATH lock the hierarchy route.
   --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.

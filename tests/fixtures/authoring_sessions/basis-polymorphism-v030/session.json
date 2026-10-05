@@ -56,7 +56,33 @@
         "observations/after-yield-missing-access.json",
         "observations/after-yield-opaque-forward.json",
         "observations/after-yield-opaque-repeat.json",
-        "observations/after-yield-unknown-basis.json"
+        "observations/after-yield-unknown-basis.json",
+        "observations/implementation-abstract-split.json",
+        "observations/implementation-assumed-unit.json",
+        "observations/implementation-concrete-control.json",
+        "observations/implementation-duplicate-owner.json",
+        "observations/implementation-forward-kind.json",
+        "observations/implementation-missing-access.json",
+        "observations/implementation-opaque-forward.json",
+        "observations/implementation-opaque-repeat.json",
+        "observations/implementation-unknown-basis.json",
+        "observations/implementation-opaque-repeat-register.json",
+        "observations/implementation-provider-repaired.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "separate-opaque-provider",
+      "reason": "Additional opaque provider; repair the observed invalid manifest field. Exact original files are preserved in implementation/provider-original-files.json and its raw retained inputs; primary snapshots unchanged.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/Qargo.toml": "a765b099ed0b44a914ae116e7c18bddf4bafb1a68da9a0434c0a223af9c31606",
+        "tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/main.qli": "ee89cbe74b1fba5fe67f3b1f0a4bce4d96b7126e66558ea2082473b8abce7864"
+      },
+      "reports": [
+        "implementation/result.json",
+        "implementation/provider-original-files.json",
+        "implementation-provider-repaired/result.json"
       ]
     }
   ]

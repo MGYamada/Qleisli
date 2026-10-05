@@ -1,0 +1,1 @@
+pub unitary fn identity[static B:Basis](q:Q<B>)->Q<B>{q}

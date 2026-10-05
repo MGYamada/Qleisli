@@ -84,6 +84,7 @@ pub(super) enum Effect {
 #[derive(Clone, Debug)]
 pub(super) enum Parameter {
     Natural(BindingName),
+    Basis(BindingName),
     Operation(BindingName, Basis),
 }
 #[derive(Clone, Debug)]
@@ -94,6 +95,7 @@ pub(super) enum Requirement {
 #[derive(Clone, Debug)]
 pub(super) enum Argument {
     Natural(Natural),
+    Basis(Basis, Span),
     Definition(Reference, Vec<Argument>, Span),
     Repeat(Count, Box<Argument>, Span),
 }

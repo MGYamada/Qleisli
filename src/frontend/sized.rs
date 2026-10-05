@@ -272,15 +272,125 @@ impl ParsedProgram {
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, OperationBinding>,
     ) -> Result<Instantiation> {
-        let (entry_id, operation_ids) = check::instantiate(self, entry, &naturals, &operations)?;
+        self.instantiate_with_types(entry, BTreeMap::new(), naturals, operations)
+    }
+
+    /// Explicit closed Basis, Nat and provider bindings. Generic declarations
+    /// have already been checked independently of these concrete choices.
+    pub fn instantiate_with_types(
+        &self,
+        entry: &str,
+        types: BTreeMap<String, BasisBinding>,
+        naturals: BTreeMap<String, u32>,
+        operations: BTreeMap<String, OperationBinding>,
+    ) -> Result<Instantiation> {
+        let (entry_id, operation_ids) =
+            check::instantiate(self, entry, &types, &naturals, &operations)?;
         Ok(Instantiation {
             program: self.clone(),
             entry: entry.into(),
             entry_id,
             operation_ids,
+            types,
             naturals,
             operations,
         })
+    }
+}
+
+/// An exact, closed ordinary basis tree, not a runtime value or an accepted IR
+/// handle. Parsing preserves Unit/Bit/Bits tags, tuple arity, order and nesting.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct BasisBinding {
+    ty: SourceType,
+}
+impl BasisBinding {
+    fn checked(ty: SourceType, span: Span) -> Result<Self> {
+        if ty.storage_size(4096, 64).is_none() || ty.basis_width().is_none_or(|n| n > 8) {
+            return Err(Error::new(
+                "limit",
+                span,
+                "closed Basis binding exceeds eight bits or type storage capacity",
+            ));
+        }
+        Ok(Self { ty })
+    }
+    /// The bounded selected-source profile permits at most eight total basis
+    /// bits and retains its 4096-node/depth-64 type-storage limits.
+    pub fn parse(source: &str) -> Result<Self> {
+        let syntax = super::parser::parse_closed_basis(source)
+            .map_err(|e| Error::new("type", e.span, e.message))?;
+        struct Closed;
+        impl super::types::SourceTypeContext for Closed {
+            type Size = u32;
+            type Error = Error;
+            fn resolve_size(&mut self, n: &super::ast::Natural) -> Result<u32> {
+                use super::ast::NatKind;
+                let bad = || {
+                    Error::new(
+                        "type",
+                        n.span,
+                        "closed Basis size must be a bounded nonnegative u32 expression",
+                    )
+                };
+                match &n.kind {
+                    NatKind::Number(n) => u32::try_from(*n).map_err(|_| bad()),
+                    NatKind::Name(_) => Err(bad()),
+                    NatKind::Add(a, b) => self
+                        .resolve_size(a)?
+                        .checked_add(self.resolve_size(b)?)
+                        .ok_or_else(bad),
+                    NatKind::Sub(a, b) => self
+                        .resolve_size(a)?
+                        .checked_sub(self.resolve_size(b)?)
+                        .ok_or_else(bad),
+                    NatKind::Mul(a, b) => self
+                        .resolve_size(a)?
+                        .checked_mul(self.resolve_size(b)?)
+                        .ok_or_else(bad),
+                }
+            }
+            fn resolve_basis(&mut self, name: &super::ast::Ident) -> Result<SourceType> {
+                Err(Error::new(
+                    "type",
+                    name.span,
+                    format!(
+                        "closed Basis binding cannot contain named type {}",
+                        name.text
+                    ),
+                ))
+            }
+            fn quantum_basis_error(&mut self, span: Span) -> Error {
+                Error::new(
+                    "type",
+                    span,
+                    "closed Basis binding must be an ordinary type, not a Q owner",
+                )
+            }
+            fn checked_node(
+                &mut self,
+                source: &super::ast::Type,
+                _stage: super::types::Stage,
+                ty: &SourceType,
+            ) -> Result<()> {
+                if ty.storage_size(4096, 64).is_none() || ty.basis_width().is_none_or(|n| n > 8) {
+                    return Err(Error::new(
+                        "limit",
+                        source.span,
+                        "closed Basis binding exceeds eight bits or type storage capacity",
+                    ));
+                }
+                Ok(())
+            }
+        }
+        let ty = super::types::classify_source(&syntax, super::types::Stage::Basis, &mut Closed)?;
+        Self::checked(ty, syntax.span)
+    }
+    pub fn ty(&self) -> &SourceType {
+        &self.ty
+    }
+    fn key(&self) -> String {
+        self.ty.display(super::types::Stage::Basis).to_string()
     }
 }
 
@@ -290,12 +400,23 @@ impl ParsedProgram {
 pub struct OperationBinding {
     definition: String,
     naturals: BTreeMap<String, u32>,
+    types: BTreeMap<String, BasisBinding>,
 }
 impl OperationBinding {
     pub fn new(definition: impl Into<String>, naturals: BTreeMap<String, u32>) -> Self {
+        Self::with_types(definition, BTreeMap::new(), naturals)
+    }
+    /// Provider type arguments belong to the provider's declaration, separately
+    /// from its naturals and the entry's type arguments.
+    pub fn with_types(
+        definition: impl Into<String>,
+        types: BTreeMap<String, BasisBinding>,
+        naturals: BTreeMap<String, u32>,
+    ) -> Self {
         Self {
             definition: definition.into(),
             naturals,
+            types,
         }
     }
     pub fn definition(&self) -> &str {
@@ -303,6 +424,9 @@ impl OperationBinding {
     }
     pub fn naturals(&self) -> &BTreeMap<String, u32> {
         &self.naturals
+    }
+    pub fn types(&self) -> &BTreeMap<String, BasisBinding> {
+        &self.types
     }
 }
 
@@ -314,6 +438,7 @@ pub struct Instantiation {
     entry_id: DefId,
     operation_ids: BTreeMap<String, DefId>,
     naturals: BTreeMap<String, u32>,
+    types: BTreeMap<String, BasisBinding>,
     operations: BTreeMap<String, OperationBinding>,
 }
 impl Instantiation {
@@ -333,6 +458,9 @@ impl Instantiation {
     }
     pub fn operations(&self) -> &BTreeMap<String, OperationBinding> {
         &self.operations
+    }
+    pub fn types(&self) -> &BTreeMap<String, BasisBinding> {
+        &self.types
     }
 }
 

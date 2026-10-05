@@ -1,0 +1,118 @@
+
+running 9 tests
+test closed_bindings_preserve_tags_order_and_nesting_and_require_eof ... ok
+test common_syntax_retains_basis_names_and_contextual_type_arguments ... ok
+test exact_type_substitutions_are_distinct_specialization_cache_keys ... ok
+test entry_and_provider_bindings_are_explicit_and_deterministic ... ok
+test unused_and_zero_iteration_bodies_do_not_gain_missing_access ... ok
+test names_forward_the_resolved_type_without_width_coercion ... ok
+test all_first_opaque_rejections_reach_their_actual_rules_before_binding ... ok
+test same_algorithm_retains_small_reference_action_and_unit_scalar_phase ... ok
+test selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+
+
+running 8 tests
+test doc_reports_truncated_static_arguments_without_panicking ... ok
+test non_utf8_source_root_reports_an_io_error_without_panicking ... ok
+test doc_reads_one_file_and_does_not_claim_type_checking ... ok
+test non_utf8_command_reports_usage_without_panicking ... ok
+test doc_reports_io_and_comment_errors_without_partial_output ... ok
+test check_and_run_accept_source_roots_with_spaces_and_unicode ... ok
+test explicit_native_check_accepts_mainless_libraries_and_checks_unused_declarations ... ok
+test closed_stdout_reports_failure_without_panicking_for_every_text_command ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.69s
+
+
+running 8 tests
+test json_type_failure_is_located_in_the_original_source ... ok
+test truncated_static_arguments_emit_one_located_json_parse_error ... ok
+test json_usage_is_atomic_and_keeps_the_usage_exit_code ... ok
+test function_equation_mismatch_has_the_same_contract_code_in_text_and_json ... ok
+test json_runtime_limit_does_not_emit_a_partial_distribution ... ok
+test native_transport_failures_use_the_closed_v1_project_code ... ok
+test json_check_and_run_have_golden_envelopes_in_every_flag_position ... ok
+test json_command_identity_is_independent_of_leading_options ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.55s
+
+
+running 3 tests
+test ecosystem_help_is_the_single_canonical_chapter ... ok
+test standalone_help_discovers_native_tools_without_project_or_checker ... ok
+test unavailable_tools_and_invalid_help_keep_usage_failures_and_discovery ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 6 tests
+test expected_types_do_not_choose_physics_or_manufacture_access_and_effects ... ok
+test nested_provider_errors_identify_the_operation_and_resolved_provider ... ok
+test missing_unused_naturals_and_extras_are_named_in_deterministic_order ... ok
+test operation_bindings_are_explicit_and_natural_errors_keep_priority ... ok
+test call_arity_names_ordered_static_parameters_without_guessing ... ok
+test explicit_identity_and_x_providers_retain_distinct_reference_actions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+
+running 11 tests
+test split_and_join_create_fresh_distinct_linear_owners_without_flattening ... ok
+test binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules ... ok
+test exact_basis_view_never_unpacks_an_owner_and_preserves_nested_zero_width_fields ... ok
+test isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject ... ok
+test same_width_substitutions_and_implicit_destructuring_remain_type_errors ... ok
+test structural_tuple_events_after_observation_retain_exact_basis_and_reference ... ok
+test ordered_axes_and_eager_helper_argument_do_not_erase_quantum_work ... ok
+test tuple_operation_binding_adjoint_repeat_and_control_have_independent_full_action ... ok
+test scalar_on_removed_unit_is_omega_on_every_retained_axis_and_reference ... ok
+test finite_controls_remain_checked_and_raw_tuple_limits_are_explicit ... ok
+test fixed_left_right_unitors_and_roundtrips_preserve_each_exact_tree_and_reference ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.03s
+
+
+running 12 tests
+test scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities ... ok
+test retained_fourteen_sources_reach_type_and_owner_judgments ... ok
+test unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit ... ok
+test source_types_keep_zero_axis_quantum_owners_distinct_from_ordinary_unit ... ok
+test scalar_work_precedes_readout_and_cannot_be_retimed_past_observation ... ok
+test nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action ... ok
+test native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_requests ... ok
+test fixed_scalar_requests_cover_unit_bit_and_small_registers_without_phase_erasure ... ok
+test unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices ... ok
+test native_valid_zero_width_basis_substitutions_fail_the_fixed_typed_request ... ok
+test native_valid_changed_provider_fails_the_same_fixed_controlled_requests ... ok
+test prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_oracle ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+
+
+running 9 tests
+test selected_basis_and_request_conflicts_reject_before_native_or_request_reads ... ok
+test selected_module_checking_and_binding_errors_cannot_start_native ... ok
+test selected_open_signature_checks_and_proposals_do_not_claim_closed_execution ... ok
+test selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native ... ok
+test selected_auto_keeps_hierarchy_fine_phase_and_zero_width_bits_axes ... ok
+test selected_static_fold_and_fresh_sampling_use_the_requested_instance ... ok
+test selected_caller_h_request_rejects_x_once_without_a_raw_retry ... ok
+test selected_mixed_sources_keep_independent_distributions_and_scope ... ok
+test selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.42s
+
+
+running 7 tests
+test sized_cli_native_source_check_run_and_fresh_sampling ... ignored, requires freshly built Lean kernel; CI runs explicitly
+test sized_cli_separates_producer_consistency_from_independent_requests ... ignored, requires freshly built Lean kernel; CI runs explicitly
+test sized_execution_basis_still_checks_input_width ... ok
+test sized_check_rejects_execution_basis_before_loading ... ok
+test sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading ... ok
+test sized_cli_cannot_select_private_entries_or_providers ... ok
+test sized_cli_emits_only_an_untrusted_proposal_without_a_kernel ... ok
+
+test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

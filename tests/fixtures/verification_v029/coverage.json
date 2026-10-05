@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "cae5ba12403d5ff5a1ab4fe2d06689ff3e94c4d0975049de9bdd55b6e97e2322",
+  "surface_sha256": "ba6bbc94c1d385fe05590c51081ddcd42ed078fdacb6987a19a221ad49e094f9",
   "groups": [
     {
       "id": "raw-core",
@@ -768,7 +768,8 @@
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/sized_source.rs",
-        "tests/ordinary_booleans.rs"
+        "tests/ordinary_booleans.rs",
+        "tests/basis_polymorphism.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1354,7 +1355,11 @@
         "ElaboratedProgram::lower_raw",
         "RawSourceProposal::validate_source_steps",
         "ElaboratedProgram::hierarchy_eligibility",
-        "qleisli check/run/sample/emit-proposal with explicit module/entry bindings"
+        "qleisli check/run/sample/emit-proposal with explicit module/entry bindings",
+        "BasisBinding::parse",
+        "ParsedProgram::instantiate_with_types",
+        "OperationBinding::with_types",
+        "selected --type/--operation-type explicit closed Basis bindings"
       ],
       "status": "mixed-boundary",
       "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
@@ -2162,7 +2167,18 @@
           "path": "src/frontend/sized.rs",
           "markers": [
             "pub fn parse(",
-            "pub fn instantiate("
+            "pub fn instantiate(",
+            "pub struct BasisBinding",
+            "pub fn instantiate_with_types(",
+            "pub fn with_types("
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan/options.rs",
+          "markers": [
+            "\"type\" =>",
+            "\"operation-type\" =>",
+            "never ordinary input"
           ]
         },
         {
@@ -2222,13 +2238,25 @@
         {
           "path": "src/frontend/sized/raw.rs",
           "test": "raw_source_replay_rejects_native_valid_semantic_and_structural_mutations"
+        },
+        {
+          "path": "tests/basis_polymorphism.rs",
+          "test": "all_first_opaque_rejections_reach_their_actual_rules_before_binding"
+        },
+        {
+          "path": "tests/basis_polymorphism.rs",
+          "test": "selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis"
+        },
+        {
+          "path": "tests/basis_polymorphism.rs",
+          "test": "same_algorithm_retains_small_reference_action_and_unit_scalar_phase"
         }
       ],
-      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance",
-      "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata",
+      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",
+      "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata; complete exact type/provider substitutions and original generic module bytes are retained",
       "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
       "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation",
-      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete."
+      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete. Opaque type checking and bounded phase/reference tests do not prove generic/source preservation or admit a guarantee; Op<A,M> and final project-profile integration remain pending."
     },
     {
       "id": "checked-views",

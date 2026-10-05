@@ -1,0 +1,68 @@
+[
+  {
+    "label": "verification-inventory",
+    "command": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.48624233301961794
+  },
+  {
+    "label": "production-coverage",
+    "command": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.13720487500540912
+  },
+  {
+    "label": "coverage-tests",
+    "command": [
+      "python3",
+      "scripts/test_check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.0970943749998696
+  },
+  {
+    "label": "authoring",
+    "command": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.21687304199440405
+  },
+  {
+    "label": "docs",
+    "command": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.7922684170189314
+  },
+  {
+    "label": "constitution",
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "exit_code": 0,
+    "seconds": 1.2184881659923121
+  },
+  {
+    "label": "whitespace",
+    "command": [
+      "git",
+      "diff",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.0384330420056358
+  }
+]

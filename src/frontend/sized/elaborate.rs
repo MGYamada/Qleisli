@@ -1,7 +1,7 @@
 //! Untrusted concrete, source-order ownership proposal. No verified IR is made.
 use super::ast::{self, *};
 use super::primitive::{Primitive, Size, TypeRule, TypeShape, dependent_output};
-use super::{Error, Instantiation, ParsedProgram, Result, Span};
+use super::{BasisBinding, Error, Instantiation, ParsedProgram, Result, Span};
 use std::collections::{BTreeMap, BTreeSet};
 
 const MAX_CALLS: usize = 1_024;
@@ -30,11 +30,13 @@ impl SourceType {
                 TypeKind::Bits(_) => "bits",
                 TypeKind::Tuple(_) => "tuple",
                 TypeKind::Q(_) => unreachable!("nested Q is not a basis"),
+                TypeKind::Parameter(_) => "unresolved",
             },
             TypeKind::Bit => "bit",
             TypeKind::Bits(_) => "bits",
             TypeKind::Tuple(_) => "tuple",
             TypeKind::Unit => "unit",
+            TypeKind::Parameter(_) => "unresolved",
         }
     }
     pub fn width(&self) -> Option<u32> {
@@ -44,6 +46,7 @@ impl SourceType {
             TypeKind::Q(basis) => basis.basis_width(),
             TypeKind::Tuple(_) => None,
             TypeKind::Unit => Some(0),
+            TypeKind::Parameter(_) => None,
         }
     }
     pub fn fields(&self) -> &[SourceType] {
@@ -274,6 +277,7 @@ impl SourceStep {
 #[derive(Clone, Debug)]
 pub struct SourceDefinition {
     path: String,
+    types: BTreeMap<String, BasisBinding>,
     naturals: BTreeMap<String, u32>,
     operations: BTreeMap<String, SourceOperation>,
     inputs: Vec<SourceValue>,
@@ -289,6 +293,9 @@ impl SourceDefinition {
     }
     pub fn naturals(&self) -> &BTreeMap<String, u32> {
         &self.naturals
+    }
+    pub fn types(&self) -> &BTreeMap<String, BasisBinding> {
+        &self.types
     }
     pub fn operations(&self) -> &BTreeMap<String, SourceOperation> {
         &self.operations
@@ -391,6 +398,7 @@ fn error(code: &'static str, span: Span, message: impl Into<String>) -> Error {
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 struct Key {
     definition: DefId,
+    types: BTreeMap<String, String>,
     naturals: BTreeMap<String, u32>,
     operations: BTreeMap<String, OperationKey>,
 }
@@ -413,10 +421,16 @@ struct Binding {
 #[derive(Clone)]
 struct Scope {
     naturals: BTreeMap<BinderKey, u32>,
+    bases: BTreeMap<BinderKey, SourceType>,
     operations: BTreeMap<BinderKey, SourceOperation>,
     values: BTreeMap<BinderKey, Binding>,
     moved: BTreeSet<usize>,
 }
+type ClosedArguments = (
+    BTreeMap<String, BasisBinding>,
+    BTreeMap<String, u32>,
+    BTreeMap<String, SourceOperation>,
+);
 struct Frame {
     module: String,
     lexical: Arc<Table>,
@@ -446,6 +460,7 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
     for (name, binding) in &instance.operations {
         let id = builder.function(
             instance.operation_ids[name],
+            binding.types.clone(),
             binding.naturals.clone(),
             BTreeMap::new(),
             0,
@@ -467,7 +482,13 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
             },
         );
     }
-    let root = builder.function(instance.entry_id, instance.naturals.clone(), operations, 0)?;
+    let root = builder.function(
+        instance.entry_id,
+        instance.types.clone(),
+        instance.naturals.clone(),
+        operations,
+        0,
+    )?;
     Ok(ElaboratedProgram {
         instance: instance.clone(),
         definitions: builder.definitions,
@@ -517,6 +538,7 @@ fn predicate(p: &Predicate, values: &BTreeMap<BinderKey, u32>) -> Result<bool> {
 fn concrete_type(
     t: &ast::Type,
     values: &BTreeMap<BinderKey, u32>,
+    bases: &BTreeMap<BinderKey, SourceType>,
     span: Span,
 ) -> Result<SourceType> {
     t.storage_size(4096, 64).ok_or_else(|| {
@@ -526,6 +548,44 @@ fn concrete_type(
             "concrete type exceeds 4096 cells or depth 64",
         )
     })?;
+    // Resolve opaque bases before allocation and check the expanded exact tree.
+    // Each referenced binding is already bounded, but repeated substitutions
+    // must also respect the aggregate shape and quantum width limits.
+    let mut expanded_nodes = 0usize;
+    let mut pending = vec![(t, 1usize)];
+    while let Some((node, depth)) = pending.pop() {
+        match &node.kind {
+            TypeKind::Parameter(parameter) => {
+                let replacement = parameter
+                    .key
+                    .as_ref()
+                    .and_then(|key| bases.get(key))
+                    .ok_or_else(|| {
+                        error("static", parameter.span, "missing concrete Basis binding")
+                    })?;
+                let size = replacement.storage_size(4096, 64).ok_or_else(|| {
+                    error("limit", span, "concrete Basis exceeds storage capacity")
+                })?;
+                expanded_nodes = expanded_nodes.saturating_add(size.nodes);
+                if depth.saturating_add(size.depth).saturating_sub(1) > 64 {
+                    return Err(error("limit", span, "substituted Basis exceeds depth 64"));
+                }
+            }
+            TypeKind::Q(child) => pending.push((child, depth)),
+            TypeKind::Tuple(fields) => {
+                expanded_nodes = expanded_nodes.saturating_add(1);
+                pending.extend(fields.iter().rev().map(|child| (child, depth + 1)));
+            }
+            _ => expanded_nodes = expanded_nodes.saturating_add(1),
+        }
+        if expanded_nodes > 4096 {
+            return Err(error(
+                "limit",
+                span,
+                "substituted Basis exceeds 4096 type nodes",
+            ));
+        }
+    }
     let mut sizes = Vec::new();
     let mut pending = vec![t];
     while let Some(node) = pending.pop() {
@@ -548,17 +608,28 @@ fn concrete_type(
     }
     // Width sums are checked on borrowed symbolic trees before allocating the
     // concrete representation. Each ordinary tuple remains a value product.
-    fn widths(t: &ast::Type, sizes: &mut impl Iterator<Item = u32>, span: Span) -> Result<u32> {
+    fn widths(
+        t: &ast::Type,
+        sizes: &mut impl Iterator<Item = u32>,
+        bases: &BTreeMap<BinderKey, SourceType>,
+        span: Span,
+    ) -> Result<u32> {
         match &t.kind {
             TypeKind::Unit => Ok(0),
             TypeKind::Bit => Ok(1),
             TypeKind::Bits(_) => Ok(sizes.next().expect("one resolved size per occurrence")),
+            TypeKind::Parameter(parameter) => parameter
+                .key
+                .as_ref()
+                .and_then(|key| bases.get(key))
+                .and_then(SourceType::basis_width)
+                .ok_or_else(|| error("static", parameter.span, "missing closed ordinary Basis")),
             TypeKind::Tuple(fields) => fields.iter().try_fold(0u32, |n, field| {
-                n.checked_add(widths(field, sizes, span)?)
+                n.checked_add(widths(field, sizes, bases, span)?)
                     .ok_or_else(|| error("limit", span, "concrete basis width overflow"))
             }),
             TypeKind::Q(basis) => {
-                let width = widths(basis, sizes, span)?;
+                let width = widths(basis, sizes, bases, span)?;
                 if width > 8 {
                     return Err(error(
                         "limit",
@@ -570,9 +641,21 @@ fn concrete_type(
             }
         }
     }
-    widths(t, &mut sizes.iter().copied(), span)?;
+    widths(t, &mut sizes.iter().copied(), bases, span)?;
     let mut sizes = sizes.into_iter();
-    t.map_sizes(&mut |_| Ok::<_, Error>(sizes.next().expect("resolved source size")))
+    let closed = t.map_parts(
+        &mut |_| Ok::<_, Error>(sizes.next().expect("resolved source size")),
+        &mut |parameter| {
+            parameter
+                .key
+                .as_ref()
+                .and_then(|key| bases.get(key))
+                .cloned()
+                .ok_or_else(|| error("static", parameter.span, "missing concrete Basis"))
+        },
+    )?;
+    concrete_capacity(&closed, span)?;
+    Ok(closed)
 }
 fn concrete_capacity(ty: &SourceType, span: Span) -> Result<()> {
     ty.storage_size(4096, 64).ok_or_else(|| {
@@ -595,6 +678,13 @@ fn concrete_capacity(ty: &SourceType, span: Span) -> Result<()> {
                 }
             }
             TypeKind::Tuple(fields) => pending.extend(fields),
+            TypeKind::Parameter(parameter) => {
+                return Err(error(
+                    "static",
+                    parameter.span,
+                    "unresolved Basis in concrete type",
+                ));
+            }
             _ => {}
         }
     }
@@ -645,18 +735,20 @@ impl Builder<'_> {
     fn function(
         &mut self,
         definition: DefId,
+        types: BTreeMap<String, BasisBinding>,
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, SourceOperation>,
         depth: usize,
     ) -> Result<usize> {
         self.enter(Span::default())?;
-        let result = self.function_inner(definition, naturals, operations, depth);
+        let result = self.function_inner(definition, types, naturals, operations, depth);
         self.active_frames -= 1;
         result
     }
     fn function_inner(
         &mut self,
         definition: DefId,
+        types: BTreeMap<String, BasisBinding>,
         naturals: BTreeMap<String, u32>,
         operations: BTreeMap<String, SourceOperation>,
         depth: usize,
@@ -672,8 +764,27 @@ impl Builder<'_> {
                 "concrete source exceeds 1024 calls or depth 16",
             ));
         }
+        let type_cells = types.values().try_fold(0usize, |total, basis| {
+            let size = basis.ty.storage_size(4096, 64).ok_or_else(|| {
+                error(
+                    "limit",
+                    Span::default(),
+                    "closed Basis exceeds type storage capacity",
+                )
+            })?;
+            total
+                .checked_add(size.nodes)
+                .ok_or_else(|| error("limit", Span::default(), "type binding accounting overflow"))
+        })?;
+        // Include keys, retained definition substitutions and lexical scope
+        // copies in the existing aggregate budget, even for unused parameters.
+        self.charge_cells(type_cells.saturating_mul(4), Span::default())?;
         let key = Key {
             definition,
+            types: types
+                .iter()
+                .map(|(name, ty)| (name.clone(), ty.key()))
+                .collect(),
             naturals: naturals.clone(),
             operations: operations
                 .iter()
@@ -693,6 +804,14 @@ impl Builder<'_> {
         let (module, function) = self.declaration(definition);
         let path = self.program.resolution.path(definition);
         let result = (|| {
+            let expected_types: BTreeSet<_> = function
+                .parameters
+                .iter()
+                .filter_map(|p| match p {
+                    Parameter::Basis(name) => Some(&name.name),
+                    _ => None,
+                })
+                .collect();
             let expected_naturals: BTreeSet<_> = function
                 .parameters
                 .iter()
@@ -717,6 +836,7 @@ impl Builder<'_> {
                 .collect();
             if naturals.keys().collect::<BTreeSet<_>>() != expected_naturals
                 || operations.keys().collect::<BTreeSet<_>>() != expected_operations
+                || types.keys().collect::<BTreeSet<_>>() != expected_types
             {
                 return Err(error(
                     "static",
@@ -729,7 +849,17 @@ impl Builder<'_> {
                 .iter()
                 .filter_map(|parameter| match parameter {
                     Parameter::Natural(name) => Some((name.key().clone(), naturals[&name.name])),
-                    Parameter::Operation(..) => None,
+                    Parameter::Operation(..) | Parameter::Basis(_) => None,
+                })
+                .collect();
+            let resolved_bases: BTreeMap<_, _> = function
+                .parameters
+                .iter()
+                .filter_map(|p| match p {
+                    Parameter::Basis(name) => {
+                        Some((name.key().clone(), types[&name.name].ty.clone()))
+                    }
+                    _ => None,
                 })
                 .collect();
             for requirement in &function.requires {
@@ -750,6 +880,7 @@ impl Builder<'_> {
                     let required = SourceType::quantum(concrete_type(
                         basis,
                         &resolved_naturals,
+                        &resolved_bases,
                         function.span,
                     )?);
                     if target_type != required {
@@ -773,6 +904,7 @@ impl Builder<'_> {
             };
             let mut scope = Scope {
                 naturals: resolved_naturals.clone(),
+                bases: resolved_bases.clone(),
                 operations: function
                     .parameters
                     .iter()
@@ -780,7 +912,7 @@ impl Builder<'_> {
                         Parameter::Operation(name, _) => {
                             Some((name.key().clone(), operations[&name.name].clone()))
                         }
-                        Parameter::Natural(_) => None,
+                        Parameter::Natural(_) | Parameter::Basis(_) => None,
                     })
                     .collect(),
                 values: BTreeMap::new(),
@@ -788,7 +920,10 @@ impl Builder<'_> {
             };
             let mut inputs = Vec::new();
             for (pattern, ty, span) in &function.arguments {
-                let value = frame.fresh(&concrete_type(ty, &resolved_naturals, *span)?, *span)?;
+                let value = frame.fresh(
+                    &concrete_type(ty, &resolved_naturals, &resolved_bases, *span)?,
+                    *span,
+                )?;
                 // Destructuring binds the value's fields, but the declared
                 // argument and its exact input interface remain whole.
                 bind(pattern, value.clone(), &mut scope, &mut frame)?;
@@ -798,7 +933,12 @@ impl Builder<'_> {
             let output = self.block(&function.body, &mut scope, &mut frame, depth)?;
             expected(
                 &output,
-                &concrete_type(&function.result, &resolved_naturals, function.span)?,
+                &concrete_type(
+                    &function.result,
+                    &resolved_naturals,
+                    &resolved_bases,
+                    function.span,
+                )?,
                 function.body.span,
             )?;
             if scope.values.values().any(|b| b.value.ty.linear()) {
@@ -819,6 +959,7 @@ impl Builder<'_> {
             self.charge_cells(output.cells(), function.span)?;
             let definition = SourceDefinition {
                 path,
+                types,
                 naturals,
                 operations,
                 inputs,
@@ -880,7 +1021,7 @@ impl Builder<'_> {
         frame: &Frame,
         depth: usize,
         span: Span,
-    ) -> Result<(BTreeMap<String, u32>, BTreeMap<String, SourceOperation>)> {
+    ) -> Result<ClosedArguments> {
         self.enter(span)?;
         let result = self.arguments_inner(definition, arguments, scope, frame, depth, span);
         self.active_frames -= 1;
@@ -894,7 +1035,7 @@ impl Builder<'_> {
         frame: &Frame,
         depth: usize,
         span: Span,
-    ) -> Result<(BTreeMap<String, u32>, BTreeMap<String, SourceOperation>)> {
+    ) -> Result<ClosedArguments> {
         let (_, function) = self.declaration(definition);
         if arguments.len() != function.parameters.len() {
             return Err(error(
@@ -904,9 +1045,31 @@ impl Builder<'_> {
             ));
         }
         let mut naturals = BTreeMap::new();
+        let mut types = BTreeMap::new();
         let mut operations = BTreeMap::new();
         for (p, a) in function.parameters.iter().zip(arguments) {
             match p {
+                Parameter::Basis(name) => {
+                    let ty = match a {
+                        Argument::Basis(basis, at) => {
+                            concrete_type(basis, &scope.naturals, &scope.bases, *at)?
+                        }
+                        Argument::Natural(Natural {
+                            kind: NatKind::Name(reference),
+                            ..
+                        }) => reference.get(&scope.bases).cloned().ok_or_else(|| {
+                            error("static", span, "expected a concrete Basis argument")
+                        })?,
+                        _ => {
+                            return Err(error(
+                                "static",
+                                span,
+                                "expected a concrete Basis argument",
+                            ));
+                        }
+                    };
+                    types.insert(name.name.clone(), BasisBinding::checked(ty, span)?);
+                }
                 Parameter::Natural(name) => {
                     let Argument::Natural(n) = a else {
                         return Err(error("static", span, "expected concrete natural"));
@@ -921,7 +1084,7 @@ impl Builder<'_> {
                 }
             }
         }
-        Ok((naturals, operations))
+        Ok((types, naturals, operations))
     }
     fn operation(
         &mut self,
@@ -1021,9 +1184,9 @@ impl Builder<'_> {
                 "primitive operation references are outside this preparation profile",
             ));
         };
-        let (naturals, operations) =
+        let (types, naturals, operations) =
             self.arguments(definition, arguments, scope, frame, depth, span)?;
-        let id = self.function(definition, naturals, operations, depth + 1)?;
+        let id = self.function(definition, types, naturals, operations, depth + 1)?;
         self.provider_type(id, span)?;
         Ok(SourceOperation {
             kind: OperationKind::Definition(id),
@@ -1249,9 +1412,10 @@ impl Builder<'_> {
                     let Target::Declaration(definition) = target else {
                         unreachable!("primitive handled above")
                     };
-                    let (naturals, operations) =
+                    let (types, naturals, operations) =
                         self.arguments(definition, arguments, scope, frame, depth, span)?;
-                    let id = self.function(definition, naturals, operations.clone(), depth + 1)?;
+                    let id =
+                        self.function(definition, types, naturals, operations.clone(), depth + 1)?;
                     let definition = &self.definitions[id];
                     let types = definition.inputs.iter().map(|v| v.ty.clone()).collect();
                     let output = definition.output.ty.clone();

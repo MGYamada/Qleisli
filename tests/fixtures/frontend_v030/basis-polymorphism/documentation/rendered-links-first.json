@@ -1,0 +1,15 @@
+{
+  "html_pages": 23,
+  "local_links_checked": 742,
+  "print_page_checked": true,
+  "errors": [
+    [
+      "404.html",
+      "/",
+      "outside book"
+    ]
+  ],
+  "mdbook_version": "0.5.4",
+  "reference_sha256": "848e8b761c74e2ec2ddda7fac773a854716215339b3b201957f65fafe6a1f42f",
+  "scope": "Offline rendered local links/anchors, including print.html; external links were not checked."
+}

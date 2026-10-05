@@ -1,0 +1,57 @@
+
+running 8 tests
+test closed_bindings_preserve_tags_order_and_nesting_and_require_eof ... ok
+test common_syntax_retains_basis_names_and_contextual_type_arguments ... ok
+test exact_type_substitutions_are_distinct_specialization_cache_keys ... ok
+test entry_and_provider_bindings_are_explicit_and_deterministic ... ok
+test unused_and_zero_iteration_bodies_do_not_gain_missing_access ... ok
+test names_forward_the_resolved_type_without_width_coercion ... ok
+test all_first_opaque_rejections_reach_their_actual_rules_before_binding ... ok
+test same_algorithm_retains_small_reference_action_and_unit_scalar_phase ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s
+
+
+running 6 tests
+test missing_unused_naturals_and_extras_are_named_in_deterministic_order ... ok
+test nested_provider_errors_identify_the_operation_and_resolved_provider ... ok
+test expected_types_do_not_choose_physics_or_manufacture_access_and_effects ... ok
+test operation_bindings_are_explicit_and_natural_errors_keep_priority ... ok
+test call_arity_names_ordered_static_parameters_without_guessing ... ok
+test explicit_identity_and_x_providers_retain_distinct_reference_actions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+
+running 11 tests
+test split_and_join_create_fresh_distinct_linear_owners_without_flattening ... ok
+test binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules ... ok
+test exact_basis_view_never_unpacks_an_owner_and_preserves_nested_zero_width_fields ... ok
+test isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject ... ok
+test same_width_substitutions_and_implicit_destructuring_remain_type_errors ... ok
+test structural_tuple_events_after_observation_retain_exact_basis_and_reference ... ok
+test ordered_axes_and_eager_helper_argument_do_not_erase_quantum_work ... ok
+test tuple_operation_binding_adjoint_repeat_and_control_have_independent_full_action ... ok
+test scalar_on_removed_unit_is_omega_on_every_retained_axis_and_reference ... ok
+test finite_controls_remain_checked_and_raw_tuple_limits_are_explicit ... ok
+test fixed_left_right_unitors_and_roundtrips_preserve_each_exact_tree_and_reference ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.01s
+
+
+running 12 tests
+test scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities ... ok
+test retained_fourteen_sources_reach_type_and_owner_judgments ... ok
+test unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit ... ok
+test source_types_keep_zero_axis_quantum_owners_distinct_from_ordinary_unit ... ok
+test scalar_work_precedes_readout_and_cannot_be_retimed_past_observation ... ok
+test nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action ... ok
+test native_valid_scalar_phase_substitution_fails_independent_exact_leaf_and_root_requests ... ok
+test fixed_scalar_requests_cover_unit_bit_and_small_registers_without_phase_erasure ... ok
+test unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices ... ok
+test native_valid_zero_width_basis_substitutions_fail_the_fixed_typed_request ... ok
+test native_valid_changed_provider_fails_the_same_fixed_controlled_requests ... ok
+test prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_oracle ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.61s
+

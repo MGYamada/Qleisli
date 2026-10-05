@@ -187,6 +187,14 @@ impl Lowerer<'_, '_> {
                     .collect::<Result<_, _>>()?,
             ),
             Kind::Bits(n) => match *n {},
+            Kind::Parameter(_) => {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    "unresolved Basis parameter in finite input",
+                ));
+            }
         })
     }
 

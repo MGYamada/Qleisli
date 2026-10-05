@@ -6,8 +6,8 @@ use qleisli::{
         ast::Span,
         diagnostic::Diagnostic,
         sized::{
-            self, ElaboratedProgram, HierarchyEligibility, HierarchyProposal, OperationBinding,
-            ParsedProgram, QpeBindingProposal, RawSourceProposal, SourceType,
+            self, BasisBinding, ElaboratedProgram, HierarchyEligibility, HierarchyProposal,
+            OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal, SourceType,
         },
     },
     interchange::{self, hierarchical, native},
@@ -243,21 +243,42 @@ fn width(ty: &SourceType) -> usize {
     }
 }
 fn prepare(options: &Options) -> Result<PreparedIr> {
+    let program = ParsedProgram::load(options.modules.clone())?;
+    fn bindings(
+        values: &std::collections::BTreeMap<String, String>,
+    ) -> Result<std::collections::BTreeMap<String, BasisBinding>> {
+        values
+            .iter()
+            .map(|(name, source)| {
+                BasisBinding::parse(source)
+                    .map(|basis| (name.clone(), basis))
+                    .map_err(|e| {
+                        Failure::new(e.code(), format!("Basis binding {name}: {}", e.message()))
+                    })
+            })
+            .collect()
+    }
     let operations = options
         .ops
         .iter()
         .map(|(name, definition)| {
-            (
+            Ok((
                 name.clone(),
-                OperationBinding::new(
+                OperationBinding::with_types(
                     definition.clone(),
+                    bindings(&options.op_types.get(name).cloned().unwrap_or_default())?,
                     options.op_ns.get(name).cloned().unwrap_or_default(),
                 ),
-            )
+            ))
         })
-        .collect();
-    let source = ParsedProgram::load(options.modules.clone())?
-        .instantiate(&options.entry, options.ns.clone(), operations)?
+        .collect::<Result<_>>()?;
+    let source = program
+        .instantiate_with_types(
+            &options.entry,
+            bindings(&options.types)?,
+            options.ns.clone(),
+            operations,
+        )?
         .elaborate()?;
     let hierarchy = if options.request.is_some() || options.provider.is_some() {
         // Parsing rejects explicit Raw conflicts. Caller intent is never weakened

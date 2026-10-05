@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"Qargo.toml requires schema-version = 2","primary":{"module":"provider","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/main.qli","start":0,"end":80},"related":[]}],"result":null}

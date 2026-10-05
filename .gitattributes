@@ -141,3 +141,5 @@ tests/fixtures/frontend_v030/discovery-ci-repair/distribution-artifact/**/*.stdo
 # Keep byte-frozen Basis first sources, including their original final blank lines.
 tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-0[12]/*/main.qli -text -whitespace
 tests/fixtures/authoring_sessions/basis-polymorphism-v030/context.md -text -whitespace
+# Raw Basis validation transcripts retain libtest's original final blank lines.
+tests/fixtures/frontend_v030/basis-polymorphism/*/*stdout.txt -text -whitespace

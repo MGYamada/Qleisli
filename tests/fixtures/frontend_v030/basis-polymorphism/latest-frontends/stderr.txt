@@ -1,0 +1,6 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.30s
+     Running tests/compile.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/compile-0346862a99dd8ee3)
+     Running tests/frontend_types.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/frontend_types-f5b7d97e61407465)
+     Running tests/parser.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/parser-505caf4e08ee6ac4)
+     Running tests/static_semantics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/static_semantics-19963809c6d37645)

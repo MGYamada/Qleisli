@@ -1,0 +1,9 @@
+{
+  "html_pages": 23,
+  "local_links_checked": 743,
+  "print_page_checked": true,
+  "errors": [],
+  "mdbook_version": "0.5.4",
+  "reference_sha256": "848e8b761c74e2ec2ddda7fac773a854716215339b3b201957f65fafe6a1f42f",
+  "scope": "Offline rendered local links/anchors, including print.html. Site-root / in generated 404.html resolves to the book index; first validator incorrectly used filesystem root. External links and deployed URL configuration were not checked."
+}

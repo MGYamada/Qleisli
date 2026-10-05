@@ -1,0 +1,20 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--test",
+    "basis_polymorphism",
+    "--test",
+    "inference_law",
+    "--test",
+    "quantum_unit_source",
+    "--test",
+    "quantum_tuple_unitors"
+  ],
+  "exit_code": 101,
+  "seconds": 1.8614093749783933,
+  "sources_unchanged": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+}

@@ -17,12 +17,14 @@ impl Lowerer<'_, '_> {
         self.compiler.tick(module, expr.span)?;
         // Parser and each constructed description bound recursive depth.
         match &expr.kind {
-            StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => Err(self.error(
-                module,
-                expr.span,
-                ErrorCode::Unsupported,
-                "static argument is outside the finite lowering profile",
-            )),
+            StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
+                Err(self.error(
+                    module,
+                    expr.span,
+                    ErrorCode::Unsupported,
+                    "static argument is outside the finite lowering profile",
+                ))
+            }
             StaticOpKind::Name(name) => {
                 self.static_name(module, name, env)?;
                 if let Some(op) = self.bound_operation(name) {

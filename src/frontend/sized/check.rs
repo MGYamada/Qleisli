@@ -2,7 +2,7 @@
 use super::ast::*;
 use super::linear::{self, Context, Linear};
 use super::primitive::{Guard, Primitive, Size, TypeRule, TypeShape, dependent_output};
-use super::{Error, OperationBinding, ParsedProgram, Result, Span};
+use super::{BasisBinding, Error, OperationBinding, ParsedProgram, Result, Span};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
@@ -42,6 +42,7 @@ struct Operation {
 #[derive(Clone)]
 struct Scope {
     naturals: BTreeMap<BinderKey, Linear>,
+    bases: BTreeMap<BinderKey, Ty>,
     operations: BTreeMap<BinderKey, Operation>,
     context: Context,
     values: BTreeMap<BinderKey, Binding>,
@@ -81,14 +82,73 @@ fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
             "operation basis exceeds type capacity",
         )
     })?;
-    Ok(Ty::quantum(b.map_sizes(&mut |n| {
-        linear::natural(n, &scope.naturals, &scope.context)
-    })?))
+    Ok(Ty::quantum(ty(b, scope, Span::default())?))
 }
 fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
     t.storage_size(4096, 64)
         .ok_or_else(|| err("limit", span, "source type exceeds type capacity"))?;
-    let result = t.map_sizes(&mut |size| linear::natural(size, &scope.naturals, &scope.context))?;
+    let mut nodes = 0usize;
+    let mut pending = vec![(t, 1usize)];
+    while let Some((node, depth)) = pending.pop() {
+        match &node.kind {
+            Kind::Parameter(parameter) => {
+                let replacement = parameter
+                    .key
+                    .as_ref()
+                    .and_then(|key| scope.bases.get(key))
+                    .ok_or_else(|| {
+                        err(
+                            "type",
+                            parameter.span,
+                            format!(
+                                "Basis parameter {} is unavailable in this ordered kind",
+                                parameter.name
+                            ),
+                        )
+                    })?;
+                let size = replacement
+                    .storage_size(4096, 64)
+                    .ok_or_else(|| err("limit", span, "substituted Basis exceeds type capacity"))?;
+                nodes = nodes.saturating_add(size.nodes);
+                if depth.saturating_add(size.depth).saturating_sub(1) > 64 {
+                    return Err(err("limit", span, "substituted Basis exceeds depth 64"));
+                }
+            }
+            Kind::Q(child) => pending.push((child, depth)),
+            Kind::Tuple(fields) => {
+                nodes = nodes.saturating_add(1);
+                pending.extend(fields.iter().rev().map(|child| (child, depth + 1)));
+            }
+            _ => nodes = nodes.saturating_add(1),
+        }
+        if nodes > 4096 {
+            return Err(err(
+                "limit",
+                span,
+                "substituted Basis exceeds 4096 type nodes",
+            ));
+        }
+    }
+    let result = t.map_parts(
+        &mut |size| linear::natural(size, &scope.naturals, &scope.context),
+        &mut |parameter| {
+            parameter
+                .key
+                .as_ref()
+                .and_then(|key| scope.bases.get(key))
+                .cloned()
+                .ok_or_else(|| {
+                    err(
+                        "type",
+                        parameter.span,
+                        format!(
+                            "Basis parameter {} is unavailable in this ordered kind",
+                            parameter.name
+                        ),
+                    )
+                })
+        },
+    )?;
     result.bounded(span)?;
     Ok(result)
 }
@@ -128,7 +188,7 @@ fn declaration(f: &Function) -> Result<Scope> {
     let mut naturals = BTreeMap::new();
     for p in &f.parameters {
         let name = match p {
-            Parameter::Natural(n) | Parameter::Operation(n, _) => n,
+            Parameter::Natural(n) | Parameter::Basis(n) | Parameter::Operation(n, _) => n,
         };
         if !names.insert(name.name.clone()) {
             return Err(err(
@@ -144,6 +204,7 @@ fn declaration(f: &Function) -> Result<Scope> {
     let mut scope = Scope {
         context: Context::natural(naturals.keys().cloned())?,
         naturals,
+        bases: BTreeMap::new(),
         operations: BTreeMap::new(),
         values: BTreeMap::new(),
         moved: BTreeSet::new(),
@@ -164,12 +225,30 @@ fn declaration(f: &Function) -> Result<Scope> {
             "inconsistent declared natural premises",
         ));
     }
+    let mut preceding_naturals = BTreeSet::new();
     for p in &f.parameters {
+        if let Parameter::Natural(name) = p {
+            preceding_naturals.insert(name.key().clone());
+        }
+        if let Parameter::Basis(name) = p {
+            scope.bases.insert(
+                name.key().clone(),
+                Ty::parameter(crate::frontend::types::TypeParameter {
+                    key: Some(name.key().clone()),
+                    name: name.name.clone(),
+                    span: f.span,
+                }),
+            );
+        }
         if let Parameter::Operation(name, b) = p {
+            let mut kind_scope = scope.clone();
+            kind_scope
+                .naturals
+                .retain(|key, _| preceding_naturals.contains(key));
             scope.operations.insert(
                 name.key().clone(),
                 Operation {
-                    ty: basis(b, &scope)?,
+                    ty: basis(b, &kind_scope)?,
                     access: BTreeSet::new(),
                 },
             );
@@ -235,7 +314,9 @@ fn bind_name(name: &BindingName, t: Ty, span: Span, scope: &mut Scope) -> Result
     }
     if name.name == "_"
         || name.shadowed.as_ref().is_some_and(|key| {
-            scope.naturals.contains_key(key) || scope.operations.contains_key(key)
+            scope.naturals.contains_key(key)
+                || scope.bases.contains_key(key)
+                || scope.operations.contains_key(key)
         })
     {
         return Err(err(
@@ -468,6 +549,7 @@ impl Checker<'_> {
                 .iter()
                 .map(|p| match p {
                     Parameter::Natural(n) => format!("{}: Nat", n.name),
+                    Parameter::Basis(n) => format!("{}: Basis", n.name),
                     Parameter::Operation(n, _) => format!("{}: Op", n.name),
                 })
                 .collect::<Vec<_>>()
@@ -484,6 +566,7 @@ impl Checker<'_> {
         }
         let mut target = Scope {
             naturals: BTreeMap::new(),
+            bases: BTreeMap::new(),
             operations: BTreeMap::new(),
             context: scope.context.clone(),
             values: BTreeMap::new(),
@@ -491,6 +574,29 @@ impl Checker<'_> {
             next_binding: Rc::clone(&scope.next_binding),
         };
         for (p, a) in f.parameters.iter().zip(args) {
+            if let Parameter::Basis(name) = p {
+                let basis = match a {
+                    Argument::Basis(basis, at) => ty(basis, scope, *at)?,
+                    Argument::Natural(Natural {
+                        kind: NatKind::Name(reference),
+                        ..
+                    }) => reference.get(&scope.bases).cloned().ok_or_else(|| {
+                        err(
+                            "static",
+                            span,
+                            "expected a Basis argument; use type(T) for a concrete type",
+                        )
+                    })?,
+                    _ => {
+                        return Err(err(
+                            "static",
+                            span,
+                            "expected a Basis argument; use type(T) for a concrete type",
+                        ));
+                    }
+                };
+                target.bases.insert(name.key().clone(), basis);
+            }
             if let Parameter::Natural(name) = p {
                 let Argument::Natural(n) = a else {
                     return Err(err("static", span, "expected natural argument"));
@@ -1054,7 +1160,21 @@ fn check_bindings<V>(
     ))
 }
 
-fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>, subject: &str) -> Result<Scope> {
+fn concrete_scope(
+    f: &Function,
+    types: &BTreeMap<String, BasisBinding>,
+    naturals: &BTreeMap<String, u32>,
+    subject: &str,
+) -> Result<Scope> {
+    let expected_types = f
+        .parameters
+        .iter()
+        .filter_map(|p| match p {
+            Parameter::Basis(name) => Some(name.name.as_str()),
+            _ => None,
+        })
+        .collect();
+    check_bindings(types, &expected_types, "Basis", subject, f.span)?;
     let expected: BTreeSet<_> = f
         .parameters
         .iter()
@@ -1070,6 +1190,19 @@ fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>, subject: &str)
     // Concrete entry sizes are diagnostic preparation data, not capacities of a
     // future runtime or coefficient domain. Keep construction bounded and small.
     let scope = Scope {
+        bases: f
+            .parameters
+            .iter()
+            .filter_map(|p| match p {
+                Parameter::Basis(name) => Some(
+                    types[&name.name]
+                        .ty
+                        .map_sizes(&mut |n| Ok::<_, Error>(Linear::constant(i128::from(*n))))
+                        .map(|ty| (name.key().clone(), ty)),
+                ),
+                _ => None,
+            })
+            .collect::<Result<_>>()?,
         naturals: f
             .parameters
             .iter()
@@ -1078,7 +1211,7 @@ fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>, subject: &str)
                     name.key().clone(),
                     Linear::constant(i128::from(naturals[&name.name])),
                 )),
-                Parameter::Operation(..) => None,
+                Parameter::Operation(..) | Parameter::Basis(_) => None,
             })
             .collect(),
         operations: BTreeMap::new(),
@@ -1092,13 +1225,14 @@ fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>, subject: &str)
 pub(super) fn instantiate(
     program: &ParsedProgram,
     entry: &str,
+    types: &BTreeMap<String, BasisBinding>,
     naturals: &BTreeMap<String, u32>,
     operations: &BTreeMap<String, OperationBinding>,
 ) -> Result<(DefId, BTreeMap<String, DefId>)> {
     let (entry_id, module, f) = visible_definition(program, entry, None, Span::default())?;
     let result = (|| {
         let subject = format!("entry {module}::{}", f.name);
-        let mut scope = concrete_scope(f, naturals, &subject)?;
+        let mut scope = concrete_scope(f, types, naturals, &subject)?;
         let mut provider_ids = BTreeMap::new();
         let expected: BTreeSet<_> = f
             .parameters
@@ -1133,7 +1267,8 @@ pub(super) fn instantiate(
                     "operation {} provider {provider_module}::{}",
                     name.name, provider.name
                 );
-                let provider_scope = concrete_scope(provider, &binding.naturals, &subject)?;
+                let provider_scope =
+                    concrete_scope(provider, &binding.types, &binding.naturals, &subject)?;
                 requirements(provider, &provider_scope, f.span)?;
                 let output = ty(&provider.result, &provider_scope, provider.span)?;
                 if provider.effect != Effect::Unitary

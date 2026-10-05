@@ -18,8 +18,18 @@ pub(super) enum Kind<N> {
     Unit,
     Bit,
     Bits(N),
+    Parameter(TypeParameter),
     Q(Box<Type<N>>),
     Tuple(Vec<Type<N>>),
+}
+
+/// Opaque Basis identity from the common lexical resolver. The discarded
+/// preflight projection has no key; checked types always have one.
+#[derive(Clone, Debug)]
+pub(super) struct TypeParameter {
+    pub key: Option<super::resolve::locals::BinderKey>,
+    pub name: String,
+    pub span: super::ast::Span,
 }
 
 /// Evaluation category is not a second ordinary finite type universe.
@@ -35,6 +45,7 @@ pub(super) trait SourceTypeContext {
     type Size;
     type Error;
     fn resolve_size(&mut self, size: &super::ast::Natural) -> Result<Self::Size, Self::Error>;
+    fn resolve_basis(&mut self, name: &super::ast::Ident) -> Result<Type<Self::Size>, Self::Error>;
     fn quantum_basis_error(&mut self, span: super::ast::Span) -> Self::Error;
     fn checked_node(
         &mut self,
@@ -57,6 +68,7 @@ pub(super) fn classify_source<C: SourceTypeContext>(
         TypeKind::Unit => Type::unit(),
         TypeKind::Bit => Type::bit(),
         TypeKind::Bits(size) => Type::bits(context.resolve_size(size)?),
+        TypeKind::Named(name) => context.resolve_basis(name)?,
         TypeKind::Q(basis) => {
             if stage == Stage::Basis {
                 return Err(context.quantum_basis_error(source.span));
@@ -86,18 +98,35 @@ impl<N> Type<N> {
         &self,
         resolve: &mut impl FnMut(&N) -> Result<M, E>,
     ) -> Result<Type<M>, E> {
+        self.map_parts(resolve, &mut |parameter| {
+            Ok(Type::parameter(parameter.clone()))
+        })
+    }
+    /// Substitute sizes and opaque bases while retaining every surrounding
+    /// constructor, owner boundary, tuple arity and source order.
+    pub(super) fn map_parts<M, E>(
+        &self,
+        resolve: &mut impl FnMut(&N) -> Result<M, E>,
+        bases: &mut impl FnMut(&TypeParameter) -> Result<Type<M>, E>,
+    ) -> Result<Type<M>, E> {
         Ok(match &self.kind {
             Kind::Unit => Type::unit(),
             Kind::Bit => Type::bit(),
             Kind::Bits(size) => Type::bits(resolve(size)?),
-            Kind::Q(basis) => Type::quantum(basis.map_sizes(resolve)?),
+            Kind::Parameter(parameter) => bases(parameter)?,
+            Kind::Q(basis) => Type::quantum(basis.map_parts(resolve, bases)?),
             Kind::Tuple(fields) => Type::tuple(
                 fields
                     .iter()
-                    .map(|field| field.map_sizes(resolve))
+                    .map(|field| field.map_parts(resolve, bases))
                     .collect::<Result<_, _>>()?,
             ),
         })
+    }
+    pub(super) fn parameter(parameter: TypeParameter) -> Self {
+        Self {
+            kind: Kind::Parameter(parameter),
+        }
     }
     pub(super) fn unit() -> Self {
         Self { kind: Kind::Unit }
@@ -254,6 +283,13 @@ impl<N> Type<N> {
             match (&a.kind, &b.kind) {
                 (Kind::Unit, Kind::Unit) | (Kind::Bit, Kind::Bit) => {}
                 (Kind::Bits(a), Kind::Bits(b)) => equal &= sizes(a, b)?,
+                (Kind::Parameter(a), Kind::Parameter(b)) => {
+                    equal &= match (&a.key, &b.key) {
+                        (Some(a), Some(b)) => a == b,
+                        (None, None) => a.name == b.name,
+                        _ => false,
+                    };
+                }
                 (Kind::Q(a), Kind::Q(b)) => pending.push((a, b)),
                 (Kind::Tuple(a), Kind::Tuple(b)) if a.len() == b.len() => {
                     pending.extend(a.iter().zip(b).rev())
@@ -295,6 +331,7 @@ impl<N: fmt::Display> fmt::Display for DisplayType<'_, N> {
                     Kind::Unit => f.write_str("Unit")?,
                     Kind::Bit => f.write_str("Bit")?,
                     Kind::Bits(n) => write!(f, "Bits<{n}>")?,
+                    Kind::Parameter(parameter) => f.write_str(&parameter.name)?,
                     Kind::Q(inner) => {
                         f.write_str("Q<")?;
                         pending.extend([Part::Text(">"), Part::Type(inner, Stage::Basis)]);
@@ -325,6 +362,7 @@ impl<N: fmt::Debug> fmt::Debug for SizedDebug<'_, N> {
             Kind::Unit => f.write_str("Unit"),
             Kind::Bit => f.write_str("Bit"),
             Kind::Bits(n) => f.debug_tuple("Bits").field(n).finish(),
+            Kind::Parameter(parameter) => f.debug_tuple("Basis").field(&parameter.name).finish(),
             Kind::Q(inner) => f.debug_tuple("Q").field(&inner.sized_debug()).finish(),
             Kind::Tuple(fields) => {
                 struct Fields<'a, N>(&'a [Type<N>]);
@@ -353,7 +391,7 @@ impl Type<u32> {
                 Kind::Bit => total = total.checked_add(1)?,
                 Kind::Bits(n) => total = total.checked_add(*n)?,
                 Kind::Tuple(fields) => pending.extend(fields.iter().rev()),
-                Kind::Q(_) => return None,
+                Kind::Q(_) | Kind::Parameter(_) => return None,
             }
         }
         Some(total)
