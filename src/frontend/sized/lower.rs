@@ -669,7 +669,9 @@ impl Lower<'_> {
                     | Primitive::PhaseEighth
                     | Primitive::Cnot
                     | Primitive::ControlledPhase => true,
-                    Primitive::Init0
+                    Primitive::Unit
+                    | Primitive::Finish
+                    | Primitive::Init0
                     | Primitive::MeasureZ
                     | Primitive::TakeBit
                     | Primitive::PutBit
@@ -1044,17 +1046,25 @@ impl Lower<'_> {
                     .structural(before, after.clone(), "put_bit", ns)?;
                 Ok((node, after))
             }
-            Primitive::Empty => {
+            Primitive::Unit | Primitive::Empty => {
                 let after = self.output_ports(step.output(), vec![vec![]])?;
+                let operation = if name == Primitive::Unit {
+                    "pack_unit"
+                } else {
+                    "pack_empty_bits"
+                };
                 let node = self
                     .graph
-                    .structural(before, after.clone(), "pack_empty_bits", &[])?;
+                    .structural(before, after.clone(), operation, &[])?;
                 Ok((node, after))
             }
-            Primitive::ConsumeEmpty => {
-                let node = self
-                    .graph
-                    .structural(before, vec![], "unpack_empty_bits", &[])?;
+            Primitive::Finish | Primitive::ConsumeEmpty => {
+                let operation = if name == Primitive::Finish {
+                    "unpack_unit"
+                } else {
+                    "unpack_empty_bits"
+                };
+                let node = self.graph.structural(before, vec![], operation, &[])?;
                 Ok((node, vec![]))
             }
             Primitive::H | Primitive::X => {
@@ -1224,7 +1234,9 @@ impl Lower<'_> {
                         vec![Item::Classical([first.clone(), rest.clone()].concat())]
                     }
                     Some(
-                        Primitive::H
+                        Primitive::Unit
+                        | Primitive::Finish
+                        | Primitive::H
                         | Primitive::X
                         | Primitive::Cnot
                         | Primitive::Phase
@@ -1265,9 +1277,12 @@ impl Lower<'_> {
         instrument: &mut Instrument,
     ) -> Result<(Vec<Item>, usize)> {
         let structural = step.primitive_kind().is_some_and(|name| match name {
-            Primitive::TakeBit | Primitive::PutBit | Primitive::Empty | Primitive::ConsumeEmpty => {
-                true
-            }
+            Primitive::Unit
+            | Primitive::Finish
+            | Primitive::TakeBit
+            | Primitive::PutBit
+            | Primitive::Empty
+            | Primitive::ConsumeEmpty => true,
             Primitive::H
             | Primitive::X
             | Primitive::Cnot

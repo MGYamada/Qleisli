@@ -1,0 +1,46 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/eliminate/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T02:23:56.585759+00:00",
+  "timestamp_note": "Clock observation immediately before launching this command.",
+  "elapsed_seconds": 0.005721917026676238,
+  "stdout_text": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"module\",\"severity\":\"error\",\"message\":\"missing dependency module std::quantum\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/eliminate/main.qli\",\"start\":74,\"end\":97},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "source_sha256": "a714d8be16f003521d4de23ca6580d118e74ba664a15d6cbf38af443e4e22a0c",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "25ee7a6e03d7c7b4e2c6b67754c5ad62dd40cc98aaf93a7bba09b77a5d23f280",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "module",
+        "severity": "error",
+        "message": "missing dependency module std::quantum",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/eliminate/main.qli",
+          "start": 74,
+          "end": 97
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -68,12 +68,13 @@ fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_sup
         "pub unitary fn f(x: Unit) -> Unit { x }",
         "pub unitary fn f(x: Bit) -> Bit { x }",
         "pub unitary fn f(x: Bits<1>) -> Bits<1> { x }",
+        "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }",
     ] {
         parsed(source);
     }
     let error = ParsedProgram::parse(BTreeMap::from([(
         "main".into(),
-        "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }".into(),
+        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<(Unit,Unit)> { q }".into(),
     )]))
     .unwrap_err();
     assert_eq!(error.code(), "unsupported");

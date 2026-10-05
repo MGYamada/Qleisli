@@ -1,0 +1,9 @@
+{
+  "run_id": 37254752247,
+  "job_id": 111589372000,
+  "branch_head": "e01e98a42a00c04892617205307f2db76b5c404e",
+  "status": "Rust job failed; other jobs were still running at retrieval",
+  "source": "GitHub workflow job logs connector",
+  "excerpt": "rust.excerpt.txt",
+  "scope": "Exact contiguous hosted output from frontend_types invocation through test step failure; not the complete log or full workflow conclusion."
+}

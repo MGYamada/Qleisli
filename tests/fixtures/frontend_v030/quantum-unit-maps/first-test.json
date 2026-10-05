@@ -1,0 +1,9 @@
+{
+  "status": "unexecuted first independent test draft",
+  "test_path": "tests/quantum_unit_maps.rs",
+  "sha256": "01d149412f26add1cd289eb414be0fb013baf7542d7739e9f7f96952d1fa981a",
+  "expectations_sha256": "f54670fd7e37b1603221520aba22b4213d968b5872d69ebb7a7043823164a998",
+  "candidate_outputs_inspected": false,
+  "oracle": "Exact coefficients/operators authored independently. Interface labels and frame/call syntax derived by read-only inspection of the existing lowerer. Later transport-placement repairs will retain this draft.",
+  "first_sources_unchanged": true
+}

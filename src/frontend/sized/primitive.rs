@@ -12,7 +12,9 @@ pub(super) enum Size {
 }
 #[derive(Clone, Copy)]
 pub(super) enum TypeShape {
+    /// Ordinary Unit has no quantum owner, unlike the exact singleton basis.
     Unit,
+    QUnit,
     Bit,
     Bits(Size),
     CBit,
@@ -81,7 +83,7 @@ macro_rules! primitives {
 }
 use Size::{Argument as A, Constant as C};
 use TypeRule::{Fixed, QuantumEndomorphism};
-use TypeShape::{Bit, Bits, CBit, CBits, Tuple, Unit};
+use TypeShape::{Bit, Bits, CBit, CBits, QUnit, Tuple, Unit};
 primitives! {
     H => ("std::quantum::h", 0, Fixed(&[Bit], Bit), Unitary, None),
     X => ("std::quantum::x", 0, Fixed(&[Bit], Bit), Unitary, None),
@@ -97,6 +99,8 @@ primitives! {
     ConsumeEmpty => ("std::registers::consume_empty", 0, Fixed(&[Bits(C(0))], Unit), Unitary, None),
     EmptyBits => ("std::classical::empty_bits", 0, Fixed(&[], CBits(C(0))), Unitary, None),
     PrependBit => ("std::classical::prepend_bit", 1, Fixed(&[CBit, CBits(A(0, 0))], CBits(A(0, 1))), Unitary, None),
+    Unit => ("std::quantum::unit", 0, Fixed(&[Unit], QUnit), Unitary, None),
+    Finish => ("std::quantum::finish", 0, Fixed(&[QUnit], Unit), Unitary, None),
 }
 
 #[cfg(test)]
@@ -110,6 +114,7 @@ mod tests {
                 | TypeShape::CBits(Size::Argument(index, _)) => assert!(index < arity),
                 TypeShape::Tuple(fields) => fields.iter().for_each(|f| shape(*f, arity)),
                 TypeShape::Unit
+                | TypeShape::QUnit
                 | TypeShape::Bit
                 | TypeShape::CBit
                 | TypeShape::Bits(Size::Constant(_))

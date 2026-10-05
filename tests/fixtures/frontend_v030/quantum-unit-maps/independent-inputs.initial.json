@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.independent-test-inputs",
+  "version": 1,
+  "status": "frozen before first test execution",
+  "files": {
+    "tests/quantum_unit_maps.rs": "01d149412f26add1cd289eb414be0fb013baf7542d7739e9f7f96952d1fa981a",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/first-test.rs.txt": "01d149412f26add1cd289eb414be0fb013baf7542d7739e9f7f96952d1fa981a",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/first-test.json": "6a838c9130b8bc74ddee0e9317c38829d01d65c2f99ef702991c9397c91c5572",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/independent-expectations.json": "f54670fd7e37b1603221520aba22b4213d968b5872d69ebb7a7043823164a998",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/independent-tests.md": "d5522f9ff6e286c6aa339f1916e4b3a768827b381542265ac9f06751c87f8eb1",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/current/double-scalar-result.qli": "ba9b616a50cbd345ff6855067ff9fd50f4cfadbb3e002b78b853c7e13c7a18ae",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/current/maps-after-observation.qli": "9d65d6ab9cec04f78600c69ec47e54aa5c3ffaa01d1a1bd58ab00309c13573b1",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/current/scalar-closed.qli": "23bade1c739a0b32eebc1380d888081ad902aea8ba7b2825dad1a6f5bbbc72f3",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/current/scalar-result.qli": "ebf484e22847a38d06c736a45278fe993d023a140fa82005832053d54eef7c3d",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/current/separate-middle-owner.qli": "cb78a09ec4ae7689879025df978a1c7a48206e2656c33960ada062223d562090",
+    "tests/fixtures/frontend_v030/quantum-unit-maps/current/two-fresh-owners.qli": "83e9a4770763d9eeab827e0966d78ff8d33a9ff587ebb87c5808938f08b132a7"
+  }
+}

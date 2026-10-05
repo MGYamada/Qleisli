@@ -1,0 +1,84 @@
+{
+  "format": "qleisli.hosted-failure-inspection",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T02:57:31.310280+00:00",
+  "repository": "MGYamada/Qleisli",
+  "run_id": 37254752247,
+  "job_id": 111589372062,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37254752247",
+  "job_url": "https://github.com/MGYamada/Qleisli/actions/runs/37254752247/job/111589372062",
+  "artifact_id": 11322976413,
+  "artifact_name": "distribution-9e429542b806bbb60027f17a5fbe658667f8146f",
+  "artifact_size_bytes": 34865173,
+  "artifact_sha256": "97ba8c1a5be2162af119b9e1b4113734dd51bb4ba3aae712e05b1342608700b7",
+  "github_digest_matches_download": true,
+  "archive_temporary_path": "/private/tmp/qleisli-hosted-unit-profile-11322976413.zip",
+  "download": "GitHub connector download_workflow_artifact; its returned temporary download URL retrieved to this one fixed ZIP path. Initial sandbox curl failed DNS, approved retry succeeded. No archive-wide extraction.",
+  "branch_head": "e01e98a42a00c04892617205307f2db76b5c404e",
+  "tested_synthetic_merge": "9e429542b806bbb60027f17a5fbe658667f8146f",
+  "command_index": 14,
+  "command": {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--all-targets",
+      "--target-dir",
+      "/home/runner/work/_temp/qleisli-distribution-target/source-production"
+    ],
+    "cwd": "/home/runner/work/_temp/qleisli-distribution-work-boxafp4q/source",
+    "elapsed_seconds": 985.362,
+    "exit_code": 101,
+    "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/logs/14.stderr",
+    "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-75pl1o0j/logs/14.stdout"
+  },
+  "entries": {
+    "qleisli-distribution-artifacts-75pl1o0j/logs/14.stdout": {
+      "full_size_bytes": 27162,
+      "full_sha256": "34e17924ae1e9a2f10ecb77cdee17d6a2e5bb96f3a00995bcddc5651a96b4e53",
+      "full_line_count": 352,
+      "excerpt_path": "distribution-14.stdout.excerpt.txt",
+      "excerpt_lines_inclusive": [
+        334,
+        352
+      ],
+      "excerpt_size_bytes": 3430,
+      "excerpt_sha256": "0ee160086d13f6b49f48162773d4bbf5f5051c46951377d4a1895857cb74768e",
+      "transformation": "Exact contiguous original bytes; no line prefixes or other edits"
+    },
+    "qleisli-distribution-artifacts-75pl1o0j/logs/14.stderr": {
+      "full_size_bytes": 3328,
+      "full_sha256": "9b88e0578b8e329293b3adf599dcbcd34bdf3f95969858da0e78512f99a0fb3c",
+      "full_line_count": 34,
+      "excerpt_path": "distribution-14.stderr.excerpt.txt",
+      "excerpt_lines_inclusive": [
+        33,
+        34
+      ],
+      "excerpt_size_bytes": 210,
+      "excerpt_sha256": "82bf608395ddb6da1f49841391cb7f75293babe2475a5c3178730a9a02404ef2",
+      "transformation": "Exact contiguous original bytes; no line prefixes or other edits"
+    },
+    "qleisli-distribution.json": {
+      "full_size_bytes": 1985459,
+      "full_sha256": "458c79e6e22e60a23c00d639fbfc4164b60baaf869242609167e2feb93d56ad2",
+      "excerpt_path": "distribution-record.excerpt.json",
+      "transformation": "Selected original JSON values, pretty-printed; commands contains only command index14"
+    }
+  },
+  "finding": "Same stale Q<Unit> rejection assertion as the previously captured Rust job. tests/frontend_types.rs:78 calls unwrap_err on successful parsing of pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }. No distinct failure is present in this command log.",
+  "limitations": [
+    "Cargo stopped at this failing target; subsequent targets did not run.",
+    "This inspection is not a successful all-target, distribution or hosted rerun.",
+    "No local Rust/Lean build or test was run for this inspection."
+  ],
+  "previous_saved_test": {
+    "path": "frontend_types.before.rs.txt",
+    "sha256": "79b3b5c5670823cf323aebabbadb406583118f013872f08e8ccaf2ffc424d38b"
+  },
+  "current_repaired_test": {
+    "path": "tests/frontend_types.rs",
+    "sha256": "f1a58f669f8da5045eb5fa9625468d1592ff525d80c81eda7d99ceb2120f85f5",
+    "status": "Identity observation only; actual repaired-target results belong to the separate root validation packet"
+  }
+}

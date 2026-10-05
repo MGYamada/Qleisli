@@ -126,8 +126,35 @@ and a finite scalar leaf, tensored with the original owner's identity. The
 internal Unit owner adds no physical wire and does not change the source
 basis. Adjoint conjugates the scalar, eight repetitions give identity, and
 coherent control of four repetitions gives Z on the control. Removing a Unit
-factor cannot remove the scalar. This implements existing semantics without
-exposing new public introduction/elimination names.
+factor cannot remove the scalar.
+
+The common selected-source hierarchy path exposes two explicit structural maps:
+
+- `std::quantum::unit(u)` takes exactly one ordinary `Unit` argument and returns
+  one fresh `Q<Unit>` owner.
+- `std::quantum::finish(q)` consumes exactly one `Q<Unit>` owner and returns
+  ordinary `Unit`.
+
+Both take no static arguments and have Unitary quantum action with exact
+coefficient `+1`. They lower to the existing checked `pack_unit` and
+`unpack_unit` constructors. Neither allocates a physical wire, measures, discards
+or converts another basis implicitly. `unit()` is an arity error; write
+`unit(())`. Bit, Bits<0> and their quantum owners are not substitutes for the
+specified argument types.
+
+Both arguments evaluate completely, once, before their map. In particular,
+`finish(phase_eighth(unit(())))` has scalar coefficient `exp(i*pi/4)`;
+its ordinary Unit result does not erase that computation. Reintroducing a
+Unit owner after finishing it gives a fresh owner, never revives the consumed
+binding, and preserves the phase and any retained reference. An observing
+argument still makes its caller observing.
+
+These maps can form explicit left/right maps on separate-owner products, such
+as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. They do not identify that interface with
+`Q<(Unit,Bit)>`. Packaged quantum tuple projection and its explicit unitors
+remain required work. The finite source catalog does not yet expose these two
+names, and the shared Raw profile rejects their quantum Unit intermediates;
+no observing discard or retry after native failure supplies a substitute.
 
 Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.

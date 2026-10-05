@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Expose explicit `unit(())` and `finish(q)` maps on the common hierarchy
+  path, preserving exact Unit owners, scalar phase and complete argument
+  evaluation through existing checked structure (#43). Finite/Raw and packaged
+  tuple support remain separate unfinished integration work.
 - Require constitutional state to be reread and checked at agent startup and
   after model/session/context changes. Preserve adopted human decisions,
   pending obligations and paused work across handoffs.

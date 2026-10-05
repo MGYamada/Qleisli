@@ -114,3 +114,7 @@ tests/fixtures/frontend_v030/quantum-unit-source/*/*stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/quantum-unit-source/*.patch -text -whitespace
 # Hosted failure excerpts retain their original timestamped blank lines.
 tests/fixtures/review_v030alpha/hosted-109-37242938514/*.excerpt.txt -text -whitespace
+# Frozen Unit-map contract and actual test/hosted output retain exact bytes.
+tests/fixtures/authoring_sessions/quantum-unit-maps-v030/contract.md -text -whitespace
+tests/fixtures/frontend_v030/quantum-unit-maps/*/*stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-unit-profile-37254752247/*.excerpt.txt -text -whitespace

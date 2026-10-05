@@ -170,3 +170,11 @@ rejections and existing capabilities. Ordinary Unit and Q<Bits<0>> controls
 remain distinct. Earlier profile rejection does not establish a downstream
 type/ownership condition, and checking an empty main does not execute the open
 phase function. Original source/manifest hashes precede all observations.
+
+The [quantum Unit map study](quantum-unit-maps-v030/session.json) preserves
+22 complete first projects and 44 actual baseline checks before public
+`unit`/`finish` implementation. Nineteen projects stop at the unavailable names;
+those results do not validate their downstream type, owner or effect conditions.
+The packaged-product example exposes a separate projection boundary, while
+the two existing controls retain their behavior. Independent intended equations
+and reference conditions remain separate from these diagnostic observations.

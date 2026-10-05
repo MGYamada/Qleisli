@@ -971,6 +971,7 @@ fn primitive_signature(
     fn shape(t: TypeShape, ns: &[Linear], span: Span) -> Result<Ty> {
         Ok(match t {
             TypeShape::Unit => Ty::unit(),
+            TypeShape::QUnit => Ty::quantum(Ty::unit()),
             TypeShape::Bit => Ty::quantum(Ty::bit()),
             TypeShape::CBit => Ty::bit(),
             TypeShape::Bits(n) => Ty::quantum(Ty::bits(size(n, ns, span)?)),

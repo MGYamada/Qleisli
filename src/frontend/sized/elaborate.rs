@@ -1141,7 +1141,11 @@ impl Builder<'_> {
                     let kind = Primitive::lookup(&self.program.resolution.target_path(target))
                         .expect("resolved primitive");
                     let signature = kind.signature();
-                    if matches!(signature.types, TypeRule::QuantumEndomorphism) {
+                    // These contracts reject arity before evaluating the sole
+                    // argument; its complete work is then retained exactly once.
+                    if matches!(signature.types, TypeRule::QuantumEndomorphism)
+                        || matches!(kind, Primitive::Unit | Primitive::Finish)
+                    {
                         if arguments.len() != signature.natural_arity {
                             return Err(error(
                                 "static",
@@ -1555,7 +1559,9 @@ fn primitive(
                 return Err(error("limit", span, "classical pack exceeds eight bits"));
             }
         }
-        Primitive::H
+        Primitive::Unit
+        | Primitive::Finish
+        | Primitive::H
         | Primitive::X
         | Primitive::PhaseEighth
         | Primitive::Cnot
@@ -1577,6 +1583,7 @@ fn primitive(
         Ok(SourceType {
             kind: match t {
                 TypeShape::Unit => TypeKind::Unit,
+                TypeShape::QUnit => TypeKind::Q(Box::new(SourceType::unit())),
                 TypeShape::Bit => TypeKind::Q(Box::new(SourceType::bit())),
                 TypeShape::CBit => TypeKind::Bit,
                 TypeShape::Bits(n) => TypeKind::Q(Box::new(SourceType::bits(size(n, ns, span)?))),
