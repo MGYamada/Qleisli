@@ -1,0 +1,23 @@
+{
+  "reason": "Add mandatory yield to opaque-repeat and concrete-control; all other source bytes unchanged.",
+  "files": {
+    "attempt-02/abstract-split/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/abstract-split/main.qli": "14a4581b86e9acecf2c21f3c102e268787aef08d149255f613f4cc40e6f3aa07",
+    "attempt-02/assumed-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/assumed-unit/main.qli": "b33de818cf78a9fbee6d1bc17a18e39825acfd4830639aa561bf08fd69126509",
+    "attempt-02/concrete-control/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/concrete-control/main.qli": "841cacfa8db7c5e76ee82821390eb59e9fb90489043b9ceb32d05d515828b64f",
+    "attempt-02/duplicate-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/duplicate-owner/main.qli": "7d78670e36fe0d8e88c8a2d95f7168ccef80a8da3a59a10f87ab4c954a89e41f",
+    "attempt-02/forward-kind/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/forward-kind/main.qli": "a40ae38452a4a0ba6abe235ef054ef0c94ec1c99c73f37dc9536d9ad2433ede5",
+    "attempt-02/missing-access/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/missing-access/main.qli": "4b7d76ec9b29fabf0c53486c66bcc9d5b7807ed476c35d22e3defe6bc74e0607",
+    "attempt-02/opaque-forward/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/opaque-forward/main.qli": "bba5fb289c34e028e8e853fe8042812fbd4aed21d4815e3a64099b5770c29c22",
+    "attempt-02/opaque-repeat/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/opaque-repeat/main.qli": "0f09d5b9a7860427147ce5138ee47cd1bcc385093ccdece5011d217b3a1c6f0a",
+    "attempt-02/unknown-basis/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/unknown-basis/main.qli": "e27171b0b1735a7b51dc0f939ea124e0198c62f780198bb4443857d1b2bfa402"
+  }
+}

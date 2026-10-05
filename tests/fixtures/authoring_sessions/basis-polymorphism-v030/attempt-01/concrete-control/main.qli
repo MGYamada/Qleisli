@@ -1,0 +1,6 @@
+pub unitary fn identity_bit(q:Q<Bit>)->Q<Bit>{q}
+pub unitary fn f[static k:Nat,static U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+requires Apply(U), k <= 4 {
+    for static i in 0..k carry result=q { U(result) }
+}
+

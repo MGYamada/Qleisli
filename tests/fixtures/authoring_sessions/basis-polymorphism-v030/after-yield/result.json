@@ -1,0 +1,82 @@
+{
+  "identities": {
+    "cli_sha256": "ba6d02af5bdfa16dd98c2ad10efc58f2c3b1ea7524fab94f49f40ea3ec99d93b",
+    "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "wrapper_sha256": "a22c4377e042c0c2b45c816db997ef0462170fdf7831c2e2487effecc4da0e40",
+    "source_files_sha256": "9ff546b0c939f231ef275c0868605a892c0b730bbc8999fda4230026e7dd3ddb"
+  },
+  "sources_stable": true,
+  "results": [
+    {
+      "project": "abstract-split",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "assumed-unit",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "concrete-control",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "codes": []
+    },
+    {
+      "project": "duplicate-owner",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "forward-kind",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "missing-access",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "opaque-forward",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "opaque-repeat",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    },
+    {
+      "project": "unknown-basis",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "codes": [
+        "parse"
+      ]
+    }
+  ],
+  "scope": "Eight desired abstract forms reach parser rejection only; one concrete control reaches native checking. No generic proof or later diagnostic claim."
+}
