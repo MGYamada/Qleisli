@@ -118,3 +118,5 @@ tests/fixtures/review_v030alpha/hosted-109-37242938514/*.excerpt.txt -text -whit
 tests/fixtures/authoring_sessions/quantum-unit-maps-v030/contract.md -text -whitespace
 tests/fixtures/frontend_v030/quantum-unit-maps/*/*stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-unit-profile-37254752247/*.excerpt.txt -text -whitespace
+# Retain actual existing-test transcripts for the classification acceptance review.
+tests/fixtures/frontend_v030/type-pattern-classification/*.stdout.txt -text -whitespace

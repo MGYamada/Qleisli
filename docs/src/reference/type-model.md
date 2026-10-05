@@ -170,6 +170,16 @@ unique across the complete parameter list and distinct from static parameters.
 An ordinary wildcard may ignore unrestricted data; it cannot discard a quantum
 owner, including one nested inside an ordinary product or having zero width.
 
+Rest patterns such as `..` are not part of the current source grammar. If a
+future pattern form elides components, every omitted component must be proven
+unrestricted or already explicitly consumed under a separate language rule.
+Rest syntax never implies discard, reset, release or measurement. Rejection of
+an elided live quantum component must identify that field or component,
+including nested and zero-width owners. This is an intentional divergence from
+ordinary Rust pattern ergonomics, required by the
+[#35 pattern contract](https://github.com/MGYamada/Qleisli/issues/35); it does not
+admit rest syntax or promise those diagnostics before that syntax is implemented.
+
 The binder in `do () <- q; pure ()` describes the ordinary Unit basis of its
 quantum input. The existing coherent lift still consumes and returns a
 `Q<Unit>` owner and retains its scalar action; it is not runtime `let () = q`
