@@ -1,0 +1,198 @@
+{
+  "format": "qleisli.hosted-terminal-decoded-log-artifacts",
+  "version": 1,
+  "decoded_total_bytes": 2071956,
+  "new_gzip_total_bytes": 137519,
+  "reused_historical_logs": 6,
+  "new_logs": 11,
+  "logs": [
+    {
+      "name": "changes",
+      "job_id": 111851329117,
+      "path": "logs/changes-111851329117.log.txt.gz",
+      "retention": "reused-historical-identical-gzip",
+      "decoded_bytes": 1267662,
+      "decoded_sha256": "f16b6d54705474ff21f68f9ba7ca33cf7b149d328c33747dcbcd397ac51fbaa5",
+      "compressed_bytes": 101369,
+      "compressed_sha256": "d30d9775b3976c3f432f97fcaad806631a6ad06de6029288da5e7d0898620f6d",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-docs",
+      "job_id": 111851435760,
+      "path": "logs/check-docs-111851435760.log.txt.gz",
+      "retention": "reused-historical-identical-gzip",
+      "decoded_bytes": 54827,
+      "decoded_sha256": "3d2dbcc8c8e71713aa50c9194dd34bbb7d62cc65dc832d3ff018821c9c3f2d83",
+      "compressed_bytes": 12886,
+      "compressed_sha256": "e595122a014e5d7397ea9320507d9dfd6275b3b4f69e10acfd48572e015035a9",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-rust-msrv",
+      "job_id": 111851435782,
+      "path": "terminal-01/logs/check-rust-msrv-111851435782.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 190363,
+      "decoded_sha256": "0ad78d95cd0bfe224870d4e52d82cd64fbaf1acebb06977c14d662c5ad4b1f7b",
+      "compressed_bytes": 47838,
+      "compressed_sha256": "b8e5f0cb41b1a9adc51398531369c69a8b208e18dabce224b634bfc0af515c22",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-lean-kernel",
+      "job_id": 111851435887,
+      "path": "logs/check-lean-kernel-111851435887.log.txt.gz",
+      "retention": "reused-historical-identical-gzip",
+      "decoded_bytes": 61668,
+      "decoded_sha256": "d69ecf7e214c1bfac2c94822d13cf767a87f9952c4a7eed9795aa2e0b4bdd808",
+      "compressed_bytes": 15062,
+      "compressed_sha256": "cd0a4e06cd11e4b17c2ea2d14153ad5790fb471f1b08dd0b13123330dfe1cbac",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-distribution",
+      "job_id": 111851435909,
+      "path": "terminal-01/logs/check-distribution-111851435909.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 46028,
+      "decoded_sha256": "781b0e2841974f2cdf92303d8f59e89843aceca808fd08de98e142afd45f66cb",
+      "compressed_bytes": 11278,
+      "compressed_sha256": "9abac0c509e055f8cc2101f4b03e1ba0c7572598c0ed9f8044ce5ce9e66c60bb",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-interop",
+      "job_id": 111851435941,
+      "path": "logs/check-interop-111851435941.log.txt.gz",
+      "retention": "reused-historical-identical-gzip",
+      "decoded_bytes": 52576,
+      "decoded_sha256": "f625936fd5542e29da3bfc39bf73b8fe64a45b3f847b00c0cf27f4a1d60430b7",
+      "compressed_bytes": 12773,
+      "compressed_sha256": "948b0533aec2e11302a2e30be58888e9e8361c24647de9156eadd548383ab0a2",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-macos-source",
+      "job_id": 111851435978,
+      "path": "logs/check-macos-source-111851435978.log.txt.gz",
+      "retention": "reused-historical-identical-gzip",
+      "decoded_bytes": 68539,
+      "decoded_sha256": "cac2f9fd976a62d4c6199085041e4483c0cc6d60b892bbdd5b12058db55e58f9",
+      "compressed_bytes": 15975,
+      "compressed_sha256": "1a7eb69773d9bcb920337424d81a4b2187a490e6ce94a803f4e11767447fe728",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-rust",
+      "job_id": 111851435989,
+      "path": "terminal-01/logs/check-rust-111851435989.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 198277,
+      "decoded_sha256": "6a2c80c975f6c43fb8ca05f886c7b6590d831ed331b22f111d187a831d113d04",
+      "compressed_bytes": 49451,
+      "compressed_sha256": "e17f269818c70934ebff2f5bf647e13da4f0ad57d16092bc38d87b6b9e566df7",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "check-lean",
+      "job_id": 111851436073,
+      "path": "logs/check-lean-111851436073.log.txt.gz",
+      "retention": "reused-historical-identical-gzip",
+      "decoded_bytes": 29582,
+      "decoded_sha256": "cd2a75a504fdf89fd7199ed61e2c705351f52235d321ee1054b686ea973c54d6",
+      "compressed_bytes": 7490,
+      "compressed_sha256": "93798cc63d66f7f97a15a71bf90f58a3f443cec6ec2ec051a4e875e5d3e40322",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "interop",
+      "job_id": 111932054080,
+      "path": "terminal-01/logs/interop-111932054080.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12525,
+      "decoded_sha256": "bd407d99df9c0c89c47df3fb2dd30341e189ee59eeae51bb824657ea36e80000",
+      "compressed_bytes": 3539,
+      "compressed_sha256": "c61992b84287ba40059bcaa66628fe044bffaa462b9a4ecb73526fcf5f58000c",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "distribution",
+      "job_id": 111932054082,
+      "path": "terminal-01/logs/distribution-111932054082.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12531,
+      "decoded_sha256": "d935110d5879c6004df973dfec6556f19d3d4495b2602526a006d5e5780f1289",
+      "compressed_bytes": 3532,
+      "compressed_sha256": "d15effc1026fa374709e6b8acb5c56160e92f7604cf1e5775f46a9ff01b04c6f",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "rust",
+      "job_id": 111932054087,
+      "path": "terminal-01/logs/rust-111932054087.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12525,
+      "decoded_sha256": "dfb366ae507d45771bb8b6dd4fffeae3d31318256fb7cc58fcad4e8bfc4ec8f0",
+      "compressed_bytes": 3510,
+      "compressed_sha256": "5801860819a82764f1fe51fac28441ac203167798cdd7df977201a3ff03400dd",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "rust-msrv",
+      "job_id": 111932054098,
+      "path": "terminal-01/logs/rust-msrv-111932054098.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12530,
+      "decoded_sha256": "91247c8bbeae37dc9257786776b6520c843d8d19f4dee5c478dba39eb612443d",
+      "compressed_bytes": 3519,
+      "compressed_sha256": "4f453cb66563552bef0b477aed66825d8c854ffc0297b845ec4fbef89c44b83c",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "lean-kernel",
+      "job_id": 111932054171,
+      "path": "terminal-01/logs/lean-kernel-111932054171.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12536,
+      "decoded_sha256": "4f7965760c92dc79f6cfc3185ae64f5afc47b00f614d74848a6b5cc2b42b0e58",
+      "compressed_bytes": 3538,
+      "compressed_sha256": "08c941cbfe173d3f2645faa15db6454019988ad08cdce6f6a1acbb63e7980b03",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "macos-source",
+      "job_id": 111932054245,
+      "path": "terminal-01/logs/macos-source-111932054245.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12530,
+      "decoded_sha256": "704a56ebd6f9b359ed0938e51961e8497fceb7166982d413625a93bbad3ccc7a",
+      "compressed_bytes": 3535,
+      "compressed_sha256": "bae8b92173100f6057cabb604bb9cbd6555f233d538d43067ef41de111b438a2",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "docs",
+      "job_id": 111932054253,
+      "path": "terminal-01/logs/docs-111932054253.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 14735,
+      "decoded_sha256": "b46b1828a34b31db1dd8c289dbb712575236750614eacf0a650cab369a327758",
+      "compressed_bytes": 4247,
+      "compressed_sha256": "a0527e7345280f4eb414e9f4644c59c0e271ca39d850e04c28342b6a93102763",
+      "decoded_roundtrip_equal": true
+    },
+    {
+      "name": "lean",
+      "job_id": 111932054276,
+      "path": "terminal-01/logs/lean-111932054276.log.txt.gz",
+      "retention": "new-deterministic-gzip",
+      "decoded_bytes": 12522,
+      "decoded_sha256": "366144367b7dcff284e6be1752cc012ffa98a56a825bd6ae9bb7aa8788263813",
+      "compressed_bytes": 3532,
+      "compressed_sha256": "8d3d08bc81c09d49af6b552d7bced1fea7726ead7bba1f259520d8dc570c42a4",
+      "decoded_roundtrip_equal": true
+    }
+  ],
+  "scope": "Exact connector-decoded UTF-8 bytes; not HTTP ZIP bytes. Only newly written temporary decoded copies were removed after hash/gzip readback. Existing checkpoints remain unchanged."
+}

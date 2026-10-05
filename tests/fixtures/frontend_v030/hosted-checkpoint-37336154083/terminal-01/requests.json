@@ -1,0 +1,188 @@
+{
+  "format": "qleisli.github-terminal-connector-requests",
+  "version": 1,
+  "first_clock_after_initial_request_batch_utc": "2026-10-05T19:20:06Z",
+  "clock_after_remaining_requests_and_metadata_write_utc": "2026-10-05T19:21:03Z",
+  "clock_after_richer_final_job_metadata_utc": "2026-10-05T19:23:07Z",
+  "clock_note": "Actual subsequent tool clock observations, not request start times or authenticated network response timestamps.",
+  "metadata_requests": [
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083/jobs?filter=latest&per_page=100",
+      "retained": "jobs.api.json",
+      "limit": "API total_count=18, all 18 current-attempt job rows returned; includes actual completion times."
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37336154083",
+      "retained": "run.api.json"
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch_workflow_run_jobs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "run_id": 37336154083,
+      "retained": "jobs.connector.json",
+      "limit": "Latest attempt, first page only; 18 rows observed."
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/commits/7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+      "retained": "merge.binding.json",
+      "limit": "Selected metadata only; 300 changed-file patch rows omitted."
+    },
+    {
+      "tool": "mcp__codex_apps__github_fetch",
+      "url": "https://raw.githubusercontent.com/MGYamada/Qleisli/7549cecca246b9335a3e1b8f9e4a176df8827d0a/.github/workflows/ci.yml",
+      "retained": "tested-workflow.yml"
+    }
+  ],
+  "log_requests": [
+    {
+      "name": "changes",
+      "id": 111851329117,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851329117,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-docs",
+      "id": 111851435760,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435760,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-rust-msrv",
+      "id": 111851435782,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435782,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-lean-kernel",
+      "id": 111851435887,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435887,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-distribution",
+      "id": 111851435909,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435909,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-interop",
+      "id": 111851435941,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435941,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-macos-source",
+      "id": 111851435978,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435978,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-rust",
+      "id": 111851435989,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851435989,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "check-lean",
+      "id": 111851436073,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111851436073,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "interop",
+      "id": 111932054080,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054080,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "distribution",
+      "id": 111932054082,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054082,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "rust",
+      "id": 111932054087,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054087,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "rust-msrv",
+      "id": 111932054098,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054098,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "lean-kernel",
+      "id": 111932054171,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054171,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "macos-source",
+      "id": 111932054245,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054245,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "docs",
+      "id": 111932054253,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054253,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    },
+    {
+      "name": "lean",
+      "id": 111932054276,
+      "tool": "mcp__codex_apps__github_fetch_workflow_job_logs",
+      "repo_full_name": "MGYamada/Qleisli",
+      "job_id": 111932054276,
+      "retention": "Exact decoded UTF-8 log bytes, compressed or referenced after equality with existing historical gzip."
+    }
+  ],
+  "no_log_requested_for": {
+    "id": 111932055584,
+    "name": "release-readiness",
+    "conclusion": "skipped"
+  },
+  "artifact_archives_downloaded": false,
+  "local_execution": "Data file writing/hashing/compression only; no native/CLI/Rust/Lean/test/build commands or Git/GitHub mutations.",
+  "bounds": {
+    "decoded_bytes_per_log": 2097152,
+    "decoded_total_bytes": 8388608
+  }
+}

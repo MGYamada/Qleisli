@@ -1,0 +1,312 @@
+{
+  "format": "qleisli.independent-hosted-terminal-metadata-audit",
+  "version": 1,
+  "recorded_utc": "2026-10-05T19:34:30.329639+00:00",
+  "auditor": "/root/isometry_cli_tests",
+  "terminal_packet_authored_by_auditor": false,
+  "scope": "Read-only independent consistency audit of existing terminal-01 metadata, decoded-log gzip files and referenced historical files; no fresh CI execution, network authentication or release result.",
+  "status": "stored-data-consistency-audit-passed",
+  "constitutional_startup": {
+    "trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "actual_argv": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "actual_exit_code": 0,
+    "actual_tool_chunk": "6105a8",
+    "done_before_dependent_packet_work": true,
+    "result": "Recorded edition 2026 ratification, appointment, interpretation adoption and two scoped guarantee admissions verified. Human transcript authenticity is not independently established by hashes. Three broader obligations and one exactness supplement retain pending proof/enforcement duties; current source/evidence identity is checked, not a fresh Lean replay. full constitutional CI and release approval remain separate."
+  },
+  "independent_metadata_operations": {
+    "first_assertion_exit_code": 1,
+    "first_actual_tool_chunk": "afdf21",
+    "first_actual_stdout": "",
+    "first_actual_stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 40, in <module>\nAssertionError: ('release-readiness', 'step projection')\n",
+    "cause": "The auditor initially required literal step-list equality. The skipped release job has steps=[] in jobs.api.json and steps=null in jobs.connector.json. The follow-up checks require those exact two representations only for this skipped job, while comparing all executed step projections literally. No packet byte or job result was changed.",
+    "final_assertions_exit_code": 0,
+    "final_actual_tool_chunk": "6a8fea",
+    "stored_commands_executed": false
+  },
+  "identity_checks": {
+    "terminal_mapped_members": 26,
+    "terminal_self_excluded_map": {
+      "path": "files.json",
+      "sha256": "dca3290b669641851a676596e89e598443b7e6d167cd6b83b2ad3ac138d2dcba",
+      "bytes": 4639,
+      "mode": 420
+    },
+    "terminal_inventory_exact_before_audit_subdirectory": true,
+    "historical_members": 19,
+    "historical_before_after_actual_identical": true,
+    "mapped_sha256_bytes_modes_equal": true,
+    "tested_workflow_identical_to_historical_head_workflow": true
+  },
+  "logs": {
+    "count": 17,
+    "reused_historical": 6,
+    "new_deterministic_gzip": 11,
+    "decoded_utf8_bytes": 2071956,
+    "new_gzip_bytes": 137519,
+    "all_connector_declared_raw_identities_equal": true,
+    "six_historical_raw_and_compressed_identities_equal": true,
+    "new_gzip_header_mtime_zero": true,
+    "rows": [
+      {
+        "job_id": 111851329117,
+        "name": "changes",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/logs/changes-111851329117.log.txt.gz",
+        "retention": "reused-historical-identical-gzip",
+        "compressed_bytes": 101369,
+        "decoded_bytes": 1267662,
+        "decoded_sha256": "f16b6d54705474ff21f68f9ba7ca33cf7b149d328c33747dcbcd397ac51fbaa5",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435760,
+        "name": "check-docs",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/logs/check-docs-111851435760.log.txt.gz",
+        "retention": "reused-historical-identical-gzip",
+        "compressed_bytes": 12886,
+        "decoded_bytes": 54827,
+        "decoded_sha256": "3d2dbcc8c8e71713aa50c9194dd34bbb7d62cc65dc832d3ff018821c9c3f2d83",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435782,
+        "name": "check-rust-msrv",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/check-rust-msrv-111851435782.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 47838,
+        "decoded_bytes": 190363,
+        "decoded_sha256": "0ad78d95cd0bfe224870d4e52d82cd64fbaf1acebb06977c14d662c5ad4b1f7b",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435887,
+        "name": "check-lean-kernel",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/logs/check-lean-kernel-111851435887.log.txt.gz",
+        "retention": "reused-historical-identical-gzip",
+        "compressed_bytes": 15062,
+        "decoded_bytes": 61668,
+        "decoded_sha256": "d69ecf7e214c1bfac2c94822d13cf767a87f9952c4a7eed9795aa2e0b4bdd808",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435909,
+        "name": "check-distribution",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/check-distribution-111851435909.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 11278,
+        "decoded_bytes": 46028,
+        "decoded_sha256": "781b0e2841974f2cdf92303d8f59e89843aceca808fd08de98e142afd45f66cb",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435941,
+        "name": "check-interop",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/logs/check-interop-111851435941.log.txt.gz",
+        "retention": "reused-historical-identical-gzip",
+        "compressed_bytes": 12773,
+        "decoded_bytes": 52576,
+        "decoded_sha256": "f625936fd5542e29da3bfc39bf73b8fe64a45b3f847b00c0cf27f4a1d60430b7",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435978,
+        "name": "check-macos-source",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/logs/check-macos-source-111851435978.log.txt.gz",
+        "retention": "reused-historical-identical-gzip",
+        "compressed_bytes": 15975,
+        "decoded_bytes": 68539,
+        "decoded_sha256": "cac2f9fd976a62d4c6199085041e4483c0cc6d60b892bbdd5b12058db55e58f9",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851435989,
+        "name": "check-rust",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/check-rust-111851435989.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 49451,
+        "decoded_bytes": 198277,
+        "decoded_sha256": "6a2c80c975f6c43fb8ca05f886c7b6590d831ed331b22f111d187a831d113d04",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111851436073,
+        "name": "check-lean",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/logs/check-lean-111851436073.log.txt.gz",
+        "retention": "reused-historical-identical-gzip",
+        "compressed_bytes": 7490,
+        "decoded_bytes": 29582,
+        "decoded_sha256": "cd2a75a504fdf89fd7199ed61e2c705351f52235d321ee1054b686ea973c54d6",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054080,
+        "name": "interop",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/interop-111932054080.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3539,
+        "decoded_bytes": 12525,
+        "decoded_sha256": "bd407d99df9c0c89c47df3fb2dd30341e189ee59eeae51bb824657ea36e80000",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054082,
+        "name": "distribution",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/distribution-111932054082.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3532,
+        "decoded_bytes": 12531,
+        "decoded_sha256": "d935110d5879c6004df973dfec6556f19d3d4495b2602526a006d5e5780f1289",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054087,
+        "name": "rust",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/rust-111932054087.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3510,
+        "decoded_bytes": 12525,
+        "decoded_sha256": "dfb366ae507d45771bb8b6dd4fffeae3d31318256fb7cc58fcad4e8bfc4ec8f0",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054098,
+        "name": "rust-msrv",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/rust-msrv-111932054098.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3519,
+        "decoded_bytes": 12530,
+        "decoded_sha256": "91247c8bbeae37dc9257786776b6520c843d8d19f4dee5c478dba39eb612443d",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054171,
+        "name": "lean-kernel",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/lean-kernel-111932054171.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3538,
+        "decoded_bytes": 12536,
+        "decoded_sha256": "4f7965760c92dc79f6cfc3185ae64f5afc47b00f614d74848a6b5cc2b42b0e58",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054245,
+        "name": "macos-source",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/macos-source-111932054245.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3535,
+        "decoded_bytes": 12530,
+        "decoded_sha256": "704a56ebd6f9b359ed0938e51961e8497fceb7166982d413625a93bbad3ccc7a",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054253,
+        "name": "docs",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/docs-111932054253.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 4247,
+        "decoded_bytes": 14735,
+        "decoded_sha256": "b46b1828a34b31db1dd8c289dbb712575236750614eacf0a650cab369a327758",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      },
+      {
+        "job_id": 111932054276,
+        "name": "lean",
+        "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/terminal-01/logs/lean-111932054276.log.txt.gz",
+        "retention": "new-deterministic-gzip",
+        "compressed_bytes": 3532,
+        "decoded_bytes": 12522,
+        "decoded_sha256": "366144367b7dcff284e6be1752cc012ffa98a56a825bd6ae9bb7aa8788263813",
+        "utf8_roundtrip_exact": true,
+        "gzip_crc_and_length_readback": "passed"
+      }
+    ]
+  },
+  "run": {
+    "id": 37336154083,
+    "attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "updated_at": "2026-10-05T18:59:12Z",
+    "jobs": 18,
+    "successful_jobs": 17,
+    "skipped_job": {
+      "name": "release-readiness",
+      "id": 111932055584,
+      "api_steps": [],
+      "connector_steps": null
+    },
+    "all_api_connector_job_and_executed_step_projections_equal": true,
+    "all_observed_job_times_and_skipped_steps_equal_api": true,
+    "actual_skipped_steps": 24,
+    "producer_receipt_and_upload_skips": 16,
+    "required_upload_skips": 7,
+    "model_only_compile_skip": 1
+  },
+  "source_binding": {
+    "published_head": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+    "tested_merge": "7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+    "ordered_parents": [
+      "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+      "9256fe9ef4ffa722066b0569ee37341cf65dea0d"
+    ],
+    "exact_checkout_logs": 17,
+    "exact_required_gate_logs": 8,
+    "all_selected_line_numbers_and_text_equal_raw_logs": true,
+    "selected_profile": "full",
+    "selected_proof_lane": "full",
+    "merge_projection_omits_changed_file_rows": 300,
+    "stored_merge_tree_equals_stored_run_head_tree": true
+  },
+  "scope_observations": {
+    "kernel_reduction_and_fresh_replay_steps_success": true,
+    "native_comparison_and_linux_macos_full_bundle_steps_success": true,
+    "each_bundle_process_checks": 267,
+    "each_bundle_small_corpus_clients": 84,
+    "schema_rebuilt_types_and_audits_and_registered_guarantee_replay_steps_success": true,
+    "per_cargo_command_ignored_rows": {
+      "check-rust": 52,
+      "check-rust-msrv": 52
+    },
+    "ignored_rows_are_not_global_untested_features": true,
+    "all_selected_relevant_lines_and_ignored_rows_exact_in_raw_logs": true,
+    "readme_material_claims_consistent": true
+  },
+  "not_established": [
+    "Authenticity of fresh GitHub HTTP responses or original ZIP bytes",
+    "Downloaded archive/artifact receipt identity",
+    "CI for later local common frontend/Formals changes or commit 7e04f20f0c908fd56720a50655bc56c072c80ceb",
+    "Release readiness, publication or Issue completion",
+    "New constitutional adoption or guarantee admission",
+    "Broader QS/PR/RS/EXACT discharge or source/runtime preservation"
+  ],
+  "execution_limits": {
+    "network": false,
+    "fixture_or_recorded_driver_execution": false,
+    "log_command_replay": false,
+    "rust_lean_build_or_test": false,
+    "qleisli_cli_or_native": false,
+    "git_or_github_mutation": false,
+    "writes": "Only this new independent-terminal-audit-01 subdirectory."
+  }
+}

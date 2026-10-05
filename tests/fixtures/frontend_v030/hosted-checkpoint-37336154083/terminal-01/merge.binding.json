@@ -1,0 +1,53 @@
+{
+  "format": "qleisli.github-merge-binding-projection",
+  "version": 1,
+  "request": "https://api.github.com/repos/MGYamada/Qleisli/commits/7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+  "sha": "7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+  "node_id": "C_kwDOUr9rbtoAKDc1NDljZWNjYTI0NmI5MzM1YTNlMWI4ZjllNGExNzZkZjg4MjdkMGE",
+  "html_url": "https://github.com/MGYamada/Qleisli/commit/7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+  "commit": {
+    "author": {
+      "name": "Masahiko G. Yamada",
+      "email": "myspinor@gmail.com",
+      "date": "2026-10-05T15:51:06Z"
+    },
+    "committer": {
+      "name": "GitHub",
+      "email": "noreply@github.com",
+      "date": "2026-10-05T15:51:06Z"
+    },
+    "message": "Merge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "tree": {
+      "sha": "952ad38d2f41d1c641d0c13848de81b393cf9892",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/git/trees/952ad38d2f41d1c641d0c13848de81b393cf9892"
+    },
+    "url": "https://api.github.com/repos/MGYamada/Qleisli/git/commits/7549cecca246b9335a3e1b8f9e4a176df8827d0a",
+    "comment_count": 0,
+    "verification": {
+      "verified": true,
+      "reason": "valid",
+      "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJqw8dqCRC1aQ7uu5UhlAAAzmcQAAAcn0gY2BlxwjLt6AiueKrO\nCxT3k/IxTPk+gyf+d1WbAVJhtaWzqVqxDJSFN70R0efeTvq00MhNtiVseylZly+x\n67JDfnBcfCIETdSGU3RdgOFm+RB0zhTdzBStMbpbvoHYuc82e8UFzrxHP+hN3K9v\n2sLgptlLEqFps5XJ0Lvi79MmHdATJ/4AVyeM+iymvW0D9unZZab7JGEFtwh9+nxX\nOIq1fwgk8bM+oQ+3GZKN3YzS3msEmKJpe/eNIzn9nyOXV8YHaiuCBRyHM9r/IRIp\ndPqQawKcG9hQFtCuSGY8RmP2JuzR9bmGQT4YKgGTnRDGGssD7MSb8lOZLqdKHiVU\n8/f4HieVmKUAfrIhlNfX2wmT/fAQ3zm425+LQv5jvfwZgmXUndbgwHt6VgAvoHCi\n18RyooXebnpFRjCzwYoe9PvZO3poM9L+DznXYp4c47DK0GkI4XCAiwodDS20PBZX\nHujoKYN4HuLGg1H8jIruI85dFwpHjjCsTfVpgMBI133oW7EHQuCwis/6ehR4BKvm\nhckGgpWMCOyAgem/kA5W5Ybaw5zz8LsrYyHAy+57hES2Ivu5H4ZiinYQcc9l8ZRQ\n9w2OiiWVzfIiLJhPJA4n/nWo3EZECDXvMb4WtPwNtyqQxyfs/8HKxOscsWLwM3zu\n3vROn5cj26YZETJhV5FN\n=kJhy\n-----END PGP SIGNATURE-----\n",
+      "payload": "tree 952ad38d2f41d1c641d0c13848de81b393cf9892\nparent ba83c5c97a9c67bf3904423745b3e9c019a083cb\nparent 9256fe9ef4ffa722066b0569ee37341cf65dea0d\nauthor Masahiko G. Yamada <myspinor@gmail.com> 1791215466 +0000\ncommitter GitHub <noreply@github.com> 1791215466 +0000\n\nMerge 9256fe9ef4ffa722066b0569ee37341cf65dea0d into ba83c5c97a9c67bf3904423745b3e9c019a083cb\n",
+      "verified_at": "2026-10-05T15:51:07Z"
+    }
+  },
+  "parents": [
+    {
+      "sha": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/commits/ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+      "html_url": "https://github.com/MGYamada/Qleisli/commit/ba83c5c97a9c67bf3904423745b3e9c019a083cb"
+    },
+    {
+      "sha": "9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/commits/9256fe9ef4ffa722066b0569ee37341cf65dea0d",
+      "html_url": "https://github.com/MGYamada/Qleisli/commit/9256fe9ef4ffa722066b0569ee37341cf65dea0d"
+    }
+  ],
+  "statistics": {
+    "total": 466054,
+    "additions": 460961,
+    "deletions": 5093
+  },
+  "file_rows_returned": 300,
+  "omitted": "Changed-file patch payloads are omitted; this is a selected metadata projection, not a copy of the complete HTTP/API response."
+}
