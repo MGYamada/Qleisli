@@ -143,3 +143,9 @@ tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-0[12]/*/main.q
 tests/fixtures/authoring_sessions/basis-polymorphism-v030/context.md -text -whitespace
 # Raw Basis validation transcripts retain libtest's original final blank lines.
 tests/fixtures/frontend_v030/basis-polymorphism/*/*stdout.txt -text -whitespace
+# Preserve the exact frozen #315 accounting packet, including original EOFs.
+tests/fixtures/constitution_v030/issue-315-scope/README.md -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope/issue-315.md -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope/tool-observations.txt -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope/validation.json -text -whitespace
+tests/fixtures/constitution_v030/issue-315-scope-whitespace/*stdout.txt -text -whitespace

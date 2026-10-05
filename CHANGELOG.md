@@ -13,6 +13,7 @@ development milestones from the scope of their evidence.
 - Include #315 in the maintainer-confirmed 110-Issue scope and release gate.
   Reject prior 108/109-Issue candidates that omit the added criteria or evidence;
   ordinary-source effect inference and stdlib migration remain required work.
+  Preserve the frozen scope records' bytes during whole-tree whitespace checks.
 - Keep the non-UTF-8 CLI regression aligned with the current usage/discovery
   contract while retaining historical help fixtures. Clarify the current v5
   guarantee ledger and pending exactness supplement in contributor guidance.

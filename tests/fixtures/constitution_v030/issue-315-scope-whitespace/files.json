@@ -1,0 +1,18 @@
+{
+  "files": {
+    "README.md": "371969cdd84e0383f49a44e7539a686cc2cfc88012e1cced3dcee41b1ef20696",
+    "after.json": "56492aa57888e6bbeaa80d62625825ba83fd3083d0304e61964f434be4a119c3",
+    "after.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "after.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.json": "3380e425582bffc822942f905fd7f5eb85e2bb2162b9ce22844af1aedafccce9",
+    "before.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "before.stdout.txt": "023968cd18045664091ce03ead64a1285460d3f4cd03ad6e29218f0243071fbf",
+    "constitution.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "constitution.stdout.txt": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+    "docs.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs.stdout.txt": "1d5a02b3d8155739dfa42b5047e28bea3a6dade0893dc7aed734ca9e4abb622c",
+    "hosted-docs.log.gz": "ac97eef6390693cea587c24aa763fd7befcbe63abbc30ab4e2b301516ebbc160",
+    "hosted.json": "9f448253d00a74868c6ea83a5614285603cabf8c6c2e25885649ce5ad94ee829",
+    "validation.json": "68abb331fd4a6a8047c3f46a52998e8616e8e974ce207100887d6805092d5fed"
+  }
+}
