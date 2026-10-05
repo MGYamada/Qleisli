@@ -128,3 +128,7 @@ tests/fixtures/frontend_v030/quantum-tuple-unitors/product-mutant-repair/*.patch
 tests/fixtures/frontend_v030/quantum-tuple-unitors/trace-capacity-repair/*.patch -text -whitespace
 tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.patch -text -whitespace
+# Keep the original inference study, raw libtest output and reviewed diff bytes.
+tests/fixtures/authoring_sessions/inference-law-v030/contract.md -text -whitespace
+tests/fixtures/frontend_v030/inference-law/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/inference-law/*.patch -text -whitespace

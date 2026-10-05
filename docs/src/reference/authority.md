@@ -5,6 +5,10 @@ between specification, acceptance and proof. It is subordinate to the ratified
 [`CONSTITUTION.md`](https://github.com/MGYamada/Qleisli/blob/10553a9f94f6fd6a4555961244e0e9be41154f8f/CONSTITUTION.md).
 It does not supply a binding mathematical interpretation of QS, PR or RS.
 
+The top-level [architecture principle](architecture.md) explains how policy
+becomes a formal obligation, the Constitution preserves its guarantees, and
+the compiler executes the authorized rules.
+
 Edition 2026 was ratified effective 2026-10-04 (Asia/Tokyo). The repository record
 `governance/ratification-2026.json` identifies the exact adopted text and the
 affirmative human decision. The same decision adopted the preserved governance

@@ -1,0 +1,2 @@
+unitary fn g[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{g(q)}

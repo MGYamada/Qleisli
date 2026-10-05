@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"static","severity":"error","message":"wrong number of static arguments","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/call-missing-natural/main.qli","start":96,"end":103},"related":[]}],"result":null}

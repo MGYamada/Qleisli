@@ -1,0 +1,10 @@
+{
+  "tests/fixtures/verification_v022/inventory.json": "d2dc1bd1036f2bd67ae3dacff7aebad28b56eea603bfae39240d9d0179fcae89",
+  "tests/fixtures/verification_v029/coverage.json": "780decc519af4afc4b58e7a1b464caa3dff54be2e31becdaa50df6a473944274",
+  "src/frontend/sized/check.rs": "fe04914f5cb9a1540691f45a9da2b93c56a01a559b4368a20c9c24311f2dc044",
+  "tests/inference_law.rs": "eb0ba203ed4390ecd71b35e568b8c4c0acb5debaf65b377dd7114d45df521935",
+  "scripts/check_verification_inventory.py": "71e4de5f852226beba197ba109230fb43be4c6e923d28ccef4b98a8b25d15ace",
+  "scripts/check_production_coverage.py": "0bbbc712c8fe8cae54f3bcf86f1f1eba8fa9275bf1455b6648d962b181fca6a2",
+  "scripts/check_authoring_sessions.py": "66a985798e65c90ed1e6e6f8cac51e076d40fa1186667d5a793f45ec3dc4523b",
+  "scripts/check_constitution.py": "424f8e9b9bedbc5cbbd49915b600026e5db8ad933460aa24e2f7a7c8c7cba8e1"
+}

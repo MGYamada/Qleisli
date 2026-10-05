@@ -1,0 +1,35 @@
+from pathlib import Path
+import argparse,hashlib,json,os,subprocess,time,datetime
+ROOT=Path('/Users/masa/git/Qleisli')
+STUDY=ROOT/'tests/fixtures/authoring_sessions/inference-law-v030'
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def write(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
+p=argparse.ArgumentParser();p.add_argument('--record',required=True);a=p.parse_args()
+assert a.record in ['baseline','after-repair']
+out=STUDY/a.record;out.mkdir(exist_ok=False)
+first=json.loads((STUDY/'first-files.json').read_text())['files']
+assert all(digest(STUDY/n)==h for n,h in first.items())
+cli=Path('/private/tmp/qleisli-bounded-validation-target/debug/qleisli')
+kernel=ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel'
+cli_sha=digest(cli);kernel_sha=digest(kernel)
+if a.record=='baseline':assert cli_sha=='15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3'
+wrapper=STUDY/'native-log.py';wrapper.chmod(0o755)
+inputs={str(x.relative_to(ROOT)):digest(x) for x in sorted(list((ROOT/'src').rglob('*.rs'))+list((ROOT/'stdlib/src').rglob('*.qli'))+[ROOT/'Cargo.toml',ROOT/'Cargo.lock'])}
+write(out/'inputs-before.json',inputs)
+(out/'driver.py.txt').write_bytes(Path(__file__).read_bytes())
+rows=[]
+for case in json.loads((STUDY/'expectations.json').read_text())['cases']:
+ label=case['label'];project=STUDY/'attempt-01'/case['project'];log=out/(label+'.native.jsonl')
+ env=os.environ.copy();env.update(QLEISLI_KERNEL=str(wrapper),QLEISLI_HIERARCHY_KERNEL=str(wrapper),QLEISLI_STUDY_NATIVE_LOG=str(log),QLEISLI_STUDY_NATIVE=str(kernel))
+ argv=[str(cli),'--format=json','check','--entry=main::f',f'--module=main={project/"main.qli"}','--ir-profile=hierarchy',f'--lean-kernel={wrapper}',*case['arguments']]
+ assert digest(cli)==cli_sha and digest(kernel)==kernel_sha
+ start=time.monotonic();r=subprocess.run(argv,cwd=ROOT,env=env,capture_output=True,timeout=60)
+ (out/(label+'.stdout.txt')).write_bytes(r.stdout);(out/(label+'.stderr.txt')).write_bytes(r.stderr)
+ if not log.exists():log.write_bytes(b'')
+ row={'label':label,'argv':argv,'exit_code':r.returncode,'seconds':time.monotonic()-start,'stdout':label+'.stdout.txt','stderr':label+'.stderr.txt','native_invocations':len(log.read_text().splitlines()),'cli_sha256_before':cli_sha,'cli_sha256_after':digest(cli),'kernel_sha256_before':kernel_sha,'kernel_sha256_after':digest(kernel)}
+ write(out/(label+'.json'),row);rows.append(row)
+ assert digest(cli)==cli_sha and digest(kernel)==kernel_sha
+ print(label,r.returncode,row['native_invocations'],flush=True)
+write(out/'inputs-after.json',{s:digest(ROOT/s) for s in inputs})
+assert inputs==json.loads((out/'inputs-after.json').read_text())
+write(out/'result.json',{'recorded_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'base_commit':subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip(),'driver_sha256':digest(Path(__file__)),'first_manifest_sha256':digest(STUDY/'first-files.json'),'source_count':len(inputs),'source_manifest_sha256':digest(out/'inputs-before.json'),'inputs_stable':True,'cli_sha256':cli_sha,'kernel_sha256':kernel_sha,'observations':rows,'scope':'Informed diagnostic study, selected open source checks only; no execution or fresh Lean replay.'})

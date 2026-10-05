@@ -1,0 +1,22 @@
+{
+  "inputs_stable": true,
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.42298312502680346
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 1,
+      "seconds": 0.036249416996724904
+    }
+  ],
+  "passed": false
+}

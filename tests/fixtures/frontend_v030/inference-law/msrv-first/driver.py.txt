@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+"""Bounded diagnostic and inference-law validation with exact input identities."""
+import argparse,hashlib,json,os,subprocess,time,shutil
+from pathlib import Path
+HERE=Path(__file__).resolve().parent;ROOT=HERE.parents[3]
+def digest(p):return hashlib.sha256(p.read_bytes()).hexdigest()
+def write(p,x):p.write_text(json.dumps(x,indent=2)+'\n')
+p=argparse.ArgumentParser();p.add_argument('--record',required=True);p.add_argument('--msrv',action='store_true');a=p.parse_args()
+out=HERE/a.record;out.mkdir(exist_ok=False)
+assert shutil.disk_usage(ROOT).free > 8*1024**3
+paths=list((ROOT/'src').rglob('*.rs'))+list((ROOT/'stdlib/src').rglob('*.qli'))+[ROOT/'Cargo.toml',ROOT/'Cargo.lock']
+paths+=list((ROOT/'tests/fixtures/authoring_sessions/inference-law-v030/attempt-01').rglob('*'))
+paths += [ROOT/'tests'/n for n in ['inference_law.rs','frontend_types.rs','shared_resolution.rs','sized_source.rs','operation_parameters.rs','function_evidence.rs','tuple_shapes.rs','Qargo.toml','common/mod.rs']]
+inputs={str(x.relative_to(ROOT)):digest(x) for x in sorted(paths) if x.is_file()}
+write(out/'inputs-before.json',inputs);(out/'driver.py.txt').write_bytes(Path(__file__).read_bytes())
+env=os.environ.copy();env.update(CARGO_TARGET_DIR='/private/tmp/qleisli-bounded-validation-target',CARGO_INCREMENTAL='0',CARGO_PROFILE_DEV_DEBUG='0',CARGO_PROFILE_TEST_DEBUG='0',CARGO_BUILD_JOBS='2',QLEISLI_KERNEL=str(ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel'),QLEISLI_HIERARCHY_KERNEL=str(ROOT/'lean-kernel/.lake/build/bin/qleisli-kernel'))
+if a.msrv:env['PATH']='/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:'+env['PATH']
+commands=[['rustc','--version'],['cargo','--version'],['cargo','test','--offline','--locked','--test','inference_law','--test','frontend_types','--test','shared_resolution','--test','operation_parameters','--test','function_evidence','--test','tuple_shapes'],['cargo','test','--offline','--locked','--test','sized_source','--','--skip','lowering_profile_preflight_identifies_unsupported_root_signatures','--skip','hierarchy_eligibility_retains_boolean_location_and_body_checks','--skip','reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference','--skip','direct_finite_source_gates_preserve_entangled_h_x_references','--skip','rust_source_proposals_check_natively_and_preserve_small_system_coefficients','--skip','matrix_free_original_routed_qpe_preserves_order_and_phase'],['cargo','clippy','--offline','--locked','--all-targets','--','-D','warnings'],['cargo','fmt','--check']]
+commands.insert(3, ['cargo','test','--offline','--locked','--test','function_evidence','--','--ignored'])
+rows=[]
+for i,argv in enumerate(commands):
+ start=time.monotonic();r=subprocess.run(argv,cwd=ROOT,env=env,capture_output=True,timeout=900)
+ (out/f'{i}.stdout.txt').write_bytes(r.stdout);(out/f'{i}.stderr.txt').write_bytes(r.stderr)
+ rows.append({'argv':argv,'exit_code':r.returncode,'seconds':time.monotonic()-start,'stdout':f'{i}.stdout.txt','stderr':f'{i}.stderr.txt'})
+ write(out/'commands.json',rows);print(a.record,argv,r.returncode,flush=True)
+ if r.returncode:break
+write(out/'inputs-after.json',{s:digest(ROOT/s) for s in inputs})
+write(out/'result.json',{'inputs_stable':inputs==json.loads((out/'inputs-after.json').read_text()),'source_count':len(inputs),'source_manifest_sha256':digest(out/'inputs-before.json'),'all_planned_commands_executed':len(rows)==len(commands),'status':'passed' if len(rows)==len(commands) and not any(x['exit_code'] for x in rows) else 'failed','commands':rows,'scope':'Focused bounded Rust/native checks; no new maximum cases or local Lean replay.'})
+raise SystemExit(0 if len(rows)==len(commands) and not any(x['exit_code'] for x in rows) else 1)

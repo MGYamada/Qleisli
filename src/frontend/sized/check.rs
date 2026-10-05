@@ -461,9 +461,26 @@ impl Checker<'_> {
         span: Span,
         recursion: bool,
     ) -> Result<(Vec<Ty>, Ty, Effect)> {
-        let (_, f) = self.program.definition(id);
+        let (module, f) = self.program.definition(id);
         if args.len() != f.parameters.len() {
-            return Err(err("static", span, "wrong number of static arguments"));
+            let parameters = f
+                .parameters
+                .iter()
+                .map(|p| match p {
+                    Parameter::Natural(n) => format!("{}: Nat", n.name),
+                    Parameter::Operation(n, _) => format!("{}: Op", n.name),
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
+            return Err(err(
+                "static",
+                span,
+                format!(
+                    "wrong number of static arguments for {module}::{}: expected [{parameters}], received {}",
+                    f.name,
+                    args.len()
+                ),
+            ));
         }
         let mut target = Scope {
             naturals: BTreeMap::new(),
@@ -1004,25 +1021,52 @@ fn primitive_signature(
     ))
 }
 
-fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>) -> Result<Scope> {
+// Closed bindings are explicit. Diagnostics describe the failed set comparison
+// in deterministic order; they cannot supply a substitution or select a provider.
+fn check_bindings<V>(
+    actual: &BTreeMap<String, V>,
+    expected: &BTreeSet<&str>,
+    category: &str,
+    subject: &str,
+    span: Span,
+) -> Result<()> {
+    if actual.len() == expected.len() && expected.iter().all(|name| actual.contains_key(*name)) {
+        return Ok(());
+    }
+    let missing = expected
+        .iter()
+        .filter(|name| !actual.contains_key(**name))
+        .copied()
+        .collect::<Vec<_>>()
+        .join(", ");
+    let unexpected = actual
+        .keys()
+        .filter(|name| !expected.contains(name.as_str()))
+        .map(String::as_str)
+        .collect::<Vec<_>>()
+        .join(", ");
+    Err(err(
+        "static",
+        span,
+        format!(
+            "concrete {category} bindings for {subject} must exactly match the declaration; missing [{missing}]; unexpected [{unexpected}]"
+        ),
+    ))
+}
+
+fn concrete_scope(f: &Function, naturals: &BTreeMap<String, u32>, subject: &str) -> Result<Scope> {
     let expected: BTreeSet<_> = f
         .parameters
         .iter()
         .filter_map(|p| {
             if let Parameter::Natural(n) = p {
-                Some(n.name.clone())
+                Some(n.name.as_str())
             } else {
                 None
             }
         })
         .collect();
-    if naturals.keys().cloned().collect::<BTreeSet<_>>() != expected {
-        return Err(err(
-            "static",
-            f.span,
-            "concrete natural bindings must exactly match the declaration",
-        ));
-    }
+    check_bindings(naturals, &expected, "natural", subject, f.span)?;
     // Concrete entry sizes are diagnostic preparation data, not capacities of a
     // future runtime or coefficient domain. Keep construction bounded and small.
     let scope = Scope {
@@ -1053,30 +1097,25 @@ pub(super) fn instantiate(
 ) -> Result<(DefId, BTreeMap<String, DefId>)> {
     let (entry_id, module, f) = visible_definition(program, entry, None, Span::default())?;
     let result = (|| {
-        let mut scope = concrete_scope(f, naturals)?;
+        let subject = format!("entry {module}::{}", f.name);
+        let mut scope = concrete_scope(f, naturals, &subject)?;
         let mut provider_ids = BTreeMap::new();
         let expected: BTreeSet<_> = f
             .parameters
             .iter()
             .filter_map(|p| {
                 if let Parameter::Operation(n, _) = p {
-                    Some(n.name.clone())
+                    Some(n.name.as_str())
                 } else {
                     None
                 }
             })
             .collect();
-        if operations.keys().cloned().collect::<BTreeSet<_>>() != expected {
-            return Err(err(
-                "static",
-                f.span,
-                "concrete operation bindings must exactly match the declaration",
-            ));
-        }
+        check_bindings(operations, &expected, "operation", &subject, f.span)?;
         for p in &f.parameters {
             if let Parameter::Operation(name, b) = p {
                 let binding = &operations[&name.name];
-                let (provider_id, _, provider) =
+                let (provider_id, provider_module, provider) =
                     visible_definition(program, &binding.definition, Some(module), f.span)?;
                 if provider
                     .parameters
@@ -1090,7 +1129,11 @@ pub(super) fn instantiate(
                     ));
                 }
                 provider_ids.insert(name.name.clone(), provider_id);
-                let provider_scope = concrete_scope(provider, &binding.naturals)?;
+                let subject = format!(
+                    "operation {} provider {provider_module}::{}",
+                    name.name, provider.name
+                );
+                let provider_scope = concrete_scope(provider, &binding.naturals, &subject)?;
                 requirements(provider, &provider_scope, f.span)?;
                 let output = ty(&provider.result, &provider_scope, provider.span)?;
                 if provider.effect != Effect::Unitary

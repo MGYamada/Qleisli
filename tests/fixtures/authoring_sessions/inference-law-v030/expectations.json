@@ -1,0 +1,198 @@
+{
+  "format": "qleisli.informed-inference-law-study",
+  "version": 1,
+  "status": "desired diagnostics before observation; no results yet",
+  "cases": [
+    {
+      "label": "natural-missing-both",
+      "project": "natural-pair",
+      "arguments": [],
+      "desired": "Reject missing n and m; never choose arbitrary static values."
+    },
+    {
+      "label": "natural-missing-m",
+      "project": "natural-pair",
+      "arguments": [
+        "--nat=n=1"
+      ],
+      "desired": "Reject and identify missing m."
+    },
+    {
+      "label": "natural-extra-z",
+      "project": "natural-pair",
+      "arguments": [
+        "--nat=n=1",
+        "--nat=m=0",
+        "--nat=z=2"
+      ],
+      "desired": "Reject and identify unexpected z."
+    },
+    {
+      "label": "natural-missing-and-extra",
+      "project": "natural-pair",
+      "arguments": [
+        "--nat=n=1",
+        "--nat=z=2"
+      ],
+      "desired": "Reject and distinguish missing m from extra z."
+    },
+    {
+      "label": "natural-missing-and-extra-reversed",
+      "project": "natural-pair",
+      "arguments": [
+        "--nat=z=2",
+        "--nat=n=1"
+      ],
+      "desired": "Same diagnostic as missing-and-extra; argument-map insertion order is irrelevant."
+    },
+    {
+      "label": "natural-exact",
+      "project": "natural-pair",
+      "arguments": [
+        "--nat=n=1",
+        "--nat=m=0"
+      ],
+      "desired": "Existing explicit complete substitution checks successfully."
+    },
+    {
+      "label": "natural-exact-reversed",
+      "project": "natural-pair",
+      "arguments": [
+        "--nat=m=0",
+        "--nat=n=1"
+      ],
+      "desired": "Same result as exact."
+    },
+    {
+      "label": "operation-missing",
+      "project": "operation-choice",
+      "arguments": [],
+      "desired": "Reject missing U; never search identity/flip providers."
+    },
+    {
+      "label": "operation-extra",
+      "project": "operation-choice",
+      "arguments": [
+        "--operation=U=main::identity",
+        "--operation=V=main::flip"
+      ],
+      "desired": "Reject extra V."
+    },
+    {
+      "label": "operation-missing-and-extra",
+      "project": "operation-choice",
+      "arguments": [
+        "--operation=V=main::identity"
+      ],
+      "desired": "Reject missing U and extra V."
+    },
+    {
+      "label": "operation-wrong-category",
+      "project": "operation-choice",
+      "arguments": [
+        "--nat=U=0"
+      ],
+      "desired": "Reject category mismatch; preserve earlier natural-binding diagnostic priority."
+    },
+    {
+      "label": "operation-identity",
+      "project": "operation-choice",
+      "arguments": [
+        "--operation=U=main::identity"
+      ],
+      "desired": "Explicit identity provider checks; this probe does not execute it."
+    },
+    {
+      "label": "operation-flip",
+      "project": "operation-choice",
+      "arguments": [
+        "--operation=U=main::flip"
+      ],
+      "desired": "Explicit X provider checks; check success does not equate it with identity."
+    },
+    {
+      "label": "operation-pair-missing-v",
+      "project": "operation-pair",
+      "arguments": [
+        "--operation=U=main::identity"
+      ],
+      "desired": "Identify missing V."
+    },
+    {
+      "label": "operation-pair-extra-w",
+      "project": "operation-pair",
+      "arguments": [
+        "--operation=U=main::identity",
+        "--operation=V=main::identity",
+        "--operation=W=main::identity"
+      ],
+      "desired": "Identify extra W."
+    },
+    {
+      "label": "provider-natural-missing",
+      "project": "provider-natural",
+      "arguments": [
+        "--operation=U=main::keep"
+      ],
+      "desired": "Reject provider keep missing n and identify the affected provider binding."
+    },
+    {
+      "label": "provider-natural-extra",
+      "project": "provider-natural",
+      "arguments": [
+        "--operation=U=main::keep",
+        "--operation-nat=U.n=0",
+        "--operation-nat=U.z=1"
+      ],
+      "desired": "Reject provider keep extra z."
+    },
+    {
+      "label": "provider-natural-missing-and-extra",
+      "project": "provider-natural",
+      "arguments": [
+        "--operation=U=main::keep",
+        "--operation-nat=U.z=1"
+      ],
+      "desired": "Reject provider keep missing n and extra z."
+    },
+    {
+      "label": "provider-natural-exact",
+      "project": "provider-natural",
+      "arguments": [
+        "--operation=U=main::keep",
+        "--operation-nat=U.n=0"
+      ],
+      "desired": "Complete nested provider specialization checks."
+    },
+    {
+      "label": "call-missing-natural",
+      "project": "call-missing-natural",
+      "arguments": [],
+      "desired": "Reject static arity mismatch and identify target declaration, declared ordered static parameters and actual count; no guessed arguments."
+    },
+    {
+      "label": "call-extra-natural",
+      "project": "call-extra-natural",
+      "arguments": [],
+      "desired": "Reject static arity mismatch and identify target declaration, declared ordered static parameters and actual count; no guessed arguments."
+    },
+    {
+      "label": "call-missing-operation",
+      "project": "call-missing-operation",
+      "arguments": [],
+      "desired": "Reject static arity mismatch and identify target declaration, declared ordered static parameters and actual count; no guessed arguments."
+    },
+    {
+      "label": "call-extra-operation",
+      "project": "call-extra-operation",
+      "arguments": [],
+      "desired": "Reject static arity mismatch and identify target declaration, declared ordered static parameters and actual count; no guessed arguments."
+    },
+    {
+      "label": "call-exact-control",
+      "project": "call-exact-control",
+      "arguments": [],
+      "desired": "Check explicit full call."
+    }
+  ]
+}

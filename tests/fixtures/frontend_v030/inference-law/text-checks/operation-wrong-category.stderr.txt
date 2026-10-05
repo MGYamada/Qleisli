@@ -1,0 +1,1 @@
+main:110..186: static: concrete natural bindings for entry main::f must exactly match the declaration; missing []; unexpected [U]

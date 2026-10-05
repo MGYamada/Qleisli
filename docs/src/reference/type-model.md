@@ -222,6 +222,25 @@ ambiguous type substitutions, callable categories and provider choices. No
 search for a convenient implementation, numerical coincidence or matching name
 may manufacture meaning, an inverse, coherent control or semantic evidence.
 
+For a fixed source, dependency set and selected toolchain, preparation is
+deterministic and terminates under its published static work, storage and depth
+limits. An unresolved constraint rejects; exhaustion of a checking budget is
+not a successful inference or a proof of impossibility. Trait/capability
+resolution cannot use cyclic guessing or absence of contradiction as evidence,
+and callable resolution must establish a unique declared category before
+ordinary checking. An effect annotation cannot downgrade the body's meaning.
+
+The current conservative profile requires complete explicit closed Nat and Op
+bindings. A mismatch reports the selected entry, the binding category, and
+missing and unexpected names in lexical order. A provider's missing Nat
+binding also identifies the affected Op binding and resolved provider. Source
+call arity errors identify the resolved declaration, its ordered static
+parameter names/categories and the supplied count. These diagnostics do not
+choose missing values or providers; even an unused static parameter must be
+bound. Natural-binding errors precede operation-binding errors as before.
+The concrete catalogue of future inference/coherence conveniences remains in
+[#197](https://github.com/MGYamada/Qleisli/issues/197).
+
 An abstract `A : Basis` is opaque. A body may move and return `Q<A>` and apply
 explicit providers justified by its constraints. It cannot inspect the type as
 a tuple, assume a width or prepare a state merely because `A` is finite.

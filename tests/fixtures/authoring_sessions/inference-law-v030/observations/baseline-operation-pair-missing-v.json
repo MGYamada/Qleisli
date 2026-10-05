@@ -1,0 +1,42 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-pair/main.qli",
+    "--ir-profile=hierarchy",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+    "--operation=U=main::identity"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T03:57:12.479533+00:00",
+  "recorded_time_note": "Result record written after this bounded observation batch; not independently authenticated invocation time.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "static",
+        "severity": "error",
+        "message": "concrete operation bindings must exactly match the declaration",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-pair/main.qli",
+          "start": 45,
+          "end": 150
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "elapsed_seconds": 0.0052220000070519745,
+  "native_invocations": 0,
+  "cli_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+  "cli_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+  "raw_record": "baseline/operation-pair-missing-v.json"
+}

@@ -179,6 +179,11 @@ The packaged-product example exposes a separate projection boundary, while
 the two existing controls retain their behavior. Independent intended equations
 and reference conditions remain separate from these diagnostic observations.
 
+The [explicit inference-law study](inference-law-v030/session.json) preserves nine
+informed first-source projects, 24 checks before/after repair and exact native
+invocation counts. Its open checks and separate bounded action tests are not a
+zero-prior benchmark or source-preservation theorem.
+
 The [packaged quantum tuple study](quantum-tuple-unitors-v030/session.json)
 preserves 22 complete first projects and 88 actual observations. Concurrent
 Cargo tests replaced the first observer's CLI; all 44 original observations and

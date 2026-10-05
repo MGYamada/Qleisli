@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Name missing and unexpected explicit Nat/Op bindings, affected providers and
+  ordered source-call static parameters in deterministic diagnostics. Preserve
+  rejection priorities, locations, explicit provider choices and the
+  uniqueness/no-physics inference law (#100).
+- Document the architecture principle "Policy as Theorem. Constitution as
+  Harness. Compiler as Executor" and its human/proof/execution separation,
+  fail-closed boundaries, diagnostic recovery and future design review (#254).
 - Admit exact packaged quantum tuple bases and explicit binary `split`/`join`
   in the selected hierarchy, preserving nested trees, ordered axes and linear
   owners. Compose explicit Unit unitors without losing scalar phase or retained

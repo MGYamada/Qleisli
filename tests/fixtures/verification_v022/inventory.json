@@ -3653,7 +3653,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "b3f0a2f6f8a813754b997acc35d18487144ac782a63c4d3f4adb994eda5c5d48",
+      "sha256": "fe04914f5cb9a1540691f45a9da2b93c56a01a559b4368a20c9c24311f2dc044",
       "group": "sized-source",
       "surface": {
         "declarations": [],

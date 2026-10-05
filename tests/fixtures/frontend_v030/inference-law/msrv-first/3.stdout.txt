@@ -1,0 +1,18 @@
+
+running 1 test
+test dependency_depth_and_expanded_execution_cost_are_bounded ... FAILED
+
+failures:
+
+---- dependency_depth_and_expanded_execution_cost_are_bounded stdout ----
+
+thread 'dependency_depth_and_expanded_execution_cost_are_bounded' panicked at tests/function_evidence.rs:96:6:
+called `Result::unwrap()` on an `Err` value: Limit("native function checking exceeded its bounded profile")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    dependency_depth_and_expanded_execution_cost_are_bounded
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 20 filtered out; finished in 0.37s
+

@@ -3,6 +3,7 @@
 [Introduction](introduction.md)
 
 - [Project name and pronunciation](reference/project-identity.md)
+- [Policy, constitutional harness and execution](reference/architecture.md)
 
 # Constitutional authority
 
