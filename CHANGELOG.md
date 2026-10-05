@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share retained original source, common syntax and provenance through a private
+  immutable collection. Preserve complete declaration checks, source budgets,
+  diagnostic order and the fixed ordinary std registry; retain selected file
+  paths without inventing in-memory manifest provenance. Common checker and
+  canonical std namespace integration remain unfinished (#32, #317).
 - Include #317 in the maintainer-confirmed 111-Issue scope and release gate.
   Reject prior 110-Issue candidates that omit semantic stdlib namespace criteria
   or acceptance evidence; preserve all earlier targets and historical records.

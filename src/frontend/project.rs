@@ -12,26 +12,13 @@ use std::path::{Path, PathBuf};
 use super::ast::{self, FnKind, Span};
 use super::diagnostic::{Diagnostic, SourceLocation, coordinates};
 use super::lexer::keyword_kind;
-use super::parser::parse_module;
+use super::source::{self, BundledRegistry, ParsePolicy, Source};
 
 mod edition;
 mod manifest;
 mod source_file;
 
 pub use manifest::{QrateSource, manifest_warnings, qrate_source_root};
-
-const BUNDLED_SOURCES: &[(&str, &str)] = &[
-    (
-        "arithmetic",
-        include_str!("../../stdlib/src/arithmetic.qli"),
-    ),
-    ("basis", include_str!("../../stdlib/src/basis.qli")),
-    ("routines", include_str!("../../stdlib/src/routines.qli")),
-    (
-        "transforms",
-        include_str!("../../stdlib/src/transforms.qli"),
-    ),
-];
 
 /// Byte policy before UTF-8 decoding. Bounded project loading also permits at
 /// most max(64, project_bytes / 1024) directory entries, including empty files.
@@ -385,50 +372,56 @@ impl Project {
         }
         let root = root.to_path_buf();
         edition::check_manifest(
-            Path::new("<bundled>/std/Qargo.toml"),
-            include_str!("../../stdlib/Qargo.toml"),
+            Path::new(BundledRegistry::manifest_path()),
+            BundledRegistry::manifest(),
         )?;
         let mut files = Vec::new();
         collect_qli_files(&root, directory, &mut budget, &mut files)?;
         files.sort_by(|a, b| a.0.cmp(&b.0));
 
-        let mut modules = BTreeMap::new();
+        let mut collection = source::Builder::default();
         for (path, source) in files {
             let name = local_module_name(&root, &path)?;
-            let module = parse_source(name.clone(), path, ModuleOrigin::Local, source)?;
-            if modules.insert(name.clone(), module).is_some() {
-                return Err(error(
-                    &root,
-                    Span::default(),
-                    format!("duplicate module `{name}`"),
-                ));
-            }
-        }
-
-        for &(name, source) in BUNDLED_SOURCES {
-            let path = PathBuf::from(format!("<bundled>/std/{name}.qli"));
-            budget.charge(&path, source.len() as u64)?;
-            let ast = parse_module(source).map_err(|failure| {
-                located_error(
-                    &path,
-                    source,
-                    failure.span,
-                    "parse",
-                    format!("parse error: {}", failure.message),
-                )
+            let parsed = Source::local(name, Some(path), source, ParsePolicy::Project)
+                .map_err(collection_error)?;
+            check_declarations(&parsed)?;
+            collection.insert(parsed).map_err(|name| {
+                error(&root, Span::default(), format!("duplicate module `{name}`"))
             })?;
-            let module = SourceModule {
-                name: format!("std::{name}"),
-                path,
-                source: source.to_owned(),
-                ast,
-                imports: BTreeMap::new(),
-                origin: ModuleOrigin::Bundled,
-            };
-            check_declarations(&module)?;
-            modules.insert(module.name.clone(), module);
         }
 
+        for bundled in BundledRegistry::sources() {
+            budget.charge(Path::new(bundled.path()), bundled.text().len() as u64)?;
+            let parsed =
+                Source::bundled(bundled, ParsePolicy::Project).map_err(collection_error)?;
+            check_declarations(&parsed)?;
+            collection.insert(parsed).map_err(|name| {
+                error(&root, Span::default(), format!("duplicate module `{name}`"))
+            })?;
+        }
+
+        // Consume the collection into the public mutable compatibility view;
+        // compilation must inspect that view afresh, not a stale parallel cache.
+        let modules = collection
+            .finish()
+            .into_entries()
+            .map(|entry| {
+                let (name, path, source, ast, bundled) = entry.into_parts();
+                let module = SourceModule {
+                    name: name.clone(),
+                    path: path.expect("filesystem and bundled sources have paths"),
+                    source,
+                    ast,
+                    imports: BTreeMap::new(),
+                    origin: if bundled {
+                        ModuleOrigin::Bundled
+                    } else {
+                        ModuleOrigin::Local
+                    },
+                };
+                (name, module)
+            })
+            .collect();
         let mut project = Self { root, modules };
         project.resolve_imports()?;
         project.reject_cycles()?;
@@ -683,40 +676,32 @@ fn valid_ident(name: &str) -> bool {
         && keyword_kind(name).is_none()
 }
 
-fn parse_source(
-    name: String,
-    path: PathBuf,
-    origin: ModuleOrigin,
-    source: String,
-) -> Result<SourceModule, LoadFailure> {
-    let ast = parse_module(&source).map_err(|failure| {
-        located_error(
-            &path,
-            &source,
-            failure.span,
-            "parse",
-            format!("parse error: {}", failure.message),
-        )
-    })?;
-    let module = SourceModule {
-        name,
-        path,
-        source,
-        ast,
-        imports: BTreeMap::new(),
-        origin,
+fn collection_error(failure: source::Failure) -> LoadFailure {
+    let span = failure.span();
+    let (code, message) = match failure.kind {
+        source::FailureKind::ReservedModule => {
+            ("project", "local modules cannot occupy `std`".into())
+        }
+        source::FailureKind::Parse(error) => ("parse", format!("parse error: {}", error.message)),
     };
-    check_declarations(&module)?;
-    Ok(module)
+    located_error(
+        failure.path.as_deref().expect("project source has a path"),
+        &failure.text,
+        span,
+        code,
+        message,
+    )
 }
 
-fn check_declarations(module: &SourceModule) -> Result<(), LoadFailure> {
+fn check_declarations(module: &Source) -> Result<(), LoadFailure> {
     let mut seen = BTreeSet::new();
-    for declaration in &module.ast.decls {
+    for declaration in &module.syntax().decls {
         if !seen.insert(declaration.name.text.as_str()) {
-            return Err(source_error(
-                module,
+            return Err(located_error(
+                module.path().expect("project source has a path"),
+                module.text(),
                 declaration.name.span,
+                "project",
                 format!("duplicate declaration `{}`", declaration.name.text),
             ));
         }

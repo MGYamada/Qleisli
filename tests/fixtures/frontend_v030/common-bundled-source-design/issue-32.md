@@ -1,0 +1,321 @@
+## Status
+
+Design umbrella for **Qleisli 0.3.0 surface-language normalization**.
+
+Related:
+- #27 type-theory synthesis
+- #28 static language / sizes / termination
+- #29 register views / quantum borrowing
+- #30 basis computation
+- #31 exact vs approximate semantics
+
+## Goal
+
+The 0.3.0 series should make the surface language reflect the semantic design already emerging in the type system.
+
+The governing principle is:
+
+> **One semantic concept should have one canonical surface spelling; historical alternatives are desugaring or migration syntax, not parallel language features.**
+
+A second principle fixes the trust boundary:
+
+> **Surface conveniences may elaborate only into explicit already-specified core structure. Desugaring is untrusted; the independent verifier remains authoritative.**
+
+This umbrella tracks syntax/grammar/desugaring decisions that are easy to postpone but expensive to change after sized source and reusable static operators become public.
+
+## Scope
+
+Child issues cover:
+
+- static parameter and runtime-call syntax;
+- the formal desugaring boundary;
+- one uniform pattern grammar;
+- register indexing/slicing notation;
+- expression-oriented blocks and early return;
+- the future role of `pure`;
+- exact numeric/phase literals;
+- `static fn` and compile-time builders;
+- namespaces and name resolution;
+- punctuation ergonomics such as trailing commas.
+
+Each child issue should specify migration, accepted/rejected examples, and lowering behavior before implementation.
+
+## Non-goals
+
+This umbrella does not itself adopt the child proposals. It does not change the trusted verifier, relax ownership, add runtime first-class operations, or imply that every future host-language feature belongs in core `.qli`.
+
+## Completion criterion
+
+Before calling the 0.3.0 surface language stable, every child item should either:
+
+1. have a normative decision and migration plan; or
+2. be explicitly deferred with a reason that does not leave two competing public spellings for the same semantic concept.
+
+
+## Child issues
+
+- [ ] #33 Static specialization vs runtime application syntax
+- [ ] #34 Normative desugaring boundary
+- [x] #35 Uniform pattern grammar
+- [ ] #36 Register indexing/slicing notation for linear views
+- [ ] #37 Expression-oriented quantum blocks and early return
+- [x] #38 `pure` versus basis-state preparation
+- [ ] #39 Exact symbolic phase/numeric literals
+- [ ] #40 `static fn` and compile-time builders
+- [ ] #41 Namespace and name-resolution model
+- [ ] #42 Trailing commas and punctuation ergonomics
+
+## Common frontend implementation contract: shared lexical boundary — 2026-10-04
+
+Under the approved 108-issue implementation plan, begin the shared frontend with **one physical source scanner**, before adding new syntax. This is an implementation decision within the adopted QS/PR/RS obligations, not a new Guardian interpretation or completion of this umbrella. The broader decision candidate is `docs/src/design/type-foundation.md`.
+
+The scanner retains the original UTF-8 bytes and half-open byte spans, recognizes words/numerals/fixed punctuation and comment/doc trivia, and performs one character/comment validation path. Existing finite public tokens and the sized parser's contextual text view are temporary adapters; remove the sized physical tokenizer. No backend-dependent scanning, parser retry or acceptance fallback is permitted. Recognition of a token does not grant a source construct or native accepted handle.
+
+**Explicit 0.3.0 compatibility change:** sized source adopts the finite scanner's LF/CRLF and character rules, including inside comments. Bare CR, FF, forbidden control/bidi characters and noncanonical Unicode whitespace previously skipped by sized comments are rejected with spans covering the original scalar. Migrate those inputs to LF/CRLF and ordinary space/tab; no valid quantum computation is transformed. Preserve first small counterexamples and actual old/new diagnostics. Comments may still contain ordinary Unicode prose. The preserved experiment confirms that VT was already rejected by the old sized scanner; only its shared diagnostic changes.
+
+Preserve the existing entry-point capacity contracts through explicit scanner limits: sized 10,000 non-EOF tokens and 64 nested comments; finite iterative comment behavior, including its retained 20,000-depth test, remains unchanged. Do not generate new maximum cases. Keep existing contextual/reserved-word distinctions and numeral canonicality/value checks in the temporary parser adapters until the single grammar replaces them. Preserve finite documentation-comment behavior and report sized doc attachment as still incomplete.
+
+**Constitutional impact:** QS must retain source byte spans, token order and all current downstream owner/effect/evidence/native checks. This refactor claims neither source preservation nor new theorem discharge. PR is unaffected at the target-artifact boundary; no emitter or provider changes. RS engineering bounds are retained and enforced before excess token allocation; this is not quantitative Resource Safety. The two admitted QLV1 guarantees retain their meanings and actual Lean source boundary unchanged.
+
+**Acceptance for this implementation unit:** one scanner used by both entry paths; duplicate sized tokenizer removed; explicit UTF-8/comment/punctuation/numeral/limit regressions; existing parser, documentation and sized-source suites pass; real diagnostics record the declared rejection migration. AST/resolver/checker unification and removal of the temporary token views remain required before #25/#32/#250 can close.
+
+## Next implementation unit: one parser and source AST
+
+Use the existing multi-declaration finite AST and parser as the sole source syntax path and port the already-supported sized forms into it. The shared syntax must represent symbolic Nat expressions/predicates, register types, static Nat/operation parameters, static branch/fold and counted-power arguments with original spans. Project loading and explicit module-map loading must consume that same parsed Module; neither may retry the removed sized parser.
+
+This unit moves existing constructs, not the final surface cutover. Keep the current public spelling/migration tests until the grouped type/operator decisions enable their canonical replacements. Existing lowerers may temporarily consume an explicit checked projection of the common AST. Such a projection must reject unsupported profile constructs with a located diagnostic, preserve type/owner/argument tree and source identity, and must not parse source text or introduce acceptance authority. Preserve existing semantic checks, capacity limits and missing-capability/static-branch counterexamples. New language features are implemented in the common syntax path only.
+
+Expose multiple declarations in the common AST. A remaining one-function lowering restriction is an explicit temporary profile limitation, not a second grammar. Moving that restriction requires the DefId-based resolver/call graph and same-module cycle checks; this unit must not accidentally grant unverified mutual recursion. Share documentation attachment at the common declaration boundary, and reject sized doc placement formerly ignored with a specific migration record. Existing contextual identifiers need an explicit compatibility classification; do not silently reinterpret an identifier as a callable/category or provider.
+
+The first endpoint is identical common ASTs for shared finite/sized source, retirement of the second recursive parser, passing existing valid programs and rejection regressions within supported profiles, and retained before/after source/proposal evidence. AST conversion, source checking and all produced IR remain untrusted; the two admitted QLV1 guarantees and existing native gates are unchanged. Common name/type/owner/effect/static checking and final canonical syntax migration remain subsequent required work, not waived completion criteria.
+
+## Common parser integration checkpoint — 2026-10-04
+
+Implemented in [44e23e4](https://github.com/MGYamada/Qleisli/commit/44e23e4d0a6302eff17f3b39c42b735fcee7583d), draft #307. The second recursive parser is removed; both profiles parse the same Module, recursive AST and spans. Sized checking receives an explicit AST projection and finite lowering has a rejecting profile preflight. Multiple declarations are represented, while sized checking's one-function limitation remains explicit pending shared resolution.
+
+[Retained migration packet](https://github.com/MGYamada/Qleisli/blob/44e23e4d0a6302eff17f3b39c42b735fcee7583d/tests/fixtures/frontend_v030/common-parser/README.md): 150 tests passed, 10 existing tests remain ignored in that selection, all 68 Rust test executables compiled, and four small proposal pairs are byte-identical to the pre-parser baseline. Independent review caught and corrected basis-requires documentation panic, empty-yield compatibility and empty static argument spans. Both current Rust and MSRV 1.85.0 Clippy pass. Documentation attachment, reserved-word and depth-limit migration are recorded in the Source Text Reference.
+
+This completes the stated common-parser unit, not this umbrella. Shared type identity/checking is the next #27 unit; common resolution, ownership/effects, canonical syntax, active source migration and whole-release validation remain open.
+
+## Shared type follow-through — 6daea68
+
+After the common parser, [6daea68](https://github.com/MGYamada/Qleisli/commit/6daea68fe7efb75df0b627f2d20bd7b409f0cfd3) moves finite/symbolic-sized/concrete-sized type identity, structural equality and linear classification into one implementation. #27 records the 203 passing tests, 34 unchanged observations and eight unchanged small proposals. The next shared frontend contract is resolved declarations/names and module dependencies; source syntax cutover and complete checking convergence remain required. This remains an open umbrella.
+
+
+## Shared resolution implementation unit — 2026-10-04
+
+Under #32, introduce one private declaration table with source-collection-local ModuleId/DefId, explicit visibility/import lookup and common graph traversal. Both finite compilation and sized generic/concrete elaboration must consume this table for actual declaration calls, Meaning/contracts and static providers. IDs are not serialized evidence identity: retain canonical paths, original source/dependency snapshots, static bindings and provider identity. Preserve every declaration and original source/span/order; rebuild the immutable view at the finite Project boundary because its public modules remain mutable. Loaders retain filesystem confinement, explicit module-map scope and edition checks.
+
+This is a shared implementation boundary before the final language cutover. Retain current profile policies explicitly: finite rejects unused import cycles and self-import collisions; sized permits its current unused-import/self-import cases but still rejects actual cross-module call/provider cycles and only permits already-checked decreasing self-recursion. Preserve each profile's module-name validation and primitive set. Do not add aliases/globs, fallback lookup, implicit sized bundled modules, sized multiple-function acceptance, or new source syntax. Local owner/static-binder scopes remain in the checkers and a moved local must never fall back to a global declaration. A later common source contract must resolve the temporary policy differences before final cutover; this unit does not complete #41/#65.
+
+Validation retains the ten actual pre-change cases, including source errors, and adds small cross-module identity/diamond/private/Meaning/contract/unused-provider cases. Check both static branches and zero-iteration dependencies. Compare native acceptance, actual diagnostics and small proposal bytes; resolver success is not a source-preservation proof. Run relevant project/compiler/sized/ownership suites and independent review. QS keeps all owner/effect/native checks, PR providers and output binding unchanged, and RS engineering bounds retained without a new quantitative claim. No admitted guarantee meaning or Guardian interpretation is changed.
+
+
+## Shared declaration-resolution checkpoint — af21dd5
+
+[af21dd5](https://github.com/MGYamada/Qleisli/commit/af21dd5d3e4373083edcf207ef9890967d4c7dab), in draft #307, adds one immutable ModuleId/DefId declaration table for finite compilation, sized generic checking and concrete elaboration. Canonical declaration paths, visibility/import lookup and graph traversal are shared; Meaning/contract and static-provider lookups use those identities. Public finite Projects are re-resolved at compilation, preserving the original source/dependency binding. Local owner/static-binder checks remain explicit and a moved local does not fall back to a global.
+
+The recorded unit's temporary profile differences are preserved, including unused imports/self-import policy, primitive sets, decreasing self-recursion and sized one-function lowering. This is not the canonical syntax cutover or complete checking convergence.
+
+Validation: **171 tests passed, nine existing cases ignored** in the focused selection; latest Rust and MSRV 1.85.0 all-target Clippy and formatting pass. Twenty-five actual pre/post observations (stdout, stderr, exit code) and five small proposal byte sequences are identical; bounded proposals use at most one qubit. Independent review verified the actual comparisons and all retained fixture hashes. Evidence: `tests/fixtures/frontend_v030/shared-resolution/`. No source-preservation proof, new guarantee admission or issue completion is claimed. Full hosted integration remains pending.
+
+The subsequent [fae0e6a](https://github.com/MGYamada/Qleisli/commit/fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3) repairs an old corpus assertion found by hosted Rust/MSRV/distribution validation: shared syntax parses Nat, then the finite profile returns the specified `unsupported` at the parameter's span. Both Rust versions pass all 12 corpus tests; all 12 retained rejected sources still reject, with only that documented diagnostic transition. Historical sources and first diagnostics remain unchanged.
+
+
+## Next common frontend unit: lexical binding identities
+
+Build one immutable common-AST lexical binding/use table, and consume it in finite value/basis lowering and sized generic/concrete checking. `BinderId` identifies a source binder; `ScopeId` identifies a lexical scope; use occurrences have structural identity within their DefId, not byte spans alone. Original spelling/span and declaration identity remain available for diagnostics. Parsed mutable public Projects rebuild the table. No internal ID becomes a serialized wire/owner/evidence identity.
+
+Keep dynamic ownership/binding instances distinct from lexical identity: the same fold/recursive body can execute repeatedly, and each execution must retain its current independent owner state. A consumed or hidden local remains a local name and never falls back to a declaration. The resolver records category/shadow/duplicate/unresolved facts; current checkers still enforce live-owner hiding, capture, type/effect/access, static termination and evidence rules at the existing diagnostic boundary. This unit does not choose new language rules or complete common checking.
+
+Preserve lexical order and scopes: let RHS resolves before new pattern binders; branches are separate; fold range/initial values use the outer scope while index/carry bind only in the body; zero folds still check bodies; coherent-lift input precedes its basis pattern; legacy computed blocks preserve current ordinary capture but forbid implicit quantum capture; certified blocks hide outer bindings and expose only their explicit data/ancilla parameters. Record static-operation/adjoint/contract/meaning name roles without bypassing existing category checks. Register static parameters before their type references so existing forward Nat references remain supported. The Nat solver's mathematical variables/closed specialization semantics are unchanged.
+
+A bounded pre-study confirms a temporary difference: `fn f[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U) { let U=q; U }` is accepted by finite checking and rejected by sized static-shadow policy. Preserve that difference explicitly here; final profile convergence requires a subsequent source decision. Sized multiple-declaration acceptance also remains a separate unit.
+
+Validation must consume the table in both sized phases and finite actual lookups/call graph, retain the first ten observations, and compare actual small diagnostics/proposals/native results. Include initializer rebinding, branch scopes, repeated fold instances, duplicate pattern names, spent-name global fallback, live-owner hiding, zero-fold capture, both computed-block scope forms, and static provider/meaning dependencies. Run relevant owner/basis/contract/sized suites and independent review with no new maximum-size cases. Public Debug/API differences, if required, must be recorded rather than silently relabelled as unchanged.
+
+QS retains all existing owner/effect/native obligations; PR retains canonical providers/source bindings and output evidence; RS engineering capacities remain enforced without a new resource theorem. No admitted guarantee changes and no new Guardian ruling are implied by this implementation refactor.
+
+
+### Next common frontend unit: all checked declarations in a sized module
+
+This ordinary implementation unit follows the reviewed lexical-identity integration; it does not begin while that shared AST/resolver transition remains unvalidated. It implements the approved single-language plan under edition 2026. Existing finite source already permits ordinary sibling declarations; the sized projection's one-function-per-module rejection is an adapter restriction to remove.
+
+**Contract.** Retain every supported ordinary function declaration in source order through the same sized profile projection. Resolve each function using its shared `DefId` and source `ast_index`, not an ordinal assumed to equal the AST position. Imports remain module scoped; each function retains its own lexical table. Same-module private sibling calls and forward references are allowed. External imports and host entry selection retain their existing public-visibility requirements, and existing same-module provider visibility remains explicit. All declarations, including unused siblings, undergo generic source checking before preparation succeeds. This is not a claim that every unexecuted specialization has received native acceptance.
+
+The shared declaration graph must keep distinct definitions from different modules even when their names match. Existing structurally decreasing natural self-recursion remains permitted only for the identical definition. Reject mutual cycles, including sibling cycles and cycles through static providers; do not introduce general mutual recursion. Empty modules and other unsupported declaration/type/effect profiles remain rejected. This unit adds no import-renaming grammar, public CLI signature, new capacity, or new guarantee.
+
+**First source study.** Ten small original programs were frozen before observing fae0e6a: private forward sibling, public sibling provider, identical names in separate modules, imported terminal bindings with private wrappers, unused bad function, mutual siblings, duplicate siblings, external private import, an unsupported `as` rename, and an import colliding with a sibling. The first four pass the existing finite source checker and fail the sized adapter at its second-declaration restriction. The `as` example remains a parse rejection. Preserve these actual sources and diagnostics alongside the implementation.
+
+**Completion checks.**
+- Preserve existing single-function diagnostics, retained proposal bytes and native outcomes.
+- Exercise forward/backward sibling calls, public sibling host entries, cloned parsed programs, and independently identified same-name providers/cache entries on small systems.
+- Reject unused ill-typed or ownership-invalid bodies, invalid static branches and zero-iteration fold bodies during generic checking.
+- Reject private external imports, private host entries, duplicate declarations and import collisions at their source locations.
+- Reject sibling/provider mutual cycles; retain decreasing self-recursion and reject nondecreasing recursion or accidental recursion by unqualified-name coincidence.
+- Compare equivalent split-module and same-module programs against independent small complex-amplitude expectations, including phase and axis order. Their source/artifact identities differ, so equal proposal bytes are not the required migration oracle.
+
+Lowering remains untrusted and every actual proposal still passes its existing independent Lean gate. No source-preservation proof, wider QS/PR/RS discharge, issue completion or release readiness follows merely from this adapter convergence.
+
+
+### Compatibility checkpoint: contextual natural names (2503bf0)
+
+[Commit 2503bf0](https://github.com/MGYamada/Qleisli/commit/2503bf0e20ea7a87345acdb67a5230207eaa1af4) repairs the unchanged hosted Python comparison: `static Q: Nat` and other retained type-word natural names were incorrectly rejected at the binder by the shared parser. The contextual natural rule now covers binders, dimensions, constraints/comparisons, folds, specialization and counts; ordinary runtime/global/operation-binder reserved-word rules remain unchanged. Unbound names still reject at the later name/profile boundary.
+
+Six focused tests, 20 existing parser tests and all four original Python comparisons pass. Root repeated these in an isolated fae0 tree containing only the parser and native-recorder fixes, additionally passing three ordinary sized checks and actual Clippy 0.1.85 across all targets. Original CI diagnostics, an intermediate test-only MSRV lint failure and its explicit-match correction are retained. This does not close common lexical checking or the subsequent all-declaration unit.
+
+### Shared-source cutover checkpoint — 2026-10-05
+
+[0d93a18](https://github.com/MGYamada/Qleisli/commit/0d93a18) shares lexical binding identities across finite/sized consumers, [a6c8bb7](https://github.com/MGYamada/Qleisli/commit/a6c8bb7) checks every sized module declaration, and [18f5569](https://github.com/MGYamada/Qleisli/commit/18f5569) removes implicit predicate parameter folding. [5ce1778](https://github.com/MGYamada/Qleisli/commit/5ce1778) adds common source type classification and switches active clients to ordinary Unit/Bit/Bits and 0/1. Full details, exact bounds and pending tests are in #27's current checkpoint and the recorded fixtures. Old authoring attempts remain original; active harnesses select explicitly named current derivatives. Edition stays 2026.
+
+The common scanner, parser, AST, declaration/local identities and source-type constructors are now used by both profiles. Generic/effect checking, profile convergence and the remaining adopted surface forms still require implementation; this is not completion of #32 or the 108-Issue plan. [CI 37217706111](https://github.com/MGYamada/Qleisli/actions/runs/37217706111) is validating the integrated cc11429 tree. No Issue is closed on a documentation-only or round-trip-only basis.
+
+
+### Next common frontend unit: ordinary function parameter patterns — 2026-10-05
+
+Implement ordinary runtime parameter patterns through the existing shared parser/AST and both finite and sized paths. A parameter remains one explicitly typed argument: `fn f((a, b): (T, U), (): Unit) -> V` takes two arguments, not three. Use the exact shared shape judgment already used by let bindings: `()` matches ordinary Unit only; nonempty tuples require the same arity and nesting; a whole name retains its subtree. No implicit quantum split/join, reassociation, measurement, coercion or Unit/empty-register identification occurs. Named-parameter programs keep their current meaning and identities.
+
+A wildcard may discard ordinary values but cannot silently discard any quantum owner, including Q<Unit> or an ordinary product containing a Q leaf. Pattern names are unique across the entire parameter list and cannot collide with static parameter binders. Keep source spans, argument evaluation order/effects, lexical binder identities, source/interface/provider identity and dynamic ownership instances. Callee pattern binding occurs only after call-argument evaluation and exact type matching; complete checking still covers unused declarations, static branches and zero-iteration bodies. Reuse the existing pattern binding implementation rather than creating a special parameter-only ownership rule.
+
+The sized projection must carry the original pattern plus its declared whole-argument type and span, not synthesize a name or flatten its signature. Both symbolic checking and concrete specialization bind the same pattern over the exact type/value; lowering preserves whole input trees and physical axis order. Static-operation interfaces retain one whole argument and their existing supported-basis restrictions. The sized projection currently rejects wildcards in every pattern position. Consistent reuse also admits ordinary wildcard let/fold bindings there, with the identical unrestricted-value requirement; retain first sources and test both ordinary and quantum-containing cases rather than making a parameter-only exception. This unit removes the name-only parser/projection restriction in both profiles; unrelated unsupported type/effect/lowering forms remain tracked unfinished work, not accepted by accident or waived.
+
+Preserve informed desired programs and actual old diagnostics before implementation in `tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/`. Validate positive Unit/product/wildcard/mixed-owner calls, fixed argument arity, nested ownership rejection, duplicate/static-shadow names, unused invalid declarations and original-source spans. Compare named-parameter equivalents using actual checked small artifacts and independent phase/axis/reference-sensitive expectations in both supported paths. Manually constructed public ASTs must produce checked outcomes or structured errors, never reach the former name-only panic. Keep historical first attempts and old observed rejection records unchanged; update current executable expectations explicitly.
+
+This is an ordinary source-adapter implementation under the existing type/ownership contract and adopted plan. QS owner/effect/native gates, PR source/provider/artifact binding and RS engineering limits remain; no Lean acceptance schema/rule changes, source-preservation theorem, constitutional interpretation or guarantee admission are introduced. Record relevant latest/MSRV bounded tests, native comparisons, independent review and Reference changes. General checking convergence and this umbrella's remaining criteria stay open.
+
+
+### Parameter-pattern implementation checkpoint — local 48807e4
+
+Implemented the unit above in local commit **48807e42391e406a3fd83152983a5823223640b7**. It is not pushed yet: the previous pushed candidate's long-running CI is being allowed to finish before the next branch update, because PR pushes cancel that run. Evidence is saved in `tests/fixtures/frontend_v030/runtime-parameter-patterns/` and the corresponding authoring session; links to the new commit will be added after push.
+
+Ordinary function parameter patterns now use the common parser and the existing exact finite/sized binders, including unrestricted wildcards in sized let/fold positions. Whole argument count/type/input identity, source/provider binding and quantum ownership are preserved. Independent source review found the old ergonomics false positive caused by retained CBit syntax; its canonical positive derivative and explicit old-type rejection are now separate. The derived sized Debug view reflects the private Pattern wrapper; public input/type accessors and native schemas are unchanged.
+
+Rust 1.98.1 and actual Rust/Cargo/Clippy 1.85.0 each pass **75 focused tests** (73 across ten integration targets and two library regressions), focused Clippy and CLI build. Fifty retained CLI calls include three byte-identical unchanged-program IR controls. Initial malformed test-input/entry expectations and their actual failures are preserved with separate repair files. Source manifests are stable across both successful runs (SHA-256 **01da76951cc4d2e13b228399eb77e539464d839a128612160de58209409f1705**). Integration manifest: **05582c079d5df16eccab40d0ace9ceac7713ed47d2854f9c13599ea2fed89c7f**. Pinned mdBook/rendered links, inventory, constitutional/edition/authoring identity and scheduler checks pass. One reusable target uses about 552 MiB, with no new source snapshot or Lean build.
+
+This implements ordinary signature destructuring previously left open in #43. Sized classical runtime/entry lowering, general Basis and quantum Unit structure maps, full common checking and the remaining umbrella requirements stay open. The original first static examples omitted `static`; their actual rejections remain historical and explicit corrected derivatives reach the intended checker. No Issue is closed, no guarantee is admitted and no full-CI/release claim follows.
+
+
+### Common ordinary Boolean execution unit — 2026-10-05
+
+**Target and reason.** Continue the adopted single-language 0.3.0 cutover in edition 2026. The common syntax already represents ordinary `0/1`, `not`, `and`, and `xor`; finite execution implements them, while the sized adapter rejects them before ordinary generic checking. Ordinary Bit identity/copy can reach sized elaboration but its hierarchical transport has no general classical entry/result. Remove the source-level discrepancy through common checking and actual execution, not by weakening the existing hierarchy gate or treating Bit as a quantum owner.
+
+**Source contract.** All four operations return exactly ordinary `Bit` and accept exactly ordinary Bit operands. `Bits<1>`, `Q<Bit>`, static Nat and product values are distinct and are not coerced. Binary operands evaluate left to right and both evaluate, including the right operand of `0 and rhs`. Copy/drop applies only to unrestricted values; ignored Boolean results cannot erase quantum effects in their arguments. Preserve whole parameter/result trees, exact argument arity, original spans, lexical/declaration identities, dynamic owners and specialization/provider/source identity. Check unused declarations, both static branches and zero-fold bodies. Static evaluation stays explicit; ordinary Boolean operators do not silently become static predicates or operation/adjoint capabilities. Canonical operator punctuation and runtime-if/branch convergence remain required work under their existing Issues, not inferred syntax changes in this unit.
+
+**Implementation and native boundary.** Extract the actual finite Boolean type/evaluation and ordered SSA construction into a common implementation used by both paths. Sized symbolic and concrete consumers retain explicit Boolean source steps (including literal values, operand/result IDs, source locations and call paths); never discard these as transport-free computation. Reuse the existing QIRF/QLV1 native acceptance path for its supported classical and mixed program forms. Keep source type/argument trees beside the width/SSA transport, which cannot itself encode their identity. Decide supported backend capability before acceptance; no fallback after a failed native decision. Existing hierarchy payloads, independently requested composition/QPE contracts and their initialization-order checks retain their existing meaning. A new Raw proposal is untrusted, and only the native gate can issue its execution handle. A general classical requested-meaning schema and source-preservation theorem are not supplied by Raw validity.
+
+**Public execution and limitations.** The implementation must reach native acceptance and actual bounded execution for closed specializations and ordinary/mixed examples, rather than stop at an AST or profile success. Open classical invocation needs explicit checked runtime arguments and retained source-interface binding; CLI `--basis` remains quantum input and is not repurposed as a Bit argument. A saved closed wrapper is a distinct checked specialization, not evidence that an open artifact was executed. Unsupported requested contracts and finite target capabilities fail explicitly at the source boundary, without silently discarding a request, approximating a phase or mapping Bit to Bits<1>. General hierarchical classical bodies/readout transformations, open runtime invocation and runtime branches remain implementation obligations until their actual contracts are supported; this unit does not close the umbrella or reduce its criteria.
+
+**First evidence and acceptance.** Preserve informed original programs and actual baseline observations under `tests/fixtures/authoring_sessions/ordinary-boolean-v030/` before behavior changes. Validate the four two-bit inputs against an independently written truth table, exact products/copy/drop, zero and repeated static folds, observed Boolean postprocessing, non-short-circuit effects, mixed quantum owners with an untouched entangled reference, type/ownership/static-stage failures and source locations. Distinguish generic checking, concrete specialization, proposal construction, native validity, execution and source correspondence. A valid-but-wrong Boolean operation must not pass a claimed source correspondence replay merely because QLV1 accepts it. Retain unchanged small hierarchy controls and historical records; no new maximum-size case or full local snapshot/build tree is necessary.
+
+QS ownership/effect/native gates and PR source/provider/artifact binding remain; existing RS engineering limits stay enforced without a new quantitative theorem. This is ordinary implementation under the ratified/adopted contracts, with no new Guardian interpretation, guarantee admission or implicit theorem discharge. Record latest/MSRV tests, independent review, Reference/CLI contracts and actual target limitations before claiming this execution unit complete.
+
+
+### Ordinary Boolean implementation checkpoint — local af26fad (2026-10-05)
+
+Committed locally as **af26fad37060c8008682c7e0d124897c12d13f89**. This is the first implementation stage of the execution contract above; it does not finish its mixed-runtime/CLI/invocation requirements or close #32. It has not been pushed while [CI 37233042845](https://github.com/MGYamada/Qleisli/actions/runs/37233042845) validates the preceding pushed 10553a9 candidate, to avoid cancelling that run.
+
+- **Implemented:** a single exact ordinary Bit operand judgment and eager left-to-right traversal is used by finite, sized symbolic and sized concrete consumers. Both actual Raw emission paths share the constant/not/and/xor constructor. Sized source steps retain literal values, operand/result identities, source spans and effects. The public `ElaboratedProgram::lower_raw` yields immutable source-bound proposals for Unit/Bit/exact products and specialized ordinary calls; the existing native gate alone accepts them. An independent replay reads actual Raw instructions, whole call trees, per-activation source identities, global SSA freshness, effects, output ordering and complete operation consumption without calling the emitter.
+- **Verified:** actual Rust/Cargo/Clippy 1.98.1 and 1.85.0 each pass 78 focused integration tests plus one native-valid mutation/replay regression, all-target Clippy with warnings denied and formatting. Independent truth tables, nested products/copy/drop, repeated calls, static zero/one/two folds, eager observed effects and negative generic/stage/ownership checks are covered. Native-valid wrong opcode/literal/extra operation/output-order mutations fail the independent matcher. This is bounded validation, not all-target runtime testing or an AST-to-step proof.
+- **Migration and evidence:** all 21 finite check/closed-run CLI observations remain byte-identical to the retained first study. All twelve sized CLI attempts still reject; seven now reach later diagnostic stages. The current Raw API execution is demonstrated by Rust tests, not inferred from those CLI failures. Evidence is in `tests/fixtures/frontend_v030/ordinary-booleans/` (73-file manifest SHA-256 **7c4c38022f7d67bfbe24e344be36af9ccba0d8238f50c337a8d20821f81fe08e**), with identical 254-file selected source manifests **184a6135e7dde057a3bf65eee63c7d7724d28f90cf3cd57ea179670feeb046fb**. The 66 original authoring-study files remain unchanged; actual first test/metadata-driver failures and their explicit corrections are retained.
+- **Integration:** independent evidence review, inventory/production coverage, 14 coverage and 15 scheduler regressions, authoring/constitutional/edition checks, Reference, pinned mdBook 0.5.4 and rendered/print links pass. Native comparisons now schedule 67 groups/85 commands, including both new tests. One existing external target is reused; no new full snapshot, maximum-size quantum case or local Lean build was made.
+
+**Remaining actual work:** share the physical Raw state and primitive mutation path for mixed quantum/ordinary execution, preserve pending owners and reference entanglement across calls, implement explicit target/CLI selection and checked open invocation, and support the remaining phase/provider/branch capabilities under their existing contracts. Unsupported profiles currently reject before emission; no native failure is retried with a weaker request. Existing hierarchy contracts are retained. Native validity is not general source preservation. No new guarantee, authority record, dependency/version change, release approval or Issue completion is claimed.
+
+
+### Mixed execution implementation checkpoint — local 5e7ed3f (2026-10-05)
+
+**5e7ed3fb3506f4cdc5178e400d9890285a5e9bbc** implements the next mixed-runtime portion of the contract above, on top of af26fad. Both commits remain local while the preceding pushed 10553a9 candidate's live CI finishes; no running CI was cancelled. This checkpoint does not close #32 or remove its remaining requirements.
+
+- **Actual common state:** finite and sized Raw adapters now share physical registers, instructions and all fresh token/wire/classical/slot supplies. Initialization, single-bit gates, CNOT, measurement and Boolean emission use the same transitions. Quantum state remains live across pending arguments and suspended callers; each source call activation has a separate local identity environment. Existing finite type/effect checks, diagnostics, work charging, branch phi handling, computed/certified bodies and zero-width phase behavior remain intact. Branch snapshots cannot rewind fresh supplies.
+- **Implemented sized Raw scope:** exact Unit/Bit/Q<Bit>/products, ordinary specialized calls/static folds, eager Boolean operations, init0/H/X/CNOT/measure_z and exact integral-eighth dyadic phases. The original canonical phase domain remains k≤8 and j<2^k. Smaller angles are never rounded. The existing hierarchy still accepts the frozen phase[1,4] example; its Raw rejection is an explicit target limitation. Global physical state enforces the existing 16-live-wire limit across calls before allocation and counts all expanded T instructions against the operation bound.
+- **Independent correspondence:** the matcher reads actual instructions without the shared emitter/state. It checks exact trees, consuming owner transitions, fresh identities, ordered gates/readout, suspended caller frames and all final outputs/instructions. Hand-authored Raw tests first establish native validity, then reject wrong H/CNOT/measurement/extra-work/output-order variants. This is bounded source-step validation, not a general AST-to-IR or runtime proof.
+- **Verified:** Rust/Cargo/Clippy 1.98.1 and actual 1.85.0 each pass **84 focused integration tests + 5 direct replay tests = 89**, all-target Clippy with warnings denied and formatting. The 280-file selected source manifests match (**5ea09289c92af27cb5e5c0cc1118d90221eb288cf0abf5277eded2871dd1d133**). Oracles cover Bell XOR correlations, entangled pending arguments, eager observation, repeated helper/fold identities, independent exact diagonal phase targets and interference, plus existing branch/computed/certified/Q<Unit> regressions.
+- **Preserved evidence:** twelve initial projects and 35 preceding-CLI observations are unchanged. Current CLI checks produce all 35 identical exits/stdout/stderr and three byte-identical stored IR controls. The initially drafted phase[9,3] positive test was corrected by review before execution; its unexecuted draft and explicit patch are retained without fabricating a failed run. Actual first latest/MSRV runs succeeded. Integration evidence: `tests/fixtures/frontend_v030/mixed-booleans/`, 69-file manifest **931c002a9ef8794c92852557119eb30df775d54a0e66ab53aa14a98a7c65907e**. Frozen study manifest **879a4eaef0b3e31f721c3a6101b8e911c96d987389d3a7412e1b8df4667db5bc**.
+- **Integration review:** independent state/matcher/oracle/evidence reviews and active inventory/coverage, 14 coverage regressions, 15 scheduler regressions, edition/constitutional/authoring checks, Reference and pinned mdBook/rendered/print links pass. Native scheduling has 67 groups/86 commands. The fixed external target is about 731 MiB, repository target about 13 MiB and available disk about 24 GiB; no new full source snapshot, large Lean build, maximum-size quantum case or historical deletion was made.
+
+**Remaining:** actual common CLI/entry and checked open invocation, general source checking convergence, Bits/other quantum bases, requested provider/control/branch and finer-phase target capabilities, and this umbrella's other adopted surface/migration contracts. The sized CLI still uses its existing hierarchy route; successful Raw API tests do not claim CLI integration. Broader QS/PR/RS obligations and source/native/runtime correspondence remain pending. No new guarantee or release approval follows.
+
+## Next common frontend unit: selected-source CLI execution plan — 2026-10-05
+
+Connect the already implemented source-bound Raw proposal to the actual public CLI through one source execution plan. This is an implementation unit under the approved one-language migration, not a third frontend, a second type universe or completion of this umbrella.
+
+**Source binding and scope.** The ordinary command namespace gains the existing explicit module-map / public-entry / static-natural / operation-provider binding form for `check`, `run`, `sample` and `emit-proposal`. The existing `sized` prefix becomes an argument adapter to that same execution plan, pending its removal in the final one-shot CLI migration. Directory/qrate source loading keeps its current confinement, edition/source identity and check-all-concrete-declarations guarantee. Module-map selection keeps whole-module generic checking and selected-specialization native checking. Do not silently discard unsupported bundled or unused declarations, reparse an already checked Project into another profile, or claim these remaining loader/checker policies have converged merely because the command dispatcher is shared.
+
+**IR profile and request intent.** Normalize the explicit IR profile choice (`auto`, `raw`, `hierarchy`) and existing kernel/request/provider arguments into a single private plan. The public flag is `--ir-profile=auto|raw|hierarchy` and result field is `ir_profile`; these identify the IR/checker route, not a physical target model. Caller composition/Fourier requests and named-QPE providers lock the hierarchy route; combining either with explicit Raw is a pre-native usage/capability rejection. Select a target before native acceptance. Auto retains the hierarchy route for its existing root type/effect/Boolean-step profile; a typed capability classification, shared with the existing profile check, identifies when Raw is needed. Generic errors, capacity failures and diagnostic strings are not target selectors. Once selected, a target's further lowering or native failure propagates unchanged; never retry a failed request as Raw validity or another native mode.
+
+The Raw route uses the existing whole-graph capability preflight, source-bound proposal, native `Kernel::accept` and independent `validate_source_steps` before execution. Preserve exact types, phase, ownership, eager source order, caller frames and measurement effects from the mixed unit. The hierarchy route keeps its exact existing payload/request coupling, named-QPE/Fourier checks, initialization-move correspondence and execution implementation. No third evaluator or Rust acceptance path is added.
+
+**Invocation boundary.** Raw `check` may retain an open source signature, but this unit's Raw `run/sample` require a declaration with zero runtime parameters and no quantum result. Reject open Bit/quantum/Unit parameters before invoking the kernel; a zero-port Unit parameter is not implicitly supplied. Reject an explicitly provided `--basis` on Raw, including zero, rather than ignore it or reinterpret it as ordinary data. Existing hierarchy `--basis` remains quantum input. General checked open invocation is still required subsequent work, and a closed wrapper is a distinct source specialization.
+
+**Output boundary.** New selected-source JSON identifies IR profile, entry and selected-specialization native-check scope separately from whole-module source checking. Raw reports native validity with no caller request, source-step correspondence checked, and source meaning not proved. Hierarchy retains producer-consistency/caller-composition/named-QPE, request origin and execution authority without borrowing the Raw correspondence claim. Preserve ordinary finite `qleisli.result` v1 output and directory check-all semantics. The untrusted `emit-proposal` path requires no kernel and remains visibly separate from the existing freshly verified `emit-ir` contract; neither an output file nor a plan is an accepted handle.
+
+**Bounded validation.** Retain new actual observations against the frozen mixed-Boolean and runtime-parameter studies without changing their first sources or prior results. Exercise eager-zero measurement, Bell XOR, pending entangled argument, repeated helper, ignored measurement, static folds at 0/1/2 and exact H-T-H probability. Preserve hierarchy fine phase and quantum tuple/Unit-axis behavior. Add the small explicit Unit-parameter invocation counterexample before its first check. Check source/name/owner/static-binding negatives and unsupported Bits/provider/fine-phase combinations before any native call using a logging sentinel. Separately hold a caller H request fixed while replacing the candidate by X, and hold a tiny QPE provider request fixed while changing the candidate; both must fail their original native contract without a subsequent Raw call. Test leading JSON-format argument placement, target/request conflicts, retained source locations, output scope and proposal/accepted-artifact distinction. No maximum quantum cases or new external corpus sources are introduced.
+
+**Constitutional impact.** QS preserves all source type/owner/effect checks and the existing independent native routes; bounded source-step comparison is not an AST-to-semantics theorem. PR retains exact caller/provider/request and emitted-artifact identity, without a new target-realization claim. RS keeps the existing source/emission/simulation engineering bounds and early failures; it does not claim quantitative resource certification. The two admitted QLV1 guarantees, broader pending interpretations and protected text remain unchanged. Ordinary implementation under these already adopted obligations needs no new Guardian judgment.
+
+Complete this unit only after the CLI reaches actual accepted execution, required negative/compatibility tests pass on current Rust and MSRV, metadata/docs describe the exposed routes, and an independent reviewer checks request/target separation. Common source checking, final canonical syntax/CLI cutover, open runtime invocation and the other original #32 criteria remain open.
+
+
+**Implementation refinements.** Preserve the selected module-map sampler's current 1024-shot bound and the project sampler's existing 1,000,000-shot bound as explicit adapter capacities. Use `--lean-kernel` with `--kernel` as a selected-input alias; duplicate aliases reject, and an absent explicit value may use `QLEISLI_KERNEL`. Neither path downloads a checker or retries another one. Legacy hierarchy JSON remains compatible through a presentation adapter; ordinary selected results state whole-module source checking and selected-specialization native checking. Diagnostics retain the actual module/span and mapped source path without inventing line/column data or rereading source to manufacture it. Project/qrate execution and existing JSON remain unchanged. These refinements implement the already stated scope and do not remove final frontend convergence or open-invocation requirements.
+
+## Retrospective constitutional impact — 2026-10-05
+
+This ordinary maintainer assessment covers the approved surface group #25, #32, #33, #34, #35, #57, #67, #68, #80, #82, #196 and #250 under adopted QS-2026-01, PR-2026-01 and RS-2026-01. It adds no Guardian ruling, guarantee or new syntax decision. Source inspection baseline: a26e29bc19e06324e8b394d9d1dbb97ea2d163e1; this is not a fresh validation run.
+
+| Issue | Distinct risk and required follow-through |
+| --- | --- |
+| #25 | The implemented single explicit predicate domain must equal the source's exact tree, including Unit; never left-fold an argument list. Both computed forms and Meaning attachment retain totality, applicable injectivity, exact cleanup, phase and reference obligations. Ordinary function arity is unchanged. |
+| #32 | Shared scanning/parsing/types/resolution/lexical identities and ordinary Boolean/physical-state helpers must drive actual consumers. Eager operand and argument evaluation, live caller frames, fresh dynamic owners and unused/zero-body checking survive convergence. Shared infrastructure and bounded Raw execution do not complete one checker/loader/CLI or all public forms. |
+| #33 | Static specialization and runtime application must resolve deterministically to their distinct categories; no live-owner capture, implicit evidence or changed argument order. Final canonical operation application and migration remain required. |
+| #34 | Every admitted sugar needs an explicit target, evaluation order, owner transitions, phase, spans and failure rule. Candidate reassociation/packaging examples in the older body are not blanket permission for implicit maps; #84/#100 and current exact-tree rules govern. |
+| #35 | One typed pattern remains one argument. Exact nesting/arity, declaration-wide duplicate/static-name rejection and nonlinear-only wildcard disposal now share implemented judgments. Future rest patterns must not hide Q fields; matching Q<Tuple> cannot implicitly split it. |
+| #57 | The selected isometry vocabulary must retain V†V=I, without asserting VV†=I, inverse access or controlled access. Current iso is still implemented; source, API and versioned transport spellings require explicit migration rather than a blind rename. |
+| #67 | Audit the full Rust semantic boundary: no unsafe bypass, implicit Drop, replacement destruction, hidden quantum copy/default, or unwinding cleanup. Broader Rust ergonomics remain only in their expressly later scope, not a waiver of the 0.3.0 boundary decisions. |
+| #68 | Release, discard, measurement, reset, uncompute, binding exchange and physical SWAP have distinct meanings. Also audit assignment, indexing, autoref/autoderef, mutation, iteration and hidden exits. Familiar syntax cannot insert a physical operation or discharge evidence. Access-specific obligations remain in their dedicated issues. |
+| #80 | Static descriptions may be composed without duplicating live Q. No unrestricted quantum-capturing closure, lazy omission of physical work, hidden bottom/recursion, generic quantum Monad, or classical sum/match interpretation of coherent sectors is inferred from Haskell. The adopted #81 coherent basis spelling migration remains implementation work; #38's closure does not complete #81. |
+| #82 | Renaming or retaining bind_op must preserve exact implementation/Meaning/signature/dependency attachment and independent checking; the naming decision remains separate from certification. |
+| #196 | q*** names genuinely different construct semantics; Q<T> carries ownership in ordinary binding syntax. Its return example is explicitly non-authoritative, and qfor/qmatch remain subject to #37/#194/#195 rather than being admitted by an illustrative example. |
+| #250 | Deliver one language/checker/module/diagnostic/CLI path, retain every existing construct's explicit migration, and ultimately remove the separate sized CLI. Temporary profiles are recorded implementation limits, not permanent dialects or completion. Preserve independently requested composition/Fourier/QPE scopes, fixed 0.2.9 oracles and the untrusted Python differential oracle. The current body correctly keeps edition 2026; any older new-edition demand is superseded. |
+
+**QS — affects and preserves.** These changes implement QS-2026-01 obligations for exact interfaces, lexical scope, linear owners, complete caller frames, effects, ordered coordinates, phase and explicit observation. Actual mixed lowering now uses shared `frontend/raw_state.rs`; `sized/raw/preservation.rs` independently compares source steps with the exact native-accepted Raw operations. This bounded executable correspondence is distinct from a proof that AST elaboration or simulation preserves source meaning. Missing shared forms and complete source preservation remain duties.
+
+**PR — affects, not discharged.** Different lowering targets, provider calls, controlled operations, phase decompositions and source rewrites must implement the same requested map under their actual target/workspace contract. Raw supports only its explicit exact phase/primitive/type profile; a finer phase is not rounded. Hierarchy/Fourier/QPE acceptance retains its independent requests and initialization-order checks. The supported lowering/acceptance route must be selected explicitly before invoking its checker, with no failed-native fallback. A target-realization claim additionally requires its own target-capability premises. This does not prove exporters, hardware realization or the complete analytic hierarchy bridge.
+
+**Quantitative RS — affects, pending.** Eager Boolean operations, measurements, repeated calls/folds, suspended callers and all alternative branches must be counted in the actual program. Fresh IDs and owner accounting are QS properties; call/depth/live-width/work limits alone are not quantitative RS. Static families need justified bound functions; target workspace and emitted gate/measurement/depth costs need checked preservation under RS-2026-01.
+
+**Definitions, trust and binding.** New normative grammar, desugaring, arity, scope and execution-profile contracts are subordinate Reference rules. These frontend changes add no constitutional text, new trusted assumption, sealed primitive meaning or native acceptance rule. Common AST/DefId/BinderId metadata is not evidence identity: original sources/dependencies, closed bindings/providers, exact type trees and immutable artifact/request bytes remain bound. Ordinary Raw goes through `native::Kernel` → `Protocol.Validity.check`; native contracts and hierarchy have their separate actual roots. An untrusted proposal or producer comparison request is not an independent source specification.
+
+**Ledger, transport and remaining proofs.** Preserve the current ownership/scope QLV1 guarantees and their v4 ledger/current-evidence bindings. They neither certify source elaboration nor extend automatically to the hierarchy route. Existing ordinary and native-contract theorems provide scoped component coverage; complete QS, PR and quantitative RS remain pending. Byte-identical proposals support unchanged transformations; intentional source/representation changes require explicit mappings, independent exact/reference-sensitive tests and eventual formal preservation, with historical fixtures unchanged. #36/#42 and the public builder syntax portion of #40 are explicitly later work; that fact does not defer this group's remaining 0.3.0 criteria.
+
+**Edition and escalation.** Same constitutional edition 2026; source/API breaks are release-compatibility work. Ordinary implementation under the adopted interpretations needs no new individual Guardian ruling. Escalate a proposed new constitutional case, protected-premise/meaning change, trust assumption, dispute or guarantee admission; no compiler, documentation or AI assessment may grant that authority. No selected acceptance criterion is weakened by this retrospective record.
+
+
+## Selected-source CLI implementation checkpoint — 2026-10-05
+
+Local commit **c89871fa490807c12150d70fdbac5c28763ae88b** implements the reviewed unit above: one prepared execution plan for explicit module/entry commands and the retained sized adapter, typed profile eligibility before native checking, immutable request/proposal selection, and no retry after native/lowering failure. Raw execution requires zero declared runtime parameters (including Unit) and no quantum result; open check/proposal remains available. Source declaration coverage and selected-specialization native scope are explicit. Legacy presentation and capacity limits are retained.
+
+Actual Rust **1.98.1 and 1.85.0 each pass 109 focused tests** (107 across eleven integration targets plus the two existing ignored native CLI tests), all-target Clippy and formatting. Three other ignored sized-source tests remain unrun. Both runs bind the same 234 selected source hashes: **974db80591484bb804b5cdf82b76b4133271284c37ab4f09eb835443f85bc031**. Independent fixed H/QPE requests reject changed candidates with one native hierarchy call and no Raw retry. Analytic small-system expectations cover entangled caller frames, exact phase, eager observation, zero/one/two folds and eight QPE coefficients.
+
+Evidence: `tests/fixtures/frontend_v030/selected-source-cli/`, manifest SHA-256 **652f28b154986cf418ce73d7b4817c5eadca46f6077043a2879f35981df67fce**. Real failed first runs and corrected test assumptions remain byte-preserved; current observations reuse the original Unit-parameter first source. Inventory, native scheduler coverage and pinned mdBook/rendered-link checks pass. The separate #311 integration retains both scoped guarantees and adds the actually adopted EXACT pending interpretation; this CLI work proves no new QS/PR/RS theorem.
+
+The commit remains local while CI37233042845 for the earlier pushed head runs, to avoid cancellation. No same-commit full CI, release readiness or publication is claimed. Shared generic checking, remaining public forms/profiles, open invocation and final one-language/CLI migration remain original #32/#250 requirements; this checkpoint does not close them.
+
+
+## Next common-source unit — quantum Unit and scalar phase (2026-10-05)
+
+The pre-implementation contract is recorded in [#43's next implementation unit](https://github.com/MGYamada/Qleisli/issues/43): admit the exact Q<Unit>/Op<Unit> basis in the current common projection, retain its zero-width owner distinct from ordinary Unit and Q<Bits<0>>, and expose the existing phase_eighth scalar meaning through the same checked source path. It requires exact native ports, current Unit/Bit/Bits atom-preserving primitive typing, phase-sensitive control/adjoint/repetition and independent requests, without a new acceptance rule or public unit/finish spelling. First sources and 28 actual baseline observations were preserved before editing. This implements part of #27/#43/#32, not their closure or general source-preservation proof. All existing migration/acceptance criteria remain.
+
+
+## Quantum Unit integration checkpoint — e01e98a (2026-10-05)
+
+[e01e98a42a00c04892617205307f2db76b5c404e](https://github.com/MGYamada/Qleisli/commit/e01e98a42a00c04892617205307f2db76b5c404e) publishes the #43 bounded Q<Unit>/Op<Unit> and exact phase_eighth contract through the common source path. Exact Unit/Bit/Bits owners, scalar phase, evaluation order and profile limits are retained. Independent native requests cover direct and transformed providers, including valid wrong-provider negatives; no new native rule or general preservation proof is claimed.
+
+Rust 1.98.1 and actual 1.85.0 each pass **126 focused tests**, all-target Clippy, warnings-denied library rustdoc and formatting, with all selected ignored cases explicitly run. [Source, real failure/repair, request provenance and validation records](https://github.com/MGYamada/Qleisli/tree/e01e98a42a00c04892617205307f2db76b5c404e/tests/fixtures/frontend_v030/quantum-unit-source) retain the same 366-input manifest across both toolchains. Constitutional continuity, inventory/coverage and documentation checks pass. The previous hosted stale Boolean expectation and locally reproduced rustdoc markup failure are repaired with their actual diagnostics preserved. Current-head hosted CI is pending; no same-current-commit full success or release readiness is claimed.
+
+The approved constitutional handoff procedure now explicitly requires original-record reconstruction and source/evidence continuity after model/context changes; AI acquires no adoption authority. Existing ratification, interpretations and both scoped guarantees are unchanged. **Progress remains 6/109 (5.50%)**. General Basis/type checking, public Unit structural maps, remaining shared language/access/realization contracts and full release gates remain required.
+
+## Current common-source integration — 2026-10-05
+
+[7cc6b5f](https://github.com/MGYamada/Qleisli/commit/7cc6b5f7f659859b01c74966bea3dc31285ada3e) contains the previous tuple/Unit pipeline plus complete #100 explicit-binding diagnostics and #254 architecture documentation. The [law packet](https://github.com/MGYamada/Qleisli/tree/7cc6b5f7f659859b01c74966bea3dc31285ada3e/tests/fixtures/frontend_v030/inference-law) retains 91 focused passing tests per actual toolchain, unchanged 24 before/after statuses and successful JSON, and matching text diagnostics/native counts. A mistaken historical ignored stress request failed and is preserved; the corrected bounded checks pass. No rule/limit or criterion was weakened.
+
+Plan progress is **12/109 (11.01%)**. [Current CI](https://github.com/MGYamada/Qleisli/actions/runs/37262809808) is running. Finite/Raw parity, general Basis, remaining shared language and this umbrella stay open. #253's deterministic discovery path is next; no new guarantee or release readiness is claimed.

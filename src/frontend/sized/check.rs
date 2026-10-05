@@ -428,7 +428,11 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
         let owner = program.resolution.module(module).expect("known module");
         let imports = program
             .resolution
-            .imports(owner, &program.syntax[module], Profile::Sized)
+            .imports(
+                owner,
+                program.syntax(module).expect("retained source"),
+                Profile::Sized,
+            )
             .map_err(ParsedProgram::resolution_error)?;
         let parsed = program.modules.get_mut(module).expect("projected module");
         for function in &mut parsed.functions {
@@ -507,8 +511,8 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
                 .resolution
                 .local(owner, &function.name)
                 .expect("known function");
-            let declaration =
-                &program.syntax[module].decls[program.resolution.declaration(id).ast_index];
+            let declaration = &program.syntax(module).expect("retained source").decls
+                [program.resolution.declaration(id).ast_index];
             let fact =
                 crate::frontend::effects::FunctionEffect::checked(declaration.kind, effects[&id])
                     .ok_or_else(|| {

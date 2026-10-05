@@ -1,0 +1,72 @@
+{
+  "format": "qleisli.reviewed-source-metadata-refresh",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T16:23:29.373033+00:00",
+  "changed_existing_source_hashes": [
+    {
+      "path": "src/frontend/mod.rs",
+      "before_sha256": "b058a99e03961ed21602b7241e26b4cf977d07613a1ed81bff3162d63df27ad7",
+      "after_sha256": "5c363bfa4f54957bdce8080eb3626cc4174a12c7a52d870b4c9cfe29044d034b",
+      "surface_identical": true
+    },
+    {
+      "path": "src/frontend/project.rs",
+      "before_sha256": "193c285db6ad84df996c86c75965a1a6aa88334755c9c1e7906fb2ca2f6854c9",
+      "after_sha256": "c5df842b7f21c80c2cacaf086317a0bf6012b8db84aff7b8e88b06e79d210d94",
+      "surface_identical": true
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "before_sha256": "2dd8dbe88f98e523118c347b1fdba109d15931706f2ad1c0e488df9acfd2ae27",
+      "after_sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "surface_identical": true
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before_sha256": "d8e5023d0c3673467dcb1e417af24621a771fff8e1043946d94991356d9d242d",
+      "after_sha256": "3465ad448404df6b4d2f5f1ab9c5d0503a527cf4540fc29e37c580d48139a90d",
+      "surface_identical": true
+    }
+  ],
+  "added_source": {
+    "path": "src/frontend/source.rs",
+    "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+    "group": "source",
+    "surface": {
+      "declarations": [],
+      "functions": [
+        "pub fn bundled(source: &'static BundledSource, policy: ParsePolicy) -> Result<Self, Failure>",
+        "pub fn finish(self) -> SourceCollection",
+        "pub fn get(&self, name: &str) -> Option<&Source>",
+        "pub fn insert(&mut self, source: Source) -> Result<(), String>",
+        "pub fn into_entries(self) -> impl Iterator<Item = Source>",
+        "pub fn into_parts(self) -> (String, Option<PathBuf>, String, Module, bool)",
+        "pub fn iter(&self) -> impl Iterator<Item = (&str, &Source)>",
+        "pub fn local( name: String, path: Option<PathBuf>, text: String, policy: ParsePolicy, ) -> Result<Self, Failure>",
+        "pub fn manifest() -> &'static str",
+        "pub fn manifest_path() -> &'static str",
+        "pub fn path(&self) -> &'static str",
+        "pub fn path(&self) -> Option<&std::path::Path>",
+        "pub fn sources() -> &'static [BundledSource]",
+        "pub fn span(&self) -> Span",
+        "pub fn syntax(&self) -> &Module",
+        "pub fn text(&self) -> &'static str",
+        "pub fn text(&self) -> &str"
+      ],
+      "capacity_constants": []
+    }
+  },
+  "added_source_effective_visibility": "Private frontend module; pub(super) types. Bounded scanner records internal pub methods, not an exported API or acceptance authority.",
+  "inventory_non_source_metadata_unchanged": true,
+  "existing_source_surfaces_unchanged": true,
+  "existing_source_order_unchanged": true,
+  "constructor_variants": 269,
+  "boundaries": 20,
+  "production_paths": 21,
+  "coverage_changed_field_only": "surface_sha256",
+  "coverage_digest_helper": "check_production_coverage.surface_identity(inventory)",
+  "before_coverage_digest": "915be1fab21236c1c459a99de85123e6f0f9a44216848baa844f0d8572856b28",
+  "after_coverage_digest": "683d27715d20cc2eaa9e387c2699d07a7b1f6cf666e30e57d8ad57967dc3a0df",
+  "native_routes_proof_scopes_gate_statuses_authority_unchanged": true,
+  "limit": "This reviews source input identity and route metadata, not source preservation, new acceptance, fresh Lean evidence or constitutional discharge."
+}

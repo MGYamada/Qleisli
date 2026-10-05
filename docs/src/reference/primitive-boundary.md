@@ -194,7 +194,7 @@ target-realization or quantitative resource theorem.
 
 ## Ordinary library and module resolution
 
-`src/frontend/project.rs::BUNDLED_SOURCES` embeds **four ordinary source
+`src/frontend/source.rs::BundledRegistry` embeds **four ordinary source
 modules with 12 public definitions**; one additional private basis helper is
 used by `std::routines`. They receive normal declaration, type/ownership and
 native checking, rather than `ImportOrigin::Sealed`:

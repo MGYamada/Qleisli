@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""Fixed bounded checks; recorded metadata is never executed.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+"""
+from pathlib import Path
+import datetime
+import hashlib
+import json
+import os
+import subprocess
+import sys
+import time
+
+HERE = Path(__file__).resolve().parent
+ROOT = HERE.parents[3]
+LABEL, TOOLCHAIN = sys.argv[1:]
+if LABEL not in {"latest", "msrv"} or TOOLCHAIN != LABEL:
+    raise SystemExit("use latest latest or msrv msrv")
+OUT = HERE / ("validation-" + LABEL)
+OUT.mkdir(exist_ok=False)
+ENV = dict(os.environ, CARGO_TARGET_DIR="/private/tmp/qleisli-bounded-validation-target",
+           CARGO_INCREMENTAL="0", CARGO_PROFILE_DEV_DEBUG="0", CARGO_PROFILE_TEST_DEBUG="0",
+           CARGO_BUILD_JOBS="2", QLEISLI_KERNEL=str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel"),
+           QLEISLI_HIERARCHY_KERNEL=str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel"))
+CARGO = ["/opt/homebrew/bin/cargo"] if LABEL == "latest" else ["rustup", "run", "1.85.0", "cargo"]
+TARGETS = ["project", "source_capacities", "source_snapshots", "shared_resolution", "sized_source",
+           "body_effects", "source_collection", "selected_source_cli"]
+COMMANDS = [CARGO + ["--version"], CARGO + ["fmt", "--check"],
+            CARGO + ["test"] + [arg for name in TARGETS for arg in ("--test", name)],
+            CARGO + ["clippy", "--all-targets", "--", "-D", "warnings"]]
+if LABEL == "latest":
+    COMMANDS.append(CARGO + ["build", "--bin", "qleisli"])
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def inputs():
+    paths = [p for p in (ROOT / "src").rglob("*.rs")]
+    paths += [ROOT / "Cargo.toml", ROOT / "Cargo.lock", ROOT / "stdlib/Qargo.toml"]
+    paths += list((ROOT / "stdlib/src").rglob("*.qli"))
+    paths += list((ROOT / "tests/common").rglob("*.rs"))
+    paths += [ROOT / "tests" / (name + ".rs") for name in TARGETS]
+    paths += list((ROOT / "tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01").rglob("*.qli"))
+    return {str(p.relative_to(ROOT)): digest(p) for p in sorted(set(paths))}
+
+
+before = inputs()
+identity = {"format": "qleisli.common-source-collection-bounded-validation", "version": 1,
+            "source_files": before, "native_sha256": digest(Path(ENV["QLEISLI_KERNEL"])),
+            "scope": "Bounded declared source map, not the complete runtime fixture closure or a compilation attestation of Git HEAD.",
+            "git_head_observed": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
+            "label": LABEL, "targets": TARGETS, "records": []}
+(OUT / "executed-driver.py.txt").write_bytes(Path(__file__).read_bytes())
+(OUT / "identity-before.json").write_text(json.dumps(identity, indent=2) + "\n")
+for index, command in enumerate(COMMANDS):
+    print("Running " + " ".join(command), flush=True)
+    started = time.monotonic()
+    with (OUT / f"{index:02d}.stdout.txt").open("wb") as stdout, (OUT / f"{index:02d}.stderr.txt").open("wb") as stderr:
+        result = subprocess.run(command, cwd=ROOT, env=ENV, stdout=stdout, stderr=stderr)
+    record = {"argv": command, "exit_code": result.returncode, "seconds": time.monotonic() - started,
+              "completed_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+              "stdout": f"{index:02d}.stdout.txt", "stderr": f"{index:02d}.stderr.txt"}
+    identity["records"].append(record)
+    (OUT / "commands.json").write_text(json.dumps(identity["records"], indent=2) + "\n")
+    assert inputs() == before, "validation source changed during command"
+    assert digest(Path(ENV["QLEISLI_KERNEL"])) == identity["native_sha256"], "native binary changed"
+    print(json.dumps(record), flush=True)
+    if result.returncode:
+        raise SystemExit(result.returncode)
+    if index == 0:
+        required = "1.98.1" if LABEL == "latest" else "1.85.0"
+        assert required in (OUT / "00.stdout.txt").read_text(), "unexpected actual toolchain"
+identity["source_files_after"] = inputs()
+identity["native_sha256_after"] = digest(Path(ENV["QLEISLI_KERNEL"]))
+(OUT / "identity-final.json").write_text(json.dumps(identity, indent=2) + "\n")
+print("All selected bounded commands passed; ignored tests retain their existing status.")

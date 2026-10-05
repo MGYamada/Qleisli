@@ -1,0 +1,79 @@
+[
+  {
+    "argv": [
+      "rustup",
+      "run",
+      "1.85.0",
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.3721157500403933,
+    "completed_utc": "2026-10-05T16:25:25.810862+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "argv": [
+      "rustup",
+      "run",
+      "1.85.0",
+      "cargo",
+      "fmt",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.6308250410365872,
+    "completed_utc": "2026-10-05T16:25:26.503184+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "argv": [
+      "rustup",
+      "run",
+      "1.85.0",
+      "cargo",
+      "test",
+      "--test",
+      "project",
+      "--test",
+      "source_capacities",
+      "--test",
+      "source_snapshots",
+      "--test",
+      "shared_resolution",
+      "--test",
+      "sized_source",
+      "--test",
+      "body_effects",
+      "--test",
+      "source_collection",
+      "--test",
+      "selected_source_cli"
+    ],
+    "exit_code": 0,
+    "seconds": 20.07448354101507,
+    "completed_utc": "2026-10-05T16:25:46.629467+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "argv": [
+      "rustup",
+      "run",
+      "1.85.0",
+      "cargo",
+      "clippy",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 6.869026832981035,
+    "completed_utc": "2026-10-05T16:25:53.602852+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  }
+]

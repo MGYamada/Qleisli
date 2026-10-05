@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.local-design-artifact-audit",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T16:09:57.765233+00:00",
+  "issue_body_bytes_match_primary_response": true,
+  "issue_317_checkbox_total": 24,
+  "source_inputs_checked": 24,
+  "source_mismatches": {},
+  "additional_read_inputs": {
+    "src/frontend/lexer.rs": {
+      "sha256": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+      "bytes": 12048
+    },
+    "src/frontend/scanner.rs": {
+      "sha256": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+      "bytes": 8363
+    }
+  },
+  "candidate_correction": "Read actual lex_documented_bounded signature:64 bounds comment nesting depth, not number of comments. Corrected local candidate before review; no source/checker mutation.",
+  "execution_scope": "Python artifact/byte checks only; not Cargo/Lean/full CI/proof/adoption."
+}

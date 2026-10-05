@@ -1,0 +1,73 @@
+{
+  "format": "qleisli.executed-metadata-checks",
+  "commands": [
+    {
+      "id": "after.inventory",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:23:49.247604+00:00",
+      "elapsed_seconds": 0.4231478750007227,
+      "exit_code": 0,
+      "stdout": "after.inventory.stdout.txt",
+      "stderr": "after.inventory.stderr.txt"
+    },
+    {
+      "id": "after.coverage",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:23:49.248888+00:00",
+      "elapsed_seconds": 0.1460359999909997,
+      "exit_code": 0,
+      "stdout": "after.coverage.stdout.txt",
+      "stderr": "after.coverage.stderr.txt"
+    },
+    {
+      "id": "after.inventory-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:23:49.250282+00:00",
+      "elapsed_seconds": 8.947532167017926,
+      "exit_code": 0,
+      "stdout": "after.inventory-regression.stdout.txt",
+      "stderr": "after.inventory-regression.stderr.txt"
+    },
+    {
+      "id": "after.coverage-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:23:49.250359+00:00",
+      "elapsed_seconds": 1.1764647089876235,
+      "exit_code": 0,
+      "stdout": "after.coverage-regression.stdout.txt",
+      "stderr": "after.coverage-regression.stderr.txt"
+    },
+    {
+      "id": "after.constitution",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:23:49.251327+00:00",
+      "elapsed_seconds": 1.3136632919777185,
+      "exit_code": 0,
+      "stdout": "after.constitution.stdout.txt",
+      "stderr": "after.constitution.stderr.txt"
+    }
+  ],
+  "record_provided_commands_executed": false
+}

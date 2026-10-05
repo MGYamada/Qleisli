@@ -15,6 +15,7 @@ mod qpe;
 mod raw;
 
 use super::resolve::{DefId, Failure, FailureKind, Resolution};
+use super::source::{self, ParsePolicy, Source, SourceCollection};
 use std::collections::BTreeMap;
 use std::fmt;
 use std::path::PathBuf;
@@ -94,8 +95,7 @@ impl std::error::Error for Error {}
 /// preparation checks. Cloning this value does not create checked IR evidence.
 #[derive(Clone, Debug)]
 pub struct ParsedProgram {
-    sources: BTreeMap<String, String>,
-    syntax: BTreeMap<String, super::ast::Module>,
+    sources: SourceCollection,
     modules: BTreeMap<String, ast::Module>,
     resolution: Resolution,
     effects: BTreeMap<DefId, super::effects::FunctionEffect>,
@@ -108,7 +108,7 @@ impl ParsedProgram {
         module: &str,
     ) -> Option<std::result::Result<String, super::parser::ParseError>> {
         self.sources.get(module).map(|source| {
-            super::documentation::render_checked_markdown(source, |name| {
+            super::documentation::render_checked_markdown(source.text(), |name| {
                 self.function_effect(&format!("{module}::{name}"))
             })
         })
@@ -116,13 +116,31 @@ impl ParsedProgram {
 
     /// The retained common source AST. It is untrusted syntax, not checked IR.
     pub fn syntax(&self, module: &str) -> Option<&super::ast::Module> {
-        self.syntax.get(module)
+        self.sources.get(module).map(Source::syntax)
     }
 
     /// Parse and check every supplied module, including unused imports and both
     /// arms of static branches. Imports must resolve within this complete map or
     /// to a primitive explicitly specified by this bounded profile.
     pub fn parse(sources: BTreeMap<String, String>) -> Result<Self> {
+        // Reject before constructing the path-bearing adapter map. The caller
+        // may supply an oversized map; its count must not trigger another one.
+        if sources.is_empty() || sources.len() > MAX_MODULES {
+            return Err(Error::new(
+                "limit",
+                Span::default(),
+                "provide 1 through 64 modules",
+            ));
+        }
+        Self::parse_inputs(
+            sources
+                .into_iter()
+                .map(|(name, text)| (name, (None, text)))
+                .collect(),
+        )
+    }
+
+    fn parse_inputs(sources: BTreeMap<String, (Option<PathBuf>, String)>) -> Result<Self> {
         if sources.is_empty() || sources.len() > MAX_MODULES {
             return Err(Error::new(
                 "limit",
@@ -132,11 +150,11 @@ impl ParsedProgram {
         }
         let mut total = 0usize;
         let mut modules = BTreeMap::new();
-        let mut syntax = BTreeMap::new();
-        for (name, source) in &sources {
-            if !valid_module_name(name) {
+        let mut collection = source::Builder::default();
+        for (name, (path, source)) in sources {
+            if !valid_module_name(&name) {
                 return Err(
-                    Error::new("module", Span::default(), "invalid module path").in_module(name)
+                    Error::new("module", Span::default(), "invalid module path").in_module(&name)
                 );
             }
             total = total.checked_add(source.len()).ok_or_else(|| {
@@ -148,28 +166,35 @@ impl ParsedProgram {
                     Span::default(),
                     "source exceeds 64 KiB per module or 1 MiB aggregate",
                 )
-                .in_module(name));
+                .in_module(&name));
             }
-            let module = super::parser::parse_bounded_module(source).map_err(|e| {
-                let code = if e.message.contains("limit") || e.message.starts_with("source exceeds")
-                {
-                    "limit"
-                } else {
-                    "parse"
-                };
-                Error::new(code, e.span, e.message).in_module(name)
+            let module = Source::local(name.clone(), path, source, ParsePolicy::ExplicitModules)
+                .map_err(Self::collection_error)?;
+            // Keep this complete projection before parsing the next module:
+            // an earlier profile failure still wins over a later parse failure.
+            let projected = parser::project(module.syntax()).map_err(|e| e.in_module(&name))?;
+            collection.insert(module).map_err(|duplicate| {
+                Error::new(
+                    "module",
+                    Span::default(),
+                    format!("duplicate module {duplicate}"),
+                )
+                .in_module(&name)
             })?;
-            let projected = parser::project(&module).map_err(|e| e.in_module(name))?;
-            syntax.insert(name.clone(), module);
             modules.insert(name.clone(), projected);
         }
-        let resolution = Resolution::new(syntax.iter().map(|(name, ast)| (name.as_str(), ast)))
-            .map_err(Self::resolution_error)?;
+        let sources = collection.finish();
+        let resolution =
+            Resolution::new(sources.iter().map(|(name, source)| (name, source.syntax())))
+                .map_err(Self::resolution_error)?;
         // Preserve the per-module profile diagnostic boundary above. Reuse the
         // same projection after real declaration IDs exist; no source reparse
         // or competing preflight rules are involved.
         for (id, declaration) in resolution.declarations() {
-            let module = &syntax[&declaration.name.0];
+            let module = sources
+                .get(&declaration.name.0)
+                .expect("retained source")
+                .syntax();
             let index = super::resolve::locals::Index::new(
                 id,
                 &module.decls[declaration.ast_index],
@@ -184,7 +209,6 @@ impl ParsedProgram {
         }
         let mut program = Self {
             sources,
-            syntax,
             modules,
             resolution,
             effects: BTreeMap::new(),
@@ -233,9 +257,27 @@ impl ParsedProgram {
                         .in_module(&name),
                 );
             }
-            sources.insert(name, source);
+            sources.insert(name, (Some(path), source));
         }
-        Self::parse(sources)
+        Self::parse_inputs(sources)
+    }
+
+    fn collection_error(failure: source::Failure) -> Error {
+        let span = failure.span();
+        let (code, message) = match failure.kind {
+            source::FailureKind::ReservedModule => ("module", "invalid module path".into()),
+            source::FailureKind::Parse(error) => {
+                let code = if error.message.contains("limit")
+                    || error.message.starts_with("source exceeds")
+                {
+                    "limit"
+                } else {
+                    "parse"
+                };
+                (code, error.message)
+            }
+        };
+        Error::new(code, span, message).in_module(&failure.name)
     }
 
     fn definition(&self, id: DefId) -> (&str, &ast::Function) {
@@ -271,7 +313,7 @@ impl ParsedProgram {
 
     /// Complete original text, including comments and line endings.
     pub fn source(&self, module: &str) -> Option<&str> {
-        self.sources.get(module).map(String::as_str)
+        self.sources.get(module).map(Source::text)
     }
 
     /// Principal and asserted effects from complete generic source checking.
@@ -282,7 +324,7 @@ impl ParsedProgram {
         self.effects.get(&id).copied()
     }
     pub fn module_names(&self) -> impl Iterator<Item = &str> {
-        self.sources.keys().map(String::as_str)
+        self.sources.iter().map(|(name, _)| name)
     }
 
     /// Check concrete entry bindings. This records an untrusted specialization

@@ -1,0 +1,5 @@
+{
+  "baseline_map_sha256": "513ad285040c1292bf3954e5a371d92601e3042625e6ef8af7a0a2fc8c11c924",
+  "replay_driver_sha256": "331224e9048b42b64687434943ff0692aba76cb841ab730308ed108d43870ef5",
+  "scope": "Separate post-baseline protection wrapper. It executes only the frozen fixed capture driver after explicit root authorization and retains baseline identity before/after. No replay has yet run."
+}

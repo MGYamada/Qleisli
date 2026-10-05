@@ -1,0 +1,182 @@
+{
+  "commands": [
+    {
+      "id": "00.mdbook-version",
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.338601+00:00",
+      "elapsed_seconds": 0.018515540985390544,
+      "exit_code": 0,
+      "stdout": "00.mdbook-version.stdout.txt",
+      "stderr": "00.mdbook-version.stderr.txt"
+    },
+    {
+      "id": "01.mdbook-build",
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs",
+        "--dest-dir",
+        "/private/tmp/qleisli-common-source-book-w8mvdoog/book"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.358839+00:00",
+      "elapsed_seconds": 0.10635479196207598,
+      "exit_code": 0,
+      "stdout": "01.mdbook-build.stdout.txt",
+      "stderr": "01.mdbook-build.stderr.txt"
+    },
+    {
+      "id": "02.rendered-book",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_book.py",
+        "--root",
+        "/private/tmp/qleisli-common-source-book-w8mvdoog/book"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.465270+00:00",
+      "elapsed_seconds": 0.277396833000239,
+      "exit_code": 0,
+      "stdout": "02.rendered-book.stdout.txt",
+      "stderr": "02.rendered-book.stderr.txt"
+    },
+    {
+      "id": "03.book-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_book.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.836129+00:00",
+      "elapsed_seconds": 0.12815104197943583,
+      "exit_code": 0,
+      "stdout": "03.book-regression.stdout.txt",
+      "stderr": "03.book-regression.stderr.txt"
+    },
+    {
+      "id": "04.authoring",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.836200+00:00",
+      "elapsed_seconds": 0.46124945796327665,
+      "exit_code": 0,
+      "stdout": "04.authoring.stdout.txt",
+      "stderr": "04.authoring.stderr.txt"
+    },
+    {
+      "id": "05.authoring-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_authoring_sessions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.837339+00:00",
+      "elapsed_seconds": 0.11036266601877287,
+      "exit_code": 0,
+      "stdout": "05.authoring-regression.stdout.txt",
+      "stderr": "05.authoring-regression.stderr.txt"
+    },
+    {
+      "id": "06.editions",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_editions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.837584+00:00",
+      "elapsed_seconds": 4.566943917016033,
+      "exit_code": 0,
+      "stdout": "06.editions.stdout.txt",
+      "stderr": "06.editions.stderr.txt"
+    },
+    {
+      "id": "07.edition-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_editions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.947775+00:00",
+      "elapsed_seconds": 0.38124091597273946,
+      "exit_code": 0,
+      "stdout": "07.edition-regression.stdout.txt",
+      "stderr": "07.edition-regression.stderr.txt"
+    },
+    {
+      "id": "08.docs",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:15.964368+00:00",
+      "elapsed_seconds": 1.996821207983885,
+      "exit_code": 0,
+      "stdout": "08.docs.stdout.txt",
+      "stderr": "08.docs.stderr.txt"
+    },
+    {
+      "id": "09.docs-regression",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/test_check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:16.297536+00:00",
+      "elapsed_seconds": 0.1802683339919895,
+      "exit_code": 0,
+      "stdout": "09.docs-regression.stdout.txt",
+      "stderr": "09.docs-regression.stderr.txt"
+    },
+    {
+      "id": "10.constitution",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:16.329071+00:00",
+      "elapsed_seconds": 1.1529014579718933,
+      "exit_code": 0,
+      "stdout": "10.constitution.stdout.txt",
+      "stderr": "10.constitution.stderr.txt"
+    },
+    {
+      "id": "11.inventory",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:16.477870+00:00",
+      "elapsed_seconds": 0.4419197499519214,
+      "exit_code": 0,
+      "stdout": "11.inventory.stdout.txt",
+      "stderr": "11.inventory.stderr.txt"
+    },
+    {
+      "id": "12.coverage",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:27:16.919879+00:00",
+      "elapsed_seconds": 0.13733045902336016,
+      "exit_code": 0,
+      "stdout": "12.coverage.stdout.txt",
+      "stderr": "12.coverage.stderr.txt"
+    }
+  ],
+  "recorded_commands_executed": false,
+  "fixed_driver_sha256": "d338973104ecae7a9c9ed32f7bdf269b45a931c5ce84624c12c337b57744a73f"
+}

@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 2,
+  "observed_at_utc": "2026-10-05T16:29:27.577100+00:00",
+  "scope": "Actual staged snapshot before narrowly scoped raw libtest transcript attributes. Original output bytes will be retained."
+}

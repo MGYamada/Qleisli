@@ -1,0 +1,29 @@
+{
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:22:59.087962+00:00",
+      "elapsed_seconds": 0.2225421670009382,
+      "exit_code": 1,
+      "stdout": "before.inventory.stdout.txt",
+      "stderr": "before.inventory.stderr.txt"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "started_at_utc": "2026-10-05T16:22:59.310513+00:00",
+      "elapsed_seconds": 0.12705441698199138,
+      "exit_code": 0,
+      "stdout": "before.coverage.stdout.txt",
+      "stderr": "before.coverage.stderr.txt"
+    }
+  ],
+  "record_commands_executed": false
+}

@@ -17,8 +17,9 @@ mod raw_state;
 mod resolve;
 mod scanner;
 pub mod sized;
+mod source;
 mod types;
 
-/// Language edition for the current grammar, in-memory source APIs and bundled
-/// library. This is independent of the product version and Rust's Cargo edition.
+/// Constitutional edition selected by in-memory source APIs and the bundled
+/// library, independently of grammar, product version and Rust's Cargo edition.
 pub const CURRENT_EDITION: &str = "2026";

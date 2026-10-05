@@ -214,3 +214,15 @@ and the [received independent review](qft-family-v030/independent-review.json)
 retain producer-consistency and numerical scope. No canonical stdlib exposure,
 independent named exact Fourier request or general proof follows; the unit-norm
 probes alone do not establish arbitrary unnormalized-input behavior.
+
+The [common source-collection study](common-source-collection-v030/session.json)
+freezes eight complete projects and 23 real pre-code observations before the
+private loader refactor. [Results](common-source-collection-v030/results-before.md)
+retain finite bundled QFT checking, sized private siblings, complete-declaration
+rejection, diagnostic ordering and reserved-namespace boundaries. The frozen
+driver records later output/proposal-byte comparisons separately; source
+collection identities do not prove source preservation or expand acceptance.
+The [authorized replay](common-source-collection-v030/results-after.md) preserves
+all 23 original stdout/stderr/status/native-count observations and the exact
+untrusted proposal bytes, including both diagnostic-order controls. Rebuilt CLI
+and current source identities are recorded separately from the frozen baseline.

@@ -1,0 +1,25 @@
+{
+  "format": "qleisli.local-review-commands",
+  "version": 1,
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 1.024491125,
+      "stdout_and_stderr_combined": "constitution-check.stdout.txt",
+      "output_note": "exec_command returned one combined output stream; no separate stdout/stderr distinction is invented."
+    }
+  ],
+  "not_run": [
+    "Cargo",
+    "Lean build/audit/replay",
+    "full release regressions",
+    "GitHub/Git mutations"
+  ]
+}

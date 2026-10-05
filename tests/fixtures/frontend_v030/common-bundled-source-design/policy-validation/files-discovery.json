@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.discovery-addendum-files",
+  "version": 1,
+  "original_policy_manifest_unchanged": "files.json",
+  "files": {
+    "files.json": {
+      "sha256": "76ddcc5189f940ef1d4a079ffca422eed115f0aa959b6b97764f2bd3bdb09fd7",
+      "bytes": 4642
+    },
+    "discovery-observations.json": {
+      "sha256": "0f36e4d385629d6a0ab38643b362c75979fbe55119693ff6438d08fb514691af",
+      "bytes": 2276
+    }
+  },
+  "self_excluded": "files-discovery.json"
+}

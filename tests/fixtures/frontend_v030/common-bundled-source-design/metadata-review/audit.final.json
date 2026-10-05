@@ -1,0 +1,39 @@
+{
+  "format": "qleisli.metadata-review-final-audit",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T16:23:58.209963+00:00",
+  "source_inputs": 256,
+  "source_mismatches_during_metadata_refresh_and_guards": {},
+  "active_inventory_matches_after_copy": true,
+  "active_coverage_matches_after_copy": true,
+  "all_five_actual_checks_passed": true,
+  "coverage_result": {
+    "groups": 36,
+    "public_boundaries": 20,
+    "public_source_files": 97,
+    "constructor_variants": 269,
+    "authority": "Lean",
+    "migration": "single-lean-acceptance-implemented",
+    "target_authority": "Lean",
+    "production_paths": 21,
+    "native_modes": 9,
+    "published_baseline": "0.2.9",
+    "development_version": "0.3.0-alpha",
+    "development_status": "unpublished",
+    "open_gates": [
+      "S05-C1",
+      "S05-C2",
+      "S05-C3",
+      "S05-C4",
+      "S05-C5"
+    ]
+  },
+  "raw_output_note": "Individual actual stdout/stderr files retained; reported parent failure remains a labelled transcript.",
+  "not_performed": [
+    "Rust/Cargo tests",
+    "Lean build/audit/replay",
+    "GitHub/Git mutations",
+    "source edits",
+    "new route/proof/authority/adoption changes"
+  ]
+}

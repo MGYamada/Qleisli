@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.local-design-candidate",
+  "version": 1,
+  "status": "local-candidate-non-normative",
+  "observed_at_utc": "2026-10-05T16:09:36.295465+00:00",
+  "trusted_constitution_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "sources": [
+    {
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/issues/32",
+      "tool": "mcp__codex_apps__github_fetch",
+      "fetch_started_clock_utc": "2026-10-05 16:05:23 UTC",
+      "issue_updated_at": "2026-10-05T04:25:00Z",
+      "raw_response": "issue-32.json",
+      "body": "issue-32.md"
+    },
+    {
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/issues/317",
+      "tool": "mcp__codex_apps__github_fetch",
+      "fetch_started_clock_utc": "2026-10-05 16:05:23 UTC",
+      "issue_updated_at": "2026-10-05T15:48:26Z",
+      "raw_response": "issue-317.json",
+      "body": "issue-317.md"
+    }
+  ],
+  "ordinary_contract_limit": "GitHub ordinary implementation contracts are not constitutional interpretation or guarantee adoption.",
+  "parent_review_boundary": "Private immutable SourceCollection; fixed four-source BundledRegistry plus manifest; finite consumes into existing owned public Project without stale duplicate; sized owns collection; retain capacities; no implicit sized std injection until all bodies supported and checked.",
+  "modification_scope": "Only new files in this directory; no GitHub/Git mutations or source edits."
+}

@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/main.qli",
+    "--module=a_malformed=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/a_malformed.qli",
+    "--module=z_basis=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/z_basis.qli",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/before/parse-before-late-profile-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004985750012565404,
+  "recorded_utc": "2026-10-05T16:13:02.989960+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `}`, found end of file",
+        "primary": {
+          "module": "a_malformed",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-source-collection-v030/attempt-01/parse-before-late-profile/a_malformed.qli",
+          "start": 114,
+          "end": 114
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

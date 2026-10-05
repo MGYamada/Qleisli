@@ -1,0 +1,29 @@
+{
+  "observed_at_utc": "2026-10-05T16:27:42.920266+00:00",
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/bin/rustc",
+        "--version",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "stdout": "00.stdout.txt",
+      "stderr": "00.stderr.txt"
+    },
+    {
+      "argv": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "rustc",
+        "--version",
+        "--verbose"
+      ],
+      "exit_code": 0,
+      "stdout": "01.stdout.txt",
+      "stderr": "01.stderr.txt"
+    }
+  ],
+  "scope": "Subsequent observed compiler identities; these commands do not retroactively attest which compiler compiled every earlier binary."
+}

@@ -11,6 +11,20 @@ classification are shared. Static/owner/effect checking and lowering are not
 yet fully unified. A parsed AST does not accept a program or confer native
 verification evidence.
 
+One private source collection retains each complete original text, common AST
+and provenance together. Filesystem entries retain the selected source path;
+in-memory entries carry no invented file or manifest. The finite loader consumes
+that collection into the existing mutable `Project` compatibility view, with
+no parallel cached collection or checked facts. The sized preparation retains
+the immutable collection. Both adapters keep their existing complete declaration
+checks, byte/parser policies and first-failure ordering: sized projection of a
+module completes before parsing the next module. The fixed bundled registry
+contains the current four ordinary sources and their manifest; it grants no
+semantic authority and does not inject unsupported bundles into sized loading.
+Complete common checking and canonical namespace migration remain required by
+[#32](https://github.com/MGYamada/Qleisli/issues/32) and
+[#317](https://github.com/MGYamada/Qleisli/issues/317).
+
 ## Ordinary function effects and assertions
 
 An ordinary body-bearing function may use `fn`, `unitary fn`, `iso fn` or
