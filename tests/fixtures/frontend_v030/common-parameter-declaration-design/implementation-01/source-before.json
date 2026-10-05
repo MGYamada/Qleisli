@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.bounded-parameter-name-implementation-before",
+  "version": 1,
+  "status": "before-first-production-edit",
+  "observed_head": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "contract": {
+    "path": "contract-before-code.md",
+    "sha256": "558ec3f68f6c7f84a248ed30039eb8655625a08fe61a48d3c32f975100bd1ad1"
+  },
+  "files": {
+    "src/frontend/pattern.rs": {
+      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede",
+      "bytes": 3459,
+      "snapshot": "source-before/src/frontend/pattern.rs"
+    },
+    "src/frontend/compile/mod.rs": {
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "bytes": 42146,
+      "snapshot": "source-before/src/frontend/compile/mod.rs"
+    },
+    "src/frontend/sized/check.rs": {
+      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "bytes": 52146,
+      "snapshot": "source-before/src/frontend/sized/check.rs"
+    }
+  },
+  "scope": "Uncompiled source snapshot only; no test, source-preservation or adoption claim."
+}

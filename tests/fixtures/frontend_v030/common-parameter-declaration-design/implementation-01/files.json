@@ -1,0 +1,62 @@
+{
+  "files": {
+    "final.patch": {
+      "sha256": "050f7cb63b3f1c729d43b5a81574d3fc82fec44d1ec56c4da4ebc305646dc1b8",
+      "bytes": 7496
+    },
+    "initial.patch": {
+      "sha256": "dea1b4682f27eee1187ede6362504c6029ab75b1e86d01ae1776228ac98f5f46",
+      "bytes": 7321
+    },
+    "source-after/src/frontend/compile/mod.rs": {
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "bytes": 41710
+    },
+    "source-after/src/frontend/pattern.rs": {
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
+      "bytes": 4506
+    },
+    "source-after/src/frontend/sized/check.rs": {
+      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1",
+      "bytes": 52569
+    },
+    "source-after.json": {
+      "sha256": "0dae4f3cd48c104bfc4aef15f8bced44337f107ee62d1154b5820f348ce1c2c2",
+      "bytes": 2223
+    },
+    "source-before/src/frontend/compile/mod.rs": {
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "bytes": 42146
+    },
+    "source-before/src/frontend/pattern.rs": {
+      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede",
+      "bytes": 3459
+    },
+    "source-before/src/frontend/sized/check.rs": {
+      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "bytes": 52146
+    },
+    "source-before.json": {
+      "sha256": "3226409f71ef9fb5feec0bddafba14d755c9eba31fb452a318d1544770ecb5ea",
+      "bytes": 1074
+    },
+    "source-initial/src/frontend/compile/mod.rs": {
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "bytes": 41710
+    },
+    "source-initial/src/frontend/pattern.rs": {
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
+      "bytes": 4506
+    },
+    "source-initial/src/frontend/sized/check.rs": {
+      "sha256": "2f7e0062f84ebbc05c89a48e961a4a262b814e33cfe9036308f32638e0f50fea",
+      "bytes": 52515
+    },
+    "source-initial.json": {
+      "sha256": "8e8aee45e6df8dad683eb2d10c350a81a59f199f17ee68f693d45dbbd8283cb7",
+      "bytes": 1123
+    }
+  },
+  "self_excluded": "files.json",
+  "scope": "Immutable implementation snapshots; source identity is not validation or proof."
+}

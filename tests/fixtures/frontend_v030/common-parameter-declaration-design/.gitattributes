@@ -1,0 +1,7 @@
+# Retain exact captured patch context and Rust libtest's final blank lines.
+implementation-01/initial.patch -text -whitespace
+implementation-01/final.patch -text -whitespace
+validation/latest-attempt-01/04-shared-type-tests.stdout.txt -text -whitespace
+validation/latest-attempt-01/05-focused-integration-tests.stdout.txt -text -whitespace
+validation/msrv-attempt-01/04-shared-type-tests.stdout.txt -text -whitespace
+validation/msrv-attempt-01/05-focused-integration-tests.stdout.txt -text -whitespace

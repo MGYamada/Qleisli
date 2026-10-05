@@ -1,0 +1,22 @@
+{
+  "before_map_sha256": "d40022d2d61500baff63e7b97439e47637b6a2f745c936174fa27d5d98f3c936",
+  "before_packet_file_count": 200,
+  "after_map_sha256": "d6a4ec21a1a52f4b0e2c7eea2977b90c89fde20cda80aa42a71f12716f69984d",
+  "after_packet_file_count": 164,
+  "root_after_observations": 40,
+  "root_after_native_calls": 44,
+  "root_after_output_normalizations": 0,
+  "root_rust_records": {
+    "latest": {
+      "record": "tests/fixtures/frontend_v030/common-parameter-declaration-design/validation/latest-attempt-01/results.json",
+      "record_sha256": "cd1afc9df8214a94f86bd50c6cd6b7ddf967c4c32b0953d7908df6c7a2b422bc",
+      "stages": 8
+    },
+    "msrv": {
+      "record": "tests/fixtures/frontend_v030/common-parameter-declaration-design/validation/msrv-attempt-01/results.json",
+      "record_sha256": "5d6e13b2b39616cc47daaf7d82180f04f6e87e0f1c386c66f28ccc4ab955d479",
+      "stages": 8
+    }
+  },
+  "scope": "Separate completed root observations/validation identities; this driver does not replay them or claim complete proof/build closure."
+}

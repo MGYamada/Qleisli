@@ -15,9 +15,13 @@ Runtime wildcard, duplicate-name and exact tuple/Unit shape judgments share
 one binding traversal in finite lowering and sized generic checking. Values
 and names retain their existing lexical and dynamic identities, eager argument
 evaluation, accounting and located diagnostics. The sized checker borrows its
-existing pattern projection; declaration/static-name policy, concrete sized
-elaboration and basis-pattern checking remain separate. This bounded sharing
-does not establish complete common checking or source preservation.
+existing pattern projection. Ordered static-name insertion and runtime parameter
+name scanning also share a private rule over the original common AST. The sized
+caller uses its actual resolved declaration and source parameter ordinals, with
+complete projection counts checked before pairing. Existing type/kind/access
+stages, static-shadow policy, concrete elaboration and basis-pattern checking
+remain separate. This bounded sharing does not establish complete common
+checking or source preservation.
 
 One private source collection retains each complete original text, common AST
 and provenance together. Filesystem entries retain the selected source path;

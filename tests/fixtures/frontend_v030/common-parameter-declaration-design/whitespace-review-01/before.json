@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 2,
+  "observed_at_utc": "2026-10-05T17:26:09.192632+00:00",
+  "stdout_sha256": "e23cb00d60cb42b71690e12aa102f7f08aedd8a7e956a1ba2ba057d9d481d190",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

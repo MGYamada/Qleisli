@@ -1,0 +1,127 @@
+{
+  "format": "qleisli.additive-author-design-inspected-inputs",
+  "version": 1,
+  "status": "local-read-only-review-not-implementation-or-adoption",
+  "observed_head": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "original_candidate_sha256": "477bc835331e8aa46c85e267408a24ada18403ca2cb3ebcbff5ea5c6e028f3b4",
+  "first_snapshot_sha256": "c631c7ae5adc3c42220af2580318d68a6df3e95071beb954d23dde1d3762a999",
+  "author_design_sha256": "78179937c1e00fa342bb874c050e5ac4041692cca5e94e00029cd2deaa8f3621",
+  "files": {
+    "src/frontend/pattern.rs": {
+      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede",
+      "bytes": 3459
+    },
+    "src/frontend/compile/mod.rs": {
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "bytes": 42146
+    },
+    "src/frontend/compile/profile.rs": {
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "bytes": 5886
+    },
+    "src/frontend/sized/check.rs": {
+      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "bytes": 52146
+    },
+    "src/frontend/sized.rs": {
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "bytes": 20355
+    },
+    "src/frontend/sized/parser.rs": {
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+      "bytes": 15956
+    },
+    "src/frontend/sized/ast.rs": {
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+      "bytes": 4754
+    },
+    "src/frontend/resolve.rs": {
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
+      "bytes": 15766
+    },
+    "src/frontend/resolve/locals.rs": {
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "bytes": 29846
+    },
+    "src/frontend/source.rs": {
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+      "bytes": 6142
+    },
+    "src/frontend/project.rs": {
+      "sha256": "c5df842b7f21c80c2cacaf086317a0bf6012b8db84aff7b8e88b06e79d210d94",
+      "bytes": 25413
+    },
+    "CONSTITUTION.md": {
+      "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+      "bytes": 20257
+    },
+    "GOVERNANCE.md": {
+      "sha256": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+      "bytes": 6573
+    },
+    "governance/README.md": {
+      "sha256": "457c42a5f3564d074593968b1a2aeafbf9683c145b11cc47e9166e8f678c0e62",
+      "bytes": 7009
+    },
+    "docs/src/reference/authority.md": {
+      "sha256": "6650e470e826fb0147ee92e582e49caef0603de8290b70e1d1a4497f013f36d9",
+      "bytes": 16091
+    },
+    "governance/ratification-2026.json": {
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+      "bytes": 2478
+    },
+    "governance/guarantees.json": {
+      "sha256": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d",
+      "bytes": 5535
+    },
+    "governance/guarantees/current-evidence.json": {
+      "sha256": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575",
+      "bytes": 32694
+    },
+    "governance/interpretations/initial-2026-reviewed.txt": {
+      "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3",
+      "bytes": 17631
+    },
+    "governance/interpretations/initial-2026-adoption.json": {
+      "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e",
+      "bytes": 2713
+    },
+    "governance/proposals/exactness-2026.md": {
+      "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179",
+      "bytes": 11721
+    },
+    "governance/interpretations/exactness-2026-adoption.json": {
+      "sha256": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59",
+      "bytes": 2877
+    },
+    "governance/proposals/initial-guarantees.json": {
+      "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02",
+      "bytes": 15180
+    },
+    "governance/guarantees/initial-2026-admission.json": {
+      "sha256": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2",
+      "bytes": 4124
+    }
+  },
+  "constitutional_check": {
+    "argv": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "scope": "Actual performed identity/continuity check; not fresh Lean replay or human adoption."
+  },
+  "not_performed": [
+    "production edits",
+    "Qleisli/native CLI",
+    "Cargo/Lean build",
+    "tests",
+    "Git/Issue mutation",
+    "normative adoption or guarantee admission"
+  ],
+  "scope": "Inspected subset and additive design only, not complete production dependency closure or compiled-source attestation."
+}

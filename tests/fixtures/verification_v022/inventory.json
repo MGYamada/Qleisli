@@ -3322,7 +3322,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3522,7 +3522,7 @@
     },
     {
       "path": "src/frontend/pattern.rs",
-      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede",
+      "sha256": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3733,7 +3733,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1",
       "group": "sized-source",
       "surface": {
         "declarations": [],

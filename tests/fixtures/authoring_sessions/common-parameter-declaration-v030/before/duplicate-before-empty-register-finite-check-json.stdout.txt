@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"register types are outside the finite lowering profile","primary":{"path":"main.qli","start":131,"end":138,"line":2,"column":57},"related":[]}],"result":null}

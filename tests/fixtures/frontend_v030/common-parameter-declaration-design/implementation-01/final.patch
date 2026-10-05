@@ -1,0 +1,185 @@
+diff --git a/src/frontend/compile/mod.rs b/src/frontend/compile/mod.rs
+index 872ee4ef..e889daa6 100644
+--- a/src/frontend/compile/mod.rs
++++ b/src/frontend/compile/mod.rs
+@@ -362,34 +362,25 @@ impl Compiler<'_> {
+         let key_name = self.resolution.declaration(*key).name.clone();
+         let mut names = BTreeSet::new();
+         for param in &decl.static_params {
+-            if !names.insert(&param.name.text) {
+-                return Err(self.error(
++            super::pattern::claim(&mut names, &param.name.text, || {
++                self.error(
+                     &key_name.0,
+                     param.name.span,
+                     ErrorCode::Ownership,
+                     "duplicate static parameter",
+-                ));
+-            }
++                )
++            })?;
+         }
+         let mut params = Vec::new();
+         for param in &decl.params {
+-            let mut pending = vec![&param.pattern];
+-            while let Some(pattern) = pending.pop() {
+-                match &pattern.kind {
+-                    PatternKind::Name(name) => {
+-                        if !names.insert(&name.text) {
+-                            return Err(self.error(
+-                                &key_name.0,
+-                                name.span,
+-                                ErrorCode::Ownership,
+-                                "duplicate parameter name",
+-                            ));
+-                        }
+-                    }
+-                    PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
+-                    PatternKind::Wildcard => {}
+-                }
+-            }
++            super::pattern::claim_pattern_names(&param.pattern, &mut names, |name| {
++                self.error(
++                    &key_name.0,
++                    name.span,
++                    ErrorCode::Ownership,
++                    "duplicate parameter name",
++                )
++            })?;
+             let ty = self.ty(
+                 &key_name.0,
+                 &param.ty,
+diff --git a/src/frontend/pattern.rs b/src/frontend/pattern.rs
+index ad5ccd40..28c86ec3 100644
+--- a/src/frontend/pattern.rs
++++ b/src/frontend/pattern.rs
+@@ -1,4 +1,4 @@
+-//! Shared runtime pattern-binding rules; no value here is acceptance evidence.
++//! Shared source pattern-name and runtime binding rules; no acceptance evidence.
+ //!
+ //! The borrowed view temporarily bridges the existing sized projection. It
+ //! neither creates a second pattern tree nor changes lexical binder identities.
+@@ -8,6 +8,38 @@ use super::types::Type;
+ use std::borrow::Cow;
+ use std::collections::BTreeSet;
+ 
++/// Claim one unchanged spelling using the caller's existing key representation
++/// and duplicate-name scope. Error formatting is needed only for a repeat.
++pub(super) fn claim<K: Ord, E>(
++    names: &mut BTreeSet<K>,
++    key: K,
++    duplicate: impl FnOnce() -> E,
++) -> Result<(), E> {
++    if names.insert(key) {
++        Ok(())
++    } else {
++        Err(duplicate())
++    }
++}
++
++/// Visit one original parameter pattern iteratively in source order. The
++/// caller's set spans its existing parameter list; no type or value is made.
++pub(super) fn claim_pattern_names<'a, E>(
++    pattern: &'a Pattern,
++    names: &mut BTreeSet<&'a String>,
++    mut duplicate: impl FnMut(&Ident) -> E,
++) -> Result<(), E> {
++    let mut pending = vec![pattern];
++    while let Some(pattern) = pending.pop() {
++        match &pattern.kind {
++            PatternKind::Name(name) => claim(names, &name.text, || duplicate(name))?,
++            PatternKind::Tuple(fields) => pending.extend(fields.iter().rev()),
++            PatternKind::Wildcard => {}
++        }
++    }
++    Ok(())
++}
++
+ pub(super) enum Node<'a, P: PatternView> {
+     Wildcard(Span),
+     Name(&'a P::Name, Span),
+diff --git a/src/frontend/sized/check.rs b/src/frontend/sized/check.rs
+index 7c41e71a..953d7c34 100644
+--- a/src/frontend/sized/check.rs
++++ b/src/frontend/sized/check.rs
+@@ -185,20 +185,30 @@ fn prove(context: &Context, a: &Linear, b: &Linear, span: Span, message: &str) -
+     }
+ }
+ 
+-fn declaration(f: &Function) -> Result<Scope> {
++fn declaration(f: &Function, original: &crate::frontend::ast::Decl) -> Result<Scope> {
++    // The private projection maps every source parameter in order. Check the
++    // complete pairing rather than accepting a prefix through zip truncation.
++    assert_eq!(
++        f.parameters.len(),
++        original.static_params.len(),
++        "complete static parameter projection"
++    );
++    assert_eq!(
++        f.arguments.len(),
++        original.params.len(),
++        "complete runtime parameter projection"
++    );
+     let mut names = BTreeSet::new();
+     let mut naturals = BTreeMap::new();
+-    for p in &f.parameters {
++    for (index, p) in f.parameters.iter().enumerate() {
+         let name = match p {
+             Parameter::Natural(n) | Parameter::Basis(n) | Parameter::Operation(n, _) => n,
+         };
+-        if !names.insert(name.name.clone()) {
+-            return Err(err(
+-                "name",
+-                f.span,
+-                format!("duplicate static parameter {name}"),
+-            ));
+-        }
++        pattern::claim(
++            &mut names,
++            original.static_params[index].name.text.clone(),
++            || err("name", f.span, format!("duplicate static parameter {name}")),
++        )?;
+         if matches!(p, Parameter::Natural(_)) {
+             naturals.insert(name.key().clone(), Linear::variable(name.key()));
+         }
+@@ -279,21 +289,12 @@ fn declaration(f: &Function) -> Result<Scope> {
+         }
+     }
+     let mut arguments = BTreeSet::new();
+-    for (pattern, t, span) in &f.arguments {
++    for (index, (pattern, t, span)) in f.arguments.iter().enumerate() {
+         // Parameter uniqueness covers the complete argument list, not only
+         // each individual product pattern. Wildcards introduce no name.
+-        let mut pending = vec![pattern];
+-        while let Some(pattern) = pending.pop() {
+-            match pattern {
+-                Pattern::Name(name, span) => {
+-                    if !arguments.insert(&name.name) {
+-                        return Err(err("name", *span, "duplicate runtime parameter"));
+-                    }
+-                }
+-                Pattern::Tuple(fields, _) => pending.extend(fields.iter().rev()),
+-                Pattern::Wildcard(_) => {}
+-            }
+-        }
++        pattern::claim_pattern_names(&original.params[index].pattern, &mut arguments, |name| {
++            err("name", name.span, "duplicate runtime parameter")
++        })?;
+         bind(pattern, ty(t, &scope, *span)?, &mut scope)?;
+     }
+     let _ = ty(&f.result, &scope, f.span)?;
+@@ -471,8 +472,13 @@ pub(super) fn program(program: &mut ParsedProgram) -> Result<()> {
+                 .resolution
+                 .local(owner, &function.name)
+                 .expect("projected declaration");
++            let resolved = program.resolution.declaration(id);
++            let original = &program
++                .syntax(&resolved.name.0)
++                .expect("retained source")
++                .decls[resolved.ast_index];
+             let result = (|| {
+-                let mut scope = declaration(function)?;
++                let mut scope = declaration(function, original)?;
+                 let expected = ty(&function.result, &scope, function.span)?;
+                 let mut checker = Checker {
+                     program,

@@ -1,0 +1,77 @@
+{
+  "status": "ordinary-policy-and-docs-checks-passed",
+  "selected_input_count": 817,
+  "source_mismatches": {},
+  "pinned_mdbook_verified": true,
+  "actual_command_count": 13,
+  "regression_test_counts": {
+    "03.book-regression": 12,
+    "05.authoring-regression": 7,
+    "07.edition-regression": 11,
+    "09.docs-regression": 36
+  },
+  "actual_regression_test_total": 66,
+  "separate_metadata_checks": {
+    "current_root_record": "tests/fixtures/frontend_v030/common-parameter-declaration-design/metadata-review/results.json",
+    "current_guard_exits": {
+      "inventory_before": 1,
+      "inventory_after": 0,
+      "coverage_before": 0,
+      "coverage_after": 0
+    },
+    "current_source_count": 253,
+    "old_root_regression_record": "tests/fixtures/frontend_v030/common-pattern-design/metadata-review/results.json",
+    "historical_metadata_regression_counts": {
+      "inventory": 17,
+      "coverage": 14
+    },
+    "guard_scripts_match_prior_policy_map": true,
+    "metadata_regressions_rerun_by_this_driver": false,
+    "recorded_commands_executed": false,
+    "identity_limit": "Current three-file review is separately bound. The older mutation packet did not freeze regression-script bytes at historical execution; a later policy map is retained, not a manufactured complete historical build/test closure."
+  },
+  "separate_root_packets": {
+    "before_map_sha256": "d40022d2d61500baff63e7b97439e47637b6a2f745c936174fa27d5d98f3c936",
+    "before_packet_file_count": 200,
+    "after_map_sha256": "d6a4ec21a1a52f4b0e2c7eea2977b90c89fde20cda80aa42a71f12716f69984d",
+    "after_packet_file_count": 164,
+    "root_after_observations": 40,
+    "root_after_native_calls": 44,
+    "root_after_output_normalizations": 0,
+    "root_rust_records": {
+      "latest": {
+        "record": "tests/fixtures/frontend_v030/common-parameter-declaration-design/validation/latest-attempt-01/results.json",
+        "record_sha256": "cd1afc9df8214a94f86bd50c6cd6b7ddf967c4c32b0953d7908df6c7a2b422bc",
+        "stages": 8
+      },
+      "msrv": {
+        "record": "tests/fixtures/frontend_v030/common-parameter-declaration-design/validation/msrv-attempt-01/results.json",
+        "record_sha256": "5d6e13b2b39616cc47daaf7d82180f04f6e87e0f1c386c66f28ccc4ab955d479",
+        "stages": 8
+      }
+    },
+    "scope": "Separate completed root observations/validation identities; this driver does not replay them or claim complete proof/build closure."
+  },
+  "rendered_output_bytes": 3854939,
+  "parameter_scope": "Private common parameter spelling claims and iterative original runtime-name scan only; kind/type/premise/access/bind/body policies retain their profile stages.",
+  "metadata_scope": "Root-reviewed actual source/surface refresh only; route/proof criteria and statuses are not widened.",
+  "constitutional_mode": "Current source/evidence identity with trusted-base continuity; no fresh Lean replay",
+  "not_run": [
+    "Inventory/coverage mutation suites (root already performed; retained separately)",
+    "Rust builds/tests (root runs separate validation/driver.py)",
+    "Lean build/audit/replay",
+    "constitutional mutation suite (unchanged checker)",
+    "full CI or release-readiness validation"
+  ],
+  "no_claim": [
+    "complete common checker",
+    "source preservation",
+    "new guarantee admission",
+    "proof closure",
+    "canonical generic QFT availability",
+    "Issue closure",
+    "release approval"
+  ],
+  "raw_failures_preserved": true,
+  "original_or_previous_records_modified": false
+}

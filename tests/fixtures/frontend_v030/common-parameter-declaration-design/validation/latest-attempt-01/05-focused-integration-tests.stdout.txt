@@ -1,0 +1,172 @@
+
+running 13 tests
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test fn_suggestions_do_not_require_a_redundant_effect_annotation ... ok
+test host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json ... ok
+test host_selected_providers_distinguish_unsupported_effects_from_shape_errors ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test principal_classes_do_not_depend_on_declaration_order_or_call_expansion ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.55s
+
+
+running 3 tests
+test concrete_accessor_views_preserve_data_owners_nesting_and_unit ... ok
+test ordinary_types_share_the_sized_signature_classifier_without_general_basis_support ... ok
+test symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 14 tests
+test existing_execution_profile_limits_remain_explicit ... ok
+test finite_boolean_actions_match_an_independent_truth_result ... ok
+test finite_measurement_and_feedforward_keep_their_correlated_action ... ok
+test finite_quantum_and_ordinary_values_never_coerce_at_return_call_or_guard ... ok
+test obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax ... ok
+test public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors ... ok
+test quantum_zero_axis_owners_still_cannot_be_copied_or_dropped ... ok
+test sized_exact_type_errors_are_distinct_from_profile_rejections ... ok
+test sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution ... ok
+test sized_unit_copy_has_no_owner_and_really_lowers_to_zero_value_ports ... ok
+test sized_unit_patterns_consume_only_actual_unit_values ... ok
+test source_bearing_native_evidence_retains_the_actual_canonical_source ... ok
+test unit_returning_quantum_consumption_survives_lowering_and_source_event_checks ... ok
+test finite_bit_values_copy_drop_call_and_use_zero_one_literals ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.75s
+
+
+running 9 tests
+test bell_module_and_bundled_imports_resolve ... ok
+test algorithm_routines_are_bundled_source_with_private_helpers ... ok
+test converging_import_paths_do_not_report_a_cycle ... ok
+test import_cycles_and_name_collisions_are_rejected ... ok
+test missing_module_and_name_are_distinct_errors ... ok
+test nonpublic_import_reports_calling_file_and_utf8_byte_span ... ok
+test reserved_word_cannot_name_a_local_module ... ok
+test std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules ... ok
+test unknown_sealed_name_is_not_reinterpreted_as_user_code ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.02s
+
+
+running 8 tests
+test common_ast_keeps_argument_count_exact_patterns_and_original_spans ... ok
+test exact_shape_owner_and_unused_declaration_failures_remain_located ... ok
+test discarded_unit_parameters_do_not_erase_argument_effects_or_scalar_phase ... ok
+test sized_inputs_retain_whole_parameter_trees_and_independent_swap_action ... ok
+test sized_nonlinear_wildcards_are_shared_by_parameters_let_and_zero_fold ... ok
+test sized_wildcards_cannot_erase_nested_or_zero_width_owners_even_in_zero_folds ... ok
+test static_substitutions_and_provider_bindings_keep_declaration_and_source_identity ... ok
+test finite_ordinary_fields_may_copy_drop_and_match_unit_without_changing_arity ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.39s
+
+
+running 9 tests
+test selected_basis_and_request_conflicts_reject_before_native_or_request_reads ... ok
+test selected_auto_keeps_hierarchy_fine_phase_and_zero_width_bits_axes ... ok
+test selected_caller_h_request_rejects_x_once_without_a_raw_retry ... ok
+test selected_module_checking_and_binding_errors_cannot_start_native ... ok
+test selected_mixed_sources_keep_independent_distributions_and_scope ... ok
+test selected_open_signature_checks_and_proposals_do_not_claim_closed_execution ... ok
+test selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_native ... ok
+test selected_static_fold_and_fresh_sampling_use_the_requested_instance ... ok
+test selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+
+
+running 3 tests
+test same_named_host_providers_keep_distinct_definition_and_instance_identity ... ok
+test recorded_profile_differences_and_adopted_convergence_remain_explicit ... ok
+test unused_concrete_declaration_still_requires_native_eligible_effects ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+running 7 tests
+test duplicate_and_import_alias_collisions_remain_located_rejections ... ok
+test every_unused_sibling_is_checked_including_dead_static_arms_and_empty_folds ... ok
+test first_invalid_sibling_follows_source_order_not_sorted_definition_identity ... ok
+test private_siblings_are_providers_but_not_host_entries_or_external_imports ... ok
+test sibling_and_unused_provider_cycles_do_not_become_self_recursion ... ok
+test same_named_providers_keep_distinct_meanings_and_specialization_identity ... ok
+test sibling_order_and_module_partition_preserve_phase_and_labelled_axes ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+
+running 41 tests
+test classical_shadows_restore_outer_bindings_in_branches_and_folds ... ok
+test common_lexical_static_substitution_uses_callee_binders_and_caller_values ... ok
+test common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics ... ok
+test common_lexical_tables_survive_cloning_and_distinguish_fold_activations ... ok
+test common_scanner_applies_the_finite_character_policy_to_sized_source ... ok
+test common_syntax_does_not_grant_missing_profile_or_capability_support ... ok
+test concrete_bindings_preserve_provider_type_and_premises ... ok
+test concrete_phase_and_repeat_limits_check_zero_and_unused_providers ... ok
+test concrete_elaboration_limits_are_aggregate_and_keep_empty_owners ... ok
+test concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order ... ok
+test concrete_shared_call_budget_and_recursion_depth_are_enforced ... ok
+test concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained ... ok
+test contextual_controlled_and_reserved_words_have_one_classification ... ok
+test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel
+test duplicate_declarations_and_inconsistent_premises_reject ... ok
+test every_import_resolves_and_mutual_cycles_are_rejected ... ok
+test existing_empty_sized_spellings_remain_common_syntax ... ok
+test concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout ... ok
+test file_loader_reuses_regular_file_and_byte_guards ... ok
+test forwarding_checks_callee_size_and_access_premises ... ok
+test grouping_semicolons_and_count_precedence_match_the_source_contract ... ok
+test guarded_subtraction_index_and_linear_normalization ... ok
+test hierarchy_eligibility_retains_boolean_location_and_body_checks ... ok
+test indexed_projection_preserves_profile_diagnostic_order_before_resolution ... ok
+test lexical_binding_identity_prevents_shadowed_owner_escape ... ok
+test lowering_profile_preflight_identifies_unsupported_root_signatures ... ok
+test explicit_module_loading_retains_the_same_ast_as_project_loading ... ok
+test multi_declaration_syntax_does_not_bypass_the_sized_cycle_boundary ... ok
+test original_bytes_and_contextual_identifiers_are_retained ... ok
+test measured_qpe_dependency_closure_and_concrete_entry_bindings ... ok
+test preparation_limits_and_utf8_diagnostics_are_explicit ... ok
+test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel
+test primitive_signatures_agree_through_symbolic_and_concrete_preparation ... ok
+test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel
+test shadowing_moves_tuple_shape_and_effects ... ok
+test sized_host_bindings_respect_module_visibility ... ok
+test substituted_size_overflow_points_to_the_caller_module ... ok
+test symbolic_capacity_errors_keep_obligation_spans_and_causes ... ok
+test unreachable_branch_and_empty_fold_still_check_names_access_and_ownership ... ok
+test root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source ... ok
+test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+
+test result: ok. 38 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.36s
+
+
+running 2 tests
+test explicit_modules_keep_the_first_profile_or_parse_failure ... ok
+test filesystem_modules_keep_a_duplicate_before_a_later_parse_failure ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 8 tests
+test coherent_unit_lift_retains_exact_scalar_and_reference_action ... ok
+test coherent_control_exposes_unit_phase_for_lift_and_computed_pattern ... ok
+test exact_pattern_shapes_reject_quantum_bit_and_equal_width_products ... ok
+test effectful_unit_rhs_is_retained_before_the_empty_result_is_bound ... ok
+test runtime_parameter_pattern_now_uses_the_common_exact_shape_rule ... ok
+test sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule ... ok
+test unit_basis_patterns_keep_exact_unary_function_and_predicate_arity ... ok
+test finite_named_unit_parameters_and_nested_patterns_are_ordinary_values ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.72s
+

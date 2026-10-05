@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+pub unitary fn entry(q: Q<Bit>) -> Q<Bit> { q }
+
+unitary fn ordered[static n: Nat](first: Q<Bits<n - 1>>, q: Q<Bit>, q: Q<Bit>)
+    -> Q<Bit> requires n == 0 {
+    q
+}

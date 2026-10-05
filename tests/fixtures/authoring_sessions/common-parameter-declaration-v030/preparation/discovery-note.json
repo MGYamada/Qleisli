@@ -1,0 +1,9 @@
+{
+  "kind": "actual-tool-output-transcript-not-cli-observation",
+  "source": "Assistant read command during this preparation",
+  "attempted_read": "cat src/frontend/profile.rs",
+  "retained_diagnostic": "cat: src/frontend/profile.rs: No such file or directory",
+  "command_note": "The read was one component of a multi-line tool command whose final component succeeded. No standalone child exit is inferred.",
+  "repair": "Subsequent rg --files found the actual src/frontend/compile/profile.rs; that source was read.",
+  "limit": "Retained diagnostic transcript only; no separate raw-output file was captured for the initial multi-read."
+}

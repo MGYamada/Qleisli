@@ -237,3 +237,14 @@ The [separate after capture](common-pattern-check-v030/results-after.md) preserv
 all forty original raw outputs, exits, native argv/counts and proposal bytes.
 Original session records remain fixed; the additional capture is indexed by
 its own summary, with no runtime, new mathematical guarantee or completion claim.
+
+The [common parameter-declaration study](common-parameter-declaration-v030/session.json)
+preserves ten first projects and forty actual checks before sharing ordered
+name judgments. [Results](common-parameter-declaration-v030/results-before.md)
+separate genuine duplicate/type-order observations from earlier profile and
+projection failures, retain complete unused-declaration rejection and all44
+native calls, and make no source-preservation or Issue completion claim.
+The [separate after comparison](common-parameter-declaration-v030/results-after.md)
+matches all forty raw outputs, exits and native argv/counts, while preserving
+the original session. Both actual Rust versions pass the existing bounded
+declaration/type/effect suites; complete common checking remains unfinished.

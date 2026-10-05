@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share ordered static and runtime parameter-name checks over the original
+  common AST. Preserve exact declaration/parameter association, per-argument
+  type checks, complete unused-declaration rejection, capacities and existing
+  profile-specific diagnostic/native order. Full declaration/body convergence
+  and canonical generic std integration remain unfinished (#32, #317).
 - Share actual runtime wildcard, duplicate-name and exact tuple/Unit binding
   rules between finite lowering and sized generic checking. Retain existing
   value moves, owner identities, capacity checks and diagnostic order; the

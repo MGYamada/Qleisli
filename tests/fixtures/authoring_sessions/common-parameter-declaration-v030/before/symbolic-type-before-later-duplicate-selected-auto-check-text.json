@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/symbolic-type-before-later-duplicate/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.006884833972435445,
+  "recorded_utc": "2026-10-05T17:12:08.406252+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "symbolic-type-before-later-duplicate-selected-auto-check-text.native.jsonl",
+  "stdout_raw": "symbolic-type-before-later-duplicate-selected-auto-check-text.stdout.txt",
+  "stderr_raw": "symbolic-type-before-later-duplicate-selected-auto-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "71d76aa0a9c3abcc2e8ca81faa0fedb2e93cbfcafcfb2a0e34c0c778a40726e5",
+  "transcript": "main:172..177: size: subtraction lacks a nonnegative guard\n"
+}

@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.006810165999922901,
+  "recorded_utc": "2026-10-05T17:12:02.760458+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "first-type-before-later-duplicate-selected-auto-check-json.native.jsonl",
+  "stdout_raw": "first-type-before-later-duplicate-selected-auto-check-json.stdout.txt",
+  "stderr_raw": "first-type-before-later-duplicate-selected-auto-check-json.stderr.txt",
+  "stdout_sha256": "7d66938d489573d9749f85dc2c00a8dd94e89cb628efa9e7861ec458e94b9aef",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "Missing names no Basis parameter",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/main.qli",
+          "start": 103,
+          "end": 110
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}
