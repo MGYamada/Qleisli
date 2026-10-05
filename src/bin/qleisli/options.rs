@@ -4,6 +4,8 @@ use std::path::PathBuf;
 
 /// Shared by text and machine-readable usage diagnostics.
 pub(super) const USAGE: &str = "usage:
+  qleisli --help | qleisli help
+  qleisli help ecosystem
   qleisli check <source-root> [--format=json] [source-options]
   qleisli run <source-root> [--format=json] [source-options]
   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
@@ -28,7 +30,14 @@ selected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION
   --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.
   Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.
   Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
-  doc produces Markdown text; verify-ir does not accept source-options.";
+  doc produces Markdown text; verify-ir does not accept source-options.
+discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
+  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
+  These analysis tools are planned, not executable commands in this alpha.
+  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
+  Canonical contract: docs/src/reference/discovery.md
+  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md
+  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.";
 
 pub(super) struct Options {
     pub command: String,

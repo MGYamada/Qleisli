@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add standalone text help and an embedded canonical ecosystem discovery
+  chapter. Route usage failures to the same introduction, distinguish familiar
+  structure from native/specification-only concepts, and expose planned tool
+  status without executing a project or checker (#253).
 - Name missing and unexpected explicit Nat/Op bindings, affected providers and
   ordered source-call static parameters in deterministic diagnostics. Preserve
   rejection priorities, locations, explicit provider choices and the

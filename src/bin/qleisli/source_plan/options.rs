@@ -16,7 +16,12 @@ pub(super) const USAGE: &str =
   --basis is hierarchy run/sample-only (default 0); it is never ordinary input.
   Selected-source sample requires shots in 1..1024 and a seed.
   emit-proposal requires output and no kernel/request/provider; it is untrusted.
-  Module-map checking covers every declaration, native checking the selected instance.";
+  Module-map checking covers every declaration, native checking the selected instance.
+discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
+  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
+  These analysis tools are planned, not executable commands in this alpha.
+  Canonical contract: docs/src/reference/discovery.md
+  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md";
 
 #[derive(Clone, Copy, Default, PartialEq, Eq)]
 pub(super) enum IrProfile {

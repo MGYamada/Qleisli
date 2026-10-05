@@ -132,3 +132,5 @@ tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.patch -text -whites
 tests/fixtures/authoring_sessions/inference-law-v030/contract.md -text -whitespace
 tests/fixtures/frontend_v030/inference-law/*/*stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/inference-law/*.patch -text -whitespace
+tests/fixtures/frontend_v030/discovery-paths/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/discovery-paths/*.patch -text -whitespace

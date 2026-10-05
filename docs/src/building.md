@@ -3,6 +3,8 @@
 Contributors should begin with the [architecture principle](reference/architecture.md)
 and [authority hierarchy](reference/authority.md). Major language/tooling designs
 must record how they preserve that architecture before implementation.
+The [inference/discovery contract](reference/discovery.md) classifies intended
+roles, availability and correction paths for language and tooling.
 
 [The Qleisli Programming Language](introduction.md) is the new book's
 starting point. [book.toml](https://github.com/MGYamada/Qleisli/blob/main/docs/book.toml) configures its source, metadata and HTML

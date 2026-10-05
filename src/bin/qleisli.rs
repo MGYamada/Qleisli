@@ -49,6 +49,17 @@ fn report(root: &std::path::Path, error: Diagnostic) {
 
 fn main() -> ExitCode {
     let args: Vec<_> = std::env::args_os().skip(1).collect();
+    // Discovery is documentation only and precedes every source/native route.
+    // Exact standalone requests cannot swallow execution or format flags.
+    if args.len() == 1 && (args[0] == "--help" || args[0] == "help") {
+        return write_stdout(format!("{}\n", options::USAGE).as_bytes(), "help");
+    }
+    if args.len() == 2 && args[0] == "help" && args[1] == "ecosystem" {
+        return write_stdout(
+            include_str!("../../docs/src/reference/discovery.md").as_bytes(),
+            "ecosystem introduction",
+        );
+    }
     if let Some(index) = args
         .iter()
         .position(|arg| !arg.as_encoded_bytes().starts_with(b"-"))

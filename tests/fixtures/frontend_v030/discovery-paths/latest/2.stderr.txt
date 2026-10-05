@@ -1,0 +1,4 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 0.82s
+     Running tests/discovery_paths.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/discovery_paths-d3da70fdda80e16c)
+     Running tests/selected_source_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/selected_source_cli-27f8497ec1219a28)

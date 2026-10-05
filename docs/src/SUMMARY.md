@@ -4,6 +4,7 @@
 
 - [Project name and pronunciation](reference/project-identity.md)
 - [Policy, constitutional harness and execution](reference/architecture.md)
+- [Learning by structure and explicit discovery](reference/discovery.md)
 
 # Constitutional authority
 

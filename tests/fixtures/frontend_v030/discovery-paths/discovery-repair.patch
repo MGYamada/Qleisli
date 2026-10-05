@@ -1,0 +1,113 @@
+diff --git a/src/bin/qleisli.rs b/src/bin/qleisli.rs
+index c0eba061..290ba3ff 100644
+--- a/src/bin/qleisli.rs
++++ b/src/bin/qleisli.rs
+@@ -49,6 +49,17 @@ fn report(root: &std::path::Path, error: Diagnostic) {
+ 
+ fn main() -> ExitCode {
+     let args: Vec<_> = std::env::args_os().skip(1).collect();
++    // Discovery is documentation only and precedes every source/native route.
++    // Exact standalone requests cannot swallow execution or format flags.
++    if args.len() == 1 && (args[0] == "--help" || args[0] == "help") {
++        return write_stdout(format!("{}\n", options::USAGE).as_bytes(), "help");
++    }
++    if args.len() == 2 && args[0] == "help" && args[1] == "ecosystem" {
++        return write_stdout(
++            include_str!("../../docs/src/reference/discovery.md").as_bytes(),
++            "ecosystem introduction",
++        );
++    }
+     if let Some(index) = args
+         .iter()
+         .position(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+diff --git a/src/bin/qleisli/options.rs b/src/bin/qleisli/options.rs
+index 7ff5d032..a66e21fe 100644
+--- a/src/bin/qleisli/options.rs
++++ b/src/bin/qleisli/options.rs
+@@ -4,6 +4,8 @@ use std::path::PathBuf;
+ 
+ /// Shared by text and machine-readable usage diagnostics.
+ pub(super) const USAGE: &str = "usage:
++  qleisli --help | qleisli help
++  qleisli help ecosystem
+   qleisli check <source-root> [--format=json] [source-options]
+   qleisli run <source-root> [--format=json] [source-options]
+   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
+@@ -28,7 +30,14 @@ selected-source-options: --nat=NAME=N --operation=NAME=MODULE::FUNCTION
+   --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.
+   Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.
+   Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
+-  doc produces Markdown text; verify-ir does not accept source-options.";
++  doc produces Markdown text; verify-ir does not accept source-options.
++discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
++  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
++  These analysis tools are planned, not executable commands in this alpha.
++  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
++  Canonical contract: docs/src/reference/discovery.md
++  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md
++  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.";
+ 
+ pub(super) struct Options {
+     pub command: String,
+diff --git a/src/bin/qleisli/source_plan/options.rs b/src/bin/qleisli/source_plan/options.rs
+index 0b943c3d..c91f6479 100644
+--- a/src/bin/qleisli/source_plan/options.rs
++++ b/src/bin/qleisli/source_plan/options.rs
+@@ -16,7 +16,12 @@ pub(super) const USAGE: &str =
+   --basis is hierarchy run/sample-only (default 0); it is never ordinary input.
+   Selected-source sample requires shots in 1..1024 and a seed.
+   emit-proposal requires output and no kernel/request/provider; it is untrusted.
+-  Module-map checking covers every declaration, native checking the selected instance.";
++  Module-map checking covers every declaration, native checking the selected instance.
++discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
++  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
++  These analysis tools are planned, not executable commands in this alpha.
++  Canonical contract: docs/src/reference/discovery.md
++  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md";
+ 
+ #[derive(Clone, Copy, Default, PartialEq, Eq)]
+ pub(super) enum IrProfile {
+diff --git a/tests/fixtures/verification_v022/inventory.json b/tests/fixtures/verification_v022/inventory.json
+index fca92f75..7bde4422 100644
+--- a/tests/fixtures/verification_v022/inventory.json
++++ b/tests/fixtures/verification_v022/inventory.json
+@@ -2899,7 +2899,7 @@
+     },
+     {
+       "path": "src/bin/qleisli.rs",
+-      "sha256": "9d6a8e673e3b7fa2cbf5e2cc1adfd0c728e6b2c1bc64d7af025befee05c04e69",
++      "sha256": "8e059a1e10ec26c4cfcb796383abae5c48c45f5dfd69aab212145f6b23281dae",
+       "group": "transport",
+       "surface": {
+         "declarations": [],
+@@ -2939,7 +2939,7 @@
+     },
+     {
+       "path": "src/bin/qleisli/options.rs",
+-      "sha256": "12d035d41e4c13d416dfd4384543c26aff84aece56449d33bd1304b5935884c3",
++      "sha256": "c24c079a7f52976d7e935a7d917e4e5ef89872fbe3279db02b9275a1f2d16694",
+       "group": "foreign",
+       "surface": {
+         "declarations": [],
+@@ -4534,7 +4534,7 @@
+     {
+       "path": "src/bin/qleisli/source_plan/options.rs",
+       "group": "sized-source",
+-      "sha256": "0a24e134ad446b3179e44c1da4a55f8cddbe69b0d7990470d75254014574c217",
++      "sha256": "6cbd784522b0338491769eeea5a23c40f3c17468ad857ba65fd19adbe88dc167",
+       "surface": {
+         "declarations": [],
+         "functions": [],
+diff --git a/tests/fixtures/verification_v029/coverage.json b/tests/fixtures/verification_v029/coverage.json
+index 663143dc..f9158f9d 100644
+--- a/tests/fixtures/verification_v029/coverage.json
++++ b/tests/fixtures/verification_v029/coverage.json
+@@ -3,7 +3,7 @@
+   "version": 2,
+   "authority": "Lean",
+   "external_schemas_enabled": false,
+-  "surface_sha256": "99d05690f0af5b11d481ec707c152da8205f9c44358c8951f3eef33e4f00f4a0",
++  "surface_sha256": "cae5ba12403d5ff5a1ab4fe2d06689ff3e94c4d0975049de9bdd55b6e97e2322",
+   "groups": [
+     {
+       "id": "raw-core",

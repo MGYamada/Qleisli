@@ -127,8 +127,9 @@ acceptance path or weaken accepted meaning. Their implementation is later work;
 this chapter installs none of those tools. mdBook is the separate documentation
 build environment and creates no language or API-introspection authority.
 
-The [discovery boundary #253](https://github.com/MGYamada/Qleisli/issues/253)
-tracks the required canonical discovery and correction paths. This principle
+The [canonical discovery contract](discovery.md) under
+[#253](https://github.com/MGYamada/Qleisli/issues/253) defines discovery and
+correction paths. This principle
 alone is not evidence that those paths or a zero-prior authoring benchmark are
 complete.
 

@@ -2899,7 +2899,7 @@
     },
     {
       "path": "src/bin/qleisli.rs",
-      "sha256": "9d6a8e673e3b7fa2cbf5e2cc1adfd0c728e6b2c1bc64d7af025befee05c04e69",
+      "sha256": "8e059a1e10ec26c4cfcb796383abae5c48c45f5dfd69aab212145f6b23281dae",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -2939,7 +2939,7 @@
     },
     {
       "path": "src/bin/qleisli/options.rs",
-      "sha256": "12d035d41e4c13d416dfd4384543c26aff84aece56449d33bd1304b5935884c3",
+      "sha256": "c24c079a7f52976d7e935a7d917e4e5ef89872fbe3279db02b9275a1f2d16694",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -4534,7 +4534,7 @@
     {
       "path": "src/bin/qleisli/source_plan/options.rs",
       "group": "sized-source",
-      "sha256": "0a24e134ad446b3179e44c1da4a55f8cddbe69b0d7990470d75254014574c217",
+      "sha256": "6cbd784522b0338491769eeea5a23c40f3c17468ad857ba65fd19adbe88dc167",
       "surface": {
         "declarations": [],
         "functions": [],
