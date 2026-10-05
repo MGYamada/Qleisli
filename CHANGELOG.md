@@ -12,6 +12,8 @@ development milestones from the scope of their evidence.
   without Issue links. Export immutable body facts and checked documentation;
   remove redundant prefixes from ten derived stdlib functions while preserving
   mathematical contracts, source bodies and native acceptance (#315).
+  Apply the same semantic explanation to host-selected providers, preserve
+  independent shape errors, and teach ordinary `fn` in provider/parser hints.
 - Add bounded opaque Basis parameters and explicit exact type/provider bindings
   to the common selected-source path. Check generic bodies before specialization,
   preserve exact trees in caches and charge retained substitutions; general

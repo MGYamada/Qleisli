@@ -1,0 +1,14 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/public-missing-kind"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/public-missing-kind/main.qli:1:5: parse: parse error: expected `basis`, `iso`, `unitary`, or `observe` after `pub`\n",
+  "native_invocations": 0,
+  "seconds": 0.004224125004839152,
+  "recorded_utc": "2026-10-05T10:02:47.978048+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance."
+}

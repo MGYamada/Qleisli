@@ -1,0 +1,19 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider"
+  ],
+  "exit_code": 1,
+  "stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli:3:34: type_mismatch: static provider requires an ordinary declared unitary function; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`\n",
+  "native_invocations": 0,
+  "seconds": 0.006656790967099369,
+  "recorded_utc": "2026-10-05T10:02:47.726324+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli:3:34: type_mismatch: static provider requires an ordinary declared unitary function; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`\n",
+  "raw_event": {
+    "path": "before-schema-repaired/finite-sealed-provider-text.json",
+    "sha256": "501c516908b245e72fe6d0b39233dc3378ee44e9d9cd8255b98ffcfa9a401a14"
+  },
+  "record_note": "Schema-compatible transcription of the unchanged actual text output. Raw event and original stdout/stderr files remain retained."
+}

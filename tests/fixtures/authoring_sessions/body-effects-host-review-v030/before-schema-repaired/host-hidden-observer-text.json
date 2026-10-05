@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "main:124..196: type: concrete provider must be a single-input quantum unitary\n",
+  "native_invocations": 0,
+  "seconds": 0.004399708006531,
+  "recorded_utc": "2026-10-05T10:02:47.737389+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance."
+}

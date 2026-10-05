@@ -16,7 +16,7 @@ fn fixture(name: &str) -> String {
 
 #[test]
 fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
-    for (source, cause, derived, declared) in [
+    for (source, cause, derived, asserted) in [
         (
             "use std::observe::measure_z;\nunitary fn bad(q:Q<Bit>)->Bit{measure_z(q)}",
             "measure_z(q)",
@@ -42,26 +42,30 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Unitary",
         ),
         (
-            "observe fn strong()->Unit{()} unitary fn weak()->Unit{()}
+            "use std::quantum::init0; use std::observe::measure_z;
+             fn strong()->Unit{let b=measure_z(init0());()} fn weak()->Unit{()}
              iso fn bad()->Unit{strong(); weak()}",
             "strong()",
             "Observe",
             "Iso",
         ),
         (
-            "observe fn strong()->Unit{()} iso fn bad()->Unit{if 0 {strong()} else {()}}",
+            "use std::quantum::init0; use std::observe::measure_z;
+             fn strong()->Unit{let b=measure_z(init0());()} iso fn bad()->Unit{if 0 {strong()} else {()}}",
             "strong()",
             "Observe",
             "Iso",
         ),
         (
-            "observe fn strong()->Unit{()} iso fn bad()->Unit{if 1 {()} else {strong()}}",
+            "use std::quantum::init0; use std::observe::measure_z;
+             fn strong()->Unit{let b=measure_z(init0());()} iso fn bad()->Unit{if 1 {()} else {strong()}}",
             "strong()",
             "Observe",
             "Iso",
         ),
         (
-            "observe fn strong()->Bit{1} iso fn bad()->Unit{if strong() {()} else {()}}",
+            "use std::quantum::init0; use std::observe::measure_z;
+             fn strong()->Bit{measure_z(init0())} iso fn bad()->Unit{if strong() {()} else {()}}",
             "strong()",
             "Observe",
             "Iso",
@@ -75,9 +79,11 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "{error:?}"
         );
         assert!(
-            error.message.contains(&format!("declared `{declared}`")),
+            error.message.contains(&format!("asserted `{asserted}`")),
             "{error:?}"
         );
+        assert!(error.message.contains("\"externally unitary\" is not supported"));
+        assert!(!error.message.contains("github.com"));
         let location = error.primary.unwrap();
         let start = source.rfind(cause).unwrap();
         assert_eq!(
@@ -92,7 +98,11 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
 fn imported_effects_point_to_the_callers_call_in_text_and_json() {
     let source = "// 日本語\r\nuse helper::strong;\r\niso fn bad()->Unit{strong()}";
     let root = SourceRoot::new(source);
-    root.write("helper.qli", "pub observe fn strong()->Unit{()}");
+    root.write(
+        "helper.qli",
+        "use std::quantum::init0; use std::observe::measure_z;
+         pub fn strong()->Unit{let b=measure_z(init0());()}",
+    );
     let error = check_project_diagnostic(&root.0).unwrap_err();
     let location = error.primary.unwrap();
     assert_eq!(
@@ -111,7 +121,7 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
         assert_eq!(output.status.code(), Some(1));
         let text = String::from_utf8(if json { output.stdout } else { output.stderr }).unwrap();
         assert!(
-            text.contains("body effect `Observe` exceeds declared `Iso`"),
+            text.contains("body effect `Observe` exceeds asserted `Iso`"),
             "{text}"
         );
         if json {
@@ -137,7 +147,7 @@ fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
         root.write("main.qli", &source);
         let error = check_project_diagnostic(&root.0).unwrap_err();
         assert_eq!(error.code, "type_mismatch");
-        let wrapper = format!("unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {gate}(q) }}");
+        let wrapper = format!("fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {gate}(q) }}");
         assert!(error.message.contains(&wrapper), "{error:?}");
         let location = error.primary.unwrap();
         assert_eq!(&source[location.span.start..location.span.end], gate);

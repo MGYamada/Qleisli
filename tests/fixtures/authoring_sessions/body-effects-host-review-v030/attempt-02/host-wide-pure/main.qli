@@ -1,0 +1,3 @@
+use std::quantum::x;
+pub observe fn provider(q:Q<Bit>)->Q<Bit>{x(q)}
+pub fn entry[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}

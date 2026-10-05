@@ -53,6 +53,13 @@ generic facts remain conditional on their checked source premises. The
 source-only `doc` command and `render_markdown` keep their explicit lack of
 semantic checking and do not manufacture inferred facts.
 
+An operation provider selected by the host has the same principal-Unitarity
+requirement as a source-selected provider. An Observe or Iso body rejects with
+an effect/semantic error and the unsupported external-justification explanation.
+A principal-Unitary body with a broader assertion remains eligible, subject to
+its separate type, ownership, access and native checks. A provider input/output
+shape mismatch remains a type error; it is not external effect justification.
+
 ## Bytes, characters and positions
 
 Source is UTF-8. Every source span is a half-open byte interval in the original

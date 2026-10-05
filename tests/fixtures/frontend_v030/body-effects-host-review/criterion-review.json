@@ -1,0 +1,97 @@
+{
+  "format": "qleisli.issue-criterion-review",
+  "version": 1,
+  "issue": 315,
+  "target": "0.3.0",
+  "edition": "2026",
+  "status": "local-implementation-reviewed-final-validation-and-publication-pending",
+  "reviewer": "Codex implementation review; not an independent human constitutional judgment",
+  "criterion_count": 14,
+  "criteria": [
+    {
+      "number": 1,
+      "finding": "Normative body/callee rule and absence of unchecked prefixes",
+      "evidence": "docs/src/reference/source-text.md: Ordinary function effects and assertions",
+      "status": "locally-supported"
+    },
+    {
+      "number": 2,
+      "finding": "Least monotone solution and finite checked DAG joins; six source-order permutations agree",
+      "evidence": "src/frontend/effects.rs: infer; tests/body_effects.rs: principal_classes_do_not_depend_on_declaration_order_or_call_expansion",
+      "status": "locally-supported"
+    },
+    {
+      "number": 3,
+      "finding": "Private inferred/asserted fact; checked bound never seeds inference",
+      "evidence": "src/frontend/effects.rs: FunctionEffect::checked; tests/body_effects.rs: false_annotations_reject_direct_and_transitive_effects_in_both_profiles",
+      "status": "locally-supported"
+    },
+    {
+      "number": 4,
+      "finding": "Unitary <= Iso <= Observe optional upper-bound rule",
+      "evidence": "docs/src/reference/source-text.md; tests/body_effects.rs: broad_assertions_do_not_inflate_caller_or_interface_effects",
+      "status": "locally-supported"
+    },
+    {
+      "number": 5,
+      "finding": "Direct, hidden, transitive, all arms, zero folds, recursion and host-selected Observe rejection",
+      "evidence": "tests/body_effects.rs; tests/repair_diagnostics.rs; ../authoring_sessions/body-effects-host-review-v030/after/host-hidden-observer-json.json",
+      "status": "locally-supported"
+    },
+    {
+      "number": 6,
+      "finding": "All four current modules; ten runtime functions and three total basis definitions",
+      "evidence": "../body-effects/stdlib-audit.json; tests/body_effects.rs: every_derived_stdlib_body_exports_its_effect_without_runtime_annotation",
+      "status": "locally-supported"
+    },
+    {
+      "number": 7,
+      "finding": "Exactly ten prefixes removed, bodies and mathematical comments retained",
+      "evidence": "../body-effects/stdlib-before/; ../body-effects/stdlib-audit.json",
+      "status": "locally-supported"
+    },
+    {
+      "number": 8,
+      "finding": "Immutable checked report and rendering from retained source; source-only mode unchanged",
+      "evidence": "src/frontend/compile/mod.rs: ProjectEffects; src/frontend/sized.rs: ParsedProgram::function_effect; tests/body_effects.rs: immutable_metadata_and_documentation_use_the_checked_source_bytes",
+      "status": "locally-supported"
+    },
+    {
+      "number": 9,
+      "finding": "Facts do not establish exact Meaning/access/preservation; independent source mathematical comments preserved",
+      "evidence": "src/frontend/documentation.rs: render; docs/src/reference/source-text.md; ../body-effects/stdlib-audit.json",
+      "status": "locally-supported"
+    },
+    {
+      "number": 10,
+      "finding": "Existing sealed catalogs remain distinct from all derived bodies; no new primitive",
+      "evidence": "src/frontend/core.rs; src/frontend/sized/primitive.rs; ../body-effects/inventory-review.json; inventory-review.json",
+      "status": "locally-supported"
+    },
+    {
+      "number": 11,
+      "finding": "Whole-project ordinary checking; no origin/path inference branch",
+      "evidence": "src/frontend/compile/mod.rs: process_loaded_project_details; src/frontend/sized/check.rs: program; tests/body_effects.rs: names_and_module_paths_do_not_grant_body_effects_or_access",
+      "status": "locally-supported"
+    },
+    {
+      "number": 12,
+      "finding": "Future structural consumer contract recorded without implementing 0.4.0",
+      "evidence": "GitHub #152: Effect-contract consumer boundary from #315 \u2014 2026-10-05; its twelve original criteria and 0.4.0 target remain unchanged",
+      "status": "locally-supported"
+    },
+    {
+      "number": 13,
+      "finding": "External justification explicitly unsupported and future post-v1 boundary retained",
+      "evidence": "docs/src/reference/source-text.md; GitHub #315 original critical non-goal and criterion",
+      "status": "locally-supported"
+    },
+    {
+      "number": 14,
+      "finding": "No certificate bypass; source and host contradictions fail before native; shape/type/access checks remain",
+      "evidence": "src/frontend/effects.rs; src/frontend/sized/check.rs: instantiate; tests/body_effects.rs; ../authoring_sessions/body-effects-host-review-v030/after/",
+      "status": "locally-supported"
+    }
+  ],
+  "completion_limit": "This review does not close #315 or replace required published integration, complete actual validation or independent review. Existing guarantees and broad pending proof obligations retain their scope. The #152 consumer rule is future migration policy, not claimed execution of its 0.4.0 work."
+}

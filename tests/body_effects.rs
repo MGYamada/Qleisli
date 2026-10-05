@@ -7,7 +7,7 @@ use std::process::Command;
 use common::SourceRoot;
 use qleisli::frontend::compile::{ErrorCode, check_project, project_effects_with_kernel};
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::sized::{OperationBinding, ParsedProgram};
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::Effect;
 
@@ -334,4 +334,149 @@ fn operation_providers_use_principal_effects_and_cannot_hide_measurement() {
             assert_eq!(sized.unwrap_err().code(), "effect");
         }
     }
+}
+
+#[test]
+fn host_selected_providers_distinguish_unsupported_effects_from_shape_errors() {
+    for (source, expected) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli"
+            ),
+            Some("effect"),
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli"
+            ),
+            None,
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli"
+            ),
+            Some("type"),
+        ),
+    ] {
+        let program =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+        let result = program.instantiate(
+            "main::entry",
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("main::provider", BTreeMap::new()),
+            )]),
+        );
+        if let Some(code) = expected {
+            let error = result.unwrap_err();
+            assert_eq!(error.code(), code, "{error}");
+            if code == "effect" {
+                assert!(error.message().contains("inferred body effect `Observe`"));
+                assert!(error.message().contains(UNSUPPORTED));
+                assert!(!error.message().contains("github.com"));
+            } else {
+                assert!(!error.message().contains(UNSUPPORTED));
+            }
+        } else {
+            result.unwrap();
+            let fact = program.function_effect("main::provider").unwrap();
+            assert_eq!(fact.inferred(), Effect::Unitary);
+            assert_eq!(fact.asserted(), Some(Effect::Observe));
+        }
+    }
+}
+
+#[test]
+fn host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli"
+    );
+    let root = SourceRoot::new(source);
+    for json in [false, true] {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+        command
+            .args([
+                "check",
+                "--entry=main::entry",
+                "--operation=U=main::provider",
+            ])
+            .arg(format!(
+                "--module=main={}",
+                root.0.join("main.qli").display()
+            ));
+        if json {
+            command.arg("--format=json");
+        }
+        let output = command.output().unwrap();
+        assert!(!output.status.success());
+        let message = if json {
+            assert!(output.stderr.is_empty());
+            let text = String::from_utf8(output.stdout).unwrap();
+            assert!(text.contains("\"code\":\"effect\""), "{text}");
+            text.replace("\\\"", "\"")
+        } else {
+            String::from_utf8(output.stderr).unwrap()
+        };
+        assert!(
+            message.contains("inferred body effect `Observe`"),
+            "{message}"
+        );
+        assert!(message.contains(UNSUPPORTED), "{message}");
+        assert!(!message.contains("github.com"), "{message}");
+        assert!(!message.contains("#283"), "{message}");
+    }
+}
+
+#[test]
+fn principal_classes_do_not_depend_on_declaration_order_or_call_expansion() {
+    let declarations = [
+        "fn a(q:Q<Bit>)->Q<Bit>{q}",
+        "fn b()->Q<Bit>{init0()}",
+        "fn c()->Bit{measure_z(a(b()))}",
+    ];
+    for order in [
+        [0, 1, 2],
+        [0, 2, 1],
+        [1, 0, 2],
+        [1, 2, 0],
+        [2, 0, 1],
+        [2, 1, 0],
+    ] {
+        let source = format!(
+            "{IMPORTS}{}",
+            order.map(|index| declarations[index]).join(" ")
+        );
+        let root = SourceRoot::new(&source);
+        let finite = project_effects_with_kernel(
+            &root.0,
+            SourcePolicy::Legacy,
+            &Kernel::selected().unwrap(),
+        )
+        .unwrap();
+        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        for (name, effect) in [
+            ("a", Effect::Unitary),
+            ("b", Effect::Iso),
+            ("c", Effect::Observe),
+        ] {
+            let path = format!("main::{name}");
+            assert_eq!(finite.function_effect(&path).unwrap().inferred(), effect);
+            assert_eq!(finite.function_effect(&path), sized.function_effect(&path));
+        }
+    }
+}
+
+#[test]
+fn fn_suggestions_do_not_require_a_redundant_effect_annotation() {
+    let parse = qleisli::frontend::parser::parse_module("pub nonsense").unwrap_err();
+    assert!(parse.message.contains("expected `fn`"), "{parse}");
+    let root = SourceRoot::new(include_str!(
+        "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli"
+    ));
+    let error = check_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::TypeMismatch);
+    assert!(error.message.contains("inferred Unitary body effect"));
+    assert!(error.message.contains("`fn wrapped_gate"));
+    assert!(!error.message.contains("declared unitary"));
 }

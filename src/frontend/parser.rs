@@ -281,7 +281,9 @@ impl Parser {
         } else if self.at(&TokenKind::Fn) {
             FnKind::Inferred
         } else {
-            return Err(self.error("expected `basis`, `iso`, `unitary`, or `observe` after `pub`"));
+            return Err(self.error(
+                "expected `fn`, `basis`, `iso`, `unitary`, `observe`, or `meaning` after `pub`",
+            ));
         };
         self.expect(&TokenKind::Fn)?;
         let name = self.ident()?;

@@ -594,7 +594,7 @@ fn concrete_bindings_preserve_provider_type_and_premises() {
             .instantiate("measurement::qpe", naturals(&[("n", 1), ("m", 2)]), observe)
             .unwrap_err()
             .code(),
-        "type"
+        "effect"
     );
 }
 

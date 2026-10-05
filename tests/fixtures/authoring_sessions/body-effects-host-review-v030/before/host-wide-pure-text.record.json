@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/host-wide-pure/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:0..25: project: Qargo.toml requires schema-version = 2\n",
+  "native_invocations": 0,
+  "seconds": 0.004109959001652896,
+  "recorded_utc": "2026-10-05T10:01:55.424335+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "transcript": "main:0..25: project: Qargo.toml requires schema-version = 2\n",
+  "raw_event": {
+    "path": "before/host-wide-pure-text.json",
+    "sha256": "c97adf2a725d759a48c05f6d184233b17f07845bd35cb1c89079757a3f8d2c67"
+  },
+  "record_note": "Schema-compatible transcription of the unchanged actual text output. Raw event and original stdout/stderr files remain retained."
+}

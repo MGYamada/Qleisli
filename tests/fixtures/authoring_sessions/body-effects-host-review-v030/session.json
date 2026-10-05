@@ -1,0 +1,68 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Issue 315 ordinary provider/annotation diagnostic review",
+  "baseline_commit": "39e360cc8676626e8da3939bc76572f533286f98",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository context; deployed model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Five complete projects frozen before review diagnostic changes; sources will not be repaired or relabelled. The invalid manifests remain exact historical data under their .original.txt names; a new enclosing valid manifest is current configuration, not a relabeling of the recorded failed checks.",
+      "sha256": {
+        "host-hidden-observer/main.qli": "e4c6a83cc0d69c43a94ef671ca0ba4b16ce3ebb2111c38ee0ea514920169e6ea",
+        "host-wide-pure/main.qli": "71452a057660c3bb9c711db09c6dccc58834e1b09e803612a197120755cc59b9",
+        "host-wrong-shape/main.qli": "74e988eec62fb91dae61ddb2135bd8b046e2189d95a69052e2d2311d15e0a426",
+        "finite-sealed-provider/main.qli": "1c38d89e5b0e4e40109f20e84dad722df6d7038238a8bb8edd29a30b788da065",
+        "public-missing-kind/main.qli": "3f4235ec1a679c9eb5170a7d3aa8ceac203343c39fd0b55d612e0bc77d0a4bae"
+      },
+      "observations": [
+        "before/finite-sealed-provider-text.record.json",
+        "before/finite-sealed-provider-json.json",
+        "before/host-hidden-observer-text.record.json",
+        "before/host-hidden-observer-json.json",
+        "before/host-wide-pure-text.record.json",
+        "before/host-wide-pure-json.json",
+        "before/host-wrong-shape-text.record.json",
+        "before/host-wrong-shape-json.json",
+        "before/public-missing-kind-text.record.json",
+        "before/public-missing-kind-json.json"
+      ],
+      "manifest_retention": "manifest-retention.json"
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Correct only missing schema-version = 2 in all five manifests. The ten real first project errors and every original byte are retained; .qli bytes are unchanged. This enables the intended diagnostic review before any Rust edit.",
+      "sha256": {
+        "finite-sealed-provider/main.qli": "1c38d89e5b0e4e40109f20e84dad722df6d7038238a8bb8edd29a30b788da065",
+        "host-hidden-observer/main.qli": "e4c6a83cc0d69c43a94ef671ca0ba4b16ce3ebb2111c38ee0ea514920169e6ea",
+        "host-wide-pure/main.qli": "71452a057660c3bb9c711db09c6dccc58834e1b09e803612a197120755cc59b9",
+        "host-wrong-shape/main.qli": "74e988eec62fb91dae61ddb2135bd8b046e2189d95a69052e2d2311d15e0a426",
+        "public-missing-kind/main.qli": "3f4235ec1a679c9eb5170a7d3aa8ceac203343c39fd0b55d612e0bc77d0a4bae"
+      },
+      "observations": [
+        "before-schema-repaired/finite-sealed-provider-text.record.json",
+        "before-schema-repaired/finite-sealed-provider-json.json",
+        "before-schema-repaired/host-hidden-observer-text.record.json",
+        "before-schema-repaired/host-hidden-observer-json.json",
+        "before-schema-repaired/host-wide-pure-text.record.json",
+        "before-schema-repaired/host-wide-pure-json.json",
+        "before-schema-repaired/host-wrong-shape-text.record.json",
+        "before-schema-repaired/host-wrong-shape-json.json",
+        "before-schema-repaired/public-missing-kind-text.record.json",
+        "before-schema-repaired/public-missing-kind-json.json",
+        "after/finite-sealed-provider-text.json",
+        "after/finite-sealed-provider-json.json",
+        "after/host-hidden-observer-text.json",
+        "after/host-hidden-observer-json.json",
+        "after/host-wide-pure-text.json",
+        "after/host-wide-pure-json.json",
+        "after/host-wrong-shape-text.json",
+        "after/host-wrong-shape-json.json",
+        "after/public-missing-kind-text.json",
+        "after/public-missing-kind-json.json"
+      ]
+    }
+  ]
+}

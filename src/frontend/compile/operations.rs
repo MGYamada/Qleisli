@@ -304,10 +304,11 @@ impl Compiler<'_> {
             Callee::User(key) => key,
             Callee::Sealed(namespace, gate) => {
                 let mut message =
-                    "static provider requires an ordinary declared unitary function".to_owned();
+                    "static provider requires an ordinary fn with inferred Unitary body effect"
+                        .to_owned();
                 if namespace == "std::quantum" && matches!(gate.as_str(), "h" | "x" | "z" | "t") {
                     message.push_str(&format!(
-                        "; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {}(q) }}` and pass `[wrapped_gate]`",
+                        "; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> {{ {}(q) }}` and pass `[wrapped_gate]`",
                         name.text
                     ));
                 }

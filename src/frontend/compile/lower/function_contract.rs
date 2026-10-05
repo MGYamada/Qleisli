@@ -151,7 +151,7 @@ impl Lowerer<'_, '_> {
                 module,
                 name.span,
                 ErrorCode::TypeMismatch,
-                "apply_contract requires ordinary declared unitary functions",
+                "apply_contract requires ordinary functions with inferred Unitary body effects",
             ));
         };
         if self.compiler.effects.get(&key).map(|fact| fact.inferred()) != Some(Effect::Unitary) {

@@ -3252,7 +3252,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "f47817c2b3cee582e5fbc812827637ea7620e976895fe5efe3e0e5c158bc0a7e",
+      "sha256": "23c981c87f2fb4028a76d6410b39aa0e839bafe1d0cc88162a952de99df49082",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3358,7 +3358,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "f314623a98399f69030a1cad3bd7b0bc74f979ecc621f1e1994a91e63f5cb442",
+      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3492,7 +3492,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "09d59a8cac5dbfea51333d61c09de2556bbf2de12f8af44edc9b188d7bc9e938",
+      "sha256": "e1125ac9d3d5d1ce517e538b72c8bad124fc57f21aaddc73aeb6d1f528e33c67",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3723,7 +3723,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "506232e31bc8566a3ddb17ffce91308e06fdf33e0cc0755d56705b203adbf529",
+      "sha256": "d8e5023d0c3673467dcb1e417af24621a771fff8e1043946d94991356d9d242d",
       "group": "sized-source",
       "surface": {
         "declarations": [],

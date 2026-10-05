@@ -1,0 +1,12 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 9.80s
+     Running tests/body_effects.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/body_effects-1bccd0daabefb9bb)
+     Running tests/certified_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/certified_source-8e96611dac4bd08e)
+     Running tests/compile.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/compile-0346862a99dd8ee3)
+     Running tests/diagnostics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/diagnostics-4229380606e88b91)
+     Running tests/documentation.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/documentation-8faf6365647983a1)
+     Running tests/function_contracts.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/function_contracts-0bb98c7d101d1073)
+     Running tests/operation_parameters.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/operation_parameters-4c3c333420fe5a90)
+     Running tests/parser.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/parser-505caf4e08ee6ac4)
+     Running tests/repair_diagnostics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/repair_diagnostics-d6f857cbadeecc84)
+error: test failed, to rerun pass `--test repair_diagnostics`

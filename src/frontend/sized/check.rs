@@ -1325,14 +1325,21 @@ pub(super) fn instantiate(
                     concrete_scope(provider, &binding.types, &binding.naturals, &subject)?;
                 requirements(provider, &provider_scope, f.span)?;
                 let output = ty(&provider.result, &provider_scope, provider.span)?;
-                if provider.effect != Effect::Unitary
-                    || provider.arguments.len() != 1
-                    || !output.is_quantum_owner()
-                {
+                if provider.effect != Effect::Unitary {
+                    return Err(err(
+                        "effect",
+                        f.span,
+                        crate::frontend::effects::unitary_required(&format!(
+                            "operation provider {provider_module}::{} has inferred body effect `{:?}`; Unitary is required",
+                            provider.name, provider.effect
+                        )),
+                    ));
+                }
+                if provider.arguments.len() != 1 || !output.is_quantum_owner() {
                     return Err(err(
                         "type",
                         f.span,
-                        "concrete provider must be a single-input quantum unitary",
+                        "concrete provider must have one quantum input with the exact output type",
                     ));
                 }
                 expect(
