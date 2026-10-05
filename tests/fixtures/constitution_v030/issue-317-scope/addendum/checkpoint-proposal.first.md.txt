@@ -1,0 +1,24 @@
+# Proposed ordinary #317 checkpoint
+
+Status: drafting for root review; not posted, adopted, implemented or validated. This is an ordinary language/library contract under existing QS-2026-01, PR-2026-01, RS-2026-01 and EXACT-2026-01, not a new constitutional interpretation or guarantee admission.
+
+## Scope and exact QFT contract
+
+The current #317 scope is 24 criteria: all original twenty plus the four later generic-QFT criteria. Retain their exact text and required status in the next caller-reviewed release requirements snapshot. The canonical semantic identity is `std::transform::qft<N>`. Define the positive Fourier family on `Q<Bits<N>>`, returning the same ordered basis, for static N >= 1:
+`F_N[y,x] = exp(2*pi*i*x*y/2^N) / sqrt(2^N)`.
+Axis zero has weight one; output-bit reversal is included in this exact operator. Every input owner returns, with no observation or auxiliary allocation; its principal effect is body-derived Unitary. The intended action remains F_N tensor identity on every external reference, with phase and axis order retained. Names or effect metadata do not prove this functional contract or grant inverse/control access.
+
+Use ordinary checked generic .qli source, not a new primitive or compiler special-case for the qft name. The current executable static-parameter spelling is `qft[static N: Nat]` with calls `qft[N](q)`; `qft<N>` denotes the canonical generic semantic identity in this checkpoint. Do not advertise angle-bracket call syntax as implemented. Any final generic-call spelling change follows the common grammar work in #32 and its migration contract.
+
+Retained `qft2` and `qft3` may remain optional specializations with their existing exact tuple interfaces. No implicit tuple/Bits coercion or width-based type identity is introduced. Their correspondence to the generic instances must state the explicit ordered basis encoding and check exact phase, entries and reversal. A future `qft4` may be a specialization; its mention does not require adding a new fixed API now. Preserve all original contracts, useful tiny circuits, source provenance and notices. Current target/coefficient/work limits remain explicit; unsupported exact instances reject rather than round or silently select weaker checking. A generic checked definition and bounded instance results do not establish a theorem for the whole family.
+
+## Sequence after the frozen validation finishes
+
+1. Audit every public stdlib item and active caller. Record mathematical namespace/admission rules and the disposition of each fixed arithmetic/catch-all API; preserve current sources and counterexamples before migration.
+2. Connect ordinary generic stdlib definitions to shared name resolution, generic checking, embedding and public project/selected execution paths before exposing the canonical family. Do not add a parallel privileged QFT resolver or treat the corpus function's name as a library contract.
+3. Implement the family as ordinary source through the existing exact h/controlled-phase/register-structure operations. The retained Qualtran Fourier translation is useful prior evidence, with its license/provenance preserved; copying or changing frozen corpus material still follows corpus policy.
+4. Perform one atomic active migration: singular std::transform, canonical qft family and subordinate specializations; retire ad-hoc arithmetic exports and std::routines, rehome mathematically justified APIs, and update imports, examples, corpus clients, documentation, fixtures and discovery metadata. Retain historical validation records unchanged.
+5. Independently check small closed QFT instances and every retained fixed specialization against the exact contract and explicit interface encodings, including wrong phase/axis/reversal cases, fresh native acceptance and real public CLI/library paths. Add no new maximum-size generation. Source/effect tests, output-IR acceptance, general preservation proofs and quantitative resource certification remain distinct.
+6. Append #152's consumer boundary: its 0.4.0 structural refactor consumes #317's frozen semantic identities/admission rules, generic QFT contract and specialization correspondences; it cannot resurrect retired catch-all or incidental demo identities. Keep #152's target and twelve criteria. Close #317 only when evidence covers all 24 criteria.
+
+No protected Constitution text, human adoption/admission record, ledger status, dependency version, native acceptance rule, new certificate schema or project axiom changes are authorized by this checkpoint.
