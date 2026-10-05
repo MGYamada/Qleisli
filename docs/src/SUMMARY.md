@@ -2,6 +2,8 @@
 
 [Introduction](introduction.md)
 
+- [Project name and pronunciation](reference/project-identity.md)
+
 # Constitutional authority
 
 - [Ratification and initial appointment](design/ratification.md)

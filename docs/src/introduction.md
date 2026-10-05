@@ -4,6 +4,10 @@ Qleisli is an experimental language for structured quantum algorithms. It
 combines linear quantum ownership, explicit measurement effects and exact
 semantic contracts.
 
+**Qleisli is pronounced exactly like Kleisli.** Its initial Q marks the
+classical-to-quantum ecosystem lift without changing the pronunciation. See
+the canonical [project name and pronunciation](reference/project-identity.md).
+
 This book is being prepared as a guide to learning and using Qleisli. Its
 chapters will build from small executable programs toward reusable quantum
 algorithms, with examples grounded in the implemented language.

@@ -8,6 +8,9 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
+**Qleisli is pronounced exactly like Kleisli.** The initial Q is semantic,
+not phonetic; see the [canonical name and ecosystem naming principle](docs/src/reference/project-identity.md).
+
 **Development version: 0.3.0-alpha (prerelease preparation; unpublished). Latest published version: 0.2.9.**
 **Qleisli language edition: `"2026"`.**
 Edition identifies the constitutional regime, not a syntax generation.
