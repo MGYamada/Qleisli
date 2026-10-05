@@ -138,7 +138,8 @@ replacement. A recorded hash or implication about an obsolete checker cannot
 substitute for that check. The original admission, two scoped guarantees and
 three broader pending duties are unchanged.
 
-The live ledger uses schema v4. Each admitted entry has a canonical identity
+The live ledger uses schema v5, retaining the schema-v4 separation of admitted
+identities from current evidence. Each admitted entry has a canonical identity
 that binds its constitutional edition, interpreted obligation, human admission
 and exact reviewed proposal entry. That identity excludes mutable current
 source/proof evidence. Separate bindings must cover every registered guarantee
@@ -147,8 +148,11 @@ both admitted entries. Neither a new JSON approval nor a successful unregistered
 helper proof creates an admission. Historical v3 bytes are archived, and
 trusted-base checks reject removal or substitution of any earlier identity.
 The complete ledger and selected evidence remain fixed throughout live replay.
-This migration keeps the same two guarantees and three pending broader duties;
-release readiness and full constitutional conformance remain separate.
+The v4 identity migration kept the same two guarantees and three pending broader
+duties. The subsequent [EXACT-2026-01 adoption](../reference/authority.md#exact-constitutional-obligations) adds a pending
+supplement across QS, PR and RS in v5; it creates no fourth jurisdiction or
+discharged guarantee. Release readiness and full constitutional conformance
+remain separate.
 
 ## Authoritative proposal record
 

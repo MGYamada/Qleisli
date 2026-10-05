@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "cli",
+    "non_utf8_command_reports_usage_without_panicking",
+    "--",
+    "--exact"
+  ],
+  "exit_code": 101,
+  "seconds": 2.3567203750135377,
+  "source_sha256": "69e3bfee48002ddaf5d7fd73b392565fb15c1c763e19cb201f71eeddc64089af"
+}

@@ -82,7 +82,7 @@ These recovery instructions are not automatic source edits:
 
 | Predictable failure | Safe recovery | Unacceptable false friend |
 | --- | --- | --- |
-| Treat Q<T> as copyable ordinary data | Read ownership; account for every owner explicitly. | Copy, discard or reset an owner merely to make source compile. |
+| Treat `Q<T>` as copyable ordinary data | Read ownership; account for every owner explicitly. | Copy, discard or reset an owner merely to make source compile. |
 | Expect ordinary/quantum expected-type conversion | Choose specified preparation/observation explicitly only if that is the intended meaning. | Insert measurement or preparation because a result type is expected. |
 | Guess an omitted Nat or Op | Missing/extra diagnostics identify entry/provider and unresolved names; provide the intended exact bindings. | Rank identity/X providers or invent a size to satisfy the checker. |
 | Equate equal widths or familiar tuple layouts | Read exact trees, axes and admitted explicit maps. | Flatten, reorder or adjust phase as an ordinary coercion. |

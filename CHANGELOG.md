@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Keep the non-UTF-8 CLI regression aligned with the current usage/discovery
+  contract while retaining historical help fixtures. Clarify the current v5
+  guarantee ledger and pending exactness supplement in contributor guidance.
 - Add standalone text help and an embedded canonical ecosystem discovery
   chapter. Route usage failures to the same introduction, distinguish familiar
   structure from native/specification-only concepts, and expose planned tool

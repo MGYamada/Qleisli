@@ -25,8 +25,9 @@ never filesystem-admission evidence. The checker preserves those bytes and
 reports them separately. Changed or additional inputs do not inherit this
 classification; ordinary projects still require a valid schema-2 manifest.
 
-The v4 ledger separates append-only admitted identities from current evidence
-bindings. Explicit code registrations bind reviewed human events and exact
+The live v5 ledger retains the v4 separation of append-only admitted identities
+from current evidence bindings and adds the human-adopted, pending EXACT-2026-01
+supplement across QS, PR and RS. Explicit code registrations bind reviewed human events and exact
 proposal entries; fixed verifier profiles name their precise identity coverage.
 Candidate JSON cannot register an approval, select executable commands or omit
 an existing guarantee. Trusted-base checks preserve earlier entries across
