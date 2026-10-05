@@ -2,7 +2,7 @@
 //! No parser or source-token interpretation belongs here.
 use super::Span;
 
-pub(super) use crate::frontend::ast::Compare;
+pub(super) use crate::frontend::ast::{Access, Compare};
 pub(super) use crate::frontend::ordinary::Boolean;
 use crate::frontend::pattern::{Node as PatternNode, PatternView};
 use crate::frontend::resolve::locals::UseSiteId;
@@ -86,7 +86,7 @@ pub(super) enum Parameter {
 #[derive(Clone, Debug)]
 pub(super) enum Requirement {
     Predicate(Predicate),
-    Access(String, Reference, Span),
+    Access(Access, Reference, Span),
 }
 #[derive(Clone, Debug)]
 pub(super) enum Argument {

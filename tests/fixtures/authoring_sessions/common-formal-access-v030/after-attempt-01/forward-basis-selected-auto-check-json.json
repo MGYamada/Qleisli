@@ -1,0 +1,31 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:48:56.009351+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.004023707995656878,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "forward-basis-selected-auto-check-json.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "forward-basis-selected-auto-check-json.stdout.bin",
+  "stderr_raw": "forward-basis-selected-auto-check-json.stderr.bin",
+  "stdout_sha256": "a8586e8874987f788ebf3b5d2b6786b18ffeceea200cb44bc70dbbeaf56f87dd",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

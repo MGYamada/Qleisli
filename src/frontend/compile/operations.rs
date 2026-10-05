@@ -7,6 +7,8 @@ use crate::contract::{
     function::RetainedIdentity,
     meaning::{FiniteMeaning, MeaningEvidence},
 };
+use crate::frontend::formals::{self, AccessError, Formals};
+use crate::frontend::resolve::locals::BindingKind;
 use crate::ir::*;
 
 #[derive(Clone)]
@@ -38,11 +40,7 @@ enum Node {
 }
 pub(super) type Bindings = BTreeMap<BinderKey, Operation>;
 pub(super) fn access_index(access: Access) -> usize {
-    match access {
-        Access::Apply => 0,
-        Access::Adjoint => 1,
-        Access::Controlled => 2,
-    }
+    formals::access_index(access)
 }
 pub(super) fn contract_basis(ty: &Ty) -> BasisType {
     match &ty.kind {
@@ -209,8 +207,8 @@ impl Compiler<'_> {
         let decl = self.declarations[key];
         let key_name = self.resolution.declaration(*key).name.clone();
         self.signature(key)?;
-        let mut bindings = Bindings::new();
-        for p in &decl.static_params {
+        let mut formals = Formals::new();
+        for (ordinal, p) in decl.static_params.iter().enumerate() {
             let StaticParamKind::Operation {
                 basis: source_basis,
                 meaning: source_meaning,
@@ -223,42 +221,38 @@ impl Compiler<'_> {
                     "finite profile does not support Nat parameters",
                 ));
             };
-            let basis = self.ty(&key_name.0, source_basis, Stage::Basis)?;
-            contract_basis(&basis)
-                .bits()
-                .map_err(|e| self.op_error(&key_name.0, source_basis.span, e))?;
-            let meaning = if let Some(m) = source_meaning {
-                let k = self.meaning_key(&key_name.0, m)?;
-                let target = &self.meanings[&k];
-                if target.basis != basis {
-                    return Err(self.error(
-                        &key_name.0,
-                        m.span,
-                        ErrorCode::TypeMismatch,
-                        "parameter and meaning basis trees differ",
-                    ));
-                }
-                let cost = target.matrix.entries().len();
-                self.charge(&key_name.0, m.span, cost)?;
-                Some(self.meanings[&k].matrix.clone())
-            } else {
-                None
-            };
-            bindings.insert(
-                self.locals.key(self.locals.binder(&p.name)).clone(),
-                Operation {
-                    basis,
-                    access: [false; 3],
-                    meaning,
-                    node: Arc::new(Node::Abstract(format!(
-                        "{}::{}::{}",
-                        key_name.0, key_name.1, p.name.text
-                    ))),
-                    depth: 1,
-                    nodes: 1,
-                    abstract_value: true,
-                },
+            let binder = self.locals.info(self.locals.binder(&p.name));
+            assert_eq!(
+                binder.kind,
+                BindingKind::StaticOperation,
+                "finite Op binder"
             );
+            assert_eq!(binder.span, p.name.span, "paired static span");
+            let parameter_key = binder.key.clone();
+            formals.advance(ordinal, p, parameter_key, |_| {
+                let basis = self.ty(&key_name.0, source_basis, Stage::Basis)?;
+                contract_basis(&basis)
+                    .bits()
+                    .map_err(|e| self.op_error(&key_name.0, source_basis.span, e))?;
+                let meaning = if let Some(m) = source_meaning {
+                    let k = self.meaning_key(&key_name.0, m)?;
+                    let target = &self.meanings[&k];
+                    if target.basis != basis {
+                        return Err(self.error(
+                            &key_name.0,
+                            m.span,
+                            ErrorCode::TypeMismatch,
+                            "parameter and meaning basis trees differ",
+                        ));
+                    }
+                    let cost = target.matrix.entries().len();
+                    self.charge(&key_name.0, m.span, cost)?;
+                    Some(self.meanings[&k].matrix.clone())
+                } else {
+                    None
+                };
+                Ok::<_, CompileError>((basis, meaning))
+            })?;
         }
         for requirement in &decl.requires {
             let Requirement::Access(constraint) = requirement else {
@@ -269,30 +263,45 @@ impl Compiler<'_> {
                     "finite profile does not support size predicates",
                 ));
             };
-            let Some(op) = self
-                .locals
-                .local_key(&constraint.name)
-                .and_then(|key| bindings.get_mut(key))
-            else {
-                return Err(self.error(
-                    &key_name.0,
-                    constraint.name.span,
-                    ErrorCode::UnknownName,
-                    "access constraint must name a static parameter",
-                ));
-            };
-            let index = access_index(constraint.access);
-            if op.access[index] {
-                return Err(self.error(
-                    &key_name.0,
-                    constraint.name.span,
-                    ErrorCode::Capability,
-                    "duplicate access constraint",
-                ));
-            }
-            op.access[index] = true;
+            formals
+                .grant(self.locals.local_key(&constraint.name), constraint.access)
+                .map_err(|error| match error {
+                    AccessError::UnknownOperation => self.error(
+                        &key_name.0,
+                        constraint.name.span,
+                        ErrorCode::UnknownName,
+                        "access constraint must name a static parameter",
+                    ),
+                    AccessError::Duplicate => self.error(
+                        &key_name.0,
+                        constraint.name.span,
+                        ErrorCode::Capability,
+                        "duplicate access constraint",
+                    ),
+                })?;
         }
-        Ok(bindings)
+        Ok(formals
+            .into_operations(decl.static_params.len())
+            .into_iter()
+            .map(|(key, formal)| {
+                let node = Arc::new(Node::Abstract(format!(
+                    "{}::{}::{}",
+                    key_name.0, key_name.1, key.name
+                )));
+                (
+                    key,
+                    Operation {
+                        basis: formal.basis,
+                        access: formal.access,
+                        meaning: formal.meaning,
+                        node,
+                        depth: 1,
+                        nodes: 1,
+                        abstract_value: true,
+                    },
+                )
+            })
+            .collect())
     }
     pub(super) fn provider(
         &mut self,

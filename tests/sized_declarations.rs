@@ -1,5 +1,8 @@
 //! Independent bounded source and native regressions for sized declarations.
 //! These are executable counterexamples/oracles, not source-preservation proofs.
+mod common;
+use common::SourceRoot;
+use qleisli::frontend::compile::{ErrorCode, check_project};
 use qleisli::frontend::sized::{HierarchyProposal, OperationBinding, ParsedProgram};
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
@@ -269,5 +272,225 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
         if case == "duplicate" {
             assert_eq!(error.span().start, inputs["main"].rfind("entry(").unwrap());
         }
+    }
+}
+
+#[test]
+fn direct_formal_adjoint_and_controlled_slots_are_usable() {
+    let inverse = "pub fn inverse[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjoint(U){adjoint(U,q)} pub fn main()->Unit{()}";
+    check_project(&SourceRoot::new(inverse).0).unwrap();
+    ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
+
+    // The existing finite control spelling reaches the same formal slot.
+    // Direct controlled application remains outside that lowering profile.
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    check_project(&SourceRoot::new(finite_control).0).unwrap();
+    let control = "pub fn control[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
+    let error = check_project(&SourceRoot::new(control).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Unsupported, "{error}");
+    assert_eq!(
+        error.message,
+        "expression is outside the finite lowering profile"
+    );
+    assert_eq!(
+        &control[error.span.start..error.span.end],
+        "controlled(U)(c,q)"
+    );
+
+    // This selected-only ordinary provider is T = diag(1, exp(i*pi/4)).
+    // Expected coefficients below come from that equation, independently of
+    // producer meanings. Neither formal receives the other access slots.
+    let provider = "use std::quantum::phase; fn rotate(q:Q<Bit>)->Q<Bit>{phase[1,3](q)} ";
+    let (sine, cosine) = std::f64::consts::FRAC_PI_4.sin_cos();
+    let input = [
+        [0.1, -0.2],
+        [0.3, 0.4],
+        [-0.5, 0.6],
+        [0.7, -0.8],
+        [-0.9, 0.2],
+        [0.4, -0.3],
+        [0.6, 0.1],
+        [-0.2, -0.7],
+    ];
+    for (declaration, entry, system_dimension) in
+        [(inverse, "main::inverse", 2), (control, "main::control", 4)]
+    {
+        let source = format!("{provider}{declaration}");
+        let program =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+        let elaborated = program
+            .instantiate(
+                entry,
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::rotate", BTreeMap::new()),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        assert!(
+            elaborated
+                .definitions()
+                .iter()
+                .any(|definition| definition.path() == "main::rotate")
+        );
+        let proposal = elaborated.lower().unwrap();
+        assert_eq!(
+            proposal.source().instantiation().program().source("main"),
+            Some(source.as_str())
+        );
+        let input = &input[..system_dimension * 2];
+        let mut expected = input.to_vec();
+        for reference in 0..2 {
+            for basis in 0..system_dimension {
+                let index = reference * system_dimension + basis;
+                let [real, imaginary] = input[index];
+                // Control is the first owner/low axis, target the second.
+                expected[index] = match (system_dimension, basis) {
+                    (2, 1) => [
+                        cosine * real + sine * imaginary,
+                        cosine * imaginary - sine * real,
+                    ],
+                    (4, 3) => [
+                        cosine * real - sine * imaginary,
+                        sine * real + cosine * imaginary,
+                    ],
+                    _ => [real, imaginary],
+                };
+            }
+        }
+        assert_amplitudes(&execute(&proposal, input), &expected);
+    }
+}
+
+#[test]
+fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
+    let inverse = "fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){adjoint(U,q)} pub fn main()->Unit{()}";
+    let finite_error = check_project(&SourceRoot::new(inverse).0).unwrap_err();
+    assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
+    assert_eq!(
+        finite_error.message,
+        "missing Adjoint access in the generic declaration"
+    );
+    let target = inverse.rfind("adjoint(U,q)").unwrap() + "adjoint(".len();
+    assert_eq!(
+        (finite_error.span.start, finite_error.span.end),
+        (target, target + 1)
+    );
+    for (source, access, use_text) in [
+        (inverse, "Adjoint", "adjoint(U,q)"),
+        (
+            "fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(U)(c,q)} pub fn main()->Unit{()}",
+            "Controlled",
+            "controlled(U)(c,q)",
+        ),
+    ] {
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        assert_eq!(error.code(), "access", "{error}");
+        assert_eq!(
+            error.message(),
+            format!("missing {access} operation access")
+        );
+        assert_eq!(error.module(), Some("main"));
+        let start = source.rfind(use_text).unwrap();
+        assert_eq!(
+            (error.span().start, error.span().end),
+            (start, start + use_text.len())
+        );
+    }
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    let error = check_project(&SourceRoot::new(finite_control).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Capability, "{error}");
+    assert_eq!(
+        error.message,
+        "missing Controlled access in the generic declaration"
+    );
+    let start = finite_control.find("1=>U").unwrap() + "1=>".len();
+    assert_eq!((error.span.start, error.span.end), (start, start + 1));
+}
+
+#[test]
+fn selected_unused_dead_arms_and_zero_folds_check_both_missing_access_slots() {
+    // These are selected-profile bodies. Finite preflight rejects these forms
+    // earlier; that refusal does not establish a downstream access judgment.
+    for (parameters, result, body, access, use_text) in [
+        (
+            "q:Q<Bit>",
+            "Q<Bit>",
+            "if static 0 == 0 {q} else {adjoint(U,q)}",
+            "Adjoint",
+            "adjoint(U,q)",
+        ),
+        (
+            "q:Q<Bit>",
+            "Q<Bit>",
+            "for static i in 0..0 carry a=q {yield adjoint(U,a)}",
+            "Adjoint",
+            "adjoint(U,a)",
+        ),
+        (
+            "c:Q<Bit>,q:Q<Bit>",
+            "(Q<Bit>,Q<Bit>)",
+            "if static 0 == 0 {(c,q)} else {controlled(U)(c,q)}",
+            "Controlled",
+            "controlled(U)(c,q)",
+        ),
+        (
+            "c:Q<Bit>,q:Q<Bit>",
+            "(Q<Bit>,Q<Bit>)",
+            "for static i in 0..0 carry pair=(c,q) {let (c,q)=pair; yield controlled(U)(c,q)}",
+            "Controlled",
+            "controlled(U)(c,q)",
+        ),
+    ] {
+        let source = format!(
+            "fn unused[static U:Op<Bit>]({parameters})->{result} requires Apply(U){{{body}}} pub fn main()->Unit{{()}}"
+        );
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        assert_eq!(error.code(), "access", "{error}");
+        assert_eq!(
+            error.message(),
+            format!("missing {access} operation access")
+        );
+        assert_eq!(error.module(), Some("main"));
+        let start = source.rfind(use_text).unwrap();
+        assert_eq!(
+            (error.span().start, error.span().end),
+            (start, start + use_text.len())
+        );
+    }
+}
+
+#[test]
+fn duplicate_adjoint_and_controlled_slots_keep_each_profile_diagnostic() {
+    for access in ["Adjoint", "Controlled"] {
+        let source = format!(
+            "fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires {access}(U),{access}(U){{q}} pub fn main()->Unit{{()}}"
+        );
+        let second = source.rfind(&format!("{access}(U)")).unwrap();
+        let finite_error = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
+        assert_eq!(finite_error.message, "duplicate access constraint");
+        let target = second + access.len() + 1;
+        assert_eq!(
+            (finite_error.span.start, finite_error.span.end),
+            (target, target + 1)
+        );
+        let selected_error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        assert_eq!(selected_error.code(), "access", "{selected_error}");
+        assert_eq!(
+            selected_error.message(),
+            "duplicate operation access requirement"
+        );
+        assert_eq!(selected_error.module(), Some("main"));
+        assert_eq!(
+            (selected_error.span().start, selected_error.span().end),
+            (second, second + access.len())
+        );
     }
 }

@@ -1,0 +1,538 @@
+{
+  "format": "qleisli.independent-formals-actual-source-review",
+  "version": 1,
+  "observed_utc": "2026-10-05T18:38:41.807351+00:00",
+  "reviewer": "/root/isometry_docs",
+  "authority": "Ordinary advisory code review; reviewer did not author phased contract or production implementation.",
+  "trusted_constitution_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "git_original_base": "a4a5dfbcca34fa5e600a5f33703c360f13221ecb",
+  "seven_author_frozen_hashes_match": true,
+  "historical_11_source_inputs": [
+    {
+      "path": "src/frontend/ast.rs",
+      "historical_sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "git_base_matches": true,
+      "current_sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "historical_sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "git_base_matches": true,
+      "current_sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "historical_sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703",
+      "git_base_matches": true,
+      "current_sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/mod.rs",
+      "historical_sha256": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422",
+      "git_base_matches": true,
+      "current_sha256": "5aa13633507fbc405a126b432f13bc62f480e8c7784e50f0a94beb1f58bbf7df",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "historical_sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "git_base_matches": true,
+      "current_sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "historical_sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+      "git_base_matches": true,
+      "current_sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "historical_sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1",
+      "git_base_matches": true,
+      "current_sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "historical_sha256": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
+      "git_base_matches": true,
+      "current_sha256": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "historical_sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+      "git_base_matches": true,
+      "current_sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "historical_sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "git_base_matches": true,
+      "current_sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "historical_sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+      "git_base_matches": true,
+      "current_sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+      "changed": false
+    }
+  ],
+  "historical_non_source_rows_unchanged": 31,
+  "first_rows_unchanged": 46,
+  "first_map_sha256": "140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454",
+  "historical_identity_235": {
+    "rows": 235,
+    "unchanged": 228,
+    "changed_only_expected_old_source_paths": [
+      "src/frontend/compile/operations.rs",
+      "src/frontend/mod.rs",
+      "src/frontend/sized/ast.rs",
+      "src/frontend/sized/check.rs",
+      "src/frontend/sized/linear.rs",
+      "src/frontend/sized/parser.rs"
+    ],
+    "separate_current_documentation_delta": [
+      "docs/src/reference/type-model.md"
+    ],
+    "documentation_provenance": "Root confirmed its additive Reference update in an actual collaboration message after the genuine reviewer assertion failure; this is not a new interpretation or authority.",
+    "new_private_formals_not_in_historical_map": true
+  },
+  "before_record_read_only_audit": {
+    "observation_records": 40,
+    "counts": {
+      "success": 6,
+      "reject": 34,
+      "forwarded_pre_execv_attempts": 46
+    },
+    "raw_observation_and_stream_rows_hashed": 160,
+    "sorted_rows_json_sha256": "f333c7f126e65cc53353bd996d82f5d95fdaa3f3606ebf20f0b97fdc3cc0a8ec",
+    "aggregate_method": "sha256(JSON UTF-8 sorted by path with sort_keys=True,separators=(comma,colon), rows path/bytes/sha256)",
+    "all_raw_hashes_journal_counts_json_and_complete_capture_metadata_match": true,
+    "native_count_limit": "Rows immediately before execv, not independently observed native child starts/exits.",
+    "selected_actual_diagnostics": [
+      {
+        "case": "duplicate-access",
+        "profile": "finite",
+        "diagnostics": [
+          {
+            "code": "capability",
+            "message": "duplicate access constraint",
+            "primary": {
+              "path": "main.qli",
+              "start": 151,
+              "end": 152,
+              "line": 3,
+              "column": 26
+            }
+          }
+        ]
+      },
+      {
+        "case": "duplicate-access",
+        "profile": "selected-auto",
+        "diagnostics": [
+          {
+            "code": "access",
+            "message": "duplicate operation access requirement",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access/main.qli",
+              "start": 145,
+              "end": 150
+            }
+          }
+        ]
+      },
+      {
+        "case": "static-runtime-collision",
+        "profile": "finite",
+        "diagnostics": [
+          {
+            "code": "ownership",
+            "message": "duplicate parameter name",
+            "primary": {
+              "path": "main.qli",
+              "start": 106,
+              "end": 107,
+              "line": 2,
+              "column": 33
+            }
+          }
+        ]
+      },
+      {
+        "case": "static-runtime-collision",
+        "profile": "selected-auto",
+        "diagnostics": [
+          {
+            "code": "access",
+            "message": "access requirement names no operation parameter: missing",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/main.qli",
+              "start": 146,
+              "end": 151
+            }
+          }
+        ]
+      },
+      {
+        "case": "unused-missing-access",
+        "profile": "finite",
+        "diagnostics": [
+          {
+            "code": "capability",
+            "message": "missing Apply access in the generic declaration",
+            "primary": {
+              "path": "main.qli",
+              "start": 130,
+              "end": 131,
+              "line": 2,
+              "column": 57
+            }
+          }
+        ]
+      },
+      {
+        "case": "unused-missing-access",
+        "profile": "selected-auto",
+        "diagnostics": [
+          {
+            "code": "access",
+            "message": "missing Apply operation access",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access/main.qli",
+              "start": 130,
+              "end": 134
+            }
+          }
+        ]
+      },
+      {
+        "case": "natural-priority",
+        "profile": "finite",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "message": "finite profile does not support static Nat parameters",
+            "primary": {
+              "path": "main.qli",
+              "start": 93,
+              "end": 94,
+              "line": 2,
+              "column": 20
+            }
+          }
+        ]
+      },
+      {
+        "case": "natural-priority",
+        "profile": "selected-auto",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "message": "multiplication of two symbolic sizes is nonlinear",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority/main.qli",
+              "start": 119,
+              "end": 122
+            }
+          }
+        ]
+      },
+      {
+        "case": "basis-scan-priority",
+        "profile": "finite",
+        "diagnostics": [
+          {
+            "code": "unsupported",
+            "message": "finite profile does not support static Nat parameters",
+            "primary": {
+              "path": "main.qli",
+              "start": 93,
+              "end": 94,
+              "line": 2,
+              "column": 20
+            }
+          }
+        ]
+      },
+      {
+        "case": "basis-scan-priority",
+        "profile": "selected-auto",
+        "diagnostics": [
+          {
+            "code": "type",
+            "message": "Basis parameter B is unavailable in this ordered kind",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority/main.qli",
+              "start": 125,
+              "end": 126
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "actual_execution_by_this_reviewer": [
+    "constitutional continuity guard only"
+  ],
+  "not_performed": [
+    "Rust/Lean build",
+    "Rust test or linter",
+    "CLI/native execution",
+    "QFT capture or generation",
+    "source preservation proof",
+    "full CI",
+    "GitHub or Git mutation"
+  ],
+  "input_map": [
+    {
+      "path": "CONSTITUTION.md",
+      "bytes": 20257,
+      "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+      "mode": 420
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "bytes": 6573,
+      "sha256": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+      "mode": 420
+    },
+    {
+      "path": "docs/src/reference/authority.md",
+      "bytes": 16091,
+      "sha256": "6650e470e826fb0147ee92e582e49caef0603de8290b70e1d1a4497f013f36d9",
+      "mode": 420
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449",
+      "mode": 420
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97",
+      "mode": 420
+    },
+    {
+      "path": "governance/README.md",
+      "bytes": 7009,
+      "sha256": "457c42a5f3564d074593968b1a2aeafbf9683c145b11cc47e9166e8f678c0e62",
+      "mode": 420
+    },
+    {
+      "path": "governance/guarantees.json",
+      "bytes": 5535,
+      "sha256": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d",
+      "mode": 420
+    },
+    {
+      "path": "governance/guarantees/current-evidence.json",
+      "bytes": 32694,
+      "sha256": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575",
+      "mode": 420
+    },
+    {
+      "path": "governance/guarantees/initial-2026-admission.json",
+      "bytes": 4124,
+      "sha256": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2",
+      "mode": 420
+    },
+    {
+      "path": "governance/interpretations/exactness-2026-adoption.json",
+      "bytes": 2877,
+      "sha256": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59",
+      "mode": 420
+    },
+    {
+      "path": "governance/interpretations/initial-2026-adoption.json",
+      "bytes": 2713,
+      "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e",
+      "mode": 420
+    },
+    {
+      "path": "governance/interpretations/initial-2026-reviewed.txt",
+      "bytes": 17631,
+      "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3",
+      "mode": 420
+    },
+    {
+      "path": "governance/proposals/exactness-2026.md",
+      "bytes": 11721,
+      "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179",
+      "mode": 420
+    },
+    {
+      "path": "governance/proposals/initial-guarantees.json",
+      "bytes": 15180,
+      "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02",
+      "mode": 420
+    },
+    {
+      "path": "governance/ratification-2026.json",
+      "bytes": 2478,
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "bytes": 56352,
+      "sha256": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "bytes": 8339,
+      "sha256": "a7033fd313d0f69227a1acce76fba47d376dedc18ff995b88a48f925a72a7bbc",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 33453,
+      "sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/formals.rs",
+      "bytes": 3523,
+      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/mod.rs",
+      "bytes": 712,
+      "sha256": "5aa13633507fbc405a126b432f13bc62f480e8c7784e50f0a94beb1f58bbf7df",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "bytes": 63429,
+      "sha256": "e1125ac9d3d5d1ce517e538b72c8bad124fc57f21aaddc73aeb6d1f528e33c67",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4764,
+      "sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 56513,
+      "sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "bytes": 12700,
+      "sha256": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15670,
+      "sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "bytes": 17970,
+      "sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/summary.json",
+      "bytes": 10082,
+      "sha256": "c5faa44191e9041148681b60d9f24de4d0fc982875f54c8d1d9076ef8c5dfcc2",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/commands-before.json",
+      "bytes": 24210,
+      "sha256": "3887d877f89a35aac37b6a961d40610660efb7a36f52c26febf62033d22455e9",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/first-files.json",
+      "bytes": 12186,
+      "sha256": "140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/identity-prepared.json",
+      "bytes": 39624,
+      "sha256": "503f2a06aa507edfd83c056afea9f84b39598a01d72cec99b88e3fe6174ae28f",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/github-before-code-32.json",
+      "bytes": 3191,
+      "sha256": "eaf20256e2508b3e427cf87c02f0e3a02eb72694a633b95240321c11cb5dcee1",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/independent-phased-preparation-review-by-cli-tests.md",
+      "bytes": 11255,
+      "sha256": "8e644dcf1a37c89fbb78dc0d868b327ea18b910b814a0854ea173445d26e5e5e",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.inputs.json",
+      "bytes": 10051,
+      "sha256": "f6d3d8753e2951189329e51b13c0c79f7535478e8205b38e3e58d26e41896e06",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.md",
+      "bytes": 9623,
+      "sha256": "1f113b273841607d62ca9107f1919f825f7ea95a4576721b023f487e932e6d09",
+      "mode": 420
+    }
+  ],
+  "scope": "Selected source/caller/contract input subset plus complete historical FIRST/raw data hash audits; not a complete production dependency closure. No new guarantee/adoption/release authority or Issue completion."
+}

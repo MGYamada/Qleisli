@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.actual-result-reporting-correction",
+  "version": 1,
+  "status": "manual-subtotal-error-corrected",
+  "incorrect_initial_integration_subtotal": 153,
+  "incorrect_initial_document_total": 157,
+  "actual_integration_pass_counts": [10, 13, 3, 15, 14, 9, 8, 9, 3, 11, 38, 2, 8],
+  "actual_integration_subtotal": 143,
+  "actual_shared_unit_pass_count": 4,
+  "actual_pass_total_per_toolchain": 147,
+  "actual_failed_per_toolchain": 0,
+  "actual_existing_ignored_per_toolchain": 3,
+  "actual_records": ["latest-attempt-02/results.json", "msrv-attempt-01/results.json"],
+  "cause": "Root manually added ten extra tests when summing the thirteen actual integration target counts, then repeated that subtotal in commentary and the initial results.md draft. A direct aggregation of the recorded actual result rows exposed the error. Commentary and the current results.md now use 143 integration plus 4 shared unit tests.",
+  "scope": "Reporting correction only. Actual commands, raw logs, result records, source, tests, native binary, proof status and Issue completion remain unchanged. This is not a compiler, test or native failure."
+}

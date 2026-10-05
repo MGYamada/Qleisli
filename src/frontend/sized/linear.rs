@@ -296,8 +296,16 @@ pub(super) fn natural(
     names: &BTreeMap<BinderKey, Linear>,
     context: &Context,
 ) -> Result<Linear> {
+    natural_with_prefix(expr, names, context, None)
+}
+pub(super) fn natural_with_prefix(
+    expr: &Natural,
+    names: &BTreeMap<BinderKey, Linear>,
+    context: &Context,
+    allowed: Option<&BTreeSet<BinderKey>>,
+) -> Result<Linear> {
     at(
-        natural_inner(expr, names, context),
+        natural_inner(expr, names, context, allowed),
         expr.span,
         "while normalizing size expression",
     )
@@ -306,16 +314,24 @@ fn natural_inner(
     expr: &Natural,
     names: &BTreeMap<BinderKey, Linear>,
     context: &Context,
+    allowed: Option<&BTreeSet<BinderKey>>,
 ) -> Result<Linear> {
     let result = match &expr.kind {
         NatKind::Number(n) => Linear::constant(*n),
-        NatKind::Name(name) => name.get(names).cloned().ok_or_else(|| {
-            Error::new("static", expr.span, format!("unknown natural name {name}"))
-        })?,
-        NatKind::Add(a, b) => natural(a, names, context)?.add(&natural(b, names, context)?)?,
+        NatKind::Name(name) => name
+            .local
+            .as_ref()
+            .filter(|key| allowed.is_none_or(|allowed| allowed.contains(*key)))
+            .and_then(|key| names.get(key))
+            .cloned()
+            .ok_or_else(|| {
+                Error::new("static", expr.span, format!("unknown natural name {name}"))
+            })?,
+        NatKind::Add(a, b) => natural_with_prefix(a, names, context, allowed)?
+            .add(&natural_with_prefix(b, names, context, allowed)?)?,
         NatKind::Sub(a, b) => {
-            let a = natural(a, names, context)?;
-            let b = natural(b, names, context)?;
+            let a = natural_with_prefix(a, names, context, allowed)?;
+            let b = natural_with_prefix(b, names, context, allowed)?;
             if !context.proves_le(&b, &a, expr.span, "while proving subtraction nonnegative")? {
                 return Err(Error::new(
                     "size",
@@ -326,8 +342,8 @@ fn natural_inner(
             a.sub(&b)?
         }
         NatKind::Mul(a, b) => {
-            let a = natural(a, names, context)?;
-            let b = natural(b, names, context)?;
+            let a = natural_with_prefix(a, names, context, allowed)?;
+            let b = natural_with_prefix(b, names, context, allowed)?;
             if a.terms.is_empty() {
                 b.scale(a.constant)?
             } else if b.terms.is_empty() {

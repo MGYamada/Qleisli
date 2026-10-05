@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:48:58.368069+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.04353475000243634,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 1,
+  "native_argv_log": "unused-missing-access-finite-check-json.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "unused-missing-access-finite-check-json.stdout.bin",
+  "stderr_raw": "unused-missing-access-finite-check-json.stderr.bin",
+  "stdout_sha256": "dd2a88257309a6f6a310559542b7adb88e410a5aa2e6f85373f083dffd056733",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275"
+}

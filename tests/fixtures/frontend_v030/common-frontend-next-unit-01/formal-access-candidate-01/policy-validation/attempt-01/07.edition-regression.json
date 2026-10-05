@@ -1,0 +1,23 @@
+{
+  "id": "07.edition-regression",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_editions.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:20.871287+00:00",
+  "elapsed_seconds": 0.46175279101589695,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "07.edition-regression.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "07.edition-regression.stderr.txt",
+    "sha256": "ae6ad4d8195d28d8d5037a0c8092615c1fc65b192c83c8e8409b83d58dc797b0",
+    "bytes": 110
+  }
+}

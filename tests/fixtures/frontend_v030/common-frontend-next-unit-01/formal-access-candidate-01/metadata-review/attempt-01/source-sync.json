@@ -1,0 +1,32 @@
+{
+  "label": "source-sync",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/maintain_release.py",
+    "--write",
+    "--report",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-plan.reviewed.json",
+    "--review-source",
+    "src/frontend/compile/operations.rs",
+    "--review-source",
+    "src/frontend/mod.rs",
+    "--review-source",
+    "src/frontend/sized/ast.rs",
+    "--review-source",
+    "src/frontend/sized/check.rs",
+    "--review-source",
+    "src/frontend/sized/linear.rs",
+    "--review-source",
+    "src/frontend/sized/parser.rs"
+  ],
+  "started_utc": "2026-10-05T18:37:13.888678+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "path": "source-sync.stdout.txt",
+    "sha256": "e7aa6aff1baa165320f9313bbd6889cca96caaf7d09f5cdbed8fcfee406da406"
+  },
+  "stderr": {
+    "path": "source-sync.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share checked formal operation bases, finite Meaning payloads and explicit
+  Apply/Adjoint/Controlled grants between the two declaration paths. Retain
+  original binder identities, ordered kind availability, diagnostic and budget
+  order; borrow sized kind environments instead of cloning whole scopes.
+  Generic assumptions grant no native acceptance or arbitrary provider access.
+  Common body convergence and canonical std integration remain unfinished
+  (#32, #317).
 - Share ordered static and runtime parameter-name checks over the original
   common AST. Preserve exact declaration/parameter association, per-argument
   type checks, complete unused-declaration rejection, capacities and existing

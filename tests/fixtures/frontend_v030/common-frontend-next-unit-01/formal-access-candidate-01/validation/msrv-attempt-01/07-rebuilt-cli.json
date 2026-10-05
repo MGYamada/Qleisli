@@ -1,0 +1,35 @@
+{
+  "label": "rebuilt-cli",
+  "argv": [
+    "/opt/homebrew/bin/rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "build",
+    "--locked",
+    "--bin",
+    "qleisli",
+    "--jobs=2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 0.30745233298512176,
+  "completed_utc": "2026-10-05T18:50:30.229411+00:00",
+  "stdout": {
+    "path": "07-rebuilt-cli.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "07-rebuilt-cli.stderr.txt",
+    "sha256": "4b395c9c76c7f7fb5221d30df7320c7a2387ff3842c426dbee6a59a54b5cffab",
+    "bytes": 60
+  },
+  "actual_test_results": [],
+  "source_input_digest_after": "9292057ddc1cd09f4eb0ff0689b8d52b0be14edf245fd8683011d2078a84ed42",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

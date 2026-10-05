@@ -9,7 +9,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::rc::Rc;
 use std::sync::Arc;
 
+use crate::frontend::formals::{self, AccessError, Formals, Prefix};
 use crate::frontend::pattern::{self, BindingContext};
+use crate::frontend::resolve::locals::BindingKind;
 use crate::frontend::resolve::{self, DefId, Failure, Profile, Target};
 use crate::frontend::types::Kind;
 type Ty = crate::frontend::types::Type<Linear>;
@@ -39,7 +41,7 @@ impl Ty {
 #[derive(Clone)]
 struct Operation {
     ty: Ty,
-    access: BTreeSet<String>,
+    access: [bool; 3],
 }
 #[derive(Clone)]
 struct Scope {
@@ -73,10 +75,13 @@ fn call_capacity<T>(result: Result<T>, span: Span) -> Result<T> {
         error
     })
 }
-fn all_access() -> BTreeSet<String> {
-    ["Apply", "Adjoint", "Controlled"].map(String::from).into()
+fn all_access() -> [bool; 3] {
+    [true; 3]
 }
 fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
+    Ok(Ty::quantum(ordinary_basis(b, scope, None)?))
+}
+fn ordinary_basis(b: &Basis, scope: &Scope, prefix: Option<Prefix<'_>>) -> Result<Ty> {
     b.storage_size(4096, 64).ok_or_else(|| {
         err(
             "limit",
@@ -84,9 +89,12 @@ fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
             "operation basis exceeds type capacity",
         )
     })?;
-    Ok(Ty::quantum(ty(b, scope, Span::default())?))
+    ty_with_prefix(b, scope, Span::default(), prefix)
 }
 fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
+    ty_with_prefix(t, scope, span, None)
+}
+fn ty_with_prefix(t: &Type, scope: &Scope, span: Span, prefix: Option<Prefix<'_>>) -> Result<Ty> {
     t.storage_size(4096, 64)
         .ok_or_else(|| err("limit", span, "source type exceeds type capacity"))?;
     let mut nodes = 0usize;
@@ -97,6 +105,7 @@ fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
                 let replacement = parameter
                     .key
                     .as_ref()
+                    .filter(|key| prefix.is_none_or(|prefix| prefix.bases.contains(*key)))
                     .and_then(|key| scope.bases.get(key))
                     .ok_or_else(|| {
                         err(
@@ -132,11 +141,19 @@ fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
         }
     }
     let result = t.map_parts(
-        &mut |size| linear::natural(size, &scope.naturals, &scope.context),
+        &mut |size| {
+            linear::natural_with_prefix(
+                size,
+                &scope.naturals,
+                &scope.context,
+                prefix.map(|prefix| prefix.naturals),
+            )
+        },
         &mut |parameter| {
             parameter
                 .key
                 .as_ref()
+                .filter(|key| prefix.is_none_or(|prefix| prefix.bases.contains(*key)))
                 .and_then(|key| scope.bases.get(key))
                 .cloned()
                 .ok_or_else(|| {
@@ -198,17 +215,40 @@ fn declaration(f: &Function, original: &crate::frontend::ast::Decl) -> Result<Sc
         original.params.len(),
         "complete runtime parameter projection"
     );
+    assert_eq!(
+        f.requires.len(),
+        original.requires.len(),
+        "complete requirement projection"
+    );
+    let table = f.lexical.as_ref().expect("indexed sized declaration");
     let mut names = BTreeSet::new();
     let mut naturals = BTreeMap::new();
     for (index, p) in f.parameters.iter().enumerate() {
         let name = match p {
             Parameter::Natural(n) | Parameter::Basis(n) | Parameter::Operation(n, _) => n,
         };
-        pattern::claim(
-            &mut names,
-            original.static_params[index].name.text.clone(),
-            || err("name", f.span, format!("duplicate static parameter {name}")),
-        )?;
+        let source = &original.static_params[index];
+        let kind = match (p, &source.kind) {
+            (Parameter::Natural(_), crate::frontend::ast::StaticParamKind::Natural) => {
+                BindingKind::StaticNatural
+            }
+            (Parameter::Basis(_), crate::frontend::ast::StaticParamKind::Basis) => {
+                BindingKind::StaticBasis
+            }
+            (
+                Parameter::Operation(_, _),
+                crate::frontend::ast::StaticParamKind::Operation { meaning: None, .. },
+            ) => BindingKind::StaticOperation,
+            _ => unreachable!("paired original static kind"),
+        };
+        let binder = table.binder(name.key().id);
+        assert_eq!(binder.key, *name.key(), "paired static key");
+        assert_eq!(binder.kind, kind, "paired static category");
+        assert_eq!(binder.span, source.name.span, "paired static span");
+        assert_eq!(name.name, source.name.text, "paired static spelling");
+        pattern::claim(&mut names, source.name.text.clone(), || {
+            err("name", f.span, format!("duplicate static parameter {name}"))
+        })?;
         if matches!(p, Parameter::Natural(_)) {
             naturals.insert(name.key().clone(), Linear::variable(name.key()));
         }
@@ -222,7 +262,37 @@ fn declaration(f: &Function, original: &crate::frontend::ast::Decl) -> Result<Sc
         moved: BTreeSet::new(),
         next_binding: Rc::new(Cell::new(0)),
     };
-    for requirement in &f.requires {
+    for (index, requirement) in f.requires.iter().enumerate() {
+        match (requirement, &original.requires[index]) {
+            (Requirement::Predicate(p), crate::frontend::ast::Requirement::Predicate(source)) => {
+                assert_eq!(
+                    p.comparison, source.comparison,
+                    "paired predicate comparison"
+                );
+                assert_eq!(p.left.span, source.left.span, "paired left predicate span");
+                assert_eq!(
+                    p.right.span, source.right.span,
+                    "paired right predicate span"
+                );
+            }
+            (
+                Requirement::Access(kind, name, span),
+                crate::frontend::ast::Requirement::Access(source),
+            ) => {
+                assert_eq!(*kind, source.access, "paired access category");
+                assert_eq!(*span, source.span, "paired access span");
+                assert_eq!(name.name, source.name.text, "paired access spelling");
+                let usage = table.usage(name.site.expect("indexed access requirement"));
+                assert_eq!(usage.name, source.name.text, "paired access use spelling");
+                assert_eq!(usage.span, source.name.span, "paired access use span");
+                let local = match usage.target {
+                    ResolvedUse::Local(id) => Some(table.key(id)),
+                    ResolvedUse::Global(_) | ResolvedUse::Unresolved => None,
+                };
+                assert_eq!(name.local.as_ref(), local, "paired access local target");
+            }
+            _ => unreachable!("paired original requirement category"),
+        }
         if let Requirement::Predicate(p) = requirement {
             scope.context = linear::predicate(p, &scope.naturals, &scope.context, true)?;
         }
@@ -237,11 +307,24 @@ fn declaration(f: &Function, original: &crate::frontend::ast::Decl) -> Result<Sc
             "inconsistent declared natural premises",
         ));
     }
-    let mut preceding_naturals = BTreeSet::new();
-    for p in &f.parameters {
-        if let Parameter::Natural(name) = p {
-            preceding_naturals.insert(name.key().clone());
-        }
+    let mut formals = Formals::<Linear, std::convert::Infallible>::new();
+    for (ordinal, p) in f.parameters.iter().enumerate() {
+        let name = match p {
+            Parameter::Natural(name) | Parameter::Basis(name) | Parameter::Operation(name, _) => {
+                name
+            }
+        };
+        formals.advance(
+            ordinal,
+            &original.static_params[ordinal],
+            name.key().clone(),
+            |prefix| {
+                let Parameter::Operation(_, b) = p else {
+                    unreachable!("only Op formals invoke basis checking")
+                };
+                Ok::<_, Error>((ordinary_basis(b, &scope, Some(prefix))?, None))
+            },
+        )?;
         if let Parameter::Basis(name) = p {
             scope.bases.insert(
                 name.key().clone(),
@@ -252,42 +335,40 @@ fn declaration(f: &Function, original: &crate::frontend::ast::Decl) -> Result<Sc
                 }),
             );
         }
-        if let Parameter::Operation(name, b) = p {
-            let mut kind_scope = scope.clone();
-            kind_scope
-                .naturals
-                .retain(|key, _| preceding_naturals.contains(key));
-            scope.operations.insert(
-                name.key().clone(),
-                Operation {
-                    ty: basis(b, &kind_scope)?,
-                    access: BTreeSet::new(),
-                },
-            );
-        }
     }
     for requirement in &f.requires {
         if let Requirement::Access(kind, name, span) = requirement {
-            let op = name
-                .local
-                .as_ref()
-                .and_then(|key| scope.operations.get_mut(key))
-                .ok_or_else(|| {
-                    err(
+            formals
+                .grant(name.local.as_ref(), *kind)
+                .map_err(|error| match error {
+                    AccessError::UnknownOperation => err(
                         "access",
                         *span,
                         format!("access requirement names no operation parameter: {name}"),
-                    )
+                    ),
+                    AccessError::Duplicate => {
+                        err("access", *span, "duplicate operation access requirement")
+                    }
                 })?;
-            if !op.access.insert(kind.clone()) {
-                return Err(err(
-                    "access",
-                    *span,
-                    "duplicate operation access requirement",
-                ));
-            }
         }
     }
+    scope.operations = formals
+        .into_operations(f.parameters.len())
+        .into_iter()
+        .map(|(key, formal)| {
+            assert!(
+                formal.meaning.is_none(),
+                "sized Meaning projection remains unsupported"
+            );
+            (
+                key,
+                Operation {
+                    ty: Ty::quantum(formal.basis),
+                    access: formal.access,
+                },
+            )
+        })
+        .collect();
     let mut arguments = BTreeSet::new();
     for (index, (pattern, t, span)) in f.arguments.iter().enumerate() {
         // Parameter uniqueness covers the complete argument list, not only
@@ -921,7 +1002,7 @@ impl Checker<'_> {
                             "operation application takes one quantum argument",
                         ));
                     }
-                    access(&op, "Apply", span)?;
+                    access(&op, Access::Apply, span)?;
                     self.expr(&runtime[0], scope, Some(&op.ty))?;
                     op.ty
                 } else {
@@ -951,13 +1032,13 @@ impl Checker<'_> {
             }
             ExprKind::Adjoint(arg, input) => {
                 let op = self.operation(arg, scope, span)?;
-                access(&op, "Adjoint", span)?;
+                access(&op, Access::Adjoint, span)?;
                 self.expr(input, scope, Some(&op.ty))?;
                 op.ty
             }
             ExprKind::Controlled(arg, inputs) => {
                 let op = self.operation(arg, scope, span)?;
-                access(&op, "Controlled", span)?;
+                access(&op, Access::Controlled, span)?;
                 if inputs.len() != 2 {
                     return Err(err(
                         "type",
@@ -1089,14 +1170,14 @@ impl Checker<'_> {
         Ok(result)
     }
 }
-fn access(op: &Operation, kind: &str, span: Span) -> Result<()> {
-    if op.access.contains(kind) {
+fn access(op: &Operation, kind: Access, span: Span) -> Result<()> {
+    if op.access[formals::access_index(kind)] {
         Ok(())
     } else {
         Err(err(
             "access",
             span,
-            format!("missing {kind} operation access"),
+            format!("missing {} operation access", formals::access_name(kind)),
         ))
     }
 }
@@ -1111,7 +1192,7 @@ fn requirements(f: &Function, scope: &Scope, span: Span) -> Result<()> {
                             err("access", span, "unresolved operation requirement")
                         })?)
                         .ok_or_else(|| err("access", span, "missing operation argument"))?,
-                    kind,
+                    *kind,
                     span,
                 )?
             }

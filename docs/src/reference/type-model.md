@@ -257,6 +257,16 @@ identity, premises and aggregate work. Specialization keys retain those inputs
 and source/dependency identity; width alone is not a key. Instance success is
 not a proof about every member of a generic family.
 
+An endomorphic `Op<A>` formal starts with no executable access. Each
+`requires Apply(U)`, `Adjoint(U)` or `Controlled(U)` grants only that named
+generic assumption, and must refer to an operation parameter of the same
+declaration. Repeating the same requirement rejects; granting one access
+does not grant the other two. The body and any forwarded call must satisfy
+their own required access even when unused or inside a zero-iteration fold.
+A mathematical Meaning refinement or Unitary effect is not an access grant.
+Concrete providers still require their checked implementation paths; a
+generic assumption is not evidence for an arbitrary external provider.
+
 ### Opaque Basis specialization in the selected profile
 
 The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity

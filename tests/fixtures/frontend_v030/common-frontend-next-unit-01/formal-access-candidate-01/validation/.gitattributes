@@ -1,0 +1,5 @@
+# Preserve actual Cargo stdout, including its final blank line.
+latest-attempt-02/04-shared-type-tests.stdout.txt whitespace=-blank-at-eof
+latest-attempt-02/05-focused-integration-tests.stdout.txt whitespace=-blank-at-eof
+msrv-attempt-01/04-shared-type-tests.stdout.txt whitespace=-blank-at-eof
+msrv-attempt-01/05-focused-integration-tests.stdout.txt whitespace=-blank-at-eof

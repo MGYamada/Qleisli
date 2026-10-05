@@ -1,0 +1,31 @@
+{
+  "label": "cargo-version",
+  "argv": [
+    "/opt/homebrew/bin/rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "--version"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 0.6480854579713196,
+  "completed_utc": "2026-10-05T18:49:24.046175+00:00",
+  "stdout": {
+    "path": "00-cargo-version.stdout.txt",
+    "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf",
+    "bytes": 36
+  },
+  "stderr": {
+    "path": "00-cargo-version.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "actual_test_results": [],
+  "source_input_digest_after": "9292057ddc1cd09f4eb0ff0689b8d52b0be14edf245fd8683011d2078a84ed42",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

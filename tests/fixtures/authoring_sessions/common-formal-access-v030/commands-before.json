@@ -1,0 +1,589 @@
+{
+  "format": "qleisli.fixed-formal-access-first-commands",
+  "version": 1,
+  "status": "authored-before-execution",
+  "recorded_utc": "2026-10-05T18:15:48.766316+00:00",
+  "commands": [
+    {
+      "case": "valid-operation",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-operation",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-operation",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-operation",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-operation",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-operation/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-operation",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-operation/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-dependent-basis",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-dependent-basis",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-dependent-basis/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "valid-dependent-basis",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/valid-dependent-basis/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-natural",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-natural",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-natural",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-natural",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-basis",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-basis",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-basis",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "forward-basis",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-basis/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "duplicate-access",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/duplicate-access/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "wrong-kind-access",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/wrong-kind-access/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "static-runtime-collision",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/static-runtime-collision/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "unused-missing-access",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/unused-missing-access/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "natural-priority",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "natural-priority",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "natural-priority",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "natural-priority",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/natural-priority/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "finite",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "finite",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    },
+    {
+      "case": "basis-scan-priority",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--entry=main::main",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/basis-scan-priority/main.qli",
+        "--ir-profile=auto",
+        "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "expectation": null
+    }
+  ],
+  "scope": "Forty literal commands for review only; driver never executes argv from this record. No outcomes predicted."
+}

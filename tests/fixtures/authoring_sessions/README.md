@@ -266,3 +266,10 @@ three valid-artifact wrong-target refusals and the original invalid-rewire
 failure with its request skipped. These bounded observations do not establish
 source preservation, a general family or completion of the standard-library
 migration.
+
+The [shared formal-operation study](common-formal-access-v030/session.json)
+preserves ten complete first projects and forty actual pre-code observations.
+[First results](common-formal-access-v030/results-before.md) retain ordered
+kind/access diagnostics, private unused-body checks, profile barriers and all46
+forwarded invocation attempts. Those attempts are not child-start attestation;
+unchanged original sources and raw results are the later comparison baseline.

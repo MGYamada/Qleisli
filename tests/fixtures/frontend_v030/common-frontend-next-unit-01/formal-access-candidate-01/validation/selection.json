@@ -1,0 +1,11 @@
+{
+  "status": "prepared-not-executed",
+  "targets": ["unit_patterns", "runtime_parameter_patterns", "frontend_types", "ordinary_types", "body_effects", "source_collection", "shared_resolution", "sized_declarations", "selected_source_cli", "sized_source", "project", "operation_parameters", "basis_polymorphism"],
+  "scope": "Real shared declaration consumers, ordered generic kinds, all three finite capabilities, exact optional Meaning phase/tree/receipt binding, selected Basis substitutions, private/unused/dead/zero-fold source checking, owned type/owner/effect and existing small native/reference paths. Four shared-type unit tests are separately selected by the authored parent.",
+  "expected_counts_are_not_results": true,
+  "existing_ignored_tests": ["reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference", "direct_finite_source_gates_preserve_entangled_h_x_references", "rust_source_proposals_check_natively_and_preserve_small_system_coefficients"],
+  "explicit_skips": {"long_acyclic_import_chain_loads_on_a_small_stack": "Unrelated3000-file import traversal stress; traversal is unchanged.", "deep_import_cycle_reports_the_back_edge_and_cycle_path": "Unrelated3000-file import traversal stress; traversal is unchanged."},
+  "excluded_suite": {"frontend_ownership_differential": "4000-source differential corpus is outside this bounded formal unit; no claim of passing it."},
+  "fixture_closure": "Declared incomplete map; all-target compilation/lint and selected tests use additional dependencies/fixtures.",
+  "root_coordination": "Ordinary authored check selection under existing requirements, not a human constitutional act or release approval."
+}

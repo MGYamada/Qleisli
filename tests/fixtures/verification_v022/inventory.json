@@ -3358,7 +3358,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703",
+      "sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3461,7 +3461,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422",
+      "sha256": "5aa13633507fbc405a126b432f13bc62f480e8c7784e50f0a94beb1f58bbf7df",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3719,7 +3719,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+      "sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3733,7 +3733,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1",
+      "sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3822,7 +3822,7 @@
     },
     {
       "path": "src/frontend/sized/linear.rs",
-      "sha256": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
+      "sha256": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3910,7 +3910,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+      "sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4639,6 +4639,21 @@
       "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "src/frontend/formals.rs",
+      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn advance<E>( &mut self, ordinal: usize, source: &StaticParam, key: BinderKey, check: impl FnOnce(Prefix<'_>) -> Result<(Type<N>, Option<M>), E>, ) -> Result<(), E>",
+          "pub fn grant(&mut self, key: Option<&BinderKey>, access: Access) -> Result<(), AccessError>",
+          "pub fn into_operations(self, count: usize) -> BTreeMap<BinderKey, Operation<N, M>>",
+          "pub fn new() -> Self"
+        ],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
@@ -4653,7 +4668,7 @@
       "request": "No algorithm-specific request; declared effect and complete caller input/output ports are checked",
       "binding": "Only a fresh matching native checker issues AcceptedProgram from immutable artifact/request bytes; raw data is never executable",
       "encoding": "Each input register ordered low-axis-first; zero-bit Unit ownership survives; final output order is explicit",
-      "domain": "Sealed ζ8 gates; exact phases retained; observes whole correlated systems",
+      "domain": "Sealed \u03b68 gates; exact phases retained; observes whole correlated systems",
       "limits": "12 bits/register, branch nesting 64; exact evidence work charged where invoked; no global live-wire bound is claimed by verify",
       "failure": "Native rejection, proposal bound, decoding or transport error; no accepted handle and no Rust fallback",
       "replacement": [
@@ -4675,7 +4690,7 @@
       "request": "Independent input/output encoding and logical matrix, complete structural basis trees",
       "binding": "Actual finite steps including controls/retained calls; checked equation and all full-space validity premises",
       "encoding": "First field low; +1 ordered routing; arbitrary reference extension; input image equality alone insufficient",
-      "domain": "Z[ζ8,1/2], exact equality, no quotient by global phase",
+      "domain": "Z[\u03b68,1/2], exact equality, no quotient by global phase",
       "limits": "Six-bit/64-dimensional matrices; 1024 actual steps; caller shared Budget; identity requires exact entry",
       "failure": "ContractError including mismatch/type/capacity; no checked receipt",
       "replacement": [
@@ -4696,7 +4711,7 @@
       "binding": "Native-check and extract BOTH raw bodies, compare full operators and ordered outputs, then freeze graph. Attachment checks the independently expected exact BasisType tree, immutable dependency/source identity and both raw snapshots; equal bit width is insufficient.",
       "encoding": "Exact trees and owner ports; Unit scalar phases; source snapshots are labels/data, not source adequacy proof",
       "domain": "R8 finite operator",
-      "limits": "Signature≤6 bits; bodies≤1M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
+      "limits": "Signature\u22646 bits; bodies\u22641M expanded steps/depth32; sources128 and aggregate1MiB; branches checked in both bodies",
       "failure": "No receipt on either invalid body, changed dependency/source, wrong phase or exceeded shared work",
       "replacement": [
         "VM-23",
@@ -4717,7 +4732,7 @@
       "request": "Optional qleisli.request v1 meaning, exact signature and source snapshot supplied independently; no request means validity only",
       "binding": "QIRF1 finite-v0 and QIRF2 finite-meaning-v1 actual/specification evidence reconstructed from full bytes in fresh process",
       "encoding": "Exact serialized root interface required for semantic request; owner/wire/output order retained",
-      "domain": "ζ8 phase8/permutation meanings; no wider dyadic transport embedding",
+      "domain": "\u03b68 phase8/permutation meanings; no wider dyadic transport embedding",
       "limits": "16MiB JSON, depth128/1M values, 65536 objects, 1M nodes, 1MiB aggregate sources/identities; one shared exact budget",
       "failure": "Strict format/limit/contract/invalid_ir errors with available JSON pointer; no evidence from serialized success flag",
       "replacement": [
@@ -4738,7 +4753,7 @@
       "binding": "Immutable QIRF bytes and description bound in private result; full unitary, input/output ports, effect and source evidence rechecked",
       "encoding": "Exact legacy trees; one quantum input/output, no classical ports; ordered wires and token identities; Unit is nonempty owner",
       "domain": "qleisli.finite-matrix v1 zeta8-dyadic-v1; four independent dyadic coefficients in ordered basis(1,sqrt2,i,i*sqrt2)",
-      "limits": "Combined16MiB; dimensions≤64; per coefficient i128 and denominator≤126; shared leaf budget ceiling10M",
+      "limits": "Combined16MiB; dimensions\u226464; per coefficient i128 and denominator\u2264126; shared leaf budget ceiling10M",
       "failure": "Reject shape/domain/phase/request/identity mismatch and capacity; no Lean seal or production hierarchy value",
       "replacement": [
         "VM-23",
@@ -4761,7 +4776,7 @@
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Same generated IR independently verified; source-preservation proof remains open",
       "encoding": "Current production finite types, exact tuples, moves/scopes and sealed primitive signatures; sized source experimental",
-      "domain": "Finite ζ8; numeric run output is approximate diagnostic only",
+      "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
       "limits": "Parser nesting64/tuple64; source tree4096/depth64; calls/static expansion1M work/depth64; source policy1MiB/file16MiB/project or explicit legacy",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
@@ -4783,7 +4798,7 @@
       "request": "Declared terminal profile and explicit output labels/order; no generic algorithm contract",
       "binding": "QASM reconstructed ownership and finite verification; QIR LLVM/profile validation plus Rust recheck; Python immutable transported bytes",
       "encoding": "Twelve gate vocabulary, static resources and ordered terminal output; unnamed LLVM blocks use identity",
-      "domain": "Exact ζ8 only; unsupported capabilities diagnose",
+      "domain": "Exact \u03b68 only; unsupported capabilities diagnose",
       "limits": "QASM/QIR reader1MiB; terminal qubits12/gates4096/tokens65536/ops65536; QIR functions17/blocks64/instructions8192; QIRF16MiB",
       "failure": "Structured original QASM spans/artifact pointers when available; no location invented; no device execution",
       "replacement": [
@@ -5198,7 +5213,7 @@
     {
       "id": "qir-reader",
       "scope": "optional LLVM text/bitcode reader",
-      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts≤12",
+      "value": "1MiB input,17 functions/64 blocks/8192 instructions; static resource counts\u226412",
       "source": "python/qleisli/_qir.py",
       "test": "scripts/test_connections.py#test_python_limits_and_cli",
       "replacement": [
@@ -5240,7 +5255,7 @@
     {
       "id": "sampling-trials",
       "scope": "fresh execution policy; random source/seed is no evidence",
-      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts≤1M, seedu64",
+      "value": "SampleLimits caller/default bounds; projection copy work reserved before each visible/hidden random draw; CLI shots1..1M, host attempts\u22641M, seedu64",
       "source": "src/host.rs",
       "test": "tests/sampling.rs#failures_are_errors_and_limits_apply_before_draws",
       "replacement": [

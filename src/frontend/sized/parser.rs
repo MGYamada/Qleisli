@@ -159,16 +159,9 @@ impl Projection<'_, '_> {
                 source::Requirement::Predicate(predicate) => {
                     Requirement::Predicate(self.predicate(predicate))
                 }
-                source::Requirement::Access(access) => Requirement::Access(
-                    match access.access {
-                        source::Access::Apply => "Apply",
-                        source::Access::Adjoint => "Adjoint",
-                        source::Access::Controlled => "Controlled",
-                    }
-                    .into(),
-                    self.ident(&access.name),
-                    access.span,
-                ),
+                source::Requirement::Access(access) => {
+                    Requirement::Access(access.access, self.ident(&access.name), access.span)
+                }
             })
             .collect();
         let source::FnBody::Quantum(body) = &declaration.body else {

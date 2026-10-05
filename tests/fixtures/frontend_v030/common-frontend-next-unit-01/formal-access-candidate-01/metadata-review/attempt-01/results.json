@@ -1,0 +1,121 @@
+{
+  "status": "passed",
+  "commands": [
+    {
+      "label": "before.inventory",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "started_utc": "2026-10-05T18:37:13.397697+00:00",
+      "exit_code": 1,
+      "stdout": {
+        "path": "before.inventory.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "before.inventory.stderr.txt",
+        "sha256": "bbd4fda93a95d433982f8b34551361ca894fb2d853a272a71e349c2383bfd4ed"
+      }
+    },
+    {
+      "label": "before.coverage",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "started_utc": "2026-10-05T18:37:13.696995+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "before.coverage.stdout.txt",
+        "sha256": "6bf1f5e58aa6cc2f70c03b3667c992750442dcbe69f91e676bd363c8bde5d930"
+      },
+      "stderr": {
+        "path": "before.coverage.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "source-sync",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/maintain_release.py",
+        "--write",
+        "--report",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/source-plan.reviewed.json",
+        "--review-source",
+        "src/frontend/compile/operations.rs",
+        "--review-source",
+        "src/frontend/mod.rs",
+        "--review-source",
+        "src/frontend/sized/ast.rs",
+        "--review-source",
+        "src/frontend/sized/check.rs",
+        "--review-source",
+        "src/frontend/sized/linear.rs",
+        "--review-source",
+        "src/frontend/sized/parser.rs"
+      ],
+      "started_utc": "2026-10-05T18:37:13.888678+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "source-sync.stdout.txt",
+        "sha256": "e7aa6aff1baa165320f9313bbd6889cca96caaf7d09f5cdbed8fcfee406da406"
+      },
+      "stderr": {
+        "path": "source-sync.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "after.inventory",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "started_utc": "2026-10-05T18:37:21.386508+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "after.inventory.stdout.txt",
+        "sha256": "9d4004245cecb9388bb9b5fbbd5eb1124983d7b0c5b287b75dd8cc53560d2f73"
+      },
+      "stderr": {
+        "path": "after.inventory.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "label": "after.coverage",
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "started_utc": "2026-10-05T18:37:21.792616+00:00",
+      "exit_code": 0,
+      "stdout": {
+        "path": "after.coverage.stdout.txt",
+        "sha256": "01988f73bb44af12755aa85e81b748373e9f18116c60fdcae362f0a3846b7164"
+      },
+      "stderr": {
+        "path": "after.coverage.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  ],
+  "source_count": 254,
+  "source_hash_changes": [
+    "src/frontend/compile/operations.rs",
+    "src/frontend/mod.rs",
+    "src/frontend/sized/ast.rs",
+    "src/frontend/sized/check.rs",
+    "src/frontend/sized/linear.rs",
+    "src/frontend/sized/parser.rs"
+  ],
+  "private_source_added": "src/frontend/formals.rs",
+  "other_inventory_fields_unchanged": true,
+  "coverage_changed_fields": [
+    "surface_sha256"
+  ],
+  "scope": "Source/surface identity only; no new route, API authority, proof discharge, guarantee or release validation.",
+  "original_sources_and_historical_records_modified": false
+}
