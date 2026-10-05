@@ -31,12 +31,18 @@ pub(super) enum Guard {
 pub(super) enum TypeRule {
     Fixed(&'static [TypeShape], TypeShape),
     QuantumEndomorphism,
+    Split,
+    Join,
 }
 impl TypeRule {
+    pub fn dependent(self) -> bool {
+        !matches!(self, Self::Fixed(..))
+    }
     pub fn runtime_arity(self) -> usize {
         match self {
             Self::Fixed(inputs, _) => inputs.len(),
-            Self::QuantumEndomorphism => 1,
+            Self::QuantumEndomorphism | Self::Split => 1,
+            Self::Join => 2,
         }
     }
 }
@@ -53,6 +59,60 @@ pub(super) fn quantum_endomorphism<N: Clone>(input: &Type<N>, span: Span) -> Res
             span,
             "scalar phase requires one Q<Unit>, Q<Bit> or Q<Bits<n>> owner",
         ))
+    }
+}
+
+/// One input-dependent exact-tree rule, shared by symbolic and concrete
+/// checking. It authorizes no implicit coherence or physical-state assumption.
+pub(super) fn dependent_output<N: Clone>(
+    rule: TypeRule,
+    inputs: &[&Type<N>],
+    span: Span,
+) -> Result<Type<N>> {
+    if inputs.len() != rule.runtime_arity() {
+        return Err(Error::new("type", span, "runtime argument arity mismatch"));
+    }
+    for input in inputs {
+        if input.storage_size(4096, 64).is_none() {
+            return Err(Error::new(
+                "limit",
+                span,
+                "primitive type exceeds 4096 cells or depth 64",
+            ));
+        }
+    }
+    match rule {
+        TypeRule::QuantumEndomorphism => quantum_endomorphism(inputs[0], span),
+        TypeRule::Split => {
+            let fields = inputs[0]
+                .quantum_basis()
+                .and_then(Type::tuple_fields)
+                .filter(|fields| fields.len() == 2)
+                .ok_or_else(|| Error::new("type", span, "split requires Q<(A, B)>"))?;
+            Ok(Type::pair(
+                Type::quantum(fields[0].clone()),
+                Type::quantum(fields[1].clone()),
+            ))
+        }
+        TypeRule::Join => {
+            let a = inputs[0]
+                .quantum_basis()
+                .ok_or_else(|| Error::new("type", span, "join requires two quantum owners"))?;
+            let b = inputs[1]
+                .quantum_basis()
+                .ok_or_else(|| Error::new("type", span, "join requires two quantum owners"))?;
+            let x = a.storage_size(4096, 64).expect("bounded input");
+            let y = b.storage_size(4096, 64).expect("bounded input");
+            if x.nodes + y.nodes + 1 > 4096 || x.depth.max(y.depth) >= 64 {
+                return Err(Error::new(
+                    "limit",
+                    span,
+                    "joined basis exceeds 4096 cells or depth 64",
+                ));
+            }
+            Ok(Type::quantum(Type::pair(a.clone(), b.clone())))
+        }
+        TypeRule::Fixed(..) => unreachable!("fixed primitive has no dependent rule"),
     }
 }
 
@@ -101,6 +161,8 @@ primitives! {
     PrependBit => ("std::classical::prepend_bit", 1, Fixed(&[CBit, CBits(A(0, 0))], CBits(A(0, 1))), Unitary, None),
     Unit => ("std::quantum::unit", 0, Fixed(&[Unit], QUnit), Unitary, None),
     Finish => ("std::quantum::finish", 0, Fixed(&[QUnit], Unit), Unitary, None),
+    Split => ("std::quantum::split", 0, TypeRule::Split, Unitary, None),
+    Join => ("std::quantum::join", 0, TypeRule::Join, Unitary, None),
 }
 
 #[cfg(test)]
@@ -131,9 +193,9 @@ mod tests {
                     inputs.iter().for_each(|f| shape(*f, s.natural_arity));
                     shape(output, s.natural_arity);
                 }
-                TypeRule::QuantumEndomorphism => {
+                TypeRule::QuantumEndomorphism | TypeRule::Split | TypeRule::Join => {
                     assert_eq!(s.natural_arity, 0);
-                    assert_eq!(s.types.runtime_arity(), 1);
+                    assert!((1..=2).contains(&s.types.runtime_arity()));
                     assert_eq!(s.effect, Effect::Unitary);
                 }
             }

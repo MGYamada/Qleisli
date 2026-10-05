@@ -26,7 +26,7 @@ def main():
         text = path.read_text()
         assert text.count('primitives! {') == 1
         path.write_text(text.replace('primitives! {', '''primitives! {
-    OmittedPrimitive => ("std::quantum::omitted", 0, &[Bit], Bit, Unitary, None),''', 1))
+    OmittedPrimitive => ("std::quantum::omitted", 0, Fixed(&[Bit], Bit), Unitary, None),''', 1))
         command = ['cargo', 'check', '--offline', '--lib', '--target-dir', str(copy / 'target')]
         result = subprocess.run(command, cwd=copy, capture_output=True, text=True, timeout=180)
         assert result.returncode != 0, 'unhandled primitive compiled'

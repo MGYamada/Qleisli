@@ -249,7 +249,7 @@ fn node_trace(
             let mut output_start = 0;
             for (out, &input) in node.after.iter().zip(&owners) {
                 let input_start: usize = node.before[..input].iter().map(|p| p.axes.len()).sum();
-                if out.kind != node.before[input].kind
+                if out.basis != node.before[input].basis
                     || out.axes.len() != node.before[input].axes.len()
                     || route[output_start..output_start + out.axes.len()]
                         != (input_start..input_start + out.axes.len()).collect::<Vec<_>>()
@@ -464,6 +464,11 @@ impl Builder<'_, '_> {
         Ok(Port {
             owner: self.lower.owner,
             kind: if bit { PortKind::Bit } else { PortKind::Bits },
+            basis: if bit {
+                SourceType::bit()
+            } else {
+                SourceType::bits(axes.len() as u32)
+            },
             axes,
         })
     }
@@ -852,6 +857,7 @@ mod tests {
         let input = Port {
             owner: 1,
             kind: PortKind::Bit,
+            basis: SourceType::bit(),
             axes: vec![0],
         };
         let output = Port {
@@ -876,6 +882,7 @@ mod tests {
         let input = Port {
             owner: 900,
             kind: PortKind::Bit,
+            basis: SourceType::bit(),
             axes: vec![7],
         };
         let output = Port {

@@ -146,6 +146,47 @@ impl<N> Type<N> {
             _ => None,
         }
     }
+    /// Borrow the exact ordinary basis tree of one quantum owner. This is a
+    /// type view, not an ordinary value or an implicit owner split.
+    pub fn quantum_basis(&self) -> Option<&Self> {
+        match &self.kind {
+            Kind::Q(basis) => Some(basis),
+            _ => None,
+        }
+    }
+    /// Bounded retained type storage. The Q wrapper shares its owner's cell;
+    /// every node inside its basis still counts, even when it has zero width.
+    pub(super) fn storage_size(&self, nodes: usize, depth: usize) -> Option<TreeSize> {
+        let mut size = TreeSize::default();
+        let mut pending = vec![(self, 1)];
+        while let Some((ty, level)) = pending.pop() {
+            if level > depth {
+                return None;
+            }
+            if let Kind::Q(basis) = &ty.kind {
+                pending.push((basis, level));
+                continue;
+            }
+            size.nodes = size.nodes.checked_add(1)?;
+            size.depth = size.depth.max(level);
+            if size.nodes > nodes {
+                return None;
+            }
+            if let Kind::Tuple(fields) = &ty.kind {
+                if fields.len() > 64
+                    || size
+                        .nodes
+                        .checked_add(pending.len())?
+                        .checked_add(fields.len())?
+                        > nodes
+                {
+                    return None;
+                }
+                pending.extend(fields.iter().rev().map(|field| (field, level + 1)));
+            }
+        }
+        Some(size)
+    }
     pub(super) fn is_quantum_owner(&self) -> bool {
         matches!(self.kind, Kind::Q(_))
     }
@@ -297,6 +338,25 @@ impl<N: fmt::Debug> fmt::Debug for SizedDebug<'_, N> {
                 f.debug_tuple("Tuple").field(&Fields(fields)).finish()
             }
         }
+    }
+}
+
+impl Type<u32> {
+    /// Checked physical width of an ordinary finite basis tree. Q is not a
+    /// basis constructor; callers must explicitly select an owner's basis.
+    pub(super) fn basis_width(&self) -> Option<u32> {
+        let mut total = 0u32;
+        let mut pending = vec![self];
+        while let Some(ty) = pending.pop() {
+            match &ty.kind {
+                Kind::Unit => {}
+                Kind::Bit => total = total.checked_add(1)?,
+                Kind::Bits(n) => total = total.checked_add(*n)?,
+                Kind::Tuple(fields) => pending.extend(fields.iter().rev()),
+                Kind::Q(_) => return None,
+            }
+        }
+        Some(total)
     }
 }
 

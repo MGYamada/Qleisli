@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "kind": "retained-recursive-basis-accounting-repair",
+  "files": [
+    {
+      "path": "src/frontend/sized/lower/preservation.rs",
+      "before_sha256": "ad6adcc7e5ba059bb265dcc6944cf487f787eae0fc53550437823f980bf6e0d9",
+      "after_sha256": "021e4cbee0192bd8cceff96d91219e6dc659ca1b32abe7a88fb33dcd06fa616b"
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "before_sha256": "e8a935a30705ceb7813c7952eb31167d220dcba0677412411cf64cac8b2f6ac6",
+      "after_sha256": "0774b297cc4480a0b2de4b4db7ddc4c5eafb56a1cd266f9aa5be68b63c2537fa"
+    }
+  ],
+  "finding": "Independent review found event trace accounting counted owners but omitted recursively retained basis nodes in idle frame owners. No large reproducer was executed.",
+  "change": "Keep the prior atom-only charge and add basis.nodes-1 for each retained before/after frame and quantum input/output; compute all costs using borrowed ports before cloning. Reject without modifying trace budget or event/current state. Move concrete Type implementation above its test module for observed Clippy items_after_test_module.",
+  "regression": "One H step with an idle zero-width balanced four-Unit basis (7 nodes). Old charge fits exactly into remaining budget; new charge rejects, then succeeds with sufficient budget and records the extra 12 nodes. Existing Unit/Bit/Bits0 atoms add zero extra. No maximum-size or 1600-step source is generated.",
+  "validation": "No build/test/rustfmt by repair author. Root rerun pending."
+}

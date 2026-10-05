@@ -6,10 +6,17 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Admit exact packaged quantum tuple bases and explicit binary `split`/`join`
+  in the selected hierarchy, preserving nested trees, ordered axes and linear
+  owners. Compose explicit Unit unitors without losing scalar phase or retained
+  reference correlations; bind lowering to the existing structural rules and
+  charge retained recursive frame types to the trace storage budget (#43).
+- Update the primitive-omission calibration to the current catalog macro so
+  it reaches exhaustive-handler checking instead of failing at macro parsing.
 - Expose explicit `unit(())` and `finish(q)` maps on the common hierarchy
   path, preserving exact Unit owners, scalar phase and complete argument
-  evaluation through existing checked structure (#43). Finite/Raw and packaged
-  tuple support remain separate unfinished integration work.
+  evaluation through existing checked structure (#43). Finite/Raw support
+  remains separate unfinished integration work.
 - Require constitutional state to be reread and checked at agent startup and
   after model/session/context changes. Preserve adopted human decisions,
   pending obligations and paused work across handoffs.

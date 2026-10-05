@@ -150,11 +150,38 @@ binding, and preserves the phase and any retained reference. An observing
 argument still makes its caller observing.
 
 These maps can form explicit left/right maps on separate-owner products, such
-as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. They do not identify that interface with
-`Q<(Unit,Bit)>`. Packaged quantum tuple projection and its explicit unitors
-remain required work. The finite source catalog does not yet expose these two
-names, and the shared Raw profile rejects their quantum Unit intermediates;
-no observing discard or retry after native failure supplies a substitute.
+as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. The finite source catalog does not yet expose
+these two names, and the shared Raw profile rejects their quantum Unit
+intermediates; no observing discard or retry after native failure supplies a
+substitute.
+
+The selected hierarchy also admits packaged quantum bases built recursively
+from `Unit`, `Bit`, `Bits<n>` and ordered tuples, including `Op<A>` for those
+bases. `Q<(A,B)>` is one owner; `(Q<A>,Q<B>)` is two. Ordinary tuple patterns
+cannot unpack the former. The two explicit maps are:
+
+- `split(q): Q<(A,B)> -> (Q<A>,Q<B>)`, consuming one owner and returning two
+  fresh owners in left/right order;
+- `join(a,b): (Q<A>,Q<B>) -> Q<(A,B)>`, consuming two distinct owners and
+  returning one fresh owner with the complete ordered basis tree.
+
+Both names are in `std::quantum`, take no static arguments, and have Unitary
+action with coefficient `+1`. `split` has one argument and requires an immediate
+binary basis tuple; `join` has two arguments, not one ordinary tuple argument.
+Their arguments evaluate completely, once, from left to right. Nested trees,
+zero-axis factors, correlations with retained owners and physical axis order
+are preserved. Neither map asserts separability, flattens a tuple, changes a
+basis tag, measures or silently discards an owner. They use the existing native
+`split_tuple` and `join_tuple` rules; native support for other arities does not
+widen this source signature.
+
+An explicit left unitor on `Q<(Unit,A)>` is `split` followed by `finish` on its
+Unit owner; its inverse is `join(unit(()), a)`. The right unitor uses the other
+factor. The coefficient is exactly `+1` on every basis value and retained
+reference. Scalar work already performed on an eliminated Unit factor remains
+in the composition. These maps are never inserted by implicit coercion.
+`phase_eighth` retains its atom-only selected-source signature: applying it
+directly to a packaged tuple still rejects.
 
 Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.
@@ -225,7 +252,10 @@ The public sized `SourceType` view uses `kind() == "unit"`, `"bit"` or `"bits"` 
 ordinary or quantum leaf. Callers must use `is_quantum()` to distinguish their
 ownership; the kind string alone is insufficient. Ordinary Unit and `Q<Unit>`
 both have kind `"unit"`, width zero and no tuple fields, but only the latter
-has a quantum owner. The hierarchy's Unit owner port, Bits(0) owner port and
+has a quantum owner. A packaged quantum tuple has kind `"tuple"` but no ordinary
+destructuring fields. `quantum_basis()` exposes its exact read-only basis tree;
+`FramePort::basis()` retains the same whole tree on a quantum port. Code must
+not infer ownership, arity or equality from width or kind alone. The hierarchy's Unit owner port, Bits(0) owner port and
 empty quantum-port list are three distinct interfaces. Native classical port tags are
 unchanged by this source/API migration.
 
@@ -277,9 +307,12 @@ controlled-phase primitives and operation providers. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
-decision is never retried as weaker Raw validity. General product quantum
-bases, reusing basis functions as runtime computations and full common checking
-also remain unfinished profile obligations.
+decision is never retried as weaker Raw validity. General Basis polymorphism,
+reusing basis functions as runtime computations and full common checking
+remain unfinished profile obligations. Packaged hierarchy bases retain the
+selected-source concrete width limits and charge every basis-tree node,
+including zero-width factors, to preparation storage/depth limits before
+materializing copied trees.
 Successful generic checking does not imply successful concrete lowering.
 These limits do not establish separate type universes or close the remaining
 [#27](https://github.com/MGYamada/Qleisli/issues/27) work.

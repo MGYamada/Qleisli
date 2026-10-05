@@ -1,0 +1,41 @@
+{
+  "format": "qleisli.independent-test-inputs",
+  "version": 1,
+  "status": "frozen-before-first-test-execution",
+  "tests": 11,
+  "test": {
+    "path": "tests/quantum_tuple_unitors.rs",
+    "sha256": "683d5f1f9a0dc8fae4b0733ecbcb08e19a3e188624be8ee0212b6f1cebb91278"
+  },
+  "expectations_sha256": "99e2dc8545377ad82b0260b1ed75f3f5cfc17de821bd94c5be0add4b3c60b03e",
+  "files": {
+    "independent-expectations.json": "99e2dc8545377ad82b0260b1ed75f3f5cfc17de821bd94c5be0add4b3c60b03e",
+    "independent-first-test.rs.txt": "683d5f1f9a0dc8fae4b0733ecbcb08e19a3e188624be8ee0212b6f1cebb91278",
+    "independent-tests.md": "ed41d95346560338bcc5e23eec2482c5229ecbdc16f7064c6f3b4d83a8fab069",
+    "independent-sources/argument-once.qli": "105fd40294d08dea606670ca2e749bc28dfdf27e4bba93e2303696af9b6585f8",
+    "independent-sources/left-bit.qli": "5c060f3c59de7d1119e24e15c5debed6d4c6e55d4fd9f7d390364f124c1d5e8e",
+    "independent-sources/left-bits0.qli": "ce97ec20d50cc5950d95577d09f317d2e48a386ac687599fa254949655ebcf49",
+    "independent-sources/left-bits1.qli": "793b7864fe8f3ff862c2792663c3db58163d0faf8abccebf0d8baea063dd769c",
+    "independent-sources/left-bits2.qli": "f1e78148d7f325210ac431bddf3feef171d3e276e0386c89e67e9c1a1dae6077",
+    "independent-sources/left-nested-left.qli": "f2b8992eaff52f93f01e70b5c10078097e0a45ca222341a99422cb309ebd6396",
+    "independent-sources/left-nested-right.qli": "8152c2637cfc3a263b7e5db6f9e0697469ecb8a523a63ba7627d0f282ac96439",
+    "independent-sources/left-unit.qli": "15c4f7b3234316438d78e9a7744271ecbefb80d3edde1863af2a1b56eacd8275",
+    "independent-sources/maps-after-observation.qli": "40e8590f2eebbcfa7f57d549fbb42f4a9162088cdf430a4f6413865ffe7d29fb",
+    "independent-sources/operations.qli": "7ba338cc3ca782f3d3964ae9c89a127e7d5b9e8bf07c64cfab351337506fe11c",
+    "independent-sources/right-bit.qli": "81e5665cfba52492d29fb33caa716a6422b4581ced99576593e3ed20233171ee",
+    "independent-sources/right-bits0.qli": "d0f6d552d0606abcd8563a956409992814a41fcd4cd67a2a9d4662507964ef9c",
+    "independent-sources/right-bits1.qli": "57b00e3c6ac055f8c9547176cc905b6099e8924f4352d47bb42e320dfd682e28",
+    "independent-sources/right-bits2.qli": "d1d3363cf5a1f6e6fcdd6790327d3fadf521464eb1e21c42ff5b8dd9c4fbc79b",
+    "independent-sources/right-nested-left.qli": "64497cd2d91eaa5560a37d613b5d5e54f75242af37c163ac8fd17daae3dc7dd1",
+    "independent-sources/right-nested-right.qli": "3b8e40609d2f983a824aaa94b6a00ee11ecef76bb6c0a2299082492fd3886e81",
+    "independent-sources/right-unit.qli": "610c1f1fc2e72ce1376e8b9d43799c7e325c9e2aa6dbaa32dce97e15954429f0",
+    "independent-prior-tests/before.json": "a61f6c4d756a3f216cb64eb1d9cf1abf8db79319c2b1c6d0496f8a9e3125cef6",
+    "independent-prior-tests/frontend_types.rs.txt": "f1a58f669f8da5045eb5fa9625468d1592ff525d80c81eda7d99ceb2120f85f5",
+    "independent-prior-tests/quantum_unit_maps.rs.txt": "01d149412f26add1cd289eb414be0fb013baf7542d7739e9f7f96952d1fa981a",
+    "independent-prior-tests/repair.json": "74e411fa96a24ff9d64327d6294bc9aeed80faccdf620e5833ddd44a7055d6c1",
+    "independent-prior-tests/repair.patch": "7242bae2eb0b0ed64a04a66838d5fe057856da23a567bbcc5a56ecabd3f4c045",
+    "independent-prior-tests/sized_source.rs.txt": "40e36e9d9b238f82cdf4381a7393ed048fc37e122d8eecb3388fddc2516b192e"
+  },
+  "no_build_or_execution_by_author": true,
+  "code_reference": "9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43"
+}

@@ -1,0 +1,17 @@
+--- a/src/frontend/sized/lower/preservation.rs
++++ b/src/frontend/sized/lower/preservation.rs
+@@ -1337,9 +1337,11 @@
+             let wrong = make(helper, join, split);
+             validate(&wrong).unwrap();
+             let mut bad = valid.clone();
+-            graph_mutation(&mut bad, |graph| {
+-                *graph = json::parse(wrong.pure_graph()).unwrap()
+-            });
++            // The helper changes fresh owner identities too. Copy its whole
++            // instrument, including readout/preparation owner references, not
++            // just its circuit. The retained source remains the original.
++            bad.payload = wrong.payload.clone();
++            bad.graph = wrong.graph.clone();
+             bad.comparison = wrong.comparison.clone();
+             bad.precursor = wrong.precursor.clone();
+             bad.events = wrong.events.clone();

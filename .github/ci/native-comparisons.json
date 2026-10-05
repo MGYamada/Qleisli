@@ -840,6 +840,13 @@
           "+1.98.1",
           "test",
           "--test",
+          "quantum_tuple_unitors"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
           "runtime_parameter_patterns"
         ],
         [

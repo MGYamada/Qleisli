@@ -1,6 +1,6 @@
 //! Untrusted concrete, source-order ownership proposal. No verified IR is made.
 use super::ast::{self, *};
-use super::primitive::{Primitive, Size, TypeRule, TypeShape, quantum_endomorphism};
+use super::primitive::{Primitive, Size, TypeRule, TypeShape, dependent_output};
 use super::{Error, Instantiation, ParsedProgram, Result, Span};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -28,7 +28,8 @@ impl SourceType {
                 TypeKind::Unit => "unit",
                 TypeKind::Bit => "bit",
                 TypeKind::Bits(_) => "bits",
-                _ => unreachable!("sized quantum profile has only Unit/Bit/Bits owners"),
+                TypeKind::Tuple(_) => "tuple",
+                TypeKind::Q(_) => unreachable!("nested Q is not a basis"),
             },
             TypeKind::Bit => "bit",
             TypeKind::Bits(_) => "bits",
@@ -40,12 +41,7 @@ impl SourceType {
         match &self.kind {
             TypeKind::Bit => Some(1),
             TypeKind::Bits(n) => Some(*n),
-            TypeKind::Q(basis) => match basis.kind {
-                TypeKind::Unit => Some(0),
-                TypeKind::Bit => Some(1),
-                TypeKind::Bits(n) => Some(n),
-                _ => unreachable!("sized quantum profile has only Unit/Bit/Bits owners"),
-            },
+            TypeKind::Q(basis) => basis.basis_width(),
             TypeKind::Tuple(_) => None,
             TypeKind::Unit => Some(0),
         }
@@ -64,7 +60,9 @@ impl SourceType {
         }
     }
     fn cells(&self) -> usize {
-        self.owner_shape_size().nodes
+        self.owner_shape_size()
+            .nodes
+            .max(self.storage_size(4096, 64).map_or(4097, |size| size.nodes))
     }
 }
 fn bit() -> SourceType {
@@ -521,25 +519,86 @@ fn concrete_type(
     values: &BTreeMap<BinderKey, u32>,
     span: Span,
 ) -> Result<SourceType> {
-    let ty = t.map_sizes(&mut |size| {
-        let value = natural(size, values)?;
-        if value > 8 {
-            return Err(error(
-                "limit",
-                span,
-                "concrete register/classical sequence exceeds eight bits",
-            ));
-        }
-        Ok(value)
-    })?;
-    if ty.width().is_some_and(|n| n > 8) {
-        return Err(error(
+    t.storage_size(4096, 64).ok_or_else(|| {
+        error(
             "limit",
             span,
-            "concrete register/classical sequence exceeds eight bits",
-        ));
+            "concrete type exceeds 4096 cells or depth 64",
+        )
+    })?;
+    let mut sizes = Vec::new();
+    let mut pending = vec![t];
+    while let Some(node) = pending.pop() {
+        match &node.kind {
+            TypeKind::Bits(n) => {
+                let value = natural(n, values)?;
+                if value > 8 {
+                    return Err(error(
+                        "limit",
+                        span,
+                        "concrete register/classical sequence exceeds eight bits",
+                    ));
+                }
+                sizes.push(value);
+            }
+            TypeKind::Q(basis) => pending.push(basis),
+            TypeKind::Tuple(fields) => pending.extend(fields.iter().rev()),
+            _ => {}
+        }
     }
-    Ok(ty)
+    // Width sums are checked on borrowed symbolic trees before allocating the
+    // concrete representation. Each ordinary tuple remains a value product.
+    fn widths(t: &ast::Type, sizes: &mut impl Iterator<Item = u32>, span: Span) -> Result<u32> {
+        match &t.kind {
+            TypeKind::Unit => Ok(0),
+            TypeKind::Bit => Ok(1),
+            TypeKind::Bits(_) => Ok(sizes.next().expect("one resolved size per occurrence")),
+            TypeKind::Tuple(fields) => fields.iter().try_fold(0u32, |n, field| {
+                n.checked_add(widths(field, sizes, span)?)
+                    .ok_or_else(|| error("limit", span, "concrete basis width overflow"))
+            }),
+            TypeKind::Q(basis) => {
+                let width = widths(basis, sizes, span)?;
+                if width > 8 {
+                    return Err(error(
+                        "limit",
+                        span,
+                        "concrete quantum owner exceeds eight bits",
+                    ));
+                }
+                Ok(0)
+            }
+        }
+    }
+    widths(t, &mut sizes.iter().copied(), span)?;
+    let mut sizes = sizes.into_iter();
+    t.map_sizes(&mut |_| Ok::<_, Error>(sizes.next().expect("resolved source size")))
+}
+fn concrete_capacity(ty: &SourceType, span: Span) -> Result<()> {
+    ty.storage_size(4096, 64).ok_or_else(|| {
+        error(
+            "limit",
+            span,
+            "concrete type exceeds 4096 cells or depth 64",
+        )
+    })?;
+    let mut pending = vec![ty];
+    while let Some(node) = pending.pop() {
+        match &node.kind {
+            TypeKind::Q(basis) => {
+                if basis.basis_width().is_none_or(|width| width > 8) {
+                    return Err(error(
+                        "limit",
+                        span,
+                        "concrete quantum owner exceeds eight bits",
+                    ));
+                }
+            }
+            TypeKind::Tuple(fields) => pending.extend(fields),
+            _ => {}
+        }
+    }
+    Ok(())
 }
 fn expected(value: &SourceValue, ty: &SourceType, span: Span) -> Result<()> {
     if &value.ty == ty {
@@ -688,15 +747,11 @@ impl Builder<'_> {
                 if let Parameter::Operation(name, basis) = p {
                     let target_type =
                         self.provider_type(operations[&name.name].target(), function.span)?;
-                    let required = concrete_type(
-                        &ast::Type::quantum(match basis {
-                            Basis::Unit => ast::Type::unit(),
-                            Basis::Bit => ast::Type::bit(),
-                            Basis::Bits(n) => ast::Type::bits(n.clone()),
-                        }),
+                    let required = SourceType::quantum(concrete_type(
+                        basis,
                         &resolved_naturals,
                         function.span,
-                    )?;
+                    )?);
                     if target_type != required {
                         return Err(error(
                             "type",
@@ -1143,7 +1198,7 @@ impl Builder<'_> {
                     let signature = kind.signature();
                     // These contracts reject arity before evaluating the sole
                     // argument; its complete work is then retained exactly once.
-                    if matches!(signature.types, TypeRule::QuantumEndomorphism)
+                    if signature.types.dependent()
                         || matches!(kind, Primitive::Unit | Primitive::Finish)
                     {
                         if arguments.len() != signature.natural_arity {
@@ -1174,8 +1229,12 @@ impl Builder<'_> {
                         .iter()
                         .map(|e| self.expr(e, scope, frame, depth))
                         .collect::<Result<_>>()?;
-                    let (types, output, effect) =
-                        primitive(kind, &naturals, values.first().map(|value| &value.ty), span)?;
+                    let (types, output, effect) = primitive(
+                        kind,
+                        &naturals,
+                        &values.iter().map(|value| &value.ty).collect::<Vec<_>>(),
+                        span,
+                    )?;
                     self.step(
                         StepKind::Primitive(kind, naturals),
                         types,
@@ -1406,6 +1465,7 @@ impl Frame {
         Ok(())
     }
     fn fresh(&mut self, ty: &SourceType, span: Span) -> Result<SourceValue> {
+        concrete_capacity(ty, span)?;
         if ty.value_cells() > 4096 {
             return Err(error("limit", span, "concrete value exceeds 4096 cells"));
         }
@@ -1518,7 +1578,7 @@ fn bind(pattern: &Pattern, value: SourceValue, scope: &mut Scope, frame: &mut Fr
 fn primitive(
     kind: Primitive,
     ns: &[u32],
-    input: Option<&SourceType>,
+    inputs: &[&SourceType],
     span: Span,
 ) -> Result<(Vec<SourceType>, SourceType, Effect)> {
     let signature = kind.signature();
@@ -1531,11 +1591,29 @@ fn primitive(
     }
     let (inputs, output) = match signature.types {
         TypeRule::Fixed(inputs, output) => (inputs, output),
-        TypeRule::QuantumEndomorphism => {
-            let input =
-                input.ok_or_else(|| error("type", span, "concrete operation arity mismatch"))?;
-            let output = quantum_endomorphism(input, span)?;
-            return Ok((vec![output.clone()], output, signature.effect));
+        rule @ (TypeRule::QuantumEndomorphism | TypeRule::Split | TypeRule::Join) => {
+            // Reject an oversized joined owner before cloning its basis tree.
+            if matches!(rule, TypeRule::Join) && inputs.len() == 2 {
+                if let (Some(a), Some(b)) = (inputs[0].quantum_basis(), inputs[1].quantum_basis()) {
+                    if a.basis_width()
+                        .and_then(|a| b.basis_width().and_then(|b| a.checked_add(b)))
+                        .is_none_or(|width| width > 8)
+                    {
+                        return Err(error(
+                            "limit",
+                            span,
+                            "concrete joined owner exceeds eight bits",
+                        ));
+                    }
+                }
+            }
+            let output = dependent_output(rule, inputs, span)?;
+            concrete_capacity(&output, span)?;
+            return Ok((
+                inputs.iter().map(|ty| (**ty).clone()).collect(),
+                output,
+                signature.effect,
+            ));
         }
     };
     // These are concrete preparation capacities, not generic source premises.
@@ -1560,6 +1638,8 @@ fn primitive(
             }
         }
         Primitive::Unit
+        | Primitive::Split
+        | Primitive::Join
         | Primitive::Finish
         | Primitive::H
         | Primitive::X

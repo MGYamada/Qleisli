@@ -32,8 +32,8 @@ correctness of every library implementation or name containing `std`. The
 native Lean checker alone issues production acceptance. Rust catalogs,
 recognizers, lowering, simulation and target emission supply no such authority.
 
-The two source catalogs contain **17 finite entries and 16 sized entries**.
-Six fully qualified names overlap: `std::quantum::{h,x,cnot,init0,phase_eighth}` and
+The two source catalogs contain **17 finite entries and 18 sized entries**.
+Eight fully qualified names overlap: `std::quantum::{h,x,cnot,init0,phase_eighth,split,join}` and
 `std::observe::measure_z`. Their union contains **27 distinct names**, not 27
 independent semantic axioms. The source of this count is
 `src/frontend/core.rs::PRIMITIVES` and the `primitives!` declaration in
@@ -98,6 +98,8 @@ parameters below are static natural arguments.
 | `std::quantum::phase_eighth` | One `Q<A> -> Q<A>` for current atoms `A = Unit, Bit, Bits<n>`; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
 | `std::quantum::unit` | One ordinary `Unit -> Q<Unit>`; Unitary | Exact coefficient +1 via existing structural `pack_unit`. Evaluates its argument fully once and creates one fresh zero-axis Unit owner. No static arguments; `unit(())` is unary. |
 | `std::quantum::finish` | `Q<Unit> -> Unit`; Unitary | Exact coefficient +1 via existing structural `unpack_unit`. Consumes exactly that Unit owner, preserving preceding scalar work and any surrounding reference. No static arguments, measurement, discard or implicit conversion. |
+| `std::quantum::split` | `Q<(A,B)> -> (Q<A>,Q<B>)`; Unitary | Exact coefficient +1 via existing structural `split_tuple`. Consumes one binary-product owner and returns two fresh ordered owners, retaining each complete basis tree and its axes. |
+| `std::quantum::join` | Two arguments `(Q<A>,Q<B>) -> Q<(A,B)>`; Unitary | Exact coefficient +1 via existing structural `join_tuple`. Consumes two distinct owners and returns a fresh owner over their ordered concatenated axes. Neither argument need be separable from the other or from a retained reference. |
 | `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled application of that exact phase, with the first owner as control; both owners return in order. |
 | `std::quantum::init0` | `() -> Q<Bit>`; Iso | Fresh-zero preparation in the instrument profile. The current lowerer rejects initialization after observation where the needed preservation is unavailable. |
 | `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
@@ -127,8 +129,15 @@ limits apply in addition.
 `unit` and `finish` expose existing independently checked Unit structure; they
 add no native semantic constructor or acceptance authority. Their source
 correspondence remains a separate obligation. They currently require the
-hierarchy path; neither is an alias for a finite observing discard. General
-packaged tuple maps and convergence with the finite source catalog remain open.
+hierarchy path; neither is an alias for a finite observing discard. Full
+convergence with the finite source catalog remains open. The selected hierarchy's
+`split`/`join` maps retain exact nested Unit/Bit/Bits/tuple bases, take no static
+arguments and evaluate their arguments once in source order. `split` requires
+an immediate binary tuple; a matching total width does not suffice. Together
+with `unit`/`finish` they provide explicit packaged left/right unitors. No
+implicit reassociation or owner conversion is inserted. Their independent
+source-step check binds the actual structural constructor, complete basis tree,
+ordered axes and full caller frame; matching endpoints alone is insufficient.
 
 `src/frontend/sized/lower.rs` emits hierarchy/finite-leaf, structural and
 instrument proposals. Source signature acceptance does not imply that every

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"unbound or consumed value q","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/aliased-zero-owner/main.qli","start":149,"end":150},"related":[]}],"result":null}

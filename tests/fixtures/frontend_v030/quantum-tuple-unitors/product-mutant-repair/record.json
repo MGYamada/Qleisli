@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "private-test-construction-repair",
+  "source": "src/frontend/sized/lower/preservation.rs",
+  "before_sha256": "723ca26709433b33e7ab8268c0e7dfe27e8a712e536e5b4fd837b841dccdfe13",
+  "after_sha256": "ad6adcc7e5ba059bb265dcc6944cf487f787eae0fc53550437823f980bf6e0d9",
+  "first_failure_log": "tests/fixtures/frontend_v030/quantum-tuple-unitors/latest-first/4.stdout.txt",
+  "first_failure_log_sha256": "01527e835a356ec7ae3650e4870025c32336853d2e62cc091bfc87d91409a94c",
+  "observed_failure": "native composition-instrument contract rejection at the new product-mutant test; 17 passed, 1 failed, 2 ignored",
+  "diagnosis": "The initial test replaced only circuit while copying the phased helper request. Split/join helper elaboration can change fresh output owner identities, so outer instrument readout/preparation still described the original graph. Transfer the complete wrong instrument and graph consistently; retain original source and remapped source-event metadata.",
+  "repair_scope": "Only the new private product-mutant test; production unchanged.",
+  "validation": "No build, test or rustfmt run by repair author; root rerun pending."
+}

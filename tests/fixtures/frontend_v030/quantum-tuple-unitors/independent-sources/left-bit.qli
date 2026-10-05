@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{unit,finish,split,join,phase_eighth};
+pub unitary fn remove(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);let()=finish(u);a}
+pub unitary fn insert(a:Q<Bit>)->Q<(Unit,Bit)>{join(unit(()),a)}
+pub unitary fn round(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,a)=split(q);let()=finish(u);join(unit(()),a)}
+pub unitary fn phase_remove(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);let()=finish(phase_eighth(u));a}

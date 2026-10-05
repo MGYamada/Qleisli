@@ -69,12 +69,15 @@ fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_sup
         "pub unitary fn f(x: Bit) -> Bit { x }",
         "pub unitary fn f(x: Bits<1>) -> Bits<1> { x }",
         "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }",
+        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<(Unit,Unit)> { q }",
     ] {
         parsed(source);
     }
     let error = ParsedProgram::parse(BTreeMap::from([(
         "main".into(),
-        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<(Unit,Unit)> { q }".into(),
+        // Exact packaged products are supported; selected-source coherent
+        // lifting remains a separate capability from explicit split/join.
+        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<Unit> { do ((),u) <- q; pure u }".into(),
     )]))
     .unwrap_err();
     assert_eq!(error.code(), "unsupported");

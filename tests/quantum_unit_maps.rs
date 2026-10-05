@@ -778,11 +778,25 @@ fn unit_maps_after_observation_retain_actual_source_events_and_native_action() {
 }
 
 #[test]
-fn packaged_quantum_tuple_maps_remain_a_distinct_unsupported_profile() {
+fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
     for (input, pattern, output) in [
         ("Q<(Unit,Bit)>", "((),x)", "x"),
         ("Q<(Bit,Unit)>", "(x,())", "x"),
     ] {
+        let identity = format!("pub unitary fn f(q:{input})->{input}{{q}}");
+        let graph = ParsedProgram::parse(BTreeMap::from([("main".into(), identity)]))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let body = &graph.definitions()[graph.root()];
+        assert_eq!(body.inputs()[0].identity(), body.output().identity());
+        assert!(body.output().fields().is_empty());
+        assert_eq!(
+            body.output().ty().quantum_basis().unwrap().fields().len(),
+            2
+        );
         let text =
             format!("pub unitary fn f(q:{input})->Q<Bit>{{do {pattern} <- q; pure {output}}}");
         let error =

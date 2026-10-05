@@ -149,39 +149,36 @@ enum PortKind {
     Unit,
     Bit,
     Bits,
-}
-impl PortKind {
-    fn from_source(ty: &SourceType) -> Result<Self> {
-        if !ty.is_quantum() {
-            return Err(fail("quantum port requires a quantum source type"));
-        }
-        match ty.kind() {
-            "unit" => Ok(Self::Unit),
-            "bit" => Ok(Self::Bit),
-            "bits" => Ok(Self::Bits),
-            _ => Err(fail("unsupported quantum port basis")),
-        }
-    }
+    Tuple,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Port {
     owner: u32,
     kind: PortKind,
+    basis: SourceType,
     axes: Vec<u32>,
 }
 impl Port {
     fn json(&self) -> String {
+        let mut basis = Vec::new();
+        let mut pending = vec![&self.basis];
+        while let Some(ty) = pending.pop() {
+            use crate::frontend::types::Kind;
+            basis.push(match &ty.kind {
+                Kind::Unit => tagged("unit", &[]),
+                Kind::Bit => tagged("bit", &[]),
+                Kind::Bits(width) => tagged("bits", &[("width", width.to_string())]),
+                Kind::Tuple(fields) => {
+                    pending.extend(fields.iter().rev());
+                    tagged("tuple", &[("arity", fields.len().to_string())])
+                }
+                Kind::Q(_) => unreachable!("validated ordinary basis"),
+            });
+        }
         object(&[
             ("owner", self.owner.to_string()),
-            (
-                "basis",
-                array([match self.kind {
-                    PortKind::Unit => tagged("unit", &[]),
-                    PortKind::Bit => tagged("bit", &[]),
-                    PortKind::Bits => tagged("bits", &[("width", self.axes.len().to_string())]),
-                }]),
-            ),
+            ("basis", array(basis)),
             ("axes", numbers(self.axes.iter().map(|n| *n as usize))),
         ])
     }
@@ -213,7 +210,30 @@ fn header(before: &[Port], after: &[Port]) -> String {
 fn axes(ports: &[Port]) -> Vec<u32> {
     ports.iter().flat_map(|p| p.axes.iter().copied()).collect()
 }
+fn frame_capacity<'a>(ports: impl Iterator<Item = &'a Port>) -> Result<()> {
+    let mut cells = 0usize;
+    let mut width = 0usize;
+    for port in ports {
+        let size = port
+            .basis
+            .storage_size(4096, 64)
+            .ok_or_else(|| limit("port basis exceeds type capacity"))?;
+        cells = cells
+            .checked_add(size.nodes)
+            .ok_or_else(|| limit("frame type accounting overflow"))?;
+        width = width
+            .checked_add(port.axes.len())
+            .ok_or_else(|| limit("frame width overflow"))?;
+        if cells > 4096 || port.axes.len() > 8 || width > 16 {
+            return Err(limit(
+                "frame exceeds basis representation or quantum width capacity",
+            ));
+        }
+    }
+    Ok(())
+}
 fn validate(ports: &[Port]) -> Result<()> {
+    frame_capacity(ports.iter())?;
     if ports.len() > 4096
         || ports.iter().map(|p| p.owner).collect::<BTreeSet<_>>().len() != ports.len()
     {
@@ -224,10 +244,13 @@ fn validate(ports: &[Port]) -> Result<()> {
         || wires.iter().collect::<BTreeSet<_>>().len() != wires.len()
         || ports.iter().any(|p| {
             p.axes.len() > 8
+                || p.basis.storage_size(4096, 64).is_none()
+                || p.basis.basis_width() != Some(p.axes.len() as u32)
                 || match p.kind {
-                    PortKind::Unit => !p.axes.is_empty(),
-                    PortKind::Bit => p.axes.len() != 1,
-                    PortKind::Bits => false,
+                    PortKind::Unit => p.basis.kind() != "unit",
+                    PortKind::Bit => p.basis.kind() != "bit",
+                    PortKind::Bits => p.basis.kind() != "bits",
+                    PortKind::Tuple => p.basis.kind() != "tuple",
                 }
         })
     {
@@ -372,7 +395,7 @@ impl Graph {
             || before
                 .iter()
                 .zip(&after)
-                .any(|(a, b)| a.kind != b.kind || a.axes.len() != b.axes.len())
+                .any(|(a, b)| a.basis != b.basis || a.axes.len() != b.axes.len())
         {
             return Err(fail("proposal rename changes an owner type"));
         }
@@ -425,6 +448,8 @@ impl Graph {
         self.add(before, after, body.clone(), body, "sequence", children)
     }
     fn tensor(&mut self, a: usize, b: usize) -> Result<usize> {
+        frame_capacity(self.nodes[a].before.iter().chain(&self.nodes[b].before))?;
+        frame_capacity(self.nodes[a].after.iter().chain(&self.nodes[b].after))?;
         let before = [self.nodes[a].before.clone(), self.nodes[b].before.clone()].concat();
         let after = [self.nodes[a].after.clone(), self.nodes[b].after.clone()].concat();
         let body = tagged(
@@ -453,6 +478,7 @@ impl Graph {
                 .filter(|p| !selected.contains(&p.owner))
                 .cloned()
                 .collect();
+            frame_capacity(after.iter().chain(&rest))?;
             let arranged = [before, rest.clone()].concat();
             if current != arranged {
                 steps.push(self.route(current, arranged)?);
@@ -546,7 +572,7 @@ fn leaves(value: &SourceValue) -> Vec<&SourceValue> {
     if value.ty().kind() == "unit" && !value.ty().is_quantum() {
         return Vec::new();
     }
-    if value.ty().kind() == "tuple" {
+    if value.ty().kind() == "tuple" && !value.ty().is_quantum() {
         value.fields().iter().flat_map(leaves).collect()
     } else {
         vec![value]
@@ -584,7 +610,7 @@ fn bind(value: &SourceValue, items: Vec<Item>, values: &mut BTreeMap<u32, Item>)
         match &item {
             Item::Quantum(p)
                 if v.ty().is_quantum()
-                    && p.kind == PortKind::from_source(v.ty())?
+                    && v.ty().quantum_basis() == Some(&p.basis)
                     && p.axes.len() == v.ty().width().unwrap() as usize => {}
             Item::Classical(bits)
                 if !v.ty().is_quantum() && bits.len() == v.ty().width().unwrap_or(0) as usize => {}
@@ -619,13 +645,25 @@ struct Lower<'a> {
 }
 impl Lower<'_> {
     fn fresh(&mut self, ty: &SourceType, axes: Vec<u32>) -> Result<Port> {
-        let kind = PortKind::from_source(ty)?;
-        if Some(axes.len() as u32) != ty.width() {
-            return Err(fail("invalid quantum port source type"));
-        }
-        self.fresh_port(kind, axes)
+        let basis = ty
+            .quantum_basis()
+            .ok_or_else(|| fail("quantum port requires a quantum source type"))?;
+        self.fresh_basis(basis, axes)
     }
-    fn fresh_port(&mut self, kind: PortKind, axes: Vec<u32>) -> Result<Port> {
+    fn fresh_basis(&mut self, basis: &SourceType, axes: Vec<u32>) -> Result<Port> {
+        if basis.storage_size(4096, 64).is_none()
+            || axes.len() > 8
+            || basis.basis_width() != Some(axes.len() as u32)
+        {
+            return Err(limit("quantum port exceeds exact type/width capacity"));
+        }
+        let kind = match basis.kind() {
+            "unit" => PortKind::Unit,
+            "bit" => PortKind::Bit,
+            "bits" => PortKind::Bits,
+            "tuple" => PortKind::Tuple,
+            _ => return Err(fail("invalid quantum basis")),
+        };
         self.owner = self
             .owner
             .checked_add(1)
@@ -633,6 +671,7 @@ impl Lower<'_> {
         Ok(Port {
             owner: self.owner,
             kind,
+            basis: basis.clone(),
             axes,
         })
     }
@@ -648,6 +687,9 @@ impl Lower<'_> {
                 let end = next
                     .checked_add(width)
                     .ok_or_else(|| limit("axis range overflow"))?;
+                if width > 8 || end > 16 {
+                    return Err(limit("entry exceeds selected quantum width capacity"));
+                }
                 ports.push(self.fresh(leaf.ty(), (next..end).collect())?);
                 next = end;
             }
@@ -670,6 +712,8 @@ impl Lower<'_> {
                     | Primitive::Cnot
                     | Primitive::ControlledPhase => true,
                     Primitive::Unit
+                    | Primitive::Split
+                    | Primitive::Join
                     | Primitive::Finish
                     | Primitive::Init0
                     | Primitive::MeasureZ
@@ -818,8 +862,8 @@ impl Lower<'_> {
     /// structural and finite nodes. Its internal Unit owner is still explicit;
     /// an empty physical coordinate list never erases its exact phase.
     fn closed_scalar(&mut self) -> Result<usize> {
-        let input = self.fresh_port(PortKind::Unit, vec![])?;
-        let output = self.fresh_port(PortKind::Unit, vec![])?;
+        let input = self.fresh_basis(&SourceType::unit(), vec![])?;
+        let output = self.fresh_basis(&SourceType::unit(), vec![])?;
         let pack = self
             .graph
             .structural(vec![], vec![input.clone()], "pack_unit", &[])?;
@@ -1028,6 +1072,42 @@ impl Lower<'_> {
             .ok_or_else(|| fail("unsupported source step"))?;
         let ns = step.natural_arguments();
         match name {
+            Primitive::Split => {
+                if before.len() != 1 || !ns.is_empty() {
+                    return Err(fail("split has invalid source arity"));
+                }
+                let fields = before[0]
+                    .basis
+                    .tuple_fields()
+                    .filter(|fields| fields.len() == 2)
+                    .ok_or_else(|| fail("split requires an exact binary basis"))?;
+                let width = fields[0]
+                    .basis_width()
+                    .ok_or_else(|| fail("invalid split basis"))?
+                    as usize;
+                let after = self.output_ports(
+                    step.output(),
+                    vec![
+                        before[0].axes[..width].to_vec(),
+                        before[0].axes[width..].to_vec(),
+                    ],
+                )?;
+                let node = self
+                    .graph
+                    .structural(before, after.clone(), "split_tuple", &[])?;
+                Ok((node, after))
+            }
+            Primitive::Join => {
+                if before.len() != 2 || !ns.is_empty() {
+                    return Err(fail("join has invalid source arity"));
+                }
+                let wires = axes(&before);
+                let after = self.output_ports(step.output(), vec![wires])?;
+                let node = self
+                    .graph
+                    .structural(before, after.clone(), "join_tuple", &[])?;
+                Ok((node, after))
+            }
             Primitive::TakeBit => {
                 let mut rest = before[0].axes.clone();
                 let bit = rest.remove(ns[1] as usize);
@@ -1235,6 +1315,8 @@ impl Lower<'_> {
                     }
                     Some(
                         Primitive::Unit
+                        | Primitive::Split
+                        | Primitive::Join
                         | Primitive::Finish
                         | Primitive::H
                         | Primitive::X
@@ -1278,6 +1360,8 @@ impl Lower<'_> {
     ) -> Result<(Vec<Item>, usize)> {
         let structural = step.primitive_kind().is_some_and(|name| match name {
             Primitive::Unit
+            | Primitive::Split
+            | Primitive::Join
             | Primitive::Finish
             | Primitive::TakeBit
             | Primitive::PutBit
@@ -1409,11 +1493,13 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
             let input = Port {
                 owner: 1,
                 kind: PortKind::Bit,
+                basis: SourceType::bit(),
                 axes: vec![0],
             };
             let output = Port {
                 owner: 2,
                 kind: PortKind::Bit,
+                basis: SourceType::bit(),
                 axes: vec![0],
             };
             let child = lower.finite_gate(gate, &input, &output)?;

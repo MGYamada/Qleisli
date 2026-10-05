@@ -1,7 +1,7 @@
 //! Generic preparation checks. No value here crosses the verified IR boundary.
 use super::ast::*;
 use super::linear::{self, Context, Linear};
-use super::primitive::{Guard, Primitive, Size, TypeRule, TypeShape, quantum_endomorphism};
+use super::primitive::{Guard, Primitive, Size, TypeRule, TypeShape, dependent_output};
 use super::{Error, OperationBinding, ParsedProgram, Result, Span};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
@@ -13,10 +13,14 @@ use crate::frontend::types::Kind;
 type Ty = crate::frontend::types::Type<Linear>;
 impl Ty {
     fn cells(&self) -> usize {
-        self.owner_shape_size().nodes
+        self.owner_shape_size()
+            .nodes
+            .max(self.storage_size(4096, 64).map_or(4097, |size| size.nodes))
     }
     fn depth(&self) -> usize {
-        self.owner_shape_size().depth
+        self.owner_shape_size()
+            .depth
+            .max(self.storage_size(4096, 64).map_or(65, |size| size.depth))
     }
     fn bounded(&self, span: Span) -> Result<()> {
         if self.cells() > 4096 || self.depth() > 64 {
@@ -70,17 +74,20 @@ fn all_access() -> BTreeSet<String> {
     ["Apply", "Adjoint", "Controlled"].map(String::from).into()
 }
 fn basis(b: &Basis, scope: &Scope) -> Result<Ty> {
-    Ok(match b {
-        Basis::Unit => Ty::quantum(Ty::unit()),
-        Basis::Bit => Ty::quantum(Ty::bit()),
-        Basis::Bits(n) => Ty::quantum(Ty::bits(linear::natural(
-            n,
-            &scope.naturals,
-            &scope.context,
-        )?)),
-    })
+    b.storage_size(4096, 64).ok_or_else(|| {
+        err(
+            "limit",
+            Span::default(),
+            "operation basis exceeds type capacity",
+        )
+    })?;
+    Ok(Ty::quantum(b.map_sizes(&mut |n| {
+        linear::natural(n, &scope.naturals, &scope.context)
+    })?))
 }
 fn ty(t: &Type, scope: &Scope, span: Span) -> Result<Ty> {
+    t.storage_size(4096, 64)
+        .ok_or_else(|| err("limit", span, "source type exceeds type capacity"))?;
     let result = t.map_sizes(&mut |size| linear::natural(size, &scope.naturals, &scope.context))?;
     result.bounded(span)?;
     Ok(result)
@@ -846,7 +853,7 @@ impl Checker<'_> {
         span: Span,
     ) -> Result<Ty> {
         let signature = primitive.signature();
-        if matches!(signature.types, TypeRule::QuantumEndomorphism) {
+        if signature.types.dependent() {
             if args.len() != signature.natural_arity {
                 return Err(err(
                     "static",
@@ -858,10 +865,13 @@ impl Checker<'_> {
                 return Err(err("type", span, "runtime argument arity mismatch"));
             }
             self.effect(signature.effect, span)?;
-            // Infer and consume the sole argument once; its exact Q basis is
-            // the result type, independently of physical width or context.
-            let input = self.expr(&runtime[0], scope, None)?;
-            return quantum_endomorphism(&input, span);
+            // Evaluate every argument once in source order before applying
+            // the same exact-tree rule used by concrete elaboration.
+            let inputs = runtime
+                .iter()
+                .map(|expr| self.expr(expr, scope, None))
+                .collect::<Result<Vec<_>>>()?;
+            return dependent_output(signature.types, &inputs.iter().collect::<Vec<_>>(), span);
         }
         let (inputs, result, effect) = primitive_signature(primitive, args, scope, span)?;
         self.effect(effect, span)?;

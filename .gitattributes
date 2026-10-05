@@ -120,3 +120,11 @@ tests/fixtures/frontend_v030/quantum-unit-maps/*/*stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-unit-profile-37254752247/*.excerpt.txt -text -whitespace
 # Retain actual existing-test transcripts for the classification acceptance review.
 tests/fixtures/frontend_v030/type-pattern-classification/*.stdout.txt -text -whitespace
+# Preserve first tuple-study records, raw transcripts and explicit repair context.
+tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/contract.md -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/*/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-prior-tests/*.patch -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/product-mutant-repair/*.patch -text -whitespace
+tests/fixtures/frontend_v030/quantum-tuple-unitors/trace-capacity-repair/*.patch -text -whitespace
+tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-catalog-37257529673/*.patch -text -whitespace

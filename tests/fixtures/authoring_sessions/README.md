@@ -178,3 +178,11 @@ those results do not validate their downstream type, owner or effect conditions.
 The packaged-product example exposes a separate projection boundary, while
 the two existing controls retain their behavior. Independent intended equations
 and reference conditions remain separate from these diagnostic observations.
+
+The [packaged quantum tuple study](quantum-tuple-unitors-v030/session.json)
+preserves 22 complete first projects and 88 actual observations. Concurrent
+Cargo tests replaced the first observer's CLI; all 44 original observations and
+the failed identity check remain intact. The 44 appended repetitions identify
+a fixed CLI before and after each invocation. Their agreement does not remove
+the first run's provenance limitation. Exact unitor, scalar and reference laws
+were authored before execution and require separate validation.

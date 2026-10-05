@@ -184,22 +184,43 @@ impl Projection<'_, '_> {
     }
 
     fn basis(&self, ty: &source::Type) -> Result<Basis> {
-        match &ty.kind {
-            source::TypeKind::Unit => Ok(Basis::Unit),
-            source::TypeKind::Bit => Ok(Basis::Bit),
-            source::TypeKind::Bits(n) => Ok(Basis::Bits(self.natural(n))),
-            _ => Err(unsupported(
-                ty.span,
-                "operation/quantum basis must be Unit, Bit or Bits<n>",
-            )),
-        }
+        self.type_at(ty, crate::frontend::types::Stage::Basis)
     }
     fn ty(&self, ty: &source::Type) -> Result<Type> {
-        crate::frontend::types::classify_source(
-            ty,
-            crate::frontend::types::Stage::Runtime,
-            &mut Projection { index: self.index },
-        )
+        self.type_at(ty, crate::frontend::types::Stage::Runtime)
+    }
+    fn type_at(&self, ty: &source::Type, stage: crate::frontend::types::Stage) -> Result<Type> {
+        // Check borrowed syntax before recursive projection allocates a second
+        // tree. In particular zero-width products must not evade the budget.
+        let mut pending = vec![(ty, 1usize)];
+        let mut nodes = 0usize;
+        while let Some((node, depth)) = pending.pop() {
+            if !matches!(node.kind, source::TypeKind::Q(_)) {
+                nodes += 1;
+            }
+            if nodes > 4096 || depth > 64 {
+                return Err(Error::new(
+                    "limit",
+                    node.span,
+                    "source type exceeds 4096 nodes or depth 64",
+                ));
+            }
+            match &node.kind {
+                source::TypeKind::Tuple(fields) => {
+                    if fields.len() > 64 || nodes + pending.len() + fields.len() > 4096 {
+                        return Err(Error::new(
+                            "limit",
+                            node.span,
+                            "source tuple exceeds type shape capacity",
+                        ));
+                    }
+                    pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
+                }
+                source::TypeKind::Q(inner) => pending.push((inner, depth + 1)),
+                _ => {}
+            }
+        }
+        crate::frontend::types::classify_source(ty, stage, &mut Projection { index: self.index })
     }
     fn pattern(&self, pattern: &source::Pattern) -> Result<Pattern> {
         Ok(match &pattern.kind {
@@ -358,20 +379,16 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
     fn checked_node(
         &mut self,
         source: &source::Type,
-        _stage: crate::frontend::types::Stage,
+        stage: crate::frontend::types::Stage,
         ty: &Type,
     ) -> Result<()> {
-        use crate::frontend::types::Kind;
-        if let Kind::Q(basis) = &ty.kind {
-            if !matches!(basis.kind, Kind::Unit | Kind::Bit | Kind::Bits(_)) {
-                let source::TypeKind::Q(inner) = &source.kind else {
-                    unreachable!()
-                };
-                return Err(unsupported(
-                    inner.span,
-                    "operation/quantum basis must be Unit, Bit or Bits<n>",
-                ));
-            }
+        if stage == crate::frontend::types::Stage::Basis
+            && ty.tuple_fields().is_some_and(|fields| fields.len() < 2)
+        {
+            return Err(unsupported(
+                source.span,
+                "quantum tuple basis requires at least two fields",
+            ));
         }
         Ok(())
     }

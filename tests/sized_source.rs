@@ -1974,9 +1974,22 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
     reject(source, "ownership");
     let source = "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{q}";
     let ast = parse_module(source).unwrap();
-    let error = ParsedProgram::parse(sources(source)).unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert!(error.span().start >= ast.decls[0].params[0].ty.span.start);
+    let parsed = ParsedProgram::parse(sources(source)).unwrap();
+    assert_eq!(parsed.syntax("main"), Some(&ast));
+    let graph = parsed
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let body = &graph.definitions()[graph.root()];
+    let owner = &body.inputs()[0];
+    assert!(owner.identity().is_some());
+    assert_eq!(owner.identity(), body.output().identity());
+    assert!(owner.fields().is_empty() && owner.ty().fields().is_empty());
+    let basis = owner.ty().quantum_basis().unwrap();
+    assert_eq!(basis.kind(), "tuple");
+    assert_eq!(basis.fields().len(), 2);
+    assert!(basis.fields().iter().all(|field| field.kind() == "unit"));
 }
 
 #[test]

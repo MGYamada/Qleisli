@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"result does not match the function return type: expected `Q<(Bit,(Unit,Bit))>`, found `Q<((Bit,Unit),Bit)>`","primary":{"path":"main.qli","start":135,"end":136,"line":2,"column":62},"related":[]}],"result":null}
