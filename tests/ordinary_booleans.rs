@@ -235,10 +235,7 @@ fn unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked() {
             "type",
         );
     }
-    sized_reject(
-        "pub unitary fn f[static n: Nat]() -> Bit { n }",
-        "ownership",
-    );
+    sized_reject("pub unitary fn f[static n: Nat]() -> Bit { n }", "type");
     sized_reject(
         "unitary fn keep[static m: Nat](b: Bit) -> Bit { b }
          pub unitary fn f(n: Bit) -> Bit { keep[n](n) }",

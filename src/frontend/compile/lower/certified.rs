@@ -104,12 +104,6 @@ impl Lowerer<'_, '_> {
                 ),
             ));
         }
-        if self.abstract_check {
-            // This skeleton is used only for parametric source checking. No
-            // certificate or executable generic body is produced from it.
-            self.apply_circuit(source_slot, logical_steps);
-            return Ok(source);
-        }
         let wire = self.wire();
         let output = self.token();
         self.raw.operations.push(RawOp::CertifiedCompute {
@@ -163,7 +157,6 @@ impl Lowerer<'_, '_> {
             effect_source: None,
             depth: self.depth,
             bindings: self.bindings.clone(),
-            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];

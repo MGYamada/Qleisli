@@ -1,0 +1,51 @@
+{
+  "self_excluded": "files.json",
+  "status": "LOCAL CANDIDATE ONLY; preparation complete",
+  "files": {
+    "README.md": {
+      "bytes": 2357,
+      "sha256": "21c32b63950980cb4e307cf58a3cb91f2acef5347a99218b01b90114a44d70ce"
+    },
+    "before/CHANGELOG.md": {
+      "bytes": 106160,
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615"
+    },
+    "before/docs/src/reference/primitive-boundary.md": {
+      "bytes": 28267,
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f"
+    },
+    "before/docs/src/reference/source-text.md": {
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    "before/docs/src/reference/type-model.md": {
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    "proposal.json": {
+      "bytes": 3070,
+      "sha256": "44ef750658e6f9c3723d77577aeaa4f050245491b8fad447513e05b2697fe8b8"
+    },
+    "proposed/CHANGELOG.md": {
+      "bytes": 107184,
+      "sha256": "46c8d08b57cccdd2d50802e2978419be348637dfee282913519ea2102a4a0bc5"
+    },
+    "proposed/docs/src/reference/primitive-boundary.md": {
+      "bytes": 29615,
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a"
+    },
+    "proposed/docs/src/reference/source-text.md": {
+      "bytes": 20704,
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935"
+    },
+    "proposed/docs/src/reference/type-model.md": {
+      "bytes": 33244,
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8"
+    },
+    "proposed.patch": {
+      "bytes": 41012,
+      "sha256": "53578d2a13da45fd34ba7e85d1026aa025676a8c29c426e27b6e8538bf1996a1"
+    }
+  },
+  "scope": "Four proposed docs + currentbeforecopies + bounded supporting records; not source/test/CIclosure."
+}

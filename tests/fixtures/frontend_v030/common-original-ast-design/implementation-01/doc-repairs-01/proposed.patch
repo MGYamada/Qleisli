@@ -1,0 +1,614 @@
+--- a/docs/src/reference/source-text.md
++++ b/docs/src/reference/source-text.md
+@@ -5,35 +5,41 @@
+ module loading use one scanner, token stream, parser and source `Module`/`Span`
+ representation under the
+ [common frontend decision](https://github.com/MGYamada/Qleisli/issues/32).
+-The sized checker consumes an explicit projection of that AST; it does not
+-parse source again. Declaration and lexical identities and source type
+-classification are shared. Static/owner/effect checking and lowering are not
+-yet fully unified. A parsed AST does not accept a program or confer native
+-verification evidence.
+-
+-Runtime wildcard, duplicate-name and exact tuple/Unit shape judgments share
+-one binding traversal in finite lowering and sized generic checking. Values
+-and names retain their existing lexical and dynamic identities, eager argument
+-evaluation, accounting and located diagnostics. The sized checker borrows its
+-existing pattern projection. Ordered static-name insertion and runtime parameter
+-name scanning also share a private rule over the original common AST. The sized
+-caller uses its actual resolved declaration and source parameter ordinals, with
+-complete projection counts checked before pairing. Existing type/kind/access
+-stages, static-shadow policy, concrete elaboration and basis-pattern checking
+-remain separate. This bounded sharing does not establish complete common
+-checking or source preservation.
+-
+-One private source collection retains each complete original text, common AST
+-and provenance together. Filesystem entries retain the selected source path;
+-in-memory entries carry no invented file or manifest. The finite loader consumes
+-that collection into the existing mutable `Project` compatibility view, with
+-no parallel cached collection or checked facts. The sized preparation retains
+-the immutable collection. Both adapters keep their existing complete declaration
+-checks, byte/parser policies and first-failure ordering: sized projection of a
+-module completes before parsing the next module. The fixed bundled registry
+-contains the current four ordinary sources and their manifest; it grants no
+-semantic authority and does not inject unsupported bundles into sized loading.
+-Complete common checking and canonical namespace migration remain required by
++A single mandatory judgment checks each complete original AST before finite or
++selected concrete eligibility. Declaration and lexical identities, types,
++static premises, owner/access rules, body dependencies and principal effects
++come from the same original-source checker in `src/frontend/check.rs` and
++`src/frontend/check/`. Every declaration is checked, including private and
++unused siblings, both arms and zero-iteration bodies. Parsing alone confers
++neither source approval nor native verification evidence.
++
++Runtime wildcard, duplicate-name and exact tuple/Unit rules use the common
++pattern traversal. Ordered static kinds and runtime parameter names retain
++original declaration ordinals and binder identities; a later declaration or
++static kind cannot rescue an earlier invalid use. Quantum values have fresh
++dynamic owner identities distinct from these lexical keys. Arguments and RHS
++expressions evaluate completely, once, from left to right before binding.
++
++One private source collection retains complete original bytes, common AST and
++provenance. Filesystem entries retain their selected path; in-memory entries
++carry no invented file or manifest. Both loaders add the fixed registry's four
++ordinary source modules and validate its edition-2026 manifest. Bundled bytes
++and module slots count against the applicable loader limits before copying or
++parsing; placement under `std::` supplies no checking exemption. The selected
++loader accepts 1 through 60 supplied modules: the four bundles count toward its
++64-module ceiling and its 1 MiB aggregate byte limit. Its 64 KiB/module limit
++also applies. Finite bounded and explicit legacy byte-loading policies remain
++separate; this unit does not make an unbounded byte loader bounded.
++
++The finite loader consumes the collection into the existing mutable `Project`
++compatibility view. Every operation reconstructs checking facts from that
++view's current original ASTs; no stale parallel collection or approval is
++reused after caller mutation. The selected path retains its immutable originals
++and records a concrete projection result for each declaration only after the
++complete common judgment. A located unsupported projection is an eligibility
++failure when that definition is requested, not a skipped original body or
++fallback source approval. Retirement of that lowering projection, canonical
++generic std APIs and source-preservation proofs remain separate work in
+ [#32](https://github.com/MGYamada/Qleisli/issues/32) and
+ [#317](https://github.com/MGYamada/Qleisli/issues/317).
+ 
+@@ -52,12 +58,14 @@
+ Type, ownership, access and termination checks still apply independently;
+ an annotation cannot supply a missing check or arbitrary mathematical Meaning.
+ 
+-Both arms of a supported branch and the body of a zero-iteration static fold
+-participate in checking and effect inference. Sized decreasing self-recursion
+-uses the least effect solution only after the existing decrease check; mutual
+-recursion remains unsupported. An unsupported or unresolved body publishes no
+-checked effect fact. These source checks are not accepted IR handles or a
+-source-preservation proof, and finite and sized lowering remain distinct.
++Both arms and the body of a zero-iteration static fold participate in common
++checking and effect inference. A decreasing runtime self-call uses the least
++effect solution only after the actual decrease check; mutual dependencies
++reject. An invalid or unresolved source body yields no checked effect fact.
++A valid source body may retain its principal effect while its requested
++concrete projection or lowering remains unsupported. These source facts are
++not accepted IR handles or a source-preservation proof; finite and selected
++concrete lowering and native checks remain distinct.
+ 
+ **`"externally unitary"` is not supported.** The current compositional rules
+ retain internal observation, reset and discard as Observe. Even if a separate
+@@ -175,16 +183,24 @@
+ than the removed parser. These are engineering limits, not the constitutional
+ quantitative Resource Safety theorem.
+ 
+-All declarations remain in the common AST. The sized profile projects every
+-supported ordinary function in source order and checks each declaration,
+-including unused siblings, before preparation succeeds. Empty sized modules
+-remain unsupported. Empty parentheses in a type position reject with a
+-diagnostic directing the author to `Unit`; the value and pattern remain `()`.
+-Existing empty sized pattern/block,
++All declarations remain in the common AST and undergo the original-source
++judgment before either concrete profile. Source-semantic errors therefore
++precede an unsupported concrete form, including in unused declarations. Empty
++parentheses in a type position reject with a diagnostic directing the author
++to `Unit`; the value and pattern remain `()`. Existing empty pattern/block,
+ empty `yield`, empty specialization brackets and parameter trailing-comma
+-spellings are represented by the shared syntax. Unsupported finite constructs
+-receive a located profile rejection; parsing a spelling does not add backend
+-support. This implementation step does not add `Op<A,B>`/Basis-generic features.
++spellings remain represented by the shared syntax. Parsing or source checking
++adds no emitter support or new `Op<A,B>` form.
++
++The common judgment has a 1,000,000-work engineering budget. It charges visits,
++allocated/copied type and lexical cells, normalized arithmetic and solver work
++before the corresponding operation. Per-value type size is bounded by 4096
++cells and depth 64. The same judgment takes an additional 16,384 retained-scope
++cell limit on the selected path; finite retains its existing aggregate/type
++and snapshot capacities without that extra selected limit. Concrete
++elaboration, evidence, native work and loader/parser limits are separate.
++Exhaustion rejects; it is not a discharged quantitative Resource Safety
++certificate or evidence that the program's mathematical obligation is false.
+ 
+ Ordinary and basis function parameters use the existing name, wildcard and
+ tuple pattern syntax. The colon annotates the entire parameter pattern, and
+@@ -207,31 +223,43 @@
+ not fall back to that declaration. Evidence retains the original source,
+ dependencies, canonical names and static bindings.
+ 
+-The current shared declaration resolver has the following profile boundaries:
+-
+-| Condition | Finite project | Sized explicit module map |
+-| --- | --- | --- |
+-| Unused import cycle | Rejected | Permitted; actual call/provider cycles are still checked |
+-| Import of the module's own declaration | Rejected as a collision, or as private | Permitted for that same declaration, including private visibility |
+-| Declaration recursion | Rejected | Only the existing checked decreasing self-call is permitted |
+-| Multiple declarations in a module | Checked, including unused declarations | Checked, including unused declarations |
++Both paths resolve imports against the complete registered declaration tables.
++Unused import-only cycles are permitted because imports have no runtime action.
++Every self-import is a declaration-name collision, including a private or
++public declaration imported into its own module. Duplicate imports and clashes
++with local declarations reject. Missing members, private members, collisions
++and unknown sealed primitives point to the final path token; a missing module
++points to the complete `use` span.
+ 
+ Same-module sibling calls may refer forward or backward and may use private
+-declarations. Every declaration has its own lexical table; its identity is
+-distinct from its source position and from equal names in other modules.
+-Sized self-recursion must call the identical declaration and satisfy the
+-existing natural-parameter decrease check. Mutual call/provider cycles remain
+-rejected. Checking all generic bodies includes static branches and zero-count
+-fold bodies; it does not certify every concrete specialization or bypass the
+-independent native checks on actual proposals.
+-
+-Existing module-name and primitive-set restrictions remain profile-specific.
+-The sized API loads only the supplied module map and its specified primitives;
+-it does not implicitly discover bundled source modules. Common declaration
+-and lexical identities are shared, while the finite and sized type, effect and
+-ownership judgments still require convergence. This does not grant the final
+-set of 0.3.0 constructs. The implementation contract and remaining convergence are tracked
+-in [#32](https://github.com/MGYamada/Qleisli/issues/32),
++declarations. Cross-module imports and host-selected entries require public
++visibility. Runtime calls, static providers, Basis and Meaning dependencies
++from every original body enter the checked graph. Mutual cycles reject. Only
++an actual runtime self-call to the identical DefId with the checked Nat decrease
++is permitted, including its directly transformed runtime form; a recursive
++opaque provider, Basis/Meaning cycle or failed decrease does not qualify.
++Finite may subsequently refuse to materialize such a source definition under
++its concrete profile. Names, effect fixed points and zero-count repetition
++cannot stand for the required decrease proof.
++
++Runtime parameter, let and fold-carry bindings cannot shadow an active static
++Nat, Basis, Op or fold-index binder. Static formals may shadow global
++declarations. A consumed quantum owner may be rebound after complete RHS
++evaluation; hiding a live owner rejects, including a zero-axis owner or one
++nested in a product. A static name used as a runtime value is a located type
++error; reusing an actually consumed runtime owner remains an ownership error.
++A resolved local value used as a callee is a wrong-category error, never a
++retry through a same-named global declaration.
++
++`src/frontend/resolve.rs` and `resolve/locals.rs` retain canonical declaration,
++lexical-use and original-span associations. The common typed primitive catalog
++has 27 fixed names; finite and selected concrete emitters still support their
++own subsets. The four ordinary bundled modules undergo the same common
++judgment as caller source. No ambient standard-library discovery, replacement
++of reserved `std` modules or new alias/re-export syntax is admitted here.
++Source facts, concrete capability and independent native acceptance remain
++separate responsibilities. Remaining lowering and namespace integration is
++tracked in [#32](https://github.com/MGYamada/Qleisli/issues/32),
+ [#41](https://github.com/MGYamada/Qleisli/issues/41) and
+ [#65](https://github.com/MGYamada/Qleisli/issues/65).
+ 
+@@ -241,6 +269,14 @@
+ comments. Those inputs now reject. Replace noncanonical whitespace with ordinary
+ space/tab or LF/CRLF and remove forbidden controls. VT already rejected before
+ this change; its diagnostic now comes from the shared character rule.
++
++Remove legacy self-imports and use the module's declaration directly; ordinary
++import-only cycles now need no source repair. Rename runtime binders that shadow
++active static names. Earlier profile refusal may now be preceded by the actual
++source type, owner, access or dependency error. Both paths charge all original
++bodies and bundled sources, so an old symbolic input may reach the common work
++capacity before an inner solver limit. Earlier sources and diagnostics remain
++historical records; these migrations do not change edition 2026.
+ 
+ Reserved-word identifiers in old sized source must be renamed. Misplaced docs
+ must move to their module/declaration attachment boundary. Unclosed block
+--- a/docs/src/reference/primitive-boundary.md
++++ b/docs/src/reference/primitive-boundary.md
+@@ -11,10 +11,12 @@
+ this inventory does not adopt every proposal in them.
+ 
+ The current implementation is `0.3.0-alpha`, in constitutional edition 2026.
+-Names and signatures below describe the existing finite and sized profiles
+-with canonical ordinary `Unit`, `Bit` and `Bits<n>` types. Their supported
+-lowering paths remain distinct; source type identity is shared. Source paths identify files in
+-the [Qleisli repository](https://github.com/MGYamada/Qleisli).
++The common original-source judgment uses canonical ordinary `Unit`, `Bit` and
++`Bits<n>` types and one typed sealed catalog. The tables below distinguish the
++existing concrete finite and selected lowering subsets, whose emitter support
++remains distinct. Source recognition and typing do not supply concrete
++capability, native acceptance or semantic evidence. Source paths identify files
++in the [Qleisli repository](https://github.com/MGYamada/Qleisli).
+ 
+ ## Meaning, spelling and implementation
+ 
+@@ -36,18 +38,23 @@
+ native Lean checker alone issues production acceptance. Rust catalogs,
+ recognizers, lowering, simulation and target emission supply no such authority.
+ 
+-The two source catalogs contain **17 finite entries and 18 sized entries**.
+-Eight fully qualified names overlap: `std::quantum::{h,x,cnot,init0,phase_eighth,split,join}` and
+-`std::observe::measure_z`. Their union contains **27 distinct names**, not 27
+-independent semantic axioms. The source of this count is
+-`src/frontend/core.rs::PRIMITIVES` and the `primitives!` declaration in
+-`src/frontend/sized/primitive.rs`.
+-
+-## Finite sealed catalog
++`src/frontend/check/primitive.rs::Primitive::ALL` is the typed common-source
++catalog of **27 distinct names**, preserving their exact static/runtime arity,
++type trees, principal effects and owner transitions. It introduces no new
++native primitive or semantic axiom. Existing concrete catalogs retain
++**17 finite entries and 18 selected entries**, with eight names overlapping:
++`std::quantum::{h,x,cnot,init0,phase_eighth,split,join}` and
++`std::observe::measure_z`. These subsets are recorded in
++`src/frontend/core.rs::PRIMITIVES` and `src/frontend/sized/primitive.rs`.
++A known common name unavailable to a requested emitter yields a located
++unsupported concrete-profile error, not another source grammar or fallback.
++
++## Finite lowering subset of sealed names
+ 
+ All entries in this table are compiler-owned imports. `A` and `B` are
+-specification metavariables for the currently supported finite basis trees;
+-they do not introduce a source-level `Basis` generic. Argument-list arity and
++specification metavariables for the currently supported finite basis trees.
++Explicit opaque Basis formals are checked by the common source judgment but
++remain outside finite concrete eligibility. Argument-list arity and
+ tuple result shape are distinct. Every supplied quantum owner is consumed by
+ the source call and explicitly represented in its returned or eliminated
+ interface. Separate owners may be entangled.
+@@ -84,10 +91,10 @@
+ declaration, comment or successful lowering is not itself a proof of the table's
+ mathematical meaning.
+ 
+-## Sized sealed catalog
+-
+-`src/frontend/sized/primitive.rs` is a separate current catalog, shared by its
+-symbolic checker and concrete elaborator. Its internal `TypeShape::Bit` and
++## Selected lowering subset of sealed names
++
++`src/frontend/sized/primitive.rs` records the selected concrete subset used by
++its projection/concrete elaborator after common source checking. Its internal `TypeShape::Bit` and
+ `Bits` labels still denote quantum source values, while internal `CBit` and
+ `CBits` labels denote ordinary values. These private catalog labels are not
+ source spellings. The table spells the actual source types explicitly. Square-bracketed
+@@ -99,7 +106,7 @@
+ | `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | The same exact bit flip; a finite leaf is bound to actual source ports. |
+ | `std::quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled X over the ordered control/target owners, followed by explicit owner routing. |
+ | `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | `diag(1, exp(2πij/2^k))`; emits a dyadic-phase hierarchy proposal. |
+-| `std::quantum::phase_eighth` | One `Q<A> -> Q<A>` for current atoms `A = Unit, Bit, Bits<n>`; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
++| `std::quantum::phase_eighth` | Source: one `Q<A> -> Q<A>` for any Basis tree; selected concrete support: atoms `A = Unit, Bit, Bits<n>`; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |
+ | `std::quantum::unit` | One ordinary `Unit -> Q<Unit>`; Unitary | Exact coefficient +1 via existing structural `pack_unit`. Evaluates its argument fully once and creates one fresh zero-axis Unit owner. No static arguments; `unit(())` is unary. |
+ | `std::quantum::finish` | `Q<Unit> -> Unit`; Unitary | Exact coefficient +1 via existing structural `unpack_unit`. Consumes exactly that Unit owner, preserving preceding scalar work and any surrounding reference. No static arguments, measurement, discard or implicit conversion. |
+ | `std::quantum::split` | `Q<(A,B)> -> (Q<A>,Q<B>)`; Unitary | Exact coefficient +1 via existing structural `split_tuple`. Consumes one binary-product owner and returns two fresh ordered owners, retaining each complete basis tree and its axes. |
+@@ -119,12 +126,16 @@
+ classical computation. The empty ordinary result has type `Unit` and value
+ `()`. `Bits<0>` and `Q<Bits<0>>` are distinct from Unit and from each other.
+ 
+-The fixed signature checks are in `src/frontend/sized/check.rs::primitive_signature`
+-and `src/frontend/sized/elaborate.rs::primitive`. The shared
+-`primitive.rs::quantum_endomorphism` checks the scalar primitive's exact
+-input-dependent type in both symbolic and concrete paths. It takes no static
+-arguments and exactly one quantum atom, evaluated once; ordinary Unit and
+-tuples of separate owners reject. Concrete phase arguments require
++Common source signatures and input-dependent results are checked in
++`src/frontend/check/primitive.rs`. `phase_eighth` takes no static arguments and
++exactly one `Q<A>` owner, evaluated once, preserving any complete Basis tree A,
++including a packaged tuple. Ordinary Unit and tuples of separate owners reject.
++Its scalar contract is `ζ I`, not the Bit phase gate. The selected concrete
++`src/frontend/sized/primitive.rs::quantum_endomorphism` retains its atom support;
++a source-valid packaged tuple can therefore encounter a located concrete
++eligibility refusal. `sized/check.rs::primitive_signature` and
++`sized/elaborate.rs::primitive` retain concrete substitution and materialization
++checks. Concrete phase arguments require
+ `k <= 8` and `j < 2^k`; concrete register operations require `k < n <= 8`;
+ classical prepend requires `n < 8`. These are current preparation capacities,
+ not general-size semantic theorems. Aggregate elaboration and backend-profile
+@@ -133,8 +144,9 @@
+ `unit` and `finish` expose existing independently checked Unit structure; they
+ add no native semantic constructor or acceptance authority. Their source
+ correspondence remains a separate obligation. They currently require the
+-hierarchy path; neither is an alias for a finite observing discard. Full
+-convergence with the finite source catalog remains open. The selected hierarchy's
++hierarchy path; neither is an alias for a finite observing discard. Both names
++are recognized by common source checking; finite concrete materialization
++remains unavailable. The selected hierarchy's
+ `split`/`join` maps retain exact nested Unit/Bit/Bits/tuple bases, take no static
+ arguments and evaluate their arguments once in source order. `split` requires
+ an immediate binary tuple; a matching total width does not suffice. Together
+@@ -149,7 +161,7 @@
+ hierarchy checks remain necessary. The
+ [production boundary](production-boundary.md) identifies these routes and the
+ remaining source-to-operator preservation gap. Common names across the two
+-catalogs do not prove that the two frontends are already one implementation.
++lowering subsets do not establish emitter convergence or source preservation.
+ 
+ ## Core forms and independent meaning
+ 
+@@ -196,8 +208,12 @@
+ 
+ `src/frontend/source.rs::BundledRegistry` embeds **four ordinary source
+ modules with 12 public definitions**; one additional private basis helper is
+-used by `std::routines`. They receive normal declaration, type/ownership and
+-native checking, rather than `ImportOrigin::Sealed`:
++used by `std::routines`. Both loaders retain all four complete original sources
++and their fixed manifest. They receive normal common declaration, type, owner,
++access, dependency and effect checking rather than `ImportOrigin::Sealed`.
++Concrete materialization and native checking occur under the actual consumer's
++scope; selected source checking alone does not natively certify every bundled
++specialization:
+ 
+ | Module and source | Public definitions | Contract provenance |
+ | --- | --- | --- |
+@@ -211,21 +227,23 @@
+ Until 0.5.0, algorithm additions ordinarily belong in the approved corpus rather
+ than expanding stdlib. This chapter adopts no new library algorithm.
+ 
+-The current finite resolver builds immutable declaration tables, resolves
+-explicit imports and rejects collisions, cycles and external access to private
+-declarations. A local source module cannot occupy the `std::` prefix. Only known
+-entries in `std::quantum` and `std::observe` acquire `ImportOrigin::Sealed`;
+-an unknown sealed name is an error, not a fallback to user code. Bundled modules
+-carry `ModuleOrigin::Bundled` and still have ordinary source ASTs.
+-
+-The sized explicit-module-map loader also reserves `std` / `std::`, resolves
+-known catalog paths explicitly, and checks other imports through ordinary
+-visibility rules. It does not acquire the finite bundled-source interface
+-merely by recognizing some of the same names. Import spelling introduces no
+-runtime module initialization, semantic operation or evidence. Resolution,
+-fully qualified identity, source/dependency retention and verification remain
+-different responsibilities. New alias/re-export syntax in #65 is not admitted
+-by this description of current imports.
++The shared resolver registers complete interfaces and resolves explicit imports
++with ordinary visibility and collision rules. Import-only cycles are allowed;
++every self-import rejects as a collision. Genuine body/provider/Basis/Meaning
++mutual dependencies reject, with only checked decreasing runtime self-calls
++permitted. Same-module private lookup remains available; cross-module imports
++and host entries require public declarations. Import spelling supplies no
++runtime initialization or evidence.
++
++Both loaders reserve `std` and `std::`. Compiler-owned modules expose only the
++fixed common catalog; an unknown sealed name is an error, not a fallback to
++caller source. Ordinary bundles retain their provenance and original ASTs,
++with bytes/modules charged under the loader's policies before parsing/copying.
++The selected map counts all four bundles toward its module and aggregate byte
++limits. No ambient source replacement or checking exemption follows from
++`ModuleOrigin::Bundled`. Resolution, original source identity, concrete
++materialization and independent acceptance remain separate duties; new
++alias/re-export syntax in #65 is not admitted here.
+ 
+ ## Generic acceptance and library-owned algorithms
+ 
+--- a/docs/src/reference/type-model.md
++++ b/docs/src/reference/type-model.md
+@@ -5,10 +5,11 @@
+ [#27](https://github.com/MGYamada/Qleisli/issues/27) type boundary and the
+ [authority hierarchy](authority.md). The current alpha frontend uses the
+ canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` spellings described
+-below. Both checking profiles classify the common source type tree and retain
+-its exact ownership boundaries. The selected-source path implements bounded
+-opaque Basis specialization; convergence of the execution profiles and general
+-Meaning/capability integration remain in progress. The
++below. Both paths use one mandatory judgment over every complete original
++declaration and body before concrete eligibility, retaining exact type trees,
++owners, static premises, access and principal effects. The selected-source path
++implements bounded opaque Basis specialization; concrete emitter convergence,
++Meaning evidence integration and general source preservation remain in progress. The
+ [foundation packet](../design/type-foundation.md) preserves the original
+ experiments; their historical failures are not current acceptance results.
+ 
+@@ -113,14 +114,16 @@
+ map for a Unit owner needs its own explicit checked rule; ordinary `()` supplies
+ neither such a map nor an implicit `Q<A> -> A` conversion.
+ 
+-The selected-source projection supports `Q<Unit>` and `Op<Unit>` alongside
+-`Q<Bit>` and `Q<Bits<n>>`. Helpers and operation providers retain the exact
+-basis and linear owner even when the physical axis list is empty. The existing
+-`std::quantum::phase_eighth(q)` consumes one such quantum atom and returns its
+-exact type with scalar action `exp(i*pi/4) I`. It evaluates its sole argument
+-once, takes no static arguments and has Unitary effect. An ordinary value or a
+-tuple of separate owners is not a valid argument. This scalar is distinct from
+-`phase[1,3]`, whose Bit action is `diag(1, exp(i*pi/4))`.
++Common source checking retains `Q<Unit>` and `Op<Unit>` alongside `Q<Bit>`,
++`Q<Bits<n>>` and complete packaged Basis trees. Helpers and operation providers
++retain the exact basis and linear owner even with an empty physical axis list.
++`std::quantum::phase_eighth(q)` consumes one `Q<A>` owner for any Basis tree A
++and returns its exact type with scalar action `exp(i*pi/4) I`. Its sole argument
++evaluates once; it takes no static arguments and has Unitary effect. An ordinary
++value or a tuple of separate owners is not a valid argument. The selected
++concrete scalar path currently supports the Unit/Bit/Bits atoms; checking a
++packaged tuple does not add that concrete emitter capability. This scalar is
++distinct from `phase[1,3]`, whose Bit action is `diag(1, exp(i*pi/4))`.
+ 
+ Hierarchy lowering retains that scalar through explicit checked Unit structure
+ and a finite scalar leaf, tensored with the original owner's identity. The
+@@ -151,8 +154,8 @@
+ argument still makes its caller observing.
+ 
+ These maps can form explicit left/right maps on separate-owner products, such
+-as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. The finite source catalog does not yet expose
+-these two names, and the shared Raw profile rejects their quantum Unit
++as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. Both names belong to the common source catalog, but finite concrete lowering
++does not materialize them and the shared Raw profile rejects their quantum Unit
+ intermediates; no observing discard or retry after native failure supplies a
+ substitute.
+ 
+@@ -250,8 +253,10 @@
+ Static parameters are explicit and ordered; a parameter kind may refer only to
+ earlier parameters. Runtime values never determine static sizes or providers.
+ 
+-Generic checking covers every declaration, owner/effect rule, capability and
+-static branch, including unused declarations and zero-iteration bodies.
++The mandatory common source judgment covers every original declaration,
++owner/effect rule, capability, dependency and static branch, including private
++and unused declarations, both arms, zero-iteration bodies and all four ordinary
++bundled modules. A source-semantic error precedes concrete profile eligibility.
+ Specialization then checks closed substitutions, exact type trees, provider
+ identity, premises and aggregate work. Specialization keys retain those inputs
+ and source/dependency identity; width alone is not a key. Instance success is
+@@ -267,6 +272,53 @@
+ Concrete providers still require their checked implementation paths; a
+ generic assumption is not evidence for an arbitrary external provider.
+ 
++### Direct runtime transforms and opaque operations
++
++A direct `adjoint`/`controlled` target given by an ordinary function name, its
++explicit static specialization or a transparent `repeat_op` wrapper has a
++runtime target type T. With one runtime parameter, T is its complete input type;
++with more, T is the exact ordered tuple
++of complete input types. Arity zero rejects. T must be a nonempty tree of quantum
++owner leaves and equal the checked result under the actual substitutions and
++caller premises. `Q<Unit>` and `Q<Bits<0>>` are valid leaves with their ownership
++and scalar phase intact. Ordinary Unit/Bit/Bits, empty tuples and mixed
++classical/quantum trees reject; equal width cannot repair a different tree.
++
++Direct `adjoint` evaluates its input once and returns T. Direct `controlled`
++evaluates control then target once and returns `(Q<Bit>,T)`. Each original
++owner is consumed and returned exactly once; no implicit split, join, packing or
++reassociation occurs. The named body must have principal Unitary effect and
++the required implementation path. Transparent Repeat checks its count and
++child even at zero. Only a directly transformed runtime self-call to the same
++DefId may use the actual checked Nat decrease; this permits neither recursive
++opaque providers nor mutual dependency cycles. A located RuntimeGroupProvider
++obligation retains the original provider DefId, complete runtime interface and
++principal effect. Its source association is not transformed-operator equality,
++provider correspondence or a source-preservation proof.
++
++This runtime-group rule does not widen an opaque `Op<A>`, static/host provider,
++Meaning refinement, certified logical operation or FunctionEquality contract.
++Those keep one input `Q<A> -> Q<A>`; `tensor_op` describes a packed quantum basis.
++Transparent specialization derives access conservatively from every actual Op
++argument, including unused ones: inverse access requires each argument's Apply
++and Adjoint paths, and controlled access additionally requires Controlled.
++A body annotation or mathematical Unitary property grants none of those paths.
++The direct-group distinction is recorded in the
++[ordinary #32 clarification](https://github.com/MGYamada/Qleisli/issues/32#issuecomment-6005081767).
++Concrete transform/evidence and native checking remain separate obligations.
++
++`apply_contract` evaluates its input first and retains one exact quantum owner.
++Its implementation and ordinary specification are closed principal-Unitary
++`Q<A> -> Q<A>` declarations; a declared finite Meaning may supply the
++specification instead. The common checker records a located FunctionEquality
++obligation binding both exact original DefIds, interface/category/effect and
++source span. Meaning/provider identity binding is not matrix equality,
++injectivity, all-input clean return, provider correspondence or source
++preservation. Those properties remain pending until the existing independent
++concrete evidence gates discharge them. A selected projection of a declared
++Meaning or meaning-refined Op remains explicitly unsupported when requested;
++checking the original source never substitutes another specification or route.
++
+ ### Opaque Basis specialization in the selected profile
+ 
+ The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity
+@@ -307,12 +359,20 @@
+ budget. The existing 1024 calls/folds, call depth 16 and 10000 steps remain.
+ These preparation limits are not a discharged quantitative RS theorem.
+ 
++Before specialization, both paths enforce the common 1,000,000-work budget
++with charges before source visits, copied/allocated type and lexical cells,
++normalization and solver work. Per-value type capacity is 4096 cells/depth 64;
++selected retained runtime scopes additionally have a 16,384-cell limit. The
++finite path retains its own aggregate/type/snapshot limits. These are separate
++from the concrete limits above and from native/evidence work. Capacity refusal
++is not a proof of a semantic impossibility or a quantitative RS certificate.
++
+ Each specialization keeps exact constructor tags, tuple order/nesting, selected
+ type/Nat/provider bindings, original source/dependencies and local identities.
+ Width alone never selects a cache entry or conversion. Concrete instances lower
+ to the existing native representation and receive a fresh Lean decision; no new
+-native primitive or accepted-handle constructor is introduced. General Meaning
+-refinement, directory-profile integration and source-preservation proofs remain
++native primitive or accepted-handle constructor is introduced. Concrete Meaning
++evidence, emitter/projection convergence and source-preservation proofs remain
+ their separately recorded obligations. A selected native success certifies only
+ its actual checked artifact/contract under the disclosed boundary.
+ 
+@@ -388,10 +448,10 @@
+ invocation and runtime branches remain unfinished. The existing
+ hierarchy `lower()` path retains its quantum and ordered-readout contracts and
+ rejects Boolean steps at their source locations; a failed native hierarchy
+-decision is never retried as weaker Raw validity. General Meaning-refined Basis
+-polymorphism,
+-reusing basis functions as runtime computations and full common checking
+-remain unfinished profile obligations. Packaged hierarchy bases retain the
++decision is never retried as weaker Raw validity. Concrete Meaning-refined Basis
++materialization and reuse of Basis functions as runtime computations remain
++unsupported selected-profile obligations; all their original declarations and
++bodies are nevertheless checked by the common source judgment. Packaged hierarchy bases retain the
+ selected-source concrete width limits and charge every basis-tree node,
+ including zero-width factors, to preparation storage/depth limits before
+ materializing copied trees.
+@@ -407,11 +467,13 @@
+ `--operation-nat` forms. The legacy
+ `sized` prefix delegates to the same selected-source execution plan. This is
+ an adapter transition; it does not complete the final grammar/CLI migration.
+-Directory/qrate input retains its existing project loader and checks all
+-concrete declarations. Explicit module maps check every supplied declaration
+-generically and seek native acceptance only for the selected specialization.
+-Results distinguish those scopes; a selected success does not certify every
+-possible specialization or converge the two remaining checking policies.
++Directory/qrate and explicit-module inputs retain their loader/provenance and
++concrete consumer differences, but both first check every complete original
++and the four bundled ordinary sources through the same judgment. Finite then
++requires its concrete declarations to fit its profile; selected input seeks
++native acceptance only for the requested concrete specialization. Native
++results distinguish those scopes and do not certify every possible
++specialization or establish general source preservation.
+ Selected commands return a JSON result object; `--format=json` uses the common
+ `qleisli.result` envelope for success and diagnostics. Without that flag,
+ errors remain text on stderr, as in the legacy selected-input command.
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -6,28 +6,42 @@
+ 
+ ## Unreleased
+ 
++- Check every complete original declaration and body through one mandatory
++  source judgment before finite or selected concrete eligibility, including
++  private/unused definitions, both arms, zero folds and all four ordinary std
++  modules. Share typed 27-name primitive lookup, canonical declaration/lexical
++  facts, static premises, owners/access, dependencies and principal effects;
++  retain located pending concrete evidence obligations instead of placeholder
++  IR approval. Permit import-only cycles, reject all self-imports and static
++  binder shadows, and charge actual source work/copies under the common 1M
++  capacity. Preserve direct transformed runtime owner groups separately from
++  unary opaque Op/static/host providers and checked decreasing runtime self
++  calls. Concrete projection/emitter limits, exact Meaning/clean/provider
++  evidence, native acceptance and general source preservation remain separate;
++  this unit adds no primitive, proof or guarantee (#32, #317).
+ - Share checked formal operation bases, finite Meaning payloads and explicit
+   Apply/Adjoint/Controlled grants between the two declaration paths. Retain
+   original binder identities, ordered kind availability, diagnostic and budget
+   order; borrow sized kind environments instead of cloning whole scopes.
+   Generic assumptions grant no native acceptance or arbitrary provider access.
+-  Common body convergence and canonical std integration remain unfinished
+-  (#32, #317).
++  Concrete lowering convergence and canonical generic std integration remain
++  unfinished (#32, #317).
+ - Share ordered static and runtime parameter-name checks over the original
+   common AST. Preserve exact declaration/parameter association, per-argument
+   type checks, complete unused-declaration rejection, capacities and existing
+-  profile-specific diagnostic/native order. Full declaration/body convergence
++  profile-specific diagnostic/native order. Full concrete lowering convergence
+   and canonical generic std integration remain unfinished (#32, #317).
+ - Share actual runtime wildcard, duplicate-name and exact tuple/Unit binding
+   rules between finite lowering and sized generic checking. Retain existing
+   value moves, owner identities, capacity checks and diagnostic order; the
+-  borrowed sized pattern bridge does not complete declaration/body convergence
++  borrowed sized pattern bridge does not complete concrete lowering convergence
+   or expose canonical std APIs (#32, #317).
+ - Share retained original source, common syntax and provenance through a private
+   immutable collection. Preserve complete declaration checks, source budgets,
+   diagnostic order and the fixed ordinary std registry; retain selected file
+-  paths without inventing in-memory manifest provenance. Common checker and
+-  canonical std namespace integration remain unfinished (#32, #317).
++  paths without inventing in-memory manifest provenance. Concrete emitter
++  convergence and canonical generic std namespace integration remain unfinished
++  (#32, #317).
+ - Include #317 in the maintainer-confirmed 111-Issue scope and release gate.
+   Reject prior 110-Issue candidates that omit semantic stdlib namespace criteria
+   or acceptance evidence; preserve all earlier targets and historical records.

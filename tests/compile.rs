@@ -332,7 +332,14 @@ fn growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack() {
                 let root = SourceRoot::new(&source);
                 let error = check_project(&root.0).unwrap_err();
                 assert_eq!(error.code, ErrorCode::Limit, "{error}");
-                assert!(error.message.contains("internal value or type"), "{error}");
+                assert!(
+                    error.message.contains("internal value or type")
+                        || error.message == "inferred tuple exceeds 4096 cells"
+                        || error.message == "source type exceeds 4096 cells or depth 64"
+                        || error.message == "type exceeds depth 64"
+                        || error.message == "basis tuple exceeds 4096 cells",
+                    "{error}"
+                );
             }
         })
         .unwrap()
@@ -355,21 +362,32 @@ fn annotated_types_and_computed_domains_share_the_tree_limits() {
         let root = SourceRoot::new(&source);
         let error = check_project(&root.0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Limit, "{error}");
-        assert!(error.message.contains("internal value or type"), "{error}");
+        assert_eq!(error.message, "source type exceeds 4096 cells or depth 64");
     }
 }
 
 #[test]
-fn bounded_classical_copies_and_unit_lifts_remain_valid() {
-    let source = format!(
-        "use std::observe::discard;
+fn common_work_limits_preserve_the_original_copy_case_and_a_bounded_control() {
+    let source = |doublings, wrappers| {
+        format!(
+            "use std::observe::discard;
          observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}
          observe fn main() -> Unit {{ let v = (); {} {} () }}",
-        "let q = do x <- q; pure (x, x);".repeat(10),
-        "let v = (v, v);".repeat(10),
-        "let v = ((), v);".repeat(40),
+            "let q = do x <- q; pure (x, x);".repeat(doublings),
+            "let v = (v, v);".repeat(doublings),
+            "let v = ((), v);".repeat(wrappers),
+        )
+    };
+    // Keep the original input as an explicit engineering migration: common
+    // source checking charges its real copied trees before finite lowering.
+    let root = SourceRoot::new(&source(10, 40));
+    let error = check_project(&root.0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Limit);
+    assert_eq!(
+        error.message,
+        "common source judgment exceeds its 1000000 work capacity"
     );
-    let root = SourceRoot::new(&source);
+    let root = SourceRoot::new(&source(6, 8));
     let result = run(&root.0);
     assert_eq!(result, BTreeMap::from([(vec![], 1.0)]));
 }
@@ -399,7 +417,11 @@ fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
         let root = SourceRoot::new(&source);
         let error = check_project(&root.0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Limit, "{error}");
-        assert!(error.message.contains("work limit"), "{error}");
+        assert!(
+            error.message.contains("work limit")
+                || error.message == "common source judgment exceeds its 1000000 work capacity",
+            "{error}"
+        );
     }
 }
 

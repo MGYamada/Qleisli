@@ -1,0 +1,63 @@
+{
+  "format": "qleisli.bounded-test-repair",
+  "status": "authored-not-executed",
+  "recorded_utc": "2026-10-05T22:53:15.094166+00:00",
+  "owned_tests": {
+    "sized_source.rs": {
+      "bytes": 84365,
+      "sha256": "9ace269007015096fbcdb96d6ee54182dbcd57eca83b920ebfc9ad9bb328a7e7"
+    },
+    "source_judgments.rs": {
+      "bytes": 11426,
+      "sha256": "463139c13afd47fa8afa9d3a8d5ee1be2616d7c56417589f615b5ae72c89567f"
+    }
+  },
+  "preserved_before_record": {
+    "bytes": 1877,
+    "sha256": "f3482a8af3545ac8ee549409c1b70b472a22995014b94e1be405da12b128ba14"
+  },
+  "first_source_map": {
+    "path": "tests/fixtures/authoring_sessions/common-static-value-v030/first-files.json",
+    "bytes": 1952,
+    "sha256": "a68b3c213a97844833434e1c1882697604db1a8e15679695ddc56d91acf4d432"
+  },
+  "first_sources_unchanged": true,
+  "predicted_new_test_count": 2,
+  "predicted_new_public_source_checks": 10,
+  "own_generated_physical_qubit_width_max": 1,
+  "actual06_facts": {
+    "first_local_callee": {
+      "code": "type",
+      "span": [
+        130,
+        131
+      ],
+      "message": "a local value is not callable"
+    },
+    "original_work_limit_case": {
+      "code": "limit",
+      "span": [
+        56,
+        4043
+      ],
+      "message": "common source judgment exceeds its 1000000 work capacity"
+    }
+  },
+  "constitutional_guard": {
+    "base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "actual_exit": 0,
+    "meaning": "Identity/continuity only, no fresh Lean replay, guarantee admission or fullCI."
+  },
+  "author_executions": {
+    "rust_build_test_format": false,
+    "cli_native": false,
+    "lean": false
+  },
+  "input_map_limit": "Files named in this packet only; not the complete source/fixture/validation closure."
+}

@@ -1,0 +1,29 @@
+{
+  "production": {
+    "path": "tests/project.rs",
+    "sha256": "da6f0808c16f53744bff0bdda9330d0c3382b03e495f3a7dbf8fb700fc78661a",
+    "bytes": 10023
+  },
+  "retained_actual_attempt_06": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/05-focused-integration-tests.stderr.txt": {
+      "sha256": "08d80365a3ec7fa99c93bd76220b0bfdc7df4d80a28ecfbc0cd7c5f58898d408",
+      "bytes": 10357
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/05-focused-integration-tests.stdout.txt": {
+      "sha256": "6d9584352ee4dfc17e83953390022bdb582bdc9ee9b589c2e8143089c94f72c1",
+      "bytes": 25489
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/results.json": {
+      "sha256": "85aa6d09eebd1232d5bda44ccbaac1126768a47ab3af1e3c950aea055e60c34a",
+      "bytes": 13188
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/inputs-before.json": {
+      "sha256": "b87663a1c975611b13645840af310b4963e350b0d0a97dae31ec94a5f56075c5",
+      "bytes": 113095
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/inputs-after.json": {
+      "sha256": "b87663a1c975611b13645840af310b4963e350b0d0a97dae31ec94a5f56075c5",
+      "bytes": 113095
+    }
+  }
+}

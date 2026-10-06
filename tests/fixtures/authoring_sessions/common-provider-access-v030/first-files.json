@@ -1,0 +1,142 @@
+{
+  "format": "qleisli.first-source-file-map",
+  "version": 1,
+  "status": "immutable FIRST source preparation; source checks unexecuted",
+  "self_excluded": "tests/fixtures/authoring_sessions/common-provider-access-v030/first-files.json",
+  "file_count": 25,
+  "files": {
+    "tests/common_source_provider_access.rs": {
+      "bytes": 4266,
+      "sha256": "c192e148a05e9c13fc10a738818fe0b29c7298c3825764627a5782c776568fde",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/README.md": {
+      "bytes": 4528,
+      "sha256": "1b75a03cb6baadbcf50f9b802199c505146235e8f840b34b7ad868533f71a40a",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/main.qli": {
+      "bytes": 404,
+      "sha256": "0c66ea22296897232853037466099d1710915ac2686f2e504e1c728efbff35b0",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/main.qli": {
+      "bytes": 418,
+      "sha256": "7dd08afe9d3399a46cef24e987ab9983e87ad3a1ca5775e1300de40b7ccd9fe3",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-controlled/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-controlled/main.qli": {
+      "bytes": 482,
+      "sha256": "0d67f20fb69130d0360725372e1e5e786a86c6ce3bc42d6e281d30e93e56fff4",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-inverse/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-inverse/main.qli": {
+      "bytes": 443,
+      "sha256": "082764a2f4f5547b2111b87e6924970fb3e75627462b12a5a3111da3c388bbe2",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-controlled/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-controlled/main.qli": {
+      "bytes": 455,
+      "sha256": "ff8b832079533e3db8ebea506d223922631654d485aa245beb99b790a56291b9",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-forward/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-forward/main.qli": {
+      "bytes": 469,
+      "sha256": "9aca58a24989c79239892935de9e9faff1481095e5cebaa0fb0804183abe751d",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-inverse/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-inverse/main.qli": {
+      "bytes": 404,
+      "sha256": "ccb9ef3535039ee3e727db832ff7825ccc06e11aceecd9feae52b3d2a8818229",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/closed-provider-controlled/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/closed-provider-controlled/main.qli": {
+      "bytes": 375,
+      "sha256": "3acd98d34866fffa93d4c710f846997bc73e54ca5b6fc48e80627554e783c3d4",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-controlled/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-controlled/main.qli": {
+      "bytes": 444,
+      "sha256": "5b82b40a5febb1a1d6679fba9ad8df4ba23baade64b8ab4ee0a97032814e40ad",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/Qargo.toml": {
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli": {
+      "bytes": 381,
+      "sha256": "dbbcc8a792cfd0abe5e4ea6a4c2a3f338b66258d3c4dd4285bf8b5f1dae40ee7",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/provenance.json": {
+      "bytes": 4126,
+      "sha256": "f3a329a4944d18bc462c5c4c8466002a88f1904887f6f6c88fd87fe977b06c67",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-01/common_source_provider_access.rs.txt": {
+      "bytes": 4258,
+      "sha256": "244ec68e8a62ba05580f53841204585a86cd258084a8e7764b942a14a7544308",
+      "mode": "0o644"
+    },
+    "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-01/repair.json": {
+      "bytes": 646,
+      "sha256": "0d2c1fa8c5be2e7c4866c87d5bacf3a40ca84ac02fdc887ece64af948c703afe",
+      "mode": "0o644"
+    }
+  },
+  "scope": "Original ten sources/manifests, explanation, provenance, authored test and retained test-only formatting-failure snapshot. Intentionally incomplete production closure.",
+  "reference_only_bindings": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/provider-access-clarification-01.md",
+    "sha256": "04669bfc1fd1bbd92942dd27bf3b180e772bda03d094c485bf4c346e9598d720",
+    "ordinary_before_code_receipt": "tests/fixtures/frontend_v030/common-original-ast-design/provider-access-before-code-01.json",
+    "receipt_sha256": "536807cbdfcb8dbbe14909fe22603d041fed234b6b0303b0f853ed7d0ea462a8",
+    "constitutional_act": false
+  }
+}

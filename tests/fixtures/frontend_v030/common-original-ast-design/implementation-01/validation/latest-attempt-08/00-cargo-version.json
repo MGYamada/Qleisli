@@ -1,0 +1,28 @@
+{
+  "label": "cargo-version",
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "--version"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 0.13696337502915412,
+  "completed_utc": "2026-10-05T23:17:10.076621+00:00",
+  "stdout": {
+    "path": "00-cargo-version.stdout.txt",
+    "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+    "bytes": 47
+  },
+  "stderr": {
+    "path": "00-cargo-version.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "actual_test_results": [],
+  "source_input_digest_after": "68b34387e98c35c1323310121e46f0775b6d5a134ba89abc50203b2c78c924ec",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

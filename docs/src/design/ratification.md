@@ -141,3 +141,8 @@ current production/artifact identity. Hash checks alone do not complete it.
 The [release umbrella](https://github.com/MGYamada/Qleisli/issues/142) tracks all
 111 selected issues, including #311, #315 and #317, and the separate
 implementation, proof and publication gates.
+The maintainer's later ordinary scope decision excludes QFT implementation
+completion from v0.3.0 and the current goal; #317's namespace work remains.
+[#317](https://github.com/MGYamada/Qleisli/issues/317) and the release umbrella
+record the applicable criteria. This scope decision changes no constitutional
+text, adopted interpretation, guarantee admission or proof status.

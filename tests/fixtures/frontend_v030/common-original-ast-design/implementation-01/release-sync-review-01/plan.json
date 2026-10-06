@@ -1,0 +1,6 @@
+{
+  "format": 1,
+  "status": "failed",
+  "commands": [],
+  "error": "public surface changed; edit/review the inventory explicitly: src/frontend/effects.rs"
+}

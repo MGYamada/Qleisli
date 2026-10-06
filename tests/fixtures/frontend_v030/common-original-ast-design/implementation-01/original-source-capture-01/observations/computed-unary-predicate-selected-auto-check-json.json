@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-unary-predicate/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-05T23:35:02.096103+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.07457691698800772,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "exit_code": 0,
+  "raw": {
+    "stdout": {
+      "path": "computed-unary-predicate-selected-auto-check-json.stdout.bin",
+      "bytes": 472,
+      "sha256": "25fddc6431e1e9f3a6d68992d5a773b4acfcf49630f43a9e4d0ade6b82ec9034",
+      "mode": 420
+    },
+    "stderr": {
+      "path": "computed-unary-predicate-selected-auto-check-json.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    }
+  },
+  "native_journal": {
+    "path": "computed-unary-predicate-selected-auto-check-json.native.jsonl",
+    "bytes": 47,
+    "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+    "mode": 420
+  },
+  "native_forwarded_attempts": 1,
+  "native_journal_parse_error": null,
+  "native_count_scope": "Forwarder rows immediately before execv; not independent native-start/exit attestations."
+}

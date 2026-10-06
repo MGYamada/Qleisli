@@ -1,0 +1,348 @@
+    Checking qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+warning: field `logical` is never read
+   --> src/frontend/check.rs:288:9
+    |
+287 |     CertifiedClean {
+    |     -------------- field in this variant
+288 |         logical: OperationIdentity,
+    |         ^^^^^^^
+    |
+    = note: `ObligationKind` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `provider` and `meaning` are never read
+   --> src/frontend/check.rs:291:9
+    |
+290 |     Provider {
+    |     -------- fields in this variant
+291 |         provider: DefId,
+    |         ^^^^^^^^
+292 |         meaning: Option<DefId>,
+    |         ^^^^^^^
+    |
+    = note: `ObligationKind` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: fields `required` and `supplied` are never read
+   --> src/frontend/check.rs:295:9
+    |
+294 |     MeaningEquality {
+    |     --------------- fields in this variant
+295 |         required: DefId,
+    |         ^^^^^^^^
+296 |         supplied: Option<DefId>,
+    |         ^^^^^^^^
+    |
+    = note: `ObligationKind` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `0` is never read
+   --> src/frontend/check.rs:302:12
+    |
+302 |     Global(resolve::Target),
+    |     ------ ^^^^^^^^^^^^^^^
+    |     |
+    |     field in this variant
+    |
+    = note: `OperationIdentity` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+    |
+302 -     Global(resolve::Target),
+302 +     Global(()),
+    |
+
+warning: field `0` is never read
+   --> src/frontend/check.rs:303:12
+    |
+303 |     Formal(BinderKey),
+    |     ------ ^^^^^^^^^
+    |     |
+    |     field in this variant
+    |
+    = note: `OperationIdentity` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+    |
+303 -     Formal(BinderKey),
+303 +     Formal(()),
+    |
+
+warning: fields `definition`, `span`, and `kind` are never read
+   --> src/frontend/check.rs:307:9
+    |
+306 | pub(super) struct Obligation {
+    |                   ---------- fields in this struct
+307 |     pub definition: DefId,
+    |         ^^^^^^^^^^
+308 |     pub span: Span,
+    |         ^^^^
+309 |     pub kind: ObligationKind,
+    |         ^^^^
+    |
+    = note: `Obligation` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `effect` is never used
+   --> src/frontend/check.rs:326:12
+    |
+322 | impl CheckedProgram {
+    | ------------------- method in this implementation
+...
+326 |     pub fn effect(&self, id: DefId) -> Option<FunctionEffect> {
+    |            ^^^^^^
+
+warning: function `program` is never used
+   --> src/frontend/check.rs:408:15
+    |
+408 | pub(super) fn program<'a>(
+    |               ^^^^^^^
+
+warning: function `equivalent_types` is never used
+   --> src/frontend/check.rs:577:15
+    |
+577 | pub(super) fn equivalent_types(a: &Ty, b: &Ty, context: &Context, span: Span) -> Result<bool> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `close_type` is never used
+   --> src/frontend/check.rs:586:15
+    |
+586 | pub(super) fn close_type(
+    |               ^^^^^^^^^^
+
+warning: function `called_static_names` is never used
+   --> src/frontend/compile/operations.rs:777:15
+    |
+777 | pub(super) fn called_static_names<'a>(op: &'a StaticOp, names: &mut Vec<&'a Ident>) {
+    |               ^^^^^^^^^^^^^^^^^^^
+
+warning: function `infer` is never used
+   --> src/frontend/effects.rs:137:15
+    |
+137 | pub(super) fn infer(bodies: &BTreeMap<DefId, BodyEffects>) -> Option<BTreeMap<DefId, Effect>> {
+    |               ^^^^^
+
+warning: variant `Sized` is never constructed
+  --> src/frontend/resolve.rs:34:5
+   |
+32 | pub(super) enum Profile {
+   |                 ------- variant in this enum
+33 |     Finite,
+34 |     Sized,
+   |     ^^^^^
+   |
+   = note: `Profile` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `modules` is never used
+   --> src/frontend/resolve.rs:175:12
+    |
+ 85 | impl Resolution {
+    | --------------- method in this implementation
+...
+175 |     pub fn modules(&self) -> impl Iterator<Item = ModuleId> + '_ {
+    |            ^^^^^^^
+
+warning: function `cycle` is never used
+   --> src/frontend/resolve.rs:408:15
+    |
+408 | pub(super) fn cycle<N: Copy + Ord>(
+    |               ^^^^^
+
+warning: function `order` is never used
+   --> src/frontend/resolve.rs:485:15
+    |
+485 | pub(super) fn order<N: Copy + Ord>(pending: BTreeMap<N, BTreeSet<N>>) -> Result<Vec<N>, N> {
+    |               ^^^^^
+
+warning: method `bind_globals` is never used
+  --> src/frontend/resolve/locals.rs:87:12
+   |
+84 | impl Table {
+   | ---------- method in this implementation
+...
+87 |     pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>) {
+   |            ^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+   --> src/frontend/resolve/locals.rs:126:12
+    |
+125 | impl<'ast> Index<'ast> {
+    | ---------------------- associated function in this implementation
+126 |     pub fn new(
+    |            ^^^
+
+warning: methods `binder`, `usage`, and `natural_usage` are never used
+   --> src/frontend/resolve/locals.rs:204:12
+    |
+203 | impl Occurrences<'_> {
+    | -------------------- methods in this implementation
+204 |     pub fn binder(&self, name: &Ident) -> BinderId {
+    |            ^^^^^^
+...
+207 |     pub fn usage(&self, name: &Ident) -> UseSiteId {
+    |            ^^^^^
+...
+210 |     pub fn natural_usage(&self, natural: &Natural) -> UseSiteId {
+    |            ^^^^^^^^^^^^^
+
+warning: field `natural_references` is never read
+   --> src/frontend/resolve/locals.rs:258:5
+    |
+254 | pub(in crate::frontend) struct Forest<'ast> {
+    |                                ------ field in this struct
+...
+258 |     natural_references: BTreeMap<usize, UseSiteId>,
+    |     ^^^^^^^^^^^^^^^^^^
+
+warning: methods `insert` and `natural_usage` are never used
+   --> src/frontend/resolve/locals.rs:274:12
+    |
+261 | impl<'ast> Forest<'ast> {
+    | ----------------------- methods in this implementation
+...
+274 |     pub fn insert(&mut self, index: Index<'ast>) {
+    |            ^^^^^^
+...
+294 |     pub fn natural_usage(&self, natural: &Natural) -> &UseInfo {
+    |            ^^^^^^^^^^^^^
+
+warning: function `primitive_path` is never used
+  --> src/frontend/sized.rs:34:15
+   |
+34 | pub(super) fn primitive_path(path: &str) -> Option<&'static str> {
+   |               ^^^^^^^^^^^^^^
+
+warning: associated items `variable`, `scale`, `add`, and `sub` are never used
+   --> src/frontend/sized/linear.rs:55:12
+    |
+ 40 | impl Linear {
+    | ----------- associated items in this implementation
+...
+ 55 |     pub fn variable(name: &BinderKey) -> Self {
+    |            ^^^^^^^^
+...
+ 85 |     pub fn scale(&self, n: i128) -> Result<Self> {
+    |            ^^^^^
+...
+108 |     pub fn add(&self, b: &Self) -> Result<Self> {
+    |            ^^^
+...
+139 |     pub fn sub(&self, b: &Self) -> Result<Self> {
+    |            ^^^
+
+warning: multiple associated items are never used
+   --> src/frontend/sized/linear.rs:166:12
+    |
+165 | impl Context {
+    | ------------ associated items in this implementation
+166 |     pub fn storage_cells(&self) -> Result<usize> {
+    |            ^^^^^^^^^^^^^
+...
+190 |     pub fn natural(names: impl IntoIterator<Item = BinderKey>) -> Result<Self> {
+    |            ^^^^^^^
+...
+193 |     pub fn natural_budgeted(
+    |            ^^^^^^^^^^^^^^^^
+...
+230 |     pub fn push(&self, inequalities: &[Linear]) -> Self {
+    |            ^^^^
+...
+254 |     pub fn compare(
+    |            ^^^^^^^
+...
+358 |     pub fn proves_le(&self, a: &Linear, b: &Linear, span: Span, obligation: &str) -> Result<bool> {
+    |            ^^^^^^^^^
+...
+394 |     pub fn feasible(&self, span: Span, obligation: &str) -> Result<bool> {
+    |            ^^^^^^^^
+
+warning: function `natural` is never used
+   --> src/frontend/sized/linear.rs:557:15
+    |
+557 | pub(super) fn natural(
+    |               ^^^^^^^
+
+warning: function `natural_with_prefix` is never used
+   --> src/frontend/sized/linear.rs:564:15
+    |
+564 | pub(super) fn natural_with_prefix(
+    |               ^^^^^^^^^^^^^^^^^^^
+
+warning: function `natural_inner` is never used
+   --> src/frontend/sized/linear.rs:576:4
+    |
+576 | fn natural_inner(
+    |    ^^^^^^^^^^^^^
+
+warning: function `predicate` is never used
+   --> src/frontend/sized/linear.rs:625:15
+    |
+625 | pub(super) fn predicate(
+    |               ^^^^^^^^^
+
+warning: field `guard` is never read
+   --> src/frontend/sized/primitive.rs:125:9
+    |
+120 | pub(super) struct Signature {
+    |                   --------- field in this struct
+...
+125 |     pub guard: Guard,
+    |         ^^^^^
+
+warning: methods `map_sizes` and `quantum_group` are never used
+   --> src/frontend/types.rs:97:19
+    |
+ 95 | impl<N> Type<N> {
+    | --------------- methods in this implementation
+ 96 |     /// Resolve sizes without changing any constructor or owner boundary.
+ 97 |     pub(super) fn map_sizes<M, E>(
+    |                   ^^^^^^^^^
+...
+237 |     pub(super) fn quantum_group(&self) -> bool {
+    |                   ^^^^^^^^^^^^^
+
+warning: `qleisli` (lib) generated 30 warnings
+warning: method `map_sizes` is never used
+  --> src/frontend/types.rs:97:19
+   |
+95 | impl<N> Type<N> {
+   | --------------- method in this implementation
+96 |     /// Resolve sizes without changing any constructor or owner boundary.
+97 |     pub(super) fn map_sizes<M, E>(
+   |                   ^^^^^^^^^
+
+warning: `qleisli` (lib test) generated 27 warnings (26 duplicates)
+error[E0277]: `Diagnostic` doesn't implement `std::fmt::Display`
+  --> tests/common_source_provider_access.rs:44:54
+   |
+44 |     assert_eq!(error.code, "unsupported", "{source}\n{error}");
+   |                                                      ^^^^^^^ `Diagnostic` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Diagnostic`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0277]: `Diagnostic` doesn't implement `std::fmt::Display`
+  --> tests/common_source_provider_access.rs:45:54
+   |
+45 |     assert!(error.message.contains("opaque Basis"), "{error}");
+   |                                                      ^^^^^^^ `Diagnostic` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Diagnostic`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0277]: `Diagnostic` doesn't implement `std::fmt::Display`
+  --> tests/common_source_provider_access.rs:64:54
+   |
+64 |     assert_eq!(finite.code, "capability", "{source}\n{finite}");
+   |                                                      ^^^^^^^^ `Diagnostic` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Diagnostic`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+error[E0277]: `Diagnostic` doesn't implement `std::fmt::Display`
+  --> tests/common_source_provider_access.rs:65:51
+   |
+65 |     assert!(finite.message.contains(capability), "{finite}");
+   |                                                   ^^^^^^^^ `Diagnostic` cannot be formatted with the default formatter
+   |
+   = help: the trait `std::fmt::Display` is not implemented for `Diagnostic`
+   = note: in format strings you may be able to use `{:?}` (or {:#?} for pretty-print) instead
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `qleisli` (test "common_source_provider_access") due to 4 previous errors
+warning: build failed, waiting for other jobs to finish...

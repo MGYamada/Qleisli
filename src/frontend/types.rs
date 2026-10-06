@@ -93,15 +93,6 @@ pub(super) struct TreeSize {
 }
 
 impl<N> Type<N> {
-    /// Resolve sizes without changing any constructor or owner boundary.
-    pub(super) fn map_sizes<M, E>(
-        &self,
-        resolve: &mut impl FnMut(&N) -> Result<M, E>,
-    ) -> Result<Type<M>, E> {
-        self.map_parts(resolve, &mut |parameter| {
-            Ok(Type::parameter(parameter.clone()))
-        })
-    }
     /// Substitute sizes and opaque bases while retaining every surrounding
     /// constructor, owner boundary, tuple arity and source order.
     pub(super) fn map_parts<M, E>(
@@ -233,18 +224,6 @@ impl<N> Type<N> {
         }
         false
     }
-    /// The existing sized provider profile requires a nonempty tree of owners.
-    pub(super) fn quantum_group(&self) -> bool {
-        let mut pending = vec![self];
-        while let Some(ty) = pending.pop() {
-            match &ty.kind {
-                Kind::Q(_) => {}
-                Kind::Tuple(fields) if !fields.is_empty() => pending.extend(fields),
-                _ => return false,
-            }
-        }
-        true
-    }
     /// Full source-type representation, including Q and its basis subtree.
     pub(super) fn tree_size(&self) -> TreeSize {
         self.size(false)
@@ -277,9 +256,22 @@ impl<N> Type<N> {
         other: &Self,
         sizes: &mut impl FnMut(&N, &N) -> Result<bool, E>,
     ) -> Result<bool, E> {
+        self.equivalent_by_budgeted(other, sizes, &mut |_| Ok(()))
+    }
+
+    /// Account for actual paired traversal and temporary stack entries before
+    /// work. Keep the complete sibling traversal and its size-error order.
+    pub(super) fn equivalent_by_budgeted<E>(
+        &self,
+        other: &Self,
+        sizes: &mut impl FnMut(&N, &N) -> Result<bool, E>,
+        charge: &mut impl FnMut(usize) -> Result<(), E>,
+    ) -> Result<bool, E> {
         let mut equal = true;
+        charge(1)?;
         let mut pending = vec![(self, other)];
         while let Some((a, b)) = pending.pop() {
+            charge(1)?;
             match (&a.kind, &b.kind) {
                 (Kind::Unit, Kind::Unit) | (Kind::Bit, Kind::Bit) => {}
                 (Kind::Bits(a), Kind::Bits(b)) => equal &= sizes(a, b)?,
@@ -290,8 +282,12 @@ impl<N> Type<N> {
                         _ => false,
                     };
                 }
-                (Kind::Q(a), Kind::Q(b)) => pending.push((a, b)),
+                (Kind::Q(a), Kind::Q(b)) => {
+                    charge(1)?;
+                    pending.push((a, b));
+                }
                 (Kind::Tuple(a), Kind::Tuple(b)) if a.len() == b.len() => {
+                    charge(a.len())?;
                     pending.extend(a.iter().zip(b).rev())
                 }
                 _ => equal = false,
@@ -434,11 +430,11 @@ mod tests {
     fn linearity_retains_zero_width_owners_inside_mixed_products() {
         for owner in [T::quantum(T::unit()), T::quantum(T::bits(0))] {
             assert!(owner.linear());
-            assert!(owner.quantum_group());
+            assert!(owner.is_quantum_owner());
             assert!(T::pair(T::bit(), owner.clone()).linear());
-            assert!(!T::pair(T::bit(), owner).quantum_group());
+            assert!(!T::pair(T::bit(), owner).is_quantum_owner());
         }
-        assert!(!T::tuple(vec![]).quantum_group());
+        assert!(!T::tuple(vec![]).is_quantum_owner());
         assert!(!T::pair(T::unit(), T::bits(0)).linear());
     }
 

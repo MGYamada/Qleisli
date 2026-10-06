@@ -1,0 +1,11 @@
+{
+  "production": {
+    "path": "tests/project.rs",
+    "sha256": "fb9e9a9d3750fab673ff0fbc6a7c04c61cd4042db95e8e3e77021df0b388ea99",
+    "bytes": 10020
+  },
+  "change": "Only the newly authored closing-callee span expectation changes from f(x) to f. Source strings, RecursiveCall category and all diagnostics are unchanged.",
+  "stress_functions_byte_unchanged": true,
+  "execution_by_repair_author": false,
+  "formatting_by_repair_author": false
+}

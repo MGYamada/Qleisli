@@ -1,0 +1,1037 @@
+{
+  "format": "qleisli.stdlib-migration-planning-inventory",
+  "version": 1,
+  "status": "non-adopted-preparation-only",
+  "execution": "No test, build, CLI, native, fixture driver or metadata argv replay; rg/read/hash only.",
+  "current_public_count": 12,
+  "current_private_count": 1,
+  "declarations": [
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "name": "increment2",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "name": "add2",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "name": "mul2_mod15",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "name": "xor2",
+      "public": true,
+      "kind": "Basis"
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "name": "and2",
+      "public": true,
+      "kind": "Basis"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "name": "hadamard2",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "name": "nonzero2",
+      "public": false,
+      "kind": "Basis"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "name": "reflect_uniform2",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "name": "measure_x",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "name": "measure_z2",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "name": "parity_zz",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "name": "qft2",
+      "public": true,
+      "kind": "ordinary-runtime"
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "name": "qft3",
+      "public": true,
+      "kind": "ordinary-runtime"
+    }
+  ],
+  "sealed_namespaces": {
+    "quantum": 18,
+    "observe": 3,
+    "registers": 4,
+    "classical": 2
+  },
+  "sealed_name_count": 27,
+  "active_direct_and_manual_dependency_files": 55,
+  "retained_selected_fixture_files": 22,
+  "references": [
+    {
+      "path": "README.md",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 195,
+          "text": "Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "STDLIB.md",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 105,
+          "text": "| [QFT2](stdlib/src/transforms.qli) | Positive F4, exact phase and included reversal | Uniform probabilities and inverse round trips do not determine sign or order. |"
+        },
+        {
+          "line": 106,
+          "text": "| [Add2](stdlib/src/arithmetic.qli) | Preserved addend; destination overwritten modulo four | Basis outputs cannot detect extra phase or invented zero-input promises. |"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/manifest.json",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 506,
+          "text": "      \"limitations\": \"This is the negative of std::routines::reflect_uniform2. Controlled interference tests retain that distinction; no arbitrary prepare oracle is accepted here.\","
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/pennylane_demos/qpe3/kernel.qli",
+      "classification": "active-corpus-derivative",
+      "references": [
+        {
+          "line": 14,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/qualtran/qft2/kernel.qli",
+      "classification": "active-corpus-derivative",
+      "references": [
+        {
+          "line": 8,
+          "text": "use std::transforms::qft2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/qualtran/qpe2/kernel.qli",
+      "classification": "active-corpus-derivative",
+      "references": [
+        {
+          "line": 14,
+          "text": "use std::transforms::qft2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/qualtran/reflection2/README.md",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 11,
+          "text": "This is the negative of std::routines::reflect_uniform2. Controlled interference tests retain that distinction; no arbitrary prepare oracle is accepted here."
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/qualtran/reflection2/kernel.qli",
+      "classification": "active-corpus-derivative",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::routines::hadamard2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/quantum_katas/grover2/kernel.qli",
+      "classification": "active-corpus-derivative",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::routines::hadamard2;"
+        },
+        {
+          "line": 10,
+          "text": "use std::routines::reflect_uniform2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "corpus/quantum_katas/qpe3/kernel.qli",
+      "classification": "active-corpus-derivative",
+      "references": [
+        {
+          "line": 14,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "docs/src/reference/primitive-boundary.md",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 199,
+          "text": "used by `std::routines`. They receive normal declaration, type/ownership and"
+        },
+        {
+          "line": 204,
+          "text": "| `std::basis`, `stdlib/src/basis.qli` | `xor2`, `and2` | Total finite ordinary basis-label maps. Neither is injective over its two-input domain; a coherent enclosing construction must meet its own obligations. |"
+        },
+        {
+          "line": 205,
+          "text": "| `std::routines`, `stdlib/src/routines.qli` | `hadamard2`, `reflect_uniform2`, `measure_x`, `measure_z2`, `parity_zz` | Explicit H tensor H; phase-fixed reflection `2|s><s| - I`; complete X/Z/parity instruments and owner interfaces. Private `nonzero2` is a normal basis helper. |"
+        },
+        {
+          "line": 206,
+          "text": "| `std::transforms`, `stdlib/src/transforms.qli` | `qft2`, `qft3` | Positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. These are fixed-width source implementations. |"
+        },
+        {
+          "line": 207,
+          "text": "| `std::arithmetic`, `stdlib/src/arithmetic.qli` | `increment2`, `add2`, `mul2_mod15` | Exact amplitude +1 whole-basis permutations with stated modular overflow, preserved addend and the fixed value 15. No generalized integer API is implied. |"
+        },
+        {
+          "line": 298,
+          "text": "`std::transforms::qft2` already expresses its phase-fixed finite contract."
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/bernstein_vazirani/interference.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 4,
+          "text": "use std::routines::hadamard2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/bernstein_vazirani/main.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 2,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/bit_flip_code/code.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 5,
+          "text": "use std::routines::parity_zz;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/bit_flip_code/main.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 10,
+          "text": "use std::routines::measure_x;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/grover/main.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 2,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/grover/search.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 4,
+          "text": "use std::routines::hadamard2;"
+        },
+        {
+          "line": 5,
+          "text": "use std::routines::reflect_uniform2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/operation_algorithms/amplification.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 5,
+          "text": "use std::routines::hadamard2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/operation_algorithms/estimation.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::transforms::qft2;"
+        },
+        {
+          "line": 10,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/order_finding/estimation.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 7,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/order_finding/evolution.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 1,
+          "text": "use std::arithmetic::mul2_mod15;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "examples/phase_estimation/estimation.qli",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 7,
+          "text": "use std::transforms::qft2;"
+        },
+        {
+          "line": 8,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/check_authoring_sessions.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/check_docs.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/check_editions.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/check_installation.py",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 135,
+          "text": "use std::transforms::qft2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/current_source_fixtures.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/test_current_source_fixtures.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/test_lean_qft.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/test_lean_qpe.py",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "scripts/test_review_v024.py",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 120,
+          "text": "        yield f\"QFT{width}\", width, f\"use std::transforms::qft{width}; unitary fn apply(q:{ty})->{ty}{{qft{width}(q)}}\", lambda row, col, size=size: cmath.exp(2j * math.pi * row * col / size) / math.sqrt(size)"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "src/frontend/project.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "src/frontend/source.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 47,
+          "text": "                name: \"std::arithmetic\","
+        },
+        {
+          "line": 49,
+          "text": "                text: include_str!(\"../../stdlib/src/arithmetic.qli\"),"
+        },
+        {
+          "line": 52,
+          "text": "                name: \"std::basis\","
+        },
+        {
+          "line": 54,
+          "text": "                text: include_str!(\"../../stdlib/src/basis.qli\"),"
+        },
+        {
+          "line": 57,
+          "text": "                name: \"std::routines\","
+        },
+        {
+          "line": 59,
+          "text": "                text: include_str!(\"../../stdlib/src/routines.qli\"),"
+        },
+        {
+          "line": 62,
+          "text": "                name: \"std::transforms\","
+        },
+        {
+          "line": 64,
+          "text": "                text: include_str!(\"../../stdlib/src/transforms.qli\"),"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "stdlib/docs/README.md",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 35,
+          "text": "`std::basis` API and embedded-library checking intact. This observed integration"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/algorithms.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 76,
+          "text": "                 use std::routines::hadamard2; use std::routines::measure_z2;"
+        },
+        {
+          "line": 129,
+          "text": "         use std::observe::measure_z; use std::routines::measure_x;"
+        },
+        {
+          "line": 178,
+          "text": "        use std::routines::parity_zz; use std::routines::measure_x;"
+        },
+        {
+          "line": 194,
+          "text": "    let imports = \"use std::quantum::init0; use std::routines::parity_zz; use std::routines::hadamard2; use std::routines::measure_x;\";"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/authoring_ergonomics.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/body_effects.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 303,
+          "text": "    assert!(report.function_effect(\"std::routines::nonzero2\").is_none());"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/compile.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 211,
+          "text": "use std::basis::and2;"
+        },
+        {
+          "line": 212,
+          "text": "use std::basis::xor2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/documentation.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 229,
+          "text": "        include_str!(\"../stdlib/src/arithmetic.qli\"),"
+        },
+        {
+          "line": 230,
+          "text": "        include_str!(\"../stdlib/src/basis.qli\"),"
+        },
+        {
+          "line": 231,
+          "text": "        include_str!(\"../stdlib/src/routines.qli\"),"
+        },
+        {
+          "line": 232,
+          "text": "        include_str!(\"../stdlib/src/transforms.qli\"),"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/editions.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 40,
+          "text": "    assert!(project.module(\"std::transforms\").is_some());"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qft/first_source/main.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qft/wrong_reversal/main.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/dephased/estimation.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::transforms::qft2;"
+        },
+        {
+          "line": 10,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/lean_qpe_instrument/first_source/estimation.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::transforms::qft2;"
+        },
+        {
+          "line": 10,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/multi_parameter.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/permutation.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 7,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/phase_mismatch.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::routines::hadamard2;"
+        },
+        {
+          "line": 10,
+          "text": "use std::routines::reflect_uniform2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring/accepted/pair_contract.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 7,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/pair_contract.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 7,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/product_reassociation.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 7,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_00.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 5,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_01.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 5,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_10.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 5,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_11.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 6,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_overshoot.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 5,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/faults/phase3_forward_qft.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 9,
+          "text": "use std::transforms::qft2;"
+        },
+        {
+          "line": 10,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/product_association.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 1,
+          "text": "use std::transforms::qft3;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/phase_kickback.qli",
+      "classification": "retained-selected-fixture-needs-new-derivative",
+      "references": [
+        {
+          "line": 4,
+          "text": "use std::routines::hadamard2;"
+        },
+        {
+          "line": 5,
+          "text": "use std::routines::measure_z2;"
+        }
+      ],
+      "why": "Selected explicitly by live harnesses; captured prior migration maps must remain unchanged."
+    },
+    {
+      "path": "tests/order_finding.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 16,
+          "text": "use std::routines::measure_z2; use std::routines::measure_x;"
+        },
+        {
+          "line": 17,
+          "text": "use std::arithmetic::increment2; use std::arithmetic::add2;"
+        },
+        {
+          "line": 18,
+          "text": "use std::arithmetic::mul2_mod15;"
+        },
+        {
+          "line": 95,
+          "text": "    let module = project.module(\"std::arithmetic\").unwrap();"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/parser.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 329,
+          "text": "        (\"use std::basis::a::b;\", vec![\"std\", \"basis\", \"a\", \"b\"]),"
+        },
+        {
+          "line": 354,
+          "text": "        \"use std::basis::observe;\","
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/project.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 83,
+          "text": "        \"use bell::entangle;\\nuse std::quantum::h;\\nuse std::quantum::init0;\\nuse std::basis::xor2;\\nuse std::observe::measure_z;\\nobserve fn main() -> Bit { measure_z(init0()) }\","
+        },
+        {
+          "line": 96,
+          "text": "    let basis = project.module(\"std::basis\").unwrap();"
+        },
+        {
+          "line": 265,
+          "text": "    root.write(\"main.qli\", \"use std::routines::reflect_uniform2;\");"
+        },
+        {
+          "line": 271,
+          "text": "    let routines = project.module(\"std::routines\").unwrap();"
+        },
+        {
+          "line": 276,
+          "text": "    root.write(\"main.qli\", \"use std::routines::nonzero2;\");"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/qli_corpus.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/repair_diagnostics.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 227,
+          "text": "    let source = \"// 日本語\\r\\nuse std::transforms::qft3;\\r\\nunitary fn bad(q:Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> { qft3(q) }\";"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/review_v024.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 12,
+          "text": "    let source = \"use std::routines::qft2; unitary fn run(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{qft2(q)}\";"
+        },
+        {
+          "line": 16,
+          "text": "        failure.message.contains(\"use std::transforms::qft2;\"),"
+        },
+        {
+          "line": 28,
+          "text": "    root.write(\"main.qli\", \"use std::transforms::private_helper;\");"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/sampling.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "classification": "active-caller-or-contract",
+      "references": [],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/specification_boundaries.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 347,
+          "text": "        let import = format!(\"use std::basis::{name};\");"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/static_operations.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 67,
+          "text": "use std::observe::discard; use std::routines::measure_x;\";"
+        },
+        {
+          "line": 227,
+          "text": "            use std::routines::reflect_uniform2; use std::routines::hadamard2;"
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    },
+    {
+      "path": "tests/static_semantics.rs",
+      "classification": "active-caller-or-contract",
+      "references": [
+        {
+          "line": 599,
+          "text": "        \"use std::transforms::qft3;\","
+        }
+      ],
+      "why": "Active direct references or explicitly inspected module/count/selector dependency; empty reference list denotes this latter case."
+    }
+  ],
+  "preserve_roots": [
+    "corpus/upstream/",
+    "corpus/authoring/",
+    "corpus/migrations/",
+    "tests/fixtures/authoring_sessions/",
+    "tests/fixtures/frontend_v030/ordinary-type-cutover/",
+    "tests/fixtures/frontend_v030/ordinary-type-client-integration/",
+    "tests/fixtures/frontend_v030/common-bundled-source-design/",
+    "tests/fixtures/frontend_v030/common-original-ast-design/"
+  ],
+  "preservation_note": "Previously current migrated fixture files remain captured inputs, despite active harness use; add new namespace derivatives and explicit selectors/maps rather than rewriting them. Existing session maps, output logs, snapshots, upstream SHA/license/notices stay unchanged. No complete enumeration or byte verification of all historical records is claimed."
+}

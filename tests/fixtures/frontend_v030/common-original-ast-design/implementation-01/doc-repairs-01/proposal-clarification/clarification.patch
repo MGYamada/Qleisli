@@ -1,0 +1,15 @@
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -12,9 +12,9 @@
+   modules. Share typed 27-name primitive lookup, canonical declaration/lexical
+   facts, static premises, owners/access, dependencies and principal effects;
+   retain located pending concrete evidence obligations instead of placeholder
+-  IR approval. Permit import-only cycles, reject all self-imports and static
+-  binder shadows, and charge actual source work/copies under the common 1M
+-  capacity. Preserve direct transformed runtime owner groups separately from
++  IR approval. Permit import-only cycles, reject all self-imports and runtime
++  bindings that shadow active static names, and charge actual source work/copies
++  under the common 1M capacity. Preserve direct transformed runtime owner groups separately from
+   unary opaque Op/static/host providers and checked decreasing runtime self
+   calls. Concrete projection/emitter limits, exact Meaning/clean/provider
+   evidence, native acceptance and general source preservation remain separate;

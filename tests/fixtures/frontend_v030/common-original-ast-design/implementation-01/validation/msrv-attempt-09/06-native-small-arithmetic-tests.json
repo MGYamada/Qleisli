@@ -1,0 +1,49 @@
+{
+  "label": "native-small-arithmetic-tests",
+  "argv": [
+    "/opt/homebrew/bin/rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "sized_review_dialects",
+    "rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively",
+    "--",
+    "--ignored",
+    "--nocapture",
+    "--test-threads=2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 1.7057648330228403,
+  "completed_utc": "2026-10-05T23:31:00.336824+00:00",
+  "stdout": {
+    "path": "06-native-small-arithmetic-tests.stdout.txt",
+    "sha256": "075fa02ea976b74cefd2c4365423aa5cb63e0acf967623731b56b2481dca0176",
+    "bytes": 200
+  },
+  "stderr": {
+    "path": "06-native-small-arithmetic-tests.stderr.txt",
+    "sha256": "72c006c21d1a06d1dc4f3297c0911af0e9c74c79c981b2b76b7c222c05b8ca8f",
+    "bytes": 204
+  },
+  "actual_test_results": [
+    {
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 7
+    }
+  ],
+  "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

@@ -21,8 +21,16 @@ fn formerly_silent_reassociation_now_rejects() {
     let root = SourceRoot::new(source);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
-    assert!(error.message.contains("expected `((Bit,Bit),Bit)`"));
-    assert!(error.message.contains("found `(Bit,Bit,Bit)`"));
+    assert!(
+        error
+            .message
+            .contains("expected Tuple([Tuple([Bit, Bit]), Bit])"),
+        "{error}"
+    );
+    assert!(
+        error.message.contains("found Tuple([Bit, Bit, Bit])"),
+        "{error}"
+    );
     for source in [
         "basis fn f((a,b,c): ((Bit,Bit),Bit)) -> Bit { a }",
         "basis fn f(((a,b),c): (Bit,Bit,Bit)) -> Bit { a }",

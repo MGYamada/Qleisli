@@ -5,8 +5,8 @@
 use super::ast::*;
 use super::{Error, Result, Span};
 use crate::frontend::ast as source;
+use crate::frontend::check::Budget;
 use crate::frontend::resolve::locals::{Index, UseSiteId};
-use std::sync::Arc;
 
 fn unsupported(span: Span, message: &str) -> Error {
     Error::new(
@@ -16,92 +16,95 @@ fn unsupported(span: Span, message: &str) -> Error {
     )
 }
 
-pub(super) fn project(module: &source::Module) -> Result<Module> {
-    if module.decls.is_empty() {
-        return Err(unsupported(
-            module.span,
-            "requires at least one ordinary function",
-        ));
-    }
-    Ok(Module {
-        functions: module
-            .decls
-            .iter()
-            .map(|declaration| project_declaration(declaration, None))
-            .collect::<Result<_>>()?,
-    })
-}
-
 pub(super) fn project_declaration(
     declaration: &source::Decl,
-    index: Option<&Index<'_>>,
+    index: &Index<'_>,
+    budget: &Budget,
 ) -> Result<Function> {
-    Projection { index }.function(declaration)
+    Projection { index, budget }.function(declaration)
 }
 
 struct Projection<'a, 'ast> {
-    index: Option<&'a Index<'ast>>,
+    index: &'a Index<'ast>,
+    budget: &'a Budget,
 }
 impl Projection<'_, '_> {
-    fn binding(&self, name: &source::Ident) -> BindingName {
-        let info = self
-            .index
-            .map(|index| index.table.binder(index.binder(name)));
-        BindingName {
+    fn charge(&self, span: Span, cells: usize) -> Result<()> {
+        self.budget.sized_charge(span, cells)
+    }
+    fn binding(&self, name: &source::Ident) -> Result<BindingName> {
+        let info = self.index.table.binder(self.index.binder(name));
+        self.charge(
+            name.span,
+            2 + name.text.len()
+                + info.key.name.len()
+                + info
+                    .shadowed
+                    .map_or(0, |id| 1 + self.index.table.key(id).name.len()),
+        )?;
+        Ok(BindingName {
             name: name.text.clone(),
-            key: info.map(|info| info.key.clone()),
-            shadowed: info
-                .and_then(|info| info.shadowed)
-                .map(|id| self.index.unwrap().table.key(id).clone()),
-        }
+            key: Some(info.key.clone()),
+            shadowed: info.shadowed.map(|id| self.index.table.key(id).clone()),
+        })
     }
-    fn reference(&self, name: &str, site: Option<UseSiteId>) -> Reference {
-        Reference {
+    fn reference(&self, name: &str, site: UseSiteId) -> Result<Reference> {
+        let local = match self.index.table.usage(site).target {
+            ResolvedUse::Local(id) => Some(self.index.table.key(id)),
+            ResolvedUse::Global(_) | ResolvedUse::Unresolved => None,
+        };
+        self.charge(
+            self.index.table.usage(site).span,
+            1 + name.len() + local.map_or(0, |key| 1 + key.name.len()),
+        )?;
+        Ok(Reference {
             name: name.into(),
-            site,
-            local: site.and_then(|site| match self.index.unwrap().table.usage(site).target {
-                ResolvedUse::Local(id) => Some(self.index.unwrap().table.key(id).clone()),
-                ResolvedUse::Global(_) | ResolvedUse::Unresolved => None,
-            }),
-        }
+            site: Some(site),
+            local: local.cloned(),
+        })
     }
-    fn ident(&self, name: &source::Ident) -> Reference {
-        self.reference(&name.text, self.index.map(|index| index.usage(name)))
+    fn ident(&self, name: &source::Ident) -> Result<Reference> {
+        self.reference(&name.text, self.index.usage(name))
     }
-    fn natural(&self, natural: &source::Natural) -> Natural {
-        Natural {
+    fn natural(&self, natural: &source::Natural) -> Result<Natural> {
+        self.charge(natural.span, 1)?;
+        Ok(Natural {
             span: natural.span,
             kind: match &natural.kind {
                 source::NatKind::Number(n) => NatKind::Number(*n),
-                source::NatKind::Name(name) => NatKind::Name(
-                    self.reference(name, self.index.map(|index| index.natural_usage(natural))),
-                ),
+                source::NatKind::Name(name) => {
+                    NatKind::Name(self.reference(name, self.index.natural_usage(natural))?)
+                }
                 source::NatKind::Add(a, b) => {
-                    NatKind::Add(Box::new(self.natural(a)), Box::new(self.natural(b)))
+                    NatKind::Add(Box::new(self.natural(a)?), Box::new(self.natural(b)?))
                 }
                 source::NatKind::Sub(a, b) => {
-                    NatKind::Sub(Box::new(self.natural(a)), Box::new(self.natural(b)))
+                    NatKind::Sub(Box::new(self.natural(a)?), Box::new(self.natural(b)?))
                 }
                 source::NatKind::Mul(a, b) => {
-                    NatKind::Mul(Box::new(self.natural(a)), Box::new(self.natural(b)))
+                    NatKind::Mul(Box::new(self.natural(a)?), Box::new(self.natural(b)?))
                 }
             },
-        }
+        })
     }
-    fn predicate(&self, predicate: &source::Predicate) -> Predicate {
-        Predicate {
-            left: self.natural(&predicate.left),
+    fn predicate(&self, predicate: &source::Predicate) -> Result<Predicate> {
+        self.charge(predicate.left.span, 1)?;
+        Ok(Predicate {
+            left: self.natural(&predicate.left)?,
             comparison: predicate.comparison,
-            right: self.natural(&predicate.right),
-        }
+            right: self.natural(&predicate.right)?,
+        })
     }
-    fn count(&self, count: &source::Count) -> Count {
-        match count {
-            source::Count::Natural(n) => Count::Natural(self.natural(n)),
-            source::Count::Power(n) => Count::Power(self.natural(n)),
-        }
+    fn count(&self, count: &source::Count) -> Result<Count> {
+        let (source::Count::Natural(n) | source::Count::Power(n)) = count;
+        self.charge(n.span, 1)?;
+        Ok(match count {
+            source::Count::Natural(n) => Count::Natural(self.natural(n)?),
+            source::Count::Power(n) => Count::Power(self.natural(n)?),
+        })
     }
     fn function(&self, declaration: &source::Decl) -> Result<Function> {
+        self.charge(declaration.span, 1)?;
         match declaration.kind {
             source::FnKind::Unitary
             | source::FnKind::Iso
@@ -114,67 +117,36 @@ impl Projection<'_, '_> {
                 ));
             }
         };
-        let parameters = declaration
-            .static_params
-            .iter()
-            .map(|parameter| {
-                Ok(match &parameter.kind {
-                    source::StaticParamKind::Natural => {
-                        Parameter::Natural(self.binding(&parameter.name))
-                    }
-                    source::StaticParamKind::Basis => {
-                        Parameter::Basis(self.binding(&parameter.name))
-                    }
-                    source::StaticParamKind::Operation {
-                        basis: ty,
-                        meaning: None,
-                    } => Parameter::Operation(self.binding(&parameter.name), self.basis(ty)?),
+        if let Some(meaning) =
+            declaration
+                .static_params
+                .iter()
+                .find_map(|parameter| match &parameter.kind {
                     source::StaticParamKind::Operation {
                         meaning: Some(meaning),
                         ..
-                    } => {
-                        return Err(unsupported(
-                            meaning.span,
-                            "meaning-refined operation parameters are not supported",
-                        ));
-                    }
+                    } => Some(meaning),
+                    _ => None,
                 })
-            })
-            .collect::<Result<_>>()?;
+        {
+            return Err(unsupported(
+                meaning.span,
+                "meaning-refined operation parameters are not supported",
+            ));
+        }
+        self.charge(declaration.span, declaration.params.len())?;
         let arguments = declaration
             .params
             .iter()
-            .map(|parameter| {
-                Ok((
-                    self.pattern(&parameter.pattern)?,
-                    self.ty(&parameter.ty)?,
-                    parameter.pattern.span,
-                ))
-            })
+            .map(|parameter| Ok((self.pattern(&parameter.pattern)?, parameter.pattern.span)))
             .collect::<Result<_>>()?;
-        let requires = declaration
-            .requires
-            .iter()
-            .map(|requirement| match requirement {
-                source::Requirement::Predicate(predicate) => {
-                    Requirement::Predicate(self.predicate(predicate))
-                }
-                source::Requirement::Access(access) => {
-                    Requirement::Access(access.access, self.ident(&access.name), access.span)
-                }
-            })
-            .collect();
         let source::FnBody::Quantum(body) = &declaration.body else {
             return Err(unsupported(declaration.span, "requires a runtime block"));
         };
         Ok(Function {
-            lexical: self.index.map(|index| Arc::new(index.table.clone())),
-            name: declaration.name.text.clone(),
+            lexical: None,           // Attach the one authoritative Arc<Table> after finish.
             effect: Effect::Unitary, // Private typed-pass placeholder, never published.
-            parameters,
             arguments,
-            result: self.ty(&declaration.return_type)?,
-            requires,
             body: self.block(body)?,
             span: declaration.span,
         })
@@ -183,15 +155,14 @@ impl Projection<'_, '_> {
     fn basis(&self, ty: &source::Type) -> Result<Basis> {
         self.type_at(ty, crate::frontend::types::Stage::Basis)
     }
-    fn ty(&self, ty: &source::Type) -> Result<Type> {
-        self.type_at(ty, crate::frontend::types::Stage::Runtime)
-    }
     fn type_at(&self, ty: &source::Type, stage: crate::frontend::types::Stage) -> Result<Type> {
         // Check borrowed syntax before recursive projection allocates a second
         // tree. In particular zero-width products must not evade the budget.
+        self.charge(ty.span, 1)?;
         let mut pending = vec![(ty, 1usize)];
         let mut nodes = 0usize;
         while let Some((node, depth)) = pending.pop() {
+            self.charge(node.span, 2)?; // Borrowed visit and resulting type cell.
             if !matches!(node.kind, source::TypeKind::Q(_)) {
                 nodes += 1;
             }
@@ -211,17 +182,29 @@ impl Projection<'_, '_> {
                             "source tuple exceeds type shape capacity",
                         ));
                     }
+                    self.charge(node.span, fields.len())?;
                     pending.extend(fields.iter().rev().map(|field| (field, depth + 1)));
                 }
-                source::TypeKind::Q(inner) => pending.push((inner, depth + 1)),
+                source::TypeKind::Q(inner) => {
+                    self.charge(node.span, 1)?;
+                    pending.push((inner, depth));
+                }
                 _ => {}
             }
         }
-        crate::frontend::types::classify_source(ty, stage, &mut Projection { index: self.index })
+        crate::frontend::types::classify_source(
+            ty,
+            stage,
+            &mut Projection {
+                index: self.index,
+                budget: self.budget,
+            },
+        )
     }
     fn pattern(&self, pattern: &source::Pattern) -> Result<Pattern> {
+        self.charge(pattern.span, 1)?;
         Ok(match &pattern.kind {
-            source::PatternKind::Name(name) => Pattern::Name(self.binding(name), name.span),
+            source::PatternKind::Name(name) => Pattern::Name(self.binding(name)?, name.span),
             source::PatternKind::Tuple(fields) => Pattern::Tuple(
                 fields
                     .iter()
@@ -233,15 +216,16 @@ impl Projection<'_, '_> {
         })
     }
     fn argument(&self, operation: &source::StaticOp) -> Result<Argument> {
+        self.charge(operation.span, 1)?;
         Ok(match &operation.kind {
             source::StaticOpKind::Type(ty) => Argument::Basis(self.basis(ty)?, operation.span),
             source::StaticOpKind::Name(name) => Argument::Natural(Natural {
-                kind: NatKind::Name(self.ident(name)),
+                kind: NatKind::Name(self.ident(name)?),
                 span: name.span,
             }),
-            source::StaticOpKind::Natural(n) => Argument::Natural(self.natural(n)),
+            source::StaticOpKind::Natural(n) => Argument::Natural(self.natural(n)?),
             source::StaticOpKind::Specialize { name, arguments } => Argument::Definition(
-                self.ident(name),
+                self.ident(name)?,
                 arguments
                     .iter()
                     .map(|value| self.argument(value))
@@ -249,7 +233,7 @@ impl Projection<'_, '_> {
                 name.span,
             ),
             source::StaticOpKind::Repeat(count, child) => Argument::Repeat(
-                self.count(count),
+                self.count(count)?,
                 Box::new(self.argument(child)?),
                 operation.span,
             ),
@@ -262,8 +246,9 @@ impl Projection<'_, '_> {
         })
     }
     fn expr(&self, expr: &source::Expr) -> Result<Expr> {
+        self.charge(expr.span, 1)?;
         let kind = match &expr.kind {
-            source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)),
+            source::ExprKind::Name(name) => ExprKind::Name(self.ident(name)?),
             source::ExprKind::Unit => ExprKind::Unit,
             source::ExprKind::Bit(value) => ExprKind::Boolean(Boolean::Constant(*value), vec![]),
             source::ExprKind::Not(input) => {
@@ -290,7 +275,7 @@ impl Projection<'_, '_> {
                 static_args,
                 args,
             } => ExprKind::Call(
-                self.ident(callee),
+                self.ident(callee)?,
                 static_args
                     .iter()
                     .map(|value| self.argument(value))
@@ -313,7 +298,7 @@ impl Projection<'_, '_> {
                 then_branch,
                 else_branch,
             } => ExprKind::If(
-                self.predicate(predicate),
+                self.predicate(predicate)?,
                 self.block(then_branch)?,
                 self.block(else_branch)?,
             ),
@@ -325,9 +310,9 @@ impl Projection<'_, '_> {
                 initial,
                 body,
             } => ExprKind::Fold {
-                index: self.binding(index),
-                start: self.natural(start),
-                end: self.natural(end),
+                index: self.binding(index)?,
+                start: self.natural(start)?,
+                end: self.natural(end)?,
                 carry: self.pattern(carry)?,
                 initial: Box::new(self.expr(initial)?),
                 body: self.block(body)?,
@@ -340,10 +325,12 @@ impl Projection<'_, '_> {
         })
     }
     fn block(&self, block: &source::Block) -> Result<Block> {
+        self.charge(block.span, 1)?;
         let statements = block
             .statements
             .iter()
             .map(|statement| {
+                self.charge(statement.span, 1)?;
                 Ok(match &statement.kind {
                     source::StmtKind::Let {
                         pattern: binder,
@@ -365,11 +352,12 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
     type Size = Natural;
     type Error = Error;
     fn resolve_size(&mut self, size: &source::Natural) -> Result<Natural> {
-        Ok(self.natural(size))
+        self.natural(size)
     }
     fn resolve_basis(&mut self, name: &source::Ident) -> Result<Type> {
-        let reference = self.ident(name);
-        if let Some(index) = self.index {
+        let reference = self.ident(name)?;
+        {
+            let index = self.index;
             let usage = index.table.usage(reference.site.unwrap());
             if !matches!(usage.target, ResolvedUse::Local(id) if index.table.binder(id).kind == crate::frontend::resolve::locals::BindingKind::StaticBasis)
             {
@@ -380,6 +368,7 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
                 ));
             }
         }
+        self.charge(name.span, 1 + name.text.len())?;
         Ok(Type::parameter(crate::frontend::types::TypeParameter {
             key: reference.local,
             name: name.text.clone(),

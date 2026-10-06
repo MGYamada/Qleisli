@@ -1,0 +1,1 @@
+called `Result::unwrap_err()` on an `Ok` value: ParsedProgram { sources: SourceCollection { entries: {"main": Source { name: "main", path: None, text: "// Copyright

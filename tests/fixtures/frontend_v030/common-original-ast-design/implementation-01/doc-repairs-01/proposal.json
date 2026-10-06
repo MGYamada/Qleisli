@@ -1,0 +1,68 @@
+{
+  "format": "qleisli.proposed-documentation-repair",
+  "status": "LOCAL CANDIDATE ONLY; actual normative docs untouched",
+  "recorded_utc": "2026-10-05T23:11:21.195289+00:00",
+  "before": {
+    "docs/src/reference/source-text.md": {
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "bytes": 28267,
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f"
+    },
+    "docs/src/reference/type-model.md": {
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    "CHANGELOG.md": {
+      "bytes": 106160,
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615"
+    }
+  },
+  "proposed": {
+    "docs/src/reference/source-text.md": {
+      "bytes": 20704,
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935"
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "bytes": 29615,
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a"
+    },
+    "docs/src/reference/type-model.md": {
+      "bytes": 33244,
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8"
+    },
+    "CHANGELOG.md": {
+      "bytes": 107184,
+      "sha256": "46c8d08b57cccdd2d50802e2978419be348637dfee282913519ea2102a4a0bc5"
+    }
+  },
+  "ordinary_scope_records": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md": {
+      "bytes": 22769,
+      "sha256": "60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-clarification-01.md": {
+      "bytes": 6732,
+      "sha256": "b87f71d5d84f6082fd6d0ba3aac67a06378c2e6e2e9e1db21af914c0b535a1a1"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-before-code-01.json": {
+      "bytes": 908,
+      "sha256": "a18467f6e4a7f7f1c8facc726c351ac99d22ccd71f31f7b4b10771d2854e7a93"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/provider-access-clarification-01.md": {
+      "bytes": 3460,
+      "sha256": "04669bfc1fd1bbd92942dd27bf3b180e772bda03d094c485bf4c346e9598d720"
+    }
+  },
+  "source_status": "Code was not finally frozen during preparation. Proposed wording must be independently checked against the final implementation and actual validation before root applies it. Path citations describe reviewed code boundaries; this packet is not a current full-source identity map.",
+  "executions": {
+    "docs_policy_build_link_tests": false,
+    "rust_cargo_format_cli_native": false,
+    "lean": false
+  },
+  "authority": "Ordinary #32 implementation/migration records, not a Guardian act. Edition2026; broader QS/PR/RS/EXACT obligations remain pending, both admitted decoded-root guarantees unchanged.",
+  "claims": "No validation success, proof, preservation, fullCI, guarantee admission, Issue completion or release approval.",
+  "preparation_complete": true
+}

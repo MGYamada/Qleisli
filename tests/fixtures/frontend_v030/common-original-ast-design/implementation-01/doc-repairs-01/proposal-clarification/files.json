@@ -1,0 +1,18 @@
+{
+  "self_excluded": "files.json",
+  "scope": "Tiny additive wording clarification; original proposal packet remains immutable.",
+  "files": {
+    "clarification.patch": {
+      "bytes": 1016,
+      "sha256": "bfc908ca3b1d4818126955fafc9e9a4d8c99e7f661177a6686f50479b6159a0f"
+    },
+    "proposal.json": {
+      "bytes": 855,
+      "sha256": "8a7f4b327ee9cb0fee4ebb911c38e65c58c3a136c4c274a6dae453b6e8838c7d"
+    },
+    "wording.md": {
+      "bytes": 843,
+      "sha256": "14d97d81ee8d07d4ecf328c2a3f0470b5e1b9fdde50f599b3049c20d5e8fe35b"
+    }
+  }
+}

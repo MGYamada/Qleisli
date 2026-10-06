@@ -363,14 +363,25 @@ fn existing_execution_profile_limits_remain_explicit() {
     let program = elaborate(source!("bit-zero"));
     program.lower_raw().unwrap();
     assert_eq!(program.lower().unwrap_err().code(), "unsupported");
-    // The original Boolean example contains a runtime if, which remains
-    // outside the sized projection even though its Boolean operands are supported.
-    let error = ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        source!("bit-boolean-keywords").into(),
-    )]))
-    .unwrap_err();
+    // Runtime if is valid original source but remains outside the selected
+    // concrete projection, even with supported ordinary Boolean operands.
+    let source = source!("bit-boolean-keywords");
+    let program = parsed(source);
+    assert_eq!(program.source("main"), Some(source));
+    assert_eq!(program.syntax("main"), Some(&parse_module(source).unwrap()));
+    let error = program
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap_err();
     assert_eq!(error.code(), "unsupported");
+    assert_eq!(error.module(), Some("main"));
+    assert_eq!(
+        error.message(),
+        "sized preparation profile: unsupported runtime expression"
+    );
+    assert_eq!(
+        &source[error.span().start..error.span().end],
+        "if a { not b } else { a xor b }"
+    );
     let program = elaborate(source!("quantum-unit"));
     program.lower().unwrap();
     assert_eq!(program.lower_raw().unwrap_err().code(), "unsupported");

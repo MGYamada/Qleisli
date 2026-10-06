@@ -1,0 +1,54 @@
+{
+  "format": "qleisli.experimental-qft-current-retention",
+  "version": 2,
+  "scope": "QFT completion excluded from v0.3.0/current goal; trial source/history retained only under experimental.",
+  "first_copy_record": {
+    "path": "experimental/qft/provenance.json",
+    "sha256": "6994ec900f4968e65353ca177d15a448012c6010aa4dd0445414e578c6ee4dfe",
+    "status": "Historical pre-relocation event; its original-location statement is superseded by this record."
+  },
+  "current_original_location": "experimental/qft/history/relocation.json",
+  "files": [
+    {
+      "original": "tests/fixtures/authoring_sessions/qft-family-v030/attempt-01/Qargo.toml",
+      "experimental": "experimental/qft/attempt-01/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": 420
+    },
+    {
+      "original": "tests/fixtures/authoring_sessions/qft-family-v030/attempt-01/transform.qli",
+      "experimental": "experimental/qft/attempt-01/transform.qli",
+      "bytes": 1638,
+      "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+      "mode": 420
+    },
+    {
+      "original": "tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/Qargo.toml",
+      "experimental": "experimental/qft/attempt-02/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": 420
+    },
+    {
+      "original": "tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/reference.qli",
+      "experimental": "experimental/qft/attempt-02/reference.qli",
+      "bytes": 1054,
+      "sha256": "28989c572d79ab94bda01ab84180e8fab4ed1c56bc8841e1769d2deef5f15ef5",
+      "mode": 420
+    },
+    {
+      "original": "tests/fixtures/authoring_sessions/qft-family-v030/attempt-02/transform.qli",
+      "experimental": "experimental/qft/attempt-02/transform.qli",
+      "bytes": 1638,
+      "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+      "mode": 420
+    }
+  ],
+  "verification": "All five live files compared byte-for-byte to their exact original archive members; original source paths no longer exist in the checkout. No compiler/native execution.",
+  "original_directories_removed": [
+    "tests/fixtures/authoring_sessions/qft-family-v030",
+    "tests/fixtures/authoring_sessions/qft-exact-request-v030",
+    "tests/fixtures/frontend_v030/qft-exact-request-design"
+  ]
+}

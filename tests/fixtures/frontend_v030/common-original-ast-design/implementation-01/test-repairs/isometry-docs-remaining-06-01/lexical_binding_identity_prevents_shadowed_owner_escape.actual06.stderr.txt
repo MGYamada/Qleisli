@@ -1,0 +1,4 @@
+thread 'lexical_binding_identity_prevents_shadowed_owner_escape' (16228852) panicked at tests/sized_source.rs:12:5:
+assertion `left == right` failed: main:130..131: type: a local value is not callable
+  left: "type"
+ right: "name"

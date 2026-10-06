@@ -1,1 +1,0 @@
-Checked 32 authoring records, 47 snapshots and 552 observations; no recorded command executed.

@@ -1,0 +1,70 @@
+--- before/src/frontend/sized/elaborate.rs
++++ after/src/frontend/sized/elaborate.rs
+@@ -958,6 +958,49 @@
+         }
+         Ok(definition.output.ty.clone())
+     }
++    fn runtime_provider_type(&mut self, id: usize, span: Span) -> Result<SourceType> {
++        let definition = &self.definitions[id];
++        let cells = definition.inputs.iter().fold(
++            definition.output.ty.cells().saturating_mul(2).saturating_add(1),
++            |cells, input| cells.saturating_add(input.ty.cells()),
++        );
++        // Charge the borrowed group walk and returned type before allocating;
++        // no aggregate input type or implicit packed owner is constructed.
++        self.charge_cells(cells, span)?;
++        let definition = &self.definitions[id];
++        let preserves_group = match definition.inputs.as_slice() {
++            [input] => input.ty == definition.output.ty,
++            inputs if !inputs.is_empty() => match &definition.output.ty.kind {
++                TypeKind::Tuple(fields) if fields.len() == inputs.len() => inputs
++                    .iter()
++                    .zip(fields)
++                    .all(|(input, field)| &input.ty == field),
++                _ => false,
++            },
++            _ => false,
++        };
++        let mut pending = Vec::with_capacity(definition.output.ty.owner_shape_size().nodes);
++        pending.push(&definition.output.ty);
++        let mut quantum_group = true;
++        while let Some(ty) = pending.pop() {
++            match &ty.kind {
++                TypeKind::Q(_) => {}
++                TypeKind::Tuple(fields) if !fields.is_empty() => pending.extend(fields),
++                _ => {
++                    quantum_group = false;
++                    break;
++                }
++            }
++        }
++        if definition.effect != Effect::Unitary || !preserves_group || !quantum_group {
++            return Err(error(
++                "type",
++                span,
++                "provider must be unitary and preserve its complete quantum input group",
++            ));
++        }
++        Ok(definition.output.ty.clone())
++    }
+     fn resolve(
+         &self,
+         name: &Reference,
+@@ -1147,7 +1190,7 @@
+         let (types, naturals, operations) =
+             self.arguments(definition, arguments, scope, frame, depth, span)?;
+         let id = self.function(definition, types, naturals, operations, depth + 1)?;
+-        self.provider_type(id, span)?;
++        self.runtime_provider_type(id, span)?;
+         Ok(SourceOperation {
+             kind: OperationKind::Definition(id),
+             module: frame.module.clone(),
+@@ -1484,7 +1527,7 @@
+             StepKind::Controlled(op) => (op, true),
+             _ => unreachable!(),
+         };
+-        let target = self.provider_type(op.target(), span)?;
++        let target = self.runtime_provider_type(op.target(), span)?;
+         let (types, output) = if controlled {
+             (vec![bit(), target.clone()], tuple(vec![bit(), target]))
+         } else {

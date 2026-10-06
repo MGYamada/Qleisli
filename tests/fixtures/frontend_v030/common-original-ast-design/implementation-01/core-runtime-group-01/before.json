@@ -1,0 +1,52 @@
+{
+  "status": "before-runtime-group-implementation",
+  "files": [
+    {
+      "path": "src/frontend/check.rs",
+      "bytes": 29155,
+      "sha256": "0e1fcdceb218a19bb1448a5535a7c356ffb61d88fdfcd5800a335b65d46764c9",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/check/body.rs",
+      "bytes": 28686,
+      "sha256": "43a1d3a3b3e41717485b8333d298c605c4180cd7492533fed548133d51d6cba3",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "bytes": 23374,
+      "sha256": "bc2d42fe6ed5ad6c5b8b32e1b63c3fc21f4438180112238527d1f0862f001919",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/check/body/special.rs",
+      "bytes": 21199,
+      "sha256": "d4c7acfe85e0f0eab22bee9497d8331df1ce43e94ddca71a49476eba31fb396d",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/check/declarations.rs",
+      "bytes": 14517,
+      "sha256": "7c5e2f2c297e24e16e71359936376d3c5ae3546f9c0bd755e926f853b98b76a3",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/check/normalize.rs",
+      "bytes": 14628,
+      "sha256": "2e4139705a5e192e951b5ca5ec11658c5c59aa663d75ba90d23bc7670694aa29",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "bytes": 11172,
+      "sha256": "38caedf63ce840caccfabd94f522fef79f9e408c3eb139f22d5df25b3f195c11",
+      "mode": 420
+    }
+  ],
+  "before_code_record": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-before-code-01.json",
+    "sha256": "a18467f6e4a7f7f1c8facc726c351ac99d22ccd71f31f7b4b10771d2854e7a93"
+  },
+  "execution": "No build/test/CLI/native/format/Git by implementation agent"
+}

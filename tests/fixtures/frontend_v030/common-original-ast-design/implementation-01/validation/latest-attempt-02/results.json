@@ -1,0 +1,105 @@
+{
+  "format": "qleisli.common-pattern-bounded-validation",
+  "version": 1,
+  "mode": "latest",
+  "attempt": "attempt-02",
+  "status": "passed",
+  "records": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.15614766697399318,
+      "completed_utc": "2026-10-05T22:25:34.307319+00:00",
+      "stdout": {
+        "path": "00-cargo-version.stdout.txt",
+        "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+        "bytes": 47
+      },
+      "stderr": {
+        "path": "00-cargo-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "31729e6dfebb6362738e3190171dc57aa67a9d0fae0cf7a26ada6b4ffeaf4636",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/opt/homebrew/bin/rustc",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.7404219590243883,
+      "completed_utc": "2026-10-05T22:25:35.050359+00:00",
+      "stdout": {
+        "path": "01-rustc-version.stdout.txt",
+        "sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+        "bytes": 47
+      },
+      "stderr": {
+        "path": "01-rustc-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "31729e6dfebb6362738e3190171dc57aa67a9d0fae0cf7a26ada6b4ffeaf4636",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "check-all-targets",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "check",
+        "--locked",
+        "--all-targets",
+        "--jobs=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 5.580032041994855,
+      "completed_utc": "2026-10-05T22:25:40.631262+00:00",
+      "stdout": {
+        "path": "02-check-all-targets.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "02-check-all-targets.stderr.txt",
+        "sha256": "460c9d17205475c88db4bb18991ff4f890b023bcc69b4cd64454da823ef2d463",
+        "bytes": 11460
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "31729e6dfebb6362738e3190171dc57aa67a9d0fae0cf7a26ada6b4ffeaf4636",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    }
+  ],
+  "remaining_stages_not_run": 0,
+  "source_files_before": 713,
+  "source_inputs_unchanged": true,
+  "native_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cli_path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+  "cli_sha256_after": "d219e3cb0e546c8173ab1215ffd94cacc7c032ce9abd145b98949bbb2c4d089e",
+  "cli_rebuild_completed": false,
+  "scope": "Actual bounded Rust checks with a declared incomplete input map. No Lean build/replay, complete fixture closure, source preservation, new native authority, guarantee discharge, full CI or release approval."
+}

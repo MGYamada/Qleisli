@@ -97,12 +97,23 @@ impl Lowerer<'_, '_> {
         source_args: &[Expr],
     ) -> Result<Value, CompileError> {
         let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
-            self.error(
-                module,
-                span,
-                ErrorCode::UnknownName,
-                "unknown sealed primitive",
-            )
+            if crate::frontend::check::primitive::Primitive::lookup(&format!("{namespace}::{name}"))
+                .is_some()
+            {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::Unsupported,
+                    format!("finite lowering profile does not support `{namespace}::{name}`"),
+                )
+            } else {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::UnknownName,
+                    "unknown sealed primitive",
+                )
+            }
         })?;
         let arity = declaration.arity;
         if args.len() != arity {

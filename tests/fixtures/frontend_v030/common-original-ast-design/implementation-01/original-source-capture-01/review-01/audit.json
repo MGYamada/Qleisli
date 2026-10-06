@@ -1,0 +1,67 @@
+{
+  "format": "qleisli.read-only-capture-audit",
+  "version": 1,
+  "constitutional_guard": {
+    "base_ref": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "command": "python3 scripts/check_constitution.py --base-ref faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "exit_code": 0,
+    "scope": "Identity/continuity only; not Lean replay, human adoption, discharge or release."
+  },
+  "file_map_verified_counts": {
+    "original": 365,
+    "new": 364
+  },
+  "exact_first_rows_verified": 41,
+  "exact_project_inventory": {
+    "cases": [
+      "mixed-qif-and-generic",
+      "private-zero-fold-owner",
+      "dead-arm-missing-adjoint",
+      "private-basis-valid",
+      "private-basis-bad-result",
+      "qif-formal-controlled",
+      "qif-formal-apply-only",
+      "qif-wrong-effect",
+      "qif-wrong-shape",
+      "computed-unary-predicate",
+      "computed-wrong-arity",
+      "owner-shadow-move-valid",
+      "owner-shadow-live-invalid",
+      "static-shadows-global-valid",
+      "runtime-shadows-static-policy",
+      "runtime-shadows-static-call-invalid",
+      "natural-runtime-shadow-invalid",
+      "bundled-import-control"
+    ],
+    "each_case_files": [
+      "Qargo.toml",
+      "main.qli"
+    ],
+    "schema_version": 2,
+    "edition": "2026"
+  },
+  "prospective_first_final_identity_equal": true,
+  "verified_current_groups": {
+    "original_tree": 418,
+    "capture_design": 5,
+    "msrv_records": 32,
+    "binaries": 2
+  },
+  "current_source_context_rows_verified": 113,
+  "current_msrv_src_std_tests_corpus_rows_verified": 631,
+  "msrv_record": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/msrv-attempt-09/results.json",
+  "msrv_nine_stage_records_terminal_zero": true,
+  "observed_cli_sha256": "5f9512a1a14febbc5d88802287b61850682aa8088653631a68bc444704846abf",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "checkout_marker": "4d86a0975c6cd97fe5bb1cc71115a2180ad561d6",
+  "compiled_head_attestation": false,
+  "mutable_active_docs_policy": "Historical captured input identities remain binding; unrelated active documentation/metadata now being repaired by root were not asserted identical to their historical captured versions. 113 actual source/std/Cargo context rows and current MSRV source/std/tests/corpus subset were compared.",
+  "all_observations_have_complete_cli_capture": true,
+  "new_refusals_with_native_forwarding": 0,
+  "all_text_json_pairs_agree_in_status_diagnostic_and_native_count": true,
+  "original_byte_spans_verified": true,
+  "native_count_scope": "Raw JSONL rows record wrapper argv immediately before execv. Neither started/exited native processes nor request/artifact stdin bytes are independently captured by this wrapper.",
+  "review_authorship": "/root/isometry_cli_tests authored the common checker and additive driver. This audit independently recomputes metadata, bytes, statuses and deltas, but is a limited-author follow-up for source-policy interpretation, not independent review of own implementation.",
+  "execution_limits": "No fixture driver or helper imported; no recorded argv, CLI/native/test/Cargo/Lean/build/network/Git/Issue command executed. Only metadata/file reads, SHA-256 checks and additive audit writes plus separately authorized presentation repairs.",
+  "metadata_inspection_correction": "An initial read-only inspection treated first-files.files as a dict and failed with AttributeError; actual schema is a list. Subsequent list-based full verification succeeded. This was not a fixture/harness execution or captured test failure."
+}

@@ -1,0 +1,10 @@
+{
+  "id": "local/measured_qpe/initialization",
+  "origin": "qleisli-authored-local-composition",
+  "file": "sized/measured_qpe/initialization.qli",
+  "license": "Apache-2.0",
+  "sha256": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+  "dependencies": [],
+  "contract": "Construct exactly zero Bits<n>, including an explicit empty owner; preserve caller/reference systems.",
+  "limitations": "Original ordinary Qleisli helper, not an upstream translation or new finite case. Small source/native/phase-reference tests pass; general source/runtime correspondence and wider capacity remain separate."
+}

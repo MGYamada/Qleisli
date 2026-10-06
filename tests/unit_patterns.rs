@@ -72,7 +72,7 @@ fn exact_pattern_shapes_reject_quantum_bit_and_equal_width_products() {
     reject(
         "counterexamples",
         "ordinary-bits-zero",
-        ErrorCode::Unsupported,
+        ErrorCode::TypeMismatch,
     );
     reject(
         "validation-sources",

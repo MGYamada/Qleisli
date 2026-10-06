@@ -1,0 +1,282 @@
+--- before/src/frontend/check.rs
++++ after/src/frontend/check.rs
+@@ -22,6 +22,23 @@
+ 
+ pub(super) type Ty = Type<Linear>;
+ pub(super) type Result<T> = std::result::Result<T, SourceError>;
++
++fn runtime_quantum_group(ty: &Ty, span: Span, budget: &Budget) -> Result<bool> {
++    budget.charge(span, 1)?;
++    let mut pending = vec![ty];
++    while let Some(node) = pending.pop() {
++        budget.charge(span, 1)?;
++        match &node.kind {
++            Kind::Q(_) => {}
++            Kind::Tuple(fields) if !fields.is_empty() => {
++                budget.charge(span, fields.len())?;
++                pending.extend(fields);
++            }
++            _ => return Ok(false),
++        }
++    }
++    Ok(true)
++}
+ 
+ /// Borrowed bounded preflight: Q is transparent in retained storage, while
+ /// its actual visit and stack entry are charged before traversal.
+@@ -290,6 +307,9 @@
+     Provider {
+         provider: DefId,
+         meaning: Option<DefId>,
++    },
++    RuntimeGroupProvider {
++        provider: DefId,
+     },
+     MeaningEquality {
+         required: DefId,
+@@ -495,6 +515,37 @@
+                     if let Some(id) = required {
+                         meaning(*id)?;
+                     }
++                }
++                ObligationKind::RuntimeGroupProvider { provider: id } => {
++                    self.budget.charge(span, 1)?;
++                    let target = self.interfaces.get(id).ok_or_else(failure)?;
++                    let original = self.decl(*id);
++                    let registered = self.resolution.declaration(*id);
++                    self.budget.charge(
++                        span,
++                        target.module.len() + registered.name.0.len() + 1,
++                    )?;
++                    if matches!(target.kind, FnKind::Basis | FnKind::Meaning)
++                        || target.ast_index != registered.ast_index
++                        || target.module != registered.name.0
++                        || target.kind != original.kind
++                        || target.params.len() != original.params.len()
++                        || target.params.is_empty()
++                        || effects.get(id).map(|fact| fact.inferred())
++                            != Some(crate::ir::Effect::Unitary)
++                        || !runtime_quantum_group(&target.result, span, &self.budget)?
++                    {
++                        return Err(failure().in_module(&interface.module));
++                    }
++                    for parameter in &target.params {
++                        self.budget.charge(span, 1)?;
++                        if !runtime_quantum_group(parameter, span, &self.budget)? {
++                            return Err(failure().in_module(&interface.module));
++                        }
++                    }
++                    // Actual substituted input-group/result/target equality
++                    // was checked at the call. This verifies source binding,
++                    // never transformation evidence or source preservation.
+                 }
+                 ObligationKind::MeaningEquality { required, supplied } => {
+                     meaning(*required)?;
+--- before/src/frontend/check/body.rs
++++ after/src/frontend/check/body.rs
+@@ -460,16 +460,9 @@
+             } => self.call(callee, static_args, args, scope, span)?,
+             ExprKind::Adjoint { operation, input } => {
+                 let target = self.expr(input, scope, None)?;
+-                let basis = target.quantum_basis().ok_or_else(|| {
+-                    SourceError::new("type", input.span, "adjoint requires one Q<A> owner")
+-                })?;
+-                let op = if let StaticOpKind::Name(name) = &operation.kind {
+-                    self.target_operation(name, basis, scope)?
+-                } else {
+-                    self.operation(operation, scope)?
+-                };
+-                access(&op, Access::Adjoint, span)?;
+-                normalize::expect(&op.basis, basis, &scope.context, span, &self.program.budget)?;
++                self.transformed_operation(
++                    operation, &target, scope, Access::Adjoint, input.span, span,
++                )?;
+                 self.obligation(span, ObligationKind::TransformedMeaning)?;
+                 target
+             }
+@@ -484,20 +477,9 @@
+                 let control = Ty::quantum(Ty::bit());
+                 self.expr(&args[0], scope, Some(&control))?;
+                 let target = self.expr(&args[1], scope, None)?;
+-                let basis = target.quantum_basis().ok_or_else(|| {
+-                    SourceError::new(
+-                        "type",
+-                        args[1].span,
+-                        "controlled target requires one Q<A> owner",
+-                    )
+-                })?;
+-                let op = if let StaticOpKind::Name(name) = &operation.kind {
+-                    self.target_operation(name, basis, scope)?
+-                } else {
+-                    self.operation(operation, scope)?
+-                };
+-                access(&op, Access::Controlled, span)?;
+-                normalize::expect(&op.basis, basis, &scope.context, span, &self.program.budget)?;
++                self.transformed_operation(
++                    operation, &target, scope, Access::Controlled, args[1].span, span,
++                )?;
+                 self.obligation(span, ObligationKind::TransformedMeaning)?;
+                 Ty::pair(control, target)
+             }
+@@ -783,7 +765,10 @@
+     }
+ }
+ fn access(op: &Operation, kind: Access, span: Span) -> Result<()> {
+-    if op.access[super::super::formals::access_index(kind)] {
++    access_mask(&op.access, kind, span)
++}
++fn access_mask(mask: &[bool; 3], kind: Access, span: Span) -> Result<()> {
++    if mask[super::super::formals::access_index(kind)] {
+         Ok(())
+     } else {
+         Err(SourceError::new(
+--- before/src/frontend/check/body/operations.rs
++++ after/src/frontend/check/body/operations.rs
+@@ -1,6 +1,147 @@
+ //! Checked static descriptions and actual original callee specialization.
+ use super::*;
+ impl Checker<'_, '_> {
++    /// Direct runtime transforms preserve the whole owner group. Opaque Op
++    /// arguments and constructors continue to use their single-owner basis.
++    pub(super) fn transformed_operation(
++        &mut self,
++        op: &StaticOp,
++        target: &Ty,
++        scope: &Scope,
++        requested: Access,
++        target_span: Span,
++        span: Span,
++    ) -> Result<()> {
++        if self.depth >= 64 {
++            return Err(SourceError::new(
++                "limit", op.span, "static operation exceeds depth 64",
++            ));
++        }
++        self.depth += 1;
++        let checked = self.transformed_operation_inner(
++            op, target, scope, requested, target_span, span,
++        );
++        self.depth -= 1;
++        checked
++    }
++    fn transformed_operation_inner(
++        &mut self,
++        op: &StaticOp,
++        target: &Ty,
++        scope: &Scope,
++        requested: Access,
++        target_span: Span,
++        span: Span,
++    ) -> Result<()> {
++        self.tick(op.span)?;
++        match &op.kind {
++            StaticOpKind::Repeat(count, child) if self.runtime_group_leaf(child)? => {
++                let (Count::Natural(count) | Count::Power(count)) = count;
++                normalize::natural(count, self.index(), scope, None, &self.program.budget)?;
++                return self.transformed_operation(
++                    child, target, scope, requested, target_span, span,
++                );
++            }
++            _ => {}
++        }
++        let named = match &op.kind {
++            StaticOpKind::Name(name) => Some((name, &[][..])),
++            StaticOpKind::Specialize { name, arguments } => {
++                Some((name, arguments.as_slice()))
++            }
++            _ => None,
++        };
++        if let Some((name, arguments)) = named {
++            if let ResolvedUse::Global(Target::Declaration(id)) =
++                self.index().table.usage(self.index().usage(name)).target
++            {
++                if matches!(self.program.decl(id).kind, FnKind::Basis | FnKind::Meaning) {
++                    return Err(SourceError::new(
++                        "type", name.span,
++                        "direct transform requires an ordinary runtime function",
++                    ));
++                }
++                let (mut inputs, result, mask) =
++                    self.specialize(id, arguments, scope, name.span, true)?;
++                if inputs.is_empty() {
++                    return Err(SourceError::new(
++                        "type", name.span,
++                        "direct transform requires a nonempty quantum input group",
++                    ));
++                }
++                self.tick(name.span)?;
++                let group = if inputs.len() == 1 {
++                    inputs.pop().expect("one complete runtime input")
++                } else {
++                    Ty::tuple(inputs)
++                };
++                self.program.budget.ty(name.span, &group)?;
++                if !runtime_quantum_group(&group, name.span, &self.program.budget)? {
++                    return Err(SourceError::new(
++                        "type", name.span,
++                        "direct transform requires a complete quantum input group",
++                    ));
++                }
++                normalize::expect(
++                    &group, &result, &scope.context, name.span, &self.program.budget,
++                )?;
++                access_mask(&mask, requested, span)?;
++                normalize::expect(
++                    target, &group, &scope.context, target_span, &self.program.budget,
++                )?;
++                self.tick(name.span)?;
++                self.effects.require_unitary(id, name.span);
++                self.obligation(
++                    name.span, ObligationKind::RuntimeGroupProvider { provider: id },
++                )?;
++                return Ok(());
++            }
++        }
++        let basis = target.quantum_basis().ok_or_else(|| {
++            SourceError::new(
++                "type", target_span,
++                if requested == Access::Adjoint {
++                    "adjoint requires one Q<A> owner"
++                } else {
++                    "controlled target requires one Q<A> owner"
++                },
++            )
++        })?;
++        let operation = if let StaticOpKind::Name(name) = &op.kind {
++            self.target_operation(name, basis, scope)?
++        } else {
++            self.operation_inner(op, scope)?
++        };
++        access(&operation, requested, span)?;
++        normalize::expect(
++            &operation.basis, basis, &scope.context, span, &self.program.budget,
++        )
++    }
++    fn runtime_group_leaf(&self, op: &StaticOp) -> Result<bool> {
++        let mut leaf = op;
++        let mut depth = self.depth;
++        loop {
++            self.tick(leaf.span)?;
++            if depth >= 64 {
++                return Err(SourceError::new(
++                    "limit", leaf.span, "static operation exceeds depth 64",
++                ));
++            }
++            match &leaf.kind {
++                StaticOpKind::Repeat(_, child) => {
++                    depth += 1;
++                    leaf = child;
++                }
++                StaticOpKind::Name(name) | StaticOpKind::Specialize { name, .. } => {
++                    return Ok(matches!(
++                        self.index().table.usage(self.index().usage(name)).target,
++                        ResolvedUse::Global(Target::Declaration(_))
++                    ));
++                }
++                _ => return Ok(false),
++            }
++        }
++    }
+     fn static_natural(&self, arg: &StaticOp, scope: &Scope) -> Result<Linear> {
+         match &arg.kind {
+             StaticOpKind::Natural(n) => {

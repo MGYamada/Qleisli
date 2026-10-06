@@ -1,4 +1,4 @@
-//! Shared untrusted source signatures; this catalog supplies no IR evidence.
+//! Existing selected concrete emitter signatures; these supply no IR evidence.
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 //! Concrete capacity limits and lowering/translation checks remain separate.
 use super::ast::Effect;
@@ -47,8 +47,9 @@ impl TypeRule {
     }
 }
 
-/// The existing scalar primitive preserves one exact quantum atom. This shared
-/// judgment neither identifies equal-width bases nor accepts a tuple of owners.
+/// The selected concrete scalar emitter preserves one exact quantum atom.
+/// The mandatory common source catalog admits a packaged quantum tuple;
+/// unsupported concrete preparation remains a separate eligibility failure.
 pub(super) fn quantum_endomorphism<N: Clone>(input: &Type<N>, span: Span) -> Result<Type<N>> {
     if matches!(&input.kind, Kind::Q(basis) if matches!(basis.kind, Kind::Unit | Kind::Bit | Kind::Bits(_)))
     {
@@ -62,8 +63,8 @@ pub(super) fn quantum_endomorphism<N: Clone>(input: &Type<N>, span: Span) -> Res
     }
 }
 
-/// One input-dependent exact-tree rule, shared by symbolic and concrete
-/// checking. It authorizes no implicit coherence or physical-state assumption.
+/// The selected concrete emitter's input-dependent exact-tree rule.
+/// It authorizes no implicit coherence or physical-state assumption.
 pub(super) fn dependent_output<N: Clone>(
     rule: TypeRule,
     inputs: &[&Type<N>],

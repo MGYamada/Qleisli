@@ -1,0 +1,17 @@
+{
+  "status": "authored-frozen-not-run-formatted-or-tested",
+  "source": {
+    "path": "src/frontend/resolve/locals.rs",
+    "bytes": 38149,
+    "sha256": "b82ee295fca12de3400a70d4caa9e6c05b525eee336155137a9f05353c48d4a4",
+    "mode": 420
+  },
+  "before_map_sha256": "43add33ea46acf290d99031894d855770f7c58cc51e0c29f57f01b3659227c69",
+  "patch_sha256": "e50253fcd7029a7c72835db08c48544a82c7d896ac43982e31644291e157a1cf",
+  "actual_warning_provenance": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-08/07-clippy-all-targets.stderr.txt",
+    "bytes": 5294,
+    "sha256": "252218aa20fc399f85733785935b8f39ff847fa680f00d4d434e5fba906bdd86"
+  },
+  "scope": "Only four saturating additions from actual Clippy warnings; no other branch/charge/traversal changed"
+}

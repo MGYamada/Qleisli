@@ -1,0 +1,26 @@
+{
+  "status": "actual-attempt-07-after-map",
+  "files": [
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "sha256": "bc2d42fe6ed5ad6c5b8b32e1b63c3fc21f4438180112238527d1f0862f001919"
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "sha256": "38caedf63ce840caccfabd94f522fef79f9e408c3eb139f22d5df25b3f195c11"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "sha256": "cc70a9c5a9fa5fe445cf7299c08f454dc624bec36a3f07561675075aa45e64bd"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "sha256": "366007e2fe05a4877c9baf954b8034a95fdaa70857d644dbee6949d6758cbd99"
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "sha256": "8a3db2710909bfd04df56d666f44bc06af87a01c3726be3d049926543f822937"
+    }
+  ],
+  "basis": "Hashes are read from the preserved actual attempt07 input map, not current files after later group repairs. Its source_inputs_unchanged condition was true; failed actual tests retain their failures. No fresh execution, pass or complete source closure is claimed."
+}

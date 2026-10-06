@@ -1,0 +1,113 @@
+//! Independent permission counterexamples through both public source paths.
+//! No fixture is instantiated, emitted, simulated or submitted to a native child.
+mod common;
+
+use common::SourceRoot;
+use qleisli::frontend::compile::check_project_with_kernel;
+use qleisli::frontend::project::SourcePolicy;
+use qleisli::frontend::sized::ParsedProgram;
+use qleisli::interchange::native::Kernel;
+use qleisli::ir::Effect;
+use std::collections::BTreeMap;
+
+macro_rules! source {
+    ($case:literal) => {
+        include_str!(concat!(
+            "fixtures/authoring_sessions/common-provider-access-v030/attempt-01/",
+            $case,
+            "/main.qli"
+        ))
+    };
+}
+
+fn selected(source: &str) -> Result<ParsedProgram, qleisli::frontend::sized::Error> {
+    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+}
+
+fn finite(source: &str) -> qleisli::frontend::diagnostic::Diagnostic {
+    let root = SourceRoot::new(source);
+    // Each fixture's valid private Basis declaration forces an explicit finite
+    // eligibility refusal after common checking. Even an erroneous advance to
+    // native checking cannot execute this deliberately absent path.
+    let absent = root.0.join("must-not-be-executed-native-kernel");
+    assert!(!absent.exists());
+    check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent)).unwrap_err()
+}
+
+fn common_source_valid(source: &str) {
+    let prepared = selected(source).unwrap_or_else(|error| panic!("{source}\n{error}"));
+    assert_eq!(
+        prepared.function_effect("main::probe").unwrap().inferred(),
+        Effect::Unitary
+    );
+    let error = finite(source);
+    assert_eq!(error.code, "unsupported", "{source}\n{error}");
+    assert!(error.message.contains("opaque Basis"), "{error}");
+    let location = error.primary.unwrap();
+    assert!(location.path.ends_with("main.qli"));
+    assert_eq!(&source[location.span.start..location.span.end], "A");
+}
+
+fn missing_path(source: &str, capability: &str, supplied_wrapper: &str) {
+    let sized = selected(source).unwrap_err();
+    assert_eq!(sized.code(), "access", "{source}\n{sized}");
+    assert!(sized.message().contains(capability), "{sized}");
+    assert_eq!(sized.module(), Some("main"));
+    assert_eq!(
+        &source[sized.span().start..sized.span().end],
+        supplied_wrapper
+    );
+
+    let finite = finite(source);
+    // The valid opaque-Basis sibling is an earlier eligibility barrier. The
+    // capability error must come from complete original checking before it.
+    assert_eq!(finite.code, "capability", "{source}\n{finite}");
+    assert!(finite.message.contains(capability), "{finite}");
+    let location = finite.primary.unwrap();
+    assert!(location.path.ends_with("main.qli"));
+    assert_eq!(
+        &source[location.span.start..location.span.end],
+        supplied_wrapper
+    );
+}
+
+#[test]
+fn apply_only_wrapper_retains_forward_use_without_inverse_or_control() {
+    common_source_valid(source!("apply-only-forward"));
+    missing_path(source!("apply-only-inverse"), "Adjoint", "forwards[V]");
+    missing_path(
+        source!("apply-only-controlled"),
+        "Controlled",
+        "forwards[V]",
+    );
+}
+
+#[test]
+fn reversing_an_adjoint_only_wrapper_needs_the_original_apply_path() {
+    // backwards[V] computes V†. Its forward invocation uses the available
+    // Adjoint(V); reversing that whole wrapper would compute V, whose Apply
+    // is absent. Checking only the argument's Adjoint would miss this case.
+    common_source_valid(source!("adjoint-only-backwards-forward"));
+    missing_path(
+        source!("adjoint-only-backwards-inverse"),
+        "Adjoint",
+        "backwards[V]",
+    );
+}
+
+#[test]
+fn declared_paths_support_the_inverse_and_control_positive_controls() {
+    common_source_valid(source!("all-paths-inverse"));
+    common_source_valid(source!("all-paths-controlled"));
+}
+
+#[test]
+fn unused_actual_operations_still_constrain_the_conservative_wrapper() {
+    missing_path(source!("unused-op-inverse"), "Adjoint", "ignored[V]");
+    missing_path(source!("unused-op-controlled"), "Controlled", "ignored[V]");
+}
+
+#[test]
+fn closed_transparent_provider_keeps_its_conditional_control_path() {
+    common_source_valid(source!("closed-provider-controlled"));
+}

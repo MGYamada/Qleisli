@@ -1,0 +1,44 @@
+{
+  "format": "qleisli.bounded-test-repair",
+  "status": "before-test-edits",
+  "recorded_utc": "2026-10-05T22:51:34.064675+00:00",
+  "root_validation": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06",
+    "results": {
+      "bytes": 13188,
+      "sha256": "85aa6d09eebd1232d5bda44ccbaac1126768a47ab3af1e3c950aea055e60c34a"
+    },
+    "inputs_before": {
+      "bytes": 113095,
+      "sha256": "b87663a1c975611b13645840af310b4963e350b0d0a97dae31ec94a5f56075c5"
+    },
+    "stderr": {
+      "bytes": 10357,
+      "sha256": "08d80365a3ec7fa99c93bd76220b0bfdc7df4d80a28ecfbc0cd7c5f58898d408"
+    }
+  },
+  "before_tests": {
+    "sized_source.rs": {
+      "bytes": 82934,
+      "sha256": "693689387c558658ba4b98bb9884f215a46294309e820b5f8d40f9ffed05efd9"
+    },
+    "source_judgments.rs": {
+      "bytes": 8900,
+      "sha256": "e9537992631b11d8819e5f9b3d9415d3327a7838900410477a778e7d67111443"
+    }
+  },
+  "raw_excerpts": {
+    "lexical_binding_identity_prevents_shadowed_owner_escape": {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-remaining-06-01/lexical_binding_identity_prevents_shadowed_owner_escape.actual06.stderr.txt",
+      "raw_offset": 8058,
+      "raw_length": 230
+    },
+    "symbolic_capacity_errors_keep_obligation_spans_and_causes": {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-remaining-06-01/symbolic_capacity_errors_keep_obligation_spans_and_causes.actual06.stderr.txt",
+      "raw_offset": 8960,
+      "raw_length": 197
+    }
+  },
+  "test_execution_by_author": false,
+  "scope": "Two test repairs and tiny targeted source controls only. Historical actual06 remains unchanged; no native/Lean/Rust execution, new guarantee or Issue completion."
+}

@@ -2,11 +2,16 @@
 
 mod common;
 
-use std::fs;
+use std::{collections::BTreeMap, fs};
 
 use common::SourceRoot;
 
-use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::frontend::compile::{
+    ErrorCode, check_project, check_project_with_kernel, compile_project,
+};
+use qleisli::frontend::project::SourcePolicy;
+use qleisli::frontend::sized::ParsedProgram;
+use qleisli::interchange::native::Kernel;
 use qleisli::ir::{Effect, ProtectedUse, RawOp, SingleGate};
 use qleisli::sim::{SimulationLimits, run_closed};
 
@@ -19,6 +24,70 @@ fn rejected(source: &str, expected: ErrorCode) {
     let root = SourceRoot::new(source);
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, expected, "{source}\n{error}");
+}
+
+macro_rules! static_value_source {
+    ($case:literal) => {
+        include_str!(concat!(
+            "fixtures/authoring_sessions/common-static-value-v030/attempt-01/",
+            $case,
+            "/main.qli"
+        ))
+    };
+}
+
+fn shared_value_error(source: &str, name: &str, code: &str, finite_code: &str, message: &str) {
+    let start = source.rfind(name).unwrap();
+    let end = start + name.len();
+    let selected =
+        ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    assert_eq!(selected.code(), code, "{source}\n{selected}");
+    assert_eq!(selected.module(), Some("main"));
+    assert_eq!((selected.span().start, selected.span().end), (start, end));
+    assert_eq!(selected.message(), message);
+
+    let root = SourceRoot::new(source);
+    let absent = root.0.join("must-not-be-executed-native-kernel");
+    assert!(!absent.exists());
+    // The common source judgment must reject before concrete eligibility or a
+    // native child. A static name is not a consumed runtime quantum binding.
+    let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
+        .unwrap_err();
+    assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
+    assert_eq!(finite.message, message);
+    let location = finite.primary.unwrap();
+    assert!(location.path.ends_with("main.qli"));
+    assert_eq!((location.span.start, location.span.end), (start, end));
+    assert_eq!(&source[start..end], name);
+}
+
+#[test]
+fn static_names_as_runtime_values_are_located_type_errors_in_both_source_paths() {
+    for (source, name) in [
+        (static_value_source!("static-natural"), "n"),
+        (static_value_source!("static-basis"), "A"),
+        (static_value_source!("static-operation"), "U"),
+        (static_value_source!("fold-index"), "i"),
+    ] {
+        shared_value_error(
+            source,
+            name,
+            "type",
+            "type_mismatch",
+            &format!("static name `{name}` is not a runtime value"),
+        );
+    }
+}
+
+#[test]
+fn an_actually_consumed_runtime_owner_retains_the_ownership_error() {
+    shared_value_error(
+        static_value_source!("consumed-runtime-owner"),
+        "q",
+        "ownership",
+        "ownership",
+        "quantum ownership `q` has already been consumed",
+    );
 }
 
 #[test]

@@ -1,0 +1,1 @@
+projections: {DefId(0): Err(Error { code: "unsupported", module: Some("main"), span: Span { start: 41, end: 72 }, message: "sized preparation profile: unsupported runtime expression" }),

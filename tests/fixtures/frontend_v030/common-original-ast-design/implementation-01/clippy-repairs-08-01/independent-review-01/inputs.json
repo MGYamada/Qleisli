@@ -1,0 +1,104 @@
+{
+  "status": "read-only-static-equivalence-review-not-a-validation-result",
+  "authored_packet_inputs": [
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/locals/after-source.rs.txt",
+      "bytes": 38149,
+      "sha256": "b82ee295fca12de3400a70d4caa9e6c05b525eee336155137a9f05353c48d4a4",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/locals/after.json",
+      "bytes": 826,
+      "sha256": "12cf138bf2f82985b7bbb3a7acb3192974c61bfbd2603b7e91b6c07f81d7a981",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/locals/before-source.rs.txt",
+      "bytes": 38250,
+      "sha256": "61984f84a16d270df728157e41452516a9faedba1564dcb5254db4eef534172a",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/locals/before.json",
+      "bytes": 630,
+      "sha256": "43add33ea46acf290d99031894d855770f7c58cc51e0c29f57f01b3659227c69",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/locals/changes.patch",
+      "bytes": 1941,
+      "sha256": "e50253fcd7029a7c72835db08c48544a82c7d896ac43982e31644291e157a1cf",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/locals/review.md",
+      "bytes": 1076,
+      "sha256": "46be3ec27dfe273e49885ec3a89d817e6568f4e747b5078f97ddf144441750a9",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/after.json",
+      "bytes": 772,
+      "sha256": "cddf1b5819f4177c5a5408983088247090eff6fad4c6666e865b051c0b633f6e",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/authored.patch",
+      "bytes": 1849,
+      "sha256": "6e415010c4ecfa49aa6b6be4bccadf624b5c6286018575c38021978250be44e5",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/before.json",
+      "bytes": 761,
+      "sha256": "6dc22da93756047966fe8ee198f342c84b5cb8929b75b51f40943b4eafb7eb44",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/src__frontend__sized__check.rs.after.txt",
+      "bytes": 13902,
+      "sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/src__frontend__sized__check.rs.before.txt",
+      "bytes": 13964,
+      "sha256": "1d70cefd37b45c64dc32ef7227e639d7f2b23232c6b72db84a96b2e180d7345e",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/src__frontend__sized__elaborate.rs.after.txt",
+      "bytes": 68287,
+      "sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/clippy-repairs-08-01/root/src__frontend__sized__elaborate.rs.before.txt",
+      "bytes": 68290,
+      "sha256": "9ba102a8a8e4b70126c0808b8c56dac09ece1a19f8034946284ccedfc19733c0",
+      "mode": 420
+    }
+  ],
+  "observed_current_sources": [
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 38093,
+      "sha256": "29c384ff3eebbf724c8c5d922d74780bb118b144e4b8fe901a34dcfbfa21d77b",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 13902,
+      "sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "bytes": 68287,
+      "sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+      "mode": 420
+    }
+  ],
+  "limits": "Current locals may contain separately retained root formatting. Review judgments below target exact authored before/after archives, not unobserved validation results."
+}

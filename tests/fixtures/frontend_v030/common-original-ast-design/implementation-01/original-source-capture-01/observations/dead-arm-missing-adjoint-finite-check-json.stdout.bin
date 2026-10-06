@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"capability","severity":"error","message":"missing Adjoint operation access","primary":{"path":"main.qli","start":206,"end":218,"line":4,"column":35},"related":[]}],"result":null}

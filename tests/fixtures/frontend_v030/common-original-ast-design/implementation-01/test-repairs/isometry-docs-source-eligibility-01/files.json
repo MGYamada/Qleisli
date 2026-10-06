@@ -1,0 +1,98 @@
+{
+  "format": "qleisli.additive-test-repair-map",
+  "version": 1,
+  "files": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/README.md": {
+      "sha256": "0e3c16103e4336ae6c559612fc35029f084b0b3ddcbfb5a910f8cb52c5fc1a71",
+      "bytes": 1409,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/changes.patch.txt": {
+      "sha256": "b503a4d62d8b7d07d587f9788ce2078f9568185d55e3345fbf121c39fdeda437",
+      "bytes": 4835,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/frontend_types.rs.00.stderr-segment.txt": {
+      "sha256": "a683149862a66d7a2b416b91898fd9e3b0e500c67e36aa1976740a215157962c",
+      "bytes": 144,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/frontend_types.rs.01.stderr-segment.txt": {
+      "sha256": "2ece3870ac132e1203dda9f1aa0c6b79b6857ebf01ad471713a31e951e74790c",
+      "bytes": 164,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/frontend_types.rs.02.stderr-segment.txt": {
+      "sha256": "ac9f19ea8a4e5660fbddac5452fd4e161911bae3ccc2fb70e9f6048172f1add9",
+      "bytes": 186,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/mixed_booleans.rs.00.stderr-segment.txt": {
+      "sha256": "9c51999f49f0c8c41c21a94e52340730ad76a8fa9b5d8da3cd0ffc3e1c00b531",
+      "bytes": 146,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/mixed_booleans.rs.01.stderr-segment.txt": {
+      "sha256": "0f20d324468186b70ac245e6bb58b10b1a4c897a75538af5b35b6263ed62e146",
+      "bytes": 164,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/mixed_booleans.rs.02.stderr-segment.txt": {
+      "sha256": "f0bfdef9ce6cea135e9a5b70d4719256394a930c5459ec2b2e76173d321385c9",
+      "bytes": 188,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/ordinary_types.rs.00.stderr-segment.txt": {
+      "sha256": "678b864a0bd664a056bb91c87fc4d6bc6436219ba63f2a011f00020b5c6e0c1c",
+      "bytes": 113,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/ordinary_types.rs.01.stderr-segment.txt": {
+      "sha256": "2ece3870ac132e1203dda9f1aa0c6b79b6857ebf01ad471713a31e951e74790c",
+      "bytes": 164,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/ordinary_types.rs.02.stderr-segment.txt": {
+      "sha256": "6736ad46c2c1d3133085e280485283bc302385fc92ecd68f2194ebf73d769dc3",
+      "bytes": 186,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/originals/frontend_types.rs.txt": {
+      "sha256": "3e24950ebcfaec1401bebb7c1730cc86cc90b59d11663139c9f8d17123d66645",
+      "bytes": 4159,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/originals/mixed_booleans.rs.txt": {
+      "sha256": "872c311d274f578c8c98773e817869b739089fb383421e43f573b5a541a3d924",
+      "bytes": 14309,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/originals/ordinary_types.rs.txt": {
+      "sha256": "f5dd365f840cca6645ecac41d026c9824e07bce7ada7caf9e276d20de328ad84",
+      "bytes": 13362,
+      "mode": "0o644"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/repair.json": {
+      "sha256": "ff938587bf32bb71928e5374d519a0619d077f9dba8f628d43fe12c94e883c9e",
+      "bytes": 7839,
+      "mode": "0o644"
+    },
+    "tests/frontend_types.rs": {
+      "sha256": "16228084a185b1d19c7d6344fbdb4452492ba6cb54fdc7119dcc01fc8bcf3c16",
+      "bytes": 4571,
+      "mode": "0o644"
+    },
+    "tests/ordinary_types.rs": {
+      "sha256": "df68d2a9bb763c660b08484d9680c35f7fd73577558bf451988633601160fc9c",
+      "bytes": 13813,
+      "mode": "0o644"
+    },
+    "tests/mixed_booleans.rs": {
+      "sha256": "8cb37e7054feb0010220a12ab2290c0d9f624ec25ca90f63657e1bdf13508b68",
+      "bytes": 14783,
+      "mode": "0o644"
+    }
+  },
+  "self_excluded": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-repairs/isometry-docs-source-eligibility-01/files.json",
+  "scope": "Only three originals/revisions, bounded actual-failure provenance/segments and textual patch; incomplete source closure."
+}

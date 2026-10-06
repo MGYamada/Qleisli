@@ -1,0 +1,31 @@
+{
+  "label": "rustc-version",
+  "argv": [
+    "/opt/homebrew/bin/rustup",
+    "run",
+    "1.85.0",
+    "rustc",
+    "--version"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 0.8563895410043187,
+  "completed_utc": "2026-10-05T23:28:34.900391+00:00",
+  "stdout": {
+    "path": "01-rustc-version.stdout.txt",
+    "sha256": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f",
+    "bytes": 36
+  },
+  "stderr": {
+    "path": "01-rustc-version.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "actual_test_results": [],
+  "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

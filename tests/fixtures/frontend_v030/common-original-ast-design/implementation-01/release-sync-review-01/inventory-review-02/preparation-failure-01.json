@@ -1,0 +1,7 @@
+{
+  "status": "actual-metadata-preparation-assertion-failed-before-any-proposal-output",
+  "exit_code": 1,
+  "stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 32, in <module>\nAssertionError: ('unreviewed surface change', 'src/frontend/resolve/locals.rs')\n",
+  "scope": "Fresh exact-list extraction exposed omitted duplicate function signatures in historical candidate01; not a source/API change or validator failure. No active metadata was changed. Subsequent scan found one duplicate omission in sized/linear.rs as well.",
+  "validator_executed": false
+}

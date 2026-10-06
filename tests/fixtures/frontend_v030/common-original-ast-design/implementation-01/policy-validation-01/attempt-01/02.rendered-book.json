@@ -1,0 +1,42 @@
+{
+  "id": "02.rendered-book",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_book.py",
+    "--root",
+    "/private/tmp/qleisli-original-ast-policy-book-c0hv8edt/book"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T23:49:16.907976+00:00",
+  "completed_at_utc": "2026-10-05T23:49:17.140052+00:00",
+  "seconds": 0.23209112498443574,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "output_limited": {
+    "stdout": false,
+    "stderr": false
+  },
+  "stream_bytes_seen": {
+    "stdout": 67,
+    "stderr": 0
+  },
+  "cleanup_incomplete": false,
+  "limits": {
+    "command_seconds": 180,
+    "bytes_per_stream": 1048576,
+    "parallel_commands": 2
+  },
+  "stdout": {
+    "path": "02.rendered-book.stdout.txt",
+    "bytes": 67,
+    "sha256": "74485319bf903ce809c30d7361655c71d00cb6bd62a9f43bee4a69f5e3a34719",
+    "mode": 420
+  },
+  "stderr": {
+    "path": "02.rendered-book.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  }
+}

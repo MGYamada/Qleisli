@@ -1,0 +1,119 @@
+{
+  "status": "bytes-preserved-review-copy-packaging",
+  "archive": {
+    "path": "snapshot-packaging-01/original-review-copies-and-maps.tar.gz",
+    "sha256": "9fc3f5370401422f684dabc68582c0d98b6729c7175cddeb7ac4672ae71168ae",
+    "bytes": 188001
+  },
+  "relocated_copies": [
+    {
+      "original_path": "before/CHANGELOG.md",
+      "current_path": "before/CHANGELOG.md.txt",
+      "archive_member": "before/CHANGELOG.md",
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615",
+      "bytes": 106160
+    },
+    {
+      "original_path": "before/docs/src/reference/primitive-boundary.md",
+      "current_path": "before/docs/src/reference/primitive-boundary.md.txt",
+      "archive_member": "before/docs/src/reference/primitive-boundary.md",
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f",
+      "bytes": 28267
+    },
+    {
+      "original_path": "before/docs/src/reference/source-text.md",
+      "current_path": "before/docs/src/reference/source-text.md.txt",
+      "archive_member": "before/docs/src/reference/source-text.md",
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449",
+      "bytes": 18322
+    },
+    {
+      "original_path": "before/docs/src/reference/type-model.md",
+      "current_path": "before/docs/src/reference/type-model.md.txt",
+      "archive_member": "before/docs/src/reference/type-model.md",
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97",
+      "bytes": 28842
+    },
+    {
+      "original_path": "clarification-02/before/docs/src/reference/primitive-boundary.md",
+      "current_path": "clarification-02/before/docs/src/reference/primitive-boundary.md.txt",
+      "archive_member": "clarification-02/before/docs/src/reference/primitive-boundary.md",
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a",
+      "bytes": 29615
+    },
+    {
+      "original_path": "clarification-02/before/docs/src/reference/source-text.md",
+      "current_path": "clarification-02/before/docs/src/reference/source-text.md.txt",
+      "archive_member": "clarification-02/before/docs/src/reference/source-text.md",
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935",
+      "bytes": 20704
+    },
+    {
+      "original_path": "clarification-02/proposed/docs/src/reference/primitive-boundary.md",
+      "current_path": "clarification-02/proposed/docs/src/reference/primitive-boundary.md.txt",
+      "archive_member": "clarification-02/proposed/docs/src/reference/primitive-boundary.md",
+      "sha256": "a4520671a9ed55265ebceea7fb053ffbd7379bbee1cd1f517b45075ef65e6350",
+      "bytes": 29926
+    },
+    {
+      "original_path": "clarification-02/proposed/docs/src/reference/source-text.md",
+      "current_path": "clarification-02/proposed/docs/src/reference/source-text.md.txt",
+      "archive_member": "clarification-02/proposed/docs/src/reference/source-text.md",
+      "sha256": "9efe2d241edd5ae789552fcce3c49b1aab598c7bc29c669987f6aed986e977f6",
+      "bytes": 21030
+    },
+    {
+      "original_path": "clarification-03/before/docs/src/reference/type-model.md",
+      "current_path": "clarification-03/before/docs/src/reference/type-model.md.txt",
+      "archive_member": "clarification-03/before/docs/src/reference/type-model.md",
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8",
+      "bytes": 33244
+    },
+    {
+      "original_path": "clarification-03/proposed/docs/src/reference/type-model.md",
+      "current_path": "clarification-03/proposed/docs/src/reference/type-model.md.txt",
+      "archive_member": "clarification-03/proposed/docs/src/reference/type-model.md",
+      "sha256": "ec0c3f8ee9a1bed1fcc3661d994be578047c3090de124b8bc7b9106e9dd756a4",
+      "bytes": 33498
+    },
+    {
+      "original_path": "proposed/CHANGELOG.md",
+      "current_path": "proposed/CHANGELOG.md.txt",
+      "archive_member": "proposed/CHANGELOG.md",
+      "sha256": "46c8d08b57cccdd2d50802e2978419be348637dfee282913519ea2102a4a0bc5",
+      "bytes": 107184
+    },
+    {
+      "original_path": "proposed/docs/src/reference/primitive-boundary.md",
+      "current_path": "proposed/docs/src/reference/primitive-boundary.md.txt",
+      "archive_member": "proposed/docs/src/reference/primitive-boundary.md",
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a",
+      "bytes": 29615
+    },
+    {
+      "original_path": "proposed/docs/src/reference/source-text.md",
+      "current_path": "proposed/docs/src/reference/source-text.md.txt",
+      "archive_member": "proposed/docs/src/reference/source-text.md",
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935",
+      "bytes": 20704
+    },
+    {
+      "original_path": "proposed/docs/src/reference/type-model.md",
+      "current_path": "proposed/docs/src/reference/type-model.md.txt",
+      "archive_member": "proposed/docs/src/reference/type-model.md",
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8",
+      "bytes": 33244
+    }
+  ],
+  "original_maps_unchanged": [
+    "clarification-02/files.json",
+    "clarification-02/proposal.json",
+    "clarification-03/files.json",
+    "clarification-03/proposal.json",
+    "files.json",
+    "proposal-clarification/files.json",
+    "proposal-clarification/proposal.json",
+    "proposal.json"
+  ],
+  "scope": "Original maps continue to describe the archived review packet with original member paths; exact copy bytes also retained as .md.txt. No maintained link-check rules, actual docs, proposal/clarification patches or source/test changed."
+}

@@ -1,0 +1,93 @@
+{
+  "format": "qleisli.common-original-ast-ordinary-migrations",
+  "version": 1,
+  "status": "before-edit",
+  "authority": "Existing #32 whole-original-AST contract (60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1) and user-approved active corpus migration plan; no new Guardian act.",
+  "baseline_head": "4d86a0975c6cd97fe5bb1cc71115a2180ad561d6",
+  "tests": [
+    {
+      "path": "tests/compile.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/compile.rs.before.txt",
+      "sha256": "bc6d5bf3436f9e6c33aa388cbd202c48b9d5baefcb16cc381eba60f825697496",
+      "bytes": 26647
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/operation_parameters.rs.before.txt",
+      "sha256": "2862444c8d92dfcab9fa05b6ab13bef6cde411400ac9d3e0d9582e13d268de6e",
+      "bytes": 19631
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/sized_source.rs.before.txt",
+      "sha256": "974b97a3f1dcae425ded45d29ad9212351187fa5c5b54edc8b697918eae0c4c2",
+      "bytes": 82412
+    },
+    {
+      "path": "tests/unit_patterns.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/unit_patterns.rs.before.txt",
+      "sha256": "967ece2e58d1511f1df10f93894373d911f2b66f45707a235ea315a37c29f9b8",
+      "bytes": 9100
+    },
+    {
+      "path": "tests/source_scope.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/source_scope.rs.before.txt",
+      "sha256": "8c58678622f83b1764b75421faeb138d82d5dac3a3c9777381da64a6a2e49433",
+      "bytes": 7865
+    },
+    {
+      "path": "tests/quantum_unit_source.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/quantum_unit_source.rs.before.txt",
+      "sha256": "0857d5b8922669215775962e7286be24ef6d2bfd49ce4a4d2f24d042ecb9f607",
+      "bytes": 33015
+    },
+    {
+      "path": "tests/tuple_shapes.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/tuple_shapes.rs.before.txt",
+      "sha256": "3bd59017a7adafc3cdd8bf52b2955b2f702ba29690b5911c4337155c6e9806d6",
+      "bytes": 8167
+    },
+    {
+      "path": "tests/predicate_domain.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/predicate_domain.rs.before.txt",
+      "sha256": "eba9d6ca2c1aee62a5985fb4c95914fbe8756ea38936c7d7d342344452719ea4",
+      "bytes": 10529
+    },
+    {
+      "path": "tests/certified_source.rs",
+      "snapshot": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/root-migrations-01/certified_source.rs.before.txt",
+      "sha256": "9c1ec934cf8a79d114a23b33da914c6509024df7c5c1d9c0c28502ae6d7e4290",
+      "bytes": 11585
+    }
+  ],
+  "active_local_source": {
+    "path": "corpus/sized/measured_qpe/initialization.qli",
+    "sha256": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+    "bytes": 467,
+    "old_manifest_entry": {
+      "id": "local/measured_qpe/initialization",
+      "origin": "qleisli-authored-local-composition",
+      "file": "sized/measured_qpe/initialization.qli",
+      "license": "Apache-2.0",
+      "sha256": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
+      "dependencies": [],
+      "contract": "Construct exactly zero Bits<n>, including an explicit empty owner; preserve caller/reference systems.",
+      "limitations": "Original ordinary Qleisli helper, not an upstream translation or new finite case. Small source/native/phase-reference tests pass; general source/runtime correspondence and wider capacity remain separate."
+    }
+  },
+  "observed_failure": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-04/results.json",
+    "integration_passed": 215,
+    "integration_failed": 58,
+    "existing_ignored": 3,
+    "explicit_stress_filtered": 2
+  },
+  "intent": [
+    "Preserve true source-before-concrete eligibility and final-token diagnostic migrations.",
+    "Keep old bounded-copy source as truthful common-work refusal plus smaller accepted control.",
+    "Remove only own redundant self-import from active Qleisli-authored measured-QPE initialization; recursive call resolves same-module DefId directly, Nat decrease obligations unchanged.",
+    "Keep frozen historical authoring, licensed upstream and validation sources unchanged.",
+    "Preserve every rejected semantic condition; actual apply_contract/Basis context regressions are code repairs, not test migrations."
+  ],
+  "scope": "Before-edit provenance only; no successful rerun, semantic/source proof, guarantee discharge, issue closure or release approval."
+}

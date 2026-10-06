@@ -1,0 +1,199 @@
+{
+  "schema": 1,
+  "scope": "Selected read-only public-route and eligibility source inputs; not whole build/runtime closure or a fresh execution result",
+  "executed_build_test_cli_native_or_driver": false,
+  "files": [
+    {
+      "path": "src/frontend/source.rs",
+      "bytes": 6142,
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/project.rs",
+      "bytes": 25048,
+      "sha256": "6751e1619e4050a9e27d6334427df3fe9524cb930428f2a9e8a758f8b549700a",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/project/manifest.rs",
+      "bytes": 9690,
+      "sha256": "da72b0ca7e10fcb44bf1832c4943535ca17350a58f0034d9764f2ca6dcdcc3cd",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 38022,
+      "sha256": "cc70a9c5a9fa5fe445cf7299c08f454dc624bec36a3f07561675075aa45e64bd",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 31762,
+      "sha256": "540d50f809150256cac8f709ee8e6102907c2dcf615700171626308ee73bd830",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "bytes": 56121,
+      "sha256": "c75920f6961ee5ee590880ee00f28dc0dd254247a36ac234fa2fee3487cb7848",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "bytes": 7837,
+      "sha256": "ddbc4bc299fabe07d85306430960bd6d1cf10fa34cb69309431f9117dce73ed1",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 22797,
+      "sha256": "366007e2fe05a4877c9baf954b8034a95fdaa70857d644dbee6949d6758cbd99",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 13902,
+      "sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15209,
+      "sha256": "9bd9baffd118a4850c068df06e104a0077f32c8303d4b701c81f7e53e6ae754f",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "bytes": 68287,
+      "sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/sized/raw.rs",
+      "bytes": 23387,
+      "sha256": "28d2d849c5cc93d626ed0156073f31cad289724f3d199c6d277991002fa0a233",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "bytes": 64151,
+      "sha256": "9def83629b1d194c47f43a47055c8211fd5b45845a3d86cde9979e4789c6e028",
+      "mode": "0644"
+    },
+    {
+      "path": "src/bin/qleisli.rs",
+      "bytes": 6459,
+      "sha256": "8e059a1e10ec26c4cfcb796383abae5c48c45f5dfd69aab212145f6b23281dae",
+      "mode": "0644"
+    },
+    {
+      "path": "src/bin/qleisli/source_commands.rs",
+      "bytes": 2182,
+      "sha256": "386fb4823e63dac7fb66f2b4095a72e322e83d29ce258047a29baa57566dfd60",
+      "mode": "0644"
+    },
+    {
+      "path": "src/bin/qleisli/source_plan.rs",
+      "bytes": 21319,
+      "sha256": "99003d69faab808ce6be69216c39329aa3210ef41f7a6bcd0561db2a419556e1",
+      "mode": "0644"
+    },
+    {
+      "path": "src/bin/qleisli/source_plan/options.rs",
+      "bytes": 8582,
+      "sha256": "ba8f88a9188bf9e275e832b3ee161718099569c76a20b7d0c0aae1ab53591c43",
+      "mode": "0644"
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 21030,
+      "sha256": "9efe2d241edd5ae789552fcce3c49b1aab598c7bc29c669987f6aed986e977f6",
+      "mode": "0644"
+    },
+    {
+      "path": "docs/src/reference/primitive-boundary.md",
+      "bytes": 29926,
+      "sha256": "a4520671a9ed55265ebceea7fb053ffbd7379bbee1cd1f517b45075ef65e6350",
+      "mode": "0644"
+    },
+    {
+      "path": "docs/src/reference/production-boundary.md",
+      "bytes": 15303,
+      "sha256": "f51d75a0ad542be6d03c9528d7f9d2f0340003d144d87ff5d4a5a64b983dfa4d",
+      "mode": "0644"
+    },
+    {
+      "path": "STDLIB.md",
+      "bytes": 12173,
+      "sha256": "e64b5b0732a9c7488968a11463c132ee52b10bc52a4c52b13b9ddfd4b86b9895",
+      "mode": "0644"
+    },
+    {
+      "path": "stdlib/Qargo.toml",
+      "bytes": 151,
+      "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689",
+      "mode": "0644"
+    },
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "bytes": 2016,
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+      "mode": "0644"
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "bytes": 825,
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "mode": "0644"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "bytes": 2436,
+      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "mode": "0644"
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "bytes": 1433,
+      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+      "mode": "0644"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
+      "bytes": 22769,
+      "sha256": "60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1",
+      "mode": "0644"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/README.md",
+      "bytes": 14634,
+      "sha256": "45500d9400895de78eddd59f9ead44607ac8da5661fa651a799d8617a349c6d1",
+      "mode": "0644"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/migration-inventory.json",
+      "bytes": 38974,
+      "sha256": "c48c75fa07d910e5a0a6a0af7ce2822f122d25fe2cfff65efdaeef87adb14016",
+      "mode": "0644"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-family-v030/README.md",
+      "bytes": 718,
+      "sha256": "e1a2cc08aaeeb117e8275ba68b35ad59c33991c0bcfd79c673d7b7be64aacd4e",
+      "mode": "0644"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/qft-family-v030/attempt-01/transform.qli",
+      "bytes": 1638,
+      "sha256": "12753179c20a3a45bb8420e5a4c6a41157b493dcf3f47314b4f41658b4644cfc",
+      "mode": "0644"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "format": 1,
+  "status": "passed",
+  "failures": [],
+  "cases": [],
+  "semantic_faults": [],
+  "negative_cases": [],
+  "created_utc": "2026-10-05T22:40:47.441166+00:00",
+  "exhaustive_unitary_entries": false,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "manifest_sha256": "0cb953ea99f6c152e6486c4390d1209c220514ac5443b46303f7854973a202ec",
+  "scope": "provenance only",
+  "case_count": 87
+}

@@ -1,0 +1,28 @@
+{
+  "files": {
+    "tests/compile.rs": {
+      "before_path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-migrations-01/root-after-attempt-07-01/compile.rs.before.txt",
+      "bytes": 27592,
+      "sha256": "a48c65a31e38c3e96474b11ac31ed50f6673fb612ce840cfcb7650c4d595e8ed"
+    },
+    "tests/ordinary_booleans.rs": {
+      "before_path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/test-migrations-01/root-after-attempt-07-01/ordinary_booleans.rs.before.txt",
+      "bytes": 14153,
+      "sha256": "ab121c76b4b6e21b13aa1ba531b41e8fc530004203e7975645acb46648db6462"
+    }
+  },
+  "actual_failure_evidence": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-07/results.json": {
+      "sha256": "8476e7ae8184a774d5800eeb295e4c95e908c35099a2fada55e117f373f88249",
+      "bytes": 13394
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-07/05-focused-integration-tests.stdout.txt": {
+      "sha256": "d620898167fda29cda6925bd95f761e752232fc12e6bd2ae96b7e70913fe46f5",
+      "bytes": 25870
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-07/05-focused-integration-tests.stderr.txt": {
+      "sha256": "a33bc5f30ed03a3744bfc79393c6d4fc5026eb6100c2fbfb53470bd7b49f757a",
+      "bytes": 5950
+    }
+  }
+}

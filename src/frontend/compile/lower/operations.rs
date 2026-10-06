@@ -112,7 +112,7 @@ impl Lowerer<'_, '_> {
         if args.is_empty() {
             return Ok(Bindings::new());
         }
-        let expected = self.compiler.abstract_bindings(key)?;
+        let expected = self.compiler.required_bindings(key)?;
         let mut bindings = Bindings::new();
         let mut identity = Vec::new();
         for (param, arg) in decl.static_params.iter().zip(args) {
@@ -151,7 +151,6 @@ impl Lowerer<'_, '_> {
             bindings.insert(self.compiler.locals.key(binding).clone(), actual);
         }
         if !identity.is_empty()
-            && !self.abstract_check
             && !self
                 .compiler
                 .instances
@@ -212,15 +211,4 @@ impl Lowerer<'_, '_> {
         self.bindings = previous;
         result
     }
-}
-
-/// Check types, linear ownership and declared access with abstract operations.
-/// Identity placeholders are discarded here and can never authorize execution.
-/// Exact computed obligations are checked afresh for every concrete expansion.
-pub(in crate::frontend::compile) fn check_generic(
-    compiler: &mut Compiler<'_>,
-    key: &Key,
-    bindings: Bindings,
-) -> Result<(), CompileError> {
-    lower_function_inner(compiler, key, bindings, true).map(|_| ())
 }

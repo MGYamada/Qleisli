@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.read-only-stdlib-declaration-inputs",
+  "version": 1,
+  "scope": "The actual four ordinary declaration bodies and schema-2 manifest, supplementary to inputs.json. No copied source or adoption.",
+  "files": [
+    {
+      "path": "stdlib/Qargo.toml",
+      "bytes": 151,
+      "mode": "0644",
+      "sha256": "e926c6cebd74ea36218e577215aa6d2c635d30ca657654b8f573125fa7d76689"
+    },
+    {
+      "path": "stdlib/src/arithmetic.qli",
+      "bytes": 2016,
+      "mode": "0644",
+      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a"
+    },
+    {
+      "path": "stdlib/src/basis.qli",
+      "bytes": 825,
+      "mode": "0644",
+      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877"
+    },
+    {
+      "path": "stdlib/src/routines.qli",
+      "bytes": 2436,
+      "mode": "0644",
+      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b"
+    },
+    {
+      "path": "stdlib/src/transforms.qli",
+      "bytes": 1433,
+      "mode": "0644",
+      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba"
+    }
+  ]
+}

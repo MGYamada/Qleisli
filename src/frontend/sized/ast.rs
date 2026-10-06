@@ -2,14 +2,14 @@
 //! No parser or source-token interpretation belongs here.
 use super::Span;
 
-pub(super) use crate::frontend::ast::{Access, Compare};
+pub(super) use crate::frontend::ast::Compare;
 pub(super) use crate::frontend::ordinary::Boolean;
 use crate::frontend::pattern::{Node as PatternNode, PatternView};
 use crate::frontend::resolve::locals::UseSiteId;
 pub(super) use crate::frontend::resolve::locals::{BinderKey, ResolvedUse, Table};
 use std::sync::Arc;
 
-/// IDs are absent only in the discarded profile preflight projection.
+/// Original numeric identities, copied only after complete source checking.
 #[derive(Clone, Debug)]
 pub(super) struct BindingName {
     pub name: String,
@@ -78,17 +78,6 @@ pub(super) type Type = crate::frontend::types::Type<Natural>;
 pub(super) type Basis = Type;
 pub(super) use crate::ir::Effect;
 #[derive(Clone, Debug)]
-pub(super) enum Parameter {
-    Natural(BindingName),
-    Basis(BindingName),
-    Operation(BindingName, Basis),
-}
-#[derive(Clone, Debug)]
-pub(super) enum Requirement {
-    Predicate(Predicate),
-    Access(Access, Reference, Span),
-}
-#[derive(Clone, Debug)]
 pub(super) enum Argument {
     Natural(Natural),
     Basis(Basis, Span),
@@ -155,18 +144,10 @@ pub(super) struct Block {
 #[derive(Clone, Debug)]
 pub(super) struct Function {
     pub lexical: Option<Arc<Table>>,
-    pub name: String,
     pub effect: Effect,
-    pub parameters: Vec<Parameter>,
-    /// One pattern and whole type per source argument; never flattened binders.
-    pub arguments: Vec<(Pattern, Type, Span)>,
-    pub result: Type,
-    pub requires: Vec<Requirement>,
+    /// Patterns belong only to concrete body lowering. Interface types and
+    /// static categories come from the common original-source judgment.
+    pub arguments: Vec<(Pattern, Span)>,
     pub body: Block,
     pub span: Span,
-}
-#[derive(Clone, Debug)]
-pub(super) struct Module {
-    /// Exactly one projection per common declaration, in original source order.
-    pub functions: Vec<Function>,
 }

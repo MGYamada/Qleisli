@@ -1,0 +1,78 @@
+{
+  "format": "qleisli.common-original-source-implementation-checkpoint",
+  "version": 1,
+  "terminal_evidence": {
+    "validation/latest-attempt-09/results.json": {
+      "bytes": 17044,
+      "sha256": "55ba33a91365a87c4e63bed9b8ba7003d0b5708919c8910e8eb6f62d0ca6c91f"
+    },
+    "validation/msrv-attempt-09/results.json": {
+      "bytes": 17500,
+      "sha256": "4c8cd4bd7f8b547d9676bab29e6f9c9ec5d427900457d65b4aa0479a3c2c87a5"
+    },
+    "original-source-capture-01/observations/files.json": {
+      "bytes": 70984,
+      "sha256": "a03aed8c6cb8337286230479cbc25cf7ee35ce3a84a61bb25f6660fb5d2258cd"
+    },
+    "original-source-capture-01/review-01/files.json": {
+      "bytes": 759,
+      "sha256": "dc46c02d7e909a6b70a31c9377511b5f11e032d80cdb739e06921aba95c150c4"
+    },
+    "final-core-review-01/files.json": {
+      "bytes": 316,
+      "sha256": "17cbbbcd8860f0b0926d9fc84876ee16e6281125248126e713be2d282463f903"
+    },
+    "policy-validation-01/attempt-01/results.json": {
+      "bytes": 3502,
+      "sha256": "468263bbc0bd8c07fd7352ec4274d9a733d174f2aa69e334cf4b2e5e76f819e4"
+    },
+    "policy-validation-01/attempt-01/files.json": {
+      "bytes": 9389,
+      "sha256": "32bae9752cdfb97220352e423d78a2ac1c67b0652486c1a2341be6b4ba8b636c"
+    }
+  },
+  "actual_validation": {
+    "rust_toolchains": [
+      "1.98.1",
+      "1.85.0"
+    ],
+    "each_toolchain": {
+      "stages_passed": 9,
+      "tests_passed": 284,
+      "integration_default_ignores": 8,
+      "separately_executed_default_ignore": 1,
+      "explicitly_filtered_large_import_stress_tests": 2
+    },
+    "original_source_checks": 72,
+    "original_source_successes": 26,
+    "original_source_nonzero_semantic_profile_exits": 46,
+    "native_pre_execv_rows": 260,
+    "policy_commands_passed": 17,
+    "policy_regressions_passed": 97,
+    "mdbook_version": "0.5.4",
+    "rendered_book": {
+      "html_files": 23,
+      "local_links": 922,
+      "anchors": 345
+    }
+  },
+  "scope_after_explicit_user_change": {
+    "selected_issues": 111,
+    "confirmed_complete": 14,
+    "percentage": 12.61,
+    "qft_completion": "excluded from0.3.0-alpha and current goal, no future target",
+    "issue_317": "original20 plus general-family rule remain21 applicable; three QFT-specific additions excluded, not completed",
+    "scope_record": "tests/fixtures/constitution_v030/qft-goal-exclusion-01/authorization.json",
+    "retained_attempts": "experimental/qft"
+  },
+  "identity_limits": "Rust source, terminal records and frozen policy inputs are bounded declared closures. Subsequent scope/results documentation and experimental byte-identical retention are separately checked. No compiled-HEAD/environment or native-start attestation.",
+  "not_claimed": [
+    "QFT completion",
+    "full frontend/emitter convergence",
+    "new constitutional interpretation or guarantee",
+    "general source/runtime preservation",
+    "fresh Lean build/audit/replay",
+    "full CI",
+    "release readiness or publication"
+  ]
+}

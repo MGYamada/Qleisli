@@ -1,0 +1,309 @@
+{
+  "label": "focused-integration-tests",
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "unit_patterns",
+    "--test",
+    "runtime_parameter_patterns",
+    "--test",
+    "frontend_types",
+    "--test",
+    "ordinary_types",
+    "--test",
+    "body_effects",
+    "--test",
+    "source_collection",
+    "--test",
+    "shared_resolution",
+    "--test",
+    "sized_declarations",
+    "--test",
+    "selected_source_cli",
+    "--test",
+    "sized_source",
+    "--test",
+    "project",
+    "--test",
+    "source_judgments",
+    "--test",
+    "operation_parameters",
+    "--test",
+    "basis_polymorphism",
+    "--test",
+    "static_operations",
+    "--test",
+    "static_semantics",
+    "--test",
+    "certified_source",
+    "--test",
+    "compile",
+    "--test",
+    "tuple_shapes",
+    "--test",
+    "quantum_unit_source",
+    "--test",
+    "predicate_domain",
+    "--test",
+    "mixed_booleans",
+    "--test",
+    "ordinary_booleans",
+    "--test",
+    "isometry_source",
+    "--test",
+    "source_scope",
+    "--test",
+    "common_source_provider_access",
+    "--test",
+    "sized_review_dialects",
+    "--no-fail-fast",
+    "--",
+    "--nocapture",
+    "--test-threads=2",
+    "--skip",
+    "long_acyclic_import_chain_loads_on_a_small_stack",
+    "--skip",
+    "deep_import_cycle_reports_the_back_edge_and_cycle_path"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 128.85795308300294,
+  "completed_utc": "2026-10-05T23:19:31.362720+00:00",
+  "stdout": {
+    "path": "05-focused-integration-tests.stdout.txt",
+    "sha256": "a5bce56a43dedec4c9437150287ff3434b707366aba538f2a93aac1c9bb6d4a5",
+    "bytes": 25400
+  },
+  "stderr": {
+    "path": "05-focused-integration-tests.stderr.txt",
+    "sha256": "cd5de4afe7648a3dfd21f14502b9d555d252e59b0a75161eef95d11a0fae6206",
+    "bytes": 3717
+  },
+  "actual_test_results": [
+    {
+      "status": "ok",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 30,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 15,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 2
+    },
+    {
+      "status": "ok",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 9,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 5,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 38,
+      "failed": 0,
+      "ignored": 3,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 12,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    },
+    {
+      "status": "ok",
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 0
+    }
+  ],
+  "source_input_digest_after": "68b34387e98c35c1323310121e46f0775b6d5a134ba89abc50203b2c78c924ec",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

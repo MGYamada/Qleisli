@@ -1,0 +1,4 @@
+{
+  "status": "prepared-snapshot-only-not-run",
+  "reason": "Independent review after the prepared snapshot required separate full-Q copy/comparison accounting repair. No formatter/build/test command ran for this packet; use a separately captured final preformat snapshot after that repair is frozen and reviewed."
+}

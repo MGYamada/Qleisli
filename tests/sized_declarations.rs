@@ -189,7 +189,10 @@ fn private_siblings_are_providers_but_not_host_entries_or_external_imports() {
     let error = ParsedProgram::parse(inputs.clone()).unwrap_err();
     assert_eq!(error.code(), "visibility", "{error}");
     assert_eq!(error.module(), Some("main"));
-    assert!(inputs["main"][error.span().start..error.span().end].contains("dep::hidden"));
+    assert_eq!(
+        &inputs["main"][error.span().start..error.span().end],
+        "hidden"
+    );
 }
 
 #[test]
@@ -257,8 +260,16 @@ fn sibling_and_unused_provider_cycles_do_not_become_self_recursion() {
 #[test]
 fn duplicate_and_import_alias_collisions_remain_located_rejections() {
     for (case, code, message) in [
-        ("collision", "name", "import shadows"),
-        ("ambiguous-import", "name", "ambiguous imported name gate"),
+        (
+            "collision",
+            "name",
+            "name `gate` collides with another declaration or import",
+        ),
+        (
+            "ambiguous-import",
+            "name",
+            "name `gate` collides with another declaration or import",
+        ),
         ("duplicate", "name", "duplicate declaration"),
         ("rename", "parse", "expected `;`"),
     ] {
@@ -271,6 +282,11 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
         assert!(error.span().end <= inputs["main"].len(), "{error}");
         if case == "duplicate" {
             assert_eq!(error.span().start, inputs["main"].rfind("entry(").unwrap());
+        } else if matches!(case, "collision" | "ambiguous-import") {
+            assert_eq!(
+                &inputs["main"][error.span().start..error.span().end],
+                "gate"
+            );
         }
     }
 }
@@ -370,14 +386,11 @@ fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
     let inverse = "fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){adjoint(U,q)} pub fn main()->Unit{()}";
     let finite_error = check_project(&SourceRoot::new(inverse).0).unwrap_err();
     assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
-    assert_eq!(
-        finite_error.message,
-        "missing Adjoint access in the generic declaration"
-    );
-    let target = inverse.rfind("adjoint(U,q)").unwrap() + "adjoint(".len();
+    assert_eq!(finite_error.message, "missing Adjoint operation access");
+    let target = inverse.rfind("adjoint(U,q)").unwrap();
     assert_eq!(
         (finite_error.span.start, finite_error.span.end),
-        (target, target + 1)
+        (target, target + "adjoint(U,q)".len())
     );
     for (source, access, use_text) in [
         (inverse, "Adjoint", "adjoint(U,q)"),
@@ -404,18 +417,14 @@ fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
     let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     let error = check_project(&SourceRoot::new(finite_control).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Capability, "{error}");
-    assert_eq!(
-        error.message,
-        "missing Controlled access in the generic declaration"
-    );
+    assert_eq!(error.message, "missing Controlled operation access");
     let start = finite_control.find("1=>U").unwrap() + "1=>".len();
     assert_eq!((error.span.start, error.span.end), (start, start + 1));
 }
 
 #[test]
-fn selected_unused_dead_arms_and_zero_folds_check_both_missing_access_slots() {
-    // These are selected-profile bodies. Finite preflight rejects these forms
-    // earlier; that refusal does not establish a downstream access judgment.
+fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
+    // Complete source checking precedes either consumer's concrete eligibility.
     for (parameters, result, body, access, use_text) in [
         (
             "q:Q<Bit>",
@@ -449,6 +458,17 @@ fn selected_unused_dead_arms_and_zero_folds_check_both_missing_access_slots() {
         let source = format!(
             "fn unused[static U:Op<Bit>]({parameters})->{result} requires Apply(U){{{body}}} pub fn main()->Unit{{()}}"
         );
+        let finite_error = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
+        assert_eq!(
+            finite_error.message,
+            format!("missing {access} operation access")
+        );
+        let start = source.rfind(use_text).unwrap();
+        assert_eq!(
+            (finite_error.span.start, finite_error.span.end),
+            (start, start + use_text.len())
+        );
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
         assert_eq!(error.code(), "access", "{error}");
@@ -466,7 +486,7 @@ fn selected_unused_dead_arms_and_zero_folds_check_both_missing_access_slots() {
 }
 
 #[test]
-fn duplicate_adjoint_and_controlled_slots_keep_each_profile_diagnostic() {
+fn duplicate_adjoint_and_controlled_slots_share_the_requirement_location() {
     for access in ["Adjoint", "Controlled"] {
         let source = format!(
             "fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires {access}(U),{access}(U){{q}} pub fn main()->Unit{{()}}"
@@ -474,11 +494,13 @@ fn duplicate_adjoint_and_controlled_slots_keep_each_profile_diagnostic() {
         let second = source.rfind(&format!("{access}(U)")).unwrap();
         let finite_error = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
-        assert_eq!(finite_error.message, "duplicate access constraint");
-        let target = second + access.len() + 1;
+        assert_eq!(
+            finite_error.message,
+            "duplicate operation access requirement"
+        );
         assert_eq!(
             (finite_error.span.start, finite_error.span.end),
-            (target, target + 1)
+            (second, second + access.len())
         );
         let selected_error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();

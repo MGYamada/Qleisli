@@ -1,0 +1,40 @@
+{
+  "id": "13.coverage",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_production_coverage.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T23:49:22.087259+00:00",
+  "completed_at_utc": "2026-10-05T23:49:22.303163+00:00",
+  "seconds": 0.21592391602462158,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "output_limited": {
+    "stdout": false,
+    "stderr": false
+  },
+  "stream_bytes_seen": {
+    "stdout": 464,
+    "stderr": 0
+  },
+  "cleanup_incomplete": false,
+  "limits": {
+    "command_seconds": 180,
+    "bytes_per_stream": 1048576,
+    "parallel_commands": 2
+  },
+  "stdout": {
+    "path": "13.coverage.stdout.txt",
+    "bytes": 464,
+    "sha256": "dfb4a363a65c68d37807ac5d45c65b4269df1b349c2377cdce209a6128167212",
+    "mode": 420
+  },
+  "stderr": {
+    "path": "13.coverage.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  }
+}

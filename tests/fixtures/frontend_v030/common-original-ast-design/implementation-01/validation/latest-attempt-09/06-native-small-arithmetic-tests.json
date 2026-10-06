@@ -1,0 +1,46 @@
+{
+  "label": "native-small-arithmetic-tests",
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "sized_review_dialects",
+    "rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively",
+    "--",
+    "--ignored",
+    "--nocapture",
+    "--test-threads=2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 1.7712380830198526,
+  "completed_utc": "2026-10-05T23:28:07.129063+00:00",
+  "stdout": {
+    "path": "06-native-small-arithmetic-tests.stdout.txt",
+    "sha256": "7f27eb0c3f5d83fbd83de9e86877491690d381fb03dfdda296d5988324a3b769",
+    "bytes": 200
+  },
+  "stderr": {
+    "path": "06-native-small-arithmetic-tests.stderr.txt",
+    "sha256": "99f4e70f0c6b70e0af2dbf664470ac4ffa70dfde46fae95622b7dbe920cc2eae",
+    "bytes": 204
+  },
+  "actual_test_results": [
+    {
+      "status": "ok",
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 7
+    }
+  ],
+  "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

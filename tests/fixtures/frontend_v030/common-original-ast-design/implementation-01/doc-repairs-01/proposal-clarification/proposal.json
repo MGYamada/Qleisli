@@ -1,0 +1,23 @@
+{
+  "status": "LOCAL CANDIDATE ONLY; additive clarification",
+  "recorded_utc": "2026-10-05T23:14:08.141429+00:00",
+  "original_frozen_map": {
+    "bytes": 1899,
+    "sha256": "55ab8a963b7015499727a875f0802d78a3e802c5bec1bb14a89ef6e3e85cfb8e"
+  },
+  "original_proposed_patch": {
+    "bytes": 41012,
+    "sha256": "53578d2a13da45fd34ba7e85d1026aa025676a8c29c426e27b6e8538bf1996a1"
+  },
+  "change": "Only CHANGELOG wording: runtime bindings that shadow active static names, preserving static-formal shadowing of globals.",
+  "application_order": [
+    "original proposed.patch",
+    "proposal-clarification/clarification.patch"
+  ],
+  "active_changelog_before": {
+    "bytes": 106160,
+    "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615"
+  },
+  "active_docs_changed": false,
+  "checks_builds_tests_native_lean_executed": false
+}

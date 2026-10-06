@@ -1,0 +1,4 @@
+{
+  "sha256": "b0456d02a0f893827d5c94379dab03d2e4c1747e3024f7e04aa0d6097426f4c3",
+  "intent": "Add existing sized_review_dialects target and explicit ignored bounded arithmetic/GHZ native reference test; add actually changed corpus arithmetic/xor/GHZ directories to declared incomplete map; keep one target and both actual toolchains."
+}

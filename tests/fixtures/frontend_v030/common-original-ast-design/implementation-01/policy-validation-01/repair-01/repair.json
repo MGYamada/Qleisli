@@ -1,0 +1,31 @@
+{
+  "status": "authored narrow repair; unexecuted",
+  "recorded_utc": "2026-10-05T23:36:36.083798+00:00",
+  "before": {
+    "driver.py": {
+      "bytes": 26969,
+      "sha256": "3271cb12ce698da1af341704e9980a5f807010c35cfa4fae4dee8453679ab2f9"
+    },
+    "README.md": {
+      "bytes": 4566,
+      "sha256": "35e0c39aec9fcc432ee29c04235081f29476d9ae93825c63ac5e6bed86574f8a"
+    },
+    "reviewed-inputs.json": null
+  },
+  "after": {
+    "driver.py": {
+      "bytes": 27536,
+      "sha256": "afc8c47b730b432fd0672d6e5adc3dcfa51d76b8d72d2953368fde54fe825f9f",
+      "mode": 420
+    },
+    "README.md": {
+      "bytes": 4566,
+      "sha256": "35e0c39aec9fcc432ee29c04235081f29476d9ae93825c63ac5e6bed86574f8a",
+      "mode": 420
+    }
+  },
+  "map_status": "No prospective policy map existed when this repair was authored.",
+  "scope": "Only wrapper-aborted failure reporting. Saved per-command files counted as retained records; actual process launches unknown under concurrent failure. Startup rejection zero and normal pass-path checks/commands/counts unchanged.",
+  "finding_provenance": "Independent read-only reviewer /root/review_isometry_adapter reported parallel pool.map exception can occur before records.extend although jobs launched and saved command records. Root explicitly authorized this narrow repair.",
+  "checks_imports_freeze_builds_tests_cli_native_executed": false
+}

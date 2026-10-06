@@ -1,0 +1,9 @@
+{
+  "status": "independent-review-finding-before-repair",
+  "path": "src/frontend/sized/elaborate.rs",
+  "bytes": 67271,
+  "sha256": "de7425348accbced4f806512d35926a69678aa8e3fc6f81402910738be7104ac",
+  "mode": 420,
+  "finding": "Initial .cells() and owner_shape_size() traversals allocated stacks before first actual budget charge. Scalar precharge was retroactive. Independent reviewer isometry_cli_tests; root authorized only elaborate.rs repair.",
+  "execution": []
+}

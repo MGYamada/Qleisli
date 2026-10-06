@@ -1,0 +1,16 @@
+{
+  "status": "reviewed-metadata-applied",
+  "active_before": {
+    "tests/fixtures/verification_v022/inventory.json": "5e5bc6ae29bcb0a7355a9a247dfba57e824b39aab26a615a2ced8ba6963a19e7",
+    "tests/fixtures/verification_v029/coverage.json": "49e46fd99a3af06d23d115220d2cf7c1ceedc59072fdb77f6c3a0f2438553848"
+  },
+  "active_after": {
+    "tests/fixtures/verification_v022/inventory.json": "e05000a8289bc3a20491558ed2e20d7e07d62f6649acdeedd0de60d9fec398eb",
+    "tests/fixtures/verification_v029/coverage.json": "44b6e5cc493e528f234f1b8a319f6a0e3c84105b677535c8fc7469fd42495f6f"
+  },
+  "reviewed_source_count": 261,
+  "coverage_changed_keys": [
+    "surface_sha256"
+  ],
+  "scope": "Source/surface identity after actual Rust and capture checks; no theorem discharge, native authority change or CI/release claim."
+}

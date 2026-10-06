@@ -1,0 +1,585 @@
+{
+  "rows": [
+    {
+      "case": "mixed-qif-and-generic",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/mixed-qif-and-generic-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "mixed-qif-and-generic",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/mixed-qif-and-generic-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "mixed-qif-and-generic",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/mixed-qif-and-generic-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "mixed-qif-and-generic",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/mixed-qif-and-generic-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "private-zero-fold-owner",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/private-zero-fold-owner-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-zero-fold-owner",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/private-zero-fold-owner-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-zero-fold-owner",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/private-zero-fold-owner-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-zero-fold-owner",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/private-zero-fold-owner-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "dead-arm-missing-adjoint",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/dead-arm-missing-adjoint-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "dead-arm-missing-adjoint",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/dead-arm-missing-adjoint-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "dead-arm-missing-adjoint",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/dead-arm-missing-adjoint-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "dead-arm-missing-adjoint",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/dead-arm-missing-adjoint-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-basis-valid",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/private-basis-valid-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "private-basis-valid",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/private-basis-valid-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "private-basis-valid",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/private-basis-valid-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "private-basis-valid",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/private-basis-valid-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "private-basis-bad-result",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/private-basis-bad-result-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-basis-bad-result",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/private-basis-bad-result-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-basis-bad-result",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/private-basis-bad-result-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "private-basis-bad-result",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/private-basis-bad-result-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-formal-controlled",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/qif-formal-controlled-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "qif-formal-controlled",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/qif-formal-controlled-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "qif-formal-controlled",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/qif-formal-controlled-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "qif-formal-controlled",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/qif-formal-controlled-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "qif-formal-apply-only",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/qif-formal-apply-only-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-formal-apply-only",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/qif-formal-apply-only-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-formal-apply-only",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/qif-formal-apply-only-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-formal-apply-only",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/qif-formal-apply-only-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-effect",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/qif-wrong-effect-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-effect",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/qif-wrong-effect-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-effect",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/qif-wrong-effect-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-effect",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/qif-wrong-effect-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-shape",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/qif-wrong-shape-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-shape",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/qif-wrong-shape-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-shape",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/qif-wrong-shape-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "qif-wrong-shape",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/qif-wrong-shape-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "computed-unary-predicate",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/computed-unary-predicate-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 21
+    },
+    {
+      "case": "computed-unary-predicate",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/computed-unary-predicate-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 21
+    },
+    {
+      "case": "computed-unary-predicate",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/computed-unary-predicate-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "computed-unary-predicate",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/computed-unary-predicate-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "computed-wrong-arity",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/computed-wrong-arity-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "computed-wrong-arity",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/computed-wrong-arity-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "computed-wrong-arity",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/computed-wrong-arity-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "computed-wrong-arity",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/computed-wrong-arity-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "owner-shadow-move-valid",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/owner-shadow-move-valid-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 21
+    },
+    {
+      "case": "owner-shadow-move-valid",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/owner-shadow-move-valid-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 21
+    },
+    {
+      "case": "owner-shadow-move-valid",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/owner-shadow-move-valid-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "owner-shadow-move-valid",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/owner-shadow-move-valid-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "owner-shadow-live-invalid",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/owner-shadow-live-invalid-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "owner-shadow-live-invalid",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/owner-shadow-live-invalid-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "owner-shadow-live-invalid",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/owner-shadow-live-invalid-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "owner-shadow-live-invalid",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/owner-shadow-live-invalid-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "static-shadows-global-valid",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/static-shadows-global-valid-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 21
+    },
+    {
+      "case": "static-shadows-global-valid",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/static-shadows-global-valid-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 21
+    },
+    {
+      "case": "static-shadows-global-valid",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/static-shadows-global-valid-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "static-shadows-global-valid",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/static-shadows-global-valid-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "runtime-shadows-static-policy",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/runtime-shadows-static-policy-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-policy",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/runtime-shadows-static-policy-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-policy",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/runtime-shadows-static-policy-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-policy",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/runtime-shadows-static-policy-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-call-invalid",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/runtime-shadows-static-call-invalid-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-call-invalid",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/runtime-shadows-static-call-invalid-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-call-invalid",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/runtime-shadows-static-call-invalid-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "runtime-shadows-static-call-invalid",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/runtime-shadows-static-call-invalid-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-runtime-shadow-invalid",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/natural-runtime-shadow-invalid-finite-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-runtime-shadow-invalid",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/natural-runtime-shadow-invalid-finite-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-runtime-shadow-invalid",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/natural-runtime-shadow-invalid-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "natural-runtime-shadow-invalid",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/natural-runtime-shadow-invalid-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_forwarded_attempts": 0
+    },
+    {
+      "case": "bundled-import-control",
+      "profile": "finite",
+      "presentation": "text",
+      "observation": "observations/bundled-import-control-finite-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "bundled-import-control",
+      "profile": "finite",
+      "presentation": "json",
+      "observation": "observations/bundled-import-control-finite-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 20
+    },
+    {
+      "case": "bundled-import-control",
+      "profile": "selected-auto",
+      "presentation": "text",
+      "observation": "observations/bundled-import-control-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    },
+    {
+      "case": "bundled-import-control",
+      "profile": "selected-auto",
+      "presentation": "json",
+      "observation": "observations/bundled-import-control-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_forwarded_attempts": 1
+    }
+  ],
+  "actual_observation_count": 72,
+  "actual_successes": 26,
+  "actual_nonzero_exits": 46,
+  "native_forwarded_attempts": 260,
+  "scope": "72 additive check observations only; no forced byte parity, source preservation, guarantee or issue completion."
+}

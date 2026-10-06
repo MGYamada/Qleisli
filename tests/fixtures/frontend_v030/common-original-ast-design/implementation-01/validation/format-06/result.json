@@ -1,0 +1,16 @@
+{
+  "actual_command": [
+    "/opt/homebrew/bin/cargo",
+    "fmt",
+    "--all"
+  ],
+  "exit_code": 0,
+  "changed_declared_files": [
+    "src/frontend/check/body/operations.rs",
+    "src/frontend/check/body.rs",
+    "src/frontend/check.rs",
+    "src/frontend/sized/elaborate.rs",
+    "tests/ordinary_booleans.rs"
+  ],
+  "scope": "Actual formatting only; no build/test/proof claim."
+}

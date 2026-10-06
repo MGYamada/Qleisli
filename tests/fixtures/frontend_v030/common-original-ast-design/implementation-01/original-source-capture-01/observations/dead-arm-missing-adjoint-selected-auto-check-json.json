@@ -1,0 +1,47 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/dead-arm-missing-adjoint/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-05T23:34:42.437976+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.005237750010564923,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "exit_code": 1,
+  "raw": {
+    "stdout": {
+      "path": "dead-arm-missing-adjoint-selected-auto-check-json.stdout.bin",
+      "bytes": 388,
+      "sha256": "4f1d020ff4112804129a51ab56d66646ace3f14decab6f7468a4b85e9b8d2935",
+      "mode": 420
+    },
+    "stderr": {
+      "path": "dead-arm-missing-adjoint-selected-auto-check-json.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    }
+  },
+  "native_journal": {
+    "path": "dead-arm-missing-adjoint-selected-auto-check-json.native.jsonl",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  },
+  "native_forwarded_attempts": 0,
+  "native_journal_parse_error": null,
+  "native_count_scope": "Forwarder rows immediately before execv; not independent native-start/exit attestations."
+}

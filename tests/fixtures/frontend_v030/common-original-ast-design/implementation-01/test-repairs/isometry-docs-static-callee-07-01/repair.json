@@ -1,0 +1,21 @@
+{
+  "status": "authored-not-executed",
+  "recorded_utc": "2026-10-05T23:04:04.311004+00:00",
+  "change": "Only exact static-callee message assertion for unchanged adjoint(g,q).",
+  "original_test": {
+    "sha256": "50cf239f617aada9af6599a8afd92cd7a7b1904bd3851024f2361ad153a485ef",
+    "bytes": 84343
+  },
+  "authored_test": {
+    "sha256": "4a72786c936d31064d7f949beec4c2a1dab2b6dbb6a23892f44590a05c69b8bd",
+    "bytes": 84396
+  },
+  "sources_categories_spans_ownership_controls_changed": false,
+  "runtime_h_message_unchanged": true,
+  "executions": {
+    "format": false,
+    "rust_tests_builds": false,
+    "cli_native": false,
+    "lean": false
+  }
+}

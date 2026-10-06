@@ -1,0 +1,42 @@
+{
+  "status": "proposal-only-not-active-not-validated",
+  "active_inventory_sha256": "5e5bc6ae29bcb0a7355a9a247dfba57e824b39aab26a615a2ced8ba6963a19e7",
+  "surface_review_sha256": "058261b996d88baa1cbb175eb8912f64d514b30d7de793f02505f7940c532adf",
+  "proposed_inventory": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-01/PROPOSED-inventory.json",
+    "bytes": 233116,
+    "sha256": "7afb53db2c8f6908032a8205c5dc0585cc4bf9ede8e71857f1d54fddfdbe1ed5"
+  },
+  "source_rows_before": 254,
+  "source_rows_after": 261,
+  "existing_changed_rows": 20,
+  "existing_surface_changes": 4,
+  "new_source_rows": 7,
+  "unchanged_fields": [
+    "format",
+    "version",
+    "packet",
+    "release",
+    "authority",
+    "enums",
+    "corpus",
+    "native_packaging",
+    "comparison"
+  ],
+  "changed_capacity_ids": [
+    "source-structure",
+    "sized-source-preparation"
+  ],
+  "added_capacity_ids": [
+    "common-original-source-work"
+  ],
+  "changed_boundary_ids": [
+    "source"
+  ],
+  "changed_group_ids": [
+    "source"
+  ],
+  "extraction_scope_correction": "surface-review.json removed_inventory_paths means outside automatic discovery domain, not missing/deleted: all36 retained extra lean/scripts paths still exist; proposal preserves all254 original rows.",
+  "execution": "Only inspected Python metadata extraction/read/hash executed; no validators, tests, builds, CLI/native, recorded argv or active inventory writes.",
+  "adoption": "None. Root review and actual completed validation are still required."
+}

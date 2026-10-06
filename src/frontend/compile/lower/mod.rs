@@ -8,7 +8,6 @@ mod branch;
 mod certified;
 mod function_contract;
 mod operations;
-pub(super) use operations::check_generic;
 mod primitives;
 mod scope;
 mod transforms;
@@ -98,7 +97,6 @@ struct Lowerer<'c, 'p> {
     effect_source: Option<(String, Span)>,
     depth: usize,
     bindings: super::operations::Bindings,
-    abstract_check: bool,
 }
 
 struct PatternBinding<'a, 'c, 'p> {
@@ -421,7 +419,15 @@ impl Lowerer<'_, '_> {
                 crate::frontend::effects::assertion_error(&decl.name.text, decl.kind, inferred),
             ));
         };
-        self.compiler.effects.insert(*key, fact);
+        let source_fact = self.compiler.effects[key];
+        if fact.inferred() > source_fact.inferred() {
+            return Err(self.error(
+                &key_name.0,
+                body.result.span,
+                ErrorCode::Effect,
+                "concrete expansion exceeds the complete checked source effect",
+            ));
+        }
         self.effect = previous_effect;
         self.effect_source = previous_effect_source;
         let (module, span) = site.map_or((key_name.0.as_str(), decl.span), |site| {
@@ -1102,7 +1108,6 @@ impl Lowerer<'_, '_> {
             effect_source: None,
             depth: self.depth,
             bindings: BTreeMap::new(),
-            abstract_check: self.abstract_check,
         };
         let mut quantum_inputs = vec![];
         let mut classical_inputs = vec![];
@@ -1353,23 +1358,14 @@ pub(super) fn lower_function(
     compiler: &mut Compiler<'_>,
     key: &Key,
 ) -> Result<AcceptedProgram, CompileError> {
-    let key_name = compiler.resolution.declaration(*key).name.clone();
-    lower_function_inner(compiler, key, BTreeMap::new(), false)?.ok_or_else(|| {
-        compiler.error(
-            &key_name.0,
-            compiler.declarations[key].span,
-            ErrorCode::InvalidIr,
-            "missing concrete program",
-        )
-    })
+    lower_function_inner(compiler, key, BTreeMap::new())
 }
 
 fn lower_function_inner(
     compiler: &mut Compiler<'_>,
     key: &Key,
     bindings: super::operations::Bindings,
-    abstract_check: bool,
-) -> Result<Option<AcceptedProgram>, CompileError> {
+) -> Result<AcceptedProgram, CompileError> {
     let decl = compiler.declarations[key];
     let key_name = compiler.resolution.declaration(*key).name.clone();
     let (params, _) = compiler.signature(key)?;
@@ -1382,7 +1378,6 @@ fn lower_function_inner(
         effect_source: None,
         depth: 0,
         bindings,
-        abstract_check,
     };
     let mut quantum_inputs = Vec::new();
     let mut classical_inputs = Vec::new();
@@ -1443,14 +1438,10 @@ fn lower_function_inner(
         classical_outputs,
         declared_effect: lower.effect,
     };
-    if abstract_check {
-        return Ok(None);
-    }
     lower
         .compiler
         .kernel
         .accept_raw_with_budget(raw, &mut lower.compiler.exact_work)
-        .map(Some)
         .map_err(|failure| {
             let limit = failure.code == "limit";
             verification_error(

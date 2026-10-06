@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "kind": "pre-migration authored-source snapshot; no execution evidence",
+  "files": {
+    "tests/project.rs": {
+      "sha256": "2e3b8d8687272a17c3881cc417b7544419bb7bc5f1506156441b065b3e99e9e0",
+      "bytes": 9144,
+      "mode": "0o644"
+    },
+    "tests/shared_resolution.rs": {
+      "sha256": "28b55e399155d5bc7464be38839ebbb7f6161629c61c7b5bd935e21f9e47d834",
+      "bytes": 3329,
+      "mode": "0o644"
+    },
+    "tests/source_collection.rs": {
+      "sha256": "4a2f20c471345b0fbe86fdecb4042b8be0e98940aeb8ffa5c7dd42b5becfe765",
+      "bytes": 2090,
+      "mode": "0o644"
+    },
+    "tests/sized_declarations.rs": {
+      "sha256": "ca9bf6d1cbcbd0b7eeab044bfc511026e4f489f09f8957e8c6059d703953f4d8",
+      "bytes": 19084,
+      "mode": "0o644"
+    },
+    "src/frontend/resolve.rs": {
+      "sha256": "0ab24661ceeaceacc925aa1e6ed8247b0773b17a37755b6111c49077e76f0682",
+      "bytes": 20942,
+      "mode": "0o644"
+    }
+  }
+}

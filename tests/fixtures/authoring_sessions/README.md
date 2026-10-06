@@ -206,14 +206,14 @@ a fixed CLI before and after each invocation. Their agreement does not remove
 the first run's provenance limitation. Exact unitor, scalar and reference laws
 were authored before execution and require separate validation.
 
-The [local QFT family study](qft-family-v030/session.json) preserves a licensed
-generic translation before checking and a separate reference-client extension.
-All 31 bounded observations at widths 0–3 pass: twelve checks, fifteen complete
-basis columns and four coherent/reference probes. [Results](qft-family-v030/results.md)
-and the [received independent review](qft-family-v030/independent-review.json)
-retain producer-consistency and numerical scope. No canonical stdlib exposure,
-independent named exact Fourier request or general proof follows; the unit-norm
-probes alone do not establish arbitrary unnormalized-input behavior.
+The historical local QFT family study recorded31 bounded observations at widths
+0–3: twelve checks, fifteen complete basis columns and four coherent/reference
+probes. The maintainer subsequently excluded generic-QFT completion from v0.3.0
+and the current goal, and requested retention only under experimental/.
+[Retained attempts and archives](../../../experimental/qft/README.md) preserve
+the source, first failures, results and review bytes. These archived observations
+are not current authoring-checker sessions, canonical stdlib exposure or a
+general proof; no historical command is replayed by this index.
 
 The [common source-collection study](common-source-collection-v030/session.json)
 freezes eight complete projects and 23 real pre-code observations before the
@@ -249,23 +249,14 @@ matches all forty raw outputs, exits and native argv/counts, while preserving
 the original session. Both actual Rust versions pass the existing bounded
 declaration/type/effect suites; complete common checking remains unfinished.
 
-The [local exact-QFT request study](qft-exact-request-v030/session.json) preserves
-the unchanged licensed family and four independent requests before emission.
-[Actual first results](qft-exact-request-v030/results-first.md) retain four tiny
-emissions, four fresh native inspections and four unchanged-request native
-contract rejections. Full endpoints differ from the frozen canonical owner/axis
-labels; neither output nor request was repaired in that capture. Later explicit
-label routes require separate fresh checks. No source/family theorem, canonical
-stdlib exposure, specialization equivalence or Issue completion follows.
-
-The separate [canonical boundary results](qft-exact-request-v030/results-canonical.md)
-retain eight successful fresh native inspections/request checks at widths0–3.
-The [first negative results](qft-exact-request-v030/results-negatives-01.md) and
-[typed reversal follow-up](qft-exact-request-v030/results-reversal-02.md) retain
-three valid-artifact wrong-target refusals and the original invalid-rewire
-failure with its request skipped. These bounded observations do not establish
-source preservation, a general family or completion of the standard-library
-migration.
+The historical exact-QFT request study and its generation/capture tooling are
+also retained in the [experimental history archives](../../../experimental/qft/history/relocation.json).
+The first capture retained four tiny emissions/inspections and four unchanged-
+request refusals; later canonical-label checks retained eight successes and
+wrong-target refusals. The original invalid-rewire failure kept its request
+skipped. Archive identity preserves those observations without replaying them
+or claiming source preservation, a general family, specialization equivalence
+or completion of the standard-library migration.
 
 The [shared formal-operation study](common-formal-access-v030/session.json)
 preserves ten complete first projects and forty actual pre-code observations.

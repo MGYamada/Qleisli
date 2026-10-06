@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/static-shadows-global-valid",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-05T23:35:11.710607+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 0,
+    "reason": null,
+    "error": null,
+    "seconds": 0.9409512919955887,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "exit_code": 0,
+  "raw": {
+    "stdout": {
+      "path": "static-shadows-global-valid-finite-check-text.stdout.bin",
+      "bytes": 154,
+      "sha256": "0c65764aaef19650bec1f36a6151a297b7071adf068633d7e10f91506326d794",
+      "mode": 420
+    },
+    "stderr": {
+      "path": "static-shadows-global-valid-finite-check-text.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    }
+  },
+  "native_journal": {
+    "path": "static-shadows-global-valid-finite-check-text.native.jsonl",
+    "bytes": 693,
+    "sha256": "14ff53ef8ab9bfc48b8f306f1a980c2966311fcf9366dd7a95082da5b9a3c27d",
+    "mode": 420
+  },
+  "native_forwarded_attempts": 21,
+  "native_journal_parse_error": null,
+  "native_count_scope": "Forwarder rows immediately before execv; not independent native-start/exit attestations."
+}

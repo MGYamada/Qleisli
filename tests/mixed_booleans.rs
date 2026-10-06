@@ -7,6 +7,7 @@ use qleisli::contract::exact::{Budget, Exact};
 use qleisli::contract::meaning::FiniteMeaning;
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, FunctionEvidence, FunctionIdentity};
 use qleisli::frontend::compile::compile_project;
+use qleisli::frontend::parser::parse_module;
 use qleisli::frontend::sized::{ElaboratedProgram, ParsedProgram};
 use qleisli::interchange::native::{AcceptedProgram, Kernel};
 use qleisli::ir::{Effect, RawOp, SingleGate};
@@ -381,10 +382,22 @@ fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_ta
         assert!(error.span().end > error.span().start, "{name}: {error}");
     }
     let text = source("counterexamples", "runtime-if");
-    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text)])).unwrap_err();
+    let program = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
+    assert_eq!(program.source("main"), Some(text.as_str()));
+    assert_eq!(program.syntax("main"), Some(&parse_module(&text).unwrap()));
+    let error = program
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap_err();
     assert_eq!(error.code(), "unsupported");
     assert_eq!(error.module(), Some("main"));
-    assert!(error.span().end > error.span().start);
+    assert_eq!(
+        error.message(),
+        "sized preparation profile: unsupported runtime expression"
+    );
+    assert_eq!(
+        &text[error.span().start..error.span().end],
+        "if b { 0 } else { 1 }"
+    );
 
     // The old finite endpoint already supports providers and runtime branches;
     // their retained controls must not be reclassified as language-wide errors.

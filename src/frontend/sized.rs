@@ -7,18 +7,19 @@
 mod ast;
 mod check;
 mod elaborate;
-mod linear;
+pub(super) mod linear;
 mod lower;
 mod parser;
 mod primitive;
 mod qpe;
 mod raw;
 
-use super::resolve::{DefId, Failure, FailureKind, Resolution};
+use super::resolve::{DefId, Failure, FailureKind};
 use super::source::{self, ParsePolicy, Source, SourceCollection};
 use std::collections::BTreeMap;
 use std::fmt;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 pub use super::ast::Span;
 pub use elaborate::{
@@ -30,11 +31,7 @@ pub use lower::{
 };
 pub use raw::RawSourceProposal;
 
-pub(super) fn primitive_path(path: &str) -> Option<&'static str> {
-    primitive::Primitive::lookup(path).map(|p| p.signature().path)
-}
-
-type Result<T> = std::result::Result<T, Error>;
+pub(in crate::frontend) type Result<T> = std::result::Result<T, Error>;
 pub use qpe::QpeBindingProposal;
 const MAX_MODULES: usize = 64;
 const MAX_SOURCE_BYTES: usize = 65_536;
@@ -49,7 +46,11 @@ pub struct Error {
     message: String,
 }
 impl Error {
-    fn new(code: &'static str, span: Span, message: impl Into<String>) -> Self {
+    pub(in crate::frontend) fn new(
+        code: &'static str,
+        span: Span,
+        message: impl Into<String>,
+    ) -> Self {
         Self {
             code,
             module: None,
@@ -91,14 +92,31 @@ impl fmt::Display for Error {
 }
 impl std::error::Error for Error {}
 
+impl From<super::check::SourceError> for Error {
+    fn from(error: super::check::SourceError) -> Self {
+        Self {
+            code: match error.code {
+                "binding" | "shadow" => "name",
+                "static-arity" => "static",
+                code => code,
+            },
+            module: error.module,
+            span: error.span,
+            message: error.message,
+        }
+    }
+}
+
 /// An opaque source collection with privately represented syntax and generic
 /// preparation checks. Cloning this value does not create checked IR evidence.
 #[derive(Clone, Debug)]
 pub struct ParsedProgram {
-    sources: SourceCollection,
-    modules: BTreeMap<String, ast::Module>,
-    resolution: Resolution,
-    effects: BTreeMap<DefId, super::effects::FunctionEffect>,
+    sources: Arc<SourceCollection>,
+    checked: Arc<super::check::CheckedProgram>,
+    // A concrete eligibility result for every original definition. Unsupported
+    // siblings retain their identity and checked facts; selecting one reports
+    // its actual located lowering restriction.
+    projections: Arc<BTreeMap<DefId, Result<Arc<ast::Function>>>>,
 }
 impl ParsedProgram {
     /// Render only this preparation's immutable retained bytes and body facts.
@@ -125,13 +143,7 @@ impl ParsedProgram {
     pub fn parse(sources: BTreeMap<String, String>) -> Result<Self> {
         // Reject before constructing the path-bearing adapter map. The caller
         // may supply an oversized map; its count must not trigger another one.
-        if sources.is_empty() || sources.len() > MAX_MODULES {
-            return Err(Error::new(
-                "limit",
-                Span::default(),
-                "provide 1 through 64 modules",
-            ));
-        }
+        Self::supplied_module_count(sources.len())?;
         Self::parse_inputs(
             sources
                 .into_iter()
@@ -140,16 +152,42 @@ impl ParsedProgram {
         )
     }
 
-    fn parse_inputs(sources: BTreeMap<String, (Option<PathBuf>, String)>) -> Result<Self> {
-        if sources.is_empty() || sources.len() > MAX_MODULES {
+    fn supplied_module_count(count: usize) -> Result<()> {
+        let bundled = source::BundledRegistry::sources().len();
+        if count == 0 || count > MAX_MODULES.saturating_sub(bundled) {
             return Err(Error::new(
                 "limit",
                 Span::default(),
-                "provide 1 through 64 modules",
+                "provide 1 through 60 local modules; four bundled modules count toward 64",
             ));
         }
+        Ok(())
+    }
+
+    fn bundled_bytes() -> Result<usize> {
+        source::BundledRegistry::sources()
+            .iter()
+            .try_fold(0usize, |used, bundled| {
+                used.checked_add(bundled.text().len()).ok_or_else(|| {
+                    Error::new(
+                        "limit",
+                        Span::default(),
+                        "bundled source byte count overflow",
+                    )
+                })
+            })
+    }
+
+    fn parse_inputs(sources: BTreeMap<String, (Option<PathBuf>, String)>) -> Result<Self> {
+        Self::supplied_module_count(sources.len())?;
+        super::project::check_bundled_manifest().map_err(|e| {
+            Error::new(
+                e.code,
+                e.primary.map_or(Span::default(), |p| p.span),
+                e.message,
+            )
+        })?;
         let mut total = 0usize;
-        let mut modules = BTreeMap::new();
         let mut collection = source::Builder::default();
         for (name, (path, source)) in sources {
             if !valid_module_name(&name) {
@@ -170,9 +208,6 @@ impl ParsedProgram {
             }
             let module = Source::local(name.clone(), path, source, ParsePolicy::ExplicitModules)
                 .map_err(Self::collection_error)?;
-            // Keep this complete projection before parsing the next module:
-            // an earlier profile failure still wins over a later parse failure.
-            let projected = parser::project(module.syntax()).map_err(|e| e.in_module(&name))?;
             collection.insert(module).map_err(|duplicate| {
                 Error::new(
                     "module",
@@ -181,54 +216,84 @@ impl ParsedProgram {
                 )
                 .in_module(&name)
             })?;
-            modules.insert(name.clone(), projected);
+        }
+        for bundled in source::BundledRegistry::sources() {
+            // Charge bytes and the already-reserved module slot before copying
+            // and parsing the registry's actual ordinary source.
+            total = total.checked_add(bundled.text().len()).ok_or_else(|| {
+                Error::new("limit", Span::default(), "source byte count overflow")
+            })?;
+            if bundled.text().len() > MAX_SOURCE_BYTES || total > MAX_TOTAL_BYTES {
+                return Err(Error::new(
+                    "limit",
+                    Span::default(),
+                    "source exceeds 64 KiB per module or 1 MiB aggregate including std",
+                ));
+            }
+            let module = Source::bundled(bundled, ParsePolicy::ExplicitModules)
+                .map_err(Self::collection_error)?;
+            collection.insert(module).map_err(|duplicate| {
+                Error::new(
+                    "module",
+                    Span::default(),
+                    format!("duplicate module {duplicate}"),
+                )
+            })?;
         }
         let sources = collection.finish();
-        let resolution =
-            Resolution::new(sources.iter().map(|(name, source)| (name, source.syntax())))
-                .map_err(Self::resolution_error)?;
-        // Preserve the per-module profile diagnostic boundary above. Reuse the
-        // same projection after real declaration IDs exist; no source reparse
-        // or competing preflight rules are involved.
-        for (id, declaration) in resolution.declarations() {
-            let module = sources
-                .get(&declaration.name.0)
-                .expect("retained source")
-                .syntax();
-            let index = super::resolve::locals::Index::new(
-                id,
-                &module.decls[declaration.ast_index],
-                |_| None,
-            );
-            modules
-                .get_mut(&declaration.name.0)
-                .expect("projected module")
-                .functions[declaration.ast_index] =
-                parser::project_declaration(&module.decls[declaration.ast_index], Some(&index))
-                    .map_err(|error| error.in_module(&declaration.name.0))?;
+        let originals = sources
+            .iter()
+            .map(|(name, source)| (name, source.syntax()))
+            .collect();
+        let (checked, mut projections) = super::check::program_with(
+            originals,
+            super::check::SourceLimits::selected(),
+            |resolution, _, effects, indices, budget| {
+                let mut projections = BTreeMap::new();
+                for (id, declaration) in resolution.declarations() {
+                    let original = &sources
+                        .get(&declaration.name.0)
+                        .expect("retained original")
+                        .syntax()
+                        .decls[declaration.ast_index];
+                    budget.charge(original.span, 1)?;
+                    let result = parser::project_declaration(original, &indices[&id], budget)
+                        .map(|mut function| {
+                            function.effect = effects[&id].inferred();
+                            Arc::new(function)
+                        })
+                        .map_err(|e| e.in_module(&declaration.name.0));
+                    if let Err(error) = &result {
+                        if error.code == "limit" {
+                            return Err(super::check::SourceError::from(error.clone()));
+                        }
+                    }
+                    projections.insert(id, result);
+                }
+                Ok(projections)
+            },
+        )
+        .map_err(Error::from)?;
+        for (id, projected) in &mut projections {
+            if let Ok(function) = projected {
+                Arc::get_mut(function)
+                    .expect("one new concrete projection owner")
+                    .lexical = Some(Arc::clone(&checked.lexical[id]));
+            }
         }
-        let mut program = Self {
-            sources,
-            modules,
-            resolution,
-            effects: BTreeMap::new(),
-        };
-        check::program(&mut program)?;
-        Ok(program)
+        Ok(Self {
+            sources: Arc::new(sources),
+            checked: Arc::new(checked),
+            projections: Arc::new(projections),
+        })
     }
 
     /// Load explicitly mapped module files with the same limits as `parse`.
     /// No directory search or ambient module path influences import resolution.
     pub fn load(files: BTreeMap<String, PathBuf>) -> Result<Self> {
-        if files.is_empty() || files.len() > MAX_MODULES {
-            return Err(Error::new(
-                "limit",
-                Span::default(),
-                "provide 1 through 64 modules",
-            ));
-        }
+        Self::supplied_module_count(files.len())?;
         let mut sources = BTreeMap::new();
-        let mut total = 0usize;
+        let mut total = Self::bundled_bytes()?;
         for (name, path) in files {
             let remaining = MAX_TOTAL_BYTES.checked_sub(total).ok_or_else(|| {
                 Error::new("limit", Span::default(), "source byte count overflow")
@@ -280,15 +345,12 @@ impl ParsedProgram {
         Error::new(code, span, message).in_module(&failure.name)
     }
 
-    fn definition(&self, id: DefId) -> (&str, &ast::Function) {
-        let declaration = self.resolution.declaration(id);
-        let (module, parsed) = self
-            .modules
-            .get_key_value(&declaration.name.0)
-            .expect("resolved module");
-        let function = &parsed.functions[declaration.ast_index];
-        debug_assert_eq!(function.name, declaration.name.1);
-        (module, function)
+    fn definition(&self, id: DefId) -> Result<(&str, &Arc<ast::Function>)> {
+        let declaration = self.checked.resolution.declaration(id);
+        match &self.projections[&id] {
+            Ok(function) => Ok((&declaration.name.0, function)),
+            Err(error) => Err(error.clone()),
+        }
     }
 
     fn resolution_error(failure: Failure) -> Error {
@@ -320,8 +382,8 @@ impl ParsedProgram {
     /// Private definitions are inspectable metadata, not selectable entries.
     /// This does not supply native acceptance or mathematical Meaning evidence.
     pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect> {
-        let id = self.resolution.qualified(path).ok()?;
-        self.effects.get(&id).copied()
+        let id = self.checked.resolution.qualified(path).ok()?;
+        self.checked.effects.get(&id).copied()
     }
     pub fn module_names(&self) -> impl Iterator<Item = &str> {
         self.sources.iter().map(|(name, _)| name)

@@ -1,0 +1,11 @@
+--- a/stdlib/docs/README.md
++++ b/stdlib/docs/README.md
+@@ -1,7 +1,7 @@
+ # The standard-library qrate
+ 
+ `stdlib` is a qrate now. Its [Qargo.toml](../Qargo.toml) follows qargo manifest
+-schema 2: name `std`, product version `0.2.3`, Qleisli edition `"2026"`,
++schema 2: name `std`, product version `0.3.0-alpha`, Qleisli edition `"2026"`,
+ and separate `src`, `tests` and `docs` roots. All three directories are included
+ in the qrate. The language import namespace remains `std::`.
+ 

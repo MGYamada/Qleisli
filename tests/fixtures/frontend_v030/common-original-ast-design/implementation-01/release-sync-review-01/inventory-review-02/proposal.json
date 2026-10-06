@@ -1,0 +1,98 @@
+{
+  "status": "proposal-only-not-active-not-validated",
+  "previous_frozen_candidate": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-01/PROPOSED-inventory.json",
+    "bytes": 233116,
+    "sha256": "7afb53db2c8f6908032a8205c5dc0585cc4bf9ede8e71857f1d54fddfdbe1ed5",
+    "mode": 420
+  },
+  "active_inventory": {
+    "path": "tests/fixtures/verification_v022/inventory.json",
+    "bytes": 226402,
+    "sha256": "5e5bc6ae29bcb0a7355a9a247dfba57e824b39aab26a615a2ced8ba6963a19e7",
+    "mode": 420
+  },
+  "active_coverage": {
+    "path": "tests/fixtures/verification_v029/coverage.json",
+    "bytes": 89343,
+    "sha256": "49e46fd99a3af06d23d115220d2cf7c1ceedc59072fdb77f6c3a0f2438553848",
+    "mode": 420
+  },
+  "refreshed_rows_since_candidate01": [
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "before_sha256": "61984f84a16d270df728157e41452516a9faedba1564dcb5254db4eef534172a",
+      "after_sha256": "29c384ff3eebbf724c8c5d922d74780bb118b144e4b8fe901a34dcfbfa21d77b",
+      "bytes": 38093,
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before_sha256": "1d70cefd37b45c64dc32ef7227e639d7f2b23232c6b72db84a96b2e180d7345e",
+      "after_sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000",
+      "bytes": 13902,
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "before_sha256": "9ba102a8a8e4b70126c0808b8c56dac09ece1a19f8034946284ccedfc19733c0",
+      "after_sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+      "bytes": 68287,
+      "mode": 420
+    }
+  ],
+  "surface_multiplicity_corrections": [
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "additional_occurrences": {
+        "pub fn binder(&self, name: &Ident) -> BinderId": 1,
+        "pub fn key(&self, id: BinderId) -> &BinderKey": 1
+      }
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "additional_occurrences": {
+        "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>": 1
+      }
+    }
+  ],
+  "existing_changed_rows_against_active": 20,
+  "source_rows_before": 254,
+  "source_rows_after": 261,
+  "new_source_rows": [
+    "src/frontend/check.rs",
+    "src/frontend/check/body.rs",
+    "src/frontend/check/body/operations.rs",
+    "src/frontend/check/body/special.rs",
+    "src/frontend/check/declarations.rs",
+    "src/frontend/check/normalize.rs",
+    "src/frontend/check/primitive.rs"
+  ],
+  "existing_surface_changes_against_active": [
+    "src/frontend/effects.rs",
+    "src/frontend/resolve.rs",
+    "src/frontend/resolve/locals.rs",
+    "src/frontend/sized/linear.rs"
+  ],
+  "other_candidate01_fields": "Identical; only3 reviewed source hashes and exact2 internal signature multiplicities corrected.",
+  "coverage_delta": {
+    "only_changed_key": "surface_sha256",
+    "before": "d5548bda05b7688b94542cd11624ae5c53b11694aef0e4b54d1189e27665cd5a",
+    "after": "5990905d4ee4c1ccfaad9d894871c19956acd188f31d0a4ef2163e3e857db536",
+    "preserved": "All groups, boundary routes, authority, statuses, proof gates, gaps, validation and publication facts."
+  },
+  "proposed_inventory": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-02/PROPOSED-inventory.json",
+    "bytes": 233359,
+    "sha256": "e05000a8289bc3a20491558ed2e20d7e07d62f6649acdeedd0de60d9fec398eb",
+    "mode": 420
+  },
+  "proposed_coverage": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-02/PROPOSED-coverage.json",
+    "bytes": 89343,
+    "sha256": "44b6e5cc493e528f234f1b8a319f6a0e3c84105b677535c8fc7469fd42495f6f",
+    "mode": 420
+  },
+  "execution": "Read/hash/JSON and inspected pure metadata functions only; no validator/main/build/test/CLI/native/stored argv or active inventory/coverage writes.",
+  "current_validation": "Root latest-attempt09 was live at preparation; no final result inferred."
+}

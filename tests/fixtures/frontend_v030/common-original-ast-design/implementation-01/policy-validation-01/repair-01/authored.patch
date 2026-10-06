@@ -1,0 +1,19 @@
+--- a/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/policy-validation-01/driver.py
++++ b/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/policy-validation-01/driver.py
+@@ -457,8 +457,15 @@
+                          'full common-frontend/emitter completion', 'generic-family proof',
+                          'canonical generic std/QFT exposure', 'Issue closure', 'release approval']})
+     except Exception as error:
++        retained = sorted(p.name for p in out.glob('*.json')
++                          if re.fullmatch(r'[0-9]{2}[.].+[.]json', p.name))
+         return finish(out, {'status': 'wrapper-aborted', 'error': repr(error),
+-                            'actual_command_count': len(records), 'raw_failures_preserved': True,
++                            'retained_record_count': len(retained),
++                            'retained_command_record_files': retained,
++                            'actual_launched_command_count': None,
++                            'actual_launched_command_count_status': 'unknown',
++                            'count_scope': 'Parallel workers may have launched commands before pool.map raised; retained record files do not establish total launches or completion.',
++                            'raw_failures_preserved': True,
+                             'scope': 'Unexpected wrapper failure; retained records do not assert a complete run.'})
+ 
+ 

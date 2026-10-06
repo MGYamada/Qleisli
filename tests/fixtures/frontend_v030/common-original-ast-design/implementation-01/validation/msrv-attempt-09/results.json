@@ -1,0 +1,628 @@
+{
+  "format": "qleisli.common-pattern-bounded-validation",
+  "version": 1,
+  "mode": "msrv",
+  "attempt": "attempt-09",
+  "status": "passed",
+  "records": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.8095447500236332,
+      "completed_utc": "2026-10-05T23:28:34.043163+00:00",
+      "stdout": {
+        "path": "00-cargo-version.stdout.txt",
+        "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf",
+        "bytes": 36
+      },
+      "stderr": {
+        "path": "00-cargo-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "rustc",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.8563895410043187,
+      "completed_utc": "2026-10-05T23:28:34.900391+00:00",
+      "stdout": {
+        "path": "01-rustc-version.stdout.txt",
+        "sha256": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f",
+        "bytes": 36
+      },
+      "stderr": {
+        "path": "01-rustc-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "format",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.6328838749905117,
+      "completed_utc": "2026-10-05T23:28:35.534022+00:00",
+      "stdout": {
+        "path": "02-format.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "02-format.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "check-all-targets",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "check",
+        "--locked",
+        "--all-targets",
+        "--jobs=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 7.794695916003548,
+      "completed_utc": "2026-10-05T23:28:43.329504+00:00",
+      "stdout": {
+        "path": "03-check-all-targets.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "03-check-all-targets.stderr.txt",
+        "sha256": "eb8f316145e7e1acde98b8d90fed84947eb72768d1f93d4a51df9f24acb51b5b",
+        "bytes": 539
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "shared-type-tests",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--locked",
+        "--lib",
+        "--jobs=2",
+        "frontend::types::tests",
+        "--",
+        "--nocapture",
+        "--test-threads=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 7.996141665964387,
+      "completed_utc": "2026-10-05T23:28:51.327421+00:00",
+      "stdout": {
+        "path": "04-shared-type-tests.stdout.txt",
+        "sha256": "b397f96669378d5fbb49ca80e66fed405d7456a574b6869d9c22f985f6c738c4",
+        "bytes": 491
+      },
+      "stderr": {
+        "path": "04-shared-type-tests.stderr.txt",
+        "sha256": "8294584de917835dc3f2f2ea2760e1343532309a4abc7723667e92e241857f62",
+        "bytes": 659
+      },
+      "actual_test_results": [
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 112
+        }
+      ],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "focused-integration-tests",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--locked",
+        "--jobs=2",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "runtime_parameter_patterns",
+        "--test",
+        "frontend_types",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "body_effects",
+        "--test",
+        "source_collection",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "sized_declarations",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "sized_source",
+        "--test",
+        "project",
+        "--test",
+        "source_judgments",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "static_operations",
+        "--test",
+        "static_semantics",
+        "--test",
+        "certified_source",
+        "--test",
+        "compile",
+        "--test",
+        "tuple_shapes",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "predicate_domain",
+        "--test",
+        "mixed_booleans",
+        "--test",
+        "ordinary_booleans",
+        "--test",
+        "isometry_source",
+        "--test",
+        "source_scope",
+        "--test",
+        "common_source_provider_access",
+        "--test",
+        "sized_review_dialects",
+        "--no-fail-fast",
+        "--",
+        "--nocapture",
+        "--test-threads=2",
+        "--skip",
+        "long_acyclic_import_chain_loads_on_a_small_stack",
+        "--skip",
+        "deep_import_cycle_reports_the_back_edge_and_cycle_path"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 127.29882370796986,
+      "completed_utc": "2026-10-05T23:30:58.628561+00:00",
+      "stdout": {
+        "path": "05-focused-integration-tests.stdout.txt",
+        "sha256": "b32ee3cfbdb402cc32d8c4bd683da941dd3dbd8aab80c179d85b82bb5713874e",
+        "bytes": 25400
+      },
+      "stderr": {
+        "path": "05-focused-integration-tests.stderr.txt",
+        "sha256": "ea1757d6476dccc0a66c3cd1af63e1d09772e5d1d753a444429cf5f5f77491d9",
+        "bytes": 3717
+      },
+      "actual_test_results": [
+        {
+          "status": "ok",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 30,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2
+        },
+        {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 5,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 38,
+          "failed": 0,
+          "ignored": 3,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "native-small-arithmetic-tests",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--locked",
+        "--jobs=2",
+        "--test",
+        "sized_review_dialects",
+        "rust_arithmetic_and_ghz_proposals_preserve_small_reference_columns_natively",
+        "--",
+        "--ignored",
+        "--nocapture",
+        "--test-threads=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 1.7057648330228403,
+      "completed_utc": "2026-10-05T23:31:00.336824+00:00",
+      "stdout": {
+        "path": "06-native-small-arithmetic-tests.stdout.txt",
+        "sha256": "075fa02ea976b74cefd2c4365423aa5cb63e0acf967623731b56b2481dca0176",
+        "bytes": 200
+      },
+      "stderr": {
+        "path": "06-native-small-arithmetic-tests.stderr.txt",
+        "sha256": "72c006c21d1a06d1dc4f3297c0911af0e9c74c79c981b2b76b7c222c05b8ca8f",
+        "bytes": 204
+      },
+      "actual_test_results": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 7
+        }
+      ],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "clippy-all-targets",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "clippy",
+        "--locked",
+        "--all-targets",
+        "--jobs=2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 6.0632474580197595,
+      "completed_utc": "2026-10-05T23:31:06.402180+00:00",
+      "stdout": {
+        "path": "07-clippy-all-targets.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "07-clippy-all-targets.stderr.txt",
+        "sha256": "2c1fac8952e902d511abf229037d9f5983d83afad97f84eda07166fec609a655",
+        "bytes": 120
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "rebuilt-cli",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "build",
+        "--locked",
+        "--bin",
+        "qleisli",
+        "--jobs=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.6331168749602512,
+      "completed_utc": "2026-10-05T23:31:07.036582+00:00",
+      "stdout": {
+        "path": "08-rebuilt-cli.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "08-rebuilt-cli.stderr.txt",
+        "sha256": "f3ae43afd1b14c6b0200b6e1735ddc2e98f4e25c4f847bf296f9a28d722209b6",
+        "bytes": 60
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    }
+  ],
+  "remaining_stages_not_run": 0,
+  "source_files_before": 760,
+  "source_inputs_unchanged": true,
+  "native_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cli_path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+  "cli_sha256_after": "5f9512a1a14febbc5d88802287b61850682aa8088653631a68bc444704846abf",
+  "cli_rebuild_completed": true,
+  "scope": "Actual bounded Rust checks with a declared incomplete input map. No Lean build/replay, complete fixture closure, source preservation, new native authority, guarantee discharge, full CI or release approval."
+}

@@ -1,0 +1,31 @@
+{
+  "label": "check-all-targets",
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "check",
+    "--locked",
+    "--all-targets",
+    "--jobs=2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 5.347562666982412,
+  "completed_utc": "2026-10-05T23:17:16.215174+00:00",
+  "stdout": {
+    "path": "03-check-all-targets.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "03-check-all-targets.stderr.txt",
+    "sha256": "0e413975d273e422e03a3a28fcf8c59ff0e4a4510ac67e20054d9397759671c7",
+    "bytes": 120
+  },
+  "actual_test_results": [],
+  "source_input_digest_after": "68b34387e98c35c1323310121e46f0775b6d5a134ba89abc50203b2c78c924ec",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

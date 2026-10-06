@@ -1,0 +1,82 @@
+{
+  "status": "four-reviewed-patches-applied",
+  "records": [
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "53578d2a13da45fd34ba7e85d1026aa025676a8c29c426e27b6e8538bf1996a1"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "53578d2a13da45fd34ba7e85d1026aa025676a8c29c426e27b6e8538bf1996a1"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/clarification.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "bfc908ca3b1d4818126955fafc9e9a4d8c99e7f661177a6686f50479b6159a0f"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/clarification.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "bfc908ca3b1d4818126955fafc9e9a4d8c99e7f661177a6686f50479b6159a0f"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/clarification-02/clarification.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "9826acb85b8ee24c94c5f5d60c49788b02c370f40432e4c6df22ddf11cbb9984"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/clarification-02/clarification.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "9826acb85b8ee24c94c5f5d60c49788b02c370f40432e4c6df22ddf11cbb9984"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "--check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/clarification-03/clarification.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "3162305554b51f78a99b1b4bec4b6e4a823aa63f1dace9cfda95f2eafa0ce9db"
+    },
+    {
+      "argv": [
+        "git",
+        "apply",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/clarification-03/clarification.patch"
+      ],
+      "exit_code": 0,
+      "patch_sha256": "3162305554b51f78a99b1b4bec4b6e4a823aa63f1dace9cfda95f2eafa0ce9db"
+    }
+  ],
+  "scope": "Documentation only; no validation or mathematical adoption inferred."
+}

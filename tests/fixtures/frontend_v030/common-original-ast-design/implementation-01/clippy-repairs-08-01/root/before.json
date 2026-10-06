@@ -1,0 +1,19 @@
+{
+  "observed_utc": "2026-10-05T23:23:32.537581+00:00",
+  "files": {
+    "src/frontend/sized/check.rs": {
+      "sha256": "1d70cefd37b45c64dc32ef7227e639d7f2b23232c6b72db84a96b2e180d7345e",
+      "bytes": 13964
+    },
+    "src/frontend/sized/elaborate.rs": {
+      "sha256": "9ba102a8a8e4b70126c0808b8c56dac09ece1a19f8034946284ccedfc19733c0",
+      "bytes": 68290
+    }
+  },
+  "warnings": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-08/07-clippy-all-targets.stderr.txt",
+    "sha256": "252218aa20fc399f85733785935b8f39ff847fa680f00d4d434e5fba906bdd86",
+    "bytes": 5294
+  },
+  "scope": "Root-owned equivalent lazy filter/map transformations only; no tests or active metadata rewritten."
+}

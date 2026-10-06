@@ -1,0 +1,35 @@
+{
+  "files": {
+    "README.before.md.txt": {
+      "bytes": 4566,
+      "sha256": "35e0c39aec9fcc432ee29c04235081f29476d9ae93825c63ac5e6bed86574f8a",
+      "mode": 420
+    },
+    "README.md": {
+      "bytes": 1260,
+      "sha256": "0aee0e260545cd163a1bbcbbaaa6adfc0af6192d41eef5be641c216f76f8713f",
+      "mode": 420
+    },
+    "authored.patch": {
+      "bytes": 1444,
+      "sha256": "46a940c1098a2d6f19d572accb4baa20b9ee2ba367cee5cd2329c2975829b67d",
+      "mode": 420
+    },
+    "driver.authored-after.py.txt": {
+      "bytes": 27536,
+      "sha256": "afc8c47b730b432fd0672d6e5adc3dcfa51d76b8d72d2953368fde54fe825f9f",
+      "mode": 420
+    },
+    "driver.before.py.txt": {
+      "bytes": 26969,
+      "sha256": "3271cb12ce698da1af341704e9980a5f807010c35cfa4fae4dee8453679ab2f9",
+      "mode": 420
+    },
+    "repair.json": {
+      "bytes": 1384,
+      "sha256": "aae99f2b7081cf7685b1825af6c9e67fea54d1b6607d628b84c7a772d35efce5",
+      "mode": 420
+    }
+  },
+  "self_excluded": "files.json"
+}

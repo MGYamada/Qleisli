@@ -1,0 +1,40 @@
+{
+  "id": "14.coverage-regression",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_production_coverage.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T23:49:22.304544+00:00",
+  "completed_at_utc": "2026-10-05T23:49:23.462450+00:00",
+  "seconds": 1.157917416014243,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "output_limited": {
+    "stdout": false,
+    "stderr": false
+  },
+  "stream_bytes_seen": {
+    "stdout": 0,
+    "stderr": 113
+  },
+  "cleanup_incomplete": false,
+  "limits": {
+    "command_seconds": 180,
+    "bytes_per_stream": 1048576,
+    "parallel_commands": 2
+  },
+  "stdout": {
+    "path": "14.coverage-regression.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  },
+  "stderr": {
+    "path": "14.coverage-regression.stderr.txt",
+    "bytes": 113,
+    "sha256": "2c249287c879143aef65df8b189ec38f6c1db4474880c51016829c762c4f6c78",
+    "mode": 420
+  }
+}

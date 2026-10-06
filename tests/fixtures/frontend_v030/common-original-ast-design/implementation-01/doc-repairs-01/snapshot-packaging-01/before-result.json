@@ -1,0 +1,9 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_docs.py"
+  ],
+  "exit_code": 1,
+  "observed_utc": "2026-10-05T23:30:32.911102+00:00",
+  "scope": "Actual repeat of the first observed link failure before any packaging repair; stderr retained complete. No source/test changes."
+}

@@ -1,0 +1,40 @@
+{
+  "id": "11.inventory",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_verification_inventory.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T23:49:21.658930+00:00",
+  "completed_at_utc": "2026-10-05T23:49:22.085731+00:00",
+  "seconds": 0.42681279097450897,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "output_limited": {
+    "stdout": false,
+    "stderr": false
+  },
+  "stream_bytes_seen": {
+    "stdout": 126,
+    "stderr": 0
+  },
+  "cleanup_incomplete": false,
+  "limits": {
+    "command_seconds": 180,
+    "bytes_per_stream": 1048576,
+    "parallel_commands": 2
+  },
+  "stdout": {
+    "path": "11.inventory.stdout.txt",
+    "bytes": 126,
+    "sha256": "282d5b0bc8583fc4de143d017f77aadb9bd6418d8a96e7164be0e50ff2eb0d75",
+    "mode": 420
+  },
+  "stderr": {
+    "path": "11.inventory.stderr.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  }
+}

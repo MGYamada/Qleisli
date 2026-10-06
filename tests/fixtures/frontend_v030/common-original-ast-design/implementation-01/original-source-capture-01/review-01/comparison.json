@@ -1,0 +1,2172 @@
+{
+  "format": "qleisli.original-source-capture-comparison",
+  "version": 1,
+  "scope": "Read-only derived comparison of fixed 18x4 captures; no replay, parity demand, independent functional oracle or native-start attestation. Core author interprets ordinary migrations; evidence-byte/status checks are separate.",
+  "totals": {
+    "old": {
+      "success": 18,
+      "nonzero": 54,
+      "forwarded_rows": 304
+    },
+    "new": {
+      "success": 26,
+      "nonzero": 46,
+      "forwarded_rows": 260
+    }
+  },
+  "transitions": {
+    "1->1": 44,
+    "1->0": 10,
+    "0->0": 16,
+    "0->1": 2
+  },
+  "raw_equality": {
+    "stdout_same": 41,
+    "stderr_same": 47,
+    "native_journal_same": 54,
+    "all_three_same": 22,
+    "stdout_changed": 31,
+    "stderr_changed": 25,
+    "native_journal_changed": 18
+  },
+  "native_argv_histograms": {
+    "old": [
+      {
+        "argv": [
+          "--hierarchy-request-pending",
+          "0.3.0-alpha"
+        ],
+        "rows": 4
+      },
+      {
+        "argv": [
+          "--qirf-native",
+          "0.3.0-alpha"
+        ],
+        "rows": 300
+      }
+    ],
+    "new": [
+      {
+        "argv": [
+          "--hierarchy-request-pending",
+          "0.3.0-alpha"
+        ],
+        "rows": 14
+      },
+      {
+        "argv": [
+          "--qirf-native",
+          "0.3.0-alpha"
+        ],
+        "rows": 246
+      }
+    ]
+  },
+  "rows": [
+    {
+      "label": "mixed-qif-and-generic-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "40247178695a7daf83ba5fee158558ea8a3e84232aee7b54bcc3302a2b1870fc",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "d1a122ae385dba60b126aa45a34325b81d71897c0521275392129df09ade9029",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "mixed-qif-and-generic-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "07300bf7e24715f0e5796e7cd2e227ed0a1bfcb57c068797a4836bf7027fef00",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "finite profile does not support static Nat parameters",
+          "primary": {
+            "path": "main.qli",
+            "start": 326,
+            "end": 327,
+            "line": 11,
+            "column": 26
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "new": {
+        "record_sha256": "e7e758aef7c8920efb25ce8a170114155c74ea8a618d58252b201838f0d7e376",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "finite profile does not support static Nat parameters",
+          "primary": {
+            "path": "main.qli",
+            "start": 326,
+            "end": 327,
+            "line": 11,
+            "column": 26
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": true,
+        "same_span": true
+      }
+    },
+    {
+      "label": "mixed-qif-and-generic-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "1399cdd9cf5cb5cfdb670deb417673d3671ddd53e6be2394a4daf9c59c66572d",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "3de3ce4336b53e5e042e78d2ba0995c84a721055f1b12484ff69c3e1f7db1dc4",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "mixed-qif-and-generic-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "cd595e7a8906de1c07b56efe48619bc03ae552bb098018be65554692b500b8fb",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/mixed-qif-and-generic/main.qli",
+            "start": 255,
+            "end": 283
+          },
+          "original_source_slice": "qif(c,q) { 0 => id, 1 => s }"
+        }
+      },
+      "new": {
+        "record_sha256": "b5d4721231237272ae04bf4ec6bdc818c924ad1dcda9dcd6b248786670f77ce2",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "private-zero-fold-owner-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "42615b726efbb58ac313269e84b4d21682a943096718d90b01d2e96fbf7b8e48",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "3693061618876c4836d0d669063f1ab2e4929fbd1cd95fdaf8d9d67717a36544",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "private-zero-fold-owner-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "eb898fc8ab29babf793f300f8ede6ca248fb306d4fa0a4f30bfbd65600e21173",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "expression is outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 114,
+            "end": 160,
+            "line": 3,
+            "column": 5
+          },
+          "original_source_slice": "for static i in 0..0 carry a=q { yield (a,a) }"
+        }
+      },
+      "new": {
+        "record_sha256": "3d87fb6c408cdb4023444837eb564552d20be1ec602689bbb4699aca1b80e15a",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "quantum ownership `a` has already been consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 156,
+            "end": 157,
+            "line": 3,
+            "column": 47
+          },
+          "original_source_slice": "a"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "private-zero-fold-owner-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "805bb323116084f04b55a1901dfd9f518cf84dfb8cec9ce2895c9ec6971cdb00",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "54f90c20ec86e14cb3203981fac6a26ea0944c31dae12c83c868d729ffdfaafe",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "private-zero-fold-owner-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "1a26b7503d2059d6bcb96c21f5d0b4344fc6330091b261e41bcdeeaa18151879",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "unbound or consumed value a",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-zero-fold-owner/main.qli",
+            "start": 156,
+            "end": 157
+          },
+          "original_source_slice": "a"
+        }
+      },
+      "new": {
+        "record_sha256": "89c9247ed28f3c0b2ba224ffe9f9c32dfe068575f9619691ab96bdaf64777898",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "quantum ownership `a` has already been consumed",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-zero-fold-owner/main.qli",
+            "start": 156,
+            "end": 157
+          },
+          "original_source_slice": "a"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "dead-arm-missing-adjoint-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "dc0d6b31dc459a98f32c7af15a55cf16224a914ba802e141d41a081a323eb35d",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "9c4d4a6a2cd186bc4563a0367458da5db452ac63ad66fce53dafafecb3d0b9c0",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "dead-arm-missing-adjoint-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "1ca5ba2857e141250b86fe3eb02f67091d661d32e7037d20f3415ae5aa83b970",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "finite profile does not support static Nat parameters",
+          "primary": {
+            "path": "main.qli",
+            "start": 92,
+            "end": 93,
+            "line": 2,
+            "column": 18
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "new": {
+        "record_sha256": "a98993639f3dcaa9fb79a056cc743ea02c06e1b01a2408deb9c09800b2db245a",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "capability",
+          "message": "missing Adjoint operation access",
+          "primary": {
+            "path": "main.qli",
+            "start": 206,
+            "end": 218,
+            "line": 4,
+            "column": 35
+          },
+          "original_source_slice": "adjoint(U,q)"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "dead-arm-missing-adjoint-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "5404a75748594094e4183c0209e9c958402200015c9e80306f7e4e21b1b4a9eb",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "828e6e55c56189a4b236403e301f33096f793772981dc73fedc130888cd9cc37",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "dead-arm-missing-adjoint-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "e04a1398a5d1f36fd62e69281966bc19a2491ad440cb4fc82cc196065fd25f14",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "access",
+          "message": "missing Adjoint operation access",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/dead-arm-missing-adjoint/main.qli",
+            "start": 206,
+            "end": 218
+          },
+          "original_source_slice": "adjoint(U,q)"
+        }
+      },
+      "new": {
+        "record_sha256": "19c0f4a2397cf73a30468adb73113bccd66b3bbc7fdabe5d7ce346850a135057",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "access",
+          "message": "missing Adjoint operation access",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/dead-arm-missing-adjoint/main.qli",
+            "start": 206,
+            "end": 218
+          },
+          "original_source_slice": "adjoint(U,q)"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": true,
+        "same_span": true
+      }
+    },
+    {
+      "label": "private-basis-valid-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "fd2156e7fa23cb4a1f17a9bc6487e9354ca4e59fc775414ee618834ef12af42b",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "e34381c8669746a6b0bd1d7ecc887e119c269f686dd45071d0fded5d76dc368e",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      }
+    },
+    {
+      "label": "private-basis-valid-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "a6d2fa8f006d5ae47aecb48ab3932e97b2550b2b93d11120f974255a6452a9b3",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "4b952b61addf563e1442697bd73d536e184c8f99b143f99083046357913da6ba",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      }
+    },
+    {
+      "label": "private-basis-valid-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "c93658e1b8ac98880816a4d1f27eeeff2af900155ab81915c821543cf0617e8e",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "ebcfbac366fc32b02a96f6fbfa5e448dd660c271ed7fae1fd5ad34533ecb7945",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "private-basis-valid-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "6bd02435f8a104c58dd33d25ba9e039e82ebc30f23c0e4b79c88a79f28bf9f7a",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: requires an ordinary function",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-valid/main.qli",
+            "start": 75,
+            "end": 127
+          },
+          "original_source_slice": "basis fn xor_pair(a: Bit, b: Bit) -> Bit { a xor b }"
+        }
+      },
+      "new": {
+        "record_sha256": "ca4472bf8ddb18302adf90d7bf711b9d0d05aaf526072ef9edf38a6187722d4b",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "private-basis-bad-result-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "b3c1b35749498f4121c6f07d4da7c8c49422b850d94ea6ac45c066e9884973c0",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "f9a1e5a371c67d7f14e83eb74b86faa669ba5674a3cd537db27937e4df32ef05",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "private-basis-bad-result-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "50627a3096ed33d89a27c5abf198137e0e0bcb99824cdb6ff7d4544d76e3ff5f",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "basis result does not match its declared type: expected `Bit`, found `(Bit,Bit)`",
+          "primary": {
+            "path": "main.qli",
+            "start": 120,
+            "end": 125,
+            "line": 2,
+            "column": 46
+          },
+          "original_source_slice": "(a,b)"
+        }
+      },
+      "new": {
+        "record_sha256": "12145a6ab9cc638ed1f216c4b17b6a7f4ca0c41872f09d200416b24e0a53b8c3",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "type or tuple/size shape mismatch: expected Bit, found Tuple([Bit, Bit])",
+          "primary": {
+            "path": "main.qli",
+            "start": 120,
+            "end": 125,
+            "line": 2,
+            "column": 46
+          },
+          "original_source_slice": "(a,b)"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "private-basis-bad-result-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "67dbca5c25cf141198b21acfe60c0f8d7c5996f32f52f5ec17fa056b3a95a6ec",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "2d0e36ffbb71fab62a97366e8c038da6ed4ee338478d7bb874a3df9d58099594",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "private-basis-bad-result-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "bcb8393e82f5d9cd0945faad268946213f05e3b9323a8cb33f112c61432577d3",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: requires an ordinary function",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-bad-result/main.qli",
+            "start": 75,
+            "end": 127
+          },
+          "original_source_slice": "basis fn nonzero2((a,b): (Bit,Bit)) -> Bit { (a,b) }"
+        }
+      },
+      "new": {
+        "record_sha256": "d393be811c6d191b2e6a1d31e0f3fa68a8749e514b6ad3c40c6bd9fc4d7abbfa",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type",
+          "message": "type or tuple/size shape mismatch: expected Bit, found Tuple([Bit, Bit])",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-bad-result/main.qli",
+            "start": 120,
+            "end": 125
+          },
+          "original_source_slice": "(a,b)"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "qif-formal-controlled-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "f6f291de9596cbae4457dc37b458eb74898eaca01be9242512e25d1a0630f7b2",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "f6fdecacd93e9d2134880b74abf1c2ef414164c2044fab4eadd69d4262e95cc5",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      }
+    },
+    {
+      "label": "qif-formal-controlled-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "c45708ba31ea158d5f7da042944591f9848a9ddb2c37cd52c9f3721055906dfd",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "6d0d1481a455d24ce4110cffb7778b8bfdab9e93b4ef78b2312e8dfbe7b19589",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      }
+    },
+    {
+      "label": "qif-formal-controlled-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "092b4fc71a32ed9b0c1cef1f57a18bc8587cad1e814129ea071a5580001700cb",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "9af5b39f84be9437008b412b1fa51033750b624400ed7f3fb42bb59cbf8ce9f0",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "qif-formal-controlled-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "598e29d9a1c25d228e7fa3488cc1880b87fafa8df7c0dfbff24561c34faf64a7",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-formal-controlled/main.qli",
+            "start": 175,
+            "end": 202
+          },
+          "original_source_slice": "qif(c,q) { 0 => U, 1 => U }"
+        }
+      },
+      "new": {
+        "record_sha256": "93b9b1ce2e88b115330a8454bffcbf3e6f80468c85270bf5f7c1a38ccc397ae9",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "qif-formal-apply-only-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "cf6208e0800fd347a742e14dcc8c02f638e4ee1455c3b1c386798a23ceecb496",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "22f6d408befb5c46dfd584ef9bbe3607f79639a892cbde1f841495e3e9dc75e7",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "qif-formal-apply-only-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "10e331f6a9e4bd6c965f63b3636b4264edb4d968a2ae152586cdfc8cde2d0603",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "capability",
+          "message": "missing Controlled access in the generic declaration",
+          "primary": {
+            "path": "main.qli",
+            "start": 186,
+            "end": 187,
+            "line": 3,
+            "column": 37
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "new": {
+        "record_sha256": "0c5dba053165db15531d376b85a00e57ec2848a7d3adcbd16e3c89a2ef878ba9",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "capability",
+          "message": "missing Controlled operation access",
+          "primary": {
+            "path": "main.qli",
+            "start": 186,
+            "end": 187,
+            "line": 3,
+            "column": 37
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "qif-formal-apply-only-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "3502a430ac1fb006c870402cf1b68840f3854c84c240f084b02bd7f4edcaf892",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "4068f5c73156cfebb00a7f2523fb3243cb25918a5456e1b39955e1e27becf99b",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "qif-formal-apply-only-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "80b0998901aa46287d96fdd39d67dd16c65394a566a7bacbbf4eb987b1a558c5",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-formal-apply-only/main.qli",
+            "start": 170,
+            "end": 197
+          },
+          "original_source_slice": "qif(c,q) { 0 => U, 1 => U }"
+        }
+      },
+      "new": {
+        "record_sha256": "8e1610d6c5c83e18a13fb068a78dba1ace49c0b923a07d0d8c71dd37178a73c1",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "access",
+          "message": "missing Controlled operation access",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-formal-apply-only/main.qli",
+            "start": 186,
+            "end": 187
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "qif-wrong-effect-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "c7f475118ffae79f9ff79bace4f3c676bbcb2c20fb2506ff4e593048f4fb05ec",
+        "exit_code": 1,
+        "native_forwarded_rows": 3
+      },
+      "new": {
+        "record_sha256": "2a64478e19c87f38eb7a05083e646e6e8972187eb28ba92f2e9b5d17bddea396",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "qif-wrong-effect-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "efee03d18fb95035f196eb74728e07bbed47e013e952dc6ee4e628aa865fee98",
+        "exit_code": 1,
+        "native_forwarded_rows": 3,
+        "diagnostic": {
+          "code": "effect",
+          "message": "static operation requires a function with inferred Unitary effect. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+          "primary": {
+            "path": "main.qli",
+            "start": 393,
+            "end": 400,
+            "line": 13,
+            "column": 42
+          },
+          "original_source_slice": "watched"
+        }
+      },
+      "new": {
+        "record_sha256": "7dfaeaf10916bbc4743b2d94ce837d02ca7c8a41f27210a2311f856bf2e7f771",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "effect",
+          "message": "operation provider's inferred body effect must be Unitary. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+          "primary": {
+            "path": "main.qli",
+            "start": 393,
+            "end": 400,
+            "line": 13,
+            "column": 42
+          },
+          "original_source_slice": "watched"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "qif-wrong-effect-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "ab6eda3ad461c0c9c5d74c01ad3a451856bb6e2725be3d181cf99184ec636b9d",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "74d0aee6a6c5bb04e491a16adf228e6e7d2c6999d6012991fcdc0814cfcb2e98",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "qif-wrong-effect-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "7fa2ce6686c815d193e0c0972bebefdc266a4b918674b7f42f721ebdaf46af19",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-effect/main.qli",
+            "start": 368,
+            "end": 402
+          },
+          "original_source_slice": "qif(c,q) { 0 => id, 1 => watched }"
+        }
+      },
+      "new": {
+        "record_sha256": "89a390e0c61dbc8e3049c817d27beb1dfc12b98688e4c37d4afd963f0efa6167",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "effect",
+          "message": "operation provider's inferred body effect must be Unitary. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-effect/main.qli",
+            "start": 393,
+            "end": 400
+          },
+          "original_source_slice": "watched"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "qif-wrong-shape-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "883fada049c4ec7cb4e95a0d7a89c531d9706a754cdf0ab76fb527079aa9969f",
+        "exit_code": 1,
+        "native_forwarded_rows": 3
+      },
+      "new": {
+        "record_sha256": "193102bdffb13c240a29a1db2616a747297cd1638cb6e4ade13799a0d0cfc774",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "qif-wrong-shape-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "cca56f763dab6a21d6f100c77a00efb3a066794846f9225ed993b199ea0c31e3",
+        "exit_code": 1,
+        "native_forwarded_rows": 3,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "static operation requires one Q<A> input and the same Q<A> result",
+          "primary": {
+            "path": "main.qli",
+            "start": 310,
+            "end": 314,
+            "line": 8,
+            "column": 42
+          },
+          "original_source_slice": "pack"
+        }
+      },
+      "new": {
+        "record_sha256": "9e4eea705cbebc3d4e66d0fd4cdbd8c567036c8ccc287df5641e8730f8aeff4a",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "operation provider requires Q<A> -> Q<A> with one exact quantum input",
+          "primary": {
+            "path": "main.qli",
+            "start": 310,
+            "end": 314,
+            "line": 8,
+            "column": 42
+          },
+          "original_source_slice": "pack"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "qif-wrong-shape-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "0d23eda64f942780d115cc979cfcf03d7fe20d4f553fbe7095024c0be34447f8",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "1a2569e7ecd894a7a7558bfb15ab633c6926daf113164764fe4a0baad1eb9ee1",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "qif-wrong-shape-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "56a87e834bac84fe589186ea61213b4be1912d4c0eb364d726178dbd5668902c",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-shape/main.qli",
+            "start": 285,
+            "end": 316
+          },
+          "original_source_slice": "qif(c,q) { 0 => id, 1 => pack }"
+        }
+      },
+      "new": {
+        "record_sha256": "7f2608448a79db0aeb8db4d5f14fbbb8a95a76f20bc8fa0c5efd2883525e7df2",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type",
+          "message": "operation provider requires Q<A> -> Q<A> with one exact quantum input",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-shape/main.qli",
+            "start": 310,
+            "end": 314
+          },
+          "original_source_slice": "pack"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "computed-unary-predicate-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "75b06390ab0952efa0e0c2e798d232b13720d8cc72505f4e528258a236d9b3e2",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      },
+      "new": {
+        "record_sha256": "d1fde64e4cd002e2c9a50cb0fe5d7efbee76c8b27f4a496294b844e35192f79a",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      }
+    },
+    {
+      "label": "computed-unary-predicate-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "8ab228441e29d1b5e27a4dc31840017d15ae5ece5e05bc1333382b0671b7cff4",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      },
+      "new": {
+        "record_sha256": "6dffa2d12feb60a73e258926130a23c703680c5e7c2d2c0823294816e71e3e28",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      }
+    },
+    {
+      "label": "computed-unary-predicate-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "2fa852079ca1e9a59e35e222da7bb5cb87884bba95a7faa8861a488af4d51a04",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "085ac84295cd7c1ffee31650b18fe2ff215d8fbbe699c765f83f41dce0f5eade",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "computed-unary-predicate-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "e658c3c5c398c3ef0c937b693dd12d5096994d878793c663a5be0cf5c1cfec6a",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: requires an ordinary function",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-unary-predicate/main.qli",
+            "start": 96,
+            "end": 164
+          },
+          "original_source_slice": "basis fn nonzero2((a,b): (Bit,Bit)) -> Bit { not (not a and not b) }"
+        }
+      },
+      "new": {
+        "record_sha256": "0d9d933a84bfc4dc74db5e22387ff011bf8563f5493376b4dd1c986151368948",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "computed-wrong-arity-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "505172a4641f13e8a6e810b69e97ae4964c8e81e79f7f9bc72b5ccee857e912a",
+        "exit_code": 1,
+        "native_forwarded_rows": 1
+      },
+      "new": {
+        "record_sha256": "06ef3f3298017ed326df61471067c973a91edd0a0b0d8b300f344043b80bd60d",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "computed-wrong-arity-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "763891b769d4c245da81b8d1c02b89f746d2dfd560778423707e532808549484",
+        "exit_code": 1,
+        "native_forwarded_rows": 1,
+        "diagnostic": {
+          "code": "arity",
+          "message": "with_computed predicate requires exactly one explicit basis parameter of type `(Bit,Bit)`; found 2 parameters",
+          "primary": {
+            "path": "main.qli",
+            "start": 226,
+            "end": 234,
+            "line": 5,
+            "column": 21
+          },
+          "original_source_slice": "nonzero2"
+        }
+      },
+      "new": {
+        "record_sha256": "fd4094fa466ff1dfd0aa05ed03dc4113b7801b05ff6ab9c79a0ccffaf0da4d2c",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "arity",
+          "message": "predicate must take exactly one basis argument",
+          "primary": {
+            "path": "main.qli",
+            "start": 226,
+            "end": 234,
+            "line": 5,
+            "column": 21
+          },
+          "original_source_slice": "nonzero2"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "computed-wrong-arity-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "e8204921242710781ad2e24fe10d5b28b039d82741e222c4f537f063b6d73315",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "bf6e9b0a4b8c5782142776b85ae61389a1cc72e724a1f2bca802f8f98f46c0f3",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "computed-wrong-arity-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "c25e1fdb873bdcc5e02f41eb72b803d0f0898fffee487e96f14e6c0a29c737b9",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "sized preparation profile: requires an ordinary function",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-wrong-arity/main.qli",
+            "start": 96,
+            "end": 162
+          },
+          "original_source_slice": "basis fn nonzero2(a: Bit, b: Bit) -> Bit { not (not a and not b) }"
+        }
+      },
+      "new": {
+        "record_sha256": "3f166159f44075094f33914d3a8e47ee7bb55c66a53322f6513ccb98b5e98814",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "arity",
+          "message": "predicate must take exactly one basis argument",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/computed-wrong-arity/main.qli",
+            "start": 226,
+            "end": 234
+          },
+          "original_source_slice": "nonzero2"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "owner-shadow-move-valid-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "9186f8a2a8de223f5c93ede61527d6c308751e910d0ffa3e9f4e1572481b19df",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      },
+      "new": {
+        "record_sha256": "45503172d9f0e184ed0e0a7d2b54a7d0379a73fb516c18bc904fae836c67c581",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      }
+    },
+    {
+      "label": "owner-shadow-move-valid-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "0753a82d990aba48f5e9b83e7a7bf1cca7ccbcd8593d0abfae27876e94a76d83",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      },
+      "new": {
+        "record_sha256": "68a0aac4bb3995e407e63d5de37bde0aa216a7e74a9833eb4a949ad51dfeeaea",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      }
+    },
+    {
+      "label": "owner-shadow-move-valid-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "cf560a0010d3c48ac8ce847b1cbc1f6f173c624753a0d4818615eed00fcfd57a",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      },
+      "new": {
+        "record_sha256": "59754250bcb19f4291ad8c7ab05691aa36f3e2862dfcfbc2ef45e255d6c42a14",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "owner-shadow-move-valid-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "f3eaf49582ab7df0d11ab3a0ab069e52b859cf2cb06e6dbfba747a1c38760659",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      },
+      "new": {
+        "record_sha256": "f9190d74058ba2a266c213923336a8a114539ed2e75bfeee4c82d2b1b653c184",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "owner-shadow-live-invalid-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "958ccb39d3ce4f9138b5119838119a2f7eb3bb02bc8eaa7d50c8fa9c8fd6a4a2",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "b0e8a1b6cf1df17c28ae0512a156bc9584a209f75f2421a67f91c29b6ae9fbb5",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "owner-shadow-live-invalid-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "270f2a79b368e2fe3db379501414b025ecbd7ee974e43f1996e990ab1d2dd680",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "binding would hide unconsumed quantum ownership",
+          "primary": {
+            "path": "main.qli",
+            "start": 121,
+            "end": 122,
+            "line": 2,
+            "column": 47
+          },
+          "original_source_slice": "q"
+        }
+      },
+      "new": {
+        "record_sha256": "c9dadfada2017200cbca6ac0d93ed9a735bf7a9fb1f838bff02ec2a79ee7da5f",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "binding q would drop a live quantum owner",
+          "primary": {
+            "path": "main.qli",
+            "start": 121,
+            "end": 122,
+            "line": 2,
+            "column": 47
+          },
+          "original_source_slice": "q"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "owner-shadow-live-invalid-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "d2a6b8f73aef72eec9a63dfaf233dc918c5a4bfd6bc043b472870b36d21cec75",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "26a49ced81ee306a28232bd025bc21484c6c5ff155368b26a6104450306d74e1",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "owner-shadow-live-invalid-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "e6b9102b4a2a8e38e4f1e56473ed99a4c85559ccfafe2459ec7a1116e68c2698",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "binding q would drop a live quantum owner",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/owner-shadow-live-invalid/main.qli",
+            "start": 121,
+            "end": 122
+          },
+          "original_source_slice": "q"
+        }
+      },
+      "new": {
+        "record_sha256": "0257a9b49d7521d293928ff7aa7eb27d2c5fa82786bcf459ac45d150c5a4c393",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "ownership",
+          "message": "binding q would drop a live quantum owner",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/owner-shadow-live-invalid/main.qli",
+            "start": 121,
+            "end": 122
+          },
+          "original_source_slice": "q"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": true,
+        "same_span": true
+      }
+    },
+    {
+      "label": "static-shadows-global-valid-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "e616718485845a59de936578cb1f2f36911852d51082954778e178c3fabef278",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      },
+      "new": {
+        "record_sha256": "1b37dc18fda6958836abc3fee017df988f9a03f9f11603a1e3c4ff57d85a4e22",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      }
+    },
+    {
+      "label": "static-shadows-global-valid-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "0d028f588280d08c88199018797f414a8183cf13aec7854034282fe6b15aacfd",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      },
+      "new": {
+        "record_sha256": "c2092a2b1b3339223bbdd50ccce5848dbb8a431c2eafd478b185fb2fa21e4f99",
+        "exit_code": 0,
+        "native_forwarded_rows": 21
+      }
+    },
+    {
+      "label": "static-shadows-global-valid-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "70fe5dda49b7fe44d37784dff5df4eab35c1cc0b9f7cd33b81c7498c3e1a9b08",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      },
+      "new": {
+        "record_sha256": "7fd484d26dab8a674968963810c8255831fb3f1967d2f92d94c6278714e7520e",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "static-shadows-global-valid-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "b3d8b2d172f94fb60d02905a20e100afdf3809e773ff6609f2a26d271e04cd53",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      },
+      "new": {
+        "record_sha256": "e487004f281b10c313e5b63f37b60532c2c7314ba8dc8a82838707d506bc3815",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "runtime-shadows-static-policy-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "9de782cb078292e83c53d21847d4e974337e9fe65dfc220f9b828db60237ed28",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "cfc571e554e72f080b867f9d106988755521f206aa0d7c9a0e8e2751aedd888b",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "runtime-shadows-static-policy-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "9ebc8f6e8ce2c3916f582ec0ff6fe00b3a7b9bd52d5b58e857d267da22732582",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "2f21afc744840466f2b4b80d9530803c9fef0add6d55a101a3045c81ada36494",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "binding U shadows a static parameter/index",
+          "primary": {
+            "path": "main.qli",
+            "start": 150,
+            "end": 151,
+            "line": 3,
+            "column": 25
+          },
+          "original_source_slice": "U"
+        }
+      }
+    },
+    {
+      "label": "runtime-shadows-static-policy-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "4250bb216e99755041f9ae5e0469e9dde67306b55e05a8765a63815b52ae42e8",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "6d7412ad9e9d8e1690b6b99c4e8a174b308446b44203acc1f3f0f07aff8bfdb3",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "runtime-shadows-static-policy-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "fbbae7a7e1f83e0e99d30d11a710def029a7d6539e68b6f7ddad125887fc530e",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "name",
+          "message": "binding U shadows a static parameter/index or discards a value",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-policy/main.qli",
+            "start": 150,
+            "end": 151
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "new": {
+        "record_sha256": "332e419ff874ae3366a962c2838655597af1aa3c174dd3dd444bc59ef339ace2",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "name",
+          "message": "binding U shadows a static parameter/index",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-policy/main.qli",
+            "start": 150,
+            "end": 151
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "runtime-shadows-static-call-invalid-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "fc07f9879e24d46c864704c7255691d9a97e26adcdac5e3578b9c2455c5381bc",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "30a16ded9d82bcdd1e607b6c44aaad520f8e53c1db1793c2df7fc3f76d54b254",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "runtime-shadows-static-call-invalid-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "7514de78f4b47b664ba66b7d0492345e5d5e383225f1cc821fdeeeda8b6f2b99",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "a local or spent runtime value cannot be a static operation",
+          "primary": {
+            "path": "main.qli",
+            "start": 155,
+            "end": 156,
+            "line": 3,
+            "column": 30
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "new": {
+        "record_sha256": "ce407f251b8673ae9e83b5524fdb07807100689321e69d37de86913e1dda0fb2",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "binding U shadows a static parameter/index",
+          "primary": {
+            "path": "main.qli",
+            "start": 150,
+            "end": 151,
+            "line": 3,
+            "column": 25
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "runtime-shadows-static-call-invalid-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "ff8230a7442a3fe56dfe2b9951fb5ed22f3fa7d1c562e96e292398ce28f36631",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "ab5565070183664cc8ef65b92c06c7bd36c286c2e0ea7ff0db24036956715f46",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "runtime-shadows-static-call-invalid-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "3588a5b569836cdaf9db038e66e911e2b68c9ffaa3ee763c79eae97381532d42",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "name",
+          "message": "binding U shadows a static parameter/index or discards a value",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-call-invalid/main.qli",
+            "start": 150,
+            "end": 151
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "new": {
+        "record_sha256": "7dbacf2e51a2fd364ea909a939237eafcae0619151137ef3a3ff12be2796282c",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "name",
+          "message": "binding U shadows a static parameter/index",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-call-invalid/main.qli",
+            "start": 150,
+            "end": 151
+          },
+          "original_source_slice": "U"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "natural-runtime-shadow-invalid-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "c2f0b11bb7311da9777c3803d8498d3e42b952032b42a4d406f930e981214401",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "ab482762414ea3d5af0e27df248a4aa79361fa4d745071def10c6e8a812f5dc4",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "natural-runtime-shadow-invalid-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "e117e9f1b804b16ddc3ac8aafdec7d6d0f40e2576728b8739c18a28d3dce98d6",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "unsupported",
+          "message": "finite profile does not support static Nat parameters",
+          "primary": {
+            "path": "main.qli",
+            "start": 93,
+            "end": 94,
+            "line": 2,
+            "column": 19
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "new": {
+        "record_sha256": "440d9d6db3d9c6455228b1af21984c162c6c7506263159d6e0511aeb4d74f98c",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "type_mismatch",
+          "message": "binding n shadows a static parameter/index",
+          "primary": {
+            "path": "main.qli",
+            "start": 136,
+            "end": 137,
+            "line": 2,
+            "column": 62
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": false,
+        "same_message": false,
+        "same_span": false
+      }
+    },
+    {
+      "label": "natural-runtime-shadow-invalid-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": false,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "c1ffe7beb8c2e87a74bba4b891988d20b2a9218b74b2cc3a160e1cb899163aab",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "b8509b1751ef098d1b349a0b74a9100d8102539751db1269d70d35cdadedd058",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      }
+    },
+    {
+      "label": "natural-runtime-shadow-invalid-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "6b76f8799f7acd168d6dce95efeb420b199aae7e53fb3aa295c73372aaff0301",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "name",
+          "message": "binding n shadows a static parameter/index or discards a value",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/natural-runtime-shadow-invalid/main.qli",
+            "start": 136,
+            "end": 137
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "new": {
+        "record_sha256": "7e5aedb5bfb4bcb6f852f801183ce2e3dc6cd11e6d076cdc5df5c5fd341a468c",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "name",
+          "message": "binding n shadows a static parameter/index",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/natural-runtime-shadow-invalid/main.qli",
+            "start": 136,
+            "end": 137
+          },
+          "original_source_slice": "n"
+        }
+      },
+      "diagnostic_comparison": {
+        "same_code": true,
+        "same_message": false,
+        "same_span": true
+      }
+    },
+    {
+      "label": "bundled-import-control-finite-check-text",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "93fc9d306274b61b1fd90c164b207b325b05b6b2d911670143fa87db807dcea9",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "f83aa8097e4a4c326b7214beba70053cff7f96d7d1130ab18262fe82059f6183",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      }
+    },
+    {
+      "label": "bundled-import-control-finite-check-json",
+      "equal_raw_bytes": {
+        "stdout": true,
+        "stderr": true,
+        "native_journal": true
+      },
+      "equal_pre_execv_argv_sequences": true,
+      "old": {
+        "record_sha256": "32ae5f76484db1cde559fbcc4be301fdbebf9afccbc7dcb46278eab556a48f59",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      },
+      "new": {
+        "record_sha256": "78176739d9d72c5d4d3db2d1321831bad2bae1327f3b7a6aaa24fc61b0dd85d0",
+        "exit_code": 0,
+        "native_forwarded_rows": 20
+      }
+    },
+    {
+      "label": "bundled-import-control-selected-auto-check-text",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": false,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "9cf81f251bd563e4474d50e6e092d969a937abed37e9fcfea9c4f739d7cf6fd9",
+        "exit_code": 1,
+        "native_forwarded_rows": 0
+      },
+      "new": {
+        "record_sha256": "8321ff645a7ae82b25bb35a2717130f059607959c83f88a51b0a3933e92b8e9e",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    },
+    {
+      "label": "bundled-import-control-selected-auto-check-json",
+      "equal_raw_bytes": {
+        "stdout": false,
+        "stderr": true,
+        "native_journal": false
+      },
+      "equal_pre_execv_argv_sequences": false,
+      "old": {
+        "record_sha256": "ae3e1ef7ad8da9aad247cbc9b8e07d13bd7ed9dd93221d516b677aefeb8c2d3e",
+        "exit_code": 1,
+        "native_forwarded_rows": 0,
+        "diagnostic": {
+          "code": "module",
+          "message": "missing dependency module std::arithmetic",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/bundled-import-control/main.qli",
+            "start": 75,
+            "end": 107
+          },
+          "original_source_slice": "use std::arithmetic::increment2;"
+        }
+      },
+      "new": {
+        "record_sha256": "d19895556ece5085a56d715f6f0543fa52a6ae5539b28bd09c4ef115717fe334",
+        "exit_code": 0,
+        "native_forwarded_rows": 1
+      }
+    }
+  ],
+  "record_directories": {
+    "old": "tests/fixtures/authoring_sessions/common-original-ast-v030/before",
+    "new": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/original-source-capture-01/observations"
+  },
+  "path_convention": "For each literal label, .json is the event; .stdout.bin/.stderr.bin/.native.jsonl are exact mapped raw records. Full bytes/modes/paths are bound by the verified directory files.json; no raw log is copied here.",
+  "classifications": {
+    "mixed-qif-and-generic-finite": "Valid common source still reaches the unchanged finite Nat eligibility refusal.",
+    "mixed-qif-and-generic-selected-auto": "Complete source judgment accepts private qif and generic fold bodies; only the ordinary Unit main entry is concretely checked.",
+    "private-zero-fold-owner-finite": "Real duplicate-owner error in a private zero-count fold now precedes unsupported finite fold eligibility.",
+    "private-zero-fold-owner-selected-auto": "Same ownership category and original duplicate-use span; message now explicitly identifies consumed quantum ownership.",
+    "dead-arm-missing-adjoint-finite": "Missing Adjoint in an unselected static arm now precedes finite Nat eligibility.",
+    "dead-arm-missing-adjoint-selected-auto": "Exact raw diagnostics and zero journal preserved.",
+    "private-basis-valid-finite": "Successful output/status/native-argv journal preserved exactly.",
+    "private-basis-valid-selected-auto": "Private total Basis bodies and sibling calls are source checked; only Unit main is concretely checked.",
+    "private-basis-bad-result-finite": "Same type_mismatch category and exact result span; message changes to common exact-tree wording.",
+    "private-basis-bad-result-selected-auto": "Genuine Basis result mismatch now precedes ordinary-function projection refusal.",
+    "qif-formal-controlled-finite": "Successful output/status/native-argv journal preserved exactly.",
+    "qif-formal-controlled-selected-auto": "Source qif access/body judgment succeeds for the unused generic body; concrete checked entry remains Unit main.",
+    "qif-formal-apply-only-finite": "Controlled requirement rejection retains category/span with common operation-access wording.",
+    "qif-formal-apply-only-selected-auto": "Missing Controlled source access now precedes qif projection refusal.",
+    "qif-wrong-effect-finite": "Same inferred-effect refusal and provider span, now before three intermediate finite forwarding rows.",
+    "qif-wrong-effect-selected-auto": "Actual body-derived Observe provider fails Unitary source requirement before qif projection refusal.",
+    "qif-wrong-shape-finite": "Same exact unary-Q provider shape refusal/span, now before three intermediate finite forwarding rows.",
+    "qif-wrong-shape-selected-auto": "Actual provider interface mismatch now precedes qif projection refusal.",
+    "computed-unary-predicate-finite": "Successful output/status/native-argv journal preserved exactly.",
+    "computed-unary-predicate-selected-auto": "Unused Basis/computed source bodies are checked; concrete checked entry remains Unit main, with no computed-lowering claim.",
+    "computed-wrong-arity-finite": "Same arity category/predicate span, now before one intermediate finite forwarding row.",
+    "computed-wrong-arity-selected-auto": "Real one-explicit-Basis-argument requirement now precedes Basis projection refusal.",
+    "owner-shadow-move-valid-finite": "RHS consumes owner before legal rebinding; complete streams/journal preserved.",
+    "owner-shadow-move-valid-selected-auto": "RHS consumes owner before legal rebinding; complete streams/journal preserved.",
+    "owner-shadow-live-invalid-finite": "Same ownership category and binder span; common wording explicitly identifies the hidden live owner.",
+    "owner-shadow-live-invalid-selected-auto": "Exact raw diagnostics and zero journal preserved.",
+    "static-shadows-global-valid-finite": "Valid static Op shadow of a global declaration remains successful with complete streams/journal preserved.",
+    "static-shadows-global-valid-selected-auto": "Valid static Op shadow of a global declaration remains successful with complete streams/journal preserved.",
+    "runtime-shadows-static-policy-finite": "Recorded ordinary migration: runtime let cannot shadow active static Op; former success now located source type_mismatch with no native forwarding.",
+    "runtime-shadows-static-policy-selected-auto": "Existing name category/binder span preserved; overly broad discard wording removed.",
+    "runtime-shadows-static-call-invalid-finite": "Canonical shadow policy now rejects at the earlier let binder, preceding the former runtime-callee error.",
+    "runtime-shadows-static-call-invalid-selected-auto": "Existing name category/binder span preserved; overly broad discard wording removed.",
+    "natural-runtime-shadow-invalid-finite": "Canonical static-Nat shadow error now precedes the former finite Nat eligibility refusal.",
+    "natural-runtime-shadow-invalid-selected-auto": "Existing name category/binder span preserved; overly broad discard wording removed.",
+    "bundled-import-control-finite": "Same fixed bundled definitions and successful streams/native-argv journal retained.",
+    "bundled-import-control-selected-auto": "All four fixed bundles now load and undergo source judgment; only Unit main is concretely checked, not the imported unused functions."
+  },
+  "raw_file_map_bindings": {
+    "old": {
+      "path": "tests/fixtures/authoring_sessions/common-original-ast-v030/before/files.json",
+      "sha256": "4336906b401c93ec97b28d8c14c0d2577a7cabb9cb4d82d6078bf8a3a1c33b63"
+    },
+    "new": {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/original-source-capture-01/observations/files.json",
+      "sha256": "a03aed8c6cb8337286230479cbc25cf7ee35ce3a84a61bb25f6660fb5d2258cd"
+    }
+  }
+}

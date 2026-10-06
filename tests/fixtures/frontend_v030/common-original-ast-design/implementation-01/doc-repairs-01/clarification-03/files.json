@@ -1,0 +1,25 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 1106,
+      "sha256": "9dc96eeca66b4f4293ba1f93cd19235001733a8f59135cafce86356139d80042"
+    },
+    "before/docs/src/reference/type-model.md": {
+      "bytes": 33244,
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8"
+    },
+    "clarification.patch": {
+      "bytes": 922,
+      "sha256": "3162305554b51f78a99b1b4bec4b6e4a823aa63f1dace9cfda95f2eafa0ce9db"
+    },
+    "proposal.json": {
+      "bytes": 2347,
+      "sha256": "6738674993d06694066392ffe6425c15b81d9ca2283f91cf9298947b0e5463be"
+    },
+    "proposed/docs/src/reference/type-model.md": {
+      "bytes": 33498,
+      "sha256": "ec0c3f8ee9a1bed1fcc3661d994be578047c3090de124b8bc7b9106e9dd756a4"
+    }
+  },
+  "self_excluded": "files.json"
+}

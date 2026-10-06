@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"binding U shadows a static parameter/index","primary":{"path":"main.qli","start":150,"end":151,"line":3,"column":25},"related":[]}],"result":null}

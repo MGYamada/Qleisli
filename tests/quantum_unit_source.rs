@@ -774,17 +774,17 @@ fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
         (
             "pub unitary fn f(u: Unit) -> Unit { phase_eighth(u) }",
             "type",
-            "scalar phase requires one Q<Unit>",
+            "primitive requires one exact quantum owner",
         ),
         (
             "pub unitary fn f(b: Bit) -> Bit { phase_eighth(b) }",
             "type",
-            "scalar phase requires one Q<Unit>",
+            "primitive requires one exact quantum owner",
         ),
         (
             "pub unitary fn f(q: Q<Unit>,r: Q<Bit>) -> (Q<Unit>,Q<Bit>) { phase_eighth((q,r)) }",
             "type",
-            "scalar phase requires one Q<Unit>",
+            "primitive requires one exact quantum owner",
         ),
         (
             "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth[0](not q) }",
@@ -793,12 +793,12 @@ fn scalar_signature_rejects_ordinary_values_tuples_and_incorrect_arities() {
         ),
         (
             "pub unitary fn f() -> Q<Unit> { phase_eighth() }",
-            "type",
+            "arity",
             "runtime argument arity mismatch",
         ),
         (
             "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { phase_eighth(q,q) }",
-            "type",
+            "arity",
             "runtime argument arity mismatch",
         ),
     ] {

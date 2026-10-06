@@ -8,6 +8,7 @@
 
 use std::collections::BTreeMap;
 use std::marker::PhantomData;
+use std::sync::Arc;
 
 use super::{DefId, Target};
 use crate::frontend::ast::*;
@@ -67,7 +68,7 @@ pub(in crate::frontend) struct UseInfo {
     pub span: Span,
     pub scope: ScopeId,
     pub target: ResolvedUse,
-    // A candidate only. Profile checks still reject non-callable local names.
+    // A candidate only. Source checking still rejects non-callable local names.
     pub global: Option<Target>,
     // Compatibility candidate for the finite static-call diagnostic order.
     // A runtime shadow still resolves to Local(runtime) and must be rejected.
@@ -81,18 +82,6 @@ pub(in crate::frontend) struct Table {
     scopes: Vec<Option<ScopeId>>,
 }
 impl Table {
-    /// Bind declaration/import candidates when that profile reaches its
-    /// existing module-resolution boundary; lexical identities never change.
-    pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>) {
-        for usage in &mut self.uses {
-            usage.global = global(&usage.name);
-            if !matches!(usage.target, ResolvedUse::Local(_)) {
-                usage.target = usage
-                    .global
-                    .map_or(ResolvedUse::Unresolved, ResolvedUse::Global);
-            }
-        }
-    }
     pub fn binder(&self, id: BinderId) -> &BinderInfo {
         assert_eq!(
             id.definition, self.definition,
@@ -122,11 +111,13 @@ pub(in crate::frontend) struct Index<'ast> {
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> Index<'ast> {
-    pub fn new(
+    pub fn new_budgeted<E>(
         definition: DefId,
         declaration: &'ast Decl,
         global: impl Fn(&str) -> Option<Target>,
-    ) -> Self {
+        mut charge: impl FnMut(Span, usize) -> Result<(), E>,
+    ) -> Result<Self, E> {
+        charge(declaration.span, 2)?;
         let mut builder = Builder {
             index: Self {
                 table: Table {
@@ -141,6 +132,8 @@ impl<'ast> Index<'ast> {
                 _syntax: PhantomData,
             },
             global,
+            charge,
+            origin: declaration.span,
             names: BTreeMap::new(),
             static_parameters: BTreeMap::new(),
             frames: vec![Frame {
@@ -151,8 +144,17 @@ impl<'ast> Index<'ast> {
                 undo: vec![],
             }],
         };
-        builder.declaration(declaration);
-        builder.index
+        builder.declaration(declaration)?;
+        Ok(builder.index)
+    }
+    /// Transfer the finite consumer's occurrence lookup, retaining the one
+    /// authoritative Table and the natural addresses needed by source checking.
+    pub fn take_occurrences(&mut self) -> Occurrences<'ast> {
+        Occurrences {
+            bindings: std::mem::take(&mut self.bindings),
+            references: std::mem::take(&mut self.references),
+            _syntax: PhantomData,
+        }
     }
     pub fn binder(&self, name: &Ident) -> BinderId {
         self.bindings[&(std::ptr::from_ref(name) as usize)]
@@ -169,20 +171,64 @@ impl<'ast> Index<'ast> {
     }
 }
 
-/// Address lookup for immutable borrowed finite syntax across declarations.
-/// The lifetime prevents mutation/reallocation until all consumers are dropped.
+/// Address-only lookup moves independently of the authoritative lexical Table.
+pub(in crate::frontend) struct Occurrences<'ast> {
+    bindings: BTreeMap<usize, BinderId>,
+    references: BTreeMap<usize, UseSiteId>,
+    _syntax: PhantomData<&'ast Decl>,
+}
+#[derive(Default)]
+pub(in crate::frontend) struct OccurrencesForest<'ast> {
+    bindings: BTreeMap<usize, BinderId>,
+    references: BTreeMap<usize, UseSiteId>,
+    _syntax: PhantomData<&'ast Decl>,
+}
+impl<'ast> OccurrencesForest<'ast> {
+    pub fn insert_budgeted<E>(
+        &mut self,
+        occurrences: Occurrences<'ast>,
+        span: Span,
+        mut charge: impl FnMut(Span, usize) -> Result<(), E>,
+    ) -> Result<(), E> {
+        // Insert moved keys individually: do not rebuild/copy the existing
+        // aggregate tree as append may do. Precharge each incoming visit and
+        // new address cell before consuming its original map iterator.
+        let cells = occurrences
+            .bindings
+            .len()
+            .checked_add(occurrences.references.len())
+            .and_then(|n| n.checked_mul(2))
+            .unwrap_or(usize::MAX);
+        charge(span, cells)?;
+        for (address, id) in occurrences.bindings {
+            self.bindings.insert(address, id);
+        }
+        for (address, id) in occurrences.references {
+            self.references.insert(address, id);
+        }
+        Ok(())
+    }
+}
+
+/// Borrowed source occurrences share the single checked lexical Table allocation.
 #[derive(Default)]
 pub(in crate::frontend) struct Forest<'ast> {
-    tables: BTreeMap<DefId, Table>,
+    tables: BTreeMap<DefId, Arc<Table>>,
     bindings: BTreeMap<usize, BinderId>,
     references: BTreeMap<usize, UseSiteId>,
     _syntax: PhantomData<&'ast Decl>,
 }
 impl<'ast> Forest<'ast> {
-    pub fn insert(&mut self, index: Index<'ast>) {
-        self.bindings.extend(index.bindings);
-        self.references.extend(index.references);
-        self.tables.insert(index.table.definition, index.table);
+    pub fn from_occurrences(
+        tables: BTreeMap<DefId, Arc<Table>>,
+        occurrences: OccurrencesForest<'ast>,
+    ) -> Self {
+        Self {
+            tables,
+            bindings: occurrences.bindings,
+            references: occurrences.references,
+            _syntax: PhantomData,
+        }
     }
     pub fn binder(&self, name: &Ident) -> BinderId {
         self.bindings[&(std::ptr::from_ref(name) as usize)]
@@ -209,15 +255,18 @@ struct Frame {
     id: ScopeId,
     undo: Vec<(String, Option<BinderId>)>,
 }
-struct Builder<'ast, F> {
+struct Builder<'ast, F, C> {
     index: Index<'ast>,
     global: F,
+    charge: C,
+    origin: Span,
     names: BTreeMap<String, BinderId>,
     static_parameters: BTreeMap<String, BinderId>,
     frames: Vec<Frame>,
 }
 enum Task<'a> {
     Enter,
+    EnterBasis,
     Leave,
     Reference(&'a Ident),
     Bind(&'a Ident, BindingKind),
@@ -230,19 +279,144 @@ enum Task<'a> {
     Block(&'a Block),
     Expression(&'a Expr),
 }
-impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
+impl Task<'_> {
+    fn span(&self, origin: Span) -> Span {
+        match self {
+            Self::Reference(n) | Self::Bind(n, _) => n.span,
+            Self::Pattern(n, _) => n.span,
+            Self::Type(n) => n.span,
+            Self::Natural(n) => n.span,
+            Self::Predicate(n) => n.left.span.cover(n.right.span),
+            Self::Operation(n) => n.span,
+            Self::Basis(n) => n.span,
+            Self::Block(n) => n.span,
+            Self::Expression(n) => n.span,
+            Self::Enter | Self::EnterBasis | Self::Leave => origin,
+        }
+    }
+    fn children<E>(
+        &self,
+        charge: &mut impl FnMut(Span, usize) -> Result<(), E>,
+    ) -> Result<usize, E> {
+        Ok(match self {
+            Self::Enter | Self::EnterBasis | Self::Leave | Self::Reference(_) | Self::Bind(..) => 0,
+            Self::Pattern(p, _) => match &p.kind {
+                PatternKind::Tuple(f) => f.len(),
+                _ => 0,
+            },
+            Self::Type(t) => match &t.kind {
+                TypeKind::Named(_) | TypeKind::Bits(_) | TypeKind::Q(_) => 1,
+                TypeKind::Tuple(f) => f.len(),
+                _ => 0,
+            },
+            Self::Natural(n) => match n.kind {
+                NatKind::Add(..) | NatKind::Sub(..) | NatKind::Mul(..) => 2,
+                _ => 0,
+            },
+            Self::Predicate(_) => 2,
+            Self::Operation(n) => match &n.kind {
+                StaticOpKind::Type(_)
+                | StaticOpKind::Name(_)
+                | StaticOpKind::Inverse(_)
+                | StaticOpKind::Controlled(_)
+                | StaticOpKind::Natural(_) => 1,
+                StaticOpKind::Specialize { arguments, .. } => arguments.len().saturating_add(1),
+                _ => 2,
+            },
+            Self::Basis(n) => match &n.kind {
+                BasisExprKind::Name(_) | BasisExprKind::Not(_) => 1,
+                BasisExprKind::Call { args, .. } => args.len().saturating_add(1),
+                BasisExprKind::Tuple(f) => f.len(),
+                BasisExprKind::Xor(..) | BasisExprKind::And(..) => 2,
+                _ => 0,
+            },
+            Self::Block(b) => {
+                let mut children = 2usize;
+                for statement in &b.statements {
+                    charge(statement.span, 1)?;
+                    children = children.saturating_add(
+                        if matches!(statement.kind, StmtKind::Let { .. }) {
+                            2
+                        } else {
+                            1
+                        },
+                    );
+                }
+                children
+            }
+            Self::Expression(n) => match &n.kind {
+                ExprKind::Name(_) | ExprKind::Not(_) => 1,
+                ExprKind::Call {
+                    args, static_args, ..
+                } => args
+                    .len()
+                    .checked_add(static_args.len())
+                    .and_then(|n| n.checked_add(1))
+                    .unwrap_or(usize::MAX),
+                ExprKind::Tuple(f) => f.len(),
+                ExprKind::And(..)
+                | ExprKind::Xor(..)
+                | ExprKind::Adjoint { .. }
+                | ExprKind::RepeatStatic { .. } => 2,
+                ExprKind::If { .. }
+                | ExprKind::StaticIf { .. }
+                | ExprKind::ApplyContract { .. } => 3,
+                ExprKind::StaticFold { .. } | ExprKind::CertifiedComputed { .. } => 8,
+                ExprKind::CoherentLift { .. } => 5,
+                ExprKind::WithComputed { .. } => 6,
+                ExprKind::Controlled { args, .. } => args.len().saturating_add(1),
+                ExprKind::QuantumIf { .. } => 4,
+                ExprKind::Bit(_) | ExprKind::Unit => 0,
+            },
+        })
+    }
+}
+
+impl<'ast, F, C, E> Builder<'ast, F, C>
+where
+    F: Fn(&str) -> Option<Target>,
+    C: FnMut(Span, usize) -> Result<(), E>,
+{
     fn scope(&self) -> ScopeId {
         self.frames.last().expect("root lexical scope").id
     }
-    fn enter(&mut self) {
+    fn enter(&mut self) -> Result<(), E> {
+        (self.charge)(self.origin, 2)?;
         let id = ScopeId {
             definition: self.index.table.definition,
             ordinal: self.index.table.scopes.len(),
         };
         self.index.table.scopes.push(Some(self.scope()));
         self.frames.push(Frame { id, undo: vec![] });
+        Ok(())
     }
-    fn leave(&mut self) {
+    fn enter_basis(&mut self) -> Result<(), E> {
+        self.enter()?;
+        // Coherent labels have a closed ordinary value environment. Preserve
+        // static identities while hiding outer runtime and Basis-local names.
+        // Move their keys into the existing undo frame instead of cloning maps.
+        let mut outer = std::mem::take(&mut self.names);
+        while !outer.is_empty() {
+            (self.charge)(self.origin, 1)?;
+            let (name, id) = outer.pop_first().expect("nonempty visible names");
+            if matches!(
+                self.index.table.binder(id).kind,
+                BindingKind::Runtime | BindingKind::Basis
+            ) {
+                (self.charge)(self.origin, 2)?;
+                self.frames
+                    .last_mut()
+                    .expect("entered Basis scope")
+                    .undo
+                    .push((name, Some(id)));
+            } else {
+                (self.charge)(self.origin, 1)?;
+                self.names.insert(name, id);
+            }
+        }
+        Ok(())
+    }
+    fn leave(&mut self) -> Result<(), E> {
         for (name, previous) in self
             .frames
             .pop()
@@ -251,14 +425,27 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
             .into_iter()
             .rev()
         {
+            (self.charge)(self.origin, 1)?;
             if let Some(id) = previous {
+                if !self.names.contains_key(&name) {
+                    (self.charge)(self.origin, 1)?;
+                }
                 self.names.insert(name, id);
             } else {
                 self.names.remove(&name);
             }
         }
+        Ok(())
     }
-    fn bind(&mut self, name: &Ident, kind: BindingKind) {
+    fn bind(&mut self, name: &Ident, kind: BindingKind) -> Result<(), E> {
+        (self.charge)(
+            name.span,
+            name.text
+                .len()
+                .checked_mul(3)
+                .and_then(|n| n.checked_add(4))
+                .unwrap_or(usize::MAX),
+        )?;
         let id = BinderId {
             definition: self.index.table.definition,
             ordinal: self.index.table.binders.len(),
@@ -268,6 +455,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
             kind,
             BindingKind::StaticNatural | BindingKind::StaticBasis | BindingKind::StaticOperation
         ) {
+            (self.charge)(name.span, name.text.len() + 1)?;
             self.static_parameters.insert(name.text.clone(), id);
         }
         self.index.table.binders.push(BinderInfo {
@@ -288,8 +476,10 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
             .expect("root scope")
             .undo
             .push((name.text.clone(), previous));
+        Ok(())
     }
-    fn record_use(&mut self, name: &str, span: Span) -> UseSiteId {
+    fn record_use(&mut self, name: &str, span: Span) -> Result<UseSiteId, E> {
+        (self.charge)(span, name.len() + 1)?;
         let id = UseSiteId {
             definition: self.index.table.definition,
             ordinal: self.index.table.uses.len(),
@@ -310,9 +500,10 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
             global,
             static_parameter: self.static_parameters.get(name).copied(),
         });
-        id
+        Ok(id)
     }
-    fn declaration(&mut self, declaration: &'ast Decl) {
+    fn declaration(&mut self, declaration: &'ast Decl) -> Result<(), E> {
+        (self.charge)(declaration.span, 1)?;
         // All static names precede their annotations, including forward sizes.
         for parameter in &declaration.static_params {
             self.bind(
@@ -322,8 +513,9 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                     StaticParamKind::Basis => BindingKind::StaticBasis,
                     StaticParamKind::Operation { .. } => BindingKind::StaticOperation,
                 },
-            );
+            )?;
         }
+        (self.charge)(declaration.span, 2)?;
         let mut tasks = vec![
             match &declaration.body {
                 FnBody::Meaning { function, .. } => Task::Reference(function),
@@ -338,10 +530,12 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
             BindingKind::Runtime
         };
         for parameter in declaration.params.iter().rev() {
+            (self.charge)(parameter.ty.span, 2)?;
             tasks.push(Task::Pattern(&parameter.pattern, kind));
             tasks.push(Task::Type(&parameter.ty));
         }
         for requirement in declaration.requires.iter().rev() {
+            (self.charge)(declaration.span, 1)?;
             tasks.push(match requirement {
                 Requirement::Access(access) => Task::Reference(&access.name),
                 Requirement::Predicate(predicate) => Task::Predicate(predicate),
@@ -350,8 +544,10 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
         for parameter in declaration.static_params.iter().rev() {
             if let StaticParamKind::Operation { basis, meaning } = &parameter.kind {
                 if let Some(meaning) = meaning {
+                    (self.charge)(meaning.span, 1)?;
                     tasks.push(Task::Reference(meaning));
                 }
+                (self.charge)(basis.span, 1)?;
                 tasks.push(Task::Type(basis));
             }
         }
@@ -359,18 +555,24 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
         // scope undo entry is visited a bounded number of times, even for an
         // externally constructed AST that did not pass through the parser.
         while let Some(task) = tasks.pop() {
+            let span = task.span(self.origin);
+            (self.charge)(span, 1)?;
+            let children = task.children(&mut self.charge)?;
+            (self.charge)(span, children)?;
             match task {
-                Task::Enter => self.enter(),
-                Task::Leave => self.leave(),
+                Task::Enter => self.enter()?,
+                Task::EnterBasis => self.enter_basis()?,
+                Task::Leave => self.leave()?,
                 Task::Reference(name) => {
-                    let id = self.record_use(&name.text, name.span);
+                    let id = self.record_use(&name.text, name.span)?;
+                    (self.charge)(name.span, 1)?;
                     self.index
                         .references
                         .insert(std::ptr::from_ref(name) as usize, id);
                 }
-                Task::Bind(name, kind) => self.bind(name, kind),
+                Task::Bind(name, kind) => self.bind(name, kind)?,
                 Task::Pattern(pattern, kind) => match &pattern.kind {
-                    PatternKind::Name(name) => self.bind(name, kind),
+                    PatternKind::Name(name) => self.bind(name, kind)?,
                     PatternKind::Tuple(fields) => {
                         tasks.extend(fields.iter().rev().map(|p| Task::Pattern(p, kind)))
                     }
@@ -385,7 +587,8 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                 },
                 Task::Natural(natural) => match &natural.kind {
                     NatKind::Name(name) => {
-                        let id = self.record_use(name, natural.span);
+                        let id = self.record_use(name, natural.span)?;
+                        (self.charge)(natural.span, 1)?;
                         self.index
                             .natural_references
                             .insert(std::ptr::from_ref(natural) as usize, id);
@@ -440,7 +643,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                     BasisExprKind::Bit(_) | BasisExprKind::Unit => {}
                 },
                 Task::Block(block) => {
-                    self.enter();
+                    self.enter()?;
                     tasks.extend([Task::Leave, Task::Expression(&block.result)]);
                     for statement in block.statements.iter().rev() {
                         match &statement.kind {
@@ -513,7 +716,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                         Task::Leave,
                         Task::Basis(basis),
                         Task::Pattern(binder, BindingKind::Basis),
-                        Task::Enter,
+                        Task::EnterBasis,
                         Task::Expression(input),
                     ]),
                     ExprKind::WithComputed {
@@ -580,6 +783,7 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
                 },
             }
         }
+        Ok(())
     }
 }
 
@@ -587,6 +791,17 @@ impl<'ast, F: Fn(&str) -> Option<Target>> Builder<'ast, F> {
 mod tests {
     use super::*;
     use crate::frontend::parser::parse_module;
+
+    fn index<'ast>(
+        definition: DefId,
+        declaration: &'ast Decl,
+        global: impl Fn(&str) -> Option<Target>,
+    ) -> Index<'ast> {
+        Index::new_budgeted(definition, declaration, global, |_, _| {
+            Ok::<_, std::convert::Infallible>(())
+        })
+        .unwrap_or_else(|never| match never {})
+    }
 
     fn name(pattern: &Pattern) -> &Ident {
         let PatternKind::Name(name) = &pattern.kind else {
@@ -627,7 +842,7 @@ mod tests {
             panic!()
         };
         result.span = Span::default();
-        let index = Index::new(DefId(0), decl, |_| None);
+        let index = index(DefId(0), decl, |_| None);
         let FnBody::Quantum(body) = &decl.body else {
             panic!()
         };
@@ -655,10 +870,10 @@ mod tests {
                 .unwrap();
         let cloned = original.clone();
         let target = Target::Declaration(DefId(9));
-        let a = Index::new(DefId(0), &original.decls[0], |n| {
+        let a = index(DefId(0), &original.decls[0], |n| {
             (n == "h").then_some(target)
         });
-        let b = Index::new(DefId(0), &cloned.decls[0], |n| (n == "h").then_some(target));
+        let b = index(DefId(0), &cloned.decls[0], |n| (n == "h").then_some(target));
         assert_eq!(a.table, b.table);
         assert!(
             a.references
@@ -669,7 +884,7 @@ mod tests {
         drop(b);
         drop(cloned);
         assert_eq!(a.table, owned);
-        let other = Index::new(DefId(1), &original.decls[0], |_| None);
+        let other = index(DefId(1), &original.decls[0], |_| None);
         assert_ne!(
             a.binder(name(&original.decls[0].params[0].pattern)),
             other.binder(name(&original.decls[0].params[0].pattern))
@@ -677,27 +892,27 @@ mod tests {
     }
 
     #[test]
-    fn later_static_naturals_and_late_imports_keep_the_same_local_identity() {
+    fn later_static_naturals_and_global_candidates_keep_the_same_local_identity() {
         let module = parse_module("unitary fn f[static U:Op<Bits<n>>,static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Apply(U){U(q)}").unwrap();
         let decl = &module.decls[0];
-        let mut index = Index::new(DefId(0), decl, |_| None);
+        let unresolved = index(DefId(0), decl, |_| None);
+        let resolved = index(DefId(0), decl, |_| Some(Target::Declaration(DefId(3))));
         let StaticParamKind::Operation { basis, .. } = &decl.static_params[0].kind else {
             panic!()
         };
         let TypeKind::Bits(natural) = &basis.kind else {
             panic!()
         };
-        let parameter = index.binder(&decl.static_params[1].name);
-        let site = index.natural_usage(natural);
+        let parameter = unresolved.binder(&decl.static_params[1].name);
+        let site = unresolved.natural_usage(natural);
         assert_eq!(
-            index.table.usage(site).target,
+            unresolved.table.usage(site).target,
             ResolvedUse::Local(parameter)
         );
-        index
-            .table
-            .bind_globals(|_| Some(Target::Declaration(DefId(3))));
+        assert_eq!(resolved.binder(&decl.static_params[1].name), parameter);
+        assert_eq!(resolved.natural_usage(natural), site);
         assert_eq!(
-            index.table.usage(site).target,
+            resolved.table.usage(site).target,
             ResolvedUse::Local(parameter)
         );
     }
@@ -709,7 +924,7 @@ mod tests {
         )
         .unwrap();
         let declaration = &module.decls[0];
-        let index = Index::new(DefId(0), declaration, |_| None);
+        let index = index(DefId(0), declaration, |_| None);
         let FnBody::Quantum(body) = &declaration.body else {
             panic!()
         };
@@ -758,7 +973,7 @@ mod tests {
                 span: Span::default(),
             };
         }
-        let index = Index::new(DefId(0), decl, |_| None);
+        let index = index(DefId(0), decl, |_| None);
         let original = index.binder(name(&decl.params[0].pattern));
         let targets: Vec<_> = index
             .table

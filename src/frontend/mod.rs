@@ -4,6 +4,7 @@
 //! validity. The `compile` API checks source and independently verifies its IR.
 
 pub mod ast;
+mod check;
 pub mod compile;
 pub mod core;
 pub mod diagnostic;

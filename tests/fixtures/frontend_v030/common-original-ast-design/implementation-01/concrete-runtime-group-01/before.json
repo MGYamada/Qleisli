@@ -1,0 +1,9 @@
+{
+  "status": "before-authoring-no-execution",
+  "path": "src/frontend/sized/elaborate.rs",
+  "bytes": 65344,
+  "sha256": "e84bbde77d158a058b515052c71092eed8fe8e8fbe2829cc785701f1105c4eb9",
+  "mode": 420,
+  "contract": "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-clarification-01.md",
+  "contract_sha256": "b87f71d5d84f6082fd6d0ba3aac67a06378c2e6e2e9e1db21af914c0b535a1a1"
+}

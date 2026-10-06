@@ -1,0 +1,58 @@
+{
+  "status": "before-repair",
+  "source_scope": "seven owned common checker files",
+  "execution": "no test, CLI, Cargo, Lean or native execution by this agent",
+  "files": [
+    {
+      "path": "src/frontend/check.rs",
+      "bytes": 29155,
+      "sha256": "0e1fcdceb218a19bb1448a5535a7c356ffb61d88fdfcd5800a335b65d46764c9",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "bytes": 23356,
+      "sha256": "c115e9647f89ae8d2b2e7c304738958101a496ad12b61b0b649f7d2f9cca521b",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/check/body/special.rs",
+      "bytes": 21031,
+      "sha256": "7298d9cf5274d9b350a8f196a2593b4d19dadc9bc2421fc56f672a0502716ab5",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/check/body.rs",
+      "bytes": 26994,
+      "sha256": "308c075fc138a1824577eec7055822c90f6e65eee23ca7961375eb2a25172586",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/check/declarations.rs",
+      "bytes": 14189,
+      "sha256": "c20bee0a89768e401df1afa4fd3653790a6945c50e64051a10f062abdfe4f401",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/check/normalize.rs",
+      "bytes": 14628,
+      "sha256": "2e4139705a5e192e951b5ca5ec11658c5c59aa663d75ba90d23bc7670694aa29",
+      "mode": "0644"
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "bytes": 11166,
+      "sha256": "91f83bcbb90d841c8c6d32919461345d9dcca5c7248c9e45ba5291ea51791fc1",
+      "mode": "0644"
+    }
+  ],
+  "raw_attempt06_stderr": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/05-focused-integration-tests.stderr.txt",
+    "bytes": 10357,
+    "sha256": "08d80365a3ec7fa99c93bd76220b0bfdc7df4d80a28ecfbc0cd7c5f58898d408"
+  },
+  "notes": [
+    "Existing first-delivery and validation records are retained unchanged.",
+    "Before snapshot includes parent formatting and arithmetic span() accessor correction."
+  ]
+}

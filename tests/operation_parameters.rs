@@ -57,14 +57,14 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
         assert!(parse_module(source).is_err(), "{source}");
     }
     // These are existing sized spellings now represented by the common AST.
-    // The finite backend still rejects out-of-profile counts before lowering.
+    // Complete source checking resolves the callee before concrete count limits.
     parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{g[](q)}").unwrap();
     let source = "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(4097,u)](q)}";
     parse_module(source).unwrap();
     let root = SourceRoot::new(source);
     assert_eq!(
         check_project(&root.0).unwrap_err().code,
-        ErrorCode::Unsupported
+        ErrorCode::UnknownName
     );
     std::thread::Builder::new()
         .stack_size(2 * 1024 * 1024)
@@ -424,12 +424,12 @@ fn unused_generic_declarations_and_static_dependencies_are_checked() {
     );
     rejects(
         "unitary fn bad[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{let v=U;q}",
-        ErrorCode::UnknownName,
+        ErrorCode::TypeMismatch,
     );
 }
 
 #[test]
-fn static_circuit_width_step_and_instance_limits_reject_without_panics() {
+fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics() {
     rejects("unitary fn dual[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>U,1=>U}}
         unitary fn bad(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){dual[repeat_op(513,phase)](c,q)}", ErrorCode::Limit);
     rejects(
@@ -439,7 +439,8 @@ fn static_circuit_width_step_and_instance_limits_reject_without_panics() {
     let too_wide = "controlled_op(".repeat(6) + "phase" + &")".repeat(6);
     rejects(
         &format!("unitary fn bad(q:Q<Bit>)->Q<Bit>{{use_op[{too_wide}](q)}}"),
-        ErrorCode::Limit,
+        // This deliberately wrong Op basis fails before a concrete width limit.
+        ErrorCode::TypeMismatch,
     );
     let mut source = String::new();
     // Structurally different, valid identity descriptions remain distinct instances.
@@ -455,32 +456,22 @@ fn static_circuit_width_step_and_instance_limits_reject_without_panics() {
 }
 
 #[test]
-fn lexical_runtime_shadow_preserves_static_call_rejection_order() {
-    // The static candidate determines the legacy argument-first diagnostic;
-    // it does not permit invoking a runtime value that shadows that parameter.
-    for (source, code, message, text) in [
-        (
-            include_str!(
-                "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli"
-            ),
-            ErrorCode::UnknownName,
-            "unknown value `missing`",
-            "missing",
+fn lexical_runtime_binding_rejects_static_shadow_before_later_calls() {
+    // Both original sources fail at the preceding let; later call arguments
+    // cannot make an illegal static-name shadow binding valid.
+    for source in [
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli"
         ),
-        (
-            include_str!(
-                "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli"
-            ),
-            ErrorCode::TypeMismatch,
-            "a local or spent runtime value cannot be a static operation",
-            "U",
+        include_str!(
+            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli"
         ),
     ] {
         let root = SourceRoot::new(source);
         let error = check_project(&root.0).unwrap_err();
-        assert_eq!(error.code, code);
-        assert_eq!(error.message, message);
-        assert_eq!(&source[error.span.start..error.span.end], text);
-        assert_eq!(error.span.start, source.rfind(text).unwrap());
+        assert_eq!(error.code, ErrorCode::TypeMismatch);
+        assert_eq!(error.message, "binding U shadows a static parameter/index");
+        assert_eq!(&source[error.span.start..error.span.end], "U");
+        assert_eq!(error.span.start, source.find("let U").unwrap() + 4);
     }
 }

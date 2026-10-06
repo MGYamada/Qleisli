@@ -1,0 +1,44 @@
+{
+  "label": "shared-type-tests",
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "--lib",
+    "--jobs=2",
+    "frontend::types::tests",
+    "--",
+    "--nocapture",
+    "--test-threads=2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 6.158335583051667,
+  "completed_utc": "2026-10-05T23:25:57.864780+00:00",
+  "stdout": {
+    "path": "04-shared-type-tests.stdout.txt",
+    "sha256": "fbac058aa5ce598cd2f0822ea7d47a58c2119204aa51999c6d38c15fe207cd5a",
+    "bytes": 491
+  },
+  "stderr": {
+    "path": "04-shared-type-tests.stderr.txt",
+    "sha256": "8e26998f2325d71cc94e523138dd0e7778590c5a1706fa36cea2d10bcf2f7c31",
+    "bytes": 240
+  },
+  "actual_test_results": [
+    {
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 112
+    }
+  ],
+  "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

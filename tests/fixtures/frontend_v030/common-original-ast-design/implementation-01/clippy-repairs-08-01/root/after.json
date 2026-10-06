@@ -1,0 +1,16 @@
+{
+  "files": {
+    "src/frontend/sized/check.rs": {
+      "before_sha256": "1d70cefd37b45c64dc32ef7227e639d7f2b23232c6b72db84a96b2e180d7345e",
+      "after_sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000",
+      "bytes": 13902
+    },
+    "src/frontend/sized/elaborate.rs": {
+      "before_sha256": "9ba102a8a8e4b70126c0808b8c56dac09ece1a19f8034946284ccedfc19733c0",
+      "after_sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+      "bytes": 68287
+    }
+  },
+  "patch_sha256": "6e415010c4ecfa49aa6b6be4bccadf624b5c6286018575c38021978250be44e5",
+  "scope": "Equivalent lazy filter/map: only matching static kinds perform clone/index; order and prior accounting unchanged. No lint suppression or changed authority."
+}

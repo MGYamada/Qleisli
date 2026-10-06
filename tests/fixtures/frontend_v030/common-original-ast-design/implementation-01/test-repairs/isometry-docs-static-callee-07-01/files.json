@@ -1,0 +1,34 @@
+{
+  "self_excluded": "files.json",
+  "scope": "Small additive one-message test repair; not full source closure. Active test is separately snapshotted here.",
+  "files": {
+    "README.md": {
+      "sha256": "a28991d552d14f81b81c29c526e294ae4def19d70061e05fbe65dc035027ce82",
+      "bytes": 804
+    },
+    "actual07.stderr-excerpt.txt": {
+      "sha256": "3d11dc93a2abbbdc4dba537810a73e03b353af067d0e2c8f127d74b862fb56a2",
+      "bytes": 339
+    },
+    "before.json": {
+      "sha256": "f2665efcac51908188a40627ba7aa165b7b91917349abd866d725c43a3e21758",
+      "bytes": 1187
+    },
+    "owned-test-diff.patch": {
+      "sha256": "c0479a8e1a4218d4fa72654fc69f3f6ca1242114d104b22f27065cdec6160164",
+      "bytes": 406
+    },
+    "repair.json": {
+      "sha256": "149add6044d778f4a71039cd973d5b1e81448a550ea9230a109287d2ea7252e5",
+      "bytes": 656
+    },
+    "sized_source.rs.authored.txt": {
+      "sha256": "4a72786c936d31064d7f949beec4c2a1dab2b6dbb6a23892f44590a05c69b8bd",
+      "bytes": 84396
+    },
+    "sized_source.rs.before.txt": {
+      "sha256": "50cf239f617aada9af6599a8afd92cd7a7b1904bd3851024f2361ad153a485ef",
+      "bytes": 84343
+    }
+  }
+}

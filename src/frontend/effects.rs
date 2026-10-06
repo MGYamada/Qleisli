@@ -96,6 +96,27 @@ impl BodyEffects {
         self.unitary.entry(id).or_insert(span);
     }
 
+    pub fn storage_cells(&self) -> usize {
+        1 + self.calls.len() + self.unitary.len()
+    }
+
+    pub fn inferred_with(&self, effects: &BTreeMap<DefId, Effect>) -> Option<Effect> {
+        self.calls.keys().try_fold(self.local, |effect, id| {
+            effects.get(id).map(|callee| effect.max(*callee))
+        })
+    }
+
+    /// The caller charges storage before copying these collection-local edges.
+    pub fn merge(&mut self, body: &Self) {
+        self.add(body.local, body.origin);
+        for (id, span) in &body.calls {
+            self.call(*id, *span);
+        }
+        for (id, span) in &body.unitary {
+            self.require_unitary(*id, *span);
+        }
+    }
+
     pub fn origin(&self, effects: &BTreeMap<DefId, Effect>) -> Span {
         let strongest = self
             .calls
@@ -113,26 +134,45 @@ impl BodyEffects {
 /// checking decides which graphs are admitted; solving a cycle cannot admit it.
 /// Each node rises at most twice, so edge propagation is bounded by the typed
 /// graph rather than repeated full-project scans or a recursion-depth guess.
-pub(super) fn infer(bodies: &BTreeMap<DefId, BodyEffects>) -> Option<BTreeMap<DefId, Effect>> {
-    let mut effects: BTreeMap<_, _> = bodies.iter().map(|(id, body)| (*id, body.local)).collect();
+/// Charge actual graph storage and propagation before each operation. Capacity
+/// failure is separate from a missing typed callee; neither becomes a fact.
+pub(super) fn infer_with<E>(
+    bodies: &BTreeMap<DefId, BodyEffects>,
+    mut charge: impl FnMut(Span, usize) -> Result<(), E>,
+) -> Result<Option<BTreeMap<DefId, Effect>>, E> {
+    let mut effects = BTreeMap::new();
+    for (id, body) in bodies {
+        charge(body.origin, 1)?;
+        effects.insert(*id, body.local);
+    }
     let mut users = BTreeMap::<DefId, BTreeSet<DefId>>::new();
     for (id, body) in bodies {
-        for callee in body.calls.keys() {
+        for (callee, span) in &body.calls {
+            charge(*span, 1)?;
             if !bodies.contains_key(callee) {
-                return None;
+                return Ok(None);
             }
+            charge(*span, usize::from(!users.contains_key(callee)) + 1)?;
             users.entry(*callee).or_default().insert(*id);
         }
     }
-    let mut pending: BTreeSet<_> = bodies.keys().copied().collect();
+    let mut pending = BTreeSet::new();
+    for (id, body) in bodies {
+        charge(body.origin, 1)?;
+        pending.insert(*id);
+    }
     while let Some(callee) = pending.pop_first() {
+        charge(bodies[&callee].origin, 1)?;
         for caller in users.get(&callee).into_iter().flatten() {
+            let span = bodies[caller].calls[&callee];
+            charge(span, 1)?;
             let joined = effects[caller].max(effects[&callee]);
             if joined > effects[caller] {
+                charge(span, 1 + usize::from(!pending.contains(caller)))?;
                 effects.insert(*caller, joined);
                 pending.insert(*caller);
             }
         }
     }
-    Some(effects)
+    Ok(Some(effects))
 }

@@ -6,28 +6,48 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Remove QFT implementation completion, generic QFT public integration and
+  fixed/generic QFT equivalence from v0.3.0 and the current goal by explicit
+  maintainer decision. Retain #317's semantic namespace/admission work, existing
+  fixed-QFT behavior and all historical evidence; assign no future target or
+  completion credit. Retain generic-QFT attempts and original experiment/tooling
+  archives only under experimental/qft (#317, #142).
+- Check every complete original declaration and body through one mandatory
+  source judgment before finite or selected concrete eligibility, including
+  private/unused definitions, both arms, zero folds and all four ordinary std
+  modules. Share typed 27-name primitive lookup, canonical declaration/lexical
+  facts, static premises, owners/access, dependencies and principal effects;
+  retain located pending concrete evidence obligations instead of placeholder
+  IR approval. Permit import-only cycles, reject all self-imports and runtime
+  bindings that shadow active static names, and charge actual source work/copies
+  under the common 1M capacity. Preserve direct transformed runtime owner groups separately from
+  unary opaque Op/static/host providers and checked decreasing runtime self
+  calls. Concrete projection/emitter limits, exact Meaning/clean/provider
+  evidence, native acceptance and general source preservation remain separate;
+  this unit adds no primitive, proof or guarantee (#32, #317).
 - Share checked formal operation bases, finite Meaning payloads and explicit
   Apply/Adjoint/Controlled grants between the two declaration paths. Retain
   original binder identities, ordered kind availability, diagnostic and budget
   order; borrow sized kind environments instead of cloning whole scopes.
   Generic assumptions grant no native acceptance or arbitrary provider access.
-  Common body convergence and canonical std integration remain unfinished
-  (#32, #317).
+  Concrete lowering convergence and canonical generic std integration remain
+  unfinished (#32, #317).
 - Share ordered static and runtime parameter-name checks over the original
   common AST. Preserve exact declaration/parameter association, per-argument
   type checks, complete unused-declaration rejection, capacities and existing
-  profile-specific diagnostic/native order. Full declaration/body convergence
+  profile-specific diagnostic/native order. Full concrete lowering convergence
   and canonical generic std integration remain unfinished (#32, #317).
 - Share actual runtime wildcard, duplicate-name and exact tuple/Unit binding
   rules between finite lowering and sized generic checking. Retain existing
   value moves, owner identities, capacity checks and diagnostic order; the
-  borrowed sized pattern bridge does not complete declaration/body convergence
+  borrowed sized pattern bridge does not complete concrete lowering convergence
   or expose canonical std APIs (#32, #317).
 - Share retained original source, common syntax and provenance through a private
   immutable collection. Preserve complete declaration checks, source budgets,
   diagnostic order and the fixed ordinary std registry; retain selected file
-  paths without inventing in-memory manifest provenance. Common checker and
-  canonical std namespace integration remain unfinished (#32, #317).
+  paths without inventing in-memory manifest provenance. Concrete emitter
+  convergence and canonical generic std namespace integration remain unfinished
+  (#32, #317).
 - Include #317 in the maintainer-confirmed 111-Issue scope and release gate.
   Reject prior 110-Issue candidates that omit semantic stdlib namespace criteria
   or acceptance evidence; preserve all earlier targets and historical records.

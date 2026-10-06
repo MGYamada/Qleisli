@@ -1,0 +1,33 @@
+{
+  "files": {
+    "README.md": {
+      "bytes": 3502,
+      "sha256": "6d7ab0a9fa926cd5c159eac822039ba7332618908a3ca1ddfbef3ca419564776"
+    },
+    "before/docs/src/reference/primitive-boundary.md": {
+      "bytes": 29615,
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a"
+    },
+    "before/docs/src/reference/source-text.md": {
+      "bytes": 20704,
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935"
+    },
+    "clarification.patch": {
+      "bytes": 5117,
+      "sha256": "9826acb85b8ee24c94c5f5d60c49788b02c370f40432e4c6df22ddf11cbb9984"
+    },
+    "proposal.json": {
+      "bytes": 15030,
+      "sha256": "e2e50c4b1380394b2103301e6b8f7f98d7a2a810a798f23de56925e0cc4fa900"
+    },
+    "proposed/docs/src/reference/primitive-boundary.md": {
+      "bytes": 29926,
+      "sha256": "a4520671a9ed55265ebceea7fb053ffbd7379bbee1cd1f517b45075ef65e6350"
+    },
+    "proposed/docs/src/reference/source-text.md": {
+      "bytes": 21030,
+      "sha256": "9efe2d241edd5ae789552fcce3c49b1aab598c7bc29c669987f6aed986e977f6"
+    }
+  },
+  "self_excluded": "files.json"
+}

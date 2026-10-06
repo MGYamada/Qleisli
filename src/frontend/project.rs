@@ -20,6 +20,14 @@ mod source_file;
 
 pub use manifest::{QrateSource, manifest_warnings, qrate_source_root};
 
+pub(super) fn check_bundled_manifest() -> Result<(), Diagnostic> {
+    edition::check_manifest(
+        Path::new(BundledRegistry::manifest_path()),
+        BundledRegistry::manifest(),
+    )
+    .map_err(LoadFailure::into_diagnostic)
+}
+
 /// Byte policy before UTF-8 decoding. Bounded project loading also permits at
 /// most max(64, project_bytes / 1024) directory entries, including empty files.
 /// Entry accounting is separate from source bytes. The legacy adapter is
@@ -424,7 +432,6 @@ impl Project {
             .collect();
         let mut project = Self { root, modules };
         project.resolve_imports()?;
-        project.reject_cycles()?;
         Ok(project)
     }
 
@@ -433,7 +440,7 @@ impl Project {
     }
 
     pub(super) fn resolution(&self) -> Result<super::resolve::Resolution, LoadFailure> {
-        use super::resolve::{Profile, Resolution};
+        use super::resolve::Resolution;
         let mut result = Resolution::new(
             self.modules
                 .iter()
@@ -443,7 +450,7 @@ impl Project {
         for (name, source) in &self.modules {
             let module = result.module(name).expect("registered module");
             let scope = result
-                .imports(module, &source.ast, Profile::Finite)
+                .imports(module, &source.ast)
                 .map_err(|failure| self.resolution_error(failure))?;
             result.set_scope(module, scope);
         }
@@ -514,28 +521,6 @@ impl Project {
         }
         for (name, imports) in scopes {
             self.modules.get_mut(&name).expect("known module").imports = imports;
-        }
-        Ok(())
-    }
-
-    fn reject_cycles(&self) -> Result<(), LoadFailure> {
-        let resolution = self.resolution()?;
-        let edges = resolution
-            .modules()
-            .map(|module| (module, resolution.scope(module).edges.clone()))
-            .collect();
-        if let Some((owner, span, cycle)) =
-            super::resolve::cycle(resolution.modules(), &edges, false)
-        {
-            let names: Vec<_> = cycle
-                .into_iter()
-                .map(|module| resolution.module_name(module))
-                .collect();
-            return Err(source_error(
-                &self.modules[resolution.module_name(owner)],
-                span,
-                format!("cyclic import: {}", names.join(" -> ")),
-            ));
         }
         Ok(())
     }
@@ -710,5 +695,10 @@ fn check_declarations(module: &Source) -> Result<(), LoadFailure> {
 }
 
 fn sealed_kind(module: &str, name: &str) -> Option<FnKind> {
-    super::core::primitive(module, name).map(|item| item.kind)
+    let path = format!("{module}::{name}");
+    super::check::primitive::Primitive::lookup(&path).map(|item| match item.effect() {
+        crate::ir::Effect::Unitary => FnKind::Unitary,
+        crate::ir::Effect::Iso => FnKind::Iso,
+        crate::ir::Effect::Observe => FnKind::Observe,
+    })
 }

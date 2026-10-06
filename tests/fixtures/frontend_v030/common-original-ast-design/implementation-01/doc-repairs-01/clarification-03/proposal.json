@@ -1,0 +1,46 @@
+{
+  "status": "LOCAL CANDIDATE ONLY; additive prose precision, no new contract",
+  "recorded_utc": "2026-10-05T23:28:58.312704+00:00",
+  "application_order": [
+    "original proposed.patch",
+    "proposal-clarification/clarification.patch",
+    "clarification-02/clarification.patch",
+    "clarification-03/clarification.patch"
+  ],
+  "before": {
+    "docs/src/reference/type-model.md": {
+      "bytes": 33244,
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8"
+    }
+  },
+  "proposed": {
+    "docs/src/reference/type-model.md": {
+      "bytes": 33498,
+      "sha256": "ec0c3f8ee9a1bed1fcc3661d994be578047c3090de124b8bc7b9106e9dd756a4"
+    }
+  },
+  "old": "Those keep one input `Q<A> -> Q<A>`; `tensor_op` describes a packed quantum basis.\n",
+  "new": "Opaque `Op<A>`, static/host provider and certified logical-operation interfaces\nkeep one input `Q<A> -> Q<A>`. FunctionEquality keeps that interface for its\nchecked implementation and any ordinary specification function. A declared\nMeaning remains a semantic object, not a runtime function. `tensor_op` describes\na packed quantum basis.\n",
+  "reported_separate_review": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/review-by-cli-01.md",
+    "bytes": 6581,
+    "sha256": "1d9d189a21861336dc644cafe4814e5f24a73ba7597aaed5704a8f732e67005c"
+  },
+  "protected_prior_maps": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/files.json": {
+      "bytes": 1899,
+      "sha256": "55ab8a963b7015499727a875f0802d78a3e802c5bec1bb14a89ef6e3e85cfb8e"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/files.json": {
+      "bytes": 551,
+      "sha256": "3eda5c5c4f12d75db2b7e59668017dd90d072ecc3dd474128dfb7d7dd8126ad7"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/clarification-02/files.json": {
+      "bytes": 1124,
+      "sha256": "c2eb07cd2ef9d8f085a5197543f4c2d404b9c4e2a3eb012109d8e233a1c98f3c"
+    }
+  },
+  "active_document_unchanged": true,
+  "tests_builds_validators_cli_native_lean_executed": false,
+  "claims": "No new adoption, guarantee, mathematical discharge, validation success, Issue completion or release approval."
+}

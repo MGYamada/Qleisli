@@ -1,0 +1,46 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/qif-wrong-shape/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-05T23:34:57.586617+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.005110458005219698,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "exit_code": 1,
+  "raw": {
+    "stdout": {
+      "path": "qif-wrong-shape-selected-auto-check-text.stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "mode": 420
+    },
+    "stderr": {
+      "path": "qif-wrong-shape-selected-auto-check-text.stderr.bin",
+      "bytes": 91,
+      "sha256": "2925b525f631335e7d21efea11b537b65ef916e82e9daf44fff15992e69b447b",
+      "mode": 420
+    }
+  },
+  "native_journal": {
+    "path": "qif-wrong-shape-selected-auto-check-text.native.jsonl",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  },
+  "native_forwarded_attempts": 0,
+  "native_journal_parse_error": null,
+  "native_count_scope": "Forwarder rows immediately before execv; not independent native-start/exit attestations."
+}

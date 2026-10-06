@@ -1,0 +1,290 @@
+{
+  "format": "qleisli.additive-documentation-clarification",
+  "status": "LOCAL CANDIDATE ONLY; self-review, not independent review",
+  "recorded_utc": "2026-10-05T23:28:29.305558+00:00",
+  "application_order": [
+    "original proposed.patch",
+    "proposal-clarification/clarification.patch",
+    "clarification-02/clarification.patch"
+  ],
+  "before": {
+    "docs/src/reference/source-text.md": {
+      "bytes": 20704,
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935"
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "bytes": 29615,
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a"
+    }
+  },
+  "proposed": {
+    "docs/src/reference/source-text.md": {
+      "bytes": 21030,
+      "sha256": "9efe2d241edd5ae789552fcce3c49b1aab598c7bc29c669987f6aed986e977f6"
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "bytes": 29926,
+      "sha256": "a4520671a9ed55265ebceea7fb053ffbd7379bbee1cd1f517b45075ef65e6350"
+    }
+  },
+  "exact_replacements": [
+    {
+      "path": "docs/src/reference/source-text.md",
+      "old": "original declaration ordinals and binder identities; a later declaration or\nstatic kind cannot rescue an earlier invalid use. Quantum values have fresh\n",
+      "new": "original declaration ordinals and binder identities. A static kind may refer\nonly to preceding static parameters; complete declaration registration does\nnot make a forward static kind available. Valid forward and backward sibling\nreferences resolve against the complete registered declaration table. Quantum\nvalues have fresh\n"
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "old": "ordinary source modules and validate its edition-2026 manifest. Bundled bytes\nand module slots count against the applicable loader limits before copying or\nparsing; placement under `std::` supplies no checking exemption. The selected\nloader accepts 1 through 60 supplied modules: the four bundles count toward its\n",
+      "new": "ordinary source modules and validate its edition-2026 manifest. Both loaders\napply their byte policies to bundled bytes before copying or parsing;\nplacement under `std::` supplies no checking exemption. The selected loader\nalso reserves all four bundled module slots. It accepts 1 through 60 supplied\nmodules: the four bundles count toward its\n"
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "old": "compatibility view. Every operation reconstructs checking facts from that\nview's current original ASTs; no stale parallel collection or approval is\nreused after caller mutation. The selected path retains its immutable originals\n",
+      "new": "compatibility view. Finite checking, compilation and checked-effect operations\nreconstruct facts from that view's current original ASTs; no stale parallel\ncollection or approval is reused after caller mutation. Source-only\ndocumentation and rendering do not acquire semantic checking from this rule.\nThe selected path retains its immutable originals\n"
+    },
+    {
+      "path": "docs/src/reference/primitive-boundary.md",
+      "old": "eligibility refusal. `sized/check.rs::primitive_signature` and\n`sized/elaborate.rs::primitive` retain concrete substitution and materialization\nchecks. Concrete phase arguments require\n",
+      "new": "eligibility refusal. `src/frontend/sized/check.rs` checks closed substitutions\nand explicit bindings against the common checked interfaces. The selected\nconcrete catalog is `src/frontend/sized/primitive.rs`;\n`src/frontend/sized/elaborate.rs::primitive` materializes its concrete\nsignatures and guards. Concrete phase arguments require\n"
+    },
+    {
+      "path": "docs/src/reference/primitive-boundary.md",
+      "old": "with bytes/modules charged under the loader's policies before parsing/copying.\nThe selected map counts all four bundles toward its module and aggregate byte\nlimits. No ambient source replacement or checking exemption follows from\n",
+      "new": "with bundled bytes checked under each loader's byte policy before\nparsing/copying. The selected loader additionally reserves all four bundled\nmodule slots and counts their bytes toward its aggregate limit. The finite\nloader retains its separate bounded and explicit legacy byte policies and\nlocal filesystem discovery limits. No ambient source replacement or checking\nexemption follows from\n"
+    }
+  ],
+  "preserved_original_packet": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/README.md": {
+      "bytes": 2357,
+      "sha256": "21c32b63950980cb4e307cf58a3cb91f2acef5347a99218b01b90114a44d70ce"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/before/CHANGELOG.md": {
+      "bytes": 106160,
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/before/docs/src/reference/primitive-boundary.md": {
+      "bytes": 28267,
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/before/docs/src/reference/source-text.md": {
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/before/docs/src/reference/type-model.md": {
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal.json": {
+      "bytes": 3070,
+      "sha256": "44ef750658e6f9c3723d77577aeaa4f050245491b8fad447513e05b2697fe8b8"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed/CHANGELOG.md": {
+      "bytes": 107184,
+      "sha256": "46c8d08b57cccdd2d50802e2978419be348637dfee282913519ea2102a4a0bc5"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed/docs/src/reference/primitive-boundary.md": {
+      "bytes": 29615,
+      "sha256": "ddc1e01c8143a8098c02bd306bfbdac590f20bd956e2f3c216f2b45f39b6a37a"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed/docs/src/reference/source-text.md": {
+      "bytes": 20704,
+      "sha256": "4f018210ffe29098d3d6de97bb4dc63e92189f55a8f3676f30864be0fbd8c935"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed/docs/src/reference/type-model.md": {
+      "bytes": 33244,
+      "sha256": "dff7581cd0cb04e47c4563139622af3f5972d6ebb9b9f4280296d1d50fe2f9c8"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposed.patch": {
+      "bytes": 41012,
+      "sha256": "53578d2a13da45fd34ba7e85d1026aa025676a8c29c426e27b6e8538bf1996a1"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/files.json": {
+      "bytes": 1899,
+      "sha256": "55ab8a963b7015499727a875f0802d78a3e802c5bec1bb14a89ef6e3e85cfb8e"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/clarification.patch": {
+      "bytes": 1016,
+      "sha256": "bfc908ca3b1d4818126955fafc9e9a4d8c99e7f661177a6686f50479b6159a0f"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/proposal.json": {
+      "bytes": 855,
+      "sha256": "8a7f4b327ee9cb0fee4ebb911c38e65c58c3a136c4c274a6dae453b6e8838c7d"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/wording.md": {
+      "bytes": 843,
+      "sha256": "14d97d81ee8d07d4ecf328c2a3f0470b5e1b9fdde50f599b3049c20d5e8fe35b"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/doc-repairs-01/proposal-clarification/files.json": {
+      "bytes": 551,
+      "sha256": "3eda5c5c4f12d75db2b7e59668017dd90d072ecc3dd474128dfb7d7dd8126ad7"
+    }
+  },
+  "active_docs_before": {
+    "docs/src/reference/source-text.md": {
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "bytes": 28267,
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f"
+    },
+    "docs/src/reference/type-model.md": {
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    "CHANGELOG.md": {
+      "bytes": 106160,
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615"
+    }
+  },
+  "bounded_incomplete_inspection_inputs": {
+    "src/frontend/project.rs": {
+      "bytes": 25048,
+      "sha256": "6751e1619e4050a9e27d6334427df3fe9524cb930428f2a9e8a758f8b549700a"
+    },
+    "src/frontend/source.rs": {
+      "bytes": 6142,
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3"
+    },
+    "src/frontend/sized.rs": {
+      "bytes": 22797,
+      "sha256": "366007e2fe05a4877c9baf954b8034a95fdaa70857d644dbee6949d6758cbd99"
+    },
+    "src/frontend/check.rs": {
+      "bytes": 31469,
+      "sha256": "cbe9bf52967f7200181079ff9a11a6ec499cfd6f0445f822566553abeb05ae3d"
+    },
+    "src/frontend/check/declarations.rs": {
+      "bytes": 14517,
+      "sha256": "7c5e2f2c297e24e16e71359936376d3c5ae3546f9c0bd755e926f853b98b76a3"
+    },
+    "src/frontend/check/primitive.rs": {
+      "bytes": 11172,
+      "sha256": "38caedf63ce840caccfabd94f522fef79f9e408c3eb139f22d5df25b3f195c11"
+    },
+    "src/frontend/check/body/operations.rs": {
+      "bytes": 29319,
+      "sha256": "17b25a718940954ce743ef92c662879197a22c43e55e20a6f119fbe5a47d9943"
+    },
+    "src/frontend/check/body/special.rs": {
+      "bytes": 21199,
+      "sha256": "d4c7acfe85e0f0eab22bee9497d8331df1ce43e94ddca71a49476eba31fb396d"
+    },
+    "src/frontend/sized/check.rs": {
+      "bytes": 13902,
+      "sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000"
+    },
+    "src/frontend/sized/primitive.rs": {
+      "bytes": 8221,
+      "sha256": "60456760d69d05a438456dd98baaa54de49a8b9f4edd111a7f22744c55f424e4"
+    },
+    "src/frontend/sized/elaborate.rs": {
+      "bytes": 68287,
+      "sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490"
+    },
+    "src/frontend/compile/mod.rs": {
+      "bytes": 38022,
+      "sha256": "cc70a9c5a9fa5fe445cf7299c08f454dc624bec36a3f07561675075aa45e64bd"
+    },
+    "src/frontend/compile/profile.rs": {
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984"
+    },
+    "src/frontend/documentation.rs": {
+      "bytes": 9211,
+      "sha256": "75db8ae40229b4e50390dae5c272bf3d6ee8b17f7f9982ae6bbaf38daf53a464"
+    },
+    "src/frontend/effects.rs": {
+      "bytes": 6201,
+      "sha256": "2487abe584b3f6bf4c5877fc18d0636e44155682ecde53012ca9b43ad9108da1"
+    },
+    "docs/src/reference/source-text.md": {
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    "docs/src/reference/primitive-boundary.md": {
+      "bytes": 28267,
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f"
+    },
+    "docs/src/reference/type-model.md": {
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    "CHANGELOG.md": {
+      "bytes": 106160,
+      "sha256": "4641a56915452185f1bc9b967b5af9474265c7c3238a583f22614305c10f7615"
+    },
+    "governance/README.md": {
+      "bytes": 7009,
+      "sha256": "457c42a5f3564d074593968b1a2aeafbf9683c145b11cc47e9166e8f678c0e62"
+    },
+    "CONSTITUTION.md": {
+      "bytes": 20257,
+      "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b"
+    },
+    "GOVERNANCE.md": {
+      "bytes": 6573,
+      "sha256": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469"
+    },
+    "docs/src/reference/authority.md": {
+      "bytes": 16091,
+      "sha256": "6650e470e826fb0147ee92e582e49caef0603de8290b70e1d1a4497f013f36d9"
+    },
+    "governance/ratification-2026.json": {
+      "bytes": 2478,
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+    },
+    "governance/guarantees.json": {
+      "bytes": 5535,
+      "sha256": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d"
+    },
+    "governance/interpretations/initial-2026-reviewed.txt": {
+      "bytes": 17631,
+      "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+    },
+    "governance/interpretations/initial-2026-adoption.json": {
+      "bytes": 2713,
+      "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+    },
+    "governance/proposals/exactness-2026.md": {
+      "bytes": 11721,
+      "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179"
+    },
+    "governance/interpretations/exactness-2026-adoption.json": {
+      "bytes": 2877,
+      "sha256": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59"
+    },
+    "governance/proposals/initial-guarantees.json": {
+      "bytes": 15180,
+      "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
+    },
+    "governance/guarantees/initial-2026-admission.json": {
+      "bytes": 4124,
+      "sha256": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md": {
+      "bytes": 22769,
+      "sha256": "60d3508a0bff407cc9acd8d66baa141fab9ce093d23ec8e57cfc13ee54b835e1"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/provider-access-clarification-01.md": {
+      "bytes": 3460,
+      "sha256": "04669bfc1fd1bbd92942dd27bf3b180e772bda03d094c485bf4c346e9598d720"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-clarification-01.md": {
+      "bytes": 6732,
+      "sha256": "b87f71d5d84f6082fd6d0ba3aac67a06378c2e6e2e9e1db21af914c0b535a1a1"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/runtime-group-before-code-01.json": {
+      "bytes": 908,
+      "sha256": "a18467f6e4a7f7f1c8facc726c351ac99d22ccd71f31f7b4b10771d2854e7a93"
+    }
+  },
+  "executions": {
+    "validators_tests_builds_cli_native_lean": false
+  },
+  "constitutional_base_supplied": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "continuity": "root-reported startup pass; not rerun in this read-only task",
+  "validation_status": "latest root attempt live at preparation; no success inferred",
+  "claims": "No new source rule, adopted interpretation, guarantee, proof, preservation, Issue completion or release approval."
+}

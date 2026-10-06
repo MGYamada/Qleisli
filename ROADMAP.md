@@ -47,6 +47,14 @@ scope and assumptions. The three broader obligations remain pending. The
 [release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
 tracks the 111 selected issues, including the exactness interpretation in #311,
 ordinary-body effect inference in #315 and semantic stdlib namespaces in #317.
+The maintainer has excluded QFT implementation completion, generic QFT public
+integration and fixed/generic QFT equivalence from v0.3.0 and the current
+development goal. No future target is selected. #317 retains its namespace and
+admission work; existing fixed-QFT code, proofs and regression records remain.
+The current scope override is recorded in #317 and #142. It earns no completion
+credit and does not change the selected 111-Issue count.
+Trial code and historical experiment archives are retained only under
+experimental/qft; this directory does not expose a canonical stdlib API.
 Edition 2026 identifies the constitutional
 regime and remains unchanged by the syntax, type-system and CLI migration.
 

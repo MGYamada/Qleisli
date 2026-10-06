@@ -1,4 +1,5 @@
 //! Public profile and accessor regressions for the internal shared type migration.
+use qleisli::frontend::parser::parse_module;
 use qleisli::frontend::sized::{ParsedProgram, SourceType};
 use std::collections::BTreeMap;
 
@@ -73,15 +74,25 @@ fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_sup
     ] {
         parsed(source);
     }
-    let error = ParsedProgram::parse(BTreeMap::from([(
-        "main".into(),
-        // Exact packaged products are supported; selected-source coherent
-        // lifting remains a separate capability from explicit split/join.
-        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<Unit> { do ((),u) <- q; pure u }".into(),
-    )]))
-    .unwrap_err();
+    // The complete coherent-lift source is valid; concrete selected lowering
+    // remains a separate capability from explicit split/join.
+    let source = "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<Unit> { do ((),u) <- q; pure u }";
+    let program = parsed(source);
+    assert_eq!(program.source("main"), Some(source));
+    assert_eq!(program.syntax("main"), Some(&parse_module(source).unwrap()));
+    let error = program
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap_err();
     assert_eq!(error.code(), "unsupported");
-    assert!(error.message().starts_with("sized preparation profile:"));
+    assert_eq!(error.module(), Some("main"));
+    assert_eq!(
+        error.message(),
+        "sized preparation profile: unsupported runtime expression"
+    );
+    assert_eq!(
+        &source[error.span().start..error.span().end],
+        "do ((),u) <- q; pure u"
+    );
 }
 
 #[test]

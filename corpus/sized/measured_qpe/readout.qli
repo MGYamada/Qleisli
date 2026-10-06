@@ -6,7 +6,6 @@ use std::registers::consume_empty;
 use std::observe::measure_z;
 use std::classical::empty_bits;
 use std::classical::prepend_bit;
-use readout::measure_bits;
 
 pub observe fn measure_bits[static n: Nat](q: Q<Bits<n>>) -> Bits<n> {
     if static n == 0 {

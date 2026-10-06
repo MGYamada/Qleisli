@@ -1,0 +1,16 @@
+{
+  "files": [
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/policy-validation-01/independent-review-01/inputs.json",
+      "bytes": 23926,
+      "sha256": "435db82ba2d229f096ee248f741e2d5e9ff05cccb61df0a13be582406feb4906",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/policy-validation-01/independent-review-01/review.md",
+      "bytes": 5138,
+      "sha256": "bc8b60392b4c70df4c01e4deb31483be030d4cc91a3099f14011f380774b49f4",
+      "mode": 420
+    }
+  ]
+}

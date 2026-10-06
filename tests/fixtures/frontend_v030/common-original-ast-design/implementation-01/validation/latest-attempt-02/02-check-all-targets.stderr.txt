@@ -1,0 +1,304 @@
+    Checking qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+warning: field `logical` is never read
+   --> src/frontend/check.rs:158:22
+    |
+158 |     CertifiedClean { logical: OperationIdentity },
+    |     --------------   ^^^^^^^
+    |     |
+    |     field in this variant
+    |
+    = note: `ObligationKind` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: fields `provider` and `meaning` are never read
+   --> src/frontend/check.rs:159:16
+    |
+159 |     Provider { provider: DefId, meaning: Option<DefId> },
+    |     --------   ^^^^^^^^         ^^^^^^^
+    |     |
+    |     fields in this variant
+    |
+    = note: `ObligationKind` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: fields `required` and `supplied` are never read
+   --> src/frontend/check.rs:160:23
+    |
+160 |     MeaningEquality { required: DefId, supplied: Option<DefId> },
+    |     ---------------   ^^^^^^^^         ^^^^^^^^
+    |     |
+    |     fields in this variant
+    |
+    = note: `ObligationKind` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: field `0` is never read
+   --> src/frontend/check.rs:164:43
+    |
+164 | pub(super) enum OperationIdentity {Global(resolve::Target),Formal(BinderKey)}
+    |                                    ------ ^^^^^^^^^^^^^^^
+    |                                    |
+    |                                    field in this variant
+    |
+    = note: `OperationIdentity` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+    |
+164 - pub(super) enum OperationIdentity {Global(resolve::Target),Formal(BinderKey)}
+164 + pub(super) enum OperationIdentity {Global(()),Formal(BinderKey)}
+    |
+
+warning: field `0` is never read
+   --> src/frontend/check.rs:164:67
+    |
+164 | pub(super) enum OperationIdentity {Global(resolve::Target),Formal(BinderKey)}
+    |                                                            ------ ^^^^^^^^^
+    |                                                            |
+    |                                                            field in this variant
+    |
+    = note: `OperationIdentity` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+    |
+164 - pub(super) enum OperationIdentity {Global(resolve::Target),Formal(BinderKey)}
+164 + pub(super) enum OperationIdentity {Global(resolve::Target),Formal(())}
+    |
+
+warning: fields `definition`, `span`, and `kind` are never read
+   --> src/frontend/check.rs:167:9
+    |
+166 | pub(super) struct Obligation {
+    |                   ---------- fields in this struct
+167 |     pub definition: DefId,
+    |         ^^^^^^^^^^
+168 |     pub span: Span,
+    |         ^^^^
+169 |     pub kind: ObligationKind,
+    |         ^^^^
+    |
+    = note: `Obligation` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `effect` is never used
+   --> src/frontend/check.rs:184:12
+    |
+182 | impl CheckedProgram {
+    | ------------------- method in this implementation
+183 |     pub fn interface(&self, id: DefId) -> &Interface { &self.interfaces[&id] }
+184 |     pub fn effect(&self, id: DefId) -> Option<FunctionEffect> { self.effects.get(&id).copied() }
+    |            ^^^^^^
+
+warning: function `program` is never used
+   --> src/frontend/check.rs:228:15
+    |
+228 | pub(super) fn program<'a>(modules:BTreeMap<&'a str,&'a ast::Module>,limits:SourceLimits)->Result<CheckedProgram> {
+    |               ^^^^^^^
+
+warning: function `equivalent_types` is never used
+   --> src/frontend/check.rs:280:15
+    |
+280 | pub(super) fn equivalent_types(a:&Ty,b:&Ty,context:&Context,span:Span)->Result<bool> {
+    |               ^^^^^^^^^^^^^^^^
+
+warning: function `close_type` is never used
+   --> src/frontend/check.rs:284:15
+    |
+284 | pub(super) fn close_type(ty:&Ty,naturals:&BTreeMap<BinderKey,u32>,bases:&BTreeMap<BinderKey,Type<u32>>,span:Span)->Result<Type<u32>> {
+    |               ^^^^^^^^^^
+
+warning: function `called_static_names` is never used
+   --> src/frontend/compile/operations.rs:777:15
+    |
+777 | pub(super) fn called_static_names<'a>(op: &'a StaticOp, names: &mut Vec<&'a Ident>) {
+    |               ^^^^^^^^^^^^^^^^^^^
+
+warning: function `infer` is never used
+   --> src/frontend/effects.rs:137:15
+    |
+137 | pub(super) fn infer(bodies: &BTreeMap<DefId, BodyEffects>) -> Option<BTreeMap<DefId, Effect>> {
+    |               ^^^^^
+
+warning: variant `Sized` is never constructed
+  --> src/frontend/resolve.rs:34:5
+   |
+32 | pub(super) enum Profile {
+   |                 ------- variant in this enum
+33 |     Finite,
+34 |     Sized,
+   |     ^^^^^
+   |
+   = note: `Profile` has derived impls for the traits `Debug` and `Clone`, but these are intentionally ignored during dead code analysis
+
+warning: method `modules` is never used
+   --> src/frontend/resolve.rs:169:12
+    |
+ 85 | impl Resolution {
+    | --------------- method in this implementation
+...
+169 |     pub fn modules(&self) -> impl Iterator<Item = ModuleId> + '_ {
+    |            ^^^^^^^
+
+warning: function `cycle` is never used
+   --> src/frontend/resolve.rs:324:15
+    |
+324 | pub(super) fn cycle<N: Copy + Ord>(
+    |               ^^^^^
+
+warning: function `order` is never used
+   --> src/frontend/resolve.rs:385:15
+    |
+385 | pub(super) fn order<N: Copy + Ord>(pending: BTreeMap<N, BTreeSet<N>>) -> Result<Vec<N>, N> {
+    |               ^^^^^
+
+warning: method `bind_globals` is never used
+  --> src/frontend/resolve/locals.rs:87:12
+   |
+84 | impl Table {
+   | ---------- method in this implementation
+...
+87 |     pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>) {
+   |            ^^^^^^^^^^^^
+
+warning: associated function `new` is never used
+   --> src/frontend/resolve/locals.rs:126:12
+    |
+125 | impl<'ast> Index<'ast> {
+    | ---------------------- associated function in this implementation
+126 |     pub fn new(
+    |            ^^^
+
+warning: methods `binder`, `usage`, and `natural_usage` are never used
+   --> src/frontend/resolve/locals.rs:186:12
+    |
+185 | impl Occurrences<'_> {
+    | -------------------- methods in this implementation
+186 |     pub fn binder(&self, name: &Ident) -> BinderId { self.bindings[&(std::ptr::from_ref(name) as usize)] }
+    |            ^^^^^^
+187 |     pub fn usage(&self, name: &Ident) -> UseSiteId { self.references[&(std::ptr::from_ref(name) as usize)] }
+    |            ^^^^^
+188 |     pub fn natural_usage(&self, natural: &Natural) -> UseSiteId { self.natural_references[&(std::ptr::from_ref(natural) as usize)] }
+    |            ^^^^^^^^^^^^^
+
+warning: field `natural_references` is never read
+   --> src/frontend/resolve/locals.rs:224:5
+    |
+220 | pub(in crate::frontend) struct Forest<'ast> {
+    |                                ------ field in this struct
+...
+224 |     natural_references: BTreeMap<usize, UseSiteId>,
+    |     ^^^^^^^^^^^^^^^^^^
+
+warning: methods `insert` and `natural_usage` are never used
+   --> src/frontend/resolve/locals.rs:232:12
+    |
+227 | impl<'ast> Forest<'ast> {
+    | ----------------------- methods in this implementation
+...
+232 |     pub fn insert(&mut self, index: Index<'ast>) {
+    |            ^^^^^^
+...
+245 |     pub fn natural_usage(&self, natural: &Natural) -> &UseInfo {
+    |            ^^^^^^^^^^^^^
+
+warning: function `primitive_path` is never used
+  --> src/frontend/sized.rs:34:15
+   |
+34 | pub(super) fn primitive_path(path: &str) -> Option<&'static str> {
+   |               ^^^^^^^^^^^^^^
+
+warning: associated items `variable`, `scale`, `add`, and `sub` are never used
+   --> src/frontend/sized/linear.rs:46:12
+    |
+ 40 | impl Linear {
+    | ----------- associated items in this implementation
+...
+ 46 |     pub fn variable(name: &BinderKey) -> Self {
+    |            ^^^^^^^^
+...
+ 62 |     pub fn scale(&self, n: i128) -> Result<Self> {
+    |            ^^^^^
+...
+ 80 |     pub fn add(&self, b: &Self) -> Result<Self> {
+    |            ^^^
+...
+102 |     pub fn sub(&self, b: &Self) -> Result<Self> {
+    |            ^^^
+
+warning: multiple associated items are never used
+   --> src/frontend/sized/linear.rs:116:12
+    |
+115 | impl Context {
+    | ------------ associated items in this implementation
+116 |     pub fn storage_cells(&self) -> Result<usize> {
+    |            ^^^^^^^^^^^^^
+...
+132 |     pub fn natural(names: impl IntoIterator<Item = BinderKey>) -> Result<Self> {
+    |            ^^^^^^^
+...
+135 |     pub fn natural_budgeted(names: impl IntoIterator<Item = BinderKey>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<...
+    |            ^^^^^^^^^^^^^^^^
+...
+160 |     pub fn push(&self, inequalities: &[Linear]) -> Self {
+    |            ^^^^
+...
+178 |     pub fn compare(&self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span) -> Result<Self> {
+    |            ^^^^^^^
+...
+223 |     pub fn proves_le(&self, a: &Linear, b: &Linear, span: Span, obligation: &str) -> Result<bool> {
+    |            ^^^^^^^^^
+...
+242 |     pub fn feasible(&self, span: Span, obligation: &str) -> Result<bool> {
+    |            ^^^^^^^^
+
+warning: function `natural` is never used
+   --> src/frontend/sized/linear.rs:342:15
+    |
+342 | pub(super) fn natural(
+    |               ^^^^^^^
+
+warning: function `natural_with_prefix` is never used
+   --> src/frontend/sized/linear.rs:349:15
+    |
+349 | pub(super) fn natural_with_prefix(
+    |               ^^^^^^^^^^^^^^^^^^^
+
+warning: function `natural_inner` is never used
+   --> src/frontend/sized/linear.rs:361:4
+    |
+361 | fn natural_inner(
+    |    ^^^^^^^^^^^^^
+
+warning: function `predicate` is never used
+   --> src/frontend/sized/linear.rs:410:15
+    |
+410 | pub(super) fn predicate(
+    |               ^^^^^^^^^
+
+warning: field `guard` is never read
+   --> src/frontend/sized/primitive.rs:125:9
+    |
+120 | pub(super) struct Signature {
+    |                   --------- field in this struct
+...
+125 |     pub guard: Guard,
+    |         ^^^^^
+
+warning: methods `map_sizes` and `quantum_group` are never used
+   --> src/frontend/types.rs:97:19
+    |
+ 95 | impl<N> Type<N> {
+    | --------------- methods in this implementation
+ 96 |     /// Resolve sizes without changing any constructor or owner boundary.
+ 97 |     pub(super) fn map_sizes<M, E>(
+    |                   ^^^^^^^^^
+...
+237 |     pub(super) fn quantum_group(&self) -> bool {
+    |                   ^^^^^^^^^^^^^
+
+warning: `qleisli` (lib) generated 30 warnings
+warning: method `map_sizes` is never used
+  --> src/frontend/types.rs:97:19
+   |
+95 | impl<N> Type<N> {
+   | --------------- method in this implementation
+96 |     /// Resolve sizes without changing any constructor or owner boundary.
+97 |     pub(super) fn map_sizes<M, E>(
+   |                   ^^^^^^^^^
+
+warning: `qleisli` (lib test) generated 27 warnings (26 duplicates)
+    Finished `dev` profile [unoptimized] target(s) in 5.42s

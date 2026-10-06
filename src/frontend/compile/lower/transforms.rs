@@ -33,7 +33,7 @@ impl Lowerer<'_, '_> {
         name: &Ident,
         basis: &Ty,
     ) -> Result<Option<Matrix>, CompileError> {
-        if self.abstract_check || basis.basis_bits().expect("basis") > MAX_CONTRACT_BITS {
+        if basis.basis_bits().expect("basis") > MAX_CONTRACT_BITS {
             return Ok(None);
         }
         if let Some(op) = self.bound_operation(name) {

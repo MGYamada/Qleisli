@@ -1,0 +1,47 @@
+{
+  "label": "shared-type-tests",
+  "argv": [
+    "/opt/homebrew/bin/rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--locked",
+    "--lib",
+    "--jobs=2",
+    "frontend::types::tests",
+    "--",
+    "--nocapture",
+    "--test-threads=2"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "postcondition_error": null,
+  "seconds": 7.996141665964387,
+  "completed_utc": "2026-10-05T23:28:51.327421+00:00",
+  "stdout": {
+    "path": "04-shared-type-tests.stdout.txt",
+    "sha256": "b397f96669378d5fbb49ca80e66fed405d7456a574b6869d9c22f985f6c738c4",
+    "bytes": 491
+  },
+  "stderr": {
+    "path": "04-shared-type-tests.stderr.txt",
+    "sha256": "8294584de917835dc3f2f2ea2760e1343532309a4abc7723667e92e241857f62",
+    "bytes": 659
+  },
+  "actual_test_results": [
+    {
+      "status": "ok",
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0,
+      "measured": 0,
+      "filtered": 112
+    }
+  ],
+  "source_input_digest_after": "d976d50a83a6ae4ff3c07306303db2bfcb58c02ec9af4c3233d23e187b15cf97",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "identities_unchanged": true
+}

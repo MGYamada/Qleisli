@@ -1,0 +1,106 @@
+--- before/src/frontend/sized/elaborate.rs
++++ after/src/frontend/sized/elaborate.rs
+@@ -720,6 +720,20 @@
+     }
+ }
+ 
++fn charge_retained_cells(cells: &mut usize, n: usize, span: Span) -> Result<()> {
++    *cells = cells
++        .checked_add(n)
++        .ok_or_else(|| error("limit", span, "source value accounting overflow"))?;
++    if *cells > MAX_CELLS {
++        return Err(error(
++            "limit",
++            span,
++            "source proposal exceeds 100000 retained value cells",
++        ));
++    }
++    Ok(())
++}
++
+ impl Builder<'_> {
+     fn enter(&mut self, span: Span) -> Result<()> {
+         if self.active_frames >= 64 {
+@@ -733,18 +747,7 @@
+         Ok(())
+     }
+     fn charge_cells(&mut self, n: usize, span: Span) -> Result<()> {
+-        self.cells = self
+-            .cells
+-            .checked_add(n)
+-            .ok_or_else(|| error("limit", span, "source value accounting overflow"))?;
+-        if self.cells > MAX_CELLS {
+-            return Err(error(
+-                "limit",
+-                span,
+-                "source proposal exceeds 100000 retained value cells",
+-            ));
+-        }
+-        Ok(())
++        charge_retained_cells(&mut self.cells, n, span)
+     }
+     fn declaration(&self, id: DefId) -> Result<(String, Arc<Function>)> {
+         let (module, function) = self.program.definition(id)?;
+@@ -960,14 +963,32 @@
+     }
+     fn runtime_provider_type(&mut self, id: usize, span: Span) -> Result<SourceType> {
+         let definition = &self.definitions[id];
+-        let cells = definition.inputs.iter().fold(
+-            definition.output.ty.cells().saturating_mul(2).saturating_add(1),
+-            |cells, input| cells.saturating_add(input.ty.cells()),
+-        );
+-        // Charge the borrowed group walk and returned type before allocating;
+-        // no aggregate input type or implicit packed owner is constructed.
+-        self.charge_cells(cells, span)?;
+-        let definition = &self.definitions[id];
++        let cells = &mut self.cells;
++        let mut charge = |span, n| charge_retained_cells(cells, n, span);
++        let output_size = crate::frontend::check::type_size_budgeted(
++            &definition.output.ty,
++            4096,
++            64,
++            false,
++            span,
++            &mut |span, n| charge(span, n).map_err(crate::frontend::check::SourceError::from),
++        )
++        .map_err(Error::from)?;
++        for input in &definition.inputs {
++            let size = crate::frontend::check::type_size_budgeted(
++                &input.ty,
++                4096,
++                64,
++                false,
++                span,
++                &mut |span, n| charge(span, n).map_err(crate::frontend::check::SourceError::from),
++            )
++            .map_err(Error::from)?;
++            charge(span, size.nodes)?;
++        }
++        // Preflight above charges stack entries and visits before allocation.
++        // Compare borrowed types; no aggregate type or packed owner is made.
++        charge(span, output_size.nodes + 1)?;
+         let preserves_group = match definition.inputs.as_slice() {
+             [input] => input.ty == definition.output.ty,
+             inputs if !inputs.is_empty() => match &definition.output.ty.kind {
+@@ -979,10 +1000,12 @@
+             },
+             _ => false,
+         };
+-        let mut pending = Vec::with_capacity(definition.output.ty.owner_shape_size().nodes);
++        charge(span, output_size.nodes)?;
++        let mut pending = Vec::with_capacity(output_size.nodes);
+         pending.push(&definition.output.ty);
+         let mut quantum_group = true;
+         while let Some(ty) = pending.pop() {
++            charge(span, 1)?;
+             match &ty.kind {
+                 TypeKind::Q(_) => {}
+                 TypeKind::Tuple(fields) if !fields.is_empty() => pending.extend(fields),
+@@ -999,6 +1022,7 @@
+                 "provider must be unitary and preserve its complete quantum input group",
+             ));
+         }
++        charge(span, output_size.nodes)?;
+         Ok(definition.output.ty.clone())
+     }
+     fn resolve(

@@ -1,0 +1,69 @@
+{
+  "status": "authored-frozen-not-run",
+  "source_scope": "seven owned common checker files; only body.rs, body/special.rs, declarations.rs changed",
+  "execution": "no test, CLI, Cargo, Lean, native, format or Git execution by this agent",
+  "before_map_sha256": "b08e2b7a3d344f3e703440bd4c8de4adac46716d6e6678cb77b045b9792f71f9",
+  "files": [
+    {
+      "path": "src/frontend/check.rs",
+      "bytes": 29155,
+      "sha256": "0e1fcdceb218a19bb1448a5535a7c356ffb61d88fdfcd5800a335b65d46764c9",
+      "mode": "0644",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "bytes": 23356,
+      "sha256": "c115e9647f89ae8d2b2e7c304738958101a496ad12b61b0b649f7d2f9cca521b",
+      "mode": "0644",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/check/body/special.rs",
+      "bytes": 21199,
+      "sha256": "d4c7acfe85e0f0eab22bee9497d8331df1ce43e94ddca71a49476eba31fb396d",
+      "mode": "0644",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/check/body.rs",
+      "bytes": 28686,
+      "sha256": "43a1d3a3b3e41717485b8333d298c605c4180cd7492533fed548133d51d6cba3",
+      "mode": "0644",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/check/declarations.rs",
+      "bytes": 14599,
+      "sha256": "0bb51a06ef82279499bb5f74caa1b840695f4e2ed51ecfcb5624a23e72523343",
+      "mode": "0644",
+      "changed": true
+    },
+    {
+      "path": "src/frontend/check/normalize.rs",
+      "bytes": 14628,
+      "sha256": "2e4139705a5e192e951b5ca5ec11658c5c59aa663d75ba90d23bc7670694aa29",
+      "mode": "0644",
+      "changed": false
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "bytes": 11166,
+      "sha256": "91f83bcbb90d841c8c6d32919461345d9dcca5c7248c9e45ba5291ea51791fc1",
+      "mode": "0644",
+      "changed": false
+    }
+  ],
+  "raw_attempt06_stderr": {
+    "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-06/05-focused-integration-tests.stderr.txt",
+    "bytes": 10357,
+    "sha256": "08d80365a3ec7fa99c93bd76220b0bfdc7df4d80a28ecfbc0cd7c5f58898d408"
+  },
+  "changed_files": [
+    "src/frontend/check/body/special.rs",
+    "src/frontend/check/body.rs",
+    "src/frontend/check/declarations.rs"
+  ],
+  "archive_sha256": "0490e60bc47973ef9139aa5de4bc545fd0fcaab1576118b7b877ad352bbfbf42",
+  "patch_sha256": "211e8cde3a74b5ab82bfd2487db29a918e70bfc3916222f9c446527e9ad54fb8"
+}

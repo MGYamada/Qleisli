@@ -1,0 +1,489 @@
+{
+  "format": "qleisli.common-pattern-bounded-validation",
+  "version": 1,
+  "mode": "latest",
+  "attempt": "attempt-07",
+  "status": "failed",
+  "records": [
+    {
+      "label": "cargo-version",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.14205154095543548,
+      "completed_utc": "2026-10-05T22:53:39.851969+00:00",
+      "stdout": {
+        "path": "00-cargo-version.stdout.txt",
+        "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20",
+        "bytes": 47
+      },
+      "stderr": {
+        "path": "00-cargo-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "b4c64d1922fa85c55cebedd7eaeb9a5f20993fe133a377f073b9afb827d54d11",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "rustc-version",
+      "argv": [
+        "/opt/homebrew/bin/rustc",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.14577091700630262,
+      "completed_utc": "2026-10-05T22:53:39.998533+00:00",
+      "stdout": {
+        "path": "01-rustc-version.stdout.txt",
+        "sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d",
+        "bytes": 47
+      },
+      "stderr": {
+        "path": "01-rustc-version.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "b4c64d1922fa85c55cebedd7eaeb9a5f20993fe133a377f073b9afb827d54d11",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "format",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 0.6406530410167761,
+      "completed_utc": "2026-10-05T22:53:40.639885+00:00",
+      "stdout": {
+        "path": "02-format.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "02-format.stderr.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "b4c64d1922fa85c55cebedd7eaeb9a5f20993fe133a377f073b9afb827d54d11",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "check-all-targets",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "check",
+        "--locked",
+        "--all-targets",
+        "--jobs=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 5.5684094579773955,
+      "completed_utc": "2026-10-05T22:53:46.208944+00:00",
+      "stdout": {
+        "path": "03-check-all-targets.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes": 0
+      },
+      "stderr": {
+        "path": "03-check-all-targets.stderr.txt",
+        "sha256": "3af65d11121b15d9a1596a6a69dd405a5d0f7c766217bb0401e008a117685d26",
+        "bytes": 120
+      },
+      "actual_test_results": [],
+      "source_input_digest_after": "b4c64d1922fa85c55cebedd7eaeb9a5f20993fe133a377f073b9afb827d54d11",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "shared-type-tests",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "test",
+        "--locked",
+        "--lib",
+        "--jobs=2",
+        "frontend::types::tests",
+        "--",
+        "--nocapture",
+        "--test-threads=2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 6.010613917023875,
+      "completed_utc": "2026-10-05T22:53:52.220997+00:00",
+      "stdout": {
+        "path": "04-shared-type-tests.stdout.txt",
+        "sha256": "b397f96669378d5fbb49ca80e66fed405d7456a574b6869d9c22f985f6c738c4",
+        "bytes": 491
+      },
+      "stderr": {
+        "path": "04-shared-type-tests.stderr.txt",
+        "sha256": "4fa266f725d90431d0f49ffefc98a17a1380375537d04913331caaf045d91231",
+        "bytes": 240
+      },
+      "actual_test_results": [
+        {
+          "status": "ok",
+          "passed": 4,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 112
+        }
+      ],
+      "source_input_digest_after": "b4c64d1922fa85c55cebedd7eaeb9a5f20993fe133a377f073b9afb827d54d11",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    },
+    {
+      "label": "focused-integration-tests",
+      "argv": [
+        "/opt/homebrew/bin/cargo",
+        "test",
+        "--locked",
+        "--jobs=2",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "runtime_parameter_patterns",
+        "--test",
+        "frontend_types",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "body_effects",
+        "--test",
+        "source_collection",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "sized_declarations",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "sized_source",
+        "--test",
+        "project",
+        "--test",
+        "source_judgments",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "static_operations",
+        "--test",
+        "static_semantics",
+        "--test",
+        "certified_source",
+        "--test",
+        "compile",
+        "--test",
+        "tuple_shapes",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "predicate_domain",
+        "--test",
+        "mixed_booleans",
+        "--test",
+        "ordinary_booleans",
+        "--test",
+        "isometry_source",
+        "--test",
+        "source_scope",
+        "--test",
+        "common_source_provider_access",
+        "--test",
+        "sized_review_dialects",
+        "--no-fail-fast",
+        "--",
+        "--nocapture",
+        "--test-threads=2",
+        "--skip",
+        "long_acyclic_import_chain_loads_on_a_small_stack",
+        "--skip",
+        "deep_import_cycle_reports_the_back_edge_and_cycle_path"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 101,
+      "launch_error": null,
+      "timed_out": false,
+      "postcondition_error": null,
+      "seconds": 128.77081291604554,
+      "completed_utc": "2026-10-05T22:56:00.994022+00:00",
+      "stdout": {
+        "path": "05-focused-integration-tests.stdout.txt",
+        "sha256": "d620898167fda29cda6925bd95f761e752232fc12e6bd2ae96b7e70913fe46f5",
+        "bytes": 25870
+      },
+      "stderr": {
+        "path": "05-focused-integration-tests.stderr.txt",
+        "sha256": "a33bc5f30ed03a3744bfc79393c6d4fc5026eb6100c2fbfb53470bd7b49f757a",
+        "bytes": 5950
+      },
+      "actual_test_results": [
+        {
+          "status": "ok",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 29,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 7,
+          "failed": 1,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 2
+        },
+        {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 1,
+          "failed": 2,
+          "ignored": 5,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 37,
+          "failed": 1,
+          "ignored": 3,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0,
+          "measured": 0,
+          "filtered": 0
+        }
+      ],
+      "source_input_digest_after": "b4c64d1922fa85c55cebedd7eaeb9a5f20993fe133a377f073b9afb827d54d11",
+      "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "identities_unchanged": true
+    }
+  ],
+  "remaining_stages_not_run": 3,
+  "source_files_before": 758,
+  "source_inputs_unchanged": true,
+  "native_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "native_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cli_path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+  "cli_sha256_after": "0f4221d331a955d1da2c48523e383240ffb2daafcc31d6acef88ae463cbc0e9d",
+  "cli_rebuild_completed": false,
+  "scope": "Actual bounded Rust checks with a declared incomplete input map. No Lean build/replay, complete fixture closure, source preservation, new native authority, guarantee discharge, full CI or release approval."
+}

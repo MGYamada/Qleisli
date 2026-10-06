@@ -1,0 +1,43 @@
+--- a/src/frontend/sized/check.rs
++++ b/src/frontend/sized/check.rs
+@@ -177,18 +177,14 @@
+     let resolved_naturals = interface
+         .statics
+         .iter()
+-        .filter_map(|formal| {
+-            matches!(formal.kind, StaticKind::Natural)
+-                .then(|| (formal.key.clone(), naturals[&formal.key.name]))
+-        })
++        .filter(|formal| matches!(formal.kind, StaticKind::Natural))
++        .map(|formal| (formal.key.clone(), naturals[&formal.key.name]))
+         .collect::<BTreeMap<_, _>>();
+     let resolved_bases = interface
+         .statics
+         .iter()
+-        .filter_map(|formal| {
+-            matches!(formal.kind, StaticKind::Basis)
+-                .then(|| (formal.key.clone(), types[&formal.key.name].ty.clone()))
+-        })
++        .filter(|formal| matches!(formal.kind, StaticKind::Basis))
++        .map(|formal| (formal.key.clone(), types[&formal.key.name].ty.clone()))
+         .collect::<BTreeMap<_, _>>();
+     let mut satisfied = false;
+     for alternative in &interface.premises.alternatives {
+--- a/src/frontend/sized/elaborate.rs
++++ b/src/frontend/sized/elaborate.rs
+@@ -883,13 +883,13 @@
+                 operations: interface
+                     .statics
+                     .iter()
+-                    .filter_map(|formal| {
++                    .filter(|formal| {
+                         matches!(
+                             formal.kind,
+                             crate::frontend::check::StaticKind::Operation { .. }
+                         )
+-                        .then(|| (formal.key.clone(), operations[&formal.key.name].clone()))
+                     })
++                    .map(|formal| (formal.key.clone(), operations[&formal.key.name].clone()))
+                     .collect(),
+                 values: BTreeMap::new(),
+                 moved: BTreeSet::new(),

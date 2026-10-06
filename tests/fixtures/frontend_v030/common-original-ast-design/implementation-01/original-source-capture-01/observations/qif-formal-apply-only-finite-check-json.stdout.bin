@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"capability","severity":"error","message":"missing Controlled operation access","primary":{"path":"main.qli","start":186,"end":187,"line":3,"column":37},"related":[]}],"result":null}

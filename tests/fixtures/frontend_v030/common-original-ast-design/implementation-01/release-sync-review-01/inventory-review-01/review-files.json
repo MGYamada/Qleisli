@@ -1,0 +1,24 @@
+{
+  "status": "review-and-proposal-frozen-not-active-not-validated",
+  "files": {
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-01/PROPOSED-inventory.json": {
+      "bytes": 233116,
+      "sha256": "7afb53db2c8f6908032a8205c5dc0585cc4bf9ede8e71857f1d54fddfdbe1ed5"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-01/proposal.json": {
+      "bytes": 1585,
+      "sha256": "1f0e6513f2143a27dbb5467e4cd421f42690479b687b0e041c92a0e35da8da8f"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-01/review.md": {
+      "bytes": 7334,
+      "sha256": "fa426792f02b170704ae95e830675a4695ee8714a297a4a34213776a961c62af"
+    },
+    "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/release-sync-review-01/inventory-review-01/surface-review.json": {
+      "bytes": 17579,
+      "sha256": "058261b996d88baa1cbb175eb8912f64d514b30d7de793f02505f7940c532adf"
+    }
+  },
+  "active_inventory_unchanged": true,
+  "current27_changed_source_rows_still_match": true,
+  "no_validation_execution": true
+}

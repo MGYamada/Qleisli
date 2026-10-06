@@ -1,0 +1,40 @@
+{
+  "id": "12.inventory-regression",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_verification_inventory.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T23:49:21.894359+00:00",
+  "completed_at_utc": "2026-10-05T23:49:31.189213+00:00",
+  "seconds": 9.294806334015448,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "output_limited": {
+    "stdout": false,
+    "stderr": false
+  },
+  "stream_bytes_seen": {
+    "stdout": 0,
+    "stderr": 116
+  },
+  "cleanup_incomplete": false,
+  "limits": {
+    "command_seconds": 180,
+    "bytes_per_stream": 1048576,
+    "parallel_commands": 2
+  },
+  "stdout": {
+    "path": "12.inventory-regression.stdout.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "mode": 420
+  },
+  "stderr": {
+    "path": "12.inventory-regression.stderr.txt",
+    "bytes": 116,
+    "sha256": "7dfdb8b2874c82f1533248443fc27412b80776215a12be86ab6531c79734081f",
+    "mode": 420
+  }
+}

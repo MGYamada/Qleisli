@@ -7,6 +7,13 @@ readable implementations, explicit proof coverage and continuing review.
 This concerns contribution discipline, not a dependency on Mathlib in the
 runtime or a claim of existing community maintainers.
 
+The maintainer has excluded QFT implementation completion from v0.3.0 and
+the current development goal. Generic QFT exposure and fixed/generic QFT
+equivalence are outside that scope, with no future target selected. The semantic
+namespace migration in [#317](https://github.com/MGYamada/Qleisli/issues/317)
+continues; existing fixed-QFT implementations retain their contracts and
+regression evidence. Historical family studies are not current release gates.
+
 Until v0.5.0, do not expand `stdlib` as a general rule; add algorithms to
 `corpus` under its [existing intake policy](corpus/POLICY.md). Prepare the
 conventions, reference contracts and checking tools now. Existing library

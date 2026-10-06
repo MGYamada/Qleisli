@@ -1,4 +1,4 @@
-//! Shared declaration identities retain the existing source profiles.
+//! Shared source judgments retain explicit loader policies and concrete limits.
 mod common;
 use qleisli::frontend::{
     compile::{ErrorCode, check_project},
@@ -12,9 +12,9 @@ fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
     let fixture = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study");
     for (case, finite, sized) in [
-        ("unused-import-cycle", false, true),
-        ("self-import-public", false, true),
-        ("self-import-private", false, true),
+        ("unused-import-cycle", true, true),
+        ("self-import-public", false, false),
+        ("self-import-private", false, false),
         ("reserved-module", false, true),
         ("underscore-module", false, true),
         ("private-unused-import", false, false),
@@ -37,11 +37,30 @@ fn recorded_profile_differences_and_adopted_convergence_remain_explicit() {
             })
             .collect();
         assert_eq!(Project::load(&root).is_ok(), finite, "finite load: {case}");
-        assert_eq!(
-            ParsedProgram::parse(sources).is_ok(),
-            sized,
-            "sized check: {case}"
-        );
+        let selected = ParsedProgram::parse(sources);
+        assert_eq!(selected.is_ok(), sized, "sized check: {case}");
+        match case {
+            "moved-local-shadows-import" | "declaration-call-cycle" => {
+                // Loading is name resolution only. Both actual source consumers
+                // reject the same moved-name or dependency-cycle program.
+                let error = check_project(&root).unwrap_err();
+                let (finite_code, selected_code) = if case == "moved-local-shadows-import" {
+                    (ErrorCode::TypeMismatch, "type")
+                } else {
+                    (ErrorCode::RecursiveCall, "cycle")
+                };
+                assert_eq!(error.code, finite_code, "{case}: {error}");
+                assert_eq!(selected.unwrap_err().code(), selected_code, "{case}");
+            }
+            "self-import-public" | "self-import-private" => {
+                let error = selected.unwrap_err();
+                assert_eq!(error.code(), "name", "{case}: {error}");
+                let source = fs::read_to_string(root.join("a.qli")).unwrap();
+                let start = source.find("::f").unwrap() + 2;
+                assert_eq!((error.span().start, error.span().end), (start, start + 1));
+            }
+            _ => {}
+        }
     }
 }
 

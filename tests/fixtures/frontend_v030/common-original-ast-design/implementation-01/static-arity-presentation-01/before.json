@@ -1,0 +1,35 @@
+{
+  "format": "qleisli.static-arity-presentation-repair",
+  "version": 1,
+  "status": "before-edit",
+  "inputs": [
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "sha256": "c115e9647f89ae8d2b2e7c304738958101a496ad12b61b0b649f7d2f9cca521b",
+      "bytes": 23356
+    },
+    {
+      "path": "src/frontend/check/primitive.rs",
+      "sha256": "91f83bcbb90d841c8c6d32919461345d9dcca5c7248c9e45ba5291ea51791fc1",
+      "bytes": 11166
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "sha256": "2884e852e4d2f680171bd25dfd5d31f6566e292502be6899c60ebaf8c94ce290",
+      "bytes": 38005
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "sha256": "70ed523c780875516793097e40f6da7d660aa578aa624264e70a52ed4670d3b1",
+      "bytes": 22753
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "sha256": "536250eda5da541d563f0ba662cd94a7d146a1819ca6411e98620353a36ae3df",
+      "bytes": 19463
+    }
+  ],
+  "basis": "Read-only actual-code inspection of masked follow-on cases in existing operation_parameters test; no observed successful rerun claimed.",
+  "change": "Separate private explicit-static argument count from static kind errors; preserve finite Arity and selected static presentations. Update only wrong-category static Op runtime-value negative to truthful type diagnostic with exact original span.",
+  "authority": "Recorded #32 contract; ordinary diagnostics covered by existing interpretations; no Guardian act."
+}
