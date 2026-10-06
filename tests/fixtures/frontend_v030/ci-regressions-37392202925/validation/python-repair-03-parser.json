@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.bounded-python-repair-command",
+  "version": 1,
+  "command": [
+    "python3",
+    "-B",
+    "scripts/test_sized_local_resolution.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_utc": "2026-10-06T00:43:27.872231+00:00",
+  "duration_seconds": 0.15295262495055795,
+  "exit_code": 0,
+  "scope": "14 bounded parser/guard regressions; no graph generation/native/build/simulation",
+  "source_sha256": {
+    "scripts/compile_sized_corpus.py": "d8836dbc47ca4688e2fdda14b03e4c88c9dab0181c4641dba4897e1375b7ad75",
+    "scripts/compile_sized_instrument.py": "bbfb943dadde2f5eb6201502c1cdb598b12ae7f623ed8a924bd97e218587ff48",
+    "scripts/test_sized_local_resolution.py": "5cfee6b2dc6b4ff09dd1a8b8db57cb314c8542918972a7353b76b41b3e08cf4a"
+  },
+  "stdout_file": "python-repair-03-parser.stdout.txt",
+  "stderr_file": "python-repair-03-parser.stderr.txt"
+}

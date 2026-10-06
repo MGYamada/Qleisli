@@ -1,0 +1,125 @@
+{
+  "format": "qleisli.ci-repair-policy-validation",
+  "version": 1,
+  "base_ref": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "records": [
+    {
+      "label": "policy-04-constitution",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "exit_code": 0,
+      "seconds": 1.426,
+      "stdout": "policy-04-constitution.stdout.txt",
+      "stderr": "policy-04-constitution.stderr.txt"
+    },
+    {
+      "label": "policy-04-inventory",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.51,
+      "stdout": "policy-04-inventory.stdout.txt",
+      "stderr": "policy-04-inventory.stderr.txt"
+    },
+    {
+      "label": "policy-04-coverage",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.138,
+      "stdout": "policy-04-coverage.stdout.txt",
+      "stderr": "policy-04-coverage.stderr.txt"
+    },
+    {
+      "label": "policy-04-authoring",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.63,
+      "stdout": "policy-04-authoring.stdout.txt",
+      "stderr": "policy-04-authoring.stderr.txt"
+    },
+    {
+      "label": "policy-04-editions",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_editions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 5.106,
+      "stdout": "policy-04-editions.stdout.txt",
+      "stderr": "policy-04-editions.stderr.txt"
+    },
+    {
+      "label": "policy-04-docs",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.993,
+      "stdout": "policy-04-docs.stdout.txt",
+      "stderr": "policy-04-docs.stderr.txt"
+    },
+    {
+      "label": "policy-04-ci-profiles",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_ci_profiles.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.046,
+      "stdout": "policy-04-ci-profiles.stdout.txt",
+      "stderr": "policy-04-ci-profiles.stderr.txt"
+    },
+    {
+      "label": "policy-04-constitution-regressions",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_check_constitution.py"
+      ],
+      "exit_code": 0,
+      "seconds": 139.518,
+      "stdout": "policy-04-constitution-regressions.stdout.txt",
+      "stderr": "policy-04-constitution-regressions.stderr.txt"
+    },
+    {
+      "label": "policy-04-coverage-regressions",
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.405,
+      "stdout": "policy-04-coverage-regressions.stdout.txt",
+      "stderr": "policy-04-coverage-regressions.stderr.txt"
+    }
+  ],
+  "checked_source_sha256": {
+    "tests/fixtures/verification_v022/inventory.json": "9609bc181a2b5605d5c7de51ed341cca806a1d6386f940e779a384d90ea332f8",
+    "tests/fixtures/verification_v029/coverage.json": "577531833f87bd0db74bf9428b0b8a1b5f3fa7c3d0fade74366f2af5e2bb9746",
+    ".github/ci/native-comparisons.json": "18ed49fe1ba30a76b84d0257e6cda7d6718477f6147be59ecc6bd0686870db95",
+    ".github/ci/README.md": "5f07da07f3940c5e332f34af34027fe855e4c0681200b8239a46ec2d20f558c3",
+    "CHANGELOG.md": "75016210eb49fef373bcc69ac4579955efb40e3d8112cf167240492abdc18b35"
+  },
+  "scope": "Current identity, coverage and policy regression checks; no live Lean replay or completed release gate."
+}

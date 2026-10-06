@@ -99,6 +99,29 @@ impl Table {
         );
         &self.uses[id.ordinal]
     }
+
+    /// Post-rejection diagnostic lookup, never lexical resolution or evidence.
+    /// A duplicate occurrence span is ambiguous even if its targets agree.
+    pub(in crate::frontend) fn local_use_at_span<E>(
+        &self,
+        span: Span,
+        mut charge: impl FnMut() -> Result<(), E>,
+    ) -> Result<Option<BinderId>, E> {
+        let mut found = None;
+        for usage in &self.uses {
+            charge()?;
+            if usage.span == span {
+                if found.is_some() {
+                    return Ok(None);
+                }
+                found = Some(usage.target);
+            }
+        }
+        Ok(match found {
+            Some(ResolvedUse::Local(id)) => Some(id),
+            _ => None,
+        })
+    }
 }
 
 /// A source-address lookup is valid only for this borrowed declaration. It is

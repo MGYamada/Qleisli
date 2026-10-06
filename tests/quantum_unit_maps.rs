@@ -657,12 +657,12 @@ fn isolated_wrong_types_and_arities_reject_before_argument_evaluation() {
             "pub unitary fn f(q: Q<Unit>,r: Q<Unit>) -> Unit { finish((q,r)) }",
             "type",
         ),
-        ("pub unitary fn f() -> Q<Unit> { unit() }", "type"),
-        ("pub unitary fn f() -> Q<Unit> { unit((),()) }", "type"),
-        ("pub unitary fn f() -> Unit { finish() }", "type"),
+        ("pub unitary fn f() -> Q<Unit> { unit() }", "arity"),
+        ("pub unitary fn f() -> Q<Unit> { unit((),()) }", "arity"),
+        ("pub unitary fn f() -> Unit { finish() }", "arity"),
         (
             "pub unitary fn f(q: Q<Unit>,r: Q<Unit>) -> Unit { finish(q,r) }",
-            "type",
+            "arity",
         ),
         (
             "pub unitary fn f(u: Unit) -> Q<Unit> { unit[0](not u) }",
@@ -799,8 +799,12 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
         );
         let text =
             format!("pub unitary fn f(q:{input})->Q<Bit>{{do {pattern} <- q; pure {output}}}");
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        // The common source judgment checks the coherent pattern. The selected
+        // concrete projection still cannot instantiate this source form.
+        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())]))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap_err();
         located(&error, &text, "unsupported");
     }
 }

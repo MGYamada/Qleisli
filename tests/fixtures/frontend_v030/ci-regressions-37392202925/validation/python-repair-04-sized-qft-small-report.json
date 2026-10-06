@@ -1,0 +1,816 @@
+{
+  "format": "qleisli.sized-qft-experiment",
+  "version": 1,
+  "status": "passed-experimental-source-path",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "check_source_fourier_contracts",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "scope": "small-system",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "source_sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+  "inverse_source_sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4",
+  "measured_components": {
+    "measured-qpe-fourier-1": {
+      "graph_sha256": "b93b23063781a9ea970390cd13b518c1e41b72c992afebc96cf8815b8b9c0ede",
+      "definitions": 52,
+      "inverse_operand": 14,
+      "retained_definitions": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ]
+    },
+    "measured-qpe-fourier-2": {
+      "graph_sha256": "4700577f06a298d1736518f24ec0f77f068c6db3e95776c17085d65cea506099",
+      "definitions": 104,
+      "inverse_operand": 82,
+      "retained_definitions": [
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82
+      ]
+    },
+    "measured-qpe-fourier-3": {
+      "graph_sha256": "37060f90c600aa5476185bcfbce4796c9fecaf9f01b15d975aeddce5d7527843",
+      "definitions": 153,
+      "inverse_operand": 124,
+      "retained_definitions": [
+        70,
+        71,
+        72,
+        73,
+        74,
+        75,
+        76,
+        77,
+        78,
+        79,
+        80,
+        81,
+        82,
+        83,
+        84,
+        85,
+        86,
+        87,
+        88,
+        89,
+        90,
+        91,
+        92,
+        93,
+        94,
+        95,
+        96,
+        97,
+        98,
+        99,
+        100,
+        101,
+        102,
+        103,
+        104,
+        105,
+        106,
+        107,
+        108,
+        109,
+        110,
+        111,
+        112,
+        113,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120,
+        121,
+        122,
+        123,
+        124
+      ]
+    },
+    "measured-qpe-missing-reversal": {
+      "graph_sha256": "fa8d9010bb8dee596409d2280a31db549eb946e71fdbe91d9db1357f09bf9997",
+      "definitions": 97,
+      "inverse_operand": 75,
+      "retained_definitions": [
+        6,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75
+      ]
+    },
+    "measured-qpe-missing-phase": {
+      "graph_sha256": "6eca24db2e7b0b99d3ff027aa08424492f1084ae5539fb6c14daa045a6c3cc16",
+      "definitions": 91,
+      "inverse_operand": 69,
+      "retained_definitions": [
+        6,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69
+      ]
+    },
+    "measured-qpe-wrong-phase": {
+      "graph_sha256": "5c45df9d7ff4f58dff852ef50d32b4d986616b6c661f80d953ddf9ae93e0ab77",
+      "definitions": 97,
+      "inverse_operand": 75,
+      "retained_definitions": [
+        6,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75
+      ]
+    },
+    "measured-qpe-wrong-h": {
+      "graph_sha256": "077cd0acdfa4386a4a10e722d02c5b4002daf16921db2efd02f224f3379f49d0",
+      "definitions": 97,
+      "inverse_operand": 75,
+      "retained_definitions": [
+        6,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56,
+        57,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        64,
+        65,
+        66,
+        67,
+        68,
+        69,
+        70,
+        71,
+        72,
+        73,
+        74,
+        75
+      ]
+    }
+  },
+  "measured_source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "delayed_fourier": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "readout": "8084c175d049101af682c4d2f693c094ca36baa060754d992cd69d68db87ea58",
+    "measurement": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e",
+    "initialization": "a15fc01067ad8037ed301b00aae6904bee2ccb84a98674bc76b0ff969be5b6a9",
+    "measured_order": "db335c8a206b0f56bba80934dbdbe00677a7c5a057eaae9e17420733b0d74015",
+    "measured_retiming": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
+    "measured_amplitude": "2078afa66fbad8578bff57db4532bbc0ea23250fc5b127507c87f2466080dd27"
+  },
+  "implementation_sha256": {
+    "scripts/compile_sized_corpus.py": "eb572c699dfdbcb1951e49ed583067667b4ff50cbfa890fba52826c9e88abd2d",
+    "scripts/compile_sized_instrument.py": "7b7114990e0a9a34a7526d5904c0682971ac491bbdf6e1b10076294f303591ad",
+    "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+    "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86"
+  },
+  "source_rejections": [
+    {
+      "case": "zero-width",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "oversized-register",
+      "diagnostic": "register width exceeds the eight-bit register profile"
+    },
+    {
+      "case": "false-premise",
+      "diagnostic": "static entry premise is false"
+    },
+    {
+      "case": "angle-denominator",
+      "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+    },
+    {
+      "case": "unnormalized-angle",
+      "diagnostic": "dyadic angle is outside the normalized denominator-256 profile"
+    },
+    {
+      "case": "alias-control",
+      "diagnostic": "unknown, captured or already moved quantum value control"
+    },
+    {
+      "case": "unselected-branch-alias",
+      "diagnostic": "unknown, captured or already moved quantum value high"
+    },
+    {
+      "case": "unselected-static-name",
+      "diagnostic": "unbound static natural unknown"
+    },
+    {
+      "case": "unknown-module",
+      "diagnostic": "unsupported or duplicate import fourier::fourier"
+    },
+    {
+      "case": "unknown-imported-declaration",
+      "diagnostic": "unknown imported declaration fourier::fourier"
+    },
+    {
+      "case": "missing-static-argument",
+      "diagnostic": "ordinary operation static argument arity mismatch"
+    },
+    {
+      "case": "operation-type-mismatch",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "operation-cycle",
+      "diagnostic": "import collides with local declaration looping"
+    },
+    {
+      "case": "aggregate-source-work",
+      "diagnostic": "invalid or excessive static fold range"
+    }
+  ],
+  "artifacts": {
+    "qft-1": {
+      "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+      "bytes": 14042,
+      "definitions": 14
+    },
+    "inverse-1": {
+      "sha256": "ff45e40a3af73ac80bbb71767db1e0bcf3922b2cec085c857dad2911c9fb3b71",
+      "bytes": 17542,
+      "definitions": 18
+    },
+    "qft-2": {
+      "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+      "bytes": 33836,
+      "definitions": 34
+    },
+    "inverse-2": {
+      "sha256": "8cbeb695a6993f5719a98cc6e120aa1626da12b5e8be5da6f1556bb001907969",
+      "bytes": 37388,
+      "definitions": 38
+    },
+    "qft-3": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "inverse-3": {
+      "sha256": "922aed7c75ab278ea5780bed6b57c52c9434628c3df70f55fe6e8d0319542d2c",
+      "bytes": 58141,
+      "definitions": 59
+    },
+    "equivalent-angle": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "wrapped-inverse-3": {
+      "sha256": "606f10185d7c3d5f1756674bc97a7f491ad6a153c0c1679bcaac5c62180bec28",
+      "bytes": 55269,
+      "definitions": 56
+    },
+    "shared-twice-3": {
+      "sha256": "026dfc8418aa32892ce88ef8922a0a77f86c910f042e39cea9c6e084a27d2620",
+      "bytes": 60805,
+      "definitions": 62
+    },
+    "framed-call-2": {
+      "sha256": "15cc605282124bca1eb6464d3e4b01fc8fe35915769ed05aaac8edc98aa50dc2",
+      "bytes": 43272,
+      "definitions": 42
+    },
+    "missing-reversal": {
+      "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "missing-phase": {
+      "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+      "bytes": 28857,
+      "definitions": 25
+    },
+    "wrong-phase": {
+      "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "wrong-h": {
+      "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+      "bytes": 35524,
+      "definitions": 31
+    },
+    "inverse-changed-dependency": {
+      "sha256": "450cef5faca631bd4a27e7234c7e6fcdaa184af16efbdd87e59f381b730c7d16",
+      "bytes": 34999,
+      "definitions": 31
+    },
+    "measured-qpe-fourier-1": {
+      "sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce",
+      "bytes": 14042,
+      "definitions": 14
+    },
+    "measured-qpe-fourier-2": {
+      "sha256": "ba954097c5735e2fa3d3d2ac515f5f02ba2bfb1cce3b4715839a473376f56e6f",
+      "bytes": 33836,
+      "definitions": 34
+    },
+    "measured-qpe-fourier-3": {
+      "sha256": "6c770603e4a4d1130b939ba2af1a08ba64a6198cbeda09868d2a65a38cf5ce46",
+      "bytes": 54541,
+      "definitions": 55
+    },
+    "measured-qpe-missing-reversal": {
+      "sha256": "f0efc051b972fc68af5c90660998784c5991c8c8431c93e9b2b8751e5f1bd5a1",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "measured-qpe-missing-phase": {
+      "sha256": "80b3dd643fe54f044438507836f12f6ac9842f8612789ca89dff0321f49bc655",
+      "bytes": 28857,
+      "definitions": 25
+    },
+    "measured-qpe-wrong-phase": {
+      "sha256": "437c5b7c96a88bb25e2d2a17b9ed3dccfed25c20e1946f654db3fb30992f7940",
+      "bytes": 35526,
+      "definitions": 31
+    },
+    "measured-qpe-wrong-h": {
+      "sha256": "d349e84743988273ddc7251f2bb2e3ebaeda5760b4e943b7e7f5626d091d5844",
+      "bytes": 35524,
+      "definitions": 31
+    }
+  },
+  "native": [
+    [
+      "qft-1",
+      "inspect",
+      "60965",
+      "171"
+    ],
+    [
+      "qft-1",
+      "ok",
+      "66724",
+      "171"
+    ],
+    [
+      "inverse-1",
+      "inspect",
+      "75450",
+      "171"
+    ],
+    [
+      "qft-2",
+      "inspect",
+      "165804",
+      "342"
+    ],
+    [
+      "qft-2",
+      "ok",
+      "181958",
+      "342"
+    ],
+    [
+      "inverse-2",
+      "inspect",
+      "183775",
+      "342"
+    ],
+    [
+      "qft-3",
+      "inspect",
+      "284739",
+      "513"
+    ],
+    [
+      "qft-3",
+      "ok",
+      "314938",
+      "513"
+    ],
+    [
+      "inverse-3",
+      "inspect",
+      "306516",
+      "513"
+    ],
+    [
+      "equivalent-angle",
+      "inspect",
+      "284739",
+      "513"
+    ],
+    [
+      "equivalent-angle",
+      "ok",
+      "314938",
+      "513"
+    ],
+    [
+      "wrapped-inverse-3",
+      "inspect",
+      "288541",
+      "513"
+    ],
+    [
+      "shared-twice-3",
+      "inspect",
+      "326331",
+      "513"
+    ],
+    [
+      "framed-call-2",
+      "inspect",
+      "225097",
+      "342"
+    ],
+    [
+      "missing-reversal",
+      "inspect",
+      "202319",
+      "342"
+    ],
+    [
+      "missing-reversal",
+      "contract"
+    ],
+    [
+      "missing-phase",
+      "inspect",
+      "152585",
+      "342"
+    ],
+    [
+      "missing-phase",
+      "contract"
+    ],
+    [
+      "wrong-phase",
+      "inspect",
+      "202319",
+      "342"
+    ],
+    [
+      "wrong-phase",
+      "contract"
+    ],
+    [
+      "wrong-h",
+      "inspect",
+      "202319",
+      "342"
+    ],
+    [
+      "wrong-h",
+      "contract"
+    ],
+    [
+      "inverse-changed-dependency",
+      "inspect",
+      "201366",
+      "342"
+    ],
+    [
+      "measured-qpe-fourier-1",
+      "inspect",
+      "60965",
+      "171"
+    ],
+    [
+      "measured-qpe-fourier-1",
+      "ok",
+      "66724",
+      "171"
+    ],
+    [
+      "measured-qpe-fourier-2",
+      "inspect",
+      "165804",
+      "342"
+    ],
+    [
+      "measured-qpe-fourier-2",
+      "ok",
+      "181958",
+      "342"
+    ],
+    [
+      "measured-qpe-fourier-3",
+      "inspect",
+      "284739",
+      "513"
+    ],
+    [
+      "measured-qpe-fourier-3",
+      "ok",
+      "314938",
+      "513"
+    ],
+    [
+      "measured-qpe-missing-reversal",
+      "inspect",
+      "202319",
+      "342"
+    ],
+    [
+      "measured-qpe-missing-reversal",
+      "contract"
+    ],
+    [
+      "measured-qpe-missing-phase",
+      "inspect",
+      "152585",
+      "342"
+    ],
+    [
+      "measured-qpe-missing-phase",
+      "contract"
+    ],
+    [
+      "measured-qpe-wrong-phase",
+      "inspect",
+      "202319",
+      "342"
+    ],
+    [
+      "measured-qpe-wrong-phase",
+      "contract"
+    ],
+    [
+      "measured-qpe-wrong-h",
+      "inspect",
+      "202319",
+      "342"
+    ],
+    [
+      "measured-qpe-wrong-h",
+      "contract"
+    ]
+  ],
+  "stdout": "\nrunning 1 test\nSIZED-FOURIER|qft-1|inspect|60965|171\nSIZED-FOURIER|qft-1|ok|66724|171\nSIZED-FOURIER|inverse-1|inspect|75450|171\nSIZED-FOURIER|qft-2|inspect|165804|342\nSIZED-FOURIER|qft-2|ok|181958|342\nSIZED-FOURIER|inverse-2|inspect|183775|342\nSIZED-FOURIER|qft-3|inspect|284739|513\nSIZED-FOURIER|qft-3|ok|314938|513\nSIZED-FOURIER|inverse-3|inspect|306516|513\nSIZED-FOURIER|equivalent-angle|inspect|284739|513\nSIZED-FOURIER|equivalent-angle|ok|314938|513\nSIZED-FOURIER|wrapped-inverse-3|inspect|288541|513\nSIZED-FOURIER|shared-twice-3|inspect|326331|513\nSIZED-FOURIER|framed-call-2|inspect|225097|342\nSIZED-FOURIER|missing-reversal|inspect|202319|342\nSIZED-FOURIER|missing-reversal|contract\nSIZED-FOURIER|missing-phase|inspect|152585|342\nSIZED-FOURIER|missing-phase|contract\nSIZED-FOURIER|wrong-phase|inspect|202319|342\nSIZED-FOURIER|wrong-phase|contract\nSIZED-FOURIER|wrong-h|inspect|202319|342\nSIZED-FOURIER|wrong-h|contract\nSIZED-FOURIER|inverse-changed-dependency|inspect|201366|342\nSIZED-FOURIER|measured-qpe-fourier-1|inspect|60965|171\nSIZED-FOURIER|measured-qpe-fourier-1|ok|66724|171\nSIZED-FOURIER|measured-qpe-fourier-2|inspect|165804|342\nSIZED-FOURIER|measured-qpe-fourier-2|ok|181958|342\nSIZED-FOURIER|measured-qpe-fourier-3|inspect|284739|513\nSIZED-FOURIER|measured-qpe-fourier-3|ok|314938|513\nSIZED-FOURIER|measured-qpe-missing-reversal|inspect|202319|342\nSIZED-FOURIER|measured-qpe-missing-reversal|contract\nSIZED-FOURIER|measured-qpe-missing-phase|inspect|152585|342\nSIZED-FOURIER|measured-qpe-missing-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-phase|inspect|202319|342\nSIZED-FOURIER|measured-qpe-wrong-phase|contract\nSIZED-FOURIER|measured-qpe-wrong-h|inspect|202319|342\nSIZED-FOURIER|measured-qpe-wrong-h|contract\ntest check_source_fourier_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 3.30s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized] target(s) in 0.15s\n     Running tests/sized_corpus.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_corpus-111aa10eead069e1)\n",
+  "forward": {
+    "1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "inverse": {
+    "1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.1443916996305594e-16,
+      "executed_gates": 1
+    },
+    "2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "measured_component_semantics": {
+    "measured-qpe-fourier-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 1.2412670766236366e-16,
+      "executed_gates": 1
+    },
+    "measured-qpe-fourier-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 2.5114115397022025e-16,
+      "executed_gates": 3
+    },
+    "measured-qpe-fourier-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 1.3743915342634358e-15,
+      "executed_gates": 7
+    }
+  },
+  "named_qpe_instrument_checked": false,
+  "roundtrip_errors": {
+    "1": 1.2412670766236366e-16,
+    "2": 2.7755575615628914e-16,
+    "3": 2.0014830212433605e-16
+  },
+  "semantic_faults": {
+    "missing-reversal": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_gates": 3
+    },
+    "missing-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 2
+    },
+    "wrong-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "wrong-h": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.5204164998665333,
+      "executed_gates": 3
+    },
+    "inverse-changed-dependency": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "measured-qpe-missing-reversal": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_gates": 3
+    },
+    "measured-qpe-missing-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865475,
+      "executed_gates": 2
+    },
+    "measured-qpe-wrong-phase": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.7071067811865477,
+      "executed_gates": 3
+    },
+    "measured-qpe-wrong-h": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0.5204164998665333,
+      "executed_gates": 3
+    }
+  },
+  "shared_call": {
+    "basis_columns": 8,
+    "finite_leaves": 3,
+    "executed_gates": 14
+  },
+  "framed_call": {
+    "basis_columns": 16,
+    "entangled_vectors": 1,
+    "maximum_error": 2.5114115397022025e-16
+  }
+}

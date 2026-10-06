@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.bounded-python-repair-command",
+  "version": 1,
+  "attempt": 4,
+  "id": "hierarchical-qpe-root",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/test_hierarchical_qpe_root.py",
+    "--record",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-root-report.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "started_utc": "2026-10-06T00:48:49.383873+00:00",
+  "duration_seconds": 7.711908083991148,
+  "exit_code": 0,
+  "timeout_seconds": 900,
+  "timed_out": false,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "source_manifest": "python-repair-04-plan.json",
+  "source_sha256": {
+    "scripts/test_hierarchical_qpe_root.py": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
+    "scripts/compile_sized_corpus.py": "eb572c699dfdbcb1951e49ed583067667b4ff50cbfa890fba52826c9e88abd2d",
+    "scripts/compile_sized_instrument.py": "7b7114990e0a9a34a7526d5904c0682971ac491bbdf6e1b10076294f303591ad",
+    "scripts/test_sized_local_resolution.py": "76508e158b5a3462b138dcbefb99ba12c8d13c998fb63f8b7c633edf03d93576"
+  },
+  "changed_sources_during_command": [],
+  "stdout_file": "python-repair-04-hierarchical-qpe-root.stdout.txt",
+  "stderr_file": "python-repair-04-hierarchical-qpe-root.stderr.txt",
+  "script_report_file": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-04-hierarchical-qpe-root-report.json",
+  "status": "passed"
+}

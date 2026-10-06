@@ -184,26 +184,29 @@ fn long_acyclic_import_chain_loads_on_a_small_stack() {
 }
 
 #[test]
-fn deep_import_cycle_reports_the_back_edge_and_cycle_path() {
+fn deep_import_only_cycle_loads_on_a_small_stack() {
     let root = TempRoot::new();
     let count = 3_000;
     let cycle_start = 1_200;
     root.write_import_chain(count, Some(cycle_start));
-    let error = load_on_small_stack(root.path()).unwrap_err();
-    assert!(error.path.ends_with("m2999.qli"));
-    let source = fs::read_to_string(&error.path).unwrap();
-    assert_eq!(error.span.start, "// π\n".len());
+    let project = load_on_small_stack(root.path()).unwrap();
     assert_eq!(
-        &source[error.span.start..error.span.end],
-        "use m1200::f1200;"
+        project
+            .modules
+            .values()
+            .filter(|module| module.origin == ModuleOrigin::Local)
+            .count(),
+        count
     );
-    let cycle: Vec<_> = (cycle_start..count)
-        .chain(std::iter::once(cycle_start))
-        .map(|index| format!("m{index:04}"))
-        .collect();
+    let last = project.module("m2999").unwrap();
+    let back_edge = &last.imports["f1200"];
+    assert_eq!(back_edge.module, format!("m{cycle_start:04}"));
+    assert_eq!(back_edge.name, format!("f{cycle_start:04}"));
+    assert_eq!(back_edge.origin, ImportOrigin::Local);
+    assert_eq!(back_edge.span.start, "// π\n".len());
     assert_eq!(
-        error.message,
-        format!("cyclic import: {}", cycle.join(" -> "))
+        &last.source[back_edge.span.start..back_edge.span.end],
+        "use m1200::f1200;"
     );
 }
 

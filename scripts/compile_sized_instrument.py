@@ -175,10 +175,10 @@ def check_body(body, env, declarations, effects, effect, hidden=()):
                 if quantum(scope[key]):
                     del scope[key]
             return a
-        _, _, _, carry, initial, inner = fields
+        index, _, _, carry, initial, inner = fields
         initial = expression(initial, scope)
         captures = {name: value for name, value in scope.items() if not quantum(value)}
-        if check_body(inner, captures | {carry: initial}, declarations, effects, effect, hidden) != initial:
+        if check_body(inner, captures | {carry: initial}, declarations, effects, effect, hidden | {index}) != initial:
             raise SourceError('fold carry tuple/classical shape changed')
         return initial
 
@@ -197,7 +197,7 @@ class InstrumentProducer(Producer):
         work = {'iterations': 0, 'calls': 0, 'modules': {}}
         self.effects = {}
         for name, source in modules.items():
-            parser = InstrumentParser(source, modules)
+            parser = InstrumentParser(source, modules, module=name)
             declaration = parser.parse()
             if len({n for n, _ in declaration[2]}) != len(declaration[2]):
                 raise SourceError('duplicate runtime parameter')
@@ -327,7 +327,8 @@ class InstrumentProducer(Producer):
                     provider.name, provider.sizes, ty, operations=provider.operations)
                 if provider_key not in self.providers:
                     self.providers[provider_key] = Producer(self.modules, self.stack+(provider_key,), self.work).compile(
-                        source, function, substitutions, operations=dict(provider.operations))
+                        source, function, substitutions, operations=dict(provider.operations),
+                        module=provider.name.split('::')[0])
                 self.operations[parameter] = provider, ty
             check_static_names(body, parameters, access, self.declarations)
             check_body(body, {n: shape(t) for n, t in arguments}, self.declarations,

@@ -1,0 +1,52 @@
+diff --git a/.github/ci/native-comparisons.json b/.github/ci/native-comparisons.json
+index f0fd5b34..593c225f 100644
+--- a/.github/ci/native-comparisons.json
++++ b/.github/ci/native-comparisons.json
+@@ -637,8 +637,12 @@
+     },
+     {
+       "id": "sized-corpus",
+-      "name": "Sized Xor and GHZ source corpus with independent native and semantic checks",
++      "name": "Sized local resolution, Xor and GHZ corpus with independent native and semantic checks",
+       "commands": [
++        [
++          "python3",
++          "scripts/test_sized_local_resolution.py"
++        ],
+         [
+           "python3",
+           "scripts/test_sized_corpus.py",
+diff --git a/scripts/test_run_native_ci.py b/scripts/test_run_native_ci.py
+index b2dd60e3..7cf99e9f 100644
+--- a/scripts/test_run_native_ci.py
++++ b/scripts/test_run_native_ci.py
+@@ -26,7 +26,7 @@ class NativeCI(unittest.TestCase):
+     def test_retains_every_pre_206_command_and_environment(self):
+         tasks = load_tasks(MANIFEST)
+         self.assertEqual(len(tasks), 67)
+-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 90)
++        self.assertEqual(sum(len(task["commands"]) for task in tasks), 91)
+         inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
+         inventory = copy.deepcopy(inventory)
+         for task in inventory:
+@@ -34,7 +34,8 @@ class NativeCI(unittest.TestCase):
+                                 if command not in (["python3", "scripts/test_hierarchical_finite_binding.py"],
+                                     ["python3", "scripts/test_verification_decoders.py", "--record", "{record}"],
+                                     ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"],
+-                                    ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"])]
++                                    ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"],
++                                    ["python3", "scripts/test_sized_local_resolution.py"])]
+         digest = hashlib.sha256(json.dumps(inventory, sort_keys=True).encode()).hexdigest()
+         # v0.2.6 workflow commands, replacing only isolated --record paths.
+         self.assertEqual(digest, "33f46d04c2071b73d673c1c509866d57b547b63fbf468a894e0b809a213f424e")
+@@ -67,6 +68,10 @@ class NativeCI(unittest.TestCase):
+         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-qpe-instrument')
+         self.assertIn(['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'], task['commands'])
+ 
++    def test_sized_local_resolution_has_a_required_ci_command(self):
++        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'sized-corpus')
++        self.assertEqual(task['commands'][0], ['python3', 'scripts/test_sized_local_resolution.py'])
++
+     def test_dynamic_component_version_checks_are_required(self):
+         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-preparation')
+         self.assertIn(['python3', 'scripts/test_instrument_transport.py', '--record', '{record}'], task['commands'])

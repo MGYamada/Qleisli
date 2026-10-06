@@ -1,0 +1,1067 @@
+{
+  "format": "qleisli.sized-arithmetic-experiment",
+  "version": 1,
+  "status": "passed-small-source-path",
+  "scope": "Small-system source path; no maximum-size checks, named arithmetic contract proof or production integration claim.",
+  "source_sha256": {
+    "comparison": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729",
+    "negation": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3",
+    "controls": "bc74ef9fa6e89dc5539efbc63fbc6c03abd4261afda42c4ab7f7758f4ef2e44c",
+    "increment": "5eab4961ffabc1ba538af43c440b11c5add3b5fed81ae21f30b97b7b71c17430",
+    "addition": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6",
+    "bitwise": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+  },
+  "producer_sha256": "eb572c699dfdbcb1951e49ed583067667b4ff50cbfa890fba52826c9e88abd2d",
+  "source_rejections": [
+    {
+      "case": "alias-empty-owners",
+      "diagnostic": "unknown, captured or already moved quantum value left"
+    },
+    {
+      "case": "ordinary-argument-count",
+      "diagnostic": "ordinary operation argument tuple shape/arity mismatch"
+    },
+    {
+      "case": "ordinary-argument-grouping",
+      "diagnostic": "ordinary operation argument tuple shape/arity mismatch"
+    },
+    {
+      "case": "ordinary-static-count",
+      "diagnostic": "ordinary operation static argument arity mismatch"
+    },
+    {
+      "case": "missing-returned-target",
+      "diagnostic": "unreturned quantum owners: target"
+    },
+    {
+      "case": "different-result-nesting",
+      "diagnostic": "return type/tuple shape mismatch"
+    },
+    {
+      "case": "control-target-type",
+      "diagnostic": "ordinary operation argument type/arity mismatch"
+    },
+    {
+      "case": "aliased-controlled-group",
+      "diagnostic": "unknown, captured or already moved quantum value head"
+    },
+    {
+      "case": "controlled-group-nesting",
+      "diagnostic": "unknown, captured or already moved quantum value target"
+    },
+    {
+      "case": "wrong-control-kind",
+      "diagnostic": "controlled application requires Q<Bit> and a quantum target"
+    },
+    {
+      "case": "unknown-static-target",
+      "diagnostic": "unknown static operation parameter or definition missing"
+    },
+    {
+      "case": "same-size-recursion",
+      "diagnostic": "cyclic or excessive source operation instantiation"
+    },
+    {
+      "case": "invalid-empty-branch",
+      "diagnostic": "unknown, captured or already moved quantum value controls"
+    },
+    {
+      "case": "controlled-static-arity",
+      "diagnostic": "ordinary operation static argument arity mismatch"
+    },
+    {
+      "case": "empty-loop-call-arity",
+      "diagnostic": "unknown, captured or already moved quantum value register"
+    },
+    {
+      "case": "aggregate-fold-limit",
+      "diagnostic": "invalid or excessive static fold range"
+    },
+    {
+      "case": "live-name-hides-function",
+      "diagnostic": "quantum/static binding hides imported operation increment::increment"
+    },
+    {
+      "case": "spent-name-hides-function",
+      "diagnostic": "quantum/static binding hides imported operation increment::increment"
+    },
+    {
+      "case": "instantiation-depth",
+      "diagnostic": "import collides with local declaration grow"
+    },
+    {
+      "case": "invalid-zero-repeat-body",
+      "diagnostic": "x requires Q<Bit>; conversions are explicit"
+    }
+  ],
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "command": [
+    "cargo",
+    "test",
+    "--test",
+    "sized_corpus",
+    "inspect_source_produced_corpus",
+    "--",
+    "--ignored",
+    "--nocapture"
+  ],
+  "exit_code": 0,
+  "stdout": "\nrunning 1 test\nCORPUS|controls-0|ok|67883|171|1\nCORPUS|increment-0|ok|5670|0|0\nCORPUS|negation-0|ok|5670|0|0\nCORPUS|comparison-0|ok|279747|171|1\nCORPUS|add-0-0|ok|5670|0|0\nCORPUS|add-0-1|ok|12500|0|0\nCORPUS|add-0-2|ok|24774|0|0\nCORPUS|add-0-3|ok|34689|0|0\nCORPUS|controls-1|ok|142734|171|1\nCORPUS|increment-1|ok|144062|171|1\nCORPUS|negation-1|ok|42539|171|1\nCORPUS|comparison-1|ok|491928|513|3\nCORPUS|add-1-0|ok|7253|0|0\nCORPUS|add-1-1|ok|155468|171|1\nCORPUS|add-1-2|ok|171224|171|1\nCORPUS|add-1-3|ok|184125|171|1\nCORPUS|controls-2|ok|231715|171|1\nCORPUS|increment-2|ok|303549|171|1\nCORPUS|negation-2|ok|79960|342|2\nCORPUS|comparison-2|ok|790570|855|5\nCORPUS|add-2-0|ok|8996|0|0\nCORPUS|add-2-1|ok|317905|171|1\nCORPUS|add-2-3|ok|353598|171|1\nCORPUS|add-2-4|ok|369769|171|1\nCORPUS|add-2-5|ok|385940|171|1\nCORPUS|controls-3|ok|330549|171|1\nCORPUS|increment-3|ok|490456|171|1\nCORPUS|negation-3|ok|120245|513|3\nCORPUS|comparison-3|ok|1121383|1197|7\nCORPUS|add-3-0|ok|10899|0|0\nCORPUS|add-3-1|ok|508082|171|1\nCORPUS|add-3-3|ok|551451|171|1\nCORPUS|add-3-7|ok|630101|171|1\nCORPUS|add-3-8|ok|649862|171|1\nCORPUS|add-3-9|ok|669623|171|1\nCORPUS|inverse-add-0|ok|41631|0|0\nCORPUS|inverse-equals-0|ok|321274|171|1\nCORPUS|controlled-add-0|ok|48605|0|0\nCORPUS|inverse-add-1|ok|197973|171|1\nCORPUS|inverse-equals-1|ok|542971|513|3\nCORPUS|controlled-add-1|ok|206844|171|1\nCORPUS|inverse-add-2|ok|370852|171|1\nCORPUS|inverse-equals-2|ok|852409|855|5\nCORPUS|controlled-add-2|ok|381506|171|1\nCORPUS|inverse-add-3|ok|572431|171|1\nCORPUS|inverse-equals-3|ok|1195298|1197|7\nCORPUS|controlled-add-3|ok|585028|171|1\nCORPUS|shared-equals-twice|ok|910512|855|5\nCORPUS|wrong-carry-order|ok|347696|171|1\nCORPUS|missing-carry|ok|161647|0|0\nCORPUS|reversed-bit-order|ok|350647|171|1\nCORPUS|wrong-count|ok|337427|171|1\nCORPUS|missing-restore|ok|738476|855|5\nCORPUS|wrong-predicate|ok|730458|855|5\nCORPUS|extra-target-phase|ok|857969|855|5\nCORPUS|false-finite-x|contract|Lean artifact inspection: the native checker rejected the artifact or request\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 4.95s\n\n",
+  "stderr": "    Finished `test` profile [unoptimized] target(s) in 0.13s\n     Running tests/sized_corpus.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_corpus-111aa10eead069e1)\n",
+  "native": [
+    [
+      "controls-0",
+      "ok",
+      "67883",
+      "171",
+      "1"
+    ],
+    [
+      "increment-0",
+      "ok",
+      "5670",
+      "0",
+      "0"
+    ],
+    [
+      "negation-0",
+      "ok",
+      "5670",
+      "0",
+      "0"
+    ],
+    [
+      "comparison-0",
+      "ok",
+      "279747",
+      "171",
+      "1"
+    ],
+    [
+      "add-0-0",
+      "ok",
+      "5670",
+      "0",
+      "0"
+    ],
+    [
+      "add-0-1",
+      "ok",
+      "12500",
+      "0",
+      "0"
+    ],
+    [
+      "add-0-2",
+      "ok",
+      "24774",
+      "0",
+      "0"
+    ],
+    [
+      "add-0-3",
+      "ok",
+      "34689",
+      "0",
+      "0"
+    ],
+    [
+      "controls-1",
+      "ok",
+      "142734",
+      "171",
+      "1"
+    ],
+    [
+      "increment-1",
+      "ok",
+      "144062",
+      "171",
+      "1"
+    ],
+    [
+      "negation-1",
+      "ok",
+      "42539",
+      "171",
+      "1"
+    ],
+    [
+      "comparison-1",
+      "ok",
+      "491928",
+      "513",
+      "3"
+    ],
+    [
+      "add-1-0",
+      "ok",
+      "7253",
+      "0",
+      "0"
+    ],
+    [
+      "add-1-1",
+      "ok",
+      "155468",
+      "171",
+      "1"
+    ],
+    [
+      "add-1-2",
+      "ok",
+      "171224",
+      "171",
+      "1"
+    ],
+    [
+      "add-1-3",
+      "ok",
+      "184125",
+      "171",
+      "1"
+    ],
+    [
+      "controls-2",
+      "ok",
+      "231715",
+      "171",
+      "1"
+    ],
+    [
+      "increment-2",
+      "ok",
+      "303549",
+      "171",
+      "1"
+    ],
+    [
+      "negation-2",
+      "ok",
+      "79960",
+      "342",
+      "2"
+    ],
+    [
+      "comparison-2",
+      "ok",
+      "790570",
+      "855",
+      "5"
+    ],
+    [
+      "add-2-0",
+      "ok",
+      "8996",
+      "0",
+      "0"
+    ],
+    [
+      "add-2-1",
+      "ok",
+      "317905",
+      "171",
+      "1"
+    ],
+    [
+      "add-2-3",
+      "ok",
+      "353598",
+      "171",
+      "1"
+    ],
+    [
+      "add-2-4",
+      "ok",
+      "369769",
+      "171",
+      "1"
+    ],
+    [
+      "add-2-5",
+      "ok",
+      "385940",
+      "171",
+      "1"
+    ],
+    [
+      "controls-3",
+      "ok",
+      "330549",
+      "171",
+      "1"
+    ],
+    [
+      "increment-3",
+      "ok",
+      "490456",
+      "171",
+      "1"
+    ],
+    [
+      "negation-3",
+      "ok",
+      "120245",
+      "513",
+      "3"
+    ],
+    [
+      "comparison-3",
+      "ok",
+      "1121383",
+      "1197",
+      "7"
+    ],
+    [
+      "add-3-0",
+      "ok",
+      "10899",
+      "0",
+      "0"
+    ],
+    [
+      "add-3-1",
+      "ok",
+      "508082",
+      "171",
+      "1"
+    ],
+    [
+      "add-3-3",
+      "ok",
+      "551451",
+      "171",
+      "1"
+    ],
+    [
+      "add-3-7",
+      "ok",
+      "630101",
+      "171",
+      "1"
+    ],
+    [
+      "add-3-8",
+      "ok",
+      "649862",
+      "171",
+      "1"
+    ],
+    [
+      "add-3-9",
+      "ok",
+      "669623",
+      "171",
+      "1"
+    ],
+    [
+      "inverse-add-0",
+      "ok",
+      "41631",
+      "0",
+      "0"
+    ],
+    [
+      "inverse-equals-0",
+      "ok",
+      "321274",
+      "171",
+      "1"
+    ],
+    [
+      "controlled-add-0",
+      "ok",
+      "48605",
+      "0",
+      "0"
+    ],
+    [
+      "inverse-add-1",
+      "ok",
+      "197973",
+      "171",
+      "1"
+    ],
+    [
+      "inverse-equals-1",
+      "ok",
+      "542971",
+      "513",
+      "3"
+    ],
+    [
+      "controlled-add-1",
+      "ok",
+      "206844",
+      "171",
+      "1"
+    ],
+    [
+      "inverse-add-2",
+      "ok",
+      "370852",
+      "171",
+      "1"
+    ],
+    [
+      "inverse-equals-2",
+      "ok",
+      "852409",
+      "855",
+      "5"
+    ],
+    [
+      "controlled-add-2",
+      "ok",
+      "381506",
+      "171",
+      "1"
+    ],
+    [
+      "inverse-add-3",
+      "ok",
+      "572431",
+      "171",
+      "1"
+    ],
+    [
+      "inverse-equals-3",
+      "ok",
+      "1195298",
+      "1197",
+      "7"
+    ],
+    [
+      "controlled-add-3",
+      "ok",
+      "585028",
+      "171",
+      "1"
+    ],
+    [
+      "shared-equals-twice",
+      "ok",
+      "910512",
+      "855",
+      "5"
+    ],
+    [
+      "wrong-carry-order",
+      "ok",
+      "347696",
+      "171",
+      "1"
+    ],
+    [
+      "missing-carry",
+      "ok",
+      "161647",
+      "0",
+      "0"
+    ],
+    [
+      "reversed-bit-order",
+      "ok",
+      "350647",
+      "171",
+      "1"
+    ],
+    [
+      "wrong-count",
+      "ok",
+      "337427",
+      "171",
+      "1"
+    ],
+    [
+      "missing-restore",
+      "ok",
+      "738476",
+      "855",
+      "5"
+    ],
+    [
+      "wrong-predicate",
+      "ok",
+      "730458",
+      "855",
+      "5"
+    ],
+    [
+      "extra-target-phase",
+      "ok",
+      "857969",
+      "855",
+      "5"
+    ],
+    [
+      "false-finite-x",
+      "contract",
+      "Lean artifact inspection: the native checker rejected the artifact or request"
+    ]
+  ],
+  "semantics": {
+    "controls-0": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "increment-0": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "negation-0": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "comparison-0": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "add-0-0": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "add-0-1": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "add-0-2": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "add-0-3": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "controls-1": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "increment-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "negation-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "comparison-1": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 5
+    },
+    "add-1-0": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "add-1-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "add-1-2": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 2
+    },
+    "add-1-3": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 3
+    },
+    "controls-2": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "increment-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 2
+    },
+    "negation-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 2
+    },
+    "comparison-2": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 9
+    },
+    "add-2-0": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "add-2-1": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 2
+    },
+    "add-2-3": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 6
+    },
+    "add-2-4": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 8
+    },
+    "add-2-5": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 10
+    },
+    "controls-3": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "increment-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 3
+    },
+    "negation-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 3
+    },
+    "comparison-3": {
+      "basis_columns": 128,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 13
+    },
+    "add-3-0": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "add-3-1": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 3
+    },
+    "add-3-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 9
+    },
+    "add-3-7": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 21
+    },
+    "add-3-8": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 24
+    },
+    "add-3-9": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 27
+    },
+    "inverse-add-0": {
+      "basis_columns": 1,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "inverse-equals-0": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 1
+    },
+    "controlled-add-0": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 0
+    },
+    "inverse-add-1": {
+      "basis_columns": 2,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 3
+    },
+    "inverse-equals-1": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 5
+    },
+    "controlled-add-1": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 3
+    },
+    "inverse-add-2": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 6
+    },
+    "inverse-equals-2": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 9
+    },
+    "controlled-add-2": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 6
+    },
+    "inverse-add-3": {
+      "basis_columns": 8,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 9
+    },
+    "inverse-equals-3": {
+      "basis_columns": 128,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 13
+    },
+    "controlled-add-3": {
+      "basis_columns": 16,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 9
+    },
+    "shared-equals-twice": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 0,
+      "executed_instructions": 18
+    }
+  },
+  "semantic_faults": {
+    "wrong-carry-order": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_instructions": 6
+    },
+    "missing-carry": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_instructions": 0
+    },
+    "reversed-bit-order": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1,
+      "executed_instructions": 6
+    },
+    "wrong-count": {
+      "basis_columns": 4,
+      "reference_columns": 2,
+      "maximum_error": 1.0,
+      "executed_instructions": 4
+    },
+    "missing-restore": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 1,
+      "executed_instructions": 7
+    },
+    "wrong-predicate": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 1,
+      "executed_instructions": 7
+    },
+    "extra-target-phase": {
+      "basis_columns": 32,
+      "reference_columns": 2,
+      "maximum_error": 2.0,
+      "executed_instructions": 10
+    }
+  },
+  "totals": {
+    "basis_columns": 557,
+    "reference_columns": 96
+  },
+  "artifacts": {
+    "controls-0": {
+      "definitions": 12,
+      "bytes": 13124
+    },
+    "increment-0": {
+      "definitions": 2,
+      "bytes": 1908
+    },
+    "negation-0": {
+      "definitions": 2,
+      "bytes": 1908
+    },
+    "comparison-0": {
+      "definitions": 43,
+      "bytes": 51719
+    },
+    "add-0-0": {
+      "definitions": 2,
+      "bytes": 1908
+    },
+    "add-0-1": {
+      "definitions": 4,
+      "bytes": 3654
+    },
+    "add-0-2": {
+      "definitions": 8,
+      "bytes": 6915
+    },
+    "add-0-3": {
+      "definitions": 11,
+      "bytes": 9461
+    },
+    "controls-1": {
+      "definitions": 23,
+      "bytes": 26055
+    },
+    "increment-1": {
+      "definitions": 26,
+      "bytes": 28085
+    },
+    "negation-1": {
+      "definitions": 10,
+      "bytes": 10923
+    },
+    "comparison-1": {
+      "definitions": 73,
+      "bytes": 85573
+    },
+    "add-1-0": {
+      "definitions": 2,
+      "bytes": 1920
+    },
+    "add-1-1": {
+      "definitions": 29,
+      "bytes": 30657
+    },
+    "add-1-2": {
+      "definitions": 33,
+      "bytes": 33969
+    },
+    "add-1-3": {
+      "definitions": 36,
+      "bytes": 36552
+    },
+    "controls-2": {
+      "definitions": 35,
+      "bytes": 40099
+    },
+    "increment-2": {
+      "definitions": 50,
+      "bytes": 55147
+    },
+    "negation-2": {
+      "definitions": 17,
+      "bytes": 19011
+    },
+    "comparison-2": {
+      "definitions": 104,
+      "bytes": 125816
+    },
+    "add-2-0": {
+      "definitions": 2,
+      "bytes": 1944
+    },
+    "add-2-1": {
+      "definitions": 53,
+      "bytes": 57755
+    },
+    "add-2-3": {
+      "definitions": 60,
+      "bytes": 63730
+    },
+    "add-2-4": {
+      "definitions": 63,
+      "bytes": 66349
+    },
+    "add-2-5": {
+      "definitions": 66,
+      "bytes": 68968
+    },
+    "controls-3": {
+      "definitions": 47,
+      "bytes": 54262
+    },
+    "increment-3": {
+      "definitions": 75,
+      "bytes": 83472
+    },
+    "negation-3": {
+      "definitions": 24,
+      "bytes": 27150
+    },
+    "comparison-3": {
+      "definitions": 135,
+      "bytes": 166511
+    },
+    "add-3-0": {
+      "definitions": 2,
+      "bytes": 1968
+    },
+    "add-3-1": {
+      "definitions": 78,
+      "bytes": 86116
+    },
+    "add-3-3": {
+      "definitions": 85,
+      "bytes": 92171
+    },
+    "add-3-7": {
+      "definitions": 97,
+      "bytes": 102556
+    },
+    "add-3-8": {
+      "definitions": 100,
+      "bytes": 105211
+    },
+    "add-3-9": {
+      "definitions": 103,
+      "bytes": 107880
+    },
+    "inverse-add-0": {
+      "definitions": 13,
+      "bytes": 10913
+    },
+    "inverse-equals-0": {
+      "definitions": 47,
+      "bytes": 56954
+    },
+    "controlled-add-0": {
+      "definitions": 15,
+      "bytes": 12989
+    },
+    "inverse-add-1": {
+      "definitions": 40,
+      "bytes": 39618
+    },
+    "inverse-equals-1": {
+      "definitions": 77,
+      "bytes": 90864
+    },
+    "controlled-add-1": {
+      "definitions": 42,
+      "bytes": 41936
+    },
+    "inverse-add-2": {
+      "definitions": 64,
+      "bytes": 66836
+    },
+    "inverse-equals-2": {
+      "definitions": 108,
+      "bytes": 131215
+    },
+    "controlled-add-2": {
+      "definitions": 66,
+      "bytes": 69182
+    },
+    "inverse-add-3": {
+      "definitions": 89,
+      "bytes": 95317
+    },
+    "inverse-equals-3": {
+      "definitions": 139,
+      "bytes": 171998
+    },
+    "controlled-add-3": {
+      "definitions": 91,
+      "bytes": 97691
+    },
+    "shared-equals-twice": {
+      "definitions": 111,
+      "bytes": 135455
+    },
+    "wrong-carry-order": {
+      "definitions": 58,
+      "bytes": 61827
+    },
+    "missing-carry": {
+      "definitions": 32,
+      "bytes": 32477
+    },
+    "reversed-bit-order": {
+      "definitions": 59,
+      "bytes": 62769
+    },
+    "wrong-count": {
+      "definitions": 57,
+      "bytes": 61111
+    },
+    "missing-restore": {
+      "definitions": 99,
+      "bytes": 119328
+    },
+    "wrong-predicate": {
+      "definitions": 98,
+      "bytes": 118222
+    },
+    "extra-target-phase": {
+      "definitions": 109,
+      "bytes": 131821
+    },
+    "false-finite-x": {
+      "definitions": 35,
+      "bytes": 40099
+    }
+  }
+}

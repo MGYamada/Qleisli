@@ -83,14 +83,23 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     ] {
         rejected(source, ErrorCode::TypeMismatch);
     }
-    for source in [
-        "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    for (source, expected) in [
+        (
+            "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
             do (a,a) <- q; pure (a,a)
         }",
-        "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,_) <- q; pure a }",
-        "unitary fn bad(q: Q<Bit>) -> Q<Bit> { do _ <- q; pure 0 }",
+            ErrorCode::Ownership,
+        ),
+        (
+            "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,_) <- q; pure a }",
+            ErrorCode::Effect,
+        ),
+        (
+            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { do _ <- q; pure 0 }",
+            ErrorCode::Ownership,
+        ),
     ] {
-        rejected(source, ErrorCode::Ownership);
+        rejected(source, expected);
     }
     for a in [false, true] {
         for b in [false, true] {
@@ -372,7 +381,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
                     do (a,b) <- q; pure {name}(a,b)
                 }}"
             ),
-            ErrorCode::Ownership,
+            ErrorCode::Effect,
         );
         accepted(&format!(
             "{import}

@@ -1,0 +1,19 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 8.22s
+     Running tests/authoring_ergonomics.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/authoring_ergonomics-0cb7aede751ae769)
+     Running tests/inference_law.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/inference_law-ce4a4c9e312ca25c)
+     Running tests/project.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/project-3d308f42f7077967)
+     Running tests/qli_corpus.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/qli_corpus-43fc3074eeeb25e5)
+     Running tests/quantum_tuple_unitors.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/quantum_tuple_unitors-0206b1676b18fdf2)
+     Running tests/quantum_unit_maps.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/quantum_unit_maps-7ec4566cd9f44df6)
+     Running tests/repair_diagnostics.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/repair_diagnostics-f542fcc89a17d3a3)
+     Running tests/review_v024.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/review_v024-ccc2c356c14a006f)
+     Running tests/review_v026.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/review_v026-4556ea4581c1f02d)
+error: test failed, to rerun pass `--test review_v026`
+     Running tests/review_v027.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/review_v027-2cf4defd87e0706c)
+     Running tests/review_v028.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/review_v028-983bd715f4c1a6d7)
+     Running tests/specification_boundaries.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/specification_boundaries-e26b96f312893353)
+     Running tests/unit_patterns.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/unit_patterns-211a5c42f6de2dfa)
+     Running tests/with_computed_diagnostics.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/with_computed_diagnostics-f6f4a4039d4690fb)
+error: 1 target failed:
+    `--test review_v026`

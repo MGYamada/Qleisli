@@ -637,8 +637,12 @@
     },
     {
       "id": "sized-corpus",
-      "name": "Sized Xor and GHZ source corpus with independent native and semantic checks",
+      "name": "Sized local resolution, Xor and GHZ corpus with independent native and semantic checks",
       "commands": [
+        [
+          "python3",
+          "scripts/test_sized_local_resolution.py"
+        ],
         [
           "python3",
           "scripts/test_sized_corpus.py",

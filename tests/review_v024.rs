@@ -57,6 +57,14 @@ fn nested_register_pattern_names_the_actual_type_and_repairs() {
         ),
     );
     check_project(&root.0).unwrap();
+    for basis in ["Bit", "Bits<1>", "Unit", "(Bit,Bit,Bit)"] {
+        let invalid = format!("unitary fn run(q:Q<{basis}>)->Q<{basis}>{{let(a,b)=q;q}}");
+        root.write("main.qli", &invalid);
+        let failure = check_project_diagnostic(&root.0).unwrap_err();
+        assert_eq!(failure.code, "type_mismatch", "{failure:?}");
+        assert!(failure.message.contains(&format!("found `Q<{basis}>`")));
+        assert!(!failure.message.contains("call `split`"), "{failure:?}");
+    }
 }
 
 #[test]

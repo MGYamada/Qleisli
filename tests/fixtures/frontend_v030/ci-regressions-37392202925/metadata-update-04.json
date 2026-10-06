@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.ci-regression-metadata-update",
+  "version": 1,
+  "sources": [
+    {
+      "path": "src/frontend/check.rs",
+      "old_sha256": "cbe9bf52967f7200181079ff9a11a6ec499cfd6f0445f822566553abeb05ae3d",
+      "new_sha256": "f0060cecd778ff199ada98d24776244427c0309f4637004ac46a21dff0f9b6e5",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/check/body/operations.rs",
+      "old_sha256": "cc10b70d978675f968fe30b340d55c9612dd18d10225643239e85a791a51d90a",
+      "new_sha256": "6d6faa315e9b7839be68df81b68371918ccd721b8d3053fd3f2f3e12215809c4",
+      "public_surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "old_sha256": "be72b25e2000eca319d9b4fe554804270d0f297620ace9a29d961cfc2a85d000",
+      "new_sha256": "238ffb9c786351885b13ac78980a70bcaceaaf1c94a1248b9b379ade1433728b",
+      "public_surface_unchanged": true
+    }
+  ],
+  "coverage": {
+    "old_surface_sha256": "6a0b3f2b9dc39fd963b44fc5c70494a6effe12b79a979d426db164273e4aade4",
+    "new_surface_sha256": "9d83cf8b85efbe88c6bb5db0599e07bab81320894c0bd4ad0d0326eba003f831",
+    "routes_and_proof_statuses_unchanged": true
+  },
+  "reason": "Private diagnostic provenance prevents outer fixed primitives from relocating an already explained inner failure. Source evaluation/contextual typing, successful work, exact public surfaces, native rules and proof status unchanged."
+}

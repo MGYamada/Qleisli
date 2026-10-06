@@ -46,11 +46,30 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_> {
     fn duplicate_error(&self, span: Span) -> SourceError {
         SourceError::new("binding", span, "duplicate name in binding pattern")
     }
-    fn shape_error(&self, span: Span, _arity: usize, _value: &Ty, _actual: &Ty) -> SourceError {
+    fn shape_error(&self, span: Span, arity: usize, value: &Ty, actual: &Ty) -> SourceError {
+        let help = if value
+            .quantum_basis()
+            .and_then(Ty::tuple_fields)
+            .is_some_and(|fields| fields.len() == 2)
+        {
+            "; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately"
+        } else {
+            ""
+        };
         SourceError::new(
             "type",
             span,
-            "binding pattern does not preserve tuple arity and nesting",
+            if arity == 0 {
+                format!(
+                    "empty pattern requires ordinary Unit, found `{}`",
+                    actual.display(Stage::Runtime)
+                )
+            } else {
+                format!(
+                    "tuple pattern requires a tuple value with the same immediate arity: expected a tuple of {arity} immediate fields, found `{}`{help}",
+                    actual.display(Stage::Runtime)
+                )
+            },
         )
     }
 }
@@ -617,9 +636,9 @@ impl Checker<'_, '_> {
                     "type",
                     span,
                     format!(
-                        "{} requires ordinary Bit operands, found {:?}",
+                        "{} requires ordinary Bit operands: expected `Bit`, found `{}`",
                         op.operator(),
-                        ty.sized_debug()
+                        ty.display(Stage::Runtime)
                     ),
                 ),
             },

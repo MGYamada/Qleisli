@@ -171,3 +171,7 @@ tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/failure-excerpt.t
 tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/*/*stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/issue-44-before.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/migration.patch -text -whitespace
+# Preserve actual hosted/local CI transcripts and original patch context bytes.
+tests/fixtures/frontend_v030/ci-regressions-37392202925/*.log-excerpts*.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.patch -text -whitespace

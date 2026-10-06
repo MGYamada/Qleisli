@@ -1,0 +1,438 @@
+{
+  "format": "qleisli.circuit-trace-validation",
+  "version": 1,
+  "status": "passed",
+  "native_cases": 19,
+  "results": {
+    "small": [
+      "pending",
+      "156331",
+      "3",
+      "2,1,0",
+      "7:2;11:1;34:2,0;43:1,0;83:2,1"
+    ],
+    "target2": [
+      "pending",
+      "172873",
+      "4",
+      "3,2,0,1",
+      "7:3;11:2;32:3,0,1;41:2,0,1;81:3,2"
+    ],
+    "precision3": [
+      "pending",
+      "275903",
+      "4",
+      "3,2,1,0",
+      "12:3;16:2;20:1;46:3,0;55:2,0;64:1,0;125:3,2,1"
+    ],
+    "target2precision4": [
+      "pending",
+      "477614",
+      "6",
+      "5,4,3,2,0,1",
+      "17:5;21:4;25:3;29:2;58:5,0,1;67:4,0,1;76:3,0,1;85:2,0,1;167:5,4,3,2"
+    ],
+    "hidden-phase": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "duplicate-route-axis": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "atom-signature": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "duplicate-atom": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-atom": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "missing-child": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "reversed-order": [
+      "QleisliKernel.Hierarchical.Artifact.Error.contract"
+    ],
+    "duplicate-definition": [
+      "QleisliKernel.Hierarchical.Artifact.Error.invalidIr"
+    ],
+    "zero-budget": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "excess-budget": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "opaque-large-repeat": [
+      "pending",
+      "156331",
+      "3",
+      "2,1,0",
+      "7:2;11:1;34:2,0;43:1,0;83:2,1"
+    ],
+    "permuted-route": [
+      "pending",
+      "156331",
+      "3",
+      "1,2,0",
+      "7:1;11:2;34:1,0;43:2,0;83:1,2"
+    ],
+    "event-growth-precharge": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ],
+    "budget-exact": [
+      "pending",
+      "156331",
+      "3",
+      "2,1,0",
+      "7:2;11:1;34:2,0;43:1,0;83:2,1"
+    ],
+    "budget-short": [
+      "QleisliKernel.Hierarchical.Artifact.Error.limit"
+    ]
+  },
+  "coefficient_probes": {
+    "small": {
+      "coefficients": 72,
+      "maximum_error": 1.3877787807814457e-16,
+      "route": [
+        2,
+        1,
+        0
+      ],
+      "events": [
+        [
+          7,
+          [
+            2
+          ]
+        ],
+        [
+          11,
+          [
+            1
+          ]
+        ],
+        [
+          34,
+          [
+            2,
+            0
+          ]
+        ],
+        [
+          43,
+          [
+            1,
+            0
+          ]
+        ],
+        [
+          83,
+          [
+            2,
+            1
+          ]
+        ]
+      ]
+    },
+    "target2": {
+      "coefficients": 272,
+      "maximum_error": 1.3877787807814457e-16,
+      "route": [
+        3,
+        2,
+        0,
+        1
+      ],
+      "events": [
+        [
+          7,
+          [
+            3
+          ]
+        ],
+        [
+          11,
+          [
+            2
+          ]
+        ],
+        [
+          32,
+          [
+            3,
+            0,
+            1
+          ]
+        ],
+        [
+          41,
+          [
+            2,
+            0,
+            1
+          ]
+        ],
+        [
+          81,
+          [
+            3,
+            2
+          ]
+        ]
+      ]
+    },
+    "precision3": {
+      "coefficients": 272,
+      "maximum_error": 3.535723771135481e-16,
+      "route": [
+        3,
+        2,
+        1,
+        0
+      ],
+      "events": [
+        [
+          12,
+          [
+            3
+          ]
+        ],
+        [
+          16,
+          [
+            2
+          ]
+        ],
+        [
+          20,
+          [
+            1
+          ]
+        ],
+        [
+          46,
+          [
+            3,
+            0
+          ]
+        ],
+        [
+          55,
+          [
+            2,
+            0
+          ]
+        ],
+        [
+          64,
+          [
+            1,
+            0
+          ]
+        ],
+        [
+          125,
+          [
+            3,
+            2,
+            1
+          ]
+        ]
+      ]
+    },
+    "target2precision4": {
+      "coefficients": 4160,
+      "maximum_error": 2.3714374201337736e-16,
+      "route": [
+        5,
+        4,
+        3,
+        2,
+        0,
+        1
+      ],
+      "events": [
+        [
+          17,
+          [
+            5
+          ]
+        ],
+        [
+          21,
+          [
+            4
+          ]
+        ],
+        [
+          25,
+          [
+            3
+          ]
+        ],
+        [
+          29,
+          [
+            2
+          ]
+        ],
+        [
+          58,
+          [
+            5,
+            0,
+            1
+          ]
+        ],
+        [
+          67,
+          [
+            4,
+            0,
+            1
+          ]
+        ],
+        [
+          76,
+          [
+            3,
+            0,
+            1
+          ]
+        ],
+        [
+          85,
+          [
+            2,
+            0,
+            1
+          ]
+        ],
+        [
+          167,
+          [
+            5,
+            4,
+            3,
+            2
+          ]
+        ]
+      ]
+    },
+    "permuted-route": {
+      "coefficients": 72,
+      "maximum_error": 1.3877787807814457e-16,
+      "route": [
+        1,
+        2,
+        0
+      ],
+      "events": [
+        [
+          7,
+          [
+            1
+          ]
+        ],
+        [
+          11,
+          [
+            2
+          ]
+        ],
+        [
+          34,
+          [
+            1,
+            0
+          ]
+        ],
+        [
+          43,
+          [
+            2,
+            0
+          ]
+        ],
+        [
+          83,
+          [
+            1,
+            2
+          ]
+        ]
+      ]
+    }
+  },
+  "phase_sensitive_coefficients": 4848,
+  "maximum_error": 3.535723771135481e-16,
+  "source_sha256": "7f2943cbd7fcb41013ab64c4afdd6fa77f593a72da2264283906d5260bf08138",
+  "binary_sha256": "1ce710fdcdcd164d6759c7d642bd43a8ef4a077925d75aa014591b53b80f4c64",
+  "kernel_source_sha256": "46ea27e589f1f61460e6e8659a65497cd2fec746d8eb55ddb8cb73bbe1e4e60c",
+  "mathlib_source_sha256": "3f6efaa34a1a267e47f7e9fea3a6a156b0d45138bbe3b8897c27305b92a07b21",
+  "script_sha256": "5214be5ad0baf5bcb0681bd8854516737e4f9b575c6b0e021aa8fce2480d25a8",
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "QleisliKernel:static"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "Build completed successfully (220 jobs).\n",
+      "stderr": "",
+      "seconds": 0.15019562502857298
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-uzdalh_9",
+        "-c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-uzdalh_9/Main.c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-uzdalh_9/Main.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 2.5900134170078672
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanc",
+        "-O3",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-uzdalh_9/native-test",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-uzdalh_9/Main.c",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.7941777920350432
+    },
+    {
+      "driver_source_sha256": "7f2943cbd7fcb41013ab64c4afdd6fa77f593a72da2264283906d5260bf08138",
+      "executable_sha256": "1ce710fdcdcd164d6759c7d642bd43a8ef4a077925d75aa014591b53b80f4c64"
+    },
+    {
+      "argv": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-uzdalh_9/native-test"
+      ],
+      "exit_code": 0,
+      "stdout": "small|pending|156331|3|2,1,0|7:2;11:1;34:2,0;43:1,0;83:2,1\ntarget2|pending|172873|4|3,2,0,1|7:3;11:2;32:3,0,1;41:2,0,1;81:3,2\nprecision3|pending|275903|4|3,2,1,0|12:3;16:2;20:1;46:3,0;55:2,0;64:1,0;125:3,2,1\ntarget2precision4|pending|477614|6|5,4,3,2,0,1|17:5;21:4;25:3;29:2;58:5,0,1;67:4,0,1;76:3,0,1;85:2,0,1;167:5,4,3,2\nhidden-phase|QleisliKernel.Hierarchical.Artifact.Error.contract\nduplicate-route-axis|QleisliKernel.Hierarchical.Artifact.Error.contract\natom-signature|QleisliKernel.Hierarchical.Artifact.Error.contract\nduplicate-atom|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-atom|QleisliKernel.Hierarchical.Artifact.Error.contract\nmissing-child|QleisliKernel.Hierarchical.Artifact.Error.contract\nreversed-order|QleisliKernel.Hierarchical.Artifact.Error.contract\nduplicate-definition|QleisliKernel.Hierarchical.Artifact.Error.invalidIr\nzero-budget|QleisliKernel.Hierarchical.Artifact.Error.limit\nexcess-budget|QleisliKernel.Hierarchical.Artifact.Error.limit\nopaque-large-repeat|pending|156331|3|2,1,0|7:2;11:1;34:2,0;43:1,0;83:2,1\npermuted-route|pending|156331|3|1,2,0|7:1;11:2;34:1,0;43:2,0;83:1,2\nevent-growth-precharge|QleisliKernel.Hierarchical.Artifact.Error.limit\nbudget-exact|pending|156331|3|2,1,0|7:2;11:1;34:2,0;43:1,0;83:2,1\nbudget-short|QleisliKernel.Hierarchical.Artifact.Error.limit\n",
+      "stderr": ""
+    }
+  ],
+  "atom_equations_discharged": false,
+  "named_qpe_binding": false,
+  "production_integration": false
+}

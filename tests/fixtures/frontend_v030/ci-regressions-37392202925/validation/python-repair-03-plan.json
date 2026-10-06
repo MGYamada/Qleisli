@@ -1,0 +1,177 @@
+{
+  "format": "qleisli.bounded-python-repair-plan",
+  "version": 1,
+  "status": "prepared; commands not yet run",
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "scope": "Existing affected small-support comparisons only; generic qft<N> excluded. Fixed sized Fourier comparison uses --small. Existing opaque-count and decoder-budget negatives are bounded metadata checks, not maximum-qubit source cases. No original fixture or product edits.",
+  "tasks": [
+    {
+      "id": "sized-instrument",
+      "script": "scripts/test_sized_instrument.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_sized_instrument.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-sized-instrument-report.json"
+      ],
+      "script_sha256": "c8c780906224f9c71aec02cc97a8eb9572b196de0271e147f5d127fd3455060d",
+      "max_semantic_qubits_from_retained_cases": 6
+    },
+    {
+      "id": "sized-arithmetic",
+      "script": "scripts/test_sized_arithmetic.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_sized_arithmetic.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-sized-arithmetic-report.json"
+      ],
+      "script_sha256": "f727517de1d07268c2e79e37043e5febc12152a6d0950408125bef8abf5489a1",
+      "max_semantic_qubits_from_retained_cases": 7
+    },
+    {
+      "id": "sized-qft-small",
+      "script": "scripts/test_sized_qft.py",
+      "options": [
+        "--small"
+      ],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_sized_qft.py",
+        "--small",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-sized-qft-small-report.json"
+      ],
+      "script_sha256": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
+      "max_semantic_qubits_from_retained_cases": 4
+    },
+    {
+      "id": "hierarchical-execution",
+      "script": "scripts/test_hierarchical_execution.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hierarchical_execution.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-hierarchical-execution-report.json"
+      ],
+      "script_sha256": "f3fb1b727fa22a608c1c7fae5fc6923ddb7d3216e92c50d6df7c216f5044431d",
+      "max_semantic_qubits_from_retained_cases": 4
+    },
+    {
+      "id": "hierarchical-routed-power",
+      "script": "scripts/test_hierarchical_routed_power.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hierarchical_routed_power.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-hierarchical-routed-power-report.json"
+      ],
+      "script_sha256": "746d772fa7b2be51885e12f910a79548aa2ce4909607c3546f321fbaec02898d",
+      "max_semantic_qubits_from_retained_cases": 4
+    },
+    {
+      "id": "hierarchical-circuit-trace",
+      "script": "scripts/test_hierarchical_circuit_trace.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hierarchical_circuit_trace.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-hierarchical-circuit-trace-report.json"
+      ],
+      "script_sha256": "5214be5ad0baf5bcb0681bd8854516737e4f9b575c6b0e021aa8fce2480d25a8",
+      "max_semantic_qubits_from_retained_cases": 6
+    },
+    {
+      "id": "hierarchical-qpe-schedule",
+      "script": "scripts/test_hierarchical_qpe_schedule.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hierarchical_qpe_schedule.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-hierarchical-qpe-schedule-report.json"
+      ],
+      "script_sha256": "71730551422dcc90bf7bf0857363cf554d17ef7d0c39aa27a3be8f1cc2bc860e",
+      "max_semantic_qubits_from_retained_cases": 6
+    },
+    {
+      "id": "hierarchical-qpe-root",
+      "script": "scripts/test_hierarchical_qpe_root.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hierarchical_qpe_root.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-hierarchical-qpe-root-report.json"
+      ],
+      "script_sha256": "59cf3357aaa77b92accc8ac642b60829f5bf6d4628c07471c5e74ed9ab4adcf4",
+      "max_semantic_qubits_from_retained_cases": 6
+    },
+    {
+      "id": "hierarchical-qpe-instrument",
+      "script": "scripts/test_hierarchical_qpe_instrument.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_hierarchical_qpe_instrument.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-hierarchical-qpe-instrument-report.json"
+      ],
+      "script_sha256": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
+      "max_semantic_qubits_from_retained_cases": 6
+    },
+    {
+      "id": "instrument-host",
+      "script": "scripts/test_instrument_host.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_instrument_host.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-instrument-host-report.json"
+      ],
+      "script_sha256": "dd092f990088732ab43cfbab33154f8eba66e353039fe1efef65503985eace64",
+      "max_semantic_qubits_from_retained_cases": 6
+    },
+    {
+      "id": "qpe-instrument-host",
+      "script": "scripts/test_qpe_instrument_host.py",
+      "options": [],
+      "command": [
+        "python3",
+        "-B",
+        "scripts/test_qpe_instrument_host.py",
+        "--record",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-03-qpe-instrument-host-report.json"
+      ],
+      "script_sha256": "37a5abb8c795fa17d7a12f2e4ada917c62e839154b14ad39bb9060bb436b3cb6",
+      "max_semantic_qubits_from_retained_cases": 6
+    }
+  ]
+}

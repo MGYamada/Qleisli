@@ -169,6 +169,7 @@ pub(super) fn closed_interface_budgeted(
                 module: error.module,
                 span: error.span,
                 message: error.message,
+                primitive_argument_located: false,
             })
         })
         .map_err(Error::from)?;
@@ -220,6 +221,7 @@ pub(super) fn closed_interface_budgeted(
                     module: error.module,
                     span: error.span,
                     message: error.message,
+                    primitive_argument_located: false,
                 })
             },
         )

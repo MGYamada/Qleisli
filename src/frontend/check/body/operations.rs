@@ -198,10 +198,27 @@ impl Checker<'_, '_> {
     ) -> Result<(Vec<Ty>, Ty, [bool; 3])> {
         let interface = &self.program.interfaces[&id];
         if args.len() != interface.statics.len() {
+            let ordered = interface
+                .statics
+                .iter()
+                .map(|formal| {
+                    let category = match formal.kind {
+                        StaticKind::Natural => "Nat",
+                        StaticKind::Basis => "Basis",
+                        StaticKind::Operation { .. } => "Op",
+                    };
+                    format!("{}: {category}", formal.key.name)
+                })
+                .collect::<Vec<_>>()
+                .join(", ");
             return Err(SourceError::new(
                 "static-arity",
                 span,
-                "wrong number of explicit static arguments",
+                format!(
+                    "{} requires explicit static parameters [{ordered}]; received {} arguments",
+                    self.program.resolution.path(id),
+                    args.len()
+                ),
             ));
         }
         let mut target = Scope {
@@ -288,7 +305,8 @@ impl Checker<'_, '_> {
                 &scope.context,
                 arg.span,
                 &self.program.budget,
-            )?;
+            )
+            .map_err(|error| operation_mismatch(error, &operation.basis, &basis))?;
             for capability in [Access::Apply, Access::Adjoint, Access::Controlled] {
                 if required[super::super::super::formals::access_index(capability)] {
                     access(&operation, capability, arg.span)?;
@@ -469,7 +487,42 @@ impl Checker<'_, '_> {
                     let (inputs, result) =
                         primitive.fixed(&ns, &scope.context, span, &self.program.budget)?;
                     for (expr, ty) in runtime.iter().zip(&inputs) {
-                        self.expr(expr, scope, Some(ty))?;
+                        // Only a direct, still-live lexical tuple binding can
+                        // carry binding-specific help. Retain its identity,
+                        // without copying the owner/type tree.
+                        let binding = if ty.quantum_basis().is_some() {
+                            if let ExprKind::Name(name) = &expr.kind {
+                                self.local(name).and_then(|key| {
+                                    scope.values.get(key).and_then(|value| {
+                                        (value.ty.linear() && value.ty.tuple_fields().is_some())
+                                            .then_some((key.id, name.text.as_str()))
+                                    })
+                                })
+                            } else {
+                                None
+                            }
+                        } else {
+                            None
+                        };
+                        self.expr(expr, scope, Some(ty)).map_err(|mut error| {
+                            if error.code == "type"
+                                && !error.primitive_argument_located
+                                && error.span == expr.span
+                                && ty.quantum_basis().is_some()
+                            {
+                                error.primitive_argument_located = true;
+                                if let Some((id, name)) = binding {
+                                    error.span = self.index().table.binder(id).span;
+                                    error.message = format!(
+                                        "binding `{name}` contains a tuple of owners: {}; help: destructure the tuple at this binding (for cnot, `let (a, b) = cnot(a, b);`); a single name binds the whole returned tuple",
+                                        error.message
+                                    );
+                                } else {
+                                    error.span = span;
+                                }
+                            }
+                            error
+                        })?;
                     }
                     Ok(result)
                 }
@@ -516,6 +569,13 @@ impl Checker<'_, '_> {
             }
             self.program.budget.ty(name.span, &operation.basis)?;
             return Ok(operation.clone());
+        }
+        if self.local(name).is_some() {
+            return Err(SourceError::new(
+                "type",
+                name.span,
+                "a local or spent runtime value cannot be a static operation",
+            ));
         }
         match self.resolve(name)? {
             Target::Primitive(primitive) if allow_primitive => {
@@ -701,7 +761,8 @@ impl Checker<'_, '_> {
                         &scope.context,
                         op.span,
                         &self.program.budget,
-                    )?;
+                    )
+                    .map_err(|error| operation_mismatch(error, &b.basis, &a.basis))?;
                 }
                 let access = if matches!(op.kind, StaticOpKind::Conjugate(..)) {
                     std::array::from_fn(|i| a.access[0] && a.access[1] && b.access[i])
@@ -727,4 +788,15 @@ impl Checker<'_, '_> {
             )),
         }
     }
+}
+
+fn operation_mismatch(mut error: SourceError, actual: &Ty, expected: &Ty) -> SourceError {
+    if error.code == "type" {
+        error.message = format!(
+            "static operation basis mismatch: expected `Op<{}>`, found `Op<{}>`",
+            expected.display(Stage::Basis),
+            actual.display(Stage::Basis)
+        );
+    }
+    error
 }

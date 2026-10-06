@@ -1,0 +1,207 @@
+2026-10-06T00:06:43.2940371Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +a675d87a9e0c550200e179bcd2cc375f7c45458a:refs/remotes/pull/307/merge
+2026-10-06T00:06:46.4443679Z HEAD is now at a675d87 Merge 7f6529ef93838d565552c3f501ce016ef1d1d2b4 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T00:06:46.4554405Z a675d87a9e0c550200e179bcd2cc375f7c45458a
+2026-10-06T00:09:07.8484295Z Build completed successfully (215 jobs).
+2026-10-06T00:09:11.5530806Z Audited 11578 kernel/transport declarations, 1124 pure import modules and 1137 executable import modules; axioms used: [propext,
+2026-10-06T00:09:11.5531617Z  Classical.choice,
+2026-10-06T00:09:11.5531902Z  Quot.sound]
+2026-10-06T00:14:40.6192158Z passed: lean-layout-dag (11.0s)
+2026-10-06T00:14:43.4480041Z passed: lean-phase-operations (2.8s)
+2026-10-06T00:14:47.0529843Z passed: lean-layout (17.5s)
+2026-10-06T00:15:01.6688455Z passed: lean-phase-layout (32.1s)
+2026-10-06T00:15:21.0204130Z passed: hierarchical-gradient (37.6s)
+2026-10-06T00:15:24.4622719Z passed: lean-hierarchy (54.9s)
+2026-10-06T00:15:29.8616376Z passed: lean-interference (28.2s)
+2026-10-06T00:15:30.5650195Z passed: hierarchical-fourier-stage (43.5s)
+2026-10-06T00:16:38.3614580Z passed: lean-exact (77.3s)
+2026-10-06T00:17:39.5962326Z passed: lean-finite (135.1s)
+2026-10-06T00:17:49.7367581Z passed: lean-raw-completion (139.2s)
+2026-10-06T00:17:51.3259729Z passed: lean-raw (141.5s)
+2026-10-06T00:17:58.9330017Z passed: lean-qft (7.6s)
+2026-10-06T00:18:02.6494978Z passed: lean-observation (84.3s)
+2026-10-06T00:18:03.3215502Z passed: lean-qft-semantic (4.4s)
+2026-10-06T00:18:18.2609897Z passed: lean-qpe (14.9s)
+2026-10-06T00:18:25.3513732Z passed: lean-controlled-power (7.1s)
+2026-10-06T00:18:34.9449943Z passed: lean-qft-graph (32.3s)
+2026-10-06T00:18:40.6849544Z passed: hierarchical-artifact (5.7s)
+2026-10-06T00:18:43.5497905Z passed: hierarchical-graph (18.2s)
+2026-10-06T00:18:45.7370299Z passed: hierarchical-typing (5.1s)
+2026-10-06T00:18:53.9699898Z passed: hierarchical-contract-typing (10.4s)
+2026-10-06T00:18:56.6570493Z passed: hierarchical-structural (10.9s)
+2026-10-06T00:19:07.1336762Z passed: lean-reshape (13.2s)
+2026-10-06T00:19:12.9942581Z passed: hierarchical-readout (16.3s)
+2026-10-06T00:19:15.9660077Z passed: hierarchical-instrument (3.0s)
+2026-10-06T00:19:18.5757990Z passed: lean-streamed-instrument (88.8s)
+2026-10-06T00:19:19.3510103Z failed: hierarchical-execution (0.8s)
+2026-10-06T00:19:19.3530270Z {"command": ["python3", "scripts/test_hierarchical_execution.py"], "executed_command": ["python3", "scripts/test_hierarchical_execution.py"]}
+2026-10-06T00:19:19.3531534Z Traceback (most recent call last):
+2026-10-06T00:19:19.3532448Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_hierarchical_execution.py", line 191, in <module>
+2026-10-06T00:19:19.3533389Z     if __name__=='__main__': main()
+2026-10-06T00:19:19.3533863Z                              ^^^^^^
+2026-10-06T00:19:19.3534733Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_hierarchical_execution.py", line 94, in main
+2026-10-06T00:19:19.3547784Z     proposal=compile_instrument(modules,'measurement::qpe',dict(n=n,m=m),
+2026-10-06T00:19:19.3549374Z              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T00:19:19.3550518Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_instrument.py", line 421, in compile_instrument
+2026-10-06T00:19:19.3552011Z     proposal = InstrumentProducer(modules).compile_instrument(entry, sizes, {} if operations is None else operations)
+2026-10-06T00:19:19.3553056Z                ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T00:19:19.3554012Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_instrument.py", line 201, in __init__
+2026-10-06T00:19:19.3554980Z     declaration = parser.parse()
+2026-10-06T00:19:19.3555573Z                   ^^^^^^^^^^^^^^
+2026-10-06T00:19:19.3556391Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 353, in parse
+2026-10-06T00:19:19.3557311Z     body = self.block()
+2026-10-06T00:19:19.3557790Z            ^^^^^^^^^^^^
+2026-10-06T00:19:19.3558566Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 276, in block
+2026-10-06T00:19:19.3559644Z     result = self.expr()
+2026-10-06T00:19:19.3560662Z              ^^^^^^^^^^^
+2026-10-06T00:19:19.3561523Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 193, in expr
+2026-10-06T00:19:19.3562476Z     return ('if', condition, first, self.block())
+2026-10-06T00:19:19.3563123Z                                     ^^^^^^^^^^^^
+2026-10-06T00:19:19.3563995Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 271, in block
+2026-10-06T00:19:19.3564913Z     value = self.expr()
+2026-10-06T00:19:19.3565407Z             ^^^^^^^^^^^
+2026-10-06T00:19:19.3566229Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 230, in expr
+2026-10-06T00:19:19.3567226Z     raise SourceError(f'unknown or unimported operation {name}')
+2026-10-06T00:19:19.3568157Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:19.5339941Z passed: hierarchical-preparation (12.4s)
+2026-10-06T00:19:19.6169566Z passed: compact-sized-graph (0.3s)
+2026-10-06T00:19:19.8584362Z failed: sized-instrument (0.3s)
+2026-10-06T00:19:19.8599893Z {"command": ["python3", "scripts/test_sized_instrument.py"], "executed_command": ["python3", "scripts/test_sized_instrument.py"]}
+2026-10-06T00:19:19.8629554Z Traceback (most recent call last):
+2026-10-06T00:19:19.9176811Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:27.0735978Z passed: sized-qpe-readout (7.5s)
+2026-10-06T00:19:27.3889337Z failed: hierarchical-routed-power (0.3s)
+2026-10-06T00:19:27.3899919Z {"command": ["python3", "scripts/test_hierarchical_routed_power.py"], "executed_command": ["python3", "scripts/test_hierarchical_routed_power.py"]}
+2026-10-06T00:19:27.3929353Z Traceback (most recent call last):
+2026-10-06T00:19:27.4549622Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:27.8594999Z failed: hierarchical-circuit-trace (0.5s)
+2026-10-06T00:19:27.8660116Z {"command": ["python3", "scripts/test_hierarchical_circuit_trace.py"], "executed_command": ["python3", "scripts/test_hierarchical_circuit_trace.py"]}
+2026-10-06T00:19:27.8719647Z Traceback (most recent call last):
+2026-10-06T00:19:27.9462203Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:28.2300214Z failed: hierarchical-qpe-schedule (0.4s)
+2026-10-06T00:19:28.2340329Z {"command": ["python3", "scripts/test_hierarchical_qpe_schedule.py"], "executed_command": ["python3", "scripts/test_hierarchical_qpe_schedule.py"]}
+2026-10-06T00:19:28.2369434Z Traceback (most recent call last):
+2026-10-06T00:19:28.3119461Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:28.5989315Z failed: hierarchical-qpe-root (0.4s)
+2026-10-06T00:19:28.5990675Z {"command": ["python3", "scripts/test_hierarchical_qpe_root.py"], "executed_command": ["python3", "scripts/test_hierarchical_qpe_root.py"]}
+2026-10-06T00:19:28.6039702Z Traceback (most recent call last):
+2026-10-06T00:19:28.6310809Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:29.0170849Z failed: hierarchical-qpe-instrument (0.4s)
+2026-10-06T00:19:29.0196497Z {"command": ["python3", "scripts/test_hierarchical_qpe_instrument.py"], "executed_command": ["python3", "scripts/test_hierarchical_qpe_instrument.py"]}
+2026-10-06T00:19:29.0219553Z Traceback (most recent call last):
+2026-10-06T00:19:29.0939672Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:19:30.1230245Z passed: hierarchical-power (10.3s)
+2026-10-06T00:19:31.3845316Z passed: lean-branch-function (111.8s)
+2026-10-06T00:19:36.4852617Z passed: sized-cli-native (5.1s)
+2026-10-06T00:19:39.6923821Z passed: sized-review-dialects-native (9.6s)
+2026-10-06T00:19:47.0750869Z passed: sized-source-native (18.1s)
+2026-10-06T00:19:59.5070141Z passed: hierarchical-calls (12.4s)
+2026-10-06T00:20:07.5534887Z passed: hierarchical-finite (8.0s)
+2026-10-06T00:20:12.8613706Z passed: named-qpe-native (36.4s)
+2026-10-06T00:20:21.6969908Z passed: hierarchical-derivation (42.0s)
+2026-10-06T00:20:27.7076484Z passed: hierarchical-conditional (20.2s)
+2026-10-06T00:21:17.6269983Z passed: verification-baseline (49.9s)
+2026-10-06T00:21:33.5109812Z failed: instrument-host (137.5s)
+2026-10-06T00:21:33.5140053Z {"command": ["python3", "scripts/test_instrument_host.py"], "executed_command": ["python3", "scripts/test_instrument_host.py"]}
+2026-10-06T00:21:33.5141111Z Traceback (most recent call last):
+2026-10-06T00:21:33.6189625Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:21:52.7132874Z passed: hierarchical-host (91.0s)
+2026-10-06T00:22:08.6411409Z passed: hierarchical-fourier-base (51.0s)
+2026-10-06T00:22:27.9264889Z passed: hierarchical-fourier-body (54.4s)
+2026-10-06T00:22:31.9669683Z passed: hierarchical-request (139.1s)
+2026-10-06T00:22:36.0592616Z passed: hierarchical-wiring (43.3s)
+2026-10-06T00:22:36.5772848Z failed: sized-qft (0.5s)
+2026-10-06T00:22:36.5779084Z {"command": ["python3", "scripts/test_sized_qft.py", "--small"], "executed_command": ["python3", "scripts/test_sized_qft.py", "--small"]}
+2026-10-06T00:22:36.5799500Z Traceback (most recent call last):
+2026-10-06T00:22:36.6664151Z compile_sized_corpus.SourceError: unknown or unimported operation init_zero
+2026-10-06T00:22:36.9166997Z passed: sized-corpus (5.0s)
+2026-10-06T00:22:43.7449943Z passed: rust-fourier-factoring (7.2s)
+2026-10-06T00:22:44.0126987Z failed: sized-arithmetic (0.3s)
+2026-10-06T00:22:44.0240569Z {"command": ["python3", "scripts/test_sized_arithmetic.py"], "executed_command": ["python3", "scripts/test_sized_arithmetic.py"]}
+2026-10-06T00:22:44.0269591Z Traceback (most recent call last):
+2026-10-06T00:22:44.0299700Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_sized_arithmetic.py", line 203, in <module>
+2026-10-06T00:22:44.0349480Z     raise SystemExit(main())
+2026-10-06T00:22:44.0429702Z                      ^^^^^^
+2026-10-06T00:22:44.0469759Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_sized_arithmetic.py", line 125, in main
+2026-10-06T00:22:44.0499545Z     artifacts[name] = compile_case(modules, module, entry, n=n)
+2026-10-06T00:22:44.0529466Z                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T00:22:44.0559961Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_sized_arithmetic.py", line 31, in compile_case
+2026-10-06T00:22:44.0561140Z     return compile_source(modules[module], entry, sizes, modules=modules)
+2026-10-06T00:22:44.0589545Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T00:22:44.0599952Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 1258, in compile_source
+2026-10-06T00:22:44.0619672Z     return Producer(modules).compile(source, entry, sizes, compact, operations)
+2026-10-06T00:22:44.0620384Z            ^^^^^^^^^^^^^^^^^
+2026-10-06T00:22:44.0621130Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 654, in __init__
+2026-10-06T00:22:44.0621967Z     declaration = parser.parse()
+2026-10-06T00:22:44.0622435Z                   ^^^^^^^^^^^^^^
+2026-10-06T00:22:44.0623164Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 353, in parse
+2026-10-06T00:22:44.0623982Z     body = self.block()
+2026-10-06T00:22:44.0624345Z            ^^^^^^^^^^^^
+2026-10-06T00:22:44.0625030Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 276, in block
+2026-10-06T00:22:44.0625802Z     result = self.expr()
+2026-10-06T00:22:44.0626183Z              ^^^^^^^^^^^
+2026-10-06T00:22:44.0626875Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 193, in expr
+2026-10-06T00:22:44.0627702Z     return ('if', condition, first, self.block())
+2026-10-06T00:22:44.0628215Z                                     ^^^^^^^^^^^^
+2026-10-06T00:22:44.0629242Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 271, in block
+2026-10-06T00:22:44.0630039Z     value = self.expr()
+2026-10-06T00:22:44.0630400Z             ^^^^^^^^^^^
+2026-10-06T00:22:44.0631464Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 170, in expr
+2026-10-06T00:22:44.0632304Z     operation = self.operation()
+2026-10-06T00:22:44.0670101Z                 ^^^^^^^^^^^^^^^^
+2026-10-06T00:22:44.0670983Z   File "/home/runner/work/Qleisli/Qleisli/scripts/compile_sized_corpus.py", line 255, in operation
+2026-10-06T00:22:44.0672101Z     raise SourceError(f'unknown static operation parameter or definition {name}')
+2026-10-06T00:22:44.0673158Z compile_sized_corpus.SourceError: unknown static operation parameter or definition all_ones
+2026-10-06T00:22:48.0680323Z passed: sized-qpe (11.1s)
+2026-10-06T00:23:00.6762398Z passed: hierarchical-qft (12.6s)
+2026-10-06T00:23:01.9669879Z passed: sized-qpe-clients (18.0s)
+2026-10-06T00:23:19.4468785Z passed: hierarchical-fourier-root (70.8s)
+2026-10-06T00:23:32.6459335Z passed: hierarchical-fourier-host (64.7s)
+2026-10-06T00:23:34.2005064Z passed: hierarchical-qft-shared-gradient (33.5s)
+2026-10-06T00:24:41.5982454Z passed: lean-kernel-self-test (82.2s)
+2026-10-06T00:26:39.7270123Z failed: native-acceptance (187.1s)
+2026-10-06T00:26:39.7271801Z {"command": ["cargo", "+1.98.1", "test", "--test", "native_acceptance", "--", "--include-ignored"], "executed_command": ["cargo", "test", "--test", "native_acceptance", "--", "--include-ignored"]}
+2026-10-06T00:26:39.7272818Z    Compiling qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-06T00:26:39.8557702Z {"command": ["cargo", "+1.98.1", "test", "--test", "quantum_unit_maps"], "executed_command": ["cargo", "test", "--test", "quantum_unit_maps"]}
+2026-10-06T00:26:39.8559060Z    Compiling qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-06T00:26:39.8559858Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.12s
+2026-10-06T00:26:39.8560794Z      Running tests/quantum_unit_maps.rs (target/debug/deps/quantum_unit_maps-d822a1e484d021e2)
+2026-10-06T00:26:39.8561418Z 
+2026-10-06T00:26:39.8561554Z running 12 tests
+2026-10-06T00:26:39.8562098Z test effects_are_not_hidden_by_the_ordinary_unit_argument_or_result ... ok
+2026-10-06T00:26:39.8562946Z test every_isolated_owner_and_unused_zero_iteration_body_is_checked ... ok
+2026-10-06T00:26:39.8563847Z test first_positive_sources_retain_whole_signatures_and_reach_elaboration ... ok
+2026-10-06T00:26:39.8564795Z test isolated_wrong_types_and_arities_reject_before_argument_evaluation ... FAILED
+2026-10-06T00:26:39.8565743Z test four_controlled_roundtrip_scalars_are_z_with_an_untouched_reference ... ok
+2026-10-06T00:26:39.8566680Z test ordinary_unit_copy_creates_fresh_owners_while_finish_returns_no_owner ... ok
+2026-10-06T00:26:39.8567622Z test exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients ... ok
+2026-10-06T00:26:39.8568585Z test selected_coherent_lifts_remain_separate_from_explicit_packaged_maps ... FAILED
+2026-10-06T00:26:39.8569735Z test left_and_right_owner_product_maps_preserve_order_and_entangled_references ... ok
+2026-10-06T00:26:39.8570721Z test unit_maps_after_observation_retain_actual_source_events_and_native_action ... ok
+2026-10-06T00:26:39.8571741Z test native_valid_wrong_scalar_and_matching_own_meaning_fail_the_unchanged_request ... ok
+2026-10-06T00:26:39.8572691Z test scalar_arguments_execute_once_and_finish_does_not_erase_phase ... ok
+2026-10-06T00:26:39.8573210Z 
+2026-10-06T00:26:39.8573336Z failures:
+2026-10-06T00:26:39.8573519Z 
+2026-10-06T00:26:39.8573918Z ---- isolated_wrong_types_and_arities_reject_before_argument_evaluation stdout ----
+2026-10-06T00:26:39.8574493Z 
+2026-10-06T00:26:39.8575204Z thread 'isolated_wrong_types_and_arities_reject_before_argument_evaluation' (80670) panicked at tests/quantum_unit_maps.rs:334:5:
+2026-10-06T00:26:39.8577148Z assertion `left == right` failed: use std::quantum::{unit,finish}; pub unitary fn f() -> Q<Unit> { unit() }: main:65..71: arity: runtime argument arity mismatch
+2026-10-06T00:26:39.8578248Z   left: "arity"
+2026-10-06T00:26:39.8578569Z  right: "type"
+2026-10-06T00:26:39.8579286Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T00:26:39.8579835Z 
+2026-10-06T00:26:39.8580243Z ---- selected_coherent_lifts_remain_separate_from_explicit_packaged_maps stdout ----
+2026-10-06T00:26:39.8580842Z 
+2026-10-06T00:26:39.8581557Z thread 'selected_coherent_lifts_remain_separate_from_explicit_packaged_maps' (80781) panicked at tests/quantum_unit_maps.rs:803:83:
+2026-10-06T00:26:40.0347929Z 
+2026-10-06T00:26:40.0347942Z 
+2026-10-06T00:26:40.0348101Z failures:
+2026-10-06T00:26:40.0348637Z     isolated_wrong_types_and_arities_reject_before_argument_evaluation
+2026-10-06T00:26:40.0349661Z     selected_coherent_lifts_remain_separate_from_explicit_packaged_maps
+2026-10-06T00:26:40.0350168Z 
+2026-10-06T00:26:40.0351038Z test result: FAILED. 10 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.68s
+2026-10-06T00:26:40.0351699Z 
+2026-10-06T00:26:40.0351977Z error: test failed, to rerun pass `--test quantum_unit_maps`
+2026-10-06T00:27:40.0123987Z passed: native-paths (278.0s)
+2026-10-06T00:27:40.4124365Z Native CI: failed or incomplete comparison: instrument-host
+2026-10-06T00:27:40.4228562Z ##[error]Process completed with exit code 1.

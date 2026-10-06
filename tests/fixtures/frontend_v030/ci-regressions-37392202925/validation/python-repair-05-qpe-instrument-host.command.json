@@ -1,0 +1,36 @@
+{
+  "format": "qleisli.bounded-python-host-refresh-command",
+  "version": 1,
+  "attempt": 5,
+  "id": "qpe-instrument-host",
+  "command": [
+    "python3",
+    "-B",
+    "scripts/test_qpe_instrument_host.py",
+    "--record",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-qpe-instrument-host-report.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "started_utc": "2026-10-06T00:54:20.952474+00:00",
+  "duration_seconds": 7.395246083033271,
+  "exit_code": 0,
+  "timeout_seconds": 900,
+  "timed_out": false,
+  "source_manifest": "python-repair-05-host-plan.json",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "changed_sources_during_command": [],
+  "status": "passed",
+  "stdout_file": "python-repair-05-qpe-instrument-host.stdout.txt",
+  "stderr_file": "python-repair-05-qpe-instrument-host.stderr.txt",
+  "script_report_file": "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/python-repair-05-qpe-instrument-host-report.json"
+}

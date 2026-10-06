@@ -1,0 +1,466 @@
+{
+  "format": "qleisli.sized-instrument-validation",
+  "version": 1,
+  "status": "passed",
+  "proposals": 22,
+  "components": {
+    "qpe-1-1": {
+      "preparation_work": 9504,
+      "readout_work": 16448,
+      "graph_work": 272389,
+      "exact_work": 171,
+      "aggregate_work": 298512
+    },
+    "qpe-1-2": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 612753,
+      "exact_work": 684,
+      "aggregate_work": 682589
+    },
+    "qpe-1-3": {
+      "preparation_work": 49888,
+      "readout_work": 93120,
+      "graph_work": 980661,
+      "exact_work": 1026,
+      "aggregate_work": 1124695
+    },
+    "qpe-2-2": {
+      "preparation_work": 27232,
+      "readout_work": 48064,
+      "graph_work": 640387,
+      "exact_work": 684,
+      "aggregate_work": 716367
+    },
+    "qpe-2-4": {
+      "preparation_work": 92320,
+      "readout_work": 175168,
+      "graph_work": 1449748,
+      "exact_work": 1368,
+      "aggregate_work": 1718604
+    },
+    "init-0": {
+      "preparation_work": 224,
+      "readout_work": 0,
+      "graph_work": 1414,
+      "exact_work": 0,
+      "aggregate_work": 1638
+    },
+    "readout-0": {
+      "preparation_work": 1312,
+      "readout_work": 768,
+      "graph_work": 1414,
+      "exact_work": 0,
+      "aggregate_work": 3494
+    },
+    "init-1": {
+      "preparation_work": 3232,
+      "readout_work": 0,
+      "graph_work": 2594,
+      "exact_work": 0,
+      "aggregate_work": 5826
+    },
+    "readout-1": {
+      "preparation_work": 1824,
+      "readout_work": 6080,
+      "graph_work": 2594,
+      "exact_work": 0,
+      "aggregate_work": 10498
+    },
+    "init-2": {
+      "preparation_work": 11680,
+      "readout_work": 0,
+      "graph_work": 32738,
+      "exact_work": 0,
+      "aggregate_work": 44418
+    },
+    "readout-2": {
+      "preparation_work": 2336,
+      "readout_work": 21760,
+      "graph_work": 22955,
+      "exact_work": 0,
+      "aggregate_work": 47051
+    },
+    "init-3": {
+      "preparation_work": 28128,
+      "readout_work": 0,
+      "graph_work": 69314,
+      "exact_work": 0,
+      "aggregate_work": 97442
+    },
+    "readout-3": {
+      "preparation_work": 2848,
+      "readout_work": 53952,
+      "graph_work": 48044,
+      "exact_work": 0,
+      "aggregate_work": 104844
+    },
+    "order": {
+      "preparation_work": 27232,
+      "readout_work": 48064,
+      "graph_work": 688671,
+      "exact_work": 684,
+      "aggregate_work": 764651
+    },
+    "amplitude-0-3": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 710851,
+      "exact_work": 855,
+      "aggregate_work": 780858
+    },
+    "amplitude-1-3": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 710851,
+      "exact_work": 855,
+      "aggregate_work": 780858
+    },
+    "amplitude-1-4": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 710851,
+      "exact_work": 855,
+      "aggregate_work": 780858
+    },
+    "amplitude-2-2": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 710851,
+      "exact_work": 855,
+      "aggregate_work": 780858
+    },
+    "classical-copy-capture": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 612753,
+      "exact_work": 684,
+      "aggregate_work": 682589
+    },
+    "wrong-zero-helper": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 683012,
+      "exact_work": 1026,
+      "aggregate_work": 753190
+    },
+    "wrong-readout-order": {
+      "preparation_work": 24672,
+      "readout_work": 44480,
+      "graph_work": 612753,
+      "exact_work": 684,
+      "aggregate_work": 682589
+    },
+    "retiming": {
+      "preparation_work": 18848,
+      "readout_work": 44480,
+      "graph_work": 72086,
+      "exact_work": 171,
+      "aggregate_work": 135585
+    }
+  },
+  "semantics": {
+    "qpe-1-1": {
+      "coefficients": 16,
+      "maximum_error": 1.2412670766236366e-16
+    },
+    "qpe-1-2": {
+      "coefficients": 32,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "qpe-1-3": {
+      "coefficients": 64,
+      "maximum_error": 4.652682298944613e-16
+    },
+    "qpe-2-2": {
+      "coefficients": 96,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "qpe-2-4": {
+      "coefficients": 384,
+      "maximum_error": 2.0959882093582513e-15
+    },
+    "order": {
+      "coefficients": 96,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "amplitude-0-3": {
+      "coefficients": 32,
+      "maximum_error": 9.61165587014318e-16
+    },
+    "amplitude-1-3": {
+      "coefficients": 32,
+      "maximum_error": 5.23691153334427e-16
+    },
+    "amplitude-1-4": {
+      "coefficients": 32,
+      "maximum_error": 7.023038222575547e-16
+    },
+    "amplitude-2-2": {
+      "coefficients": 32,
+      "maximum_error": 9.61165587014318e-16
+    },
+    "classical-copy-capture": {
+      "coefficients": 32,
+      "maximum_error": 3.3306690738754696e-16
+    },
+    "retiming": {
+      "coefficients": 48,
+      "maximum_error": 0.0
+    }
+  },
+  "semantic_faults": {
+    "wrong-zero-helper": {
+      "coefficients": 32,
+      "maximum_error": 1.0
+    },
+    "wrong-readout-order": {
+      "coefficients": 32,
+      "maximum_error": 0.5
+    }
+  },
+  "normalization": {
+    "qpe-1-1": {
+      "before": 72,
+      "after": 52,
+      "columns": 5,
+      "maximum_error": 0.0
+    },
+    "qpe-1-2": {
+      "before": 130,
+      "after": 104,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "qpe-1-3": {
+      "before": 181,
+      "after": 153,
+      "columns": 17,
+      "maximum_error": 0.0
+    },
+    "qpe-2-2": {
+      "before": 128,
+      "after": 103,
+      "columns": 17,
+      "maximum_error": 0.0
+    },
+    "qpe-2-4": {
+      "before": 231,
+      "after": 201,
+      "columns": 65,
+      "maximum_error": 0.0
+    },
+    "init-0": {
+      "before": 3,
+      "after": 1,
+      "columns": 2,
+      "maximum_error": 0.0
+    },
+    "readout-0": {
+      "before": 3,
+      "after": 1,
+      "columns": 2,
+      "maximum_error": 0.0
+    },
+    "init-1": {
+      "before": 8,
+      "after": 1,
+      "columns": 3,
+      "maximum_error": 0.0
+    },
+    "readout-1": {
+      "before": 8,
+      "after": 1,
+      "columns": 3,
+      "maximum_error": 0.0
+    },
+    "init-2": {
+      "before": 13,
+      "after": 6,
+      "columns": 5,
+      "maximum_error": 0.0
+    },
+    "readout-2": {
+      "before": 14,
+      "after": 5,
+      "columns": 5,
+      "maximum_error": 0.0
+    },
+    "init-3": {
+      "before": 18,
+      "after": 11,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "readout-3": {
+      "before": 20,
+      "after": 9,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "order": {
+      "before": 135,
+      "after": 110,
+      "columns": 17,
+      "maximum_error": 0.0
+    },
+    "amplitude-0-3": {
+      "before": 159,
+      "after": 124,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "amplitude-1-3": {
+      "before": 159,
+      "after": 124,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "amplitude-1-4": {
+      "before": 159,
+      "after": 124,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "amplitude-2-2": {
+      "before": 159,
+      "after": 124,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "classical-copy-capture": {
+      "before": 130,
+      "after": 104,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "wrong-zero-helper": {
+      "before": 140,
+      "after": 119,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "wrong-readout-order": {
+      "before": 130,
+      "after": 104,
+      "columns": 9,
+      "maximum_error": 0.0
+    },
+    "retiming": {
+      "before": 9,
+      "after": 8,
+      "columns": 9,
+      "maximum_error": 0.0
+    }
+  },
+  "source_rejections": [
+    {
+      "case": "unitary-wrapper",
+      "diagnostic": "unitary body cannot perform iso operation initialization::init_zero"
+    },
+    {
+      "case": "unitary-initializer",
+      "diagnostic": "ordinary unitary operation must preserve the complete quantum type"
+    },
+    {
+      "case": "iso-readout",
+      "diagnostic": "iso body cannot perform observe operation measure_z"
+    },
+    {
+      "case": "missing-access",
+      "diagnostic": "operation use requires declared Controlled access"
+    },
+    {
+      "case": "wrong-classical-width",
+      "diagnostic": "return type/tuple shape mismatch"
+    },
+    {
+      "case": "drop-empty-owner",
+      "diagnostic": "unreturned quantum owners: q"
+    },
+    {
+      "case": "consume-nonempty",
+      "diagnostic": "unknown, captured or already moved value q"
+    },
+    {
+      "case": "reuse-measured-bit",
+      "diagnostic": "unknown, captured or already moved value bit"
+    },
+    {
+      "case": "duplicate-classical-pattern",
+      "diagnostic": "duplicate binding in one pattern"
+    },
+    {
+      "case": "wrong-prepend-width",
+      "diagnostic": "prepend_bit requires Bit and exactly Bits<n>, with n < 8"
+    },
+    {
+      "case": "cycle-initializer",
+      "diagnostic": "cyclic or excessive source operation instantiation"
+    },
+    {
+      "case": "unknown-empty-branch",
+      "diagnostic": "unknown or unimported operation missing"
+    },
+    {
+      "case": "runtime-feedback",
+      "diagnostic": "expected 'static', found 'target' at token 82"
+    },
+    {
+      "case": "bad-init-arity",
+      "diagnostic": "operation argument shape/arity mismatch"
+    },
+    {
+      "case": "unknown-static-size",
+      "diagnostic": "unbound static natural missing"
+    }
+  ],
+  "pending_composed": {},
+  "production_integration": false,
+  "named_instrument_receipt": false,
+  "source_preservation_proved": false,
+  "max_checked_graph_qubits": 6,
+  "unaccepted_composed_case_qubits": null,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "graph_reconstruction": {
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "sized_corpus",
+      "inspect_source_produced_corpus",
+      "--",
+      "--ignored",
+      "--nocapture"
+    ],
+    "exit_code": 0,
+    "stdout": "\nrunning 1 test\nCORPUS|qpe-1-1|ok|272389|171|1\nCORPUS|qpe-1-2|ok|612753|684|4\nCORPUS|qpe-1-3|ok|980661|1026|6\nCORPUS|qpe-2-2|ok|640387|684|4\nCORPUS|qpe-2-4|ok|1449748|1368|8\nCORPUS|init-0|ok|1414|0|0\nCORPUS|readout-0|ok|1414|0|0\nCORPUS|init-1|ok|2594|0|0\nCORPUS|readout-1|ok|2594|0|0\nCORPUS|init-2|ok|32738|0|0\nCORPUS|readout-2|ok|22955|0|0\nCORPUS|init-3|ok|69314|0|0\nCORPUS|readout-3|ok|48044|0|0\nCORPUS|order|ok|688671|684|4\nCORPUS|amplitude-0-3|ok|710851|855|5\nCORPUS|amplitude-1-3|ok|710851|855|5\nCORPUS|amplitude-1-4|ok|710851|855|5\nCORPUS|amplitude-2-2|ok|710851|855|5\nCORPUS|classical-copy-capture|ok|612753|684|4\nCORPUS|wrong-zero-helper|ok|683012|1026|6\nCORPUS|wrong-readout-order|ok|612753|684|4\nCORPUS|retiming|ok|72086|171|1\ntest inspect_source_produced_corpus ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 2.57s\n\n",
+    "stderr": "   Compiling serde_core v1.0.229\n   Compiling serde v1.0.229\n   Compiling libc v0.2.177\n   Compiling equivalent v1.0.2\n   Compiling hashbrown v0.17.1\n   Compiling indexmap v2.14.2\n   Compiling toml_datetime v0.6.11\n   Compiling serde_spanned v0.6.9\n   Compiling winnow v0.7.15\n   Compiling rustix v1.1.3\n   Compiling errno v0.3.14\n   Compiling bitflags v2.13.2\n   Compiling toml_edit v0.22.27\n   Compiling toml v0.8.23\n   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 8.63s\n     Running tests/sized_corpus.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_corpus-111aa10eead069e1)\n"
+  },
+  "source_sha256": {
+    "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+    "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+    "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+    "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+    "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+    "delayed_fourier": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+    "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+    "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+    "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+    "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+    "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+    "readout": "8084c175d049101af682c4d2f693c094ca36baa060754d992cd69d68db87ea58",
+    "measurement": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e",
+    "initialization": "a15fc01067ad8037ed301b00aae6904bee2ccb84a98674bc76b0ff969be5b6a9",
+    "measured_order": "db335c8a206b0f56bba80934dbdbe00677a7c5a057eaae9e17420733b0d74015",
+    "measured_retiming": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
+    "measured_amplitude": "2078afa66fbad8578bff57db4532bbc0ea23250fc5b127507c87f2466080dd27"
+  },
+  "implementation_sha256": {
+    "scripts/compile_sized_corpus.py": "eb572c699dfdbcb1951e49ed583067667b4ff50cbfa890fba52826c9e88abd2d",
+    "scripts/compile_sized_instrument.py": "7b7114990e0a9a34a7526d5904c0682971ac491bbdf6e1b10076294f303591ad",
+    "scripts/compact_sized_graph.py": "3902138de896ab7e2761e1a45407210ced9adf06065a4d9e2121d3c6b81ae679",
+    "scripts/instrument_transport.py": "662a2aab4a0029c88fc9246f7ebda898c30af507f79fa79ef3478b369d207b63",
+    "scripts/test_sized_instrument.py": "c8c780906224f9c71aec02cc97a8eb9572b196de0271e147f5d127fd3455060d"
+  }
+}

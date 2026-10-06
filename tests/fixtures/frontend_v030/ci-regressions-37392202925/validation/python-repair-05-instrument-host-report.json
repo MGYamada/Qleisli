@@ -1,0 +1,146 @@
+{
+  "format": "qleisli.instrument-host-validation",
+  "version": 1,
+  "status": "passed",
+  "binary_cases": 772,
+  "shared_decoder_allowance": {
+    "commands": [
+      {
+        "command": [
+          "lake",
+          "build",
+          "QleisliKernel:static"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "Build completed successfully (220 jobs).\n",
+        "stderr": "",
+        "seconds": 0.44325387495337054
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_o5ss_a6",
+          "-c",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_o5ss_a6/Main.c",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_o5ss_a6/Main.lean"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 2.993016083026305
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "leanc",
+          "-O3",
+          "-o",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_o5ss_a6/native-test",
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_o5ss_a6/Main.c",
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "",
+        "stderr": "",
+        "seconds": 1.7513882500352338
+      },
+      {
+        "driver_source_sha256": "308ba17204e28c981003893019db1b07ef5731a30d5676d1c6ee9ffa5db2b657",
+        "executable_sha256": "bfaedf61acc66bd6297b60bb881e0129f16a8b4d06e3843cc1e57e5305b96c58"
+      },
+      {
+        "argv": [
+          "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-hierarchical-artifact-_o5ss_a6/native-test"
+        ],
+        "exit_code": 0,
+        "stdout": "shared-word-budget|passed\n",
+        "stderr": ""
+      }
+    ],
+    "binary_sha256": "bfaedf61acc66bd6297b60bb881e0129f16a8b4d06e3843cc1e57e5305b96c58"
+  },
+  "source_connection": {
+    "cases": 8,
+    "command": [
+      "cargo",
+      "test",
+      "--test",
+      "sized_corpus",
+      "check_source_instrument_contracts",
+      "--",
+      "--ignored",
+      "--nocapture"
+    ],
+    "stdout": "\nrunning 1 test\nINSTRUMENT|qpe|ok|776257|684\nINSTRUMENT|order|ok|866694|684\nINSTRUMENT|amplitude|ok|888493|855\nINSTRUMENT|retiming|ok|151684|171\nINSTRUMENT|qpe-1-3|ok|1268842|1026\nINSTRUMENT|qpe-2-4|ok|1920516|1368\nINSTRUMENT|wrong-zero|contract\nINSTRUMENT|wrong-order|contract\ntest check_source_instrument_contracts ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 1.36s\n\n",
+    "stderr": "   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 6.53s\n     Running tests/sized_corpus.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_corpus-111aa10eead069e1)\n",
+    "pending_composed_capacity": {},
+    "semantics": {
+      "qpe": {
+        "coefficients": 32,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "order": {
+        "coefficients": 96,
+        "maximum_error": 3.3306690738754696e-16
+      },
+      "amplitude": {
+        "coefficients": 32,
+        "maximum_error": 5.23691153334427e-16
+      },
+      "qpe-1-3": {
+        "coefficients": 64,
+        "maximum_error": 6.667840187510446e-16
+      },
+      "qpe-2-4": {
+        "coefficients": 384,
+        "maximum_error": 2.0959882093582513e-15
+      },
+      "retiming": {
+        "coefficients": 48,
+        "maximum_error": 0.0
+      }
+    },
+    "request_origin": "baseline proposal; mutation regression only",
+    "source_sha256": {
+      "rotation": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+      "order": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+      "modular": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+      "amplitude": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+      "reflection": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+      "delayed_fourier": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+      "amplification": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+      "evolution": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+      "estimation": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+      "preparation": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+      "fourier": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "readout": "8084c175d049101af682c4d2f693c094ca36baa060754d992cd69d68db87ea58",
+      "measurement": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e",
+      "initialization": "a15fc01067ad8037ed301b00aae6904bee2ccb84a98674bc76b0ff969be5b6a9",
+      "measured_order": "db335c8a206b0f56bba80934dbdbe00677a7c5a057eaae9e17420733b0d74015",
+      "measured_retiming": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
+      "measured_amplitude": "2078afa66fbad8578bff57db4532bbc0ea23250fc5b127507c87f2466080dd27"
+    }
+  },
+  "host_command": [
+    "cargo",
+    "test",
+    "--test",
+    "hierarchical_host",
+    "instrument",
+    "--",
+    "--include-ignored",
+    "--nocapture"
+  ],
+  "stdout": "\nrunning 3 tests\ntest instrument_codec_rejects_malformed_fields_before_execution ... ok\ntest instrument_host_rejects_missing_duplicate_and_malformed_runtime_obligations ... ok\ncomposed instrument costs: [(false, 0, 32870, 171), (false, 1, 32870, 171), (false, 3, 32870, 171), (true, 0, 58216, 171), (true, 1, 58216, 171), (true, 3, 58216, 171)]\ntest native_instrument_binds_all_stages_and_reconstructs_finite_obligations ... ok\n\ntest result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 15 filtered out; finished in 2.32s\n\n",
+  "stderr": "   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)\n    Finished `test` profile [unoptimized] target(s) in 0.47s\n     Running tests/hierarchical_host.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/hierarchical_host-b4cae116ddf951e4)\n",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "production_integration": false,
+  "named_qpe_binding": false
+}

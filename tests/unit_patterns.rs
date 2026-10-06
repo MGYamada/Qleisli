@@ -8,8 +8,10 @@ use qleisli::contract::BasisType;
 use qleisli::contract::exact::Exact;
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::frontend::parser::parse_module;
+use qleisli::frontend::project::SourcePolicy;
 use qleisli::frontend::sized::ParsedProgram;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
+use qleisli::interchange::native;
 use qleisli::ir::{CircuitAction, Effect, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
@@ -85,6 +87,38 @@ fn exact_pattern_shapes_reject_quantum_bit_and_equal_width_products() {
         ErrorCode::Ownership,
     );
     reject("validation-sources", "lost-owner", ErrorCode::Ownership);
+}
+
+#[test]
+fn empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths() {
+    for name in [
+        "runtime-quantum-unit",
+        "runtime-bit",
+        "runtime-unit-product",
+        "ordinary-bits-zero",
+    ] {
+        let input = source("counterexamples", name);
+        let selected =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), input.clone())])).unwrap_err();
+        assert_eq!(selected.code(), "type", "{name}: {selected}");
+        assert!(
+            selected
+                .message()
+                .contains("empty pattern requires ordinary Unit"),
+            "{name}: {selected}"
+        );
+        let root = SourceRoot::new(&input);
+        let absent = root.0.join("must-not-be-executed-native-kernel");
+        let finite = qleisli::frontend::compile::check_project_with_kernel(
+            &root.0,
+            SourcePolicy::default(),
+            &native::Kernel::new(absent),
+        )
+        .unwrap_err();
+        assert_eq!(finite.code, "type_mismatch", "{name}: {finite:?}");
+        assert_eq!(finite.message, selected.message(), "{name}");
+        assert_eq!(finite.primary.unwrap().span, selected.span(), "{name}");
+    }
 }
 
 #[test]

@@ -1,0 +1,84 @@
+{
+  "format": "qleisli.ci-repair-focused-validation",
+  "version": 1,
+  "environment_overrides": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-ci-repair-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "source_sha256": {
+    "src/frontend/check/body.rs": "35a55058006bc9f9e7750f6f5d12041e6860ff609e77a12123df4c49c71ba3c3",
+    "src/frontend/check/body/special.rs": "7776b428be08ef7546319a5c58c7073f3bcc11f33f20cdc592655e947ce88800",
+    "src/frontend/check/body/operations.rs": "707bd546aeedf9e9f10ae5f4a691f36a075adea63586b706a7d0f66528c90559",
+    "tests/authoring_ergonomics.rs": "1e6fb6ee38025d88d0cd0aee21a89ffb45cc06138b14c4d6ce7ec33d2fabf9ad",
+    "tests/quantum_unit_maps.rs": "0e6323ada15254786785eebb3afda498aa36db5af78b2c3801723c1d9f2953dd",
+    "tests/project.rs": "5c02c887115d0f437e993130eb101417dd8d1610703e2cb686165014c391e4a6",
+    "tests/unit_patterns.rs": "c48703cea7f971dcc35f95239a7ad3f875914a68bd5dd683b2e9b820446fedfd"
+  },
+  "records": [
+    {
+      "label": "msrv-repaired-targets",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--test",
+        "authoring_ergonomics",
+        "--test",
+        "inference_law",
+        "--test",
+        "quantum_unit_maps",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "project",
+        "--no-fail-fast",
+        "--jobs=2",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit_code": 0,
+      "seconds": 21.036,
+      "test_summaries": [
+        "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.12s",
+        "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s",
+        "test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.87s",
+        "test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.43s"
+      ],
+      "stdout": "msrv-repaired-targets.stdout.txt",
+      "stderr": "msrv-repaired-targets.stderr.txt"
+    },
+    {
+      "label": "msrv-repaired-empty-unit",
+      "argv": [
+        "/opt/homebrew/bin/rustup",
+        "run",
+        "1.85.0",
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--lib",
+        "type_model::tests::exact_pattern_arity_and_empty_unit_are_not_width_equality",
+        "--jobs=2",
+        "--",
+        "--exact"
+      ],
+      "exit_code": 0,
+      "seconds": 6.494,
+      "test_summaries": [
+        "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 116 filtered out; finished in 0.00s"
+      ],
+      "stdout": "msrv-repaired-empty-unit.stdout.txt",
+      "stderr": "msrv-repaired-empty-unit.stderr.txt"
+    }
+  ],
+  "scope": "Separate focused rebuild after diagnostic repairs. This target is isolated from the still-running initial all-targets binaries; no full-suite or release claim."
+}

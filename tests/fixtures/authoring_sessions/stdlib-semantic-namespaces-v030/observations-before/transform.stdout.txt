@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"missing module `std::transform`","primary":{"path":"main.qli","start":223,"end":253,"line":4,"column":1},"related":[]}],"result":null}

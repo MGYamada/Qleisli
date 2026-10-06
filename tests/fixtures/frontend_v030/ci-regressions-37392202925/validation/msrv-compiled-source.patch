@@ -1,0 +1,123 @@
+diff --git a/src/frontend/check/body.rs b/src/frontend/check/body.rs
+index 7fdc0178..99d98a73 100644
+--- a/src/frontend/check/body.rs
++++ b/src/frontend/check/body.rs
+@@ -46,11 +46,15 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_> {
+     fn duplicate_error(&self, span: Span) -> SourceError {
+         SourceError::new("binding", span, "duplicate name in binding pattern")
+     }
+-    fn shape_error(&self, span: Span, _arity: usize, _value: &Ty, _actual: &Ty) -> SourceError {
++    fn shape_error(&self, span: Span, arity: usize, _value: &Ty, _actual: &Ty) -> SourceError {
+         SourceError::new(
+             "type",
+             span,
+-            "binding pattern does not preserve tuple arity and nesting",
++            if arity == 0 {
++                "empty pattern requires ordinary Unit"
++            } else {
++                "binding pattern does not preserve tuple arity and nesting"
++            },
+         )
+     }
+ }
+diff --git a/tests/project.rs b/tests/project.rs
+index ab3ada0b..beae805b 100644
+--- a/tests/project.rs
++++ b/tests/project.rs
+@@ -184,26 +184,29 @@ fn long_acyclic_import_chain_loads_on_a_small_stack() {
+ }
+ 
+ #[test]
+-fn deep_import_cycle_reports_the_back_edge_and_cycle_path() {
++fn deep_import_only_cycle_loads_on_a_small_stack() {
+     let root = TempRoot::new();
+     let count = 3_000;
+     let cycle_start = 1_200;
+     root.write_import_chain(count, Some(cycle_start));
+-    let error = load_on_small_stack(root.path()).unwrap_err();
+-    assert!(error.path.ends_with("m2999.qli"));
+-    let source = fs::read_to_string(&error.path).unwrap();
+-    assert_eq!(error.span.start, "// π\n".len());
++    let project = load_on_small_stack(root.path()).unwrap();
+     assert_eq!(
+-        &source[error.span.start..error.span.end],
+-        "use m1200::f1200;"
++        project
++            .modules
++            .values()
++            .filter(|module| module.origin == ModuleOrigin::Local)
++            .count(),
++        count
+     );
+-    let cycle: Vec<_> = (cycle_start..count)
+-        .chain(std::iter::once(cycle_start))
+-        .map(|index| format!("m{index:04}"))
+-        .collect();
++    let last = project.module("m2999").unwrap();
++    let back_edge = &last.imports["f1200"];
++    assert_eq!(back_edge.module, format!("m{cycle_start:04}"));
++    assert_eq!(back_edge.name, format!("f{cycle_start:04}"));
++    assert_eq!(back_edge.origin, ImportOrigin::Local);
++    assert_eq!(back_edge.span.start, "// π\n".len());
+     assert_eq!(
+-        error.message,
+-        format!("cyclic import: {}", cycle.join(" -> "))
++        &last.source[back_edge.span.start..back_edge.span.end],
++        "use m1200::f1200;"
+     );
+ }
+ 
+diff --git a/tests/unit_patterns.rs b/tests/unit_patterns.rs
+index f670f261..6d4f64d7 100644
+--- a/tests/unit_patterns.rs
++++ b/tests/unit_patterns.rs
+@@ -8,8 +8,10 @@ use qleisli::contract::BasisType;
+ use qleisli::contract::exact::Exact;
+ use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+ use qleisli::frontend::parser::parse_module;
++use qleisli::frontend::project::SourcePolicy;
+ use qleisli::frontend::sized::ParsedProgram;
+ use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
++use qleisli::interchange::native;
+ use qleisli::ir::{CircuitAction, Effect, RawOp};
+ use qleisli::sim::{SimulationLimits, run_closed};
+ use std::collections::BTreeMap;
+@@ -87,6 +89,38 @@ fn exact_pattern_shapes_reject_quantum_bit_and_equal_width_products() {
+     reject("validation-sources", "lost-owner", ErrorCode::Ownership);
+ }
+ 
++#[test]
++fn empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths() {
++    for name in [
++        "runtime-quantum-unit",
++        "runtime-bit",
++        "runtime-unit-product",
++        "ordinary-bits-zero",
++    ] {
++        let input = source("counterexamples", name);
++        let selected =
++            ParsedProgram::parse(BTreeMap::from([("main".into(), input.clone())])).unwrap_err();
++        assert_eq!(selected.code(), "type", "{name}: {selected}");
++        assert!(
++            selected
++                .message()
++                .contains("empty pattern requires ordinary Unit"),
++            "{name}: {selected}"
++        );
++        let root = SourceRoot::new(&input);
++        let absent = root.0.join("must-not-be-executed-native-kernel");
++        let finite = qleisli::frontend::compile::check_project_with_kernel(
++            &root.0,
++            SourcePolicy::default(),
++            &native::Kernel::new(absent),
++        )
++        .unwrap_err();
++        assert_eq!(finite.code, "type_mismatch", "{name}: {finite:?}");
++        assert_eq!(finite.message, selected.message(), "{name}");
++        assert_eq!(finite.primary.unwrap().span, selected.span(), "{name}");
++    }
++}
++
+ #[test]
+ fn unit_basis_patterns_keep_exact_unary_function_and_predicate_arity() {
+     check_project(&SourceRoot::new(&source("attempt-01", "computed-unit")).0).unwrap();

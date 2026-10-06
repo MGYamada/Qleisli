@@ -6,6 +6,7 @@ use qleisli::frontend::ast::{FnBody, PatternKind, TypeKind};
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
 use qleisli::frontend::documentation::render_markdown;
 use qleisli::frontend::parser::parse_module;
+use qleisli::frontend::sized::ParsedProgram;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::fs;
 use std::path::Path;
@@ -138,6 +139,15 @@ fn missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliarie
                 location.column,
                 source[..start].rsplit('\n').next().unwrap().chars().count() + 1
             );
+            let selected = ParsedProgram::parse(std::collections::BTreeMap::from([(
+                "implementation".into(),
+                source.clone(),
+            )]))
+            .unwrap_err();
+            assert_eq!(selected.code(), "ownership", "{name}: {selected}");
+            assert_eq!(selected.module(), Some("implementation"));
+            assert_eq!(selected.span(), location.span, "{name}: {selected}");
+            assert_eq!(selected.message(), error.message, "{name}: {selected}");
         }
     }
 }

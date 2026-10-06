@@ -387,9 +387,9 @@ pub(super) fn expect(
             "type",
             span,
             format!(
-                "type or tuple/size shape mismatch: expected {:?}, found {:?}",
-                expected.sized_debug(),
-                actual.sized_debug()
+                "type or tuple/size shape mismatch: expected `{}`, found `{}`",
+                expected.display(Stage::Runtime),
+                actual.display(Stage::Runtime)
             ),
         ))
     }

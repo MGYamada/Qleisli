@@ -1,0 +1,71 @@
+
+running 7 tests
+test corpus_dropped_owner_now_points_to_b_not_the_body ... ok
+test flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits ... ok
+test nary_patterns_types_and_basis_values_preserve_immediate_arity ... ok
+test missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliaries ... ok
+test pattern_arity_totality_ownership_and_exact_tree_guards_remain ... ok
+test ordinary_parameter_patterns_execute_with_canonical_ordinary_types ... ok
+test patterned_basis_contracts_and_nary_clients_execute ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.12s
+
+
+running 6 tests
+test expected_types_do_not_choose_physics_or_manufacture_access_and_effects ... ok
+test call_arity_names_ordered_static_parameters_without_guessing ... ok
+test missing_unused_naturals_and_extras_are_named_in_deterministic_order ... ok
+test nested_provider_errors_identify_the_operation_and_resolved_provider ... ok
+test operation_bindings_are_explicit_and_natural_errors_keep_priority ... ok
+test explicit_identity_and_x_providers_retain_distinct_reference_actions ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+
+running 12 tests
+test bell_module_and_bundled_imports_resolve ... ok
+test algorithm_routines_are_bundled_source_with_private_helpers ... ok
+test converging_import_paths_do_not_report_a_cycle ... ok
+test import_only_cycles_load_but_call_cycles_and_name_collisions_reject ... ok
+test deep_import_only_cycle_loads_on_a_small_stack ... ok
+test missing_module_and_name_are_distinct_errors ... ok
+test nonpublic_import_reports_calling_file_and_utf8_byte_span ... ok
+test reserved_word_cannot_name_a_local_module ... ok
+test long_acyclic_import_chain_loads_on_a_small_stack ... ok
+test std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules ... ok
+test tiny_import_only_cycle_loads_on_a_small_stack ... ok
+test unknown_sealed_name_is_not_reinterpreted_as_user_code ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.60s
+
+
+running 12 tests
+test effects_are_not_hidden_by_the_ordinary_unit_argument_or_result ... ok
+test every_isolated_owner_and_unused_zero_iteration_body_is_checked ... ok
+test first_positive_sources_retain_whole_signatures_and_reach_elaboration ... ok
+test four_controlled_roundtrip_scalars_are_z_with_an_untouched_reference ... ok
+test isolated_wrong_types_and_arities_reject_before_argument_evaluation ... ok
+test exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients ... ok
+test left_and_right_owner_product_maps_preserve_order_and_entangled_references ... ok
+test ordinary_unit_copy_creates_fresh_owners_while_finish_returns_no_owner ... ok
+test native_valid_wrong_scalar_and_matching_own_meaning_fail_the_unchanged_request ... ok
+test selected_coherent_lifts_remain_separate_from_explicit_packaged_maps ... ok
+test unit_maps_after_observation_retain_actual_source_events_and_native_action ... ok
+test scalar_arguments_execute_once_and_finish_does_not_erase_phase ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.87s
+
+
+running 9 tests
+test coherent_unit_lift_retains_exact_scalar_and_reference_action ... ok
+test coherent_control_exposes_unit_phase_for_lift_and_computed_pattern ... ok
+test empty_patterns_explain_the_ordinary_unit_requirement_in_both_source_paths ... ok
+test exact_pattern_shapes_reject_quantum_bit_and_equal_width_products ... ok
+test effectful_unit_rhs_is_retained_before_the_empty_result_is_bound ... ok
+test runtime_parameter_pattern_now_uses_the_common_exact_shape_rule ... ok
+test sized_symbolic_and_concrete_patterns_share_the_same_unit_shape_rule ... ok
+test unit_basis_patterns_keep_exact_unary_function_and_predicate_arity ... ok
+test finite_named_unit_parameters_and_nested_patterns_are_ordinary_values ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.43s
+

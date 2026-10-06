@@ -742,19 +742,19 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
             "pub unitary fn f(a:Q<Unit>,b:Q<Bit>)->Q<(Unit,Bit)>{join[0](a,b)}",
             "static",
         ),
-        ("pub unitary fn f()->Unit{split()}", "type"),
+        ("pub unitary fn f()->Unit{split()}", "arity"),
         (
             "pub unitary fn f(q:Q<(Unit,Bit)>,r:Q<(Unit,Bit)>)->(Q<Unit>,Q<Bit>){split(q,r)}",
-            "type",
+            "arity",
         ),
-        ("pub unitary fn f()->Unit{join()}", "type"),
+        ("pub unitary fn f()->Unit{join()}", "arity"),
         (
             "pub unitary fn f(q:Q<Unit>)->Q<(Unit,Unit)>{join(q)}",
-            "type",
+            "arity",
         ),
         (
             "pub unitary fn f(a:Q<Unit>,b:Q<Unit>,c:Q<Unit>)->Q<(Unit,Unit,Unit)>{join(a,b,c)}",
-            "type",
+            "arity",
         ),
         (
             "pub unitary fn f(q:Q<(Unit,Bit,Unit)>)->(Q<Unit>,Q<Bit>){split(q)}",
@@ -768,16 +768,24 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
             "pub unitary fn f(a:Unit,b:Q<Bit>)->Q<(Unit,Bit)>{join(a,b)}",
             "type",
         ),
-        (
-            "pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{phase_eighth(q)}",
-            "type",
-        ),
     ] {
         reject(
             &format!("use std::quantum::{{split,join,phase_eighth}};{decl}"),
             code,
         );
     }
+    let text = "use std::quantum::phase_eighth; pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{phase_eighth(q)}";
+    let error = parsed(text)
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert_eq!(error.module(), Some("main"));
+    assert_eq!(
+        &text[error.span().start..error.span().end],
+        "phase_eighth(q)"
+    );
 }
 
 #[test]
@@ -865,5 +873,11 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     assert!(error.span().end > error.span().start);
     // Coherent lifting is a separate selected-source capability even though
     // the same exact Q<tuple> now passes common source type classification.
-    reject(&study("finite-coherent-unitors"), "unsupported");
+    let text = study("finite-coherent-unitors");
+    let error = parsed(&text)
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert_eq!(error.module(), Some("main"));
+    assert!(error.span().end > error.span().start && error.span().end <= text.len());
 }

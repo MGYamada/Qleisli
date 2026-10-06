@@ -67,6 +67,13 @@ impl Checker<'_, '_> {
                 Ty::tuple(result)
             }
             BasisExprKind::Call { callee, args } => {
+                if self.local(callee).is_some() {
+                    return Err(SourceError::new(
+                        "type",
+                        callee.span,
+                        "a basis value is not callable",
+                    ));
+                }
                 let Target::Declaration(id) = self.resolve(callee)? else {
                     return Err(SourceError::new(
                         "type",
@@ -459,6 +466,13 @@ impl Checker<'_, '_> {
                 "with_computed source requires one Q<A> owner",
             )
         })?;
+        if self.local(function).is_some() {
+            return Err(SourceError::new(
+                "type",
+                function.span,
+                "with_computed requires a basis function name",
+            ));
+        }
         let Target::Declaration(predicate) = self.resolve(function)? else {
             return Err(SourceError::new(
                 "type",
@@ -478,23 +492,39 @@ impl Checker<'_, '_> {
             return Err(SourceError::new(
                 "arity",
                 function.span,
-                "predicate must take exactly one basis argument",
+                format!(
+                    "with_computed predicate requires exactly one explicit basis parameter; found {} parameters",
+                    params.len()
+                ),
             ));
         }
+        let predicate_mismatch = |mut error: SourceError| {
+            if error.code == "type" {
+                error.message = format!(
+                    "with_computed predicate type mismatch: expected `{} -> Bit`, found `{} -> {}`",
+                    basis.display(Stage::Basis),
+                    params[0].display(Stage::Basis),
+                    result.display(Stage::Basis)
+                );
+            }
+            error
+        };
         normalize::expect(
             &params[0],
             basis,
             &scope.context,
             function.span,
             &self.program.budget,
-        )?;
+        )
+        .map_err(&predicate_mismatch)?;
         normalize::expect(
             &result,
             &Ty::bit(),
             &scope.context,
             function.span,
             &self.program.budget,
-        )?;
+        )
+        .map_err(&predicate_mismatch)?;
         let mut inner = scope.copy(&self.program.budget, span)?;
         let ancilla_ty = Ty::quantum(Ty::bit());
         let expected = if let (Some(logical), Some(data)) = (logical, data) {
@@ -549,12 +579,24 @@ impl Checker<'_, '_> {
         let surrounding = std::mem::replace(&mut self.effects, BodyEffects::new(body.span));
         let checked = self.block(body, &mut inner, None);
         let region = std::mem::replace(&mut self.effects, surrounding);
-        let found = checked?;
-        if self.live_owner(&inner, body.span)?.is_some() {
+        let found = match checked {
+            Ok(found) => found,
+            Err(error) => {
+                return Err(self.computed_capture_error(
+                    error,
+                    scope,
+                    logical.is_some() && data.is_some(),
+                )?);
+            }
+        };
+        if let Some(key) = self.live_owner(&inner, body.span)? {
             return Err(SourceError::new(
                 "ownership",
-                body.span,
-                "with_computed body leaves a live owner unconsumed",
+                self.index().table.binder(key.id).span,
+                format!(
+                    "quantum ownership `{}` was not returned or explicitly consumed",
+                    key.name
+                ),
             ));
         }
         normalize::expect(
@@ -574,5 +616,45 @@ impl Checker<'_, '_> {
         // Exact returned-register identity and clean release remain obligations
         // for the actual circuit/evidence consumer, not type/name evidence.
         Ok(source_ty)
+    }
+
+    /// Explain a rejected use only; successful body checking performs no extra
+    /// traversal, cloning, metadata allocation or work-budget charge.
+    fn computed_capture_error(
+        &self,
+        mut error: SourceError,
+        scope: &Scope,
+        all: bool,
+    ) -> Result<SourceError> {
+        if error.code != "ownership" {
+            return Ok(error);
+        }
+        let Some(id) = self
+            .index()
+            .table
+            .local_use_at_span(error.span, || self.tick(error.span))?
+        else {
+            return Ok(error);
+        };
+        let key = self.index().table.key(id);
+        let Some(binding) = scope.values.get(key) else {
+            return Ok(error);
+        };
+        // The surrounding scope is already after source evaluation. A spent
+        // source/outer owner is absent; shadowed body locals have a distinct ID.
+        self.program.budget.ty(error.span, &binding.ty)?;
+        let quantum = binding.ty.linear();
+        if all || quantum {
+            let repair = if quantum {
+                "include it in the source data with `join` and access it through the data binder of three-argument `with_computed`, or restructure the body"
+            } else {
+                "use a closed classical expression or restructure the body"
+            };
+            error.message = format!(
+                "with_computed body cannot capture outer binding `{}`; {repair}",
+                key.name
+            );
+        }
+        Ok(error)
     }
 }

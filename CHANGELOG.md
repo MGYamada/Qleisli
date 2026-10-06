@@ -6,6 +6,19 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Restore common-source diagnostics for exact types, empty/tuple patterns,
+  static arguments, predicates, tuple-owner bindings and forbidden computed
+  captures. Retain lexical identities and original caller/binding locations;
+  derive capture explanations only after rejection. Suggest `split` only for
+  an immediate binary packaged basis. Update existing arity, effect and
+  concrete-profile expectations without moving those limits into common
+  checking. Preserve the deep import-only cycle and real call-cycle controls
+  (#32).
+- Resolve Python sized-adapter local calls and operation references through
+  their actual module identity, without self-imports. Preserve lexical hiding
+  inside every loop body, including zero iterations, and reject ambiguous or
+  mismatched entry-source registrations. Native acceptance and the existing
+  pure/instrument producer profiles remain separate (#32).
 - Remove QFT implementation completion, generic QFT public integration and
   fixed/generic QFT equivalence from v0.3.0 and the current goal by explicit
   maintainer decision. Retain #317's semantic namespace/admission work, existing

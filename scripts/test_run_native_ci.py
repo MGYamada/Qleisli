@@ -26,7 +26,7 @@ class NativeCI(unittest.TestCase):
     def test_retains_every_pre_206_command_and_environment(self):
         tasks = load_tasks(MANIFEST)
         self.assertEqual(len(tasks), 67)
-        self.assertEqual(sum(len(task["commands"]) for task in tasks), 90)
+        self.assertEqual(sum(len(task["commands"]) for task in tasks), 91)
         inventory = [{key: value for key, value in task.items() if key in ("commands", "env")} for task in tasks if task["id"] not in {"native-paths", "native-acceptance"}]
         inventory = copy.deepcopy(inventory)
         for task in inventory:
@@ -34,7 +34,8 @@ class NativeCI(unittest.TestCase):
                                 if command not in (["python3", "scripts/test_hierarchical_finite_binding.py"],
                                     ["python3", "scripts/test_verification_decoders.py", "--record", "{record}"],
                                     ["python3", "scripts/test_qpe_instrument_host.py", "--record", "{record}"],
-                                    ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"])]
+                                    ["python3", "scripts/test_instrument_transport.py", "--record", "{record}"],
+                                    ["python3", "scripts/test_sized_local_resolution.py"])]
         digest = hashlib.sha256(json.dumps(inventory, sort_keys=True).encode()).hexdigest()
         # v0.2.6 workflow commands, replacing only isolated --record paths.
         self.assertEqual(digest, "33f46d04c2071b73d673c1c509866d57b547b63fbf468a894e0b809a213f424e")
@@ -66,6 +67,10 @@ class NativeCI(unittest.TestCase):
     def test_named_qpe_host_faults_have_a_required_ci_command(self):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-qpe-instrument')
         self.assertIn(['python3', 'scripts/test_qpe_instrument_host.py', '--record', '{record}'], task['commands'])
+
+    def test_sized_local_resolution_has_a_required_ci_command(self):
+        task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'sized-corpus')
+        self.assertEqual(task['commands'][0], ['python3', 'scripts/test_sized_local_resolution.py'])
 
     def test_dynamic_component_version_checks_are_required(self):
         task = next(t for t in load_tasks(MANIFEST) if t['id'] == 'hierarchical-preparation')

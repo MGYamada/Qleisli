@@ -34,7 +34,10 @@ RESERVED = {'pub', 'unitary', 'fn', 'static', 'let', 'for', 'in', 'carry', 'yiel
 class Parser:
     primitive_imports = IMPORTS
 
-    def __init__(self, source, modules=()):
+    def __init__(self, source, modules=(), *, module):
+        if (not isinstance(module, str) or
+                not re.fullmatch(r'[A-Za-z_][A-Za-z_0-9]*', module) or module == 'std'):
+            raise SourceError('invalid source module identity')
         if len(source.encode()) > 65536:
             raise SourceError('source exceeds 64 KiB')
         self.tokens = []
@@ -65,7 +68,12 @@ class Parser:
         self.index = 0
         self.imports = {}
         self.modules = set(modules)
+        self.module = module
+        self.local_functions = {}
         self.operations = {}
+
+    def definition(self, name):
+        return self.local_functions.get(name, self.imports.get(name))
 
     def peek(self):
         return self.tokens[self.index]
@@ -151,7 +159,8 @@ class Parser:
 
     def static_argument(self):
         name = self.peek()
-        if name in self.operations or (name in self.imports and '::' in self.imports[name]
+        definition = self.definition(name)
+        if name in self.operations or (definition is not None and '::' in definition
                                       and self.tokens[self.index+1] == '['):
             return self.operation()
         return self.nat()
@@ -178,13 +187,14 @@ class Parser:
         if self.eat('adjoint'):
             self.need('(')
             name = self.name()
-            if name not in self.imports or '::' not in self.imports[name]:
-                raise SourceError('adjoint requires an imported ordinary unitary definition')
+            definition = self.definition(name)
+            if definition is None or '::' not in definition:
+                raise SourceError('adjoint requires an ordinary unitary definition')
             sizes = self.static_arguments()
             self.need(',')
             arg = self.expr()
             self.need(')')
-            return ('adjoint', self.imports[name], sizes, [arg])
+            return ('adjoint', definition, sizes, [arg])
         if self.eat('if'):
             self.need('static')
             condition = self.predicate()
@@ -226,9 +236,10 @@ class Parser:
                 while self.eat(','):
                     args.append(self.expr())
             self.need(')')
-            if name not in self.imports:
+            definition = self.definition(name)
+            if definition is None:
                 raise SourceError(f'unknown or unimported operation {name}')
-            return ('call', self.imports[name], sizes, args)
+            return ('call', definition, sizes, args)
         if sizes:
             raise SourceError('static arguments require a call')
         return ('var', name)
@@ -249,9 +260,10 @@ class Parser:
         name = self.name()
         if name in self.operations:
             return ('parameter', name)
-        if name in self.imports and '::' in self.imports[name]:
+        definition = self.definition(name)
+        if definition is not None and '::' in definition:
             sizes = self.static_arguments()
-            return ('definition', self.imports[name], sizes)
+            return ('definition', definition, sizes)
         raise SourceError(f'unknown static operation parameter or definition {name}')
 
     def predicate(self):
@@ -297,6 +309,9 @@ class Parser:
         self.function_effect()
         self.need('fn')
         name = self.name()
+        if name in self.imports:
+            raise SourceError('import collides with local declaration '+name)
+        self.local_functions[name] = self.module+'::'+name
         sizes = []
         static_names = []
         has_static = self.eat('[')
@@ -620,9 +635,9 @@ def check_moves(body, env, signatures=None, hidden=()):
                     2 if name in ('take_bit', 'put_bit', 'controlled_phase', 'phase') else 0):
                 raise SourceError('operation argument shape/arity mismatch')
             return (None, None) if name in ('take_bit', 'cnot', 'controlled_phase') else None
-        _, _, _, carry, initial, inner = fields
+        index, _, _, carry, initial, inner = fields
         value = expression(initial, scope)
-        if check_moves(inner, {carry: value}, signatures, hidden) != value:
+        if check_moves(inner, {carry: value}, signatures, hidden | {index}) != value:
             raise SourceError('fold carry tuple shape changed')
         return value
 
@@ -650,7 +665,7 @@ class Producer(Circuit):
         self.work = {'iterations': 0, 'calls': 0, 'modules': {}} if work is None else work
         if work is None:
             for module, source in self.modules.items():
-                parser = Parser(source, self.modules)
+                parser = Parser(source, self.modules, module=module)
                 declaration = parser.parse()
                 self.work['modules'][module] = (declaration, parser.imports)
             for _, imports in self.work['modules'].values():
@@ -833,7 +848,8 @@ class Producer(Circuit):
             artifact = self.providers.get(key)
             if artifact is None:
                 artifact = Producer(self.modules, self.stack+(key,), self.work).compile(
-                    source, function, substitutions, operations=dict(operations))
+                    source, function, substitutions, operations=dict(operations),
+                    module=name.split('::')[0])
             if len(self.definitions)+len(artifact['definitions']) > 10000:
                 raise SourceError('generated definition limit')
             self.imported[key] = self.import_artifact(artifact)
@@ -1029,8 +1045,10 @@ class Producer(Circuit):
             raise SourceError('unreturned quantum owners: '+', '.join(sorted(env)))
         return result
 
-    def compile(self, source, entry, sizes, compact=True, operations=None):
-        parser = Parser(source, self.modules)
+    def compile(self, source, entry, sizes, compact=True, operations=None, *, module):
+        if module not in self.modules or self.modules[module] != source:
+            raise SourceError('entry source does not match its registered module')
+        parser = Parser(source, self.modules, module=module)
         name, static, parameters, output, body, premises, operation_types, access, _ = parser.parse()
         self.check_imports(parser.imports)
         if name != entry or set(sizes) != set(static) or any(type(n) is not int or not 0 <= n <= 65535 for n in sizes.values()):
@@ -1052,7 +1070,8 @@ class Producer(Circuit):
             # Validate transparent providers even if unused or repeated zero times.
             self.charge_call()
             self.providers[key] = Producer(self.modules, self.stack+(key,), self.work).compile(
-                provider_source, function, substitutions, operations=dict(provider.operations))
+                provider_source, function, substitutions, operations=dict(provider.operations),
+                module=provider.name.split('::')[0])
             self.operations[parameter] = provider, ty
         env = {}
         shapes = {}
@@ -1254,8 +1273,23 @@ def compact_artifact(inputs, outputs, trace):
         proofs=c.proofs, entry=dict(implementation=root, proof=root))
 
 
-def compile_source(source, entry, sizes, *, compact=True, modules=None, operations=None):
-    return Producer(modules).compile(source, entry, sizes, compact, operations)
+def compile_source(source, entry, sizes, *, compact=True, modules=None, operations=None, module=None):
+    """Compile a registered module, or a standalone source named ``__entry__``.
+
+    Exact source matches recover an existing registry identity. Ambiguous
+    registrations require the caller's explicit module; function names never
+    determine module identity. The standalone name is private to this adapter.
+    """
+    modules = {} if modules is None else dict(modules)
+    if module is None:
+        matches = [name for name, registered in modules.items() if registered == source]
+        if len(matches) > 1:
+            raise SourceError('ambiguous entry source module; provide module explicitly')
+        module = matches[0] if matches else '__entry__'
+    if module in modules and modules[module] != source:
+        raise SourceError('entry source does not match its registered module')
+    modules[module] = source
+    return Producer(modules).compile(source, entry, sizes, compact, operations, module=module)
 
 
 def factor_fourier_trace(inputs, outputs, trace):
@@ -1373,7 +1407,8 @@ def main():
             if parameter in operations:
                 raise SourceError('duplicate static operation argument')
             operations[parameter] = Operation(name, tuple(int(n) for n in values.split(',')))
-        artifact = compile_source(args.source.read_text(), args.entry, sizes, modules=modules, operations=operations)
+        artifact = compile_source(args.source.read_text(), args.entry, sizes, modules=modules,
+                                  operations=operations, module=args.source.stem)
         if args.adjoint:
             artifact = adjoint_artifact(artifact)
         args.output.write_text(text(artifact)+'\n')

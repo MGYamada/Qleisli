@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.ci-regression-metadata-update",
+  "version": 1,
+  "source": {
+    "path": "src/frontend/check/body.rs",
+    "old_sha256": "2dcd73e92e3dbd00b86d04bdfc99f1aec4915b30d04f86bf3905fad90949bf57",
+    "new_sha256": "35a55058006bc9f9e7750f6f5d12041e6860ff609e77a12123df4c49c71ba3c3",
+    "public_surface_unchanged": true
+  },
+  "coverage": {
+    "old_surface_sha256": "5990905d4ee4c1ccfaad9d894871c19956acd188f31d0a4ef2163e3e857db536",
+    "new_surface_sha256": "7f6f80a9135e20b905bd3fff068c4e0cc071d39bd848fd057388cf42bad1812f",
+    "routes_and_proof_statuses_unchanged": true
+  },
+  "reason": "Reviewed diagnostic-only arity-zero branch; checker acceptance/type/ownership/span rules unchanged."
+}

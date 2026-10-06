@@ -37,6 +37,37 @@ impl std::fmt::Debug for Linear {
             .finish()
     }
 }
+/// Diagnostic rendering preserves source names without replacing binder identity.
+impl std::fmt::Display for Linear {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut written = false;
+        for (key, coefficient) in &self.terms {
+            if *coefficient == 0 {
+                continue;
+            }
+            if *coefficient < 0 {
+                f.write_str("-")?;
+            } else if written {
+                f.write_str("+")?;
+            }
+            let magnitude = coefficient.unsigned_abs();
+            if magnitude != 1 {
+                write!(f, "{magnitude}*")?;
+            }
+            f.write_str(&key.name)?;
+            written = true;
+        }
+        if self.constant != 0 || !written {
+            if self.constant < 0 {
+                f.write_str("-")?;
+            } else if written {
+                f.write_str("+")?;
+            }
+            write!(f, "{}", self.constant.unsigned_abs())?;
+        }
+        Ok(())
+    }
+}
 impl Linear {
     pub fn constant(n: i128) -> Self {
         Self {
