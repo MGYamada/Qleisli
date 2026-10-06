@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Organize ordinary std source into `basis`, singular `transform`, `reflection`
+  and `measurement`, with mathematical admission rules and exact contracts.
+  Retire `routines`, `transforms` and fixed demo arithmetic exports; preserve
+  arithmetic as local order-finding source and migrate active examples, corpus
+  and fixture clients without rewriting historical inputs (#317).
 - Restore common-source diagnostics for exact types, empty/tuple patterns,
   static arguments, predicates, tuple-owner bindings and forbidden computed
   captures. Retain lexical identities and original caller/binding locations;

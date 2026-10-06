@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/transform",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 0.911,
+  "recorded_utc": "2026-10-06T02:55:04.240725+00:00",
+  "timestamp_note": "Post-command recording time from aggregate capture, not independently authenticated execution time.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  },
+  "stderr": "",
+  "raw_stdout": "transform.stdout.txt",
+  "raw_stderr": "transform.stderr.txt",
+  "executed_source_sha256": {
+    "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/transform/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/attempt-01/transform/main.qli": "2b306872b1b6714e304da8f2bdf56495bae0d8b90e433af567da49a381abed69"
+  },
+  "compiler": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "424f8c5cf4dbbccccfa18f35a4535de881e448811d5b3c1f5021acc4976e0684"
+  },
+  "native": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "scope": "Actual source CLI/native checks only; no semantic oracle, source preservation proof or guarantee admission."
+}

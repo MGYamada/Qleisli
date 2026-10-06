@@ -64,7 +64,7 @@ fn probability(result: &BTreeMap<Vec<bool>, f64>, bits: &[bool], expected: f64) 
 const IMPORTS: &str = "use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split; use std::observe::measure_z;
-use std::observe::discard; use std::routines::measure_x;";
+use std::observe::discard; use std::measurement::measure_x;";
 
 #[test]
 fn qpe_resolves_all_eighth_turns_in_little_endian_order() {
@@ -224,7 +224,7 @@ fn grover_reflection_and_its_negative_are_distinguished_under_control() {
     let root = Root::new();
     for (function, expected) in [("reflect_uniform2", false), ("negative", true)] {
         root.write("main.qli", &format!("{IMPORTS}
-            use std::routines::reflect_uniform2; use std::routines::hadamard2;
+            use std::reflection::reflect_uniform2; use std::transform::hadamard2;
             unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{ q }}
             unitary fn negative(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(reflect_uniform2(q)); join(z(x(z(x(a)))),b)

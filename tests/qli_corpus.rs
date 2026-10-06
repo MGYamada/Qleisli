@@ -2,7 +2,7 @@
 //! Exhaustive finite simulation is a regression oracle, not a general proof.
 mod common;
 
-use common::SourceRoot;
+use common::{SourceRoot, current_namespace_fixture};
 use qleisli::frontend::ast::StaticParamKind;
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
 use qleisli::frontend::parser::parse_module;
@@ -30,22 +30,22 @@ const REJECTED: &[(&str, &str)] = &[
 ];
 
 fn fixture(name: &str) -> String {
-    fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring")
             .join(format!("{name}.qli")),
-    )
+    ))
     .unwrap()
 }
 
-// #25 keeps original authoring bytes as historical inputs. The selected current
-// translations only make the predicate domain explicit; neither is auto-repaired.
+// #25 retains historical authoring bytes. Explicit predicate and namespace
+// translations are selected from recorded copies; neither is auto-repaired.
 fn current_predicate_fixture(name: &str) -> String {
-    fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring")
             .join(format!("{name}.qli")),
-    )
+    ))
     .unwrap()
 }
 
@@ -353,7 +353,8 @@ fn every_quick_reference_program_compiles_and_executes() {
         "each program needs an output oracle"
     );
     for (program, expected) in programs.into_iter().zip(expected) {
-        let source = fs::read_to_string(directory.join(program)).unwrap();
+        let source =
+            fs::read_to_string(current_namespace_fixture(&directory.join(program))).unwrap();
         distribution(&execute(&SourceRoot::new(&source)), &expected);
     }
 }

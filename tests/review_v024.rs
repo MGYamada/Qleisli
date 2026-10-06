@@ -9,14 +9,15 @@ use std::{fs, process::Command};
 
 #[test]
 fn misplaced_public_import_has_a_checked_repair() {
-    let source = "use std::routines::qft2; unitary fn run(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{qft2(q)}";
+    let source =
+        "use std::measurement::qft2; unitary fn run(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{qft2(q)}";
     let root = SourceRoot::new(source);
     let failure = check_project_diagnostic(&root.0).unwrap_err();
     assert!(
-        failure.message.contains("use std::transforms::qft2;"),
+        failure.message.contains("use std::transform::qft2;"),
         "{failure:?}"
     );
-    root.write("main.qli", &source.replace("routines", "transforms"));
+    root.write("main.qli", &source.replace("measurement", "transform"));
     check_project(&root.0).unwrap();
     root.write("main.qli", "use std::quantum::measure_z;");
     assert!(
@@ -25,7 +26,7 @@ fn misplaced_public_import_has_a_checked_repair() {
             .message
             .contains("use std::observe::measure_z;")
     );
-    root.write("main.qli", "use std::transforms::private_helper;");
+    root.write("main.qli", "use std::reflection::nonzero2;");
     assert!(
         !check_project_diagnostic(&root.0)
             .unwrap_err()

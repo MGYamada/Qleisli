@@ -1,0 +1,21 @@
+//! A unary product pattern and an independent exact SWAP implementation.
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+use std::measurement::measure_z2;
+basis fn swap((a,b): (Bit,Bit)) -> (Bit,Bit) { (b,a) }
+meaning Swap: (Bit,Bit) = permutation_by(swap);
+unitary fn implementation(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    let (a,b) = cnot(a,b);
+    let (b,a) = cnot(b,a);
+    let (a,b) = cnot(a,b);
+    join(a,b)
+}
+unitary fn apply[static U: Op<(Bit,Bit),Swap>](q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)>
+requires Apply(U) { U(q) }
+observe fn main() -> (Bit,Bit) {
+    measure_z2(apply[bind_op(implementation,Swap)](join(x(init0()),init0())))
+}

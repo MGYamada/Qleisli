@@ -209,8 +209,8 @@ target-realization or quantitative resource theorem.
 ## Ordinary library and module resolution
 
 `src/frontend/source.rs::BundledRegistry` embeds **four ordinary source
-modules with 12 public definitions**; one additional private basis helper is
-used by `std::routines`. Both loaders retain all four complete original sources
+modules with nine public definitions**; one additional private basis helper is
+used by `std::reflection`. Both loaders retain all four complete original sources
 and their fixed manifest. They receive normal common declaration, type, owner,
 access, dependency and effect checking rather than `ImportOrigin::Sealed`.
 Concrete materialization and native checking occur under the actual consumer's
@@ -220,9 +220,20 @@ specialization:
 | Module and source | Public definitions | Contract provenance |
 | --- | --- | --- |
 | `std::basis`, `stdlib/src/basis.qli` | `xor2`, `and2` | Total finite ordinary basis-label maps. Neither is injective over its two-input domain; a coherent enclosing construction must meet its own obligations. |
-| `std::routines`, `stdlib/src/routines.qli` | `hadamard2`, `reflect_uniform2`, `measure_x`, `measure_z2`, `parity_zz` | Explicit H tensor H; phase-fixed reflection `2|s><s| - I`; complete X/Z/parity instruments and owner interfaces. Private `nonzero2` is a normal basis helper. |
-| `std::transforms`, `stdlib/src/transforms.qli` | `qft2`, `qft3` | Positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. These are fixed-width source implementations. |
-| `std::arithmetic`, `stdlib/src/arithmetic.qli` | `increment2`, `add2`, `mul2_mod15` | Exact amplitude +1 whole-basis permutations with stated modular overflow, preserved addend and the fixed value 15. No generalized integer API is implied. |
+| `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H; positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. Fourier interfaces remain fixed-width. |
+| `std::reflection`, `stdlib/src/reflection.qli` | `reflect_uniform2` | Phase-fixed reflection `2|s><s| - I` with exact computed-auxiliary cleanup. Private `nonzero2` is a normal basis helper; Hadamard is imported from ordinary transform source. |
+| `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X/Z instruments and nondestructive data-parity measurement with their original owner/result trees and reference behavior. |
+
+The [semantic namespace Reference](stdlib.md) gives every mathematical module's
+admission rule, exact public interfaces and migration mapping. `std::routines`
+and `std::transforms` are retired without aliases. The three A001–A003 fixed
+arithmetic definitions remain ordinary local source in
+`examples/order_finding/arithmetic.qli`, preserving amplitude +1, modular
+overflow, the addend and the full-space value-15 extension. They have no canonical
+std export; `std::arithmetic` is reserved for parameterized arithmetic/number
+theory. Reserved family names do not promise callable APIs. Generic QFT
+completion and fixed/generic correspondence remain outside all v0.3.0 and the
+current goal.
 
 The English source contracts and `STDLIB.md` state intended meanings and
 conventions; their presence alone does not prove implementation conformance.
@@ -318,7 +329,7 @@ accept a producer's unchecked assertion.
 
 For example, a proposal to seal `qft2` solely because a backend can execute it
 faster fails the irreducibility justification: the ordinary checked
-`std::transforms::qft2` already expresses its phase-fixed finite contract.
+`std::transform::qft2` already expresses its phase-fixed finite contract.
 An optimization or target intrinsic can instead propose a realization of that
 same meaning and supply the required independent checks. This is an admission
 assessment of that stated rationale, not a claim that a historical proposal was

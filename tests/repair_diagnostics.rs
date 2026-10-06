@@ -1,16 +1,16 @@
 //! Diagnostic text and locations assist repair; schemas and rejection stay intact.
 mod common;
-use common::SourceRoot;
+use common::{SourceRoot, current_namespace_fixture};
 use qleisli::frontend::compile::{check_project, check_project_diagnostic, compile_project};
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::{fs, path::Path, process::Command};
 
 fn fixture(name: &str) -> String {
-    fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics")
             .join(format!("{name}.qli")),
-    )
+    ))
     .unwrap()
 }
 
@@ -224,7 +224,7 @@ fn concrete_mismatches_show_expected_and_actual_exact_types() {
 
 #[test]
 fn argument_types_reach_text_and_json_without_moving_the_callers_span() {
-    let source = "// 日本語\r\nuse std::transforms::qft3;\r\nunitary fn bad(q:Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> { qft3(q) }";
+    let source = "// 日本語\r\nuse std::transform::qft3;\r\nunitary fn bad(q:Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> { qft3(q) }";
     let root = SourceRoot::new(source);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     let location = error.primary.unwrap();
@@ -266,10 +266,13 @@ fn argument_types_reach_text_and_json_without_moving_the_callers_span() {
 
 #[test]
 fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
-    let original = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/auxiliary_hh.qli"
-    );
-    let root = SourceRoot::new(original);
+    let original = fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR")).join(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/auxiliary_hh.qli",
+        ),
+    ))
+    .unwrap();
+    let root = SourceRoot::new(&original);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     assert_eq!(error.code, "unsupported");
     assert!(
@@ -294,7 +297,12 @@ fn cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract() {
     }
     root.write(
         "main.qli",
-        include_str!("fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/auxiliary_hh.qli"),
+        &fs::read_to_string(current_namespace_fixture(
+            &Path::new(env!("CARGO_MANIFEST_DIR")).join(
+                "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/auxiliary_hh.qli",
+            ),
+        ))
+        .unwrap(),
     );
     let program = compile_project(&root.0).unwrap();
     let result = run_closed(&program, SimulationLimits::default()).unwrap();

@@ -10,6 +10,9 @@
 //! 799-pair comparison inputs nor the compiled corpus contain one.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
+mod common;
+
+use common::current_corpus_projects;
 use qleisli::AcceptedProgram;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::meaning::{FiniteMeaning, MeaningEvidence};
@@ -128,11 +131,13 @@ const CORPUS_SOURCES: [&str; 3] = ["quantum_katas", "qualtran", "pennylane_demos
 fn compiled_projects(manifest: &Path) -> Vec<PathBuf> {
     let mut roots = Vec::new();
     projects(&manifest.join("examples"), &mut roots);
-    // Migration and authoring snapshots retain historical source syntax. Only
-    // the approved provider roots are current executable corpus projects.
+    // Discover logical provider roots, then select their explicitly recorded
+    // current snapshots. Other migration and authoring sources stay historical.
+    let mut corpus_roots = Vec::new();
     for source in CORPUS_SOURCES {
-        projects(&manifest.join("corpus").join(source), &mut roots);
+        projects(&manifest.join("corpus").join(source), &mut corpus_roots);
     }
+    roots.extend(current_corpus_projects(&corpus_roots));
     roots
 }
 
@@ -142,9 +147,18 @@ fn compiled_project_discovery_selects_current_sources() {
     let roots = compiled_projects(manifest);
     let selected: BTreeSet<_> = roots.iter().cloned().collect();
     assert_eq!(selected.len(), roots.len(), "duplicate compiled project");
+    assert_eq!(roots.len(), 101, "logical compilation coverage changed");
+    assert_eq!(
+        roots
+            .iter()
+            .filter(|path| path.starts_with(manifest.join("examples")))
+            .count(),
+        14,
+        "example compilation coverage changed"
+    );
 
-    // Independently enumerate the current flat provider layout. This guards
-    // against excluding active projects while avoiding preserved snapshots.
+    // Independently enumerate the flat logical provider layout. Each logical
+    // project contributes exactly one validated current source selection.
     let corpus = manifest.join("corpus");
     let mut expected = BTreeSet::new();
     for source in CORPUS_SOURCES {
@@ -156,12 +170,37 @@ fn compiled_project_discovery_selects_current_sources() {
         assert!(!provider.is_empty(), "missing corpus provider {source}");
         expected.extend(provider);
     }
+    assert_eq!(expected.len(), 87, "logical corpus coverage changed");
+    let logical: Vec<_> = expected.iter().cloned().collect();
+    let current = current_corpus_projects(&logical);
+    let snapshots: BTreeSet<_> = logical
+        .iter()
+        .zip(&current)
+        .filter(|(before, after)| before != after)
+        .map(|(_, after)| after.clone())
+        .collect();
+    assert_eq!(snapshots.len(), 6, "current corpus snapshots not selected");
+    let snapshot_root = corpus.join("migrations/semantic-namespace-v030/sources");
+    for (before, after) in logical.iter().zip(&current) {
+        if before != after {
+            assert!(after.starts_with(&snapshot_root));
+            assert!(
+                !selected.contains(before),
+                "original retired namespace source selected: {}",
+                before.display()
+            );
+        }
+    }
     let actual: BTreeSet<_> = roots
         .iter()
         .filter(|path| path.starts_with(&corpus))
         .cloned()
         .collect();
-    assert_eq!(actual, expected, "current corpus discovery changed");
+    assert_eq!(
+        actual,
+        current.into_iter().collect(),
+        "current corpus discovery changed"
+    );
 
     let mut historical = Vec::new();
     projects(&corpus.join("migrations"), &mut historical);
@@ -169,7 +208,14 @@ fn compiled_project_discovery_selects_current_sources() {
         !historical.is_empty(),
         "missing migration regression inputs"
     );
+    assert!(
+        snapshots.is_subset(&historical.iter().cloned().collect()),
+        "selected current snapshots missing from migration inventory"
+    );
     for path in historical {
+        if snapshots.contains(&path) {
+            continue;
+        }
         assert!(
             !selected.contains(&path),
             "historical project selected for current compilation: {}",
@@ -183,11 +229,7 @@ fn compiled_programs_reencode_exactly_and_caches_match_implementations() {
     let kernel = kernel();
     let manifest = Path::new(env!("CARGO_MANIFEST_DIR"));
     let roots = compiled_projects(manifest);
-    assert!(
-        roots.len() >= 100,
-        "project discovery found {}",
-        roots.len()
-    );
+    assert_eq!(roots.len(), 101, "logical compilation coverage changed");
     let mut evidence = 0;
     for root in &roots {
         let context = root.display().to_string();

@@ -39,5 +39,23 @@ bodies through ordinary project checking with the selected native boundary; it
 does not establish their full complex permutations, run or sample output,
 reference semantics, general-size arithmetic or retirement of old std exports.
 No semantic oracle, mathematical proof, guarantee or Issue completion follows.
-Later namespace results must be appended separately; retain these first sources
-and raw failures unchanged. No stored command was replayed during registration.
+No stored command was replayed during registration.
+
+## Results after the namespace migration
+
+The four unchanged projects were actually checked against the migrated source;
+all four checks passed. [The later capture](observations-after-01/capture.json)
+preserves their commands, outputs and identities separately. The registered
+session now links the four first events and four later events; it preserves all
+first sources, raw failures and earlier pending metadata.
+
+The later CLI SHA-256 is
+`424f8c5cf4dbbccccfa18f35a4535de881e448811d5b3c1f5021acc4976e0684`.
+Following a final Fourier-only comment correction in the embedded transform
+module, the CLI was rebuilt (SHA-256
+`a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8`)
+and all four projects passed again. That distinct source state is recorded in
+`tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/post-comment-validation-03.json`.
+These observations establish successful ordinary checking at the selected
+native boundary, not a general semantic theorem, constitutional discharge or
+release approval. Independent bounded semantic checks have their own records.

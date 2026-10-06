@@ -101,19 +101,19 @@ fn symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics() {
     for (source, message) in [
         (
             "pub unitary fn f(q: Q<Bits<1>>) -> Q<Bit> { q }",
-            "type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))",
+            "type or tuple/size shape mismatch: expected `Q<Bit>`, found `Q<Bits<1>>`",
         ),
         (
             "pub unitary fn f(c: Bits<0>) -> Unit { c }",
-            "type or tuple/size shape mismatch: expected Unit, found Bits(Linear { constant: 0, terms: {} })",
+            "type or tuple/size shape mismatch: expected `Unit`, found `Bits<0>`",
         ),
         (
             "pub unitary fn f(c: Bit) -> Q<Bit> { c }",
-            "type or tuple/size shape mismatch: expected Q(Bit), found Bit",
+            "type or tuple/size shape mismatch: expected `Q<Bit>`, found `Bit`",
         ),
         (
             "pub unitary fn f(q: Q<Bit>) -> Bit { q }",
-            "type or tuple/size shape mismatch: expected Bit, found Q(Bit)",
+            "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`",
         ),
     ] {
         let e = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();

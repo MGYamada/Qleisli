@@ -154,6 +154,50 @@ class IntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "missing authoring snapshots"):
             corpus.check_manifest(self.root)
 
+    def test_current_negatives_preserve_baseline_and_source_identities(self):
+        original = json.loads((self.root / "negative/manifest.json").read_text())
+        current = corpus.current_negatives(self.root)
+        self.assertEqual([(c["id"], c["project"]) for c in current],
+                         [(c["id"], c["project"]) for c in original["cases"]])
+        changed = [c["id"] for b, c in zip(original["cases"], current) if b != c]
+        self.assertEqual(changed, ["measurement_adjoint"])
+
+    def test_missing_current_negative_selection_rejects(self):
+        self.edit_manifest(lambda m: m.pop("negative_expectations"))
+        with self.assertRaisesRegex(ValueError, "missing or invalid current negative"):
+            corpus.check_manifest(self.root)
+
+    def test_changed_current_negative_bytes_reject(self):
+        path = self.root / "negative/current-manifest.json"
+        path.write_text(path.read_text() + " ")
+        with self.assertRaisesRegex(ValueError, "expectation identity changed"):
+            corpus.current_negatives(self.root)
+
+    def test_current_negative_cannot_drop_or_replace_rejected_source(self):
+        path = self.root / "negative/current-manifest.json"
+        initial = json.loads(path.read_text())
+        for drop in (True, False):
+            data = json.loads(json.dumps(initial))
+            if drop:
+                data["cases"].pop()
+            else:
+                data["cases"][0]["project"] = "negative/measurement_adjoint"
+            path.write_text(json.dumps(data))
+            self.edit_manifest(lambda m: m["negative_expectations"].update(sha256=corpus.sha256(path)))
+            with self.assertRaisesRegex(ValueError, "current negative (coverage|identity or contract) changed"):
+                corpus.current_negatives(self.root)
+
+    def test_current_negative_rejects_stale_baseline(self):
+        path = self.root / "negative/manifest.json"
+        path.write_text(path.read_text() + " ")
+        with self.assertRaisesRegex(ValueError, "baseline changed"):
+            corpus.current_negatives(self.root)
+
+    def test_current_negative_path_cannot_escape(self):
+        self.edit_manifest(lambda m: m["negative_expectations"].update(path="../outside.json"))
+        with self.assertRaises(ValueError):
+            corpus.current_negatives(self.root)
+
 
 class MigrationTests(unittest.TestCase):
     """Small synthetic records test chaining, not genuine compiler acceptance."""
@@ -214,6 +258,92 @@ class MigrationTests(unittest.TestCase):
         self.paths.reverse()
         with self.assertRaisesRegex(ValueError, "stale migration predecessor"):
             self.check()
+
+    def snapshot_selection(self):
+        first, after = self.migration("first", self.before)
+        for source in after:
+            target = self.root / source
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(first / "sources" / source, target)
+        selected, final = self.migration("selected", after)
+        self.mutate(selected / "migration.json", lambda m: m.update(source_selection="snapshot"))
+        self.write(self.root / "manifest.json", {"source_migrations": self.paths})
+        return selected, after, final
+
+    def test_explicit_snapshot_selects_current_files_and_preserves_old_directory(self):
+        selected, after, final = self.snapshot_selection()
+        locations = {}
+        self.assertEqual(corpus.migrated_sources(self.root, self.paths, self.before,
+                                                source_paths=locations), final)
+        self.assertEqual({source: corpus.sha256(self.root / source) for source in after}, after)
+        self.assertEqual(locations, {source: (selected / "sources" / source).resolve() for source in final})
+        self.assertEqual(corpus.current_project({"project": self.project}, self.root),
+                         (selected / "sources" / self.project).resolve())
+        self.assertEqual(corpus.current_project({"project": "unaffected/project"}, self.root),
+                         (self.root / "unaffected/project").resolve())
+
+    def test_snapshot_selection_rejects_changed_retained_predecessor(self):
+        self.snapshot_selection()
+        (self.root / self.project / "kernel.qli").write_text("changed preserved source")
+        with self.assertRaisesRegex(ValueError, "selected migration predecessor changed"):
+            self.check()
+
+    def test_snapshot_selection_rejects_stale_current_file_and_extra_manifest(self):
+        selected, _, _ = self.snapshot_selection()
+        project = selected / "sources" / self.project
+        source = project / "kernel.qli"
+        original = source.read_text()
+        source.write_text("stale derivative")
+        with self.assertRaisesRegex(ValueError, "selected migration snapshot changed"):
+            corpus.current_project({"project": self.project}, self.root)
+        source.write_text(original)
+        (project / "Qargo.toml").write_text("unrecorded edition override")
+        with self.assertRaisesRegex(ValueError, "selected migration snapshot changed"):
+            corpus.current_project({"project": self.project}, self.root)
+
+    def test_snapshot_root_symlink_cannot_escape_corpus(self):
+        selected, _, _ = self.snapshot_selection()
+        with tempfile.TemporaryDirectory() as directory:
+            outside = Path(directory) / "sources"
+            shutil.move(selected / "sources", outside)
+            (selected / "sources").symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "snapshot root escapes intake"):
+                self.check()
+            with self.assertRaisesRegex(ValueError, "snapshot root escapes intake"):
+                corpus.current_project({"project": self.project}, self.root)
+
+    def test_unknown_snapshot_selection_cannot_silently_use_original(self):
+        selected, _, _ = self.snapshot_selection()
+        self.mutate(selected / "migration.json", lambda m: m.update(source_selection="original"))
+        with self.assertRaisesRegex(ValueError, "unknown migration source selection"):
+            self.check()
+        with self.assertRaisesRegex(ValueError, "unknown migration source selection"):
+            corpus.current_project({"project": self.project}, self.root)
+
+    def test_execution_and_report_binding_use_selected_snapshot(self):
+        selected, _, _ = self.snapshot_selection()
+        case = {"id": self.project, "project": self.project, "kind": "measure"}
+        for name in ("Qargo.toml", "semantic_faults/manifest.json"):
+            path = self.root / name
+            path.parent.mkdir(exist_ok=True)
+            path.write_text("{}")
+        (self.root / "negative").mkdir()
+        for name in ("manifest.json", "current-manifest.json"):
+            shutil.copyfile(corpus.CORPUS / "negative" / name, self.root / "negative" / name)
+        manifest_path = self.root / "manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["negative_expectations"] = json.loads((corpus.CORPUS / "manifest.json").read_text())["negative_expectations"]
+        manifest_path.write_text(json.dumps(manifest))
+        with patch.object(corpus, "CORPUS", self.root), \
+             patch.object(corpus, "run", return_value={(True,): 1.0}) as run, \
+             patch.object(corpus, "protocol_probes", return_value=[]):
+            corpus.check_case(case, Path(__file__), False)
+            self.assertEqual(run.call_args.args[1], (selected / "sources" / self.project).resolve())
+            binding = corpus.input_binding([case], [], [], Path(__file__))
+        selected_prefix = str((selected / "sources" / self.project).relative_to(self.root))
+        self.assertEqual(set(binding["source_sha256"]),
+                         {selected_prefix + "/" + name for name in ("main.qli", "kernel.qli")})
+        self.assertEqual(set(binding["source_migration_sha256"]), set(self.paths))
 
     def test_removed_or_duplicate_migration_rejects(self):
         self.migration("first", self.before)

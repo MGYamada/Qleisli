@@ -1,0 +1,21 @@
+..........................................................[
+  {
+    "stage": "run",
+    "id": null,
+    "type": "ValueError",
+    "message": "invalid provenance"
+  }
+]
+..[
+  {
+    "stage": "cases",
+    "id": "quantum_katas/minus_state1",
+    "type": "SemanticMismatch",
+    "message": "wrong phase"
+  }
+]
+.
+----------------------------------------------------------------------
+Ran 61 tests in 15.993s
+
+OK

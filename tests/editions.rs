@@ -37,7 +37,9 @@ fn edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib() {
     check_project(&root.0).unwrap();
     compile_project(&root.0).unwrap();
     let project = Project::load(&root.0).unwrap();
-    assert!(project.module("std::transforms").is_some());
+    assert!(project.module("std::transform").is_some());
+    assert!(project.module("std::transforms").is_none());
+    assert!(project.module("std::routines").is_none());
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args(["run", root.0.to_str().unwrap(), "--format=json"])
         .output()

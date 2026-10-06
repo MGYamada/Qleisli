@@ -5,11 +5,21 @@ schema 2: name `std`, product version `0.3.0-alpha`, Qleisli edition `"2026"`,
 and separate `src`, `tests` and `docs` roots. All three directories are included
 in the qrate. The language import namespace remains `std::`.
 
-The compiler embeds the four [source modules](../src) and their edition
-manifest in its distribution. It reads no installed qargo executable to use
-them. Their mathematical contracts, ownership/effect rules and proof status
-remain governed by [STDLIB.md](../../STDLIB.md) and the
-contract ledger.
+The compiler embeds four ordinary [source modules](../src): `std::basis`,
+`std::transform`, `std::reflection` and `std::measurement`, with nine public
+definitions and one private reflection helper. Their edition manifest is
+embedded in the distribution too. It reads no installed qargo executable to use
+them. Their mathematical admission rules, exact contracts and path migration
+are specified by the [stdlib Reference](../../docs/src/reference/stdlib.md);
+contribution and evidence requirements remain in [STDLIB.md](../../STDLIB.md).
+The compiler-owned foundation catalogs retain their separate primitive boundary.
+
+The retired `std::routines`, `std::transforms` and fixed `std::arithmetic`
+exports have no compatibility aliases. Useful A001–A003 arithmetic circuits
+remain local to [the order-finding example](../../examples/order_finding/arithmetic.qli).
+Future parameterized arithmetic and factorization names are reserved meanings,
+not available APIs. Generic QFT remains excluded from all v0.3.0 and the current
+goal; `std::transform::{qft2,qft3}` retain their fixed contracts.
 
 To check the source using this checkout:
 
@@ -17,7 +27,9 @@ To check the source using this checkout:
 cargo run --bin qleisli -- check examples/bell
 ```
 
-This checks every bundled library declaration as well as the Bell client.
+This checks every bundled library declaration, including private/unused bodies,
+as well as the Bell client. Ordinary source judgment, concrete eligibility and
+fresh native acceptance remain separate; namespace placement grants no trust.
 The in-progress schema-2 qargo implementation accepts the manifest and captures
 the four sources with:
 

@@ -226,10 +226,10 @@ fn unfinished_comment_blocks_cannot_swallow_later_declarations() {
 #[test]
 fn every_bundled_module_and_public_or_private_definition_has_documentation() {
     let sources = [
-        include_str!("../stdlib/src/arithmetic.qli"),
         include_str!("../stdlib/src/basis.qli"),
-        include_str!("../stdlib/src/routines.qli"),
-        include_str!("../stdlib/src/transforms.qli"),
+        include_str!("../stdlib/src/transform.qli"),
+        include_str!("../stdlib/src/reflection.qli"),
+        include_str!("../stdlib/src/measurement.qli"),
     ];
     let mut public = 0;
     let mut private = 0;
@@ -255,7 +255,7 @@ fn every_bundled_module_and_public_or_private_definition_has_documentation() {
             }
         }
     }
-    assert_eq!((public, private), (12, 1));
+    assert_eq!((public, private), (9, 1));
 }
 
 #[test]

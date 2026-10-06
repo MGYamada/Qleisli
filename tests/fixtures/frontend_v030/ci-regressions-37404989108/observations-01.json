@@ -1,0 +1,178 @@
+{
+  "format": "qleisli.hosted-ci-failure-observations",
+  "version": 1,
+  "run_id": 37404989108,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108",
+  "source_head": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+  "base_head": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "checked_merge": "f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f",
+  "scope": "Actual logs of the hosted committed merge; current uncommitted namespace migration is not the hosted source.",
+  "log_provenance": {
+    "tool": "github_fetch_workflow_job_logs",
+    "selection": "Exact selected decoded log lines, with original timestamps. Excerpts are not full logs.",
+    "entries": [
+      {
+        "job_id": 112080576927,
+        "file": "rust-latest.log-excerpt.txt",
+        "ranges": [
+          [
+            122,
+            125
+          ],
+          [
+            906,
+            930
+          ]
+        ],
+        "full_log_lines": 949,
+        "full_log_chars": 85754
+      },
+      {
+        "job_id": 112080577195,
+        "file": "rust-msrv.log-excerpt.txt",
+        "ranges": [
+          [
+            122,
+            125
+          ],
+          [
+            901,
+            925
+          ]
+        ],
+        "full_log_lines": 944,
+        "full_log_chars": 85384
+      },
+      {
+        "job_id": 112080577442,
+        "file": "distribution.log-excerpt.txt",
+        "ranges": [
+          [
+            122,
+            125
+          ],
+          [
+            486,
+            510
+          ]
+        ],
+        "full_log_lines": 549,
+        "full_log_chars": 45658
+      }
+    ]
+  },
+  "jobs_snapshot": [
+    {
+      "job_id": 112080443955,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080443955"
+    },
+    {
+      "job_id": 112080576927,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080576927"
+    },
+    {
+      "job_id": 112080576949,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080576949"
+    },
+    {
+      "job_id": 112080576952,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080576952"
+    },
+    {
+      "job_id": 112080577015,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080577015"
+    },
+    {
+      "job_id": 112080577023,
+      "name": "check-lean-kernel",
+      "status": "in_progress",
+      "conclusion": null,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080577023"
+    },
+    {
+      "job_id": 112080577140,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080577140"
+    },
+    {
+      "job_id": 112080577195,
+      "name": "check-rust-msrv",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080577195"
+    },
+    {
+      "job_id": 112080577442,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "failure",
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37404989108/job/112080577442"
+    }
+  ],
+  "rust_failure": {
+    "jobs": [
+      112080576927,
+      112080577195
+    ],
+    "test": "symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics",
+    "path": "tests/frontend_types.rs",
+    "panic_line": 121,
+    "actual": "type or tuple/size shape mismatch: expected `Q<Bit>`, found `Q<Bits<1>>`",
+    "historical_expected": "type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))",
+    "conclusion": "Both jobs fail at the same stale exact diagnostic expectation. Canonical type display preserves the rejection and type distinction.",
+    "repair": {
+      "path": "tests/frontend_types.rs",
+      "current_sha256": "0234dc24b67821de7a09689926f8e9af89a948c61ba0928295efd21d830fcfba",
+      "changed": "Only four expected display strings; original program sources and code/rejection assertions retained.",
+      "checks_performed": [
+        "git diff --check -- tests/frontend_types.rs (exit 0)"
+      ],
+      "checks_not_performed": [
+        "No Rust build, test or native comparison by this audit."
+      ]
+    }
+  },
+  "historical_expected_strings": [
+    "type or tuple/size shape mismatch: expected Q(Bit), found Q(Bits(Linear { constant: 1, terms: {} }))",
+    "type or tuple/size shape mismatch: expected Unit, found Bits(Linear { constant: 0, terms: {} })",
+    "type or tuple/size shape mismatch: expected Q(Bit), found Bit",
+    "type or tuple/size shape mismatch: expected Bit, found Q(Bit)"
+  ],
+  "distribution": {
+    "job_id": 112080577442,
+    "step": "Verify clean package and complete source archive",
+    "actual": "cargo test --offline --all-targets --target-dir /home/runner/work/_temp/qleisli-distribution-target/source-production exited 101",
+    "underlying_log": "/home/runner/work/_temp/qleisli-distribution-artifacts-lzl86_fu/logs/14.stderr",
+    "underlying_failure": "Unverified: job log does not expose the inner test output; same frontend_types cause is only a plausible inference.",
+    "artifact": {
+      "id": 11387656942,
+      "name": "distribution-f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f",
+      "size_in_bytes": 61057080,
+      "digest": "sha256:aa9a25f7b4e71e1c5dc8fa2118ed0062c8501219bd7a70ab356625772df102ea",
+      "downloaded": false,
+      "reason": "Bounded audit excludes the full 61 MB distribution ZIP; no artifact-member retrieval capability used."
+    }
+  },
+  "constitutional": {
+    "continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "changes": "No interpretation, admission, protected meaning, guarantee or source acceptance rule changed.",
+    "broader_obligations": "QS, PR, quantitative RS and EXACT remain pending; the two admitted QLV1 ownership/classical-scope guarantees retain their scope."
+  }
+}

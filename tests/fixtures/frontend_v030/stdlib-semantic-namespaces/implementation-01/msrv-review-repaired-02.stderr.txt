@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.70s
+     Running tests/review_v024.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/review_v024-ccc2c356c14a006f)

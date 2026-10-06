@@ -4102,7 +4102,7 @@
     },
     {
       "path": "src/frontend/source.rs",
-      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+      "sha256": "caa1c9a6f61876f2942c0ad711b4c57064407acdb271998a0991a5fd8b04273b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4729,26 +4729,26 @@
       }
     },
     {
-      "path": "stdlib/src/arithmetic.qli",
-      "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
-      "group": "source",
-      "surface": null
-    },
-    {
       "path": "stdlib/src/basis.qli",
       "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
       "group": "source",
       "surface": null
     },
     {
-      "path": "stdlib/src/routines.qli",
-      "sha256": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+      "path": "stdlib/src/measurement.qli",
+      "sha256": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
       "group": "source",
       "surface": null
     },
     {
-      "path": "stdlib/src/transforms.qli",
-      "sha256": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+      "path": "stdlib/src/reflection.qli",
+      "sha256": "99ea6514ac57b990894291101a580e39256c5e5471f8bf14de8d0856876a1382",
+      "group": "source",
+      "surface": null
+    },
+    {
+      "path": "stdlib/src/transform.qli",
+      "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
       "group": "source",
       "surface": null
     }

@@ -175,3 +175,7 @@ tests/fixtures/review_v030alpha/hosted-basis-order-37278580289/migration.patch -
 tests/fixtures/frontend_v030/ci-regressions-37392202925/*.log-excerpts*.txt -text -whitespace
 tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.patch -text -whitespace
+# Preserve raw namespace validation transcripts, including libtest EOFs.
+tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37404989108/*stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/ci-regressions-37404989108/*.log-excerpt.txt -text -whitespace

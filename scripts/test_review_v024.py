@@ -117,7 +117,7 @@ def cases():
     for width in [2, 3]:
         size = 1 << width
         ty = "Q<(Bit,Bit)>" if width == 2 else "Q<((Bit,Bit),Bit)>"
-        yield f"QFT{width}", width, f"use std::transforms::qft{width}; unitary fn apply(q:{ty})->{ty}{{qft{width}(q)}}", lambda row, col, size=size: cmath.exp(2j * math.pi * row * col / size) / math.sqrt(size)
+        yield f"QFT{width}", width, f"use std::transform::qft{width}; unitary fn apply(q:{ty})->{ty}{{qft{width}(q)}}", lambda row, col, size=size: cmath.exp(2j * math.pi * row * col / size) / math.sqrt(size)
     for negative in [False, True]:
         for gate, k in [("s", 2), ("sdg", 6), ("t", 1), ("tdg", 7), ("phase_eighth", 1)]:
             arms = f"0=>{gate},1=>id" if negative else f"0=>id,1=>{gate}"

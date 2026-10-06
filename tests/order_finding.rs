@@ -9,13 +9,14 @@ use qleisli::host::{Factors, PhaseInputError, factor_from_phase};
 use qleisli::sim::{SimulationLimits, run_closed};
 
 static NEXT: AtomicU64 = AtomicU64::new(0);
+const ARITHMETIC: &str = include_str!("../examples/order_finding/arithmetic.qli");
 const IMPORTS: &str = "
 use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::cnot; use std::quantum::split; use std::quantum::join;
 use std::observe::measure_z; use std::observe::discard;
-use std::routines::measure_z2; use std::routines::measure_x;
-use std::arithmetic::increment2; use std::arithmetic::add2;
-use std::arithmetic::mul2_mod15;
+use std::measurement::measure_z2; use std::measurement::measure_x;
+use arithmetic::increment2; use arithmetic::add2;
+use arithmetic::mul2_mod15;
 ";
 
 struct Root(PathBuf);
@@ -29,6 +30,7 @@ impl Root {
         ));
         fs::create_dir(&path).unwrap();
         fs::write(path.join("Qargo.toml"), include_str!("Qargo.toml")).unwrap();
+        fs::write(path.join("arithmetic.qli"), ARITHMETIC).unwrap();
         Self(path)
     }
 
@@ -88,12 +90,12 @@ fn probability(result: &BTreeMap<Vec<bool>, f64>, output: &[bool], expected: f64
 }
 
 #[test]
-fn arithmetic_is_bundled_ordinary_source_and_has_no_extra_primitives() {
+fn fixed_arithmetic_is_local_ordinary_source_without_public_std_aliases() {
     let root = Root::new();
     root.main("observe fn main()->Unit{()}");
     let project = Project::load(&root.0).unwrap();
-    let module = project.module("std::arithmetic").unwrap();
-    assert_eq!(module.origin, ModuleOrigin::Bundled);
+    let module = project.module("arithmetic").unwrap();
+    assert_eq!(module.origin, ModuleOrigin::Local);
     assert_eq!(
         module.ast.decls.iter().filter(|decl| decl.public).count(),
         3
@@ -101,10 +103,21 @@ fn arithmetic_is_bundled_ordinary_source_and_has_no_extra_primitives() {
     for name in ["increment2", "add2", "mul2_mod15"] {
         assert_eq!(
             project.module("main").unwrap().imports[name].origin,
-            ImportOrigin::Bundled
+            ImportOrigin::Local
         );
     }
     check_project(&root.0).unwrap();
+    for name in ["increment2", "add2", "mul2_mod15"] {
+        fs::write(
+            root.0.join("main.qli"),
+            format!("use std::arithmetic::{name}; fn main()->Unit{{()}}"),
+        )
+        .unwrap();
+        assert!(
+            Project::load(&root.0).is_err(),
+            "retired std arithmetic alias: {name}"
+        );
+    }
 }
 
 #[test]

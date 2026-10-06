@@ -1,0 +1,1290 @@
+{
+  "status": "failed",
+  "scope": "single native acceptance through both selection mechanisms; not S05 or source preservation",
+  "binaries": {
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "observations": [
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-contract",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-contract"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-contract",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-pending",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-pending"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-pending",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.hierarchy-pending 3\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-request-pending",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-request-pending"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-request-pending",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.hierarchy-request-pending 3\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-fourier-pending",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-fourier-pending"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--hierarchy-fourier-pending",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.hierarchy-fourier-pending 3\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--readout-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.readout-result 1\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--preparation-check",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.preparation-result 1\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--instrument-pending",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--instrument-pending"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--instrument-pending",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.instrument-pending 3\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qpe-instrument-pending",
+        "0.0.0"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qpe-instrument-pending"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qpe-instrument-pending",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qpe-instrument-pending 3\nerror\nformat\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sample",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--shots=64",
+        "--seed=7"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13}],\"execution_steps\":807}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sample",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--shots=64",
+        "--seed=7",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"rng\":\"splitmix64-v1\",\"seed\":\"7\",\"shots\":[{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[false,false],\"execution_steps\":12},{\"bits\":[true,true],\"execution_steps\":13},{\"bits\":[true,true],\"execution_steps\":13}],\"execution_steps\":807}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "checked source and verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/environment.qirf",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/environment.qirf\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/explicit.qirf",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"path\":\"/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/explicit.qirf\"}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/explicit.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/explicit.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "verified IR; request_checked: false\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n50\n0\n",
+      "stderr": "",
+      "input_sha256": "a2a75daa23b1353cf2fc997ab2c1cb9371e4bac16afffa6db236030180fb8b6b"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"io: cannot resolve Lean checker: No such file or directory (os error 2) while checking main::main\",\"primary\":{\"path\":\"main.qli\",\"start\":171,\"end\":356,\"line\":7,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"io: cannot resolve Lean checker: No such file or directory (os error 2) while checking main::main\",\"primary\":{\"path\":\"main.qli\",\"start\":171,\"end\":356,\"line\":7,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sample",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--shots=1",
+        "--seed=1",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"sample\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"io: cannot resolve Lean checker: No such file or directory (os error 2) while checking main::main\",\"primary\":{\"path\":\"main.qli\",\"start\":171,\"end\":356,\"line\":7,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--format=json",
+        "--output=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/blocked.qirf",
+        "--lean-kernel=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/absent"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"emit-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"io: cannot resolve Lean checker: No such file or directory (os error 2) while checking main::main\",\"primary\":{\"path\":\"main.qli\",\"start\":171,\"end\":356,\"line\":7,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.\n"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel="
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.\n"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--against=x"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.\n"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "doc",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.\n"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "64588d27ff8109c6523b7442a8374bcc597c3cbccb6bbeae7d2e678d1d1db7bc"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/h.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "6836b58c5733040abeb363cfe630bfe105fa34488e2008af92bdd53c2db1b114"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/h.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "c0c5717fd21c7f46c4607e0883e11fc65616eaf360abbb917c7be82141d3597b"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/t.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "93288a19356dff750f93b6c9daac39188fb9dc90640805c241c0c2db90d3dc1b"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/t.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "187474d6f47d093537d1f31d80ec147a887e236bef59d7b8aae561e20a12d584"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/unit_phase.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n24\n0\n",
+      "stderr": "",
+      "input_sha256": "830a58d1110f106ec1142089cba673525678078fe0b82918d483bc72980e85be"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/unit_phase.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n44\n0\n",
+      "stderr": "",
+      "input_sha256": "6973a64d9eecc6a322d5a9d45fbce7df0440e2006d88d588b95e46375eb964bb"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/toffoli.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n44\n0\n",
+      "stderr": "",
+      "input_sha256": "9781210f0b9ac215cb63f290d6d2f489b15fca26122bdb0d7ae96fe012a83d54"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/toffoli.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n34\n0\n",
+      "stderr": "",
+      "input_sha256": "0d080c6ab3e5fb334f3ee3e766eda29f55f41e301256af5b78a29869b07866ed"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_qif_unit.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n34\n0\n",
+      "stderr": "",
+      "input_sha256": "34f6733fa4431c6141e79ed725b9c3f5985e495faa1fbbdb61f2be259008bbc0"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_qif_unit.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n46\n0\n",
+      "stderr": "",
+      "input_sha256": "6ad600a053427a358f614088a36da0bfcb220d6784d94b5d7011cd7b9fd5016b"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_computed_target.v1.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n46\n0\n",
+      "stderr": "",
+      "input_sha256": "3f31986daebe59e05a51fa785ec437091a52f52fc99c693c5add0422ac9f606c"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/verification_v022/finite/raw_computed_target.v2.qirf",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":false}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n183\n1\n",
+      "stderr": "",
+      "input_sha256": "dac89ba0bff15051de19cad23bd37e4548c551051b3a3006e966a9cfc8ffc40c"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ncontract\n",
+      "stderr": "",
+      "input_sha256": "3de058f9d9991b3a91479321f7882ed7c021c63f24b04271746c6e4314d153c2"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ncontract\n",
+      "stderr": "",
+      "input_sha256": "b22decd9e9f6fa4b916d0a4f6a210af7d9f59629f10446cf36d7805f711763f3"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ncontract\n",
+      "stderr": "",
+      "input_sha256": "76806f584b464430fe8eef61410fd3f443a3afca1860d8848c999edd74fd26f2"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"contract\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "f3a9f6f2386a88ca3dfa53216c90abc46e91bda3c327e14d70d9759fb3493cf1"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_ir\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"invalid_ir\",\"severity\":\"error\",\"message\":\"Lean native checker rejected the artifact/request; no fallback\",\"primary\":null,\"related\":[{\"message\":\"json_pointer: \",\"location\":null}]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 0,
+      "stdout": "qleisli.qirf-native 1\naccepted\n183\n1\n",
+      "stderr": "",
+      "input_sha256": "3426189192f489cf64e98c8a5ae87776a058b5da932364c7359ad934cd05c635"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "verify-ir",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request-artifact.qirf",
+        "--against=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-native-83it9sfg/request.json",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"verify-ir\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true,\"request_checked\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "0b9735a8aec23dd19bb0de636924f03d1e22eb83bfae2938c6e5335e9df0a755"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "90611b0bac454e20c60d9a4d0bc3cbd8cc5e3c9869e356105674bcbb67a87b86"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "71bc80ff8bc05640e0c06cbcaa9730165ea7ba4abea3c691d9fa26d06d10c224"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "d217b3437c1ecb4e72823e5f938086eb7857c4ae7aec65872ca79626b5c05ea5"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "6dd5de63cd11c2316a734ca0f9d76ac73ca841aff9cae142fbd548c428d4a9a5"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "3aed5d43b066af15e623531bfdbbba09357b6a99568492712a6bfba783ef362c"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "56e44985c104c1aa1a1ac60962b98ef2e9388e6cb3348aa0d6633247d212f031"
+    },
+    {
+      "command": [
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--qirf-native",
+        "0.3.0-alpha"
+      ],
+      "exit_code": 1,
+      "stdout": "qleisli.qirf-native 1\nerror\ninvalid_ir\n",
+      "stderr": "",
+      "input_sha256": "58560a468a942ed1a09b056f5a932e1d0ed3eeb0a6fef59b06664ab3bd16f11a"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/global_phase",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/global_phase",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/ghz3",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/ghz3",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5000000000000001},{\"bits\":[true,true,true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/measure_plus",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/measure_plus",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/teleport",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2133883476483186},{\"bits\":[false,false,true],\"probability\":0.036611652351681574},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.036611652351681574},{\"bits\":[true,false,false],\"probability\":0.2133883476483186},{\"bits\":[true,false,true],\"probability\":0.036611652351681574},{\"bits\":[true,true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true,true],\"probability\":0.036611652351681574}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/teleport",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.2133883476483186},{\"bits\":[false,false,true],\"probability\":0.036611652351681574},{\"bits\":[false,true,false],\"probability\":0.2133883476483186},{\"bits\":[false,true,true],\"probability\":0.036611652351681574},{\"bits\":[true,false,false],\"probability\":0.2133883476483186},{\"bits\":[true,false,true],\"probability\":0.036611652351681574},{\"bits\":[true,true,false],\"probability\":0.2133883476483186},{\"bits\":[true,true,true],\"probability\":0.036611652351681574}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/dense_coding",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/dense_coding",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bernstein_vazirani",
+        "--format=json"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bernstein_vazirani",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/grover2",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"missing module `std::routines`\",\"primary\":{\"path\":\"kernel.qli\",\"start\":469,\"end\":498,\"line\":9,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

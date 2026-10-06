@@ -1,0 +1,2 @@
+use std::transform::qft3;
+unitary fn transform(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> { qft3(q) }

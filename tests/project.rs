@@ -263,20 +263,74 @@ fn unknown_sealed_name_is_not_reinterpreted_as_user_code() {
 }
 
 #[test]
-fn algorithm_routines_are_bundled_source_with_private_helpers() {
+fn semantic_stdlib_modules_are_bundled_source_with_private_helpers() {
     let root = TempRoot::new();
-    root.write("main.qli", "use std::routines::reflect_uniform2;");
+    root.write("main.qli", "use std::reflection::reflect_uniform2;");
     let project = Project::load(root.path()).unwrap();
     assert_eq!(
         project.module("main").unwrap().imports["reflect_uniform2"].origin,
         ImportOrigin::Bundled
     );
-    let routines = project.module("std::routines").unwrap();
-    assert_eq!(routines.origin, ModuleOrigin::Bundled);
-    assert!(!routines.ast.decls.is_empty());
-    assert_eq!(routines.imports["h"].origin, ImportOrigin::Sealed);
+    let reflection = project.module("std::reflection").unwrap();
+    assert_eq!(reflection.origin, ModuleOrigin::Bundled);
+    assert!(!reflection.ast.decls.is_empty());
+    assert_eq!(
+        reflection.imports["hadamard2"].origin,
+        ImportOrigin::Bundled
+    );
+    assert_eq!(reflection.imports["hadamard2"].module, "std::transform");
 
-    root.write("main.qli", "use std::routines::nonzero2;");
+    root.write("main.qli", "use std::reflection::nonzero2;");
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("not public"), "{error}");
+}
+
+#[test]
+fn semantic_stdlib_public_paths_resolve_without_retired_namespace_aliases() {
+    let root = TempRoot::new();
+    for (module, names) in [
+        ("transform", &["hadamard2", "qft2", "qft3"][..]),
+        ("reflection", &["reflect_uniform2"][..]),
+        ("measurement", &["measure_x", "measure_z2", "parity_zz"][..]),
+    ] {
+        let source = names
+            .iter()
+            .map(|name| format!("use std::{module}::{name};"))
+            .collect::<String>();
+        root.write("main.qli", &source);
+        let project = Project::load(root.path()).unwrap();
+        for name in names {
+            let import = &project.module("main").unwrap().imports[*name];
+            assert_eq!(
+                import.origin,
+                ImportOrigin::Bundled,
+                "std::{module}::{name}"
+            );
+            assert_eq!(import.module, format!("std::{module}"));
+        }
+        assert!(project.module("std::transforms").is_none());
+        assert!(project.module("std::routines").is_none());
+    }
+    for (module, names) in [
+        ("transforms", &["qft2", "qft3"][..]),
+        (
+            "routines",
+            &[
+                "hadamard2",
+                "reflect_uniform2",
+                "measure_x",
+                "measure_z2",
+                "parity_zz",
+            ][..],
+        ),
+        ("arithmetic", &["increment2", "add2", "mul2_mod15"][..]),
+    ] {
+        for name in names {
+            root.write("main.qli", &format!("use std::{module}::{name};"));
+            assert!(
+                Project::load(root.path()).is_err(),
+                "retired stdlib alias resolved: std::{module}::{name}"
+            );
+        }
+    }
 }

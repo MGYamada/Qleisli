@@ -1,0 +1,66 @@
+{
+  "format": "qleisli.namespace-negative-revalidation",
+  "version": 1,
+  "binary_sha256": "424f8c5cf4dbbccccfa18f35a4535de881e448811d5b3c1f5021acc4976e0684",
+  "oracle_script_sha256": "189573cbedbe8d094173bc4558350285927dba2aac27f31a613e3a9d6fdd9c56",
+  "negative_manifest_sha256": "c0664658ebf165c04c0e37feadd813bebe1ef1e901bf9d2de75d90acb8862bec",
+  "results": [
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1,
+      "seconds": 0.175,
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/negative/duplicate_owner",
+        "--format=json"
+      ],
+      "stdout": "duplicate_owner-negative-02.stdout.txt",
+      "stderr": "duplicate_owner-negative-02.stderr.txt"
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1,
+      "seconds": 0.006,
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/negative/measured_owner",
+        "--format=json"
+      ],
+      "stdout": "measured_owner-negative-02.stdout.txt",
+      "stderr": "measured_owner-negative-02.stderr.txt"
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "type_mismatch",
+      "exit_code": 1,
+      "seconds": 0.005,
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/negative/measurement_adjoint",
+        "--format=json"
+      ],
+      "stdout": "measurement_adjoint-negative-02.stdout.txt",
+      "stderr": "measurement_adjoint-negative-02.stderr.txt"
+    },
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1,
+      "seconds": 0.006,
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/negative/dirty_auxiliary",
+        "--format=json"
+      ],
+      "stdout": "dirty_auxiliary-negative-02.stdout.txt",
+      "stderr": "dirty_auxiliary-negative-02.stderr.txt"
+    }
+  ],
+  "scope": "All4 existing small negative sources rerun with the final selector script/current expected diagnostics. Earlier6cases/340probes remain their actually recorded stage01 results; no whole oracle rerun or proof claim."
+}

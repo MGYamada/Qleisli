@@ -596,7 +596,7 @@ fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
     ));
 
     let steps = compiled_steps(
-        "use std::transforms::qft3;",
+        "use std::transform::qft3;",
         "let q = join(join(init0(),init0()),init0());",
         "repeat_static(1,qft3,q)",
     );

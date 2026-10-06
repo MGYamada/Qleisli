@@ -3,10 +3,101 @@
 
 use std::fs;
 use std::io::ErrorKind;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
+use std::process::Command;
 use std::sync::atomic::{AtomicU64, Ordering};
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
+
+/// Select an explicitly recorded namespace translation and verify both sources.
+pub(super) fn current_namespace_fixture(path: &Path) -> PathBuf {
+    // Python's standard library supplies the repository's fixture hashing,
+    // without adding a Rust dependency or changing production acceptance.
+    let output = Command::new("python3")
+        .args([
+            "-B",
+            "-c",
+            r#"import hashlib, json, sys
+from pathlib import Path
+root = Path(sys.argv[1])
+historical = Path(sys.argv[2])
+if not historical.is_absolute():
+    historical = root / historical
+key = historical.relative_to(root).as_posix()
+mapping = root / 'tests/fixtures/frontend_v030/stdlib-semantic-namespaces/namespace-source-map.json'
+matches = [entry for entry in json.loads(mapping.read_text())['files']
+           if entry['before_path'] == key]
+if not matches:
+    print(historical)
+else:
+    if len(matches) != 1:
+        raise ValueError(f'duplicate namespace fixture mapping: {key}')
+    entry = matches[0]
+    current = root / entry['current_path']
+    for source, field in ((historical, 'before_sha256'), (current, 'current_sha256')):
+        if hashlib.sha256(source.read_bytes()).hexdigest() != entry[field]:
+            raise ValueError(f'namespace fixture identity changed: {source}')
+    print(current)
+"#,
+        ])
+        .arg(env!("CARGO_MANIFEST_DIR"))
+        .arg(path)
+        .output()
+        .expect("Python 3 is required for recorded fixture identity checks");
+    assert!(
+        output.status.success(),
+        "namespace fixture selection failed for {}: {}",
+        path.display(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let selected = String::from_utf8(output.stdout).expect("fixture paths must be UTF-8");
+    PathBuf::from(selected.trim_end_matches('\n'))
+}
+
+/// Select current corpus snapshots only for registered logical project roots.
+pub(super) fn current_corpus_projects(paths: &[PathBuf]) -> Vec<PathBuf> {
+    let output = Command::new("python3")
+        .args([
+            "-B",
+            "-c",
+            r#"import sys
+from pathlib import Path
+root = Path(sys.argv[1])
+sys.path.insert(0, str(root / 'scripts'))
+from check_input_corpus import check_manifest, current_project, local, require
+corpus = root / 'corpus'
+manifest = check_manifest(corpus)
+known = {local(corpus, case['project']): case for case in manifest['cases']}
+require(len(known) == len(manifest['cases']), 'duplicate logical corpus project')
+requested = [Path(path).resolve() for path in sys.argv[2:]]
+require(len(set(requested)) == len(requested), 'duplicate requested corpus project')
+selected = []
+for project in requested:
+    require(project in known, 'unregistered logical corpus project: ' + str(project))
+    selected.append(current_project(known[project], corpus))
+require(len(set(selected)) == len(selected), 'duplicate selected corpus project')
+for project in selected:
+    print(project)
+"#,
+        ])
+        .arg(env!("CARGO_MANIFEST_DIR"))
+        .args(paths)
+        .output()
+        .expect("Python 3 is required for recorded corpus identity checks");
+    assert!(
+        output.status.success(),
+        "current corpus project selection failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let selected = String::from_utf8(output.stdout).expect("corpus paths must be UTF-8");
+    let selected: Vec<_> = selected.lines().map(PathBuf::from).collect();
+    assert_eq!(
+        selected.len(),
+        paths.len(),
+        "missing current corpus project"
+    );
+    selected
+}
 
 pub(super) struct SourceRoot(pub(super) PathBuf);
 

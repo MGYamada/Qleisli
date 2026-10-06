@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.hosted-distribution-failure-inspection",
+  "version": 1,
+  "run_id": 37404989108,
+  "artifact_id": 11387656942,
+  "archive_bytes": 61057080,
+  "archive_sha256": "aa9a25f7b4e71e1c5dc8fa2118ed0062c8501219bd7a70ab356625772df102ea",
+  "identity": "Downloaded archive SHA-256 and size exactly match GitHub artifact metadata. Only existing logs/14 stdout+stderr extracted; no stored command/source executed.",
+  "members": [
+    {
+      "archive_member": "qleisli-distribution-artifacts-lzl86_fu/logs/14.stderr",
+      "bytes": 3972,
+      "sha256": "d3f13d94f9ed209a0df40adef2fb76781891a86984bc414fcb384a8bbda46e6f",
+      "retained": "distribution-inner-14.stderr.txt"
+    },
+    {
+      "archive_member": "qleisli-distribution-artifacts-lzl86_fu/logs/14.stdout",
+      "bytes": 28602,
+      "sha256": "be2645fa31cd251be26457a43b17fbc7e0e291f3418406ce31f07c8ac26ef5bd",
+      "retained": "distribution-inner-14.stdout.txt"
+    }
+  ],
+  "actual_failure": "tests/frontend_types.rs symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics fails the same old debug-format expected string observed in both Rust jobs. Inner test stdout and stderr now confirm the exact cause, rather than inference.",
+  "checked_merge": "f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f",
+  "source_head": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+  "scope": "Historical hosted failing source package only. Later canonical expectation repair passes locally on Rust1.85.0/1.98.1; this archive certifies no current-tree package/full CI/release success.",
+  "cleanup": "Temporary full61MB ZIP deleted after exact needed logs were retained."
+}

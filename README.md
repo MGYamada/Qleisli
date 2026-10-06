@@ -192,7 +192,7 @@ ideally impossible outcome may appear with a tiny positive rounding residue
 in text or JSON output; interpret these values with a numerical tolerance.
 
 Add `--format=json` to `check` or `run` for structured results and diagnostics.
-Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source
+Use `cargo run --bin qleisli -- doc stdlib/src/transform.qli` to render source
 documentation; comments are isolated as fenced text so unfinished Markdown or
 HTML cannot hide subsequent declarations. `qleisli --help` lists available commands.
 

@@ -1,0 +1,32 @@
+Selected original log lines 122-125; this is an excerpt, not a full log.
+2026-10-06T02:37:39.5851560Z HEAD is now at f2d47dd Merge bdc2d076bc57c1e7284a913cf6c078d75081189c into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T02:37:39.5887221Z ##[endgroup]
+2026-10-06T02:37:39.5925999Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T02:37:39.5950125Z f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f
+
+Selected original log lines 486-510; this is an excerpt, not a full log.
+2026-10-06T02:39:21.7471835Z ##[group]Run python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
+2026-10-06T02:39:21.7472507Z [36;1mpython3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"[0m
+2026-10-06T02:39:21.7526193Z shell: /usr/bin/bash -e {0}
+2026-10-06T02:39:21.7526362Z env:
+2026-10-06T02:39:21.7526600Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+2026-10-06T02:39:21.7526850Z ##[endgroup]
+2026-10-06T02:53:28.0761230Z command failed (101): ['cargo', 'test', '--offline', '--all-targets', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/source-production')]; see /home/runner/work/_temp/qleisli-distribution-artifacts-lzl86_fu/logs/14.stderr
+2026-10-06T02:53:28.0767177Z Distribution validation failed; report: /home/runner/work/_temp/qleisli-distribution.json
+2026-10-06T02:53:28.0871763Z ##[error]Process completed with exit code 1.
+2026-10-06T02:53:28.0932183Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-06T02:53:28.0932414Z with:
+2026-10-06T02:53:28.0932582Z   name: distribution-f2d47dd5afd584ea31b51ef8bba2f2acf3fe494f
+2026-10-06T02:53:28.0933199Z   path: /home/runner/work/_temp/qleisli-distribution.json
+/home/runner/work/_temp/qleisli-distribution-artifacts-*/logs/
+/home/runner/work/_temp/qleisli-distribution-artifacts-*/*.crate
+/home/runner/work/_temp/qleisli-distribution-artifacts-*/*-source.tar
+
+2026-10-06T02:53:28.0933921Z   if-no-files-found: error
+2026-10-06T02:53:28.0934064Z   compression-level: 6
+2026-10-06T02:53:28.0934192Z   overwrite: false
+2026-10-06T02:53:28.0934322Z   include-hidden-files: false
+2026-10-06T02:53:28.0934459Z env:
+2026-10-06T02:53:28.0934677Z   QLEISLI_KERNEL: /home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel
+2026-10-06T02:53:28.0934933Z ##[endgroup]
+2026-10-06T02:53:28.3352482Z (node:109802) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.

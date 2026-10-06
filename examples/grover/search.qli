@@ -1,8 +1,8 @@
 use oracle::mark;
 use std::quantum::init0;
 use std::quantum::join;
-use std::routines::hadamard2;
-use std::routines::reflect_uniform2;
+use std::transform::hadamard2;
+use std::reflection::reflect_uniform2;
 
 pub unitary fn step(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     reflect_uniform2(mark(q))

@@ -7,7 +7,7 @@ use std::quantum::x;
 use std::quantum::split;
 use std::quantum::join;
 use std::observe::measure_z;
-use std::routines::measure_x;
+use std::measurement::measure_x;
 
 observe fn main() -> ((Bit, Bit), (Bit, (Bit, Bit))) {
     let (ab, c) = split(encode(h(init0())));

@@ -44,24 +44,24 @@ impl BundledRegistry {
     pub fn sources() -> &'static [BundledSource] {
         static SOURCES: &[BundledSource] = &[
             BundledSource {
-                name: "std::arithmetic",
-                path: "<bundled>/std/arithmetic.qli",
-                text: include_str!("../../stdlib/src/arithmetic.qli"),
-            },
-            BundledSource {
                 name: "std::basis",
                 path: "<bundled>/std/basis.qli",
                 text: include_str!("../../stdlib/src/basis.qli"),
             },
             BundledSource {
-                name: "std::routines",
-                path: "<bundled>/std/routines.qli",
-                text: include_str!("../../stdlib/src/routines.qli"),
+                name: "std::measurement",
+                path: "<bundled>/std/measurement.qli",
+                text: include_str!("../../stdlib/src/measurement.qli"),
             },
             BundledSource {
-                name: "std::transforms",
-                path: "<bundled>/std/transforms.qli",
-                text: include_str!("../../stdlib/src/transforms.qli"),
+                name: "std::reflection",
+                path: "<bundled>/std/reflection.qli",
+                text: include_str!("../../stdlib/src/reflection.qli"),
+            },
+            BundledSource {
+                name: "std::transform",
+                path: "<bundled>/std/transform.qli",
+                text: include_str!("../../stdlib/src/transform.qli"),
             },
         ];
         SOURCES

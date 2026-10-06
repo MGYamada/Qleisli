@@ -1,6 +1,6 @@
 mod common;
 
-use common::SourceRoot;
+use common::{SourceRoot, current_namespace_fixture};
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::sim::{RandomSource, SampleError, SampleLimits, SplitMix64, sample_closed};
 use std::path::Path;
@@ -216,10 +216,21 @@ fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
     .unwrap_err();
     assert_eq!(original.code, ErrorCode::Project);
     assert!(original.message.contains("CBit/CBits types were removed"));
-    let p = compile_project(Path::new(
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR")).join(
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020",
-    ))
-    .unwrap();
+    );
+    let current = SourceRoot::new("");
+    for entry in std::fs::read_dir(directory).unwrap() {
+        let path = entry.unwrap().path();
+        if path.extension().is_some_and(|extension| extension == "qli") {
+            std::fs::copy(
+                current_namespace_fixture(&path),
+                current.0.join(path.file_name().unwrap()),
+            )
+            .unwrap();
+        }
+    }
+    let p = compile_project(&current.0).unwrap();
     let mut rng = SplitMix64::new(0);
     for _ in 0..20 {
         assert_eq!(

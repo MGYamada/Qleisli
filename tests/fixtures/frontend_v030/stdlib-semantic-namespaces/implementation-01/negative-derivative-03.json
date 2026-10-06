@@ -1,0 +1,22 @@
+{
+  "format": "qleisli.frozen-negative-diagnostic-derivative",
+  "version": 1,
+  "trigger": "Final inventory check rejected changed corpus/negative/manifest.json as a frozen VM-22 baseline.",
+  "failed_check": "final-policy-validation-04.json",
+  "baseline": "corpus/negative/manifest.json",
+  "baseline_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+  "current": "corpus/negative/current-manifest.json",
+  "selection": "corpus/manifest.json negative_expectations exact path/SHA",
+  "change": "Original manifest restored byte-for-byte from negative-manifest-before.json. Separate derivative changes only measurement_adjoint expected_code/message; all four rejected sources and case identities remain original.",
+  "reason": "The unchanged measurement read() returns Bit from Q<Bit>, so the common direct transform requires incompatible input/result types before effect eligibility; existing specification permits this type rejection. No checker/type/effect change or acceptance weakening.",
+  "preceding_review": "negative-diagnostic-review-01.json",
+  "guards": "Exact derivative and baseline hashes, explicit local contained path, identical ordered case/project identities and complete four-case coverage. Missing/changed selection rejects.",
+  "current_files_sha256": {
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "scripts/test_check_input_corpus.py": "2ef64fde562fb9c30f7309cecb81e7c90257d9b3adba5cf779dfc5faedde8768",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+    "corpus/negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "corpus/negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "scope": "Current diagnostics selector only; frozen baseline, sources and original evidence remain intact. Earlier negative-validation-02 binds the earlier in-place derivative state, not this selection mechanism. Final selector/negative checks recorded separately."
+}

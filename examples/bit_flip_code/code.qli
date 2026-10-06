@@ -2,7 +2,7 @@ use std::quantum::x;
 use std::quantum::cnot;
 use std::quantum::split;
 use std::quantum::join;
-use std::routines::parity_zz;
+use std::measurement::parity_zz;
 
 pub iso fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
     do a <- q; pure ((a, a), a)

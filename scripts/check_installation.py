@@ -132,7 +132,7 @@ def check(root, binary):
 use std::quantum::init0;
 use std::quantum::join;
 use std::quantum::split;
-use std::transforms::qft2;
+use std::transform::qft2;
 use std::observe::measure_z;
 observe fn main() -> (Bit, Bit) {
     let (a, b) = split(qft2(join(init0(), init0())));

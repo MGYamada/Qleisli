@@ -269,18 +269,13 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
             .unwrap();
     for (module, functions, effect) in [
         (
-            "arithmetic",
-            &["increment2", "add2", "mul2_mod15"][..],
+            "transform",
+            &["hadamard2", "qft2", "qft3"][..],
             Effect::Unitary,
         ),
-        ("transforms", &["qft2", "qft3"][..], Effect::Unitary),
+        ("reflection", &["reflect_uniform2"][..], Effect::Unitary),
         (
-            "routines",
-            &["hadamard2", "reflect_uniform2"][..],
-            Effect::Unitary,
-        ),
-        (
-            "routines",
+            "measurement",
             &["measure_x", "measure_z2", "parity_zz"][..],
             Effect::Observe,
         ),
@@ -300,7 +295,34 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
         assert!(!documentation.contains("Checked upper-bound assertion:"));
     }
     // Basis functions have their distinct ordinary total-function checking.
-    assert!(report.function_effect("std::routines::nonzero2").is_none());
+    assert!(
+        report
+            .function_effect("std::reflection::nonzero2")
+            .is_none()
+    );
+
+    root.write(
+        "arithmetic.qli",
+        include_str!("../examples/order_finding/arithmetic.qli"),
+    );
+    let report =
+        project_effects_with_kernel(&root.0, SourcePolicy::Legacy, &Kernel::selected().unwrap())
+            .unwrap();
+    for name in ["increment2", "add2", "mul2_mod15"] {
+        let fact = report
+            .function_effect(&format!("arithmetic::{name}"))
+            .unwrap();
+        assert_eq!(fact.inferred(), Effect::Unitary, "arithmetic::{name}");
+        assert_eq!(fact.asserted(), None, "arithmetic::{name}");
+        assert!(
+            report
+                .function_effect(&format!("std::arithmetic::{name}"))
+                .is_none()
+        );
+    }
+    let documentation = report.documentation("arithmetic").unwrap().unwrap();
+    assert!(documentation.contains("Inferred quantum effect:"));
+    assert!(!documentation.contains("Checked upper-bound assertion:"));
 }
 
 #[test]

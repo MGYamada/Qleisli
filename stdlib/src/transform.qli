@@ -1,14 +1,21 @@
-//! Fixed two- and three-bit quantum Fourier transforms with positive phase.
+//! Coherent Hadamard and fixed positive-phase Fourier transformations.
 //!
 //! Ordinary checked .qli definitions; no general-size or approximate QFT API.
-//! Basis labels are little-endian and each circuit includes output-bit reversal.
-//! Contracts and finite regression status: Contract identifiers: F001-F002.
+//! Fourier basis labels are little-endian; Fourier circuits include output-bit reversal.
+//! Contracts and finite regression status: F001-F002 and R001.
 use std::quantum::h;
 use std::quantum::t;
 use std::quantum::s;
 use std::quantum::id;
 use std::quantum::split;
 use std::quantum::join;
+
+/// Apply H tensor H to a two-bit register, preserving both owners and order.
+/// This unitary has no input-state promise and uses no auxiliary.
+pub fn hadamard2(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
+    let (a, b) = split(q);
+    join(h(a), h(b))
+}
 
 /// Apply F4: |x> maps to sum_y exp(2*pi*i*x*y/4)|y>/2 for every input.
 /// The leftmost bit has weight 1; output reversal is part of the exact unitary.

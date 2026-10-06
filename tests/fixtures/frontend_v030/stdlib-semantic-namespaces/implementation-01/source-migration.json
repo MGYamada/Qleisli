@@ -1,0 +1,84 @@
+{
+  "format": "qleisli.std-semantic-namespace-source-migration",
+  "version": 1,
+  "before_commit": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+  "observed_host_utc": "2026-10-06T02:46:36.134295+00:00",
+  "issue": 317,
+  "constitutional_impact": "Existing QS/PR/RS/EXACT requirements and both scoped QLV1 guarantees unchanged. Namespace placement confers no sealed or acceptance authority. Generic QFT implementation remains outside v0.3.0/current goal.",
+  "before_source_sha256": {
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+    "stdlib/src/routines.qli": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+    "stdlib/src/transforms.qli": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba"
+  },
+  "scope": "Mechanical migration of existing contracts and ordinary source bodies, not new mathematical operation, generic family, proof or validation.",
+  "after_source_sha256": {
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/measurement.qli": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
+    "stdlib/src/reflection.qli": "99ea6514ac57b990894291101a580e39256c5e5471f8bf14de8d0856876a1382",
+    "stdlib/src/transform.qli": "3b097e71dc74b51c0e1e09b66b33aa319fed599c14a1b96769e5076c2a8aff40"
+  },
+  "local_arithmetic": {
+    "path": "examples/order_finding/arithmetic.qli",
+    "sha256": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+    "byte_identical_to_original": true
+  },
+  "changed_examples": [
+    {
+      "path": "examples/bernstein_vazirani/interference.qli",
+      "before_sha256": "07c27f0db5f830b561a30e17f1566cf29dcbc8f33b101c3fc40fbaf4a75b3761",
+      "after_sha256": "25cf593524f81fdaa863f552dcf8648390b2fa4f9c6b3acaa6fb67269ab3f512"
+    },
+    {
+      "path": "examples/bernstein_vazirani/main.qli",
+      "before_sha256": "cc8aac10916e546d61c2dc16e90dd8c5458dba8f88d74f9fd5bb1f064bc9777b",
+      "after_sha256": "a01bca887bb713335058bf0551712e7214f1f0ca676e792daab96df33e8f32a9"
+    },
+    {
+      "path": "examples/bit_flip_code/code.qli",
+      "before_sha256": "23f1503f3d0442afc05df01be661251c2e2e875ff8d10436453ac151a5b0fbd9",
+      "after_sha256": "f3a1c5516dfe14c6a6b70dba2c626202ddb72fb0f7e02fa8525177cecaeef4a1"
+    },
+    {
+      "path": "examples/bit_flip_code/main.qli",
+      "before_sha256": "40c917d23cb077f10efddc3ac0bc82ebc474b1921acf84a1f05d3e2210645306",
+      "after_sha256": "a8cb5a61e1b997b5d48be0f7d2802f8915a051b3caaaa3b71a587b4247b11949"
+    },
+    {
+      "path": "examples/grover/main.qli",
+      "before_sha256": "a79f952fc4a7f2666c08cd235ac18e00b26c188ead8da4a239138455a2405ab5",
+      "after_sha256": "97c950b95f1a6b771bc35cd04b564ddb6314e267c4bb314b0a48a2e345637297"
+    },
+    {
+      "path": "examples/grover/search.qli",
+      "before_sha256": "7d86c84f950475f3dbd4733c69cab6a0158e00fbb86635ce172aebdf6b3ffa07",
+      "after_sha256": "056520d6d35f0a33f14a0c142ef93b924b36c4b50663a992b40f7caba6bf66ec"
+    },
+    {
+      "path": "examples/operation_algorithms/amplification.qli",
+      "before_sha256": "d82ce900fd7dd8abee5466450bdf9b50259ddc42348a8e753feef1fe7f0f918c",
+      "after_sha256": "ded22a7d9f37b3b4014841ef41f5cbe8e9f45e35f51717ef3832bb6bb46ef5c5"
+    },
+    {
+      "path": "examples/operation_algorithms/estimation.qli",
+      "before_sha256": "b1809f07c91020398012ce660efa537a31470668f181b3153da7d2512b68717d",
+      "after_sha256": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827"
+    },
+    {
+      "path": "examples/order_finding/estimation.qli",
+      "before_sha256": "34d446042596192211f972e0d3af3ec785aacffc223c5f9f171307a0e16ac8c2",
+      "after_sha256": "8df92aa15dc81e551e22f6efcdad890821458830c879d761c773a5245df85d82"
+    },
+    {
+      "path": "examples/order_finding/evolution.qli",
+      "before_sha256": "beb6c0e867531414587df2dd0e7effcd0c4e0568cf6c1854c46d48c19b8f0dd9",
+      "after_sha256": "1807e9b9551788e3d6b036863908c46dc2919fb15f6ad7606a7577bc889a1a6d"
+    },
+    {
+      "path": "examples/phase_estimation/estimation.qli",
+      "before_sha256": "1e52e91838eef8a7223286e3cf93d55da985b99648c119be19fcf1e41aec344e",
+      "after_sha256": "03925f5f8b4099d9034f8c48b86cd39b6236b8a8a6e8ac370c3c33799aec8d38"
+    }
+  ],
+  "validation_status": "pending: no compiler, native acceptance or semantic tests run for this migration yet"
+}

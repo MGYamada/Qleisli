@@ -14,6 +14,24 @@ namespace migration in [#317](https://github.com/MGYamada/Qleisli/issues/317)
 continues; existing fixed-QFT implementations retain their contracts and
 regression evidence. Historical family studies are not current release gates.
 
+The normative [semantic namespace Reference](docs/src/reference/stdlib.md)
+defines mathematical admission and naming rules. The four ordinary bundled
+modules are `std::basis`, `std::transform`, `std::reflection` and
+`std::measurement`, with nine public definitions and one private reflection
+helper. Public names describe mathematical operations; algorithm selection
+belongs in an explicit parameter, policy or configuration layer. Genuine
+parameterized families own their canonical semantic identity, while reservations
+and fixed interfaces alone promise no available generic family.
+
+`std::arithmetic` is reserved for reusable parameterized arithmetic/number theory.
+`modexp<N>` is a representative intended shape and `primefact<N>` reserves the
+v1 factorization identity; neither spelling is an implemented syntax/API.
+The fixed A001–A003 circuits now live in the ordinary local
+[order-finding arithmetic source](examples/order_finding/arithmetic.qli).
+`std::routines` and `std::transforms` have no compatibility aliases. Current
+foundation catalog names and their primitive contracts remain distinct from
+the ordinary mathematical modules.
+
 Until v0.5.0, do not expand `stdlib` as a general rule; add algorithms to
 `corpus` under its [existing intake policy](corpus/POLICY.md). Prepare the
 conventions, reference contracts and checking tools now. Existing library
@@ -109,8 +127,8 @@ or approximation; `pending` names the missing obligation and its scope.
 
 | Source | Fixed contract | Review focus |
 | --- | --- | --- |
-| [QFT2](stdlib/src/transforms.qli) | Positive F4, exact phase and included reversal | Uniform probabilities and inverse round trips do not determine sign or order. |
-| [Add2](stdlib/src/arithmetic.qli) | Preserved addend; destination overwritten modulo four | Basis outputs cannot detect extra phase or invented zero-input promises. |
+| [QFT2](stdlib/src/transform.qli) | Positive F4, exact phase and included reversal | Uniform probabilities and inverse round trips do not determine sign or order. |
+| [Local Add2](examples/order_finding/arithmetic.qli) | Preserved addend; destination overwritten modulo four | Basis outputs cannot detect extra phase or invented zero-input promises. |
 | [AND phase](corpus/qualtran/and_phase/kernel.qli) | (-1)^(a and b), with explicit cleanup | Marking polarity, clean return, phase and attribution; this remains outside std. |
 
 These existing implementations do not establish general-size or source-preservation

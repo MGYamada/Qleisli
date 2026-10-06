@@ -12,6 +12,8 @@ import subprocess
 import tempfile
 import tomllib
 
+from check_input_corpus import check_manifest, current_project
+
 ROOT = Path(__file__).resolve().parents[1]
 VERSION = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
 SOURCE = ROOT / "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02"
@@ -148,10 +150,10 @@ def main():
 
             # Both selection mechanisms use the same native verifier and execution view.
             # Independent mathematical oracles remain separate tests.
-            cases = [case for case in json.loads((ROOT / "corpus/manifest.json").read_text())["cases"]
+            cases = [case for case in check_manifest(ROOT / "corpus")["cases"]
                      if case["qubits"] <= 4]
             for case in cases:
-                source = ROOT / "corpus" / case["project"]
+                source = current_project(case, ROOT / "corpus")
                 base = json.loads(run([binary, "run", source, "--format=json"]))
                 explicit = json.loads(run([binary, "run", source, "--format=json", selected]))
                 assert base == explicit, case["id"]

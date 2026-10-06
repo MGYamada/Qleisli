@@ -2,7 +2,7 @@
 //! Success depends on the oracle/preparation and iteration count, not typing.
 use std::quantum::init0;
 use std::quantum::join;
-use std::routines::hadamard2;
+use std::transform::hadamard2;
 use oracles::zero_reflection;
 
 /// A whole-space unitary preparing the uniform state when its input is |00>.

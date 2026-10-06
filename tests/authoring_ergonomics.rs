@@ -1,7 +1,7 @@
 //! Author-written source exercises; no additional IR rule or evidence authority.
 mod common;
 
-use common::SourceRoot;
+use common::{SourceRoot, current_namespace_fixture};
 use qleisli::frontend::ast::{FnBody, PatternKind, TypeKind};
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
 use qleisli::frontend::documentation::render_markdown;
@@ -12,11 +12,11 @@ use std::fs;
 use std::path::Path;
 
 fn source(name: &str) -> String {
-    fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics")
             .join(format!("{name}.qli")),
-    )
+    ))
     .unwrap()
 }
 
@@ -88,12 +88,14 @@ fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
                     .message
                     .contains("exactly one explicit basis parameter")
             );
-            // Preserve the original counterexample; its current translation
-            // must still reach the independent phase mismatch, not an arity error.
-            include_str!(
-                "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli"
-            )
-            .to_owned()
+            // The namespace translation retains the historical predicate.
+            // Its explicit domain repair must still reach the phase mismatch.
+            fs::read_to_string(current_namespace_fixture(
+                &Path::new(env!("CARGO_MANIFEST_DIR")).join(
+                    "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+                ),
+            ))
+            .unwrap()
         } else {
             source(name)
         };
