@@ -284,7 +284,8 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
             assert!(log.calls().is_empty(), "{path:?}: {:?}", log.calls());
         }
     }
-    for name in ["packed-bits", "fine-phase"] {
+    {
+        let name = "fine-phase";
         let log = LoggedKernel::new();
         let mut command = selected("check", &fixture("counterexamples", name), "main::main");
         command.arg("--ir-profile=raw");
@@ -297,22 +298,20 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
         );
         assert!(log.calls().is_empty(), "{name}: {:?}", log.calls());
     }
-    // Closed forward providers now preserve their actual source call graph.
-    // The historical counterexample source remains unchanged.
-    for action in ["check", "run"] {
-        let log = LoggedKernel::new();
-        let mut command = selected(
-            action,
-            &fixture("counterexamples", "provider"),
-            "main::main",
-        );
-        command.arg("--ir-profile=raw");
-        log.attach(&mut command, true);
-        let text = result(command.output().unwrap(), action, true);
-        scope(&text, "main::main", "raw");
-        assert!(!log.calls().is_empty());
-        if action == "run" {
-            distribution(&text, &[(&[true], 1.0)]);
+    // Closed providers and ordinary empty Bits now preserve their source call
+    // graphs. Both historical counterexample sources remain unchanged.
+    for (name, expected) in [("provider", &[true][..]), ("packed-bits", &[][..])] {
+        for action in ["check", "run"] {
+            let log = LoggedKernel::new();
+            let mut command = selected(action, &fixture("counterexamples", name), "main::main");
+            command.arg("--ir-profile=raw");
+            log.attach(&mut command, true);
+            let text = result(command.output().unwrap(), action, true);
+            scope(&text, "main::main", "raw");
+            assert!(!log.calls().is_empty());
+            if action == "run" {
+                distribution(&text, &[(expected, 1.0)]);
+            }
         }
     }
 }

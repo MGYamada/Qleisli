@@ -373,7 +373,8 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
 
 #[test]
 fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target() {
-    for name in ["fine-phase", "packed-bits"] {
+    {
+        let name = "fine-phase";
         let text = source("counterexamples", name);
         let graph = elaborate(&text, "main::f", BTreeMap::new());
         let error = graph.lower_raw().unwrap_err();
@@ -381,6 +382,21 @@ fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_ta
         assert_eq!(error.module(), Some("main"), "{name}: {error}");
         assert!(error.span().end > error.span().start, "{name}: {error}");
     }
+    // The preserved empty-register counterexample now lowers through the
+    // ordinary Bits adapter. Check its empty classical result independently;
+    // it creates no quantum owner or operation, including at width zero.
+    let empty = elaborate(
+        &source("counterexamples", "packed-bits"),
+        "main::f",
+        BTreeMap::new(),
+    );
+    let accepted_empty = accept(&empty);
+    distribution(&accepted_empty, &[(&[], 1.0)]);
+    assert!(accepted_empty.raw().quantum_inputs.is_empty());
+    assert!(accepted_empty.raw().quantum_outputs.is_empty());
+    assert!(accepted_empty.raw().classical_inputs.is_empty());
+    assert!(accepted_empty.raw().classical_outputs.is_empty());
+    assert!(accepted_empty.raw().operations.is_empty());
     // The retained provider source is now supported by the closed-operation
     // adapter. Require native acceptance, independent source replay and its
     // intended observed result instead of the historical target refusal.
