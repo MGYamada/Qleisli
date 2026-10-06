@@ -39,6 +39,11 @@ development milestones from the scope of their evidence.
   Unit/Bit/product trees and refusing unsupported Bits signature substitution.
   Check actual X/scalar provider bytes and reject lying implementations through
   the existing native finite-leaf gate; generic binding remains open (#44).
+- Preserve explicit `checked_op` requests in the selected hierarchy path,
+  including unused bindings, direct adjoints, forwarded requirements and
+  repeated children under zero iterations. Check each original requested
+  Meaning through the existing native finite-leaf gate before lowering; Raw
+  bypasses reject. General Meaning/profile convergence remains open (#44).
 - Remove two unnecessary lifetime parameters found by hosted MSRV Clippy;
   select actual local MSRV compiler and Clippy executables for validation.
 

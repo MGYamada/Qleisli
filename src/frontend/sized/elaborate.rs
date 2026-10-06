@@ -116,9 +116,16 @@ impl SourceValue {
 #[derive(Clone, Debug)]
 pub struct SourceOperation {
     kind: OperationKind,
+    pub(super) meanings: Arc<[ExplicitMeaning]>,
     module: String,
     span: Span,
     repetitions: u32,
+}
+#[derive(Clone, Debug)]
+pub(super) struct ExplicitMeaning {
+    pub id: DefId,
+    pub span: Span,
+    pub module: String,
 }
 #[derive(Clone, Debug)]
 enum OperationKind {
@@ -129,6 +136,7 @@ enum OperationKind {
 pub(super) enum OperationKey {
     Definition(usize),
     Repeat(u32, Box<OperationKey>),
+    Requested(Vec<DefId>, Box<OperationKey>),
 }
 impl SourceOperation {
     pub fn definition(&self) -> Option<usize> {
@@ -162,10 +170,21 @@ impl SourceOperation {
         }
     }
     pub(super) fn key(&self) -> OperationKey {
-        match &self.kind {
+        let action = match &self.kind {
             OperationKind::Definition(id) => OperationKey::Definition(*id),
             OperationKind::Repeat(n, child) => OperationKey::Repeat(*n, Box::new(child.key())),
+        };
+        if self.meanings.is_empty() {
+            action
+        } else {
+            OperationKey::Requested(
+                self.meanings.iter().map(|m| m.id).collect(),
+                Box::new(action),
+            )
         }
+    }
+    fn has_meanings(&self) -> bool {
+        !self.meanings.is_empty() || self.child().is_some_and(Self::has_meanings)
     }
 }
 
@@ -348,21 +367,31 @@ impl ElaboratedProgram {
     /// obligation, including unused operation bindings.
     pub fn has_operation_meanings(&self) -> bool {
         self.definitions.iter().any(|definition| {
-            self.instance
-                .program
-                .checked
-                .interface(definition.original)
-                .statics
-                .iter()
-                .any(|formal| {
-                    matches!(
-                        formal.kind,
-                        crate::frontend::check::StaticKind::Operation {
-                            meaning: Some(_),
-                            ..
-                        }
-                    )
-                })
+            definition
+                .operations
+                .values()
+                .any(SourceOperation::has_meanings)
+                || definition
+                    .steps
+                    .iter()
+                    .filter_map(SourceStep::operation)
+                    .any(SourceOperation::has_meanings)
+                || self
+                    .instance
+                    .program
+                    .checked
+                    .interface(definition.original)
+                    .statics
+                    .iter()
+                    .any(|formal| {
+                        matches!(
+                            formal.kind,
+                            crate::frontend::check::StaticKind::Operation {
+                                meaning: Some(_),
+                                ..
+                            }
+                        )
+                    })
         })
     }
     pub(super) fn require_unrefined(&self) -> Result<()> {
@@ -527,6 +556,7 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
             name.clone(),
             SourceOperation {
                 kind: OperationKind::Definition(id),
+                meanings: Arc::from([]),
                 module: instance
                     .program
                     .checked
@@ -1284,6 +1314,50 @@ impl Builder<'_> {
             Argument::Definition(name, arguments, span) => {
                 self.provider(name, arguments, scope, frame, depth, *span)
             }
+            Argument::Checked(implementation, meaning, span) => {
+                let argument = Argument::Natural(Natural {
+                    kind: NatKind::Name(implementation.clone()),
+                    span: *span,
+                });
+                let mut operation = self.operation(&argument, scope, frame, depth, *span)?;
+                let Target::Declaration(id) = self.resolve(meaning, scope, frame, *span)? else {
+                    return Err(error(
+                        "meaning",
+                        *span,
+                        "checked_op requires an original Meaning declaration",
+                    ));
+                };
+                let target = self.program.meaning_targets.get(&id).ok_or_else(|| {
+                    error(
+                        "meaning",
+                        *span,
+                        "checked_op requires an original finite Meaning",
+                    )
+                })?;
+                if self
+                    .provider_type(operation.target(), *span)?
+                    .quantum_basis()
+                    != Some(&target.basis)
+                {
+                    return Err(error(
+                        "type",
+                        *span,
+                        "checked_op provider and Meaning have different exact basis trees",
+                    ));
+                }
+                self.charge_cells(
+                    target.cells() + operation.meanings.len() + frame.module.len() + 1,
+                    *span,
+                )?;
+                let mut meanings = operation.meanings.to_vec();
+                meanings.push(ExplicitMeaning {
+                    id,
+                    span: *span,
+                    module: frame.module.clone(),
+                });
+                operation.meanings = meanings.into();
+                Ok(operation)
+            }
             Argument::Repeat(count, child, span) => {
                 let child = self.operation(child, scope, frame, depth, *span)?;
                 let count = match count {
@@ -1306,6 +1380,7 @@ impl Builder<'_> {
                 }
                 Ok(SourceOperation {
                     kind: OperationKind::Repeat(count, Box::new(child)),
+                    meanings: Arc::from([]),
                     module: frame.module.clone(),
                     span: *span,
                     repetitions,
@@ -1354,6 +1429,7 @@ impl Builder<'_> {
         self.runtime_provider_type(id, span)?;
         Ok(SourceOperation {
             kind: OperationKind::Definition(id),
+            meanings: Arc::from([]),
             module: frame.module.clone(),
             span,
             repetitions: 1,

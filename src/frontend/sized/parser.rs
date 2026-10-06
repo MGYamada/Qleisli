@@ -306,6 +306,14 @@ impl Projection<'_, '_> {
                 Box::new(self.argument(child)?),
                 operation.span,
             ),
+            source::StaticOpKind::Bind {
+                implementation,
+                meaning,
+            } => Argument::Checked(
+                self.ident(implementation)?,
+                self.ident(meaning)?,
+                operation.span,
+            ),
             _ => {
                 return Err(unsupported(
                     operation.span,

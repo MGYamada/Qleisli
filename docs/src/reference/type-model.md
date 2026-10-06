@@ -424,6 +424,17 @@ finite checking, and replays its actual source steps. One shared exact-work
 budget covers all bindings; at most 1024 bindings and 100000 aggregate provider
 bytes may be retained. Exhaustion and unsupported interfaces reject.
 
+The selected projection also retains explicit `checked_op(implementation, M)`
+requests by their original resolved Meaning ID. These requests apply even when
+the receiving formal is unrefined or unused. Requests attached to a repeated
+child are checked against that child, including under a zero-count repetition;
+they are not compared against the outer identity. Forwarding an operation and
+requesting another Meaning retains both requirements. Direct operation-valued
+steps, including `adjoint(checked_op(implementation, M), q)`, check the underlying
+implementation before applying the requested transformation. The immutable
+proposal locates the original caller binding or step and exact child depth;
+equal names or a native-valid replacement do not substitute another subject.
+
 Only the private `CheckedSourceMeanings` collection can lower a refined caller
 hierarchy. Its finite nodes embed the checked provider bytes and matrices;
 the complete output graph still requires fresh native hierarchy acceptance.

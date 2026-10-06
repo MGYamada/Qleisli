@@ -21,3 +21,13 @@ case was generated or checked.
 The [nested repeated binding](repeated-binding.json) passes the base X provider
 but rejects X² against the inner original Flip annotation. Its complete repeated
 operation is never replaced by the base provider while checking the request.
+
+The [canonical checked_op first attempt](explicit-attempt-01/before.json)
+retains an actual pre-code projection refusal at commit `a94d3be3`. The
+[separate after observation](explicit-attempt-01/after.json) uses identical
+source bytes and invocation after explicit-request support. The original
+request is retained even though the receiving formal is unrefined and unused.
+Integration tests additionally cover lying providers, zero-count outer
+repetitions, direct adjoints, multiple forwarded requests and exact scalar
+phase with an external reference. These are informed bounded contract tests,
+not a blind benchmark, general profile completion or a new proof.

@@ -3882,7 +3882,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "24ee709dfdfea895e658f35af947ea7dd0882b41dfe762305b0200e398cca003",
+      "sha256": "59f6f9ebb86036327d2a724ad917d971c78573277e2cff213ce11c0da523e65f",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3906,7 +3906,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "aec83ec0d34eedfdbfc1262cecd04c2c35b32f62b098bda4c6bf55bd06cffc86",
+      "sha256": "3f236d858bb92fd38c87d8b8512905a0075b501aa81e120ac28ce9fd0e86a3e5",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4082,7 +4082,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "c10ce3ab63738faf9ee5279bca6f084441c29d94d14fa13286a1f54af43b829d",
+      "sha256": "dbe792be18afb96f4299fc808c3dfae87b4e20c9a39d6e84daf3f5c1f97ff742",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4123,7 +4123,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "7278cff3f3b56afa7704f598b4373ff75be013903ba5b94c034e8b60490734a3",
+      "sha256": "bfd1a57c03b929b25e04ccd9708662003a3d9eae344554437622df22e2e56bcf",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4141,6 +4141,8 @@
           "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
           "pub fn operation(&self) -> Option<&super::SourceOperation>",
           "pub fn operation_binding(&self) -> Option<(usize, &str)>",
+          "pub fn operation_depth(&self) -> usize",
+          "pub fn operation_step(&self) -> Option<(usize, usize)>",
           "pub fn payload(&self) -> &[u8]",
           "pub fn proposal(&self) -> &native::Proposal",
           "pub fn required(&self) -> &FiniteMeaning",

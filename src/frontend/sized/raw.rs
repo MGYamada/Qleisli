@@ -18,6 +18,34 @@ const MAX_DEPTH: usize = 16;
 const MAX_CELLS: usize = 100_000;
 const MAX_LIVE_QUBITS: usize = 16;
 
+#[derive(Clone, Debug)]
+enum OperationSite {
+    Binding(usize, String),
+    Step(usize, usize),
+}
+impl OperationSite {
+    fn caller(&self) -> usize {
+        match self {
+            Self::Binding(id, _) | Self::Step(id, _) => *id,
+        }
+    }
+    fn select<'a>(
+        &self,
+        source: &'a ElaboratedProgram,
+        depth: usize,
+    ) -> Option<&'a super::SourceOperation> {
+        let definition = source.definitions().get(self.caller())?;
+        let mut operation = match self {
+            Self::Binding(_, name) => definition.operations().get(name)?,
+            Self::Step(_, step) => definition.steps().get(*step)?.operation()?,
+        };
+        for _ in 0..depth {
+            operation = operation.child()?;
+        }
+        Some(operation)
+    }
+}
+
 /// Native finite equations for every original Meaning binding in this immutable
 /// concrete source graph. No constructor or mutable evidence view is public.
 #[derive(Debug)]
@@ -52,58 +80,126 @@ pub(super) fn check_operation_meanings<'a>(
         ));
     }
     let program = &source.instantiation().program;
-    let mut leaves = Vec::new();
-    let mut bytes = 0usize;
+    let mut collector = MeaningCollector {
+        source,
+        kernel,
+        budget,
+        leaves: Vec::new(),
+        bytes: 0,
+    };
     for (caller, definition) in source.definitions().iter().enumerate() {
         for formal in &program.checked.interface(definition.original).statics {
-            let crate::frontend::check::StaticKind::Operation {
-                meaning: Some(id), ..
-            } = &formal.kind
-            else {
+            let crate::frontend::check::StaticKind::Operation { meaning, .. } = &formal.kind else {
                 continue;
             };
-            let name = &formal.key.name;
-            let span = definition.span();
-            let operation = &definition.operations()[name];
-            if leaves.len() >= MAX_CALLS {
-                return Err(Error::new(
-                    "limit",
-                    span,
-                    "source Meaning checking exceeds 1024 bindings",
-                ));
+            let site = OperationSite::Binding(caller, formal.key.name.clone());
+            if let Some(id) = meaning {
+                collector.check(&site, 0, *id)?;
             }
-            // Resolve the original request before generating/comparing a leaf;
-            // no width or basename matching and no producer-chosen equation.
-            let required = program.meaning_targets[id].finite(span)?;
-            let proposal = source.lower_raw_operation_at(caller, name)?;
-            bytes = bytes
-                .checked_add(proposal.payload().len())
-                .ok_or_else(|| Error::new("limit", span, "provider byte accounting overflow"))?;
-            if bytes > MAX_CELLS {
-                return Err(Error::new(
-                    "limit",
-                    span,
-                    "source Meaning checking exceeds 100000 aggregate provider bytes",
-                ));
+            collector.annotated(&site)?;
+        }
+        for (step, operation) in definition.steps().iter().enumerate() {
+            if operation.operation().is_some() {
+                collector.annotated(&OperationSite::Step(caller, step))?;
             }
-            budget
-                .charge(proposal.payload().len())
-                .map_err(|e| Error::new("limit", span, e.to_string()))?;
-            let check = proposal
-                .check_finite_meaning(kernel, &required, budget)
-                .map_err(|mut e| {
-                    e.message = format!(
-                        "operation binding {}::{name} must satisfy original Meaning {}: {}",
-                        definition.path(),
-                        program.checked.resolution.path(*id),
-                        e.message()
-                    );
-                    e
-                })?;
-            leaves.push((operation.key(), check.leaf));
         }
     }
-    Ok(CheckedSourceMeanings { source, leaves })
+    Ok(CheckedSourceMeanings {
+        source,
+        leaves: collector.leaves,
+    })
+}
+
+struct MeaningCollector<'a, 'b> {
+    source: &'a ElaboratedProgram,
+    kernel: &'b native::Kernel,
+    budget: &'b mut Budget,
+    leaves: Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>,
+    bytes: usize,
+}
+impl MeaningCollector<'_, '_> {
+    fn annotated(&mut self, site: &OperationSite) -> Result<()> {
+        let source = self.source;
+        let mut operation = site.select(source, 0).expect("original operation site");
+        let mut depth = 0;
+        loop {
+            if depth > MAX_DEPTH {
+                return Err(Error::new(
+                    "limit",
+                    operation.span(),
+                    "Raw operation exceeds existing depth bound",
+                ));
+            }
+            for required in operation.meanings.iter() {
+                self.check(site, depth, required.id).map_err(|mut error| {
+                    error.span = required.span;
+                    error.module = Some(required.module.clone());
+                    error
+                })?;
+            }
+            let Some(child) = operation.child() else {
+                break;
+            };
+            operation = child;
+            depth += 1;
+        }
+        Ok(())
+    }
+    fn check(
+        &mut self,
+        site: &OperationSite,
+        depth: usize,
+        id: crate::frontend::resolve::DefId,
+    ) -> Result<()> {
+        let source = self.source;
+        let definition = &source.definitions()[site.caller()];
+        let operation = site
+            .select(source, depth)
+            .expect("original operation descendant");
+        let program = &source.instantiation().program;
+        let span = operation.span();
+        if self.leaves.len() >= MAX_CALLS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "source Meaning checking exceeds 1024 bindings",
+            ));
+        }
+        // Fix the original request before producing or checking its actual body.
+        let required = program.meaning_targets[&id].finite(span)?;
+        let proposal = lower_operation_site(source, site.clone(), depth)?;
+        self.bytes = self
+            .bytes
+            .checked_add(proposal.payload().len())
+            .ok_or_else(|| Error::new("limit", span, "provider byte accounting overflow"))?;
+        if self.bytes > MAX_CELLS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "source Meaning checking exceeds 100000 aggregate provider bytes",
+            ));
+        }
+        self.budget
+            .charge(proposal.payload().len())
+            .map_err(|e| Error::new("limit", span, e.to_string()))?;
+        let check = proposal
+            .check_finite_meaning(self.kernel, &required, self.budget)
+            .map_err(|mut error| {
+                let location = match site {
+                    OperationSite::Binding(_, name) => name.clone(),
+                    OperationSite::Step(_, step) => format!("step {step}"),
+                };
+                error.message = format!(
+                    "operation binding {}::{location} must satisfy original Meaning {}: {}",
+                    definition.path(),
+                    program.checked.resolution.path(id),
+                    error.message()
+                );
+                error
+            })?;
+        self.leaves.push((operation.key(), check.leaf));
+        Ok(())
+    }
 }
 
 /// An immutable finite transport proposal alongside its exact source instance.
@@ -117,7 +213,8 @@ pub(super) fn check_operation_meanings<'a>(
 pub struct RawSourceProposal {
     source: ElaboratedProgram,
     subject: usize,
-    binding: Option<(usize, String)>,
+    binding: Option<OperationSite>,
+    operation_depth: usize,
     proposal: native::Proposal,
     finite_boundary: Option<UnitaryBoundary>,
 }
@@ -222,26 +319,35 @@ impl RawSourceProposal {
         self.subject
     }
     pub fn operation_binding(&self) -> Option<(usize, &str)> {
-        self.binding.as_ref().map(|(id, name)| (*id, name.as_str()))
+        match self.binding.as_ref()? {
+            OperationSite::Binding(id, name) => Some((*id, name)),
+            OperationSite::Step(_, _) => None,
+        }
+    }
+    /// Original source-step locator for a direct operation expression.
+    pub fn operation_step(&self) -> Option<(usize, usize)> {
+        match self.binding.as_ref()? {
+            OperationSite::Step(id, step) => Some((*id, *step)),
+            OperationSite::Binding(_, _) => None,
+        }
+    }
+    /// Selected descendant in the immutable original operation wrapper.
+    pub fn operation_depth(&self) -> usize {
+        self.operation_depth
     }
     pub fn operation(&self) -> Option<&super::SourceOperation> {
-        let (id, name) = self.operation_binding()?;
-        self.source.definitions()[id].operations().get(name)
+        self.binding
+            .as_ref()?
+            .select(&self.source, self.operation_depth)
     }
     fn replay(&self, raw: &RawProgram) -> Result<()> {
-        let operation = if let Some((id, name)) = self.operation_binding() {
-            Some(
-                self.source
-                    .definitions()
-                    .get(id)
-                    .and_then(|d| d.operations().get(name))
-                    .ok_or_else(|| {
-                        invalid(
-                            Span::default(),
-                            "original operation binding is absent during replay",
-                        )
-                    })?,
-            )
+        let operation = if self.binding.is_some() {
+            Some(self.operation().ok_or_else(|| {
+                invalid(
+                    Span::default(),
+                    "original operation binding is absent during replay",
+                )
+            })?)
         } else {
             None
         };
@@ -710,18 +816,34 @@ pub(super) fn lower_operation(
     caller_id: usize,
     name: &str,
 ) -> Result<RawSourceProposal> {
+    lower_operation_site(source, OperationSite::Binding(caller_id, name.into()), 0)
+}
+
+fn lower_operation_site(
+    source: &ElaboratedProgram,
+    site: OperationSite,
+    operation_depth: usize,
+) -> Result<RawSourceProposal> {
+    let caller_id = site.caller();
     let caller = source.definitions().get(caller_id).ok_or_else(|| {
         invalid(
             Span::default(),
             "operation caller is absent from its original source graph",
         )
     })?;
-    let op = caller.operations().get(name).ok_or_else(|| {
+    if operation_depth > MAX_DEPTH {
+        return Err(Error::new(
+            "limit",
+            caller.span(),
+            "Raw operation exceeds existing depth bound",
+        ));
+    }
+    let op = site.select(source, operation_depth).ok_or_else(|| {
         located(
             source,
             caller_id,
             caller.span(),
-            "unknown entry operation binding",
+            "unknown original operation site or descendant",
         )
     })?;
     let mut base = op;
@@ -780,15 +902,20 @@ pub(super) fn lower_operation(
         .path()
         .rsplit_once("::")
         .map_or(definition.path(), |(module, _)| module);
-    lower_inner(source, subject, Some(&selected), Some((caller_id, name)))
-        .map_err(|error| error.in_module(module))
+    lower_inner(
+        source,
+        subject,
+        Some(&selected),
+        Some((site, operation_depth)),
+    )
+    .map_err(|error| error.in_module(module))
 }
 
 fn lower_inner(
     source: &ElaboratedProgram,
     subject: usize,
     selected: Option<&BTreeSet<usize>>,
-    binding: Option<(usize, &str)>,
+    binding: Option<(OperationSite, usize)>,
 ) -> Result<RawSourceProposal> {
     check_profile(source, selected)?;
     let root = &source.definitions()[subject];
@@ -822,7 +949,10 @@ fn lower_inner(
             }
         }
     }
-    let operation = binding.map(|(id, name)| &source.definitions()[id].operations()[name]);
+    let operation = binding.as_ref().map(|(site, depth)| {
+        site.select(source, *depth)
+            .expect("retained original operation site")
+    });
     let outputs = if let Some(op) = operation {
         emitter.operation(op, arguments, 0)?
     } else {
@@ -929,7 +1059,8 @@ fn lower_inner(
     Ok(RawSourceProposal {
         source: source.clone(),
         subject,
-        binding: binding.map(|(id, name)| (id, name.into())),
+        operation_depth: binding.as_ref().map_or(0, |(_, depth)| *depth),
+        binding: binding.map(|(site, _)| site),
         proposal,
         finite_boundary,
     })

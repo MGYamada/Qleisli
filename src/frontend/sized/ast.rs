@@ -87,6 +87,7 @@ pub(super) enum Argument {
     Basis(Basis, Span),
     Definition(Reference, Vec<Argument>, Span),
     Repeat(Count, Box<Argument>, Span),
+    Checked(Reference, Reference, Span),
 }
 #[derive(Clone, Debug)]
 pub(super) enum Pattern {

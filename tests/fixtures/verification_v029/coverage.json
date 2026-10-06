@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "058f18105ad2d40a987c0bbf221fd9ca1d35f42fa6d8c3a085e1ecc8955e0c79",
+  "surface_sha256": "69209605ab50ce697082ea81a62fb44e9cb6a9c304c2643da307b37f0a158755",
   "groups": [
     {
       "id": "raw-core",
@@ -2751,8 +2751,11 @@
             "pub fn check_finite_meaning",
             "pub struct CheckedSourceMeanings",
             "program.checked.interface(definition.original).statics",
-            "program.meaning_targets[id].finite(span)?",
+            "program.meaning_targets[&id].finite(span)?",
             "budget",
+            "OperationSite::Step(caller, step)",
+            "operation.meanings.iter()",
+            "lower_operation_site(source, site.clone(), depth)?",
             "finite_leaf::check_with_kernel",
             "self.replay(leaf.program().raw())?",
             "original operation binding is absent during replay",
@@ -2801,6 +2804,22 @@
         {
           "path": "tests/classical_functions.rs",
           "test": "selected_cli_checks_original_annotations_and_rejects_raw_bypass"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "explicit_checked_op_checks_unused_and_zero_repeat_children"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "selected_cli_checks_explicit_requests_without_a_refined_formal"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase"
         },
         {
           "path": "tests/classical_functions.rs",
