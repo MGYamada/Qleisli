@@ -29,6 +29,7 @@ const MAX_LIVE_QUBITS: usize = 16;
 pub struct RawSourceProposal {
     source: ElaboratedProgram,
     subject: usize,
+    binding: Option<(usize, String)>,
     proposal: native::Proposal,
     finite_boundary: Option<UnitaryBoundary>,
 }
@@ -100,7 +101,7 @@ impl RawSourceProposal {
                 "checked leaf differs from actual source artifact".into(),
             ));
         }
-        preservation::validate_definition(&self.source, self.subject, leaf.program().raw())?;
+        self.replay(leaf.program().raw())?;
         Ok(SourceMeaningCheck {
             source: self,
             required,
@@ -116,13 +117,40 @@ impl RawSourceProposal {
     pub fn payload(&self) -> &[u8] {
         self.proposal.artifact()
     }
-    /// Selected original definition within the retained caller's source graph.
+    /// Underlying original definition within the retained caller's source graph.
+    /// For a repeated binding, operation() retains the complete wrapper.
     /// The caller's instantiation metadata is never rewritten as leaf metadata.
     pub fn definition(&self) -> &super::SourceDefinition {
         &self.source.definitions()[self.subject]
     }
     pub fn definition_index(&self) -> usize {
         self.subject
+    }
+    pub fn operation_binding(&self) -> Option<(usize, &str)> {
+        self.binding.as_ref().map(|(id, name)| (*id, name.as_str()))
+    }
+    pub fn operation(&self) -> Option<&super::SourceOperation> {
+        let (id, name) = self.operation_binding()?;
+        self.source.definitions()[id].operations().get(name)
+    }
+    fn replay(&self, raw: &RawProgram) -> Result<()> {
+        let operation = if let Some((id, name)) = self.operation_binding() {
+            Some(
+                self.source
+                    .definitions()
+                    .get(id)
+                    .and_then(|d| d.operations().get(name))
+                    .ok_or_else(|| {
+                        invalid(
+                            Span::default(),
+                            "original operation binding is absent during replay",
+                        )
+                    })?,
+            )
+        } else {
+            None
+        };
+        preservation::validate_subject(&self.source, self.subject, operation, raw)
     }
     /// Compare the actual native-accepted artifact with retained ordered source
     /// steps. This issues no execution handle and proves no AST-to-step theorem.
@@ -135,7 +163,7 @@ impl RawSourceProposal {
                 "native accepted artifact differs from the source-bound Raw proposal",
             ));
         }
-        preservation::validate_definition(&self.source, self.subject, accepted.raw())
+        self.replay(accepted.raw())
     }
 }
 
@@ -345,6 +373,33 @@ struct Emitter<'a> {
     cells: usize,
 }
 impl Emitter<'_> {
+    fn operation(
+        &mut self,
+        op: &super::SourceOperation,
+        arguments: Vec<Vec<Atom>>,
+        depth: usize,
+    ) -> Result<Vec<Atom>> {
+        if let Some(id) = op.definition() {
+            return self.invoke(id, arguments, depth, op.span());
+        }
+        self.calls += 1;
+        if self.calls > MAX_CALLS || depth > MAX_DEPTH {
+            return Err(Error::new(
+                "limit",
+                op.span(),
+                "Raw operation exceeds existing call/depth bounds",
+            ));
+        }
+        let child = op.child().expect("retained repeat child");
+        let mut value = arguments
+            .into_iter()
+            .next()
+            .expect("preflighted unary operation");
+        for _ in 0..op.repeat_count().expect("retained repeat count") {
+            value = self.operation(child, vec![value], depth + 1)?;
+        }
+        Ok(value)
+    }
     fn charge_value(&mut self, value: &SourceValue, span: Span) -> Result<()> {
         self.cells = self
             .cells
@@ -551,22 +606,42 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
         .path()
         .rsplit_once("::")
         .map_or(root.path(), |(module, _)| module);
-    lower_inner(source, source.root(), None).map_err(|error| error.in_module(module))
+    lower_inner(source, source.root(), None, None).map_err(|error| error.in_module(module))
 }
 
-pub(super) fn lower_operation(source: &ElaboratedProgram, name: &str) -> Result<RawSourceProposal> {
-    let caller = &source.definitions()[source.root()];
+pub(super) fn lower_operation(
+    source: &ElaboratedProgram,
+    caller_id: usize,
+    name: &str,
+) -> Result<RawSourceProposal> {
+    let caller = source.definitions().get(caller_id).ok_or_else(|| {
+        invalid(
+            Span::default(),
+            "operation caller is absent from its original source graph",
+        )
+    })?;
     let op = caller.operations().get(name).ok_or_else(|| {
         located(
             source,
-            source.root(),
+            caller_id,
             caller.span(),
             "unknown entry operation binding",
         )
     })?;
-    let subject = op.definition().ok_or_else(|| {
-        located(source, source.root(), caller.span(), "Raw operation leaves require a closed definition; repeated providers need separate support")
-    })?;
+    let mut base = op;
+    let mut depth = 0;
+    while let Some(child) = base.child() {
+        depth += 1;
+        if depth > MAX_DEPTH {
+            return Err(Error::new(
+                "limit",
+                op.span(),
+                "Raw operation exceeds existing depth bound",
+            ));
+        }
+        base = child;
+    }
+    let subject = base.definition().expect("closed operation base");
     let mut selected = BTreeSet::new();
     let mut pending = vec![subject];
     let mut cells = 1usize;
@@ -595,17 +670,29 @@ pub(super) fn lower_operation(source: &ElaboratedProgram, name: &str) -> Result<
         }
     }
     let definition = &source.definitions()[subject];
+    if definition.effect() != "unitary"
+        || definition.inputs().len() != 1
+        || !definition.inputs()[0].ty().is_quantum_owner()
+        || definition.inputs()[0].ty() != definition.output().ty()
+    {
+        return Err(invalid(
+            op.span(),
+            "operation must preserve one exact quantum owner",
+        ));
+    }
     let module = definition
         .path()
         .rsplit_once("::")
         .map_or(definition.path(), |(module, _)| module);
-    lower_inner(source, subject, Some(&selected)).map_err(|error| error.in_module(module))
+    lower_inner(source, subject, Some(&selected), Some((caller_id, name)))
+        .map_err(|error| error.in_module(module))
 }
 
 fn lower_inner(
     source: &ElaboratedProgram,
     subject: usize,
     selected: Option<&BTreeSet<usize>>,
+    binding: Option<(usize, &str)>,
 ) -> Result<RawSourceProposal> {
     check_profile(source, selected)?;
     let root = &source.definitions()[subject];
@@ -639,7 +726,12 @@ fn lower_inner(
             }
         }
     }
-    let outputs = emitter.invoke(subject, arguments, 0, root.span())?;
+    let operation = binding.map(|(id, name)| &source.definitions()[id].operations()[name]);
+    let outputs = if let Some(op) = operation {
+        emitter.operation(op, arguments, 0)?
+    } else {
+        emitter.invoke(subject, arguments, 0, root.span())?
+    };
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
     let mut retained = BTreeSet::new();
@@ -677,7 +769,7 @@ fn lower_inner(
         classical_outputs,
         declared_effect: effect(source, subject),
     };
-    preservation::validate_definition(source, subject, &raw)?;
+    preservation::validate_subject(source, subject, operation, &raw)?;
     // A finite request binds the actual artifact's declared type as well as
     // its ports. Retain a unary quantum boundary only for an exact matching
     // source tree; zero width alone never establishes a Unit signature.
@@ -741,6 +833,7 @@ fn lower_inner(
     Ok(RawSourceProposal {
         source: source.clone(),
         subject,
+        binding: binding.map(|(id, name)| (id, name.into())),
         proposal,
         finite_boundary,
     })
@@ -751,6 +844,43 @@ mod tests {
     use super::*;
     use crate::frontend::sized::ParsedProgram;
     use crate::ir::RawOp;
+
+    #[test]
+    fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {
+        use crate::frontend::sized::OperationBinding;
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(),
+            "use std::quantum::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q} pub unitary fn outer[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[repeat_op(2,U)](q)}".into())]))
+            .unwrap().instantiate("main::outer", BTreeMap::new(), BTreeMap::from([("U".into(), OperationBinding::new("main::flip", BTreeMap::new()))])).unwrap().elaborate().unwrap();
+        let caller = source
+            .definitions()
+            .iter()
+            .position(|d| d.path() == "main::inner")
+            .unwrap();
+        let mut repeated = source.lower_raw_operation_at(caller, "U").unwrap();
+        let base = source.lower_raw_operation("U").unwrap();
+        // Model a producer substituting both valid bytes and a matching port
+        // boundary. Its claim still must replay the retained X^2 subject.
+        repeated.proposal = base.proposal;
+        repeated.finite_boundary = base.finite_boundary;
+        let required = FiniteMeaning::permutation(BasisType::Bit, vec![1, 0]).unwrap();
+        let checker = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("matching native checker"),
+        );
+        finite_leaf::check_with_kernel(
+            &checker,
+            repeated.payload(),
+            repeated.finite_boundary.as_ref().unwrap(),
+            &required
+                .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap(),
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        let error = repeated
+            .check_finite_meaning(&checker, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap_err();
+        assert_eq!(error.code(), "preservation", "{error}");
+    }
 
     #[test]
     fn source_meaning_gate_rejects_a_native_valid_replaced_provider() {

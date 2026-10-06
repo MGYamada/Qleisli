@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prepare and replay complete bounded repeated provider leaves, including
+  bindings in nested instantiated callers. Preserve zero-count owners and
+  dependency preflight; reject a native-valid base artifact substituted for
+  its repeated subject. Mandatory generic Meaning enforcement remains open (#44).
+
 - Prepare actual closed operation-provider leaves while retaining the original
   caller instance and shared immutable source graph. Replay the selected body
   and dependencies; keep generic Meaning enforcement unfinished (#44).

@@ -5,7 +5,8 @@
 use crate::frontend::ordinary::Boolean;
 use crate::frontend::sized::primitive::Primitive;
 use crate::frontend::sized::{
-    ElaboratedProgram, Error, Result, SourceDefinition, SourceStep, SourceType, SourceValue, Span,
+    ElaboratedProgram, Error, Result, SourceDefinition, SourceOperation, SourceStep, SourceType,
+    SourceValue, Span,
 };
 use crate::frontend::types::Kind;
 use crate::ir::{
@@ -539,6 +540,39 @@ impl Replay<'_> {
         }
     }
 
+    fn operation(
+        &mut self,
+        operation: &SourceOperation,
+        arguments: &[Argument<'_>],
+        depth: usize,
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
+        if let Some(id) = operation.definition() {
+            return self.function(id, arguments, depth, site);
+        }
+        self.calls += 1;
+        if self.calls > MAX_CALLS || depth > MAX_DEPTH {
+            return Err(site.error("limit", "Raw operation replay exceeds call/depth bounds"));
+        }
+        let [argument] = arguments else {
+            return Err(site.invalid("repeated operation requires one whole argument"));
+        };
+        self.charge(argument.atoms.len(), site)?;
+        let mut value = argument.atoms.clone();
+        for _ in 0..operation.repeat_count().expect("retained repeat") {
+            value = self.operation(
+                operation.child().expect("retained repeat child"),
+                &[Argument {
+                    ty: argument.ty,
+                    atoms: value,
+                }],
+                depth + 1,
+                site,
+            )?;
+        }
+        Ok(value)
+    }
+
     fn function(
         &mut self,
         id: usize,
@@ -664,9 +698,19 @@ pub(super) fn validate(source: &ElaboratedProgram, raw: &RawProgram) -> Result<(
     validate_definition(source, source.root(), raw)
 }
 
+#[cfg(test)]
 pub(super) fn validate_definition(
     source: &ElaboratedProgram,
     subject: usize,
+    raw: &RawProgram,
+) -> Result<()> {
+    validate_subject(source, subject, None, raw)
+}
+
+pub(super) fn validate_subject(
+    source: &ElaboratedProgram,
+    subject: usize,
+    operation: Option<&SourceOperation>,
     raw: &RawProgram,
 ) -> Result<()> {
     let definition = source
@@ -674,6 +718,25 @@ pub(super) fn validate_definition(
         .get(subject)
         .ok_or_else(|| Error::new("preservation", Span::default(), "source subject is absent"))?;
     let site = Site::definition(definition);
+    if let Some(operation) = operation {
+        let mut base = operation;
+        let mut depth = 0;
+        while let Some(child) = base.child() {
+            depth += 1;
+            if depth > MAX_DEPTH {
+                return Err(site.error("limit", "Raw operation replay exceeds depth bound"));
+            }
+            base = child;
+        }
+        if base.definition() != Some(subject)
+            || definition.effect() != "unitary"
+            || definition.inputs().len() != 1
+            || quantum_width(definition.inputs()[0].ty()).is_none()
+            || definition.inputs()[0].ty() != definition.output().ty()
+        {
+            return Err(site.invalid("operation subject differs from its exact unary base"));
+        }
+    }
     if raw.declared_effect != effect(definition.effect(), site)? {
         return Err(site.invalid("Raw declared effect differs from the source root"));
     }
@@ -751,7 +814,11 @@ pub(super) fn validate_definition(
     if classical != raw.classical_inputs.len() || quantum != raw.quantum_inputs.len() {
         return Err(site.invalid("Raw program has extra source inputs"));
     }
-    let outputs = replay.function(subject, &arguments, 0, site)?;
+    let outputs = if let Some(operation) = operation {
+        replay.operation(operation, &arguments, 0, site)?
+    } else {
+        replay.function(subject, &arguments, 0, site)?
+    };
     if replay.cursor != raw.operations.len() {
         return Err(site.invalid("Raw program contains extra instructions after source replay"));
     }

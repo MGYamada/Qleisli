@@ -388,13 +388,20 @@ automatic checking of a declared `Op<A,M>` annotation. Generic admission still
 requires mandatory checks of every applicable original binding, including
 unused providers, and remains unsupported until that route is connected.
 
-`ElaboratedProgram::lower_raw_operation(name)` selects the actual closed
-definition of one original entry operation binding and its called dependencies.
+`ElaboratedProgram::lower_raw_operation(name)` selects one original entry
+operation binding and its called dependencies. `lower_raw_operation_at(caller,
+name)` selects a binding in another retained instantiated definition.
 The returned proposal retains the complete immutable caller graph and original
-instantiation; `definition()` identifies the separate provider subject.
+instantiation; `operation_binding()` identifies the original caller and binding.
+`definition()` identifies the underlying closed provider definition, while
+`operation()` retains the complete operation wrapper. A repeated subject is
+the entire repeated operator, including exact zero-count identity, never just
+its base definition. Emission and independent ordered replay apply each retained
+repetition with aggregate existing call/work/depth limits. Zero counts retain
+the quantum owner and do not bypass dependency capability preflight.
 Its interface, emitted bytes and ordered replay derive from that subject,
-rather than the caller or a rewritten caller identity. Repeated providers and
-providers with further operation bindings remain unsupported by this Raw leaf
+rather than the caller or a rewritten caller identity. Providers with further
+operation bindings remain unsupported by this Raw leaf
 profile. This explicit preparation API neither admits the caller nor performs
 mandatory checking of all unused bindings. Such enforcement remains required
 before generic Meaning-refined execution can be enabled.

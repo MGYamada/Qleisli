@@ -3906,7 +3906,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "b2d70b784e4b961dafaaf99bee362394485ad8492ee2367b0886615fcd0ec5f9",
+      "sha256": "41fd5fe8cc886bb7eeb2af3b53f5e6653b0c9675ef77d0cef722ead14c504039",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3943,6 +3943,7 @@
           "pub fn lower(&self) -> Result<super::HierarchyProposal>",
           "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
           "pub fn lower_raw_operation(&self, name: &str) -> Result<super::RawSourceProposal>",
+          "pub fn lower_raw_operation_at( &self, caller: usize, name: &str, ) -> Result<super::RawSourceProposal>",
           "pub fn module(&self) -> &str",
           "pub fn module(&self) -> &str",
           "pub fn natural_arguments(&self) -> &[u32]",
@@ -4120,7 +4121,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "8bd703531eb13d28b5d979001ec2abb3df61ebe05bf0b333d7078d4e2a73a74e",
+      "sha256": "709b8e7aa0d13ada3d87b13e8d5f8897c55f0440870eb8ff4ec447065bdf31b6",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4132,6 +4133,8 @@
           "pub fn definition(&self) -> &super::SourceDefinition",
           "pub fn definition_index(&self) -> usize",
           "pub fn leaf(&self) -> &CheckedUnitaryLeaf",
+          "pub fn operation(&self) -> Option<&super::SourceOperation>",
+          "pub fn operation_binding(&self) -> Option<(usize, &str)>",
           "pub fn payload(&self) -> &[u8]",
           "pub fn proposal(&self) -> &native::Proposal",
           "pub fn required(&self) -> &FiniteMeaning",
@@ -4150,7 +4153,7 @@
     },
     {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "4a58aa79964364baaa65c244be5203f33c475f22256be3232915673d2789d441",
+      "sha256": "9c858002142d70077c819868b3f00ac259c51c7e919d9ea0463d01be0ad69ecd",
       "group": "sized-source",
       "surface": {
         "declarations": [],

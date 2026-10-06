@@ -1,0 +1,60 @@
+{
+  "format": "qleisli.repeated-provider-leaf-review",
+  "version": 1,
+  "issues": [
+    44,
+    32
+  ],
+  "base_commit": "e86d899df8c25b0282772f44cab2fc5e3efbf6e9",
+  "status": "locally-checked component; mandatory generic Meaning enforcement remains unfinished",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6021833457",
+  "source_sha256": {
+    "src/frontend/sized/elaborate.rs": "41fd5fe8cc886bb7eeb2af3b53f5e6653b0c9675ef77d0cef722ead14c504039",
+    "src/frontend/sized/raw.rs": "709b8e7aa0d13ada3d87b13e8d5f8897c55f0440870eb8ff4ec447065bdf31b6",
+    "src/frontend/sized/raw/preservation.rs": "9c858002142d70077c819868b3f00ac259c51c7e919d9ea0463d01be0ad69ecd",
+    "tests/classical_functions.rs": "c1d4a8e94d5a953cd902a6706f5f37ebdb23a162d875d83326df7c6efe13dc72"
+  },
+  "behavior": {
+    "selection": "Original binding in any retained instantiated definition; complete immutable caller graph and caller/binding locator retained.",
+    "subject": "Complete SourceOperation wrapper, including nested repetitions. definition() describes only the underlying closed provider, never the entire repeated action.",
+    "emission": "Repeat the actual unary Unit/Bit quantum provider with aggregate existing call/depth/storage/operation limits; zero repeats retain the owner and do not bypass dependency capability preflight.",
+    "replay": "Independent ordered Raw replay follows the complete retained wrapper and rejects missing original bindings, different underlying subjects, changed instructions and result owners.",
+    "authority": "Only the existing native finite checker issues exact leaf evidence. This is not automatic checking of an original Op<A,M> annotation or an AST-to-step theorem."
+  },
+  "tests": {
+    "repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller": "X^0 and X^2 match fixed independent identity and reject Flip; X^1 matches original Flip and rejects identity. Original nested unused binding, caller instance and repeat count remain retained.",
+    "repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight": "(-1)^0/1/2 retain exact scalar phase; a zero wrapper cannot hide an unsupported adjoint provider body.",
+    "repeated_subject_replay_rejects_its_native_valid_base_artifact": "A substituted X body plus its matching boundary satisfies the native Flip equation but fails replay of the original X^2 subject."
+  },
+  "checks": {
+    "latest_integration": "47 passed, 0 failed, 0 ignored: classical_functions 21, basis_polymorphism 10, quantum_unit_source 16",
+    "actual_msrv_1_85_0_integration": "same 47 passed via scripts/run_msrv.py",
+    "actual_msrv_private_raw": "3 passed, 0 failed",
+    "latest_all_target_clippy": "passed -D warnings",
+    "actual_msrv_all_target_clippy": "passed -D warnings via scripts/run_msrv.py",
+    "inventory": "275 constructors, 265 snapshots, 20 boundaries",
+    "coverage": "22 paths, 9 existing native modes",
+    "checker_tests": "14 production coverage and 17 inventory tests passed",
+    "docs": "2186 links, 30 anchors, 206 Lean roots",
+    "book": "mdBook 0.5.4 build; 29 HTML files, 1224 links, 471 anchors",
+    "constitution": "passed continuity against trusted 38baae7d19535602b21270e11e97617d45205b37; current identity, not fresh proof replay",
+    "latest_private_raw": "3 passed, 0 failed"
+  },
+  "development_observations": [
+    "Initial all-target check reported the now-test-only validate_definition helper as dead code. It is restricted to cfg(test), used by the retained private replay tests; both subsequent all-target Clippy runs pass without suppressing the lint."
+  ],
+  "limits": [
+    "No automatic all-binding source admission yet; original Meaning-refined projection guard remains.",
+    "Further operation-parametric providers and distinct unsupported quantum bases remain outside this Raw leaf profile; no implicit inverse/control access.",
+    "No new maximum-size case, fresh Lean build/audit/replay, full Rust all-target test run, package/install/release check or publication performed.",
+    "Two scoped QLV1 guarantees and all broader QS/PR/RS/EXACT pending obligations retain their status; no new guarantee, primitive or human interpretation."
+  ],
+  "constitutional_impact": {
+    "QS": "Exact typed request, phase and complete repeated provider artifact checked with retained source-step replay; general source/runtime preservation remains pending.",
+    "PR": "No exporter/target correspondence certification.",
+    "RS": "Existing host work/storage/call/depth caps retained; no quantitative program-resource certification.",
+    "edition": "2026 unchanged"
+  },
+  "completion": "22/111 (19.82%); #63 remains deferred for 0.3.0-alpha, not completed",
+  "hosted_ci": "Preceding run 37502280428 on 5bd267f76a9084acc7cd2d67b059fb161267ab3a remains in_progress at observation. New component not covered; push held, no restart/cancel."
+}

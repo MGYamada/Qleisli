@@ -371,9 +371,18 @@ impl ElaboratedProgram {
     /// Propose the actual closed definition bound to an entry operation.
     /// Keep the original caller instance and an explicit leaf subject. This
     /// neither accepts the caller nor automatically checks every binding.
-    /// Repeated providers require separate support and are rejected here.
     pub fn lower_raw_operation(&self, name: &str) -> Result<super::RawSourceProposal> {
-        super::raw::lower_operation(self, name)
+        self.lower_raw_operation_at(self.root, name)
+    }
+    /// Select an original binding in any retained instantiated definition.
+    /// Repetition is part of the subject, never replaced by its base provider.
+    /// This is preparation only, not mandatory generic Meaning enforcement.
+    pub fn lower_raw_operation_at(
+        &self,
+        caller: usize,
+        name: &str,
+    ) -> Result<super::RawSourceProposal> {
+        super::raw::lower_operation(self, caller, name)
     }
     pub fn instantiation(&self) -> &Instantiation {
         &self.instance

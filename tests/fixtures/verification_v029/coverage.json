@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "6b9c5f27cb2c1a6cd37ff8c95ae91a717a1a3890c4ca90ea6c04d4a45889c515",
+  "surface_sha256": "1f5f66d6a667a6637deb752c9398340fd703882a301628dd52ed159299594ffb",
   "groups": [
     {
       "id": "raw-core",
@@ -2196,6 +2196,7 @@
           "path": "src/frontend/sized/elaborate.rs",
           "markers": [
             "pub fn lower_raw_operation(",
+            "pub fn lower_raw_operation_at(",
             "definitions: Arc<[SourceDefinition]>"
           ]
         },
@@ -2210,7 +2211,8 @@
         {
           "path": "src/frontend/sized/raw/preservation.rs",
           "markers": [
-            "pub(super) fn validate_definition(",
+            "pub(super) fn validate_subject(",
+            "fn operation(",
             "RawOp::ClassicalAnd",
             "RawOp::ClassicalXor"
           ]
@@ -2268,6 +2270,14 @@
         {
           "path": "tests/classical_functions.rs",
           "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight"
         },
         {
           "path": "src/frontend/sized/raw.rs",
@@ -2727,7 +2737,9 @@
             "pub struct SourceMeaningCheck",
             "pub fn check_finite_meaning",
             "finite_leaf::check_with_kernel",
-            "preservation::validate_definition(&self.source, self.subject, leaf.program().raw())"
+            "self.replay(leaf.program().raw())?",
+            "original operation binding is absent during replay",
+            "preservation::validate_subject(&self.source, self.subject, operation, raw)"
           ]
         },
         {
@@ -2746,6 +2758,10 @@
         {
           "path": "tests/classical_functions.rs",
           "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
+        },
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "test": "repeated_subject_replay_rejects_its_native_valid_base_artifact"
         },
         {
           "path": "tests/classical_functions.rs",

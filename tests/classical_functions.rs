@@ -90,6 +90,129 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
 }
 
 #[test]
+fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    use qleisli::frontend::sized::OperationBinding;
+    let source = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}\npub unitary fn outer[static k:Nat,static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U),k<=2 {inner[repeat_op(k,U)](q)}";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let flip = parsed.finite_meaning_target("main::Flip").unwrap();
+    let identity = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
+    for count in 0..=2 {
+        let source = parsed
+            .instantiate(
+                "main::outer",
+                BTreeMap::from([("k".into(), count)]),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::implementation", BTreeMap::new()),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let caller = source
+            .definitions()
+            .iter()
+            .position(|d| d.path() == "main::inner")
+            .unwrap();
+        let leaf = source.lower_raw_operation_at(caller, "U").unwrap();
+        assert_eq!(leaf.source().instantiation().entry(), "main::outer");
+        assert_eq!(leaf.operation_binding(), Some((caller, "U")));
+        assert_eq!(leaf.operation().unwrap().repeat_count(), Some(count));
+        assert_eq!(leaf.definition().path(), "main::implementation");
+        let accepted = kernel().accept(leaf.proposal()).unwrap();
+        leaf.validate_source_steps(&accepted).unwrap();
+        assert_eq!(accepted.raw().operations.len(), count as usize);
+        let checker = kernel();
+        for (meaning, matches) in [(&flip, count == 1), (&identity, count != 1)] {
+            let result =
+                leaf.check_finite_meaning(&checker, meaning, &mut Budget::new(DEFAULT_EXACT_WORK));
+            if matches {
+                result.unwrap();
+            } else {
+                assert_eq!(result.unwrap_err().code(), "contract");
+            }
+        }
+        assert_eq!(
+            source
+                .lower_raw_operation_at(usize::MAX, "U")
+                .unwrap_err()
+                .code(),
+            "preservation"
+        );
+    }
+}
+
+#[test]
+fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    use qleisli::frontend::sized::OperationBinding;
+    let scalar = "use std::quantum::phase_eighth;\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\nunitary fn inner[static U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U){q}\npub unitary fn outer[static k:Nat,static U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U),k<=2 {inner[repeat_op(k,U)](q)}";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), scalar.into())])).unwrap();
+    let minus = FiniteMeaning::phase(BasisType::Unit, vec![4]).unwrap();
+    let identity = FiniteMeaning::phase(BasisType::Unit, vec![0]).unwrap();
+    for count in 0..=2 {
+        let source = parsed
+            .instantiate(
+                "main::outer",
+                BTreeMap::from([("k".into(), count)]),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::implementation", BTreeMap::new()),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let caller = source
+            .definitions()
+            .iter()
+            .position(|d| d.path() == "main::inner")
+            .unwrap();
+        let leaf = source.lower_raw_operation_at(caller, "U").unwrap();
+        let checker = kernel();
+        for (meaning, matches) in [(&minus, count == 1), (&identity, count != 1)] {
+            let result =
+                leaf.check_finite_meaning(&checker, meaning, &mut Budget::new(DEFAULT_EXACT_WORK));
+            if matches {
+                result.unwrap();
+            } else {
+                assert_eq!(result.unwrap_err().code(), "contract");
+            }
+        }
+    }
+    // A zero-count wrapper must not hide a provider capability unsupported by
+    // the leaf profile. Its original body remains checked before emission.
+    let unsupported = "use std::quantum::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{adjoint(turn,q)}\nunitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}\npub unitary fn outer[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[repeat_op(0,U)](q)}";
+    let parsed =
+        ParsedProgram::parse(BTreeMap::from([("main".into(), unsupported.into())])).unwrap();
+    let source = parsed
+        .instantiate(
+            "main::outer",
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("main::implementation", BTreeMap::new()),
+            )]),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let caller = source
+        .definitions()
+        .iter()
+        .position(|d| d.path() == "main::inner")
+        .unwrap();
+    assert_eq!(
+        source
+            .lower_raw_operation_at(caller, "U")
+            .unwrap_err()
+            .code(),
+        "unsupported"
+    );
+}
+
+#[test]
 fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
     use qleisli::contract::exact::{Budget, Exact};
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
