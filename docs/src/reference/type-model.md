@@ -226,6 +226,9 @@ perform observable work; omitting its result port does not omit its body.
 
 ## Inference and generic responsibilities
 
+The [static language](static-language.md) specifies natural expressions,
+guarded arithmetic, termination and the current specialization capacities.
+
 Infer only uniquely determined static structure under specified rules. Reject
 ambiguous type substitutions, callable categories and provider choices. No
 search for a convenient implementation, numerical coincidence or matching name

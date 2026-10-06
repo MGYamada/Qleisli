@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Specify the implemented static fragment, guarded exact arithmetic, incomplete
+  linear implication, decreasing recursion, definition/instance checking and
+  concrete capacities in the Reference. Keep static helper and final loop work
+  open; compiler limits do not certify quantitative resources (#28, #44, #63).
 - Use `classical fn` for total finite classical declarations, reserving
   `basis q as pattern { expression }` for coherent basis maps. Reject the
   retired `basis fn` declaration with a located migration diagnostic. Run
