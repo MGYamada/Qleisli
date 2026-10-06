@@ -474,3 +474,161 @@ fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
             .any(|op| matches!(op, RawOp::MeasureZ { .. }))
     );
 }
+
+#[test]
+fn ordinary_basis_substitutions_keep_register_and_product_tags() {
+    use qleisli::frontend::sized::BasisBinding;
+    let parsed = ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        "pub unitary fn f[static A:Basis](b:A)->A{b}".into(),
+    )]))
+    .unwrap();
+    for (ty, width) in [
+        ("Unit", 0),
+        ("Bits<0>", 0),
+        ("Bit", 1),
+        ("Bits<1>", 1),
+        ("Bits<2>", 2),
+        ("(Bits<0>,(Bit,Bits<1>))", 2),
+    ] {
+        let graph = parsed
+            .instantiate_with_types(
+                "main::f",
+                BTreeMap::from([("A".into(), BasisBinding::parse(ty).unwrap())]),
+                BTreeMap::new(),
+                BTreeMap::new(),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let root = &graph.definitions()[graph.root()];
+        assert_eq!(
+            root.inputs()[0].ty().kind(),
+            match ty {
+                "Unit" => "unit",
+                "Bit" => "bit",
+                "(Bits<0>,(Bit,Bits<1>))" => "tuple",
+                _ => "bits",
+            }
+        );
+        if ty.starts_with("Bits") {
+            assert_eq!(root.inputs()[0].ty().width(), Some(width as u32));
+        }
+        if ty.starts_with('(') {
+            let fields = root.inputs()[0].ty().fields();
+            assert_eq!(fields[0].kind(), "bits");
+            assert_eq!(fields[0].width(), Some(0));
+            assert_eq!(fields[1].fields()[0].kind(), "bit");
+            assert_eq!(fields[1].fields()[1].kind(), "bits");
+        }
+        assert_eq!(root.inputs()[0].ty(), root.output().ty());
+        let accepted = accept(&graph);
+        assert_eq!(accepted.raw().classical_inputs.len(), width);
+        assert_eq!(
+            accepted.raw().classical_inputs,
+            accepted.raw().classical_outputs
+        );
+    }
+}
+
+#[test]
+fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
+    use qleisli::frontend::sized::{BasisBinding, OperationBinding};
+    let text = "use std::classical::{empty_bits,prepend_bit};
+        classical fn copy(b:Bits<2>)->(Bits<2>,Bits<2>){(b,b)}
+        unitary fn provider[static B:Basis](q:Q<B>)->Q<B>{
+        let b=prepend_bit[1](0,prepend_bit[0](1,empty_bits()));let _=copy(b);q}
+        pub unitary fn f[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    for ty in ["Unit", "Bits<0>", "Bits<1>", "Bits<2>"] {
+        let binding = BasisBinding::parse(ty).unwrap();
+        let graph = parsed
+            .instantiate_with_types(
+                "main::f",
+                BTreeMap::from([("A".into(), binding.clone())]),
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::with_types(
+                        "main::provider",
+                        BTreeMap::from([("B".into(), binding)]),
+                        BTreeMap::new(),
+                    ),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let accepted = accept(&graph);
+        assert_eq!(accepted.raw().quantum_inputs.len(), 1);
+        assert_eq!(accepted.raw().quantum_outputs.len(), 1);
+        assert!(accepted.raw().classical_outputs.is_empty());
+        assert_eq!(accepted.raw().operations.len(), 2);
+        assert!(
+            accepted
+                .raw()
+                .operations
+                .iter()
+                .all(|op| matches!(op, RawOp::ClassicalConst { .. }))
+        );
+    }
+    let error = parsed
+        .instantiate_with_types(
+            "main::f",
+            BTreeMap::from([("A".into(), BasisBinding::parse("Bits<1>").unwrap())]),
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::with_types(
+                    "main::provider",
+                    BTreeMap::from([("B".into(), BasisBinding::parse("Bit").unwrap())]),
+                    BTreeMap::new(),
+                ),
+            )]),
+        )
+        .unwrap_err();
+    assert_eq!(error.code(), "type");
+}
+
+#[test]
+fn register_type_coercions_and_quantum_copy_drop_still_reject() {
+    for source in [
+        "pub unitary fn f(b:Bits<0>)->Unit{b}",
+        "pub unitary fn f(b:Bits<1>)->Bit{b}",
+        "pub unitary fn f(b:Bits<2>)->(Bit,Bit){b}",
+        "pub unitary fn f(b:(Bits<0>,Bit))->(Unit,Bit){b}",
+    ] {
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        assert_eq!(error.code(), "type", "{error}");
+    }
+    for source in [
+        "pub unitary fn f(q:Q<Bits<0>>)->(Q<Bits<0>>,Q<Bits<0>>){(q,q)}",
+        "pub unitary fn f(q:Q<Bits<1>>)->Unit{let _=q;()}",
+    ] {
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        assert_eq!(error.code(), "ownership", "{error}");
+    }
+}
+
+#[test]
+fn retained_register_source_rejects_another_native_accepted_artifact() {
+    let text = "use std::classical::{empty_bits,prepend_bit};
+        pub unitary fn main()->Bits<2>{prepend_bit[1](0,prepend_bit[0](1,empty_bits()))}";
+    let graph = elaborate(text, "main::main", BTreeMap::new());
+    let proposal = graph.lower_raw().unwrap();
+    let changed = text.replace(
+        "prepend_bit[1](0,prepend_bit[0](1",
+        "prepend_bit[1](1,prepend_bit[0](0",
+    );
+    let other = elaborate(&changed, "main::main", BTreeMap::new());
+    let accepted = accept(&other);
+    let error = proposal.validate_source_steps(&accepted).unwrap_err();
+    assert_eq!(error.code(), "preservation");
+    assert!(error.message().contains("differs"));
+    assert_eq!(
+        proposal.source().instantiation().program().source("main"),
+        Some(text)
+    );
+}

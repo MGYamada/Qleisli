@@ -2288,6 +2288,22 @@
           "test": "copied_measured_registers_preserve_bell_correlation_and_eager_effects"
         },
         {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "ordinary_basis_substitutions_keep_register_and_product_tags"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "quantum_provider_calls_retain_unused_ordinary_register_computation"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "register_type_coercions_and_quantum_copy_drop_still_reject"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "retained_register_source_rejects_another_native_accepted_artifact"
+        },
+        {
           "path": "src/frontend/sized/raw/preservation.rs",
           "test": "ordinary_register_replay_rejects_native_valid_order_and_computation_faults"
         },

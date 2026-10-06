@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.ordinary-bits-additional-coverage",
+  "version": 1,
+  "recorded_utc": "2026-10-06T22:44:14.220165+00:00",
+  "implementation_commit": "cba1a9cc9146c457e2d2a5930a9de8d1283d02dd",
+  "source_files": {
+    "tests/ordinary_booleans.rs": "797f3e51553766fa6b389d575db66bbca0dce68cc9db38aeefd731648eef4fcb",
+    "scripts/check_production_coverage.py": "10163b52b80f815f0d8a4aac6e8dcd26b6bb8d37f4939f5c024b3e926c9d5abb",
+    "tests/fixtures/verification_v029/coverage.json": "d4deb28430defdea9d52d7cff58977085e7c027989dfbbf7bbe730fa585a0957"
+  },
+  "validation": {
+    "latest": "16 ordinary_booleans tests passed; targeted Clippy passed.",
+    "msrv": "16 ordinary_booleans tests passed; targeted Clippy passed.",
+    "coverage": "14 production coverage checker tests and fixed current coverage/inventory passed.",
+    "new_tests": [
+      "ordinary_basis_substitutions_keep_register_and_product_tags",
+      "quantum_provider_calls_retain_unused_ordinary_register_computation",
+      "register_type_coercions_and_quantum_copy_drop_still_reject",
+      "retained_register_source_rejects_another_native_accepted_artifact"
+    ],
+    "subjects": "Unit, Bit, Bits<0..2>, nested ordinary products, generic Basis bindings, explicit provider-local types and discarded ordinary computations; native-accepted changed-source output rejected by original private proposal binding.",
+    "limits": "Existing concrete capacities and pending proof status unchanged. No new maximum-size quantum case.",
+    "not_claimed": [
+      "General source preservation",
+      "New guarantee admission",
+      "Finite project profile convergence",
+      "Exact new-commit hosted CI success"
+    ]
+  }
+}

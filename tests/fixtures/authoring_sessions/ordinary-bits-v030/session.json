@@ -106,7 +106,8 @@
       ],
       "reports": [
         "assessment.json",
-        "validation-local.json"
+        "validation-local.json",
+        "validation-additional.json"
       ]
     }
   ],
