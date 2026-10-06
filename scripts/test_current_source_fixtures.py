@@ -628,7 +628,7 @@ class RepositoryMigrationTests(unittest.TestCase):
         # real strict file records. Exercise the same entry point as Rust tests.
         data = json.loads((fixtures.ROOT / fixtures.QFOR_MAP).read_text())
         entries = fixtures._file_entries(data, "quantum fold")
-        self.assertEqual(len(entries), 13)
+        self.assertEqual(len(entries), 16)
         for entry in entries.values():
             before = fixtures.ROOT / entry["before_path"]
             current = fixtures.ROOT / entry["current_path"]

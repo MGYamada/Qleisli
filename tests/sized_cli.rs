@@ -18,7 +18,12 @@ fn modules() -> Vec<String> {
         ("evolution", "corpus/sized/qualtran_qpe/evolution.qli"),
     ]
     .into_iter()
-    .map(|(name, path)| format!("--module={name}={}/{path}", env!("CARGO_MANIFEST_DIR")))
+    .map(|(name, path)| {
+        let selected = common::current_namespace_fixture(
+            &PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(path),
+        );
+        format!("--module={name}={}", selected.display())
+    })
     .collect()
 }
 #[test]

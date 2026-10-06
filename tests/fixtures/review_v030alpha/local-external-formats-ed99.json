@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.local-external-formats-validation.v1",
+  "checked_commit": "ed99fbd723f0745991d700686017f7bbb149cd7f",
+  "command": "QLEISLI_KERNEL=<repository>/lean-kernel/.lake/build/bin/qleisli-kernel /private/tmp/qleisli-ed99-interop-validation/bin/python scripts/test_interop_external.py /private/tmp/qleisli-bounded-validation-target/debug/examples/interop --llvm-as /opt/homebrew/opt/llvm/bin/llvm-as --opt /opt/homebrew/opt/llvm/bin/opt",
+  "result": {
+    "exit_code": 0,
+    "passed": 4,
+    "seconds": 46.178
+  },
+  "environment": {
+    "python": "3.14.5",
+    "llvm": "22.1.6",
+    "openqasm3": "1.0.1",
+    "antlr4-python3-runtime": "4.13.2",
+    "dependency_requirements": "scripts/interop-validation-requirements.txt",
+    "dependency_install": "Pinned wheel hashes checked in an isolated temporary virtual environment"
+  },
+  "source_sha256": {
+    "scripts/test_interop_external.py": "b5d004d69508b3049ab6b0daefd2cfd2afefbf68a43945e8ac90b9ef705d4938",
+    "scripts/test_review_v024.py": "bcb23e4b768160dc8a035ea1800a88913e040adf344a649443d8b5984d8b75cb",
+    "scripts/current_source_fixtures.py": "fcd6506cb12f59b84458e0bddbda597b958d9ee3ea7cc4cbb27621dd7d35a3c3",
+    "scripts/interop-validation-requirements.txt": "981c252d6b9379db5f3e085847f86625eed8fa8a0666e2aba127c2734ecb83fc",
+    "examples/interop.rs": "4b53325a5104ddc32fc1f93bcfa57dfbaf2dd5e8656328141e62c05e40c99b8f",
+    "tests/fixtures/frontend_v030/qfor/source-map.json": "b2909c9a7eee8ead6c87f7431f9bada099579fcbeab4232e4faf6e9d0b02889d"
+  },
+  "executables_sha256": {
+    "example": "05ef3589651d7efb65b8e769b7fa5fad46dc8aa0562e966e27f418a8f358bc1a",
+    "native_checker": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "log": {
+    "path": "/private/tmp/qleisli-interop-ed99.log",
+    "sha256": "ad0aebfa7293bbfc02060711ef5efd03204f93af3559e178f5e3c4e20dcf075e",
+    "retention": "External local log; the compact result is retained here."
+  },
+  "scope": "Independent OpenQASM syntax, LLVM/QIR profile structure, retained small target coefficients and atomic rejection checks. Strict migration identities select current derivatives; original fixtures remain untouched.",
+  "limits": "Not translation correctness, source preservation, generic QFT, a fresh Lean replay, full Rust integration or hosted CI. Local LLVM 22 differs from the hosted LLVM 18 gate; hosted verification remains required. Broader QS/PR/RS/EXACT obligations remain pending."
+}

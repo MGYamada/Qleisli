@@ -1,6 +1,8 @@
 //! Small source-level comparisons of the generic Rust frontend and the
 //! experimental concrete Python oracle. Neither result supplies IR evidence.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+mod common;
+
 use qleisli::frontend::sized::ParsedProgram;
 use std::collections::BTreeMap;
 use std::io::Write;
@@ -221,7 +223,10 @@ fn corpus_modules() -> BTreeMap<String, String> {
     .map(|(module, path)| {
         (
             module.into(),
-            std::fs::read_to_string(root.join("corpus/sized").join(path)).unwrap(),
+            std::fs::read_to_string(common::current_namespace_fixture(
+                &root.join("corpus/sized").join(path),
+            ))
+            .unwrap(),
         )
     })
     .collect()
@@ -279,10 +284,11 @@ import sys
 from pathlib import Path
 sys.path.insert(0, 'scripts')
 from compile_sized_corpus import compile_source
+from current_source_fixtures import current_source_file
 root = Path('corpus/sized')
-modules = {path.stem: path.read_text() for path in (root/'qualtran_arithmetic').glob('*.qli')}
-modules['prepare'] = (root/'katas_ghz/prepare.qli').read_text()
-modules['bitwise'] = (root/'qualtran_xor/bitwise.qli').read_text()
+modules = {path.stem: current_source_file(path).read_text() for path in (root/'qualtran_arithmetic').glob('*.qli')}
+modules['prepare'] = current_source_file(root/'katas_ghz/prepare.qli').read_text()
+modules['bitwise'] = current_source_file(root/'qualtran_xor/bitwise.qli').read_text()
 count = 0
 for n in range(4):
     for module, entry in [('controls','all_ones'), ('increment','increment'),

@@ -26,14 +26,11 @@ fn rejected(source: &str, expected: ErrorCode) {
     assert_eq!(error.code, expected, "{source}\n{error}");
 }
 
-macro_rules! static_value_source {
-    ($case:literal) => {
-        include_str!(concat!(
-            "fixtures/authoring_sessions/common-static-value-v030/attempt-01/",
-            $case,
-            "/main.qli"
-        ))
-    };
+fn static_value_source(case: &str) -> String {
+    let original = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
+        "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/{case}/main.qli"
+    ));
+    fs::read_to_string(common::current_namespace_fixture(&original)).unwrap()
 }
 
 fn shared_value_error(source: &str, name: &str, code: &str, finite_code: &str, message: &str) {
@@ -64,13 +61,13 @@ fn shared_value_error(source: &str, name: &str, code: &str, finite_code: &str, m
 #[test]
 fn static_names_as_runtime_values_are_located_type_errors_in_both_source_paths() {
     for (source, name) in [
-        (static_value_source!("static-natural"), "n"),
-        (static_value_source!("static-basis"), "A"),
-        (static_value_source!("static-operation"), "U"),
-        (static_value_source!("fold-index"), "i"),
+        (static_value_source("static-natural"), "n"),
+        (static_value_source("static-basis"), "A"),
+        (static_value_source("static-operation"), "U"),
+        (static_value_source("fold-index"), "i"),
     ] {
         shared_value_error(
-            source,
+            &source,
             name,
             "type",
             "type_mismatch",
@@ -82,7 +79,7 @@ fn static_names_as_runtime_values_are_located_type_errors_in_both_source_paths()
 #[test]
 fn an_actually_consumed_runtime_owner_retains_the_ownership_error() {
     shared_value_error(
-        static_value_source!("consumed-runtime-owner"),
+        &static_value_source("consumed-runtime-owner"),
         "q",
         "ownership",
         "ownership",

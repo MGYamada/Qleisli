@@ -6,7 +6,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
-- Repair strict qfor migration metadata and sized QPE test source selection;
+- Repair strict qfor migration metadata and retained CLI/Python corpus source
+  selection, including zero-fold ownership counterexamples;
   check the real migration map in regression tests. Keep fold parsing out of
   recursive expression dispatch frames so bounded nesting rejects on the
   default test stack. Add small static identity-fold accounting checks (#28/#194).

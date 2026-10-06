@@ -26,6 +26,12 @@ fn case(category: &str, name: &str) -> String {
     // Explicit derivatives preserve the first missing-static sources and their
     // actual baseline diagnostics; source-map.json binds both byte identities.
     match (category, name) {
+        ("followups", "zero-fold-quantum-wildcard") => {
+            let original = Path::new(env!("CARGO_MANIFEST_DIR"))
+                .join("tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030")
+                .join(format!("{category}/{name}/main.qli"));
+            std::fs::read_to_string(common::current_namespace_fixture(&original)).unwrap()
+        }
         ("counterexamples", "static-collision") | ("attempt-01", "static-mixed") => {
             source(&format!("validation-repairs/{name}.qli"))
         }

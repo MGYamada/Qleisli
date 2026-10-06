@@ -80,6 +80,24 @@
       "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
       "before_sha256": "cc936fe9f49ac5c7c1a4794e540d9d7af36426f68d3dbfa411018080eb3cefc2",
       "current_sha256": "9a5482a2c7a66f5c9b14d173adbf72970e08de93993b1f410774afe870cf5011"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard/main.qli",
+      "before_sha256": "b66a3e45b89eedf01b33cb7556cf3e8f6c6f0297ad845027b86ade578ae32f2e",
+      "current_sha256": "95090fba67e10c64575fed41dec1ae2ef4af31ced3ce4063abad427986c39a43"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/zero-fold-invalid/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/zero-fold-invalid/main.qli",
+      "before_sha256": "70c80623e2765516c16ea2570df1c38dc55ec0e6c53492132c705b3638021a65",
+      "current_sha256": "a9f762e462932ec35eaea38eddda41960587aabbd70c372a8ffedfd6b360d5fc"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/fold-index/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/fold-index/main.qli",
+      "before_sha256": "ef0e68fa98815b3c1030b8a5e167e0ce626114dffeacf363a69ea7171ef1d936",
+      "current_sha256": "951aba17924c0c1cd4ac2944dd343a908eff0e443981c0defc7659515d4bbd0f"
     }
   ],
   "context": "#194 original quantum folds migrate only their keyword; all predecessor source/attribution bytes remain fixed. Fixed historical Fourier clients receive grammar migration only, without generic-QFT delivery/integration work. The two basis-polymorphism current derivatives additionally remove a copied blank EOF line for Git whitespace policy; original predecessor bytes and their hashes remain fixed."
