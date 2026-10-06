@@ -16,7 +16,7 @@ unitary fn client[static U: Op<Bit,ZMeaning>](q: Q<Bit>) -> Q<Bit>
 requires Apply(U) { U(q) }
 
 observe fn main() -> (Bit,Bit) {
-    let a = client[bind_op(direct,ZMeaning)](h(init0()));
-    let b = client[bind_op(decomposed,ZMeaning)](h(init0()));
+    let a = client[checked_op(direct,ZMeaning)](h(init0()));
+    let b = client[checked_op(decomposed,ZMeaning)](h(init0()));
     (measure_z(h(a)),measure_z(h(b)))
 }

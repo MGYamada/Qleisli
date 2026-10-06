@@ -1,0 +1,30 @@
+2026-10-06T04:19:54.7548110Z HEAD is now at 1899754 Merge a6e09a5960d9615b1f4356dcbf32bc33fd608e1f into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T04:19:54.7575550Z ##[endgroup]
+2026-10-06T04:19:54.7615527Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T04:19:54.7637883Z 18997543f87b254063d65e60394b26f999d261ab
+2026-10-06T04:21:46.1296525Z ##[group]Run cargo +1.98.1 test --all-targets
+2026-10-06T04:21:46.1297005Z [36;1mcargo +1.98.1 test --all-targets[0m
+2026-10-06T04:34:12.3049807Z      Running tests/input_corpus.rs (target/debug/deps/input_corpus-c0f88c70f45f8fa3)
+2026-10-06T04:34:12.3062195Z 
+2026-10-06T04:34:12.3062382Z running 2 tests
+2026-10-06T04:34:12.3168172Z test local_corpus_counterexamples_reject ... ok
+2026-10-06T04:34:12.8659427Z test all_reviewed_corpus_projects_compile_verify_and_execute ... FAILED
+2026-10-06T04:34:12.8659818Z 
+2026-10-06T04:34:12.8659921Z failures:
+2026-10-06T04:34:12.8660118Z 
+2026-10-06T04:34:12.8660375Z ---- all_reviewed_corpus_projects_compile_verify_and_execute stdout ----
+2026-10-06T04:34:12.8660772Z 
+2026-10-06T04:34:12.8661287Z thread 'all_reviewed_corpus_projects_compile_verify_and_execute' (96084) panicked at tests/input_corpus.rs:29:5:
+2026-10-06T04:34:12.8661847Z assertion `left == right` failed: current corpus snapshots not selected
+2026-10-06T04:34:12.8662191Z   left: 8
+2026-10-06T04:34:12.8662416Z  right: 6
+2026-10-06T04:34:12.8662761Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T04:34:12.8663011Z 
+2026-10-06T04:34:12.8663014Z 
+2026-10-06T04:34:12.8663083Z failures:
+2026-10-06T04:34:12.8663300Z     all_reviewed_corpus_projects_compile_verify_and_execute
+2026-10-06T04:34:12.8663490Z 
+2026-10-06T04:34:12.8663702Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.56s
+2026-10-06T04:34:12.8663980Z 
+2026-10-06T04:34:12.8664262Z error: test failed, to rerun pass `--test input_corpus`
+2026-10-06T04:34:12.8686148Z ##[error]Process completed with exit code 101.

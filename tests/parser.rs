@@ -36,14 +36,14 @@ fn static_operation_errors_point_to_the_unconsumed_token_or_eof() {
 #[test]
 fn all_static_constructor_token_prefixes_parse_without_panicking() {
     for operation in [
-        "bind_op(u,m)",
+        "checked_op(u,m)",
         "repeat_op(0,u)",
         "inverse_op(u)",
         "controlled_op(u)",
         "then_op(u,v)",
         "tensor_op(u,v)",
         "conjugate_op(u,v)",
-        "then_op(bind_op(u,m),controlled_op(inverse_op(repeat_op(2,v))))",
+        "then_op(checked_op(u,m),controlled_op(inverse_op(repeat_op(2,v))))",
     ] {
         let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ g[{operation}](q) }}");
         check_token_prefixes(&source, operation);

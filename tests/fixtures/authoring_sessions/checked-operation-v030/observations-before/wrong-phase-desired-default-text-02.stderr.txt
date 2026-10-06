@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-desired/main.qli:17:26: parse: parse error: expected `]`, found `(`

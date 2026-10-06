@@ -1,0 +1,67 @@
+{
+  "format": "qleisli.authoring-metadata-correction",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:23:19.265570+00:00",
+  "first_metadata_check": "metadata-check-first-03.json",
+  "first_error": "missing observation output: text events supplied stdout_text/stderr_text but omitted the existing checker-required transcript.",
+  "original_session": {
+    "path": "session-before-metadata-03.json",
+    "sha256": "0945401f6381502d700d678f260b97d9cc9a6bad7fcc3f2fbc756d0a9c54f1f5"
+  },
+  "current_session": {
+    "path": "session.json",
+    "sha256": "1ad55eef4120806a7058ac550987223717b1c88f9278d8155c0a2d5c6761b410"
+  },
+  "companions": [
+    {
+      "original_path": "observations-before/providers-reference-control-desired-finite-check-text.json",
+      "original_sha256": "43ae5925c9bb58233b6c6bfc4304691487d5f5c2830438721a7ebb962d8d33d8",
+      "companion_path": "observations-before/providers-reference-control-desired-finite-check-text-registration-03.json",
+      "companion_sha256": "683a5be1e3686ab1e3c8f940c5f35fa9f467384f024f13d7bff090ace3575a6b"
+    },
+    {
+      "original_path": "observations-before/providers-reference-control-legacy-finite-check-text.json",
+      "original_sha256": "1071140c9bbd77d7b14a22cc71ced5e6038a859058fe18dfb30ef82adb521358",
+      "companion_path": "observations-before/providers-reference-control-legacy-finite-check-text-registration-03.json",
+      "companion_sha256": "20260b48091b59399b5c1d69f0e19c2b51d134970abf8a26dbb32e3d2a2cf100"
+    },
+    {
+      "original_path": "observations-before/wrong-phase-desired-finite-check-text.json",
+      "original_sha256": "1e8dd811d4ac326b1477f8dade95e632325e96100bf6f63cb42cbcf4668ce4e3",
+      "companion_path": "observations-before/wrong-phase-desired-finite-check-text-registration-03.json",
+      "companion_sha256": "8e49bf1f3a4a9276a17be43fd9c3a45b4a8a2b0b06039de4b5bb9c79f1f25cf3"
+    },
+    {
+      "original_path": "observations-before/wrong-phase-legacy-finite-check-text.json",
+      "original_sha256": "972b6059c8acadec747598de0abe17e584eccb39fb0f10616df6018606290947",
+      "companion_path": "observations-before/wrong-phase-legacy-finite-check-text-registration-03.json",
+      "companion_sha256": "be5ebd5d8eb1d8a3b941e9063d22873d7ad586467192d17dd5ae1a6d0f7cb376"
+    },
+    {
+      "original_path": "observations-before/providers-reference-control-desired-default-text-02.json",
+      "original_sha256": "63967f04473b762ce377a06964b55838e151f83c148b16f58302308c7cd8995d",
+      "companion_path": "observations-before/providers-reference-control-desired-default-text-02-registration-03.json",
+      "companion_sha256": "6b151ff764633fda5ce844effebd4a33efe1bb2b6c210632d4c17044b161e36d"
+    },
+    {
+      "original_path": "observations-before/providers-reference-control-legacy-default-text-02.json",
+      "original_sha256": "a2e7d016db76cd0d45d35a1125be3ac94be0c1c9b6d56591edd3f85974261d25",
+      "companion_path": "observations-before/providers-reference-control-legacy-default-text-02-registration-03.json",
+      "companion_sha256": "f1fadee5c4b475647b02c5ea7c46de2f1124ac93db507f28c9abc42ebef66274"
+    },
+    {
+      "original_path": "observations-before/wrong-phase-desired-default-text-02.json",
+      "original_sha256": "816903a6b0735da4718d3627acd571fdfe637d0d0f158ba703ef3fd44a5148c8",
+      "companion_path": "observations-before/wrong-phase-desired-default-text-02-registration-03.json",
+      "companion_sha256": "539e09d5d14cec7ee095056c160fb22a39953c0132d3570a05bc3c61d38c77f1"
+    },
+    {
+      "original_path": "observations-before/wrong-phase-legacy-default-text-02.json",
+      "original_sha256": "708e09dd5ed6382704769164e4fc323f2cf778ece9fc5f83417ed41e2d08b0c5",
+      "companion_path": "observations-before/wrong-phase-legacy-default-text-02-registration-03.json",
+      "companion_sha256": "f4dfc2e47385ec0bd480aa11716f5ff03b4e7f11e90138270959fc9f93d90526"
+    }
+  ],
+  "preserved": "All16 first QLI files,16 manifests, pending inventory, context, both drivers, original26-event capture,4-event text supplement, all original event JSON/raw streams and artifacts remain byte-identical. Only current registration adds explicit transcript companions and the supplement.",
+  "scope": "Registration-only normalization after an actual preserved metadata failure. No CLI source, diagnostic, exit/time, proof or accepted handle changes."
+}

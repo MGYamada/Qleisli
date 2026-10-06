@@ -117,7 +117,7 @@ fn distinct_contract_pairs_and_static_providers_share_one_project_snapshot() {
 #[test]
 fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
     for call in [
-        "apply[bind_op(implementation,Flip)](q)",
+        "apply[checked_op(implementation,Flip)](q)",
         "apply_contract(implementation,specified,q)",
     ] {
         let root = SourceRoot::new(&format!(

@@ -1,0 +1,11 @@
+{
+  "error_type": "ValueError",
+  "error": "missing observation output",
+  "exit_code": 1,
+  "format": "qleisli.authoring-metadata-integrity-observation",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:22:51.251376+00:00",
+  "method": "Pure check_authoring_sessions.check_session on this one registered first capture; no recorded command execution",
+  "session_sha256": "0945401f6381502d700d678f260b97d9cc9a6bad7fcc3f2fbc756d0a9c54f1f5",
+  "scope": "First metadata failure is preserved separately; CLI outputs/exits/source bytes are unchanged."
+}

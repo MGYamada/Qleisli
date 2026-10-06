@@ -1,0 +1,36 @@
+2026-10-06T04:21:19.8581311Z ##[group]Run git diff --check "$(git hash-object -t tree /dev/null)" HEAD
+2026-10-06T04:21:19.8581716Z [36;1mgit diff --check "$(git hash-object -t tree /dev/null)" HEAD[0m
+2026-10-06T04:21:19.8636383Z shell: /usr/bin/bash -e {0}
+2026-10-06T04:21:19.8636679Z env:
+2026-10-06T04:21:19.8636852Z   MDBOOK_VERSION: 0.5.4
+2026-10-06T04:21:19.8637174Z   MDBOOK_LINUX_SHA256: 3f28de05dafca9d0f2eab99c662116b0e37b89b1d96a08f8f430b9eeae958cd7
+2026-10-06T04:21:19.8637526Z ##[endgroup]
+2026-10-06T04:21:20.4765628Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/bit-flip-reference-01.stdout.txt:7: new blank line at EOF.
+2026-10-06T04:21:20.4766806Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt:6: trailing whitespace.
+2026-10-06T04:21:20.4767565Z +2026-10-06T04:05:44.0475308Z 
+2026-10-06T04:21:20.4768365Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt:8: trailing whitespace.
+2026-10-06T04:21:20.4769534Z +2026-10-06T04:05:44.0476274Z 
+2026-10-06T04:21:20.4769975Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt:12: trailing whitespace.
+2026-10-06T04:21:20.4770456Z +2026-10-06T04:05:44.0480720Z 
+2026-10-06T04:21:20.4770913Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt:13: trailing whitespace.
+2026-10-06T04:21:20.4771365Z +2026-10-06T04:05:44.0480723Z 
+2026-10-06T04:21:20.4771787Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt:16: trailing whitespace.
+2026-10-06T04:21:20.4772240Z +2026-10-06T04:05:44.0481394Z 
+2026-10-06T04:21:20.4772667Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt:18: trailing whitespace.
+2026-10-06T04:21:20.4773106Z +2026-10-06T04:05:44.0482032Z 
+2026-10-06T04:21:20.4773507Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt:2: trailing whitespace.
+2026-10-06T04:21:20.4773937Z +2026-10-06T04:01:37.8591545Z 
+2026-10-06T04:21:20.4774319Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt:6: trailing whitespace.
+2026-10-06T04:21:20.4774756Z +2026-10-06T04:01:37.8592978Z 
+2026-10-06T04:21:20.4775133Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt:7: trailing whitespace.
+2026-10-06T04:21:20.4775666Z +2026-10-06T04:01:37.8592981Z 
+2026-10-06T04:21:20.4776063Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt:10: trailing whitespace.
+2026-10-06T04:21:20.4776485Z +2026-10-06T04:01:37.8593524Z 
+2026-10-06T04:21:20.4776885Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt:12: trailing whitespace.
+2026-10-06T04:21:20.4777310Z +2026-10-06T04:01:37.8594011Z 
+2026-10-06T04:21:20.4777700Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.stdout.txt:363: new blank line at EOF.
+2026-10-06T04:21:20.4778332Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.stdout.txt:44: new blank line at EOF.
+2026-10-06T04:21:20.4778947Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.stdout.txt:182: new blank line at EOF.
+2026-10-06T04:21:20.4779565Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stdout.txt:46: new blank line at EOF.
+2026-10-06T04:21:20.4780201Z tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stdout.txt:46: new blank line at EOF.
+2026-10-06T04:21:20.4823211Z ##[error]Process completed with exit code 2.

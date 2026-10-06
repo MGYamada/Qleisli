@@ -116,7 +116,7 @@ characters. This does not admit Unicode identifiers or alternate whitespace.
 The existing finite keywords are reserved in the common grammar, including
 identifier positions formerly treated contextually by the sized parser:
 `use`, `meaning`, `static`, `Op`, `requires`, `Apply`, `Adjoint`, `Controlled`,
-`permutation_by`, `phase_by`, `bind_op`, `inverse_op`, `then_op`, `tensor_op`,
+`permutation_by`, `phase_by`, `checked_op`, `bind_op`, `inverse_op`, `then_op`, `tensor_op`,
 `controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `basis`, `iso`, `unitary`,
 `observe`, `fn`, `let`, `if`, `else`, `do`, `pure`, `with_computed`,
 `apply_contract`, `adjoint`, `repeat_static`, `qif`, `true`, `false`, `not`,
@@ -128,6 +128,17 @@ notation with a migration diagnostic. They introduce no accepted expression,
 alias, monadic operation or state preparation. `basis fn` retains its separate
 declaration role; the expression role is specified in
 [Coherent basis maps](coherent-basis.md).
+
+`checked_op` is the reserved exact-meaning constructor described in
+[Checked operations](checked-operations.md). The retired `bind_op` spelling
+remains reserved solely for a located migration error; it is never an alias.
+Existing declarations or finite filesystem module names using `checked_op`
+as an ordinary identifier must be renamed. Occurrences in comments and longer
+identifiers remain unaffected. The lexer scans the complete file before
+parsing, so a later retired token can precede an earlier grammar error. Token
+capacity rejection keeps precedence over that token's migration diagnostic.
+Selected explicit module keys retain their separate existing validation rules;
+this change does not unify them with finite filesystem module names.
 
 `Bits`, `CBits` and `Nat` are contextual type/kind names and remain valid names
 in identifier positions. `as` is contextual: it separates the quantum input

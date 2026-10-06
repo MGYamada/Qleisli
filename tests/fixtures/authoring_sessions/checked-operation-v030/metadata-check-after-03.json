@@ -1,0 +1,15 @@
+{
+  "format": "qleisli.authoring-metadata-integrity-observation",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:23:19.278456+00:00",
+  "method": "Pure check_authoring_sessions.check_session on this one registered study; no recorded command execution",
+  "exit_code": 0,
+  "result": {
+    "snapshots": 1,
+    "observations": 30
+  },
+  "session_sha256": "1ad55eef4120806a7058ac550987223717b1c88f9278d8155c0a2d5c6761b410",
+  "original_session_sha256": "0945401f6381502d700d678f260b97d9cc9a6bad7fcc3f2fbc756d0a9c54f1f5",
+  "first_failure_preserved": "metadata-check-first-03.json",
+  "scope": "Local metadata integrity only; no semantic certification."
+}

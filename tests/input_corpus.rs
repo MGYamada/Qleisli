@@ -32,7 +32,8 @@ fn all_reviewed_corpus_projects_compile_verify_and_execute() {
             .zip(&current)
             .filter(|(before, after)| before != after)
             .count(),
-        6,
+        // Six namespace snapshots plus the two explicit coherent-basis migrations.
+        8,
         "current corpus snapshots not selected"
     );
     for project in current {

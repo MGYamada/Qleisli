@@ -48,7 +48,7 @@ impl Lowerer<'_, '_> {
                             module,
                             name.span,
                             ErrorCode::TypeMismatch,
-                            "bind_op requires closed declarations",
+                            "checked_op requires closed declarations",
                         ));
                     }
                 }

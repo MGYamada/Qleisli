@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.checked-operation-integration-supplement",
+  "version": 1,
+  "issue": 82,
+  "supplements": {
+    "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/integration-validation-01.json",
+    "sha256": "c2ea364b1ec74a32ad6df5ffc34d129438972d4bf03f9c9e530d5a510a493f7c"
+  },
+  "performed": [
+    {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/input-corpus-latest-01.json",
+      "sha256": "a908428af5708ad88be068e1a4d98db39f04df31d2fecac41f66b35851687993"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/input-corpus-msrv-01.json",
+      "sha256": "a91a918a997d4c5397a54b97e1314063d255b9666ea37ac5ae87539a7fa8723c"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/clippy-corpus-latest-02.json",
+      "sha256": "247a94cf8a2822fe423b0fc18a7848b4af4f61c5959250942db8470952bdef5a"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/clippy-corpus-msrv-02.json",
+      "sha256": "19ff7c1120fb3515002ffe81310cc899f099f12deeb1c7bc54a03bb505996944"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/fmt-corpus-03.json",
+      "sha256": "6d9fc3329aa58df02a117f90d75a36473452d7a6262440facd2df18c4f41a62b"
+    }
+  ],
+  "reviewed_source": {
+    "path": "tests/input_corpus.rs",
+    "sha256": "bdef063b8cf66317732b2b85d3208ab8de7f51883271ee3adf3322c8cfb53676"
+  },
+  "repair": {
+    "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/input-corpus-count-repair-01.json",
+    "sha256": "6918f73fa5e896d84ab247ead11fc58d5e49efafcae04cc5b70fb18da07174e8"
+  },
+  "hosted_predecessor_review": {
+    "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/hosted-predecessor/review-37413163947.json",
+    "sha256": "c37b38ded86e2083b46043f91b55db1f439078345c7c6028e4fcb2b91bbd1168"
+  },
+  "counts": {
+    "latest_rust_unique_passed": 97,
+    "msrv_rust_unique_passed": 78,
+    "existing_ignored_stress_tests_per_toolchain": 2,
+    "corpus_projects_compiled_verified_executed_per_toolchain": 87,
+    "corpus_negative_controls_per_toolchain": 4
+  },
+  "reason": "The #81 full hosted run failed an obsolete six-snapshot assertion before exercising the corpus. Preserve the 87 source roots and eight explicit derivatives; update only the test expectation and comment. Preserve exact hosted/libtest streams with narrow Git whitespace attributes.",
+  "limits": "These two passing corpus smoke tests on each toolchain supplement, not replace, independent mathematical oracle and preservation obligations. Current #82 full hosted CI, packages, fresh installation and release gates are not complete; no fresh Lean build/audit/replay or guarantee admission. External qargo/qlippy diagnostic work is omitted under explicit human authorization; Cargo Clippy and actual Qleisli diagnostics remain checked. QFT stays outside scope."
+}

@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-desired/main.qli:16:26: parse: parse error: expected `]`, found `(`

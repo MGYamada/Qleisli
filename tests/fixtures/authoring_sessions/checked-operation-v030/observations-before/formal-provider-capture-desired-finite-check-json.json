@@ -1,0 +1,59 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/formal-provider-capture-desired",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:20:14.166805+00:00",
+  "elapsed_seconds": 0.005440333974547684,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "formal-provider-capture-desired",
+  "action": "finite-check-json",
+  "output_format": "json",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "3b8ea77f59b93639fa2714f0dc96987141b779dd8494ac5207f762c03b5f2a6e",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-before/formal-provider-capture-desired-finite-check-json.stdout.txt",
+    "sha256": "848f0ad9b6ece3076efae4859ffab9f350f2f9ed458cf315a06f92e689a203ea"
+  },
+  "raw_stderr": {
+    "path": "observations-before/formal-provider-capture-desired-finite-check-json.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "attestation_limit": "Explicit selected executable bytes; no compiled-HEAD claim, independent native child-start/exit count, source preservation or Lean replay.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected `]`, found `(`",
+        "primary": {
+          "path": "main.qli",
+          "start": 723,
+          "end": 724,
+          "line": 16,
+          "column": 42
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

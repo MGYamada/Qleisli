@@ -1,0 +1,27 @@
+{
+  "format": "qleisli.checked-operation-default-text-supplement",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:21:28.610862+00:00",
+  "driver_sha256": "555ebe5dc64d48d09acf0c2752fd11c79081b528ee8afec6a935fdc049d0cb81",
+  "first_capture_sha256": "dd863291650b05ce3f0d9d138288b45cd533e90d5eb233d322b6f327309642d5",
+  "predictions": {
+    "path": "observations-before/default-text-predictions-02.json",
+    "sha256": "63c254834fd9f505d5d78c87f6f86e6d2c27c25acd05277d0744f5ccf37b5e19"
+  },
+  "frozen_record_sha256": {
+    "first-files.json": "4b61f2321d9a54c87bc45782039cbb6fed0ea530de3e331c1585a2f0aa3a238d",
+    "session.pending.json": "aac15b788ce9643b2402e304acaf463fafc4acbf6ef88efb838f5b07f980b9fe",
+    "session.json": "0945401f6381502d700d678f260b97d9cc9a6bad7fcc3f2fbc756d0a9c54f1f5",
+    "context.md": "4b6ab377b0a54819c39e465f220a85586a3d34075e3ff40443fbdf444eaf22e4",
+    "capture_before.py": "fa1573d88215d46d0f1341e64da19f3ecde98cb87cf8288547a03fc55b475493",
+    "observations-before/capture.json": "dd863291650b05ce3f0d9d138288b45cd533e90d5eb233d322b6f327309642d5"
+  },
+  "observations": [
+    "observations-before/providers-reference-control-desired-default-text-02.json",
+    "observations-before/providers-reference-control-legacy-default-text-02.json",
+    "observations-before/wrong-phase-desired-default-text-02.json",
+    "observations-before/wrong-phase-legacy-default-text-02.json"
+  ],
+  "source_and_executable_identities_unchanged": true,
+  "scope": "Four additional real text commands. Four original invalid-flag usage failures remain. No source repair, compiler change/build, oracle execution, Lean replay, guarantee/Issue/release completion."
+}

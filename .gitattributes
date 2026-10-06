@@ -179,3 +179,11 @@ tests/fixtures/frontend_v030/ci-regressions-37392202925/validation/*.patch -text
 tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/*.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/ci-regressions-37404989108/*stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/ci-regressions-37404989108/*.log-excerpt.txt -text -whitespace
+# Preserve raw coherent-basis command output and hosted timestamped blank lines.
+tests/fixtures/frontend_v030/coherent-basis/implementation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/coherent-basis/implementation-01/*.excerpt.txt -text -whitespace
+tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-msrv-failure.txt -text -whitespace
+# Keep checked-operation libtest and command streams byte-identical.
+tests/fixtures/frontend_v030/checked-operation/implementation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/checked-operation/implementation-01/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/checked-operation/implementation-01/hosted-predecessor/*.exact-excerpt.txt -text -whitespace

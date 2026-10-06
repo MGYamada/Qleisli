@@ -25,6 +25,7 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.manifest = self.root / "source-map.json"
         self.namespace_manifest = self.root / "namespace-source-map.json"
         self.coherent_manifest = self.root / "coherent-source-map.json"
+        self.checked_manifest = self.root / "checked-source-map.json"
         files = []
         for directory in (self.original, self.current):
             directory.mkdir()
@@ -39,9 +40,11 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.write_namespaces([])
         self.coherent_manifest.write_text(json.dumps(dict(
             format="qleisli.coherent-basis-source-map", version=1, files=[], projects=[])))
+        self.write_checked_projects([])
         for name, value in (("ROOT", self.root), ("MAP", self.manifest),
                             ("NAMESPACE_MAP", self.namespace_manifest.name),
-                            ("COHERENT_MAP", self.coherent_manifest.name)):
+                            ("COHERENT_MAP", self.coherent_manifest.name),
+                            ("CHECKED_MAP", self.checked_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -57,6 +60,10 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.namespace_manifest.write_text(json.dumps(dict(
             format="qleisli.semantic-namespace-source-map", version=1, files=[], projects=entries)))
 
+    def write_checked_projects(self, entries):
+        self.checked_manifest.write_text(json.dumps(dict(
+            format="qleisli.checked-operation-source-map", version=1, files=[], projects=entries)))
+
     def namespace_entry(self):
         self.selected = self.root / "namespace-current"
         shutil.copytree(self.current, self.selected)
@@ -67,6 +74,30 @@ class SourceFixtureIdentity(unittest.TestCase):
                  current_sha256=self.sha(self.selected / name))
             for name in ("Qargo.toml", "main.qli")])
         self.write_namespaces([entry])
+        return entry
+
+    def checked_project_entry(self):
+        self.namespace_entry()
+        self.coherent = self.root / "coherent-current"
+        shutil.copytree(self.selected, self.coherent)
+        (self.coherent / "main.qli").write_text(
+            "fn f(q: Q<Bit>) -> Q<Bit> { apply[bind_op(u,m)](basis q as x { not x }) }")
+        coherent_entry = dict(before_path="namespace-current", current_path="coherent-current", files=[
+            dict(path=name, before_sha256=self.sha(self.selected / name),
+                 current_sha256=self.sha(self.coherent / name))
+            for name in ("Qargo.toml", "main.qli")])
+        self.coherent_manifest.write_text(json.dumps(dict(
+            format="qleisli.coherent-basis-source-map", version=1,
+            files=[], projects=[coherent_entry])))
+        self.checked = self.root / "checked-current"
+        shutil.copytree(self.coherent, self.checked)
+        source = self.checked / "main.qli"
+        source.write_text(source.read_text().replace("bind_op", "checked_op"))
+        entry = dict(before_path="coherent-current", current_path="checked-current", files=[
+            dict(path=name, before_sha256=self.sha(self.coherent / name),
+                 current_sha256=self.sha(self.checked / name))
+            for name in ("Qargo.toml", "main.qli")])
+        self.write_checked_projects([entry])
         return entry
 
     def test_selects_only_recorded_current_source_and_keeps_original(self):
@@ -137,6 +168,56 @@ class SourceFixtureIdentity(unittest.TestCase):
     def test_missing_coherent_map_rejects_without_previous_project_fallback(self):
         self.coherent_manifest.unlink()
         with self.assertRaisesRegex(ValueError, "missing coherent basis source map"):
+            fixtures.current_source_fixture(self.original)
+
+    def test_missing_checked_map_rejects_without_previous_project_fallback(self):
+        self.checked_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing checked operation source map"):
+            fixtures.current_source_fixture(self.original)
+
+    def test_checked_project_chain_preserves_every_predecessor_and_complete_inventory(self):
+        entry = self.checked_project_entry()
+        before = {path: fixtures.source_hashes(path)
+                  for path in (self.original, self.current, self.selected, self.coherent)}
+        self.assertEqual(fixtures.current_source_fixture(self.original), self.checked)
+        self.assertEqual({path: fixtures.source_hashes(path) for path in before}, before)
+        self.assertEqual(fixtures.source_hashes(self.checked), {
+            file["path"]: file["current_sha256"] for file in entry["files"]})
+
+    def test_checked_map_cannot_hide_changed_coherent_project_predecessor(self):
+        entry = self.checked_project_entry()
+        source = self.coherent / "main.qli"
+        source.write_text("changed predecessor")
+        entry["files"][1]["before_sha256"] = self.sha(source)
+        self.write_checked_projects([entry])
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_fixture(self.original)
+
+    def test_checked_project_rejects_missing_extra_and_stale_final_inputs(self):
+        self.checked_project_entry()
+        source = self.checked / "main.qli"
+        original = source.read_bytes()
+        for change in ("missing", "stale", "extra"):
+            with self.subTest(change=change):
+                if change == "missing":
+                    source.unlink()
+                elif change == "stale":
+                    source.write_text("stale final source")
+                else:
+                    (self.checked / "unexpected.qli").write_text("extra input")
+                try:
+                    with self.assertRaisesRegex(ValueError, "identity changed"):
+                        fixtures.current_source_fixture(self.original)
+                finally:
+                    source.write_bytes(original)
+                    (self.checked / "unexpected.qli").unlink(missing_ok=True)
+
+    def test_checked_project_symlink_cannot_escape_snapshot(self):
+        self.checked_project_entry()
+        source = self.checked / "main.qli"
+        source.unlink()
+        source.symlink_to(self.coherent / "main.qli")
+        with self.assertRaisesRegex(ValueError, "escaping"):
             fixtures.current_source_fixture(self.original)
 
     def test_unmapped_current_project_keeps_previous_selection(self):
@@ -297,18 +378,23 @@ class SourceFileIdentity(unittest.TestCase):
         self.root = Path(self.temporary.name)
         self.original = self.root / "original.qli"
         self.namespace = self.root / "namespace.qli"
-        self.current = self.root / "coherent.qli"
-        self.original.write_text("use std::routines::qft2; fn f(q: Q<Bit>) -> Q<Bit> { do x <- q; pure not x }")
-        self.namespace.write_text("use std::transform::qft2; fn f(q: Q<Bit>) -> Q<Bit> { do x <- q; pure not x }")
-        self.current.write_text("use std::transform::qft2; fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { not x } }")
+        self.coherent = self.root / "coherent.qli"
+        self.current = self.root / "checked.qli"
+        self.original.write_text("use std::routines::qft2; fn f(q: Q<Bit>) -> Q<Bit> { apply[bind_op(u,m)](do x <- q; pure not x) }")
+        self.namespace.write_text("use std::transform::qft2; fn f(q: Q<Bit>) -> Q<Bit> { apply[bind_op(u,m)](do x <- q; pure not x) }")
+        self.coherent.write_text("use std::transform::qft2; fn f(q: Q<Bit>) -> Q<Bit> { apply[bind_op(u,m)](basis q as x { not x }) }")
+        self.current.write_text("use std::transform::qft2; fn f(q: Q<Bit>) -> Q<Bit> { apply[checked_op(u,m)](basis q as x { not x }) }")
         self.namespace_manifest = self.root / "namespace-map.json"
         self.coherent_manifest = self.root / "coherent-map.json"
+        self.checked_manifest = self.root / "checked-map.json"
         self.namespace_entry = self.entry(self.original, self.namespace)
-        self.coherent_entry = self.entry(self.namespace, self.current)
+        self.coherent_entry = self.entry(self.namespace, self.coherent)
+        self.checked_entry = self.entry(self.coherent, self.current)
         self.write_maps()
         for name, value in (("ROOT", self.root),
                             ("NAMESPACE_MAP", self.namespace_manifest.name),
-                            ("COHERENT_MAP", self.coherent_manifest.name)):
+                            ("COHERENT_MAP", self.coherent_manifest.name),
+                            ("CHECKED_MAP", self.checked_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -322,20 +408,23 @@ class SourceFileIdentity(unittest.TestCase):
                     current_path=current.relative_to(self.root).as_posix(),
                     before_sha256=self.sha(before), current_sha256=self.sha(current))
 
-    def write_maps(self, namespace=None, coherent=None):
+    def write_maps(self, namespace=None, coherent=None, checked=None):
         for path, format_name, entries in (
                 (self.namespace_manifest, "qleisli.semantic-namespace-source-map",
                  [self.namespace_entry] if namespace is None else namespace),
                 (self.coherent_manifest, "qleisli.coherent-basis-source-map",
-                 [self.coherent_entry] if coherent is None else coherent)):
+                 [self.coherent_entry] if coherent is None else coherent),
+                (self.checked_manifest, "qleisli.checked-operation-source-map",
+                 [self.checked_entry] if checked is None else checked)):
             path.write_text(json.dumps(dict(format=format_name, version=1,
                                            files=entries, projects=[])))
 
-    def test_complete_file_chain_keeps_both_predecessors(self):
-        originals = {path: path.read_bytes() for path in (self.original, self.namespace)}
+    def test_complete_file_chain_keeps_all_predecessors(self):
+        originals = {path: path.read_bytes() for path in (self.original, self.namespace, self.coherent)}
         self.assertEqual(fixtures.current_source_file(self.original), self.current)
         self.assertEqual(fixtures.current_source_file(self.original.name), self.current)
         self.assertEqual(fixtures.current_source_file(self.namespace), self.current)
+        self.assertEqual(fixtures.current_source_file(self.coherent), self.current)
         self.assertEqual({path: path.read_bytes() for path in originals}, originals)
 
     def test_unmapped_file_is_returned_unchanged(self):
@@ -345,9 +434,10 @@ class SourceFileIdentity(unittest.TestCase):
         self.assertEqual(fixtures.current_source_file(source), source)
         self.assertEqual(source.read_bytes(), original)
 
-    def test_both_file_maps_are_required_even_for_unmapped_input(self):
+    def test_all_file_maps_are_required_even_for_unmapped_input(self):
         for path, label in ((self.namespace_manifest, "semantic namespace"),
-                            (self.coherent_manifest, "coherent basis")):
+                            (self.coherent_manifest, "coherent basis"),
+                            (self.checked_manifest, "checked operation")):
             with self.subTest(map=label):
                 data = path.read_bytes()
                 path.unlink()
@@ -358,7 +448,7 @@ class SourceFileIdentity(unittest.TestCase):
                     path.write_bytes(data)
 
     def test_stale_bytes_reject_at_every_selected_link(self):
-        for path in (self.original, self.namespace, self.current):
+        for path in (self.original, self.namespace, self.coherent, self.current):
             with self.subTest(source=path.name):
                 original = path.read_bytes()
                 path.write_text("changed source")
@@ -375,13 +465,21 @@ class SourceFileIdentity(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "identity changed"):
             fixtures.current_source_file(self.original)
 
+    def test_checked_map_cannot_hide_changed_coherent_predecessor(self):
+        self.coherent.write_text("changed predecessor")
+        changed = dict(self.checked_entry, before_sha256=self.sha(self.coherent))
+        self.write_maps(checked=[changed])
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_file(self.original)
+
     def test_missing_selected_source_rejects(self):
         self.current.unlink()
         with self.assertRaisesRegex(ValueError, "identity changed"):
             fixtures.current_source_file(self.original)
 
-    def test_duplicate_before_or_destination_rejects_in_either_map(self):
-        for label, entry in (("namespace", self.namespace_entry), ("coherent", self.coherent_entry)):
+    def test_duplicate_before_or_destination_rejects_in_every_map(self):
+        for label, entry in (("namespace", self.namespace_entry),
+                             ("coherent", self.coherent_entry), ("checked", self.checked_entry)):
             for field in ("before_path", "current_path"):
                 with self.subTest(map=label, duplicate=field):
                     other = dict(entry)
@@ -427,13 +525,13 @@ class SourceFileIdentity(unittest.TestCase):
             fixtures.current_source_file(self.original)
         self.current.unlink()
         self.current.write_text("current source")
-        self.coherent_manifest.unlink()
-        self.coherent_manifest.symlink_to(outside / "map.json")
+        self.checked_manifest.unlink()
+        self.checked_manifest.symlink_to(outside / "map.json")
         with self.assertRaisesRegex(ValueError, "escaping"):
             fixtures.current_source_file(self.original)
 
     def test_map_identity_and_duplicate_json_fields_reject(self):
-        for path in (self.namespace_manifest, self.coherent_manifest):
+        for path in (self.namespace_manifest, self.coherent_manifest, self.checked_manifest):
             original = path.read_text()
             for invalid in (original.replace('"version": 1', '"version": true'),
                             original.replace('"version": 1', '"version": 2'),
@@ -446,7 +544,7 @@ class SourceFileIdentity(unittest.TestCase):
             path.write_text(original)
 
     def test_malformed_json_or_missing_map_inventories_reject(self):
-        for path in (self.namespace_manifest, self.coherent_manifest):
+        for path in (self.namespace_manifest, self.coherent_manifest, self.checked_manifest):
             original = path.read_text()
             for invalid in ("not JSON", "[]", "{}", original.replace('"files": [', '"omitted": [')):
                 with self.subTest(map=path.name, data=invalid):
@@ -456,9 +554,9 @@ class SourceFileIdentity(unittest.TestCase):
             path.write_text(original)
 
     def test_unselected_project_metadata_is_not_ignored_by_file_selection(self):
-        data = json.loads(self.coherent_manifest.read_text())
+        data = json.loads(self.checked_manifest.read_text())
         data["projects"] = [dict(before_path="unselected", current_path="../outside", files=[])]
-        self.coherent_manifest.write_text(json.dumps(data))
+        self.checked_manifest.write_text(json.dumps(data))
         with self.assertRaisesRegex(ValueError, "escaping"):
             fixtures.current_source_file(self.original)
 

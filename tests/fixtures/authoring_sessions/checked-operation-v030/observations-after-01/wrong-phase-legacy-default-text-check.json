@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-legacy",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:28:37.822713+00:00",
+  "elapsed_seconds": 0.0051492080092430115,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "wrong-phase-legacy",
+  "action": "default-text-check",
+  "output_format": "text",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "54fb03a515baed9c96da4ce42a1204e048328ff0ec02aa69ba371edbb53ae47d",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-after-01/wrong-phase-legacy-default-text-check.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "raw_stderr": {
+    "path": "observations-after-01/wrong-phase-legacy-default-text-check.stderr.txt",
+    "sha256": "f3ddcbab01d3a540c16d133a763afa80d79434a8daead9a981e8da6f714f379f"
+  },
+  "transcript": "stdout:\n\nstderr:\n/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-legacy/main.qli:17:16: parse: parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.\n",
+  "attestation_limit": "Selected bytes, not compiled-HEAD or native-child attestation.",
+  "identity_checked_before_and_after": true
+}

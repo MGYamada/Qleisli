@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Rename the exact-meaning static constructor to
+  `checked_op(implementation, Meaning)`. Reject the retired `bind_op` spelling
+  with a located migration diagnostic; reserve the new spelling and migrate
+  current examples, grammar, Reference and explicit fixture derivatives.
+  Preserve closed declaration inputs, exact phase/basis checks, pending source
+  obligations, source-bound receipts and native acceptance without granting
+  monadic bind, constitutional certification or new provider access (#82).
 - Replace coherent `do p <- q; pure e` with `basis q as p { e }` in the common
   source grammar. Retain the existing isolated basis-expression checker and
   finite injectivity/lowering rules, exact types, owners, phase and ordered

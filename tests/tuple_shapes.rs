@@ -77,7 +77,7 @@ fn nary_static_meanings_retain_shape_and_order() {
         unitary fn apply[static U:Op<(Bit,Bit,Bit),Id>](q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>
         requires Apply(U) { U(q) }
         unitary fn identity(q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>{q}
-        unitary fn client(q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>{apply[bind_op(identity,Id)](q)}";
+        unitary fn client(q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>{apply[checked_op(identity,Id)](q)}";
     let root = SourceRoot::new(&format!("{prefix} observe fn main()->Unit {{()}}"));
     check_project(&root.0).unwrap();
     reject(

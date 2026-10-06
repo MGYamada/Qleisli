@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"bind_op requires closed declarations","primary":{"path":"main.qli","start":721,"end":722,"line":16,"column":40},"related":[]}],"result":null}

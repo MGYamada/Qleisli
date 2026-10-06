@@ -7,6 +7,14 @@ reported as compiled. It does not ratify text, record a Guardian judgment,
 admit a guarantee, change the adopted QS/PR/RS interpretations, or close an
 Issue. The [authority hierarchy](../reference/authority.md) still applies.
 
+**Naming decision:** [#82](https://github.com/MGYamada/Qleisli/issues/82)
+selects `checked_op(implementation, Meaning)` for the existing closed-declaration
+constructor. The proposed `bind` spelling below is superseded by that name.
+Its broader proposed operation-expression inputs, arrow kinds, Meaning forms
+and other constructor renames remain candidates. The naming decision adopts
+none of those extensions; [Checked operations](../reference/checked-operations.md)
+specifies the current bounded contract.
+
 The current bodies of [#45](https://github.com/MGYamada/Qleisli/issues/45),
 [#46](https://github.com/MGYamada/Qleisli/issues/46),
 [#83](https://github.com/MGYamada/Qleisli/issues/83) and
@@ -70,9 +78,9 @@ requires Controlled(U) { controlled(U)(q) }
 ```
 
 `then(U,V)`, `tensor(U,V)`, `inverse(U)`, `controlled(U)` and `power(U,n)` are
-static builders. `bind(implementation, expectedMeaning)` constructs a refined
+static builders. `checked_op(implementation, expectedMeaning)` constructs a refined
 static operation after checking the binding; it is not a general monadic bind.
-The implementation argument of `bind` is a closed, explicitly specialized
+The proposed extended implementation argument of `checked_op` is a closed, explicitly specialized
 operation expression (including a resolved source provider or a constructed
 operation), with a materializable artifact. An unresolved abstract parameter
 cannot acquire a refinement by this form; it must already carry the required
@@ -164,7 +172,7 @@ more access than the source-level object `U` itself.
 | `inverse(U)` | `U:Op<A,B>` with full-space unitary laws and D(U); result `Op<B,A>` | A from D(U); D from A(U); C from C(U) only for an endomorphism, by verified inversion of its controlled path. No inverse is formed from a one-sided isometry law. |
 | `controlled(U)` | `U:Op<A>` with C(U); result `Op<(Bit,A)>` | A, D, C from the replayable controlled witness and its checked transformations. Direct A(U) is still unavailable if not granted. |
 | `power(U,n)` | `U:Op<A>`, canonical bounded static count `n` | Retain A/D/C requirements of U for each requested access, including `n=0`. Replay the respective path `n` times; do not unroll beyond the selected capacity. |
-| `bind(f,M)` | Exact input/output/effect match and successful independent actual-artifact/expected-meaning check | Preserve only capabilities backed by f's implementation paths and the requested transforms. Adding a refinement does not create access. |
+| `checked_op(f,M)` | Exact input/output/effect match and successful independent actual-artifact/expected-meaning check | Preserve only capabilities backed by f's implementation paths and the requested transforms. Adding a refinement does not create access. |
 
 Every realization and transformation remains subject to its explicit work,
 interface and representation bounds. Logical access never overrides a selected
@@ -385,7 +393,9 @@ instantiation chain. Rust may explain a native rejection but cannot reverse it.
 ## Migration, counterexamples and completion
 
 The one 0.3.0 cutover maps old `Op<A,M>` to `Op<A, meaning M>`, old endomorphic
-`meaning M : A = ...` to `meaning M : Meaning<A> = ...`, and `bind_op` to `bind`.
+`meaning M : A = ...` to `meaning M : Meaning<A> = ...`. The separate naming
+decision maps `bind_op` to `checked_op`; it adopts none of these other proposed
+migrations or the extended argument contract.
 Map `inverse_op`, `then_op`, `tensor_op`, `controlled_op` and `repeat_op(n,U)`
 to `inverse`, `then`, `tensor`, `controlled` and `power(U,n)`. Map
 `adjoint(U,q)`/`repeat_static(n,U,q)` to constructed applications. Preserve the
@@ -404,7 +414,7 @@ parser interpretation. Do not retain the old grammar as a runtime fallback.
 | `Op<Unit>` scalar -1 / scalar +1 under a superposed control | Distinguish the observable relative phase; reject any erased empty owner or phase. |
 | `tensor(U,V)` / swapped operands, flattened tree or aliased targets | Preserve ordered type trees, axes and disjoint live owners. |
 | QFT2/QFT3 exact target / wrong sign, missing reversal, swapped output order or extra global -1 | Check all small exact coefficients plus an entangled reference; every changed meaning rejects. |
-| `bind(then(H,H),identity[Bit])` / `bind(H,identity[Bit])` | Accept exact identity composition; reject the single H. No request derived from the candidate itself. |
+| `checked_op(then(H,H),identity[Bit])` / `checked_op(H,identity[Bit])` | Proposed extended inputs: accept exact identity composition; reject the single H. No request derived from the candidate itself. |
 | Retained refinement / modified source, dependency, request, artifact or capability realization | Reject stale attachment without a new independent check. |
 | Complete observing reference / same histogram with wrong residual state or outcome ordering | Compare the full instrument, not a sample or marginal. |
 | Named static builder / environment capturing q or a spent/empty quantum owner | Allow bounded static composition; reject hidden live ownership before specialization. |

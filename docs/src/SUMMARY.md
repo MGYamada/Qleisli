@@ -20,6 +20,7 @@
 - [Source text and lexical boundary](reference/source-text.md)
 - [Ordinary types, quantum owners and equality](reference/type-model.md)
 - [Coherent basis maps](reference/coherent-basis.md)
+- [Checked operations](reference/checked-operations.md)
 - [Standard-library semantic namespaces](reference/stdlib.md)
 - [Realization, specialization and resources](reference/realization.md)
 

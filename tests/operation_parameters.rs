@@ -82,7 +82,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     let root = SourceRoot::new(
         "use meanings::Flip; use meanings::implementation;
         unitary fn run[static U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
-        unitary fn client(q:Q<Bit>)->Q<Bit>{run[bind_op(implementation,Flip)](q)}",
+        unitary fn client(q:Q<Bit>)->Q<Bit>{run[checked_op(implementation,Flip)](q)}",
     );
     root.write(
         "meanings.qli",
@@ -124,7 +124,7 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
         requires Apply(U), Controlled(U) {{ U(q) }}
         observe fn main()->(Bit,Bit) {{
             let (r,q)=cnot(h(init0()),init0());
-            let q=client[bind_op(implementation,ZMeaning)](q);
+            let q=client[checked_op(implementation,ZMeaning)](q);
             let (r,q)=cnot(r,q);
             (measure_z(h(r)),measure_z(q))
         }}"
@@ -250,7 +250,7 @@ fn scalar_phase_and_zero_width_ownership_survive_control() {
         unitary fn ctrl[static U:Op<Unit,Minus>](c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)
         requires Controlled(U){qif(c,q){0=>U,1=>zero}}
         observe fn main()->Bit{let q=basis init0() as b { ((),b) };let(e,b)=split(q);discard(b);
-            let(c,e)=ctrl[bind_op(minus,Minus)](h(init0()),e);discard(e);measure_z(h(c))}",
+            let(c,e)=ctrl[checked_op(minus,Minus)](h(init0()),e);discard(e);measure_z(h(c))}",
         &[true],
     );
     rejects(
@@ -331,7 +331,7 @@ fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
     );
     rejects(
         "unitary fn minus_z(q:Q<Bit>)->Q<Bit>{x(z(x(q)))}
-        unitary fn bad(q:Q<Bit>)->Q<Bit>{use_op[bind_op(minus_z,ZMeaning)](q)}",
+        unitary fn bad(q:Q<Bit>)->Q<Bit>{use_op[checked_op(minus_z,ZMeaning)](q)}",
         ErrorCode::Contract,
     );
     rejects(

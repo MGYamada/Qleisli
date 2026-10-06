@@ -94,7 +94,7 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "Controlled" => TokenKind::ControlledAccess,
         "permutation_by" => TokenKind::PermutationBy,
         "phase_by" => TokenKind::PhaseBy,
-        "bind_op" => TokenKind::BindOp,
+        "checked_op" | "bind_op" => TokenKind::BindOp,
         "inverse_op" => TokenKind::InverseOp,
         "then_op" => TokenKind::ThenOp,
         "tensor_op" => TokenKind::TensorOp,
@@ -145,7 +145,7 @@ impl TokenKind {
             Self::ControlledAccess => "`Controlled`",
             Self::PermutationBy => "`permutation_by`",
             Self::PhaseBy => "`phase_by`",
-            Self::BindOp => "`bind_op`",
+            Self::BindOp => "`checked_op`",
             Self::InverseOp => "`inverse_op`",
             Self::ThenOp => "`then_op`",
             Self::TensorOp => "`tensor_op`",
@@ -322,6 +322,14 @@ fn scan(
                 span: token.span,
             });
         }
+        // Reserve the retired spelling for a located migration error only.
+        // Capacity rejection retains precedence over spelling diagnostics.
+        if token.kind == Kind::Word && text == "bind_op" {
+            return Err(LexError {
+                message: "`bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.".into(),
+                span: token.span,
+            });
+        }
         if let TokenKind::Ident(value) | TokenKind::Natural(value) = &mut kind {
             *value = text.to_owned();
         }
@@ -339,6 +347,19 @@ fn scan(
 #[cfg(test)]
 mod common_token_tests {
     use super::*;
+
+    #[test]
+    fn capacity_precedes_retired_word_diagnostics_with_a_small_allowance() {
+        let source = "/* λ */ x bind_op";
+        let start = source.find("bind_op").unwrap();
+        let span = Span::new(start, start + "bind_op".len());
+        let capacity = lex_documented_bounded(source, 1, 2).unwrap_err();
+        assert_eq!(capacity.span, span);
+        assert_eq!(capacity.message, "source exceeds 1 tokens");
+        let retirement = lex_documented_bounded(source, 2, 2).unwrap_err();
+        assert_eq!(retirement.span, span);
+        assert!(retirement.message.contains("was renamed to `checked_op`"));
+    }
 
     #[test]
     fn bounded_common_tokens_count_pairs_before_owning_spellings() {
