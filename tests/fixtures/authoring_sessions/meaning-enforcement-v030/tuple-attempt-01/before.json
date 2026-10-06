@@ -1,0 +1,17 @@
+{
+  "kind": "informed pre-code bounded packaged-product provider experiment",
+  "source_sha256": "5809535c8f13d17e9591ada96ab2ae2796318c8ce6645cfe6eee3072b13f0bea",
+  "base_commit": "c5f618f324b57ead3218dca0fca9c14013d0f139",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::client",
+    "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/tuple-attempt-01/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "stdout": "before.stdout.txt",
+  "stderr": "before.stderr.txt",
+  "scope": "two system qubits; no maximum-size generation; no independent author or blind benchmark"
+}

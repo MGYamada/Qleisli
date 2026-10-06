@@ -369,3 +369,122 @@ fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
         }
     }
 }
+
+#[test]
+fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    let source = "use std::quantum::{x,phase_eighth};
+        classical fn flip(b:Bit)->Bit{not b}
+        classical fn angle(u:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
+        meaning Flip:Bit=permutation_by(flip);
+        meaning Eighth:Unit=phase_by(angle);
+        pub unitary fn bit_provider(q:Q<Bit>)->Q<Bit>{x(q)}
+        pub unitary fn unit_provider(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+        unitary fn run[static A:Basis,static n:Nat,static U:Op<A>](q:Q<A>)->Q<A>
+            requires Apply(U),n<=2 {qfor static i in 0..n carry a=q {yield U(a)}}
+        pub unitary fn bit[static n:Nat,static U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit>
+            requires Apply(U),n<=2 {run[type(Bit),n,U](q)}
+        pub unitary fn unit[static n:Nat,static U:Op<Unit,Eighth>](q:Q<Unit>)->Q<Unit>
+            requires Apply(U),n<=2 {run[type(Unit),n,U](q)}";
+    for honest in [false, true] {
+        let text = if honest {
+            source.into()
+        } else {
+            source
+                .replace("{x(q)}", "{q}")
+                .replace("{phase_eighth(q)}", "{q}")
+        };
+        let program = parsed(&text);
+        for (entry, provider, width) in [("bit", "bit_provider", 1), ("unit", "unit_provider", 0)] {
+            for n in 0..=2 {
+                let elaborated = program
+                    .instantiate(
+                        &format!("main::{entry}"),
+                        BTreeMap::from([("n".into(), n)]),
+                        BTreeMap::from([(
+                            "U".into(),
+                            OperationBinding::new(format!("main::{provider}"), BTreeMap::new()),
+                        )]),
+                    )
+                    .unwrap()
+                    .elaborate()
+                    .unwrap();
+                let instances = elaborated
+                    .definitions()
+                    .iter()
+                    .filter(|d| d.path() == "main::run")
+                    .collect::<Vec<_>>();
+                assert_eq!(instances.len(), 1);
+                assert_eq!(instances[0].naturals()["n"], n);
+                assert_eq!(
+                    instances[0].types()["A"],
+                    BasisBinding::parse(if entry == "bit" { "Bit" } else { "Unit" }).unwrap()
+                );
+                assert_eq!(
+                    instances[0].inputs()[0].ty(),
+                    elaborated.definitions()[elaborated.root()].inputs()[0].ty()
+                );
+                let checked = elaborated.check_operation_meanings(
+                    &qleisli::interchange::native::Kernel::new(
+                        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                    ),
+                    &mut Budget::new(DEFAULT_EXACT_WORK),
+                );
+                if !honest {
+                    let e = checked.unwrap_err();
+                    assert_eq!(e.code(), "contract", "{e}");
+                    assert!(
+                        e.message().contains(if entry == "bit" {
+                            "main::Flip"
+                        } else {
+                            "main::Eighth"
+                        }),
+                        "{e}"
+                    );
+                    continue;
+                }
+                let graph = checked.unwrap().lower_hierarchy().unwrap();
+                let accepted = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                    .check_against_native(graph.payload(), graph.comparison_request())
+                    .unwrap();
+                let input = (0..(2 << width))
+                    .map(|i| [(i + 1) as f64 / 7.0, (i as f64 - 2.0) / 11.0])
+                    .collect::<Vec<_>>();
+                let actual = accepted
+                    .execute_pure(
+                        &input,
+                        2,
+                        ExecutionLimits {
+                            max_amplitudes: 16,
+                            max_steps: 1000,
+                        },
+                    )
+                    .unwrap()
+                    .amplitudes;
+                let angle = f64::from(n) * std::f64::consts::FRAC_PI_4;
+                let expected = if width == 0 {
+                    input
+                        .iter()
+                        .map(|[a, b]| {
+                            [
+                                a * angle.cos() - b * angle.sin(),
+                                a * angle.sin() + b * angle.cos(),
+                            ]
+                        })
+                        .collect::<Vec<_>>()
+                } else {
+                    (0..input.len())
+                        .map(|i| input[i ^ (if n % 2 == 1 { 1 } else { 0 })])
+                        .collect()
+                };
+                assert_eq!(actual.len(), expected.len());
+                for (a, b) in actual.iter().flatten().zip(expected.iter().flatten()) {
+                    assert!(
+                        (a - b).abs() < 1e-12,
+                        "{entry},n={n}: {actual:?} != {expected:?}"
+                    );
+                }
+            }
+        }
+    }
+}

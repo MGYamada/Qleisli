@@ -31,3 +31,9 @@ Integration tests additionally cover lying providers, zero-count outer
 repetitions, direct adjoints, multiple forwarded requests and exact scalar
 phase with an external reference. These are informed bounded contract tests,
 not a blind benchmark, general profile completion or a new proof.
+
+The [packaged-product first attempt](tuple-attempt-01/before.json) retains a
+two-system-qubit swap provider with a zero-width Unit factor and one shared
+Basis/Nat repetition body. At `c5f618f3` its checked source reaches the Raw
+leaf profile's actual unsupported quantum-basis diagnostic. This is a concrete
+remaining integration case, not an accepted provider, passing test or theorem.

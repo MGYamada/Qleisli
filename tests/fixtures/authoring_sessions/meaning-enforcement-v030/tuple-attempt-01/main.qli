@@ -1,0 +1,14 @@
+use std::quantum::split;
+use std::quantum::join;
+classical fn swap((u,(a,b)):(Unit,(Bit,Bit)))->(Unit,(Bit,Bit)){(u,(b,a))}
+meaning Swap:(Unit,(Bit,Bit))=permutation_by(swap);
+pub unitary fn implementation(q:Q<(Unit,(Bit,Bit))>)->Q<(Unit,(Bit,Bit))>{
+    let (u,r)=split(q);
+    let (a,b)=split(r);
+    join(u,join(b,a))
+}
+unitary fn run[static A:Basis,static n:Nat,static U:Op<A>](q:Q<A>)->Q<A>
+    requires Apply(U),n<=2 {qfor static i in 0..n carry a=q {yield U(a)}}
+pub unitary fn client(q:Q<(Unit,(Bit,Bit))>)->Q<(Unit,(Bit,Bit))>{
+    run[type((Unit,(Bit,Bit))),2,checked_op(implementation,Swap)](q)
+}
