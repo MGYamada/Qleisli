@@ -1869,6 +1869,10 @@
         {
           "path": "tests/selected_source_cli.rs",
           "test": "selected_mixed_sources_keep_independent_distributions_and_scope"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_inverse_application_preserves_ordinary_names_and_both_consumers"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
@@ -2326,6 +2330,14 @@
         {
           "path": "tests/basis_polymorphism.rs",
           "test": "all_first_opaque_rejections_reach_their_actual_rules_before_binding"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_inverse_checks_unused_zero_count_generic_access"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_inverse_unit_scalar_retains_independent_reference_request"
         },
         {
           "path": "tests/classical_functions.rs",

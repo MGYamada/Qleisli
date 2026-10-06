@@ -738,10 +738,10 @@ impl Parser {
         })
     }
 
-    // Only the existing two-stage application spelling is special. A normal
-    // `controlled(q)` remains a call to the ordinary identifier `controlled`.
-    fn controlled_application(&self) -> bool {
-        if !self.word("controlled")
+    // Two-stage operation syntax is contextual. Single-stage ordinary calls
+    // and declarations with these names retain normal name resolution.
+    fn transformed_application(&self, name: &str) -> bool {
+        if !self.word(name)
             || self
                 .tokens
                 .get(self.pos + 1)
@@ -1264,7 +1264,20 @@ impl Parser {
         {
             return self.static_fold(quantum_fold);
         }
-        if self.controlled_application() {
+        if self.transformed_application("inverse") {
+            let start = self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let operation = self.static_op()?;
+            self.expect(&TokenKind::RParen)?;
+            self.expect(&TokenKind::LParen)?;
+            let input = Box::new(self.expr()?);
+            let end = self.expect(&TokenKind::RParen)?;
+            return Ok(Expr {
+                kind: ExprKind::Adjoint { operation, input },
+                span: start.span.cover(end.span),
+            });
+        }
+        if self.transformed_application("controlled") {
             let start = self.bump();
             self.expect(&TokenKind::LParen)?;
             let operation = self.static_op()?;

@@ -231,6 +231,18 @@ No general recursion or runtime unbounded loop is introduced.
 
 ## Operation repetition and access
 
+The canonical unary inverse application is `inverse(U)(q)`. The first stage
+contains the existing static operation description; the second evaluates one
+runtime input. It requires the actual operation's Adjoint access and an exact
+quantum-owner interface. Unitarity or a Meaning annotation alone grants no
+access. The same checks apply to unused bodies and zero-count descriptions.
+The word is contextual: an ordinary `inverse(q)` and functions or locals named
+`inverse` retain normal resolution. No runtime callable is constructed.
+Concrete profile restrictions and independent native evidence gates still apply.
+During this unreleased migration, `adjoint(U,q)` remains temporary input with
+the same rule. Its retirement and the remaining operation-builder spellings
+are unfinished [#33](https://github.com/MGYamada/Qleisli/issues/33) work.
+
 `repeat_op(count, U)` is a static operation description, not execution of a
 host loop. An ordinary count is a natural expression. The special count form
 `2^e` is admitted here with a natural atom exponent; use parentheses for a

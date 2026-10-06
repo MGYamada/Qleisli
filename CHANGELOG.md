@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add contextual `inverse(U)(q)` source application through the existing
+  adjoint/access, owner and native-evidence rules. Preserve single-stage
+  ordinary calls with that name and scalar phase on zero-width owners.
+  Remaining builder notation and legacy retirement stay tracked in #33.
+
 - Transport ordinary `Bits<n>` through selected Raw source lowering and
   independent ordered replay, retaining exact source values including width
   zero, copying/drop, Nat specialization and eager measurement effects.

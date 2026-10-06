@@ -29,6 +29,84 @@ unitary fn provider(q:Q<Bit>)->Q<Bit>{repeat_static(4,t,q)}
 unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 ";
 
+#[test]
+fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
+    let text = "use std::quantum::{h,init0}; use std::observe::measure_z;
+        unitary fn inverse(q:Q<Bit>)->Q<Bit>{q}
+        unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(q)}
+        unitary fn undo(q:Q<Bit>)->Q<Bit>{inverse(oracle)(q)}
+        pub observe fn main()->Bit{measure_z(h(undo(inverse(init0()))))}";
+    let finite = compile_project(&SourceRoot::new(text).0).unwrap();
+    let selected = ParsedProgram::parse(sources(text))
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower_raw()
+        .unwrap();
+    let native =
+        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let accepted = native.accept(selected.proposal()).unwrap();
+    selected.validate_source_steps(&accepted).unwrap();
+    for distribution in [
+        run_closed(&finite, SimulationLimits::default()).unwrap(),
+        run_closed(&accepted, SimulationLimits::default()).unwrap(),
+    ] {
+        // Ordinary inverse is identity; the two-stage inverse of H is H.
+        // H H |0> = |0>, including interference missed by one H measurement.
+        assert!((distribution[&vec![false]] - 1.0).abs() < 1e-12);
+    }
+}
+
+#[test]
+fn canonical_inverse_checks_unused_zero_count_generic_access() {
+    for body in ["inverse(U)(q)", "inverse(repeat_op(0,U))(q)"] {
+        let text = format!(
+            "// 日本語\r\npub unitary fn bad[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+            requires Apply(U){{{body}}}"
+        );
+        let finite = check_project(&SourceRoot::new(&text).0).unwrap_err();
+        let selected = ParsedProgram::parse(sources(&text)).unwrap_err();
+        assert!(finite.message.contains("Adjoint"), "{finite}");
+        assert!(selected.message().contains("Adjoint"), "{selected}");
+        let start = text.find(body).unwrap();
+        assert_eq!(selected.span(), Span::new(start, start + body.len()));
+        let root = SourceRoot::new(&text);
+        let module = format!("--module=main={}", root.0.join("main.qli").display());
+        for json in [false, true] {
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command.args(["check", "--entry=main::bad", "--ir-profile=raw", &module]);
+            if json {
+                command.arg("--format=json");
+            }
+            let output = command.output().unwrap();
+            assert!(!output.status.success());
+            if json {
+                let decoded = Command::new("python3")
+                    .args([
+                        "-c",
+                        "import json,sys; v=json.loads(sys.argv[1]); d=v['diagnostics'][0]; assert v['outcome']=='error'; assert 'Adjoint' in d['message']; print(d['code']); print(d['primary']['start']); print(d['primary']['end'])",
+                        std::str::from_utf8(&output.stdout).unwrap(),
+                    ])
+                    .output()
+                    .unwrap();
+                assert!(decoded.status.success(), "{decoded:?}");
+                assert_eq!(
+                    String::from_utf8(decoded.stdout).unwrap(),
+                    format!("{}\n{}\n{}\n", selected.code(), start, start + body.len())
+                );
+            } else {
+                assert!(
+                    String::from_utf8(output.stderr)
+                        .unwrap()
+                        .contains("Adjoint")
+                );
+            }
+        }
+    }
+}
+
 fn sources(source: &str) -> BTreeMap<String, String> {
     BTreeMap::from([("main".into(), source.into())])
 }

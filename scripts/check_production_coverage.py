@@ -73,7 +73,8 @@ PATHS = {
         ('tests/function_evidence.rs', 'checks_two_raw_functions_and_retains_their_full_snapshots'),
         ('scripts/test_source_kernel.py', 'test_unused_body_native_rejection_blocks_every_source_action'),
         ('scripts/test_interop_native.py', 'test_all_actions_formats_use_real_native_checker'),
-        ('tests/selected_source_cli.rs', 'selected_mixed_sources_keep_independent_distributions_and_scope')]),
+        ('tests/selected_source_cli.rs', 'selected_mixed_sources_keep_independent_distributions_and_scope'),
+        ('tests/checked_operations.rs', 'canonical_inverse_application_preserves_ordinary_names_and_both_consumers')]),
     'contract-acceptance': path_rule('native-acceptance', 'contract finite-leaf', '--qirf-contract', [
         ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', '"--qirf-contract"']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),
@@ -147,6 +148,8 @@ PATHS = {
         ('tests/mixed_booleans.rs', 'representable_phases_match_independent_exact_targets_and_interference'),
         ('src/frontend/sized/raw.rs', 'raw_source_replay_rejects_native_valid_semantic_and_structural_mutations'),
         ('tests/basis_polymorphism.rs', 'all_first_opaque_rejections_reach_their_actual_rules_before_binding'),
+        ('tests/checked_operations.rs', 'canonical_inverse_checks_unused_zero_count_generic_access'),
+        ('tests/quantum_unit_source.rs', 'canonical_inverse_unit_scalar_retains_independent_reference_request'),
         ('tests/classical_functions.rs', 'original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase'),
         ('tests/classical_functions.rs', 'finite_source_targets_preserve_product_tree_and_refuse_width_substitution'),
         ('tests/classical_functions.rs', 'source_meaning_signature_effect_and_budget_guards_precede_native_io'),

@@ -27,7 +27,8 @@
         "observation-repaired-manifest.json"
       ],
       "reports": [
-        "expectations.json"
+        "expectations.json",
+        "validation-inverse-unit.json"
       ]
     }
   ]

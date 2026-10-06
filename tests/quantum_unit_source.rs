@@ -625,6 +625,41 @@ fn unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices
 }
 
 #[test]
+fn canonical_inverse_unit_scalar_retains_independent_reference_request() {
+    let text = source("operations").replace("adjoint(U,q)", "inverse(U)(q)");
+    assert!(text.contains("inverse(U)(q)"));
+    let graph = parsed(&text)
+        .instantiate(
+            "main::inverse",
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("main::scalar", BTreeMap::new()),
+            )]),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let proposal = graph.lower().unwrap();
+    let required = operation_request("inverse");
+    let accepted = kernel()
+        .check_against_native(proposal.payload(), &required)
+        .unwrap();
+    let factor = [omega()[0], -omega()[1]];
+    let expected = input(0)
+        .into_iter()
+        .map(|z| multiply(factor, z))
+        .collect::<Vec<_>>();
+    close(
+        &accepted
+            .execute_pure(&input(0), 2, limits())
+            .unwrap()
+            .amplitudes,
+        &expected,
+    );
+}
+
+#[test]
 fn native_valid_changed_provider_fails_the_same_fixed_controlled_requests() {
     let p = parsed(&source("operations"));
     let k = kernel();

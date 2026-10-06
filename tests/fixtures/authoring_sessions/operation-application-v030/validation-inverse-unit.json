@@ -1,0 +1,109 @@
+{
+  "format": "qleisli.canonical-inverse-unit-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-06T23:11:01.108131+00:00",
+  "status": "local-checkpoint",
+  "base_commit": "f61c659904a309987814a5fb0ed873a432251a6d",
+  "sources_sha256": {
+    "src/frontend/parser.rs": "f1b37c949f7e591ed9e087f0b4aed2c41026897174d0f6d6fa94b33c09ed1cde",
+    "tests/checked_operations.rs": "a07a69f0d8814533b92a5b73d775d2b80706f1d99e26dd278a3e632c58e0944f",
+    "tests/quantum_unit_source.rs": "bcc80b7fc0a01339367f272cda0f93b8442bb8225d594394d89d86cf11d1c331",
+    "scripts/check_production_coverage.py": "fb8704be23c3a9833b2740fc6791930a7f571892444e0159feda2a857f7ccbc1",
+    "docs/src/reference/static-language.md": "3dede30fc8b942ce6d8977dc3628229bee13ee94e8a7a34a8fcf2331b46cfdf6",
+    "tests/fixtures/verification_v022/inventory.json": "de10d48a6701adb246cba41f49909c59ab33e36c7564dffe3d673b42a4600fd6",
+    "tests/fixtures/verification_v029/coverage.json": "b0f7a78dfa89333da617bc4dac6d3cb8a9b9f9c7e977570c66eae22bcc8bbcc1"
+  },
+  "native_binary": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+  },
+  "rust_checks": [
+    {
+      "toolchain": "1.98.1",
+      "integration_targets": [
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 28,
+      "failed": 0,
+      "ignored": 0,
+      "note": "Full targets ran before the final added CLI text/JSON assertion; that changed checked_operations target subsequently passed its two canonical_inverse tests on the same production source.",
+      "parser_unit_tests_passed": 7
+    },
+    {
+      "toolchain": "1.85.0",
+      "integration_targets": [
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 28,
+      "failed": 0,
+      "ignored": 0,
+      "note": "Full targets ran before the final added CLI text/JSON assertion; that changed checked_operations target subsequently passed its two canonical_inverse tests on the same production source.",
+      "parser_unit_tests_passed": 7
+    }
+  ],
+  "exact_scope": [
+    "Finite and selected Raw interference control, with ordinary inverse name retained",
+    "Independent fixed native Q<Unit> inverse scalar request and two reference coefficients",
+    "Missing generic Adjoint even in unused/zero-count body",
+    "Final negative text and JSON CLI results preserve actual UTF-8/CRLF byte spans"
+  ],
+  "failed_probes": [
+    {
+      "kind": "actual-integration-failure",
+      "command": [
+        "cargo",
+        "test",
+        "-j",
+        "2",
+        "--test",
+        "checked_operations",
+        "--test",
+        "quantum_unit_source",
+        "canonical_inverse"
+      ],
+      "exit_code": 101,
+      "test": "canonical_inverse_application_preserves_ordinary_names_and_both_consumers",
+      "source": "use std::quantum::{h,z,init0}; use std::observe::measure_z;\n        unitary fn inverse(q:Q<Bit>)->Q<Bit>{q}\n        unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}\n        unitary fn undo(q:Q<Bit>)->Q<Bit>{inverse(oracle)(q)}\n        pub observe fn main()->Bit{measure_z(h(undo(inverse(h(init0())))))}",
+      "error": {
+        "code": "unsupported",
+        "module": "main",
+        "start": 152,
+        "end": 156,
+        "message": "selected concrete preparation does not support std::quantum::z"
+      },
+      "repair": "Use supported H as an explicit execution control; H H interference must yield zero. Keep desired Z/power Grover-style source unchanged and pending.",
+      "record_note": "Observed tool-output error and original test string; not a saved complete cargo transcript."
+    },
+    {
+      "kind": "test-compilation-failure",
+      "exit_code": 101,
+      "error": "E0433: test incorrectly assumed serde_json was an available dependency",
+      "repair": "Decode CLI JSON independently with the existing Python standard library; no dependency added",
+      "record_note": "No runtime result was produced by this failed compile."
+    }
+  ],
+  "checks": {
+    "production_coverage": "passed; three new regressions mandatory in actual route inventory",
+    "coverage_policy_tests": 14,
+    "inventory": "passed",
+    "constitutional_continuity_base": "38baae7d19535602b21270e11e97617d45205b37",
+    "constitutional_continuity": "passed; not fresh Lean replay",
+    "mdbook_version": "0.5.4",
+    "book_html_files": 29,
+    "book_local_links": 1228,
+    "book_anchors": 474,
+    "clippy_all_targets": {
+      "1.98.1": "passed",
+      "1.85.0": "passed"
+    }
+  },
+  "remaining": [
+    "power/builder application and source migration",
+    "legacy adjoint retirement before full #33/#250 completion",
+    "same-commit hosted CI and release gates",
+    "general source/IR/runtime preservation and broader QS/PR/RS/EXACT obligations"
+  ],
+  "no_new_ledger_guarantee": true
+}
