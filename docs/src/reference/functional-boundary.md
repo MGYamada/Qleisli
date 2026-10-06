@@ -138,9 +138,11 @@ not grant inverse or controlled access.
 
 Supported finite construction materializes explicit circuit/operation proposals
 and retained evidence; the independent native gate checks the bound artifact.
-Selected-source specialization has its own concrete eligibility rules. In
-particular, `checked_op` and meaning-refined selected projection retain their
-unsupported-constructor/specification refusals. A successful common judgment
+Selected-source specialization has its own concrete eligibility rules.
+Closed `checked_op` and Meaning-refined bindings use the all-binding native
+gate described in the [type model](type-model.md#direct-runtime-transforms-and-opaque-operations).
+Unsupported constructors and Bits interfaces retain explicit refusals.
+A successful common judgment
 or pending obligation does not supply a missing emitter or an accepted handle.
 The [type model](type-model.md#direct-runtime-transforms-and-opaque-operations)
 also distinguishes existing direct runtime-group transforms from opaque

@@ -392,8 +392,8 @@ operator on that proposal's actual bytes through the existing native finite
 gate, then replays its retained ordered source steps. The returned
 `SourceMeaningCheck` borrows the immutable source and requested target and
 retains the native leaf; it cannot substitute another source or request.
-The current profile requires a unary Unitary endomorphism on exact `Q<Unit>`
-or `Q<Bit>`. Unsupported interfaces, same-width type substitutions and invalid
+The current profile requires a unary Unitary endomorphism on an exact
+Unit/Bit/product quantum basis. Unsupported interfaces, same-width type substitutions and invalid
 work budgets reject before native IO. This is not an AST-to-step theorem or
 automatic checking of a declared `Op<A,M>` annotation by this single-leaf API.
 Generic admission requires the all-binding collection below, including unused
@@ -411,9 +411,13 @@ its base definition. Emission and independent ordered replay apply each retained
 repetition with aggregate existing call/work/depth limits. Zero counts retain
 the quantum owner and do not bypass dependency capability preflight.
 Its interface, emitted bytes and ordered replay derive from that subject,
-rather than the caller or a rewritten caller identity. Providers with further
-operation bindings remain unsupported by this Raw leaf
-profile. This explicit preparation API neither admits the caller nor performs
+rather than the caller or a rewritten caller identity. Closed Definition/Repeat
+operation bindings may be forwarded through ordinary helpers, preserving their
+actual arguments and original requested meanings. Existing adjoint/controlled
+access materializes the actual pure circuit with exact phase and ordered routing;
+independent source replay checks its action and suspended caller owners.
+Opaque assertions and unsupported operation constructors still reject.
+This explicit preparation API neither admits the caller nor performs
 mandatory checking of all unused bindings. Such enforcement remains required
 before generic Meaning-refined execution can be enabled.
 
@@ -606,8 +610,14 @@ comparison independently checks the scalar opcode, exact phase, empty controls
 and axes, and the intended owner; fresh native validity is still mandatory.
 Preceding argument work and subsequent observation stay in source order.
 
-This Raw adapter still rejects Bits values, other quantum basis shapes,
-controlled-phase primitives and operation providers. Checked open runtime
+This Raw adapter still rejects Bits values, unsupported quantum basis shapes
+and controlled-phase primitives. Closed Definition/Repeat providers support
+forward, adjoint and controlled access through ordinary calls within the exact
+pure-circuit profile; this includes conditional scalar action on a Unit owner.
+Their original Meaning requests remain mandatory, including unused bindings
+and zero repetitions. Refined Raw root emission still rejects; the checked
+all-binding collection embeds actual finite leaves into a hierarchy that needs
+fresh native acceptance. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
