@@ -58,6 +58,26 @@
         "access-attempt-01/after.json",
         "access-attempt-01/after-final.json"
       ]
+    },
+    {
+      "id": "bits-attempt-01",
+      "reason": "Pre-implementation source using one Basis/Nat body at Bits0 and Bits1; original exact tagged source and actual current refusal retained, with no width coercion or claim of implemented finite Bits support.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/main.qli": "0c43df6b1a0aa4faf2c61e5cd5502a150e6a60411cc16231a51e7fba58f86a1c"
+      },
+      "reports": [
+        "bits-attempt-01/before.json"
+      ]
+    },
+    {
+      "id": "bits-spaced-attempt-02",
+      "reason": "First source tokenized adjacent > and = as >= and stopped in parsing. Add the required lexical separation at the two Meaning declarations only. Original source and actual parse failures remain unchanged. This is a source repair, not a compiler change or successful Meaning check.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli": "6b8348e775ec09227ee76156e45405383e03a19f0df6b17360c94019fd6edb89"
+      },
+      "reports": [
+        "bits-attempt-01/spaced-before.json"
+      ]
     }
   ]
 }

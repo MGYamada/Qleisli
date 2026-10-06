@@ -89,3 +89,13 @@ exact/reference tests cover inverse order, swapped output axes, nested controls,
 zero-width phase and suspended caller owners. Wrong native-valid actions remain
 counterexamples. Earlier unsupported and feasibility records stay historical;
 this component is not a general source-preservation or constitutional discharge.
+
+The [Bits first attempt](bits-attempt-01/before.json) retains one shared
+Basis/Nat repetition body with Bits0 and Bits1 scalar providers. Both first
+checks stop at the lexical `>=` formed by an adjacent type terminator and
+assignment. The [separate whitespace repair](bits-attempt-01/spaced-before.json)
+changes only those two separators and reaches the actual unsupported finite
+Bits signature in both entries. These four calls are pre-implementation
+observations, with a frozen CLI hash before and after each invocation; they
+establish neither an accepted provider nor phase/ownership preservation.
+The original source and parser failures remain unchanged.
