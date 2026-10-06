@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Embed a source-bound checked provider's exact bytes and requested matrix
+  in the actual emitted hierarchy node, keyed by its complete operation.
+  Preserve typed ports and repeats; fresh native checking rejects substituted
+  bodies with a different meaning. Automatic all-binding Meaning admission
+  remains open (#44).
+
 - Prepare and replay complete bounded repeated provider leaves, including
   bindings in nested instantiated callers. Preserve zero-count owners and
   dependency preflight; reject a native-valid base artifact substituted for

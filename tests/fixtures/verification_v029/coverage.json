@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "1f5f66d6a667a6637deb752c9398340fd703882a301628dd52ed159299594ffb",
+  "surface_sha256": "cfa0afe4ed11b56e7781d9f89db6c3fc1b18b1c79009989dfbc1903666fc2c9a",
   "groups": [
     {
       "id": "raw-core",
@@ -2193,6 +2193,15 @@
           ]
         },
         {
+          "path": "src/frontend/sized/lower.rs",
+          "markers": [
+            "fn native_operation(",
+            "leaf.payload()",
+            "finite_matrix::encode(leaf.meaning())",
+            "entry.key == key"
+          ]
+        },
+        {
           "path": "src/frontend/sized/elaborate.rs",
           "markers": [
             "pub fn lower_raw_operation(",
@@ -2282,6 +2291,10 @@
         {
           "path": "src/frontend/sized/raw.rs",
           "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        },
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "test": "checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy"
         },
         {
           "path": "tests/basis_polymorphism.rs",

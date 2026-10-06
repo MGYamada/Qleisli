@@ -126,7 +126,7 @@ enum OperationKind {
     Repeat(u32, Box<SourceOperation>),
 }
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-enum OperationKey {
+pub(super) enum OperationKey {
     Definition(usize),
     Repeat(u32, Box<OperationKey>),
 }
@@ -161,7 +161,7 @@ impl SourceOperation {
             OperationKind::Repeat(_, child) => child.target(),
         }
     }
-    fn key(&self) -> OperationKey {
+    pub(super) fn key(&self) -> OperationKey {
         match &self.kind {
             OperationKind::Definition(id) => OperationKey::Definition(*id),
             OperationKind::Repeat(n, child) => OperationKey::Repeat(*n, Box::new(child.key())),

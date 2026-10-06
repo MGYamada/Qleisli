@@ -406,6 +406,16 @@ profile. This explicit preparation API neither admits the caller nor performs
 mandatory checking of all unused bindings. Such enforcement remains required
 before generic Meaning-refined execution can be enabled.
 
+For an explicitly checked original operation binding,
+`SourceMeaningCheck::lower_hierarchy()` emits the caller hierarchy using that
+leaf's exact QIRF bytes and requested matrix as the actual finite node for the
+complete operation key. Explicit renaming preserves its typed owners and axes.
+The resulting hierarchy is still an untrusted proposal; fresh native hierarchy
+checking rechecks the embedded bytes against their matrix description. A
+separate native-valid provider cannot replace those bytes while retaining a
+different requested operator. This bridge does not automatically collect or
+check other original Meaning annotations, nor prove source elaboration sound.
+
 ### Opaque Basis specialization in the selected profile
 
 The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity

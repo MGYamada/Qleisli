@@ -849,6 +849,7 @@ mod tests {
     fn factor(source: &ElaboratedProgram) -> (Lower<'_>, usize, usize) {
         let mut lower = Lower {
             source,
+            native_operations: &[],
             graph: Graph::new(),
             owner: 100,
             pure: BTreeMap::new(),

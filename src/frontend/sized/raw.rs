@@ -53,6 +53,13 @@ impl SourceMeaningCheck<'_> {
     pub fn leaf(&self) -> &CheckedUnitaryLeaf {
         &self.leaf
     }
+    /// Emit a hierarchy whose actual use of this original binding embeds the
+    /// same checked provider bytes and required matrix. The returned artifact
+    /// is an untrusted proposal and still requires fresh native checking.
+    /// This neither checks all bindings nor enables Meaning-refined admission.
+    pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal> {
+        super::lower::lower_with_checked_operation(self)
+    }
 }
 impl RawSourceProposal {
     /// Check the requested exact operator on this actual source-bound artifact,
@@ -844,6 +851,161 @@ mod tests {
     use super::*;
     use crate::frontend::sized::ParsedProgram;
     use crate::ir::RawOp;
+
+    #[test]
+    fn checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy() {
+        use crate::frontend::sized::{BasisBinding, OperationBinding};
+        use crate::interchange::{hierarchical, json};
+        use hierarchical::execution::ExecutionLimits;
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(),
+            "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))} unitary fn inner[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)} pub unitary fn outer[static A:Basis,static k:Nat,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=2{inner[A,repeat_op(k,U)](q)}".into())])).unwrap();
+        let executable = std::env::var_os("QLEISLI_KERNEL").expect("matching native checker");
+        let checker = native::Kernel::new(executable.clone());
+        let hierarchy_checker = hierarchical::Kernel::new(executable);
+        for (basis, provider) in [("Bit", "main::flip"), ("Unit", "main::scalar")] {
+            for count in 0..=2 {
+                let source = parsed
+                    .instantiate_with_types(
+                        "main::outer",
+                        BTreeMap::from([("A".into(), BasisBinding::parse(basis).unwrap())]),
+                        BTreeMap::from([("k".into(), count)]),
+                        BTreeMap::from([(
+                            "U".into(),
+                            OperationBinding::new(provider, BTreeMap::new()),
+                        )]),
+                    )
+                    .unwrap()
+                    .elaborate()
+                    .unwrap();
+                let caller = source
+                    .definitions()
+                    .iter()
+                    .position(|d| d.path() == "main::inner")
+                    .unwrap();
+                let leaf = source.lower_raw_operation_at(caller, "U").unwrap();
+                let required = if basis == "Bit" {
+                    FiniteMeaning::permutation(
+                        BasisType::Bit,
+                        if count == 1 { vec![1, 0] } else { vec![0, 1] },
+                    )
+                    .unwrap()
+                } else {
+                    FiniteMeaning::phase(BasisType::Unit, vec![if count == 1 { 4 } else { 0 }])
+                        .unwrap()
+                };
+                let checked = leaf
+                    .check_finite_meaning(&checker, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .unwrap();
+                let proposal = checked.lower_hierarchy().unwrap();
+                let graph = json::parse(proposal.payload()).unwrap();
+                let definitions = graph.field("definitions").unwrap().array().unwrap();
+                assert!(
+                    definitions.iter().any(|d| {
+                        let body = d.field("body").unwrap();
+                        body.field("tag").unwrap().text().unwrap() == "leaf"
+                            && body.field("program").unwrap().text().unwrap().as_bytes()
+                                == checked.leaf().payload()
+                    }),
+                    "actual provider bytes must be in the emitted artifact"
+                );
+                let actual = hierarchy_checker
+                    .check_against_native(proposal.payload(), proposal.comparison_request())
+                    .unwrap();
+                let input = if basis == "Bit" {
+                    vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]]
+                } else {
+                    vec![[0.1, -0.2], [0.3, 0.4]]
+                };
+                let output = actual
+                    .execute_pure(
+                        &input,
+                        2,
+                        ExecutionLimits {
+                            max_amplitudes: 16,
+                            max_steps: 1000,
+                        },
+                    )
+                    .unwrap()
+                    .amplitudes;
+                let expected = if basis == "Bit" {
+                    (0..input.len())
+                        .map(|i| input[i ^ (if count == 1 { 1 } else { 0 })])
+                        .collect::<Vec<_>>()
+                } else {
+                    input
+                        .iter()
+                        .map(|[a, b]| if count == 1 { [-a, -b] } else { [*a, *b] })
+                        .collect()
+                };
+                for (a, b) in output.iter().flatten().zip(expected.iter().flatten()) {
+                    assert!((a - b).abs() < 1e-12, "{basis}, {count}");
+                }
+                assert_eq!(output.len(), expected.len());
+                if basis == "Bit" && count == 2 {
+                    // Keep the actual input/output frame, but substitute a
+                    // native-valid single X for the checked X^2 body. The
+                    // emitted matrix request must reject the new artifact.
+                    let mut wrong = checked.leaf().program().raw().clone();
+                    wrong.operations.remove(0);
+                    let RawOp::Gate { input, .. } = &mut wrong.operations[0] else {
+                        panic!("X gate")
+                    };
+                    *input = wrong.quantum_inputs[0].token;
+                    let wrong = native::Proposal::from_raw(
+                        &wrong,
+                        Some(&RootInterface {
+                            input: BasisType::Bit,
+                            output: BasisType::Bit,
+                        }),
+                        Version::V2,
+                        None,
+                    )
+                    .unwrap();
+                    checker.accept(&wrong).unwrap();
+                    let mut changed = json::parse(proposal.payload()).unwrap();
+                    let json::Value::Object(root) = &mut changed else {
+                        panic!("graph")
+                    };
+                    let json::Value::Array(definitions) = root.get_mut("definitions").unwrap()
+                    else {
+                        panic!("definitions")
+                    };
+                    let mut replaced = 0;
+                    for definition in definitions {
+                        let json::Value::Object(fields) = definition else {
+                            panic!("definition")
+                        };
+                        let json::Value::Object(body) = fields.get_mut("body").unwrap() else {
+                            panic!("body")
+                        };
+                        if body.get("program")
+                            == Some(&json::Value::String(
+                                std::str::from_utf8(checked.leaf().payload())
+                                    .unwrap()
+                                    .into(),
+                            ))
+                        {
+                            body.insert(
+                                "program".into(),
+                                json::Value::String(
+                                    std::str::from_utf8(wrong.artifact()).unwrap().into(),
+                                ),
+                            );
+                            replaced += 1;
+                        }
+                    }
+                    assert_eq!(replaced, 1);
+                    let error = hierarchy_checker
+                        .check_against_native(
+                            &json::encode(&changed).unwrap(),
+                            proposal.comparison_request(),
+                        )
+                        .unwrap_err();
+                    assert_eq!(error.code, "contract", "{error}");
+                }
+            }
+        }
+    }
 
     #[test]
     fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {

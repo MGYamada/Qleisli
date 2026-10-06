@@ -125,6 +125,7 @@ PATHS = {
         ('src/bin/qleisli/source_plan/options.rs', ['"type" =>', '"operation-type" =>',
          'never ordinary input']),
         ('src/frontend/sized/raw.rs', ['pub struct RawSourceProposal', 'pub fn validate_source_steps(', 'native::Proposal::from_raw']),
+        ('src/frontend/sized/lower.rs', ['fn native_operation(', 'leaf.payload()', 'finite_matrix::encode(leaf.meaning())', 'entry.key == key']),
         ('src/frontend/sized/elaborate.rs', ['pub fn lower_raw_operation(', 'pub fn lower_raw_operation_at(', 'definitions: Arc<[SourceDefinition]>']),
         ('src/frontend/raw_state.rs', ['pub(crate) struct RawState', 'pub(crate) fn cnot(', 'pub(crate) fn measure_z(']),
         ('src/frontend/sized/raw/preservation.rs', ['pub(super) fn validate_subject(', 'fn operation(', 'RawOp::ClassicalAnd', 'RawOp::ClassicalXor']),
@@ -144,6 +145,7 @@ PATHS = {
         ('tests/classical_functions.rs', 'repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller'),
         ('tests/classical_functions.rs', 'repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight'),
         ('src/frontend/sized/raw.rs', 'source_meaning_gate_rejects_a_native_valid_replaced_provider'),
+        ('src/frontend/sized/raw.rs', 'checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy'),
         ('tests/basis_polymorphism.rs', 'selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis'),
         ('tests/basis_polymorphism.rs', 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase')]),
     'source-meaning-check': path_rule('native-acceptance', 'finite-leaf sized-source-proposal', '--qirf-contract', [

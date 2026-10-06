@@ -639,6 +639,7 @@ fn consume(inputs: &[SourceValue], values: &mut BTreeMap<u32, Item>) -> Result<V
 
 struct Lower<'a> {
     source: &'a ElaboratedProgram,
+    native_operations: &'a [NativeOperation<'a>],
     graph: Graph,
     owner: u32,
     pure: BTreeMap<usize, usize>,
@@ -646,7 +647,51 @@ struct Lower<'a> {
     finite_gates: BTreeMap<u8, usize>,
     inline_visits: usize,
 }
+struct NativeOperation<'a> {
+    key: super::elaborate::OperationKey,
+    leaf: &'a crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+}
 impl Lower<'_> {
+    fn native_operation(
+        &mut self,
+        leaf: &crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+    ) -> Result<usize> {
+        let (kind, basis) = match leaf.boundary().signature() {
+            BasisType::Unit => (PortKind::Unit, SourceType::unit()),
+            BasisType::Bit => (PortKind::Bit, SourceType::bit()),
+            _ => {
+                return Err(fail(
+                    "checked source operation requires an exact Unit/Bit leaf",
+                ));
+            }
+        };
+        let port = |p: &QuantumPort| Port {
+            owner: p.token.0,
+            kind,
+            basis: basis.clone(),
+            axes: p.wires.iter().map(|wire| wire.0).collect(),
+        };
+        let before = vec![port(leaf.boundary().input())];
+        let after = vec![port(leaf.boundary().output())];
+        let program = std::str::from_utf8(leaf.payload())
+            .map_err(|_| fail("checked provider payload is not UTF-8"))?;
+        let description =
+            interchange::finite_matrix::encode(leaf.meaning()).map_err(|e| fail(e.to_string()))?;
+        let description = std::str::from_utf8(&description)
+            .map_err(|_| fail("checked provider matrix is not UTF-8"))?;
+        // Actual immutable bytes, not a reconstructed provider or success flag.
+        // The hierarchy's native gate checks this finite node again.
+        let node = self.graph.add(
+            before.clone(),
+            after.clone(),
+            tagged("leaf", &[("program", quote(program))]),
+            tagged("finite", &[("description", quote(description))]),
+            "finite",
+            vec![],
+        )?;
+        let rename = self.graph.rename(after, before)?;
+        self.graph.sequence(vec![node, rename])
+    }
     fn fresh(&mut self, ty: &SourceType, axes: Vec<u32>) -> Result<Port> {
         let basis = ty
             .quantum_basis()
@@ -976,6 +1021,10 @@ impl Lower<'_> {
         )
     }
     fn operation(&mut self, op: &SourceOperation) -> Result<usize> {
+        let key = op.key();
+        if let Some(native) = self.native_operations.iter().find(|entry| entry.key == key) {
+            return self.native_operation(native.leaf);
+        }
         if let Some(id) = op.definition() {
             let child = self.pure_definition(id)?;
             let before = self.graph.nodes[child].before.clone();
@@ -1478,9 +1527,31 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
 }
 
 pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
+    lower_inner(source, &[])
+}
+
+pub(super) fn lower_with_checked_operation(
+    check: &super::SourceMeaningCheck<'_>,
+) -> Result<HierarchyProposal> {
+    let proposal = check.source();
+    let op = proposal
+        .operation()
+        .ok_or_else(|| fail("hierarchy binding requires an original source operation binding"))?;
+    let operations = [NativeOperation {
+        key: op.key(),
+        leaf: check.leaf(),
+    }];
+    lower_inner(proposal.source(), &operations)
+}
+
+fn lower_inner<'a>(
+    source: &'a ElaboratedProgram,
+    native_operations: &'a [NativeOperation<'a>],
+) -> Result<HierarchyProposal> {
     check_profile(source)?;
     let mut lower = Lower {
         source,
+        native_operations,
         graph: Graph::new(),
         owner: 100,
         pure: BTreeMap::new(),
