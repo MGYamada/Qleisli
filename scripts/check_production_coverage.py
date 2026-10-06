@@ -138,8 +138,17 @@ PATHS = {
         ('tests/basis_polymorphism.rs', 'all_first_opaque_rejections_reach_their_actual_rules_before_binding'),
         ('tests/classical_functions.rs', 'original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase'),
         ('tests/classical_functions.rs', 'finite_source_targets_preserve_product_tree_and_refuse_width_substitution'),
+        ('tests/classical_functions.rs', 'source_meaning_signature_effect_and_budget_guards_precede_native_io'),
+        ('src/frontend/sized/raw.rs', 'source_meaning_gate_rejects_a_native_valid_replaced_provider'),
         ('tests/basis_polymorphism.rs', 'selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis'),
         ('tests/basis_polymorphism.rs', 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase')]),
+    'source-meaning-check': path_rule('native-acceptance', 'finite-leaf sized-source-proposal', '--qirf-contract', [
+        ('src/frontend/sized/raw.rs', ['pub struct SourceMeaningCheck', 'pub fn check_finite_meaning',
+         'finite_leaf::check_with_kernel', 'preservation::validate(&self.source, leaf.program().raw())']),
+        ('src/interchange/finite_leaf.rs', ['pub(crate) fn check_with_kernel(', 'kernel.check_leaf(payload, boundary, meaning)']),
+    ], [('tests/classical_functions.rs', 'original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase'),
+        ('tests/classical_functions.rs', 'source_meaning_signature_effect_and_budget_guards_precede_native_io'),
+        ('src/frontend/sized/raw.rs', 'source_meaning_gate_rejects_a_native_valid_replaced_provider')]),
     'checked-views': path_rule('checked-view', 'contract function named-qpe-components', '', [
         ('src/contract/mod.rs', ['pub fn check_binding(', 'pub fn check_entry(']),
         ('src/contract/function.rs', ['pub fn check_binding(']),

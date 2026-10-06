@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Bind fresh finite native checks to actual Raw source proposals and replay
+  their ordered source steps. Retain immutable source/request references;
+  reject native-valid substituted providers and preflight exact type, effect
+  and budget failures. Generic Meaning binding remains unfinished (#44).
+
 - Expose retained finite source Meanings as untrusted exact requests, preserving
   Unit/Bit/product trees and refusing unsupported Bits signature substitution.
   Check actual X/scalar provider bytes and reject lying implementations through

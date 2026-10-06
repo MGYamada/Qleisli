@@ -2,9 +2,10 @@
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 use super::primitive::Primitive;
 use super::{ElaboratedProgram, Error, Result, SourceType, SourceValue, Span};
-use crate::contract::BasisType;
+use crate::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
 use crate::frontend::raw_state::{RawState, Slot};
 use crate::frontend::types::Kind;
+use crate::interchange::finite_leaf::{self, CheckedUnitaryLeaf, UnitaryBoundary};
 use crate::interchange::{RootInterface, Version, native};
 use crate::ir::{BasisShape, ClassicalId, Effect, QuantumPort, RawProgram, SingleGate};
 use std::collections::{BTreeMap, BTreeSet};
@@ -28,8 +29,83 @@ const MAX_LIVE_QUBITS: usize = 16;
 pub struct RawSourceProposal {
     source: ElaboratedProgram,
     proposal: native::Proposal,
+    finite_boundary: Option<UnitaryBoundary>,
+}
+
+/// A fresh native finite equation with replay of these retained source steps.
+/// The borrowed immutable source/target identities cannot be substituted.
+/// This does not prove original AST-to-step preservation or generic binding.
+#[derive(Debug)]
+pub struct SourceMeaningCheck<'a> {
+    source: &'a RawSourceProposal,
+    required: &'a FiniteMeaning,
+    leaf: CheckedUnitaryLeaf,
+}
+impl SourceMeaningCheck<'_> {
+    pub fn source(&self) -> &RawSourceProposal {
+        self.source
+    }
+    pub fn required(&self) -> &FiniteMeaning {
+        self.required
+    }
+    pub fn leaf(&self) -> &CheckedUnitaryLeaf {
+        &self.leaf
+    }
 }
 impl RawSourceProposal {
+    /// Check the requested exact operator on this actual source-bound artifact,
+    /// then independently replay its ordered steps. Only Lean issues the leaf.
+    /// Unsupported interfaces reject before any native invocation. This gate
+    /// neither enables generic providers nor proves source elaboration sound.
+    pub fn check_finite_meaning<'a>(
+        &'a self,
+        kernel: &native::Kernel,
+        required: &'a FiniteMeaning,
+        budget: &mut Budget,
+    ) -> Result<SourceMeaningCheck<'a>> {
+        let root = &self.source.definitions()[self.source.root()];
+        let error = |code, message: String| {
+            let path = root.path();
+            Error::new(code, root.span(), message)
+                .in_module(path.rsplit_once("::").map_or(path, |(module, _)| module))
+        };
+        let boundary = self.finite_boundary.as_ref().ok_or_else(|| {
+            error("unsupported", "source Meaning checking requires a unary exact Unit/Bit quantum endomorphism with Unitary effect".into())
+        })?;
+        if required.signature() != boundary.signature() {
+            return Err(error(
+                "type",
+                "source and requested Meaning have different exact basis trees".into(),
+            ));
+        }
+        if budget.remaining() > DEFAULT_EXACT_WORK {
+            return Err(error(
+                "limit",
+                "source Meaning budget exceeds the shared exact-work ceiling".into(),
+            ));
+        }
+        let matrix = required.matrix(budget).map_err(|e| {
+            error(
+                if e.is_capacity() { "limit" } else { "meaning" },
+                e.to_string(),
+            )
+        })?;
+        let leaf =
+            finite_leaf::check_with_kernel(kernel, self.payload(), boundary, &matrix, budget)
+                .map_err(|e| error(e.code, e.to_string()))?;
+        if leaf.payload() != self.payload() {
+            return Err(error(
+                "preservation",
+                "checked leaf differs from actual source artifact".into(),
+            ));
+        }
+        preservation::validate(&self.source, leaf.program().raw())?;
+        Ok(SourceMeaningCheck {
+            source: self,
+            required,
+            leaf,
+        })
+    }
     pub fn source(&self) -> &ElaboratedProgram {
         &self.source
     }
@@ -558,9 +634,50 @@ fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
     });
     let proposal = native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
         .map_err(|error| Error::new("transport", root.span(), error.to_string()))?;
+    let finite_boundary =
+        if raw.declared_effect == Effect::Unitary {
+            if let Some(interface) = interface {
+                // This exact unary source result has one globally live register.
+                // Use its actual returned wire order, never just the input width.
+                if raw.quantum_inputs.len() != 1
+                    || raw.quantum_outputs.len() != 1
+                    || emitter.raw.registers.len() != 1
+                {
+                    return Err(invalid(
+                        root.span(),
+                        "unary source boundary has a different owner frame",
+                    ));
+                }
+                let output =
+                    emitter.raw.registers.values().next().ok_or_else(|| {
+                        invalid(root.span(), "missing unary source output register")
+                    })?;
+                Some(
+                    UnitaryBoundary::new(
+                        interface.input,
+                        raw.quantum_inputs[0].clone(),
+                        QuantumPort {
+                            token: output.token,
+                            wires: output.wires.clone(),
+                            shape: if output.wires.is_empty() {
+                                BasisShape::UNIT
+                            } else {
+                                BasisShape::BIT
+                            },
+                        },
+                    )
+                    .map_err(|e| invalid(root.span(), &e.to_string()))?,
+                )
+            } else {
+                None
+            }
+        } else {
+            None
+        };
     Ok(RawSourceProposal {
         source: source.clone(),
         proposal,
+        finite_boundary,
     })
 }
 
@@ -569,6 +686,51 @@ mod tests {
     use super::*;
     use crate::frontend::sized::ParsedProgram;
     use crate::ir::RawOp;
+
+    #[test]
+    fn source_meaning_gate_rejects_a_native_valid_replaced_provider() {
+        let source = ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}".into(),
+        )]))
+        .unwrap()
+        .instantiate("main::implementation", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+        let mut proposal = source.lower_raw().unwrap();
+        let required = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
+        proposal.proposal = native::Proposal::from_raw(
+            &required.target_ir().unwrap(),
+            Some(&RootInterface {
+                input: BasisType::Bit,
+                output: BasisType::Bit,
+            }),
+            Version::V2,
+            None,
+        )
+        .unwrap();
+        let kernel = native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("matching native checker"),
+        );
+        let matrix = required
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        // The replacement even satisfies its own requested equation. This
+        // cannot establish correspondence to the retained X source steps.
+        finite_leaf::check_with_kernel(
+            &kernel,
+            proposal.payload(),
+            proposal.finite_boundary.as_ref().unwrap(),
+            &matrix,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        let error = proposal
+            .check_finite_meaning(&kernel, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap_err();
+        assert_eq!(error.code(), "preservation", "{error}");
+    }
 
     fn example() -> ElaboratedProgram {
         ParsedProgram::parse(BTreeMap::from([(

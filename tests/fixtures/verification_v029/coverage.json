@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "74a6eb6b87e563c20ce1b52ba62b434bc5db188262c2fc3fd60f8a39107565a4",
+  "surface_sha256": "f96bf3216577f8c8b8be8f2e5072274a1be17ff0c1ed6d9d3fea6feebf712b27",
   "groups": [
     {
       "id": "raw-core",
@@ -996,7 +996,8 @@
       "legacy": "removed; no Rust acceptance fallback",
       "paths": [
         "contract-acceptance",
-        "finite-proposal"
+        "finite-proposal",
+        "source-meaning-check"
       ]
     },
     {
@@ -1394,7 +1395,8 @@
         "hierarchy-instrument",
         "hierarchy-qpe",
         "hierarchy-request",
-        "sized-proposal"
+        "sized-proposal",
+        "source-meaning-check"
       ]
     },
     {
@@ -2253,6 +2255,14 @@
           "test": "finite_source_targets_preserve_product_tree_and_refuse_width_substitution"
         },
         {
+          "path": "tests/classical_functions.rs",
+          "test": "source_meaning_signature_effect_and_budget_guards_precede_native_io"
+        },
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        },
+        {
           "path": "tests/basis_polymorphism.rs",
           "test": "selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis"
         },
@@ -2688,6 +2698,54 @@
       "checker": "Cli.runPreparation -> Protocol.Hierarchical.parsePreparation -> Hierarchical.Preparation.check",
       "proof_scope": "Preparation.check_reference/check_boundary retain their explicit reference and packet premises.",
       "gaps": "A component report is not a complete program handle, full instrument composition or runtime guarantee."
+    },
+    {
+      "id": "source-meaning-check",
+      "classification": "native-acceptance",
+      "boundaries": [
+        "finite-leaf",
+        "sized-source-proposal"
+      ],
+      "native_modes": [
+        "--qirf-contract"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "markers": [
+            "pub struct SourceMeaningCheck",
+            "pub fn check_finite_meaning",
+            "finite_leaf::check_with_kernel",
+            "preservation::validate(&self.source, leaf.program().raw())"
+          ]
+        },
+        {
+          "path": "src/interchange/finite_leaf.rs",
+          "markers": [
+            "pub(crate) fn check_with_kernel(",
+            "kernel.check_leaf(payload, boundary, meaning)"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "source_meaning_signature_effect_and_budget_guards_precede_native_io"
+        },
+        {
+          "path": "src/frontend/sized/raw.rs",
+          "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        }
+      ],
+      "entry_path": "RawSourceProposal::check_finite_meaning",
+      "checked_artifact": "Actual QIRF source proposal bytes, exact requested finite matrix/boundary and immutable retained source-step program",
+      "checker": "Kernel.check_leaf via existing Protocol.NativeContract.check, followed by Rust raw/preservation::validate",
+      "proof_scope": "The existing NativeContract leaf theorems bind the original body/request, complete unary interface and exact finite operator. Source-step replay is an independent Rust check; no AST-to-step theorem is supplied.",
+      "gaps": "No generic Op<A,M> or unused-provider enforcement, general AST/source preservation, native compiler/decoder/runtime proof or quantitative RS. Source/request borrowing protects host identity, not a constitutional guarantee."
     }
   ]
 }

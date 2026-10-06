@@ -376,6 +376,18 @@ type. The existing native finite-leaf gate can compare this request with actual
 provider bytes. Callers must still bind that result to the source instance and
 dependencies; requesting a target alone does not enable a refined operation.
 
+`RawSourceProposal::check_finite_meaning` checks an independently requested
+operator on that proposal's actual bytes through the existing native finite
+gate, then replays its retained ordered source steps. The returned
+`SourceMeaningCheck` borrows the immutable source and requested target and
+retains the native leaf; it cannot substitute another source or request.
+The current profile requires a unary Unitary endomorphism on exact `Q<Unit>`
+or `Q<Bit>`. Unsupported interfaces, same-width type substitutions and invalid
+work budgets reject before native IO. This is not an AST-to-step theorem or
+automatic checking of a declared `Op<A,M>` annotation. Generic admission still
+requires mandatory checks of every applicable original binding, including
+unused providers, and remains unsupported until that route is connected.
+
 ### Opaque Basis specialization in the selected profile
 
 The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity

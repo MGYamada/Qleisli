@@ -96,16 +96,81 @@ fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
             &required,
             &mut Budget::new(DEFAULT_EXACT_WORK),
         );
+        let source_result =
+            proposal.check_finite_meaning(&kernel(), &target, &mut Budget::new(DEFAULT_EXACT_WORK));
         if correct {
             assert!(
                 result
                     .unwrap()
                     .matches(proposal.payload(), &boundary, &required)
             );
+            let checked = source_result.unwrap();
+            assert!(std::ptr::eq(checked.source(), &proposal));
+            assert!(std::ptr::eq(checked.required(), &target));
+            assert!(
+                checked
+                    .leaf()
+                    .matches(proposal.payload(), &boundary, &required)
+            );
         } else {
             assert_eq!(result.unwrap_err().code, "contract");
+            assert_eq!(source_result.unwrap_err().code(), "contract");
         }
     }
+}
+
+#[test]
+fn source_meaning_signature_effect_and_budget_guards_precede_native_io() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    let absent = std::path::Path::new("/private/tmp/qleisli-missing-source-meaning-test-checker");
+    assert!(!absent.exists());
+    let kernel = Kernel::new(absent);
+    let source = "pub unitary fn identity(q:Q<Bit>)->Q<Bit>{q} pub observe fn main()->Unit{()}";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let raw = parsed
+        .instantiate("main::identity", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower_raw()
+        .unwrap();
+    let same_width =
+        FiniteMeaning::permutation(BasisType::pair(BasisType::Bit, BasisType::Unit), vec![0, 1])
+            .unwrap();
+    assert_eq!(
+        raw.check_finite_meaning(&kernel, &same_width, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap_err()
+            .code(),
+        "type"
+    );
+    let bit = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
+    assert_eq!(
+        raw.check_finite_meaning(&kernel, &bit, &mut Budget::new(DEFAULT_EXACT_WORK + 1))
+            .unwrap_err()
+            .code(),
+        "limit"
+    );
+    assert_eq!(
+        raw.check_finite_meaning(&kernel, &bit, &mut Budget::new(0))
+            .unwrap_err()
+            .code(),
+        "limit"
+    );
+    let observe = parsed
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower_raw()
+        .unwrap();
+    let unit = FiniteMeaning::permutation(BasisType::Unit, vec![0]).unwrap();
+    assert_eq!(
+        observe
+            .check_finite_meaning(&kernel, &unit, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap_err()
+            .code(),
+        "unsupported"
+    );
 }
 
 #[test]

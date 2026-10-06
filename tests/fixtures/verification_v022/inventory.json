@@ -3834,7 +3834,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "475aa86c54a4ded12eee6c5675fac1e2590f22e1a894959fd8a2ae1e3110c5c6",
+      "sha256": "fcdee89c9d9218cac4218b6ab1aa3d13d45dffb9ec30d4cb14ed0ef441cfb2b0",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4119,16 +4119,21 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "0c35e56c064c5a9e622085f3674cee1cdb43ea5bb9184381c38da8a668e637bb",
+      "sha256": "c1cd4b22ea61620d17998d45107dd93b12f264096c85175fa794881f605c8b50",
       "group": "sized-source",
       "surface": {
         "declarations": [
-          "RawSourceProposal"
+          "RawSourceProposal",
+          "SourceMeaningCheck"
         ],
         "functions": [
+          "pub fn check_finite_meaning<'a>( &'a self, kernel: &native::Kernel, required: &'a FiniteMeaning, budget: &mut Budget, ) -> Result<SourceMeaningCheck<'a>>",
+          "pub fn leaf(&self) -> &CheckedUnitaryLeaf",
           "pub fn payload(&self) -> &[u8]",
           "pub fn proposal(&self) -> &native::Proposal",
+          "pub fn required(&self) -> &FiniteMeaning",
           "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source(&self) -> &RawSourceProposal",
           "pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()>"
         ],
         "capacity_constants": [
@@ -4280,7 +4285,7 @@
     },
     {
       "path": "src/interchange/finite_leaf.rs",
-      "sha256": "095706e42eb58485d759bf866313dcfba126e2a4222dd4e9f8bb57e6a77de45a",
+      "sha256": "e481d08849423de1601440206e48af5e604eb730c25347ae31b57a15b83f6b65",
       "group": "finite-leaf",
       "surface": {
         "declarations": [

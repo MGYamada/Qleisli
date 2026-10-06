@@ -19,7 +19,7 @@ class ProductionCoverage(unittest.TestCase):
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')
         self.assertEqual(result['migration'], 'single-lean-acceptance-implemented')
-        self.assertEqual(result['production_paths'], 21)
+        self.assertEqual(result['production_paths'], 22)
         self.assertEqual(result['native_modes'], 9)
         self.assertEqual(result['published_baseline'], '0.2.9')
         self.assertEqual(result['development_version'], '0.3.0-alpha')
