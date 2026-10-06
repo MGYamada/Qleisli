@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{unit,finish,phase_eighth}; pub observe fn main()->Unit{let q=qfor static k in 0..0 carry q=unit(){yield phase_eighth(q);};finish(q)}

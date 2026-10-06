@@ -64,11 +64,19 @@ For the next session:
    backlog entry, update or A020 ID.
 
 The [static Nat helper first study](static-nat-helpers-v030/session.json)
-preserves eight complete desired programs and sixteen actual parser refusals
-before implementation. They cover computed sizes, acyclic helper composition,
+preserves eight complete desired programs and sixteen actual baseline refusals
+before implementation, including missing-checker observer errors. They cover computed sizes, acyclic helper composition,
 an indexed exact phase schedule and intended staging/guard/cycle refusals.
-These first parser failures do not establish the downstream negative rules.
+Those baseline failures do not establish the downstream negative rules.
 The helper spelling is provisional; no generic QFT implementation is included.
+
+The [qfor boundary first study](qfor-boundary-v030/session.json) preserves twelve
+complete desired/control/negative programs and 24 actual checks before qfor
+implementation. QPE, GHZ, arithmetic, mixed and zero-width carries are desired
+sources; grammar refusals do not validate their semantics. The unchanged ordinary
+fold and old quantum-for controls pass selected checking, exposing the boundary
+the migration must change. Context is informed; no independent blind model or
+generic QFT implementation is claimed.
 
 The [functional-boundary study](functional-boundary-v030/README.md) retains ten
 complete first projects, two explicit wrapper repairs and 44 actual CLI calls.
