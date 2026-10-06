@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reduce ordinary corpus CI to all shipped entries, 20 representative X/Y
+  entry pairs, four semantic faults and existing rejection cases at the
+  maintainer's request. Record omitted coverage explicitly; retain exhaustive
+  release/manual-full validation and fresh native checks (#142).
 - Show corpus CI case starts, bounded probe progress, elapsed times and
   completion/failure on stderr. Preserve stdout summaries, JSON reports and all independent oracle
   checks, fresh native decisions and partial failure records (#142).

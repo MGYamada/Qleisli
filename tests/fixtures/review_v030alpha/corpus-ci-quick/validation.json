@@ -1,0 +1,262 @@
+{
+  "format": "qleisli.corpus-quick-validation.v1",
+  "source_base": "60ac6d667f578b08becdfd46865f681cef076bdb",
+  "authorization": "Maintainer explicitly requested approximately 1/100 as many corpus CLI calls; the four-shard attempt was discarded.",
+  "source_sha256": {
+    "scripts/check_input_corpus.py": "37241a2622883463c23b78432415e03e5dc5eb682291da7b660ddbf75dd038e3",
+    "scripts/test_check_input_corpus.py": "cbb2d95f3c4915c477f0ef67d934b877cc87290b8eddab64d51a648edb652ca3",
+    ".github/workflows/ci.yml": "758ab404025eea9a6c543ed8de87c20f309f7a901f5f07921e9f3714f4253f40",
+    "scripts/test_check_release_ready.py": "444e78241536a844c0f00fd96ca98664e12fb71c9ae5f4f80d3d753e561c8c12"
+  },
+  "real_native_run": {
+    "command": "QLEISLI_KERNEL=lean-kernel/.lake/build/bin/qleisli-kernel python3 scripts/check_input_corpus.py /private/tmp/qleisli-bounded-validation-target/debug/qleisli --quick --report /private/tmp/qleisli-corpus-quick-report-final.json",
+    "exit_code": 0,
+    "elapsed_seconds": 31.394810375000816,
+    "cli_invocations": 157,
+    "report_sha256": "f52c27f2cc61f98f3013256da63892a6cf0310c9792699c69cb85d17c835e362",
+    "compiler_sha256": "aaa2466e9939f803d73a1aac1c22574488d725abbd1db2c1506a85c37ac32d1a",
+    "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "mode": "quick-representative-v1",
+    "exhaustive_unitary_entries": false,
+    "case_count": 87,
+    "semantic_probes": 40,
+    "semantic_faults": [
+      {
+        "id": "incomplete_swap",
+        "reference": "quantum_katas/swap2",
+        "typecheck": "passed",
+        "semantic_mismatch": "quantum_katas/swap2 column 2: (True, False): 0 != 1.0"
+      },
+      {
+        "id": "missing_add_two",
+        "reference": "qualtran/add_constant3",
+        "typecheck": "passed",
+        "semantic_mismatch": "qualtran/add_constant3 column 0: (True, True, False): 0 != 1.0"
+      },
+      {
+        "id": "rx_missing_scalar",
+        "reference": "pennylane_demos/rx_quarter",
+        "typecheck": "passed",
+        "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+      },
+      {
+        "id": "swapped_bell_labels",
+        "reference": "quantum_katas/bell_measure",
+        "typecheck": "passed",
+        "semantic_mismatch": "quantum_katas/bell_measure Bell-label-False-True: (True, False): 1 != 0"
+      }
+    ],
+    "negative_cases": [
+      {
+        "id": "dirty_auxiliary",
+        "code": "unsupported",
+        "exit_code": 1
+      },
+      {
+        "id": "duplicate_owner",
+        "code": "ownership",
+        "exit_code": 1
+      },
+      {
+        "id": "measured_owner",
+        "code": "ownership",
+        "exit_code": 1
+      },
+      {
+        "id": "measurement_adjoint",
+        "code": "type_mismatch",
+        "exit_code": 1
+      }
+    ],
+    "representative_entries": {
+      "pennylane_demos/ry_quarter": [
+        0,
+        0
+      ],
+      "quantum_katas/bell_singlet2": [
+        1,
+        0
+      ],
+      "qualtran/less_than_constant2": [
+        7,
+        2
+      ],
+      "quantum_katas/deutsch_jozsa3": [
+        4,
+        2
+      ],
+      "pennylane_demos/qaoa_path_layer3": [
+        6,
+        0
+      ],
+      "qualtran/reflection2": [
+        0,
+        1
+      ],
+      "pennylane_demos/qpe3": [
+        4,
+        8
+      ],
+      "qualtran/qrom2": [
+        8,
+        8
+      ],
+      "pennylane_demos/qaoa_negative_mixer2": [
+        1,
+        3
+      ],
+      "quantum_katas/qpe3": [
+        1,
+        1
+      ],
+      "qualtran/equals2": [
+        9,
+        9
+      ],
+      "quantum_katas/phase_negative_eighth1": [
+        1,
+        1
+      ],
+      "qualtran/reflection_minus1": [
+        1,
+        1
+      ],
+      "pennylane_demos/phase_lock": [
+        1,
+        20
+      ],
+      "pennylane_demos/rotation_half_y": [
+        0,
+        1
+      ],
+      "quantum_katas/fredkin3": [
+        4,
+        4
+      ],
+      "quantum_katas/odd_parity3": [
+        4,
+        1
+      ],
+      "qualtran/equals_constant2": [
+        1,
+        0
+      ],
+      "quantum_katas/uniform3": [
+        2,
+        5
+      ],
+      "qualtran/add_minus_one2": [
+        2,
+        1
+      ]
+    },
+    "omitted_semantic_fault_ids": [
+      "basis_reflection_wrong_label",
+      "bell_change_reversed_phase",
+      "bitstring_wrong_target",
+      "controlled_h_unconditional",
+      "controlled_increment2_fault",
+      "controlled_reflection_missing_phase",
+      "cz_replaced_by_identity",
+      "decrement_lost_high_borrow",
+      "edge_layer_reversed_order",
+      "equals1_fault",
+      "equals_constant_wrong_endian",
+      "erased_rotation_scalar",
+      "even_numbers_wrong_low_bit",
+      "even_parity3_fault",
+      "graph_edge_erased",
+      "greater_constant_wrong_threshold",
+      "greater_than_input_not_restored",
+      "half_rotation_order_reversed",
+      "half_rx_missing_scalar",
+      "half_zz_missing_scalar",
+      "increment_wrong_carry_order",
+      "kickback_wrong_secret",
+      "less_equal_changed_to_strict",
+      "low_bit_equality_only",
+      "majority_replaced_by_parity",
+      "minus_preparation_wrong_extension",
+      "missing_lcu_unprepare",
+      "mixed_rotation_order_reversed",
+      "mixer_erased_scalar",
+      "negative_control_changed_to_positive",
+      "negative_edge_cost_sign",
+      "negative_phase_conjugated",
+      "negative_rotations_reversed",
+      "negative_rx_missing_scalar",
+      "negative_ry_wrong_sign",
+      "negative_zz_missing_scalar",
+      "parity_prepared_even",
+      "partial_bitwise_not",
+      "path_cost_lost_second_phase",
+      "qaoa_negative_mixer2_fault",
+      "qaoa_path_layer3_fault",
+      "qrom_reversed_target_bits",
+      "reflection_minus_missing_phase",
+      "reflection_zero2_fault",
+      "rotation_negative_x_positive_y_fault",
+      "ry_second_column_sign",
+      "singlet_phase_after_flip",
+      "subtract_wrong_borrow_order",
+      "threshold_wrong_polarity",
+      "toffoli_ignored_second_control",
+      "two_bitstrings3_fault",
+      "unconditional_fredkin",
+      "uniform_missing_middle_h",
+      "uniform_phase_conjugated",
+      "w2_retained3_fault",
+      "xor_constant_missing_high_bit",
+      "xor_constant_wrong_bit",
+      "zero_predicate_input_not_restored",
+      "zz_erased_scalar"
+    ],
+    "all_failures": []
+  },
+  "comparison": {
+    "historical_exhaustive_unitary_probes": 15848,
+    "ratio": 0.009906612821807168,
+    "limits": "157 counts all quick CLI calls, including 87 shipped entries, 40 representative probes, selected fault checking and four rejections. 15,848 counts only exhaustive unitary probes; full mode also has shipped/protocol/fault/rejection overhead. No old/new same-machine runtime comparison or hosted timing is claimed."
+  },
+  "first_failed_run": {
+    "exit_code": 1,
+    "elapsed_seconds": 31.282648082997184,
+    "cli_invocations": 157,
+    "failures": [
+      {
+        "stage": "run",
+        "id": null,
+        "type": "ValueError",
+        "message": "validation inputs changed during the run"
+      }
+    ],
+    "reason": "The assistant edited the oracle script while validation was running. Input identity enforcement correctly rejected the run; no acceptance result was overridden."
+  },
+  "checks": {
+    "corpus_python_tests": {
+      "passed": 77,
+      "seconds": 28.689
+    },
+    "ci_profile_tests": {
+      "passed": 6
+    },
+    "docs": {
+      "local_links": 2181,
+      "status": "passed"
+    },
+    "verification_inventory": "passed",
+    "production_coverage": "passed",
+    "constitutional_continuity": {
+      "status": "passed",
+      "base": "38baae7d19535602b21270e11e97617d45205b37",
+      "scope": "Current identities and protected continuity; no fresh Lean replay"
+    },
+    "workflow_parser": "PyYAML unavailable; release workflow structure is covered by the existing producer gate test and new full-corpus routing regression.",
+    "release_gate_tests": {
+      "passed": 32,
+      "seconds": 78.451,
+      "scope": "Includes ordinary-quick versus release/manual-full workflow routing"
+    }
+  },
+  "remaining": "No new Lean proof/build/audit/replay, hosted current-commit CI, full corpus run or release readiness is claimed. Releases and manual full validation retain exhaustive corpus coverage. General 0.3.0 obligations and all pending constitutional duties remain open."
+}

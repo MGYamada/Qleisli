@@ -783,7 +783,7 @@ def current_project(case, corpus=None):
     return project
 
 
-def check_case(case, binary, exhaustive, project=None):
+def check_case(case, binary, exhaustive, project=None, quick_probe=None):
     started = time.monotonic()
     print(f"[corpus] start {case['id']}", file=sys.stderr, flush=True)
     project = current_project(case) if project is None else project
@@ -804,20 +804,25 @@ def check_case(case, binary, exhaustive, project=None):
         if case["kind"] == "unitary":
             n = case["qubits"]
             dim = 1 << n
-            for x in range(dim):
+            for x in ([] if quick_probe is not None else range(dim)):
                 column = reference_column(case, x)
                 execute(driver(n, x), probabilities(column), f"column {x}")
                 rows = range(dim) if exhaustive else sorted({0, x, dim - 1})
                 for y in rows:
                     for axis in "xy":
                         execute(driver(n, x, y, axis), interference(column, y, axis), f"entry {y},{x} {axis}")
+            if quick_probe:
+                x, y = quick_probe
+                column = reference_column(case, x)
+                for axis in "xy":
+                    execute(driver(n, x, y, axis), interference(column, y, axis), f"representative entry {y},{x} {axis}")
             default = sum(b << j for j, b in enumerate(case["default_input"]))
             expected = probabilities(reference_column(case, default))
             compare(shipped, expected, f"{case['id']} shipped main")
             observed, wanted = host_observables(case, shipped), host_observables(case, expected)
             require(all(abs(v - wanted[k]) < TOLERANCE for k, v in observed.items()), "host expectation mismatch")
         else:
-            for source, expected, label in protocol_probes(case):
+            for source, expected, label in ([] if quick_probe is not None else protocol_probes(case)):
                 execute(source, expected, label)
             if case["kind"] == "dense":
                 expected = {(True, False): 1.0}
@@ -889,7 +894,7 @@ def check_negative(case, binary):
     return {"id": case["id"], "code": case["expected_code"], "exit_code": process.returncode}
 
 
-def run_checks(cases, faults, negatives, binary, exhaustive, report, path):
+def run_checks(cases, faults, negatives, binary, exhaustive, report, path, quick_probes=None):
     """Retain completed cases even when a peer fails, times out or crashes."""
     def completed(stage, identifier, action):
         status = "passed"
@@ -903,7 +908,9 @@ def run_checks(cases, faults, negatives, binary, exhaustive, report, path):
         print(f"[corpus] completed {stage}/{identifier}: {status}", file=sys.stderr, flush=True)
 
     with ThreadPoolExecutor(max_workers=4) as pool:
-        futures = {pool.submit(check_case, case, binary, exhaustive): case["id"] for case in cases}
+        futures = {pool.submit(check_case, case, binary, exhaustive, **(
+            {"quick_probe": quick_probes.get(case["id"], ())} if quick_probes is not None else {})):
+            case["id"] for case in cases}
         for future in as_completed(futures):
             completed("cases", futures[future], future.result)
     by_id = {case["id"]: case for case in cases}
@@ -1068,7 +1075,7 @@ def current_counterexample_sources(corpus=None):
     return selected
 
 
-def input_binding(cases, faults, negatives, binary):
+def source_binding(cases, faults, negatives):
     sources = {str(p.resolve().relative_to(CORPUS.resolve())): sha256(p)
                for case in cases + faults + negatives
                for p in sorted(current_project(case).glob("*.qli"))}
@@ -1078,7 +1085,7 @@ def input_binding(cases, faults, negatives, binary):
     counterexample_migrations = {name: sha256(local(CORPUS, name))
                                 for name in manifest.get("counterexample_source_migrations", [])}
     current_negatives()
-    return dict(compiler_sha256=sha256(binary), oracle_script_sha256=sha256(Path(__file__)),
+    return dict(oracle_script_sha256=sha256(Path(__file__)),
                 manifest_sha256=sha256(CORPUS / "manifest.json"), source_sha256=sources,
                 source_migration_sha256=migrations,
                 counterexample_source_migration_sha256=counterexample_migrations,
@@ -1089,13 +1096,53 @@ def input_binding(cases, faults, negatives, binary):
                     for fault in faults for p in sorted(current_project(fault).glob("*.qli"))})
 
 
+def input_binding(cases, faults, negatives, binary):
+    return dict(compiler_sha256=sha256(binary), **source_binding(cases, faults, negatives))
+
+
+def semantic_probe_count(case, exhaustive):
+    if case["kind"] != "unitary":
+        return sum(1 for _ in protocol_probes(case))
+    dim = 1 << case["qubits"]
+    if exhaustive:
+        return dim + 2 * dim * dim
+    return sum(1 + 2 * len({0, x, dim - 1}) for x in range(dim))
+
+
+QUICK_FAULT_IDS = {"rx_missing_scalar", "swapped_bell_labels", "missing_add_two", "incomplete_swap"}
+
+
+def representative_entries(cases):
+    """Twenty fixed entries, stratified by approved source and existing width."""
+    unitary = [case for case in cases if case["kind"] == "unitary"]
+    ordered = sorted(unitary, key=lambda case: hashlib.sha256(case["id"].encode()).hexdigest())
+    selected, groups = [], set()
+    for case in ordered:
+        group = (case["id"].split("/")[0], case["qubits"])
+        if group not in groups:
+            selected.append(case)
+            groups.add(group)
+    for case in ordered:
+        if len(selected) >= 20:
+            break
+        if case not in selected:
+            selected.append(case)
+    return {case["id"]: (int.from_bytes(hashlib.sha256(case["id"].encode()).digest()[:8], "big") % (1 << case["qubits"]),
+                         int.from_bytes(hashlib.sha256(case["id"].encode()).digest()[8:16], "big") % (1 << case["qubits"]))
+            for case in selected}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("binary", nargs="?", type=Path)
     parser.add_argument("--case", help="single source/case ID")
-    parser.add_argument("--exhaustive", action="store_true", help="check every complex matrix entry via X/Y interference")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--exhaustive", action="store_true", help="check every complex matrix entry via X/Y interference")
+    modes.add_argument("--quick", action="store_true", help="all shipped entries, 20 representative X/Y entry pairs and four semantic faults")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args(argv)
+    if args.quick and not args.binary:
+        parser.error("--quick requires an executable; provenance-only validation is a separate mode")
     report = dict(format=1, status="incomplete", failures=[], cases=[], semantic_faults=[], negative_cases=[],
                   created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   exhaustive_unitary_entries=args.exhaustive, upstream_frameworks_executed=False, tolerance=TOLERANCE)
@@ -1113,12 +1160,22 @@ def main(argv=None):
         ids = {case["id"] for case in cases}
         faults = [f for f in json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"] if f["reference"] in ids]
         negatives = current_negatives()
+        quick_probes = None
+        if args.quick:
+            all_faults = json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"]
+            require(QUICK_FAULT_IDS <= {fault["id"] for fault in all_faults}, "quick semantic fault inventory changed")
+            faults = [fault for fault in faults if fault["id"] in QUICK_FAULT_IDS]
+            quick_probes = {identifier: entry for identifier, entry in representative_entries(manifest["cases"]).items()
+                            if identifier in ids}
+            report.update(validation_mode="quick-representative-v1", representative_entries=quick_probes,
+                          omitted_semantic_fault_ids=sorted(fault["id"] for fault in all_faults
+                              if fault["reference"] in ids and fault["id"] not in QUICK_FAULT_IDS))
         binding = input_binding(cases, faults, negatives, binary)
         report.update(binding, expected_ids={name: [case["id"] for case in items] for name, items in
                       [("cases", cases), ("semantic_faults", faults), ("negative_cases", negatives)]})
         report["project_version"] = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
         save_report(args.report, report)
-        run_checks(cases, faults, negatives, binary, args.exhaustive, report, args.report)
+        run_checks(cases, faults, negatives, binary, args.exhaustive, report, args.report, quick_probes)
         require(binding == input_binding(cases, faults, negatives, binary), "validation inputs changed during the run")
         report["status"] = "failed" if report["failures"] else "passed"
     except (Exception, KeyboardInterrupt) as error:

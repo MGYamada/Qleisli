@@ -136,7 +136,22 @@ jobs:
           python3 scripts/test_qli_differential.py target/debug/qleisli --cases=96
       - name: Frozen VM-22 finite/source comparison inputs
         run: python3 scripts/test_verification_baseline.py target/debug/qleisli
-      - run: python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive
+      - name: Bounded corpus checks (exhaustive for release and manual full validation)
+        env:
+          CORPUS_FULL: ${{ startsWith(github.ref, 'refs/tags/') || startsWith(github.head_ref, 'codex/release-') || startsWith(github.head_ref, 'release/') || (github.event_name == 'workflow_dispatch' && (inputs.validation == 'full' || inputs.release_readiness)) }}
+        run: |
+          mode=--quick
+          if [[ "$CORPUS_FULL" == 'true' ]]; then
+            mode=--exhaustive
+          fi
+          python3 scripts/check_input_corpus.py target/debug/qleisli "$mode" --report "$RUNNER_TEMP/corpus.json"
+      - name: Retain actual corpus mode, selected probes and partial failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: corpus-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/corpus.json
+          if-no-files-found: error
       - run: cargo +1.98.1 clippy --all-targets -- -D warnings
       - run: cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check
       - run: cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets

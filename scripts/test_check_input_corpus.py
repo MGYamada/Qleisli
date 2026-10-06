@@ -776,6 +776,61 @@ class OracleTests(unittest.TestCase):
 
 
 class ReportTests(unittest.TestCase):
+    def test_quick_selection_covers_sources_and_widths_without_expanding_maximum_cases(self):
+        cases = json.loads((corpus.CORPUS / "manifest.json").read_text())["cases"]
+        selected = corpus.representative_entries(cases)
+        self.assertEqual(len(selected), 20)
+        self.assertEqual(selected, corpus.representative_entries(list(reversed(cases))))
+        groups = {(case["id"].split("/")[0], case["qubits"]) for case in cases if case["kind"] == "unitary"}
+        chosen = {(case["id"].split("/")[0], case["qubits"]) for case in cases if case["id"] in selected}
+        self.assertEqual(groups, chosen)
+        for case in cases:
+            if case["id"] in selected:
+                self.assertTrue(all(0 <= index < 1 << case["qubits"] for index in selected[case["id"]]))
+        full = sum(corpus.semantic_probe_count(case, True) for case in cases if case["kind"] == "unitary")
+        self.assertEqual(full, 15848)
+        self.assertLess((len(cases) + 2 * len(selected)) / full, 0.01)
+
+    def test_quick_case_checks_shipped_output_and_both_complex_axes(self):
+        case = next(case for case in json.loads((corpus.CORPUS / "manifest.json").read_text())["cases"]
+                    if case["id"] == "quantum_katas/global_phase")
+        default = sum(bit << j for j, bit in enumerate(case["default_input"]))
+        shipped = corpus.probabilities(corpus.reference_column(case, default))
+        column = corpus.reference_column(case, 1)
+        expected = [shipped, corpus.interference(column, 0, "x"), corpus.interference(column, 0, "y")]
+        with patch.object(corpus, "run", side_effect=expected) as run:
+            record = corpus.check_case(case, Path("unused"), False, quick_probe=(1, 0))
+        self.assertEqual(record["semantic_probes"], 2)
+        self.assertEqual(run.call_count, 3)
+        with patch.object(corpus, "run", return_value=shipped) as run:
+            record = corpus.check_case(case, Path("unused"), False, quick_probe=())
+        self.assertEqual(record["semantic_probes"], 0)
+        self.assertEqual(run.call_count, 1)
+        with patch.object(corpus, "run", return_value={(False,): 0.0, (True,): 1.0}), self.assertRaises(corpus.SemanticMismatch):
+            corpus.check_case(case, Path("unused"), False, quick_probe=())
+
+    def test_quick_report_discloses_omitted_faults_and_never_claims_exhaustive_coverage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "report.json"
+            def check(case, *args, **kwargs):
+                return dict(id=case["id"], semantic_probes=2 if kwargs["quick_probe"] else 0)
+            with patch.object(corpus, "check_case", side_effect=check), patch.object(corpus, "check_semantic_fault", side_effect=lambda f, *a: dict(id=f["id"])) as faults, patch.object(corpus, "check_negative", side_effect=lambda c, b: dict(id=c["id"])):
+                self.assertEqual(corpus.main([__file__, "--quick", "--report", str(path)]), 0)
+            report = json.loads(path.read_text())
+            self.assertEqual(len(report["cases"]), 87)
+            self.assertEqual(sum(row["semantic_probes"] for row in report["cases"]), 40)
+            self.assertEqual(faults.call_count, 4)
+            self.assertEqual(set(report["expected_ids"]["semantic_faults"]), corpus.QUICK_FAULT_IDS)
+            self.assertEqual(len(report["omitted_semantic_fault_ids"]), 59)
+            self.assertEqual(len(report["negative_cases"]), 4)
+            self.assertEqual(report["validation_mode"], "quick-representative-v1")
+            self.assertFalse(report["exhaustive_unitary_entries"])
+            with patch.object(corpus, "check_manifest") as manifest:
+                for arguments in (("--quick",), (__file__, "--quick", "--exhaustive")):
+                    with self.assertRaises(SystemExit):
+                        corpus.main(list(arguments))
+                manifest.assert_not_called()
+
     def test_partial_results_and_failures_survive_parallel_completion(self):
         import subprocess
         with tempfile.TemporaryDirectory() as directory:

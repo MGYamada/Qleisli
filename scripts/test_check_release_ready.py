@@ -503,6 +503,20 @@ class SyntheticRelease(unittest.TestCase):
         self.assertIn('--record-constitution',text)
         self.assertIn('inputs.release_readiness',final)
 
+    def test_reduced_corpus_mode_cannot_replace_release_or_manual_full_validation(self):
+        text=(ROOT/'.github/workflows/ci.yml').read_text()
+        block=text.split('      - name: Bounded corpus checks')[1].split('      - name: Retain actual corpus mode')[0]
+        for condition in ("startsWith(github.ref, 'refs/tags/')", "startsWith(github.head_ref, 'codex/release-')",
+                          "startsWith(github.head_ref, 'release/')", "github.event_name == 'workflow_dispatch'",
+                          "inputs.validation == 'full'", "inputs.release_readiness"):
+            self.assertIn(condition,block)
+        self.assertIn('mode=--quick',block)
+        self.assertIn('if [[ "$CORPUS_FULL" == \'true\' ]]; then\n            mode=--exhaustive',block)
+        self.assertIn('"$mode" --report "$RUNNER_TEMP/corpus.json"',block)
+        retained=text.split('      - name: Retain actual corpus mode')[1].split('      - run:')[0]
+        self.assertIn('if: always()',retained)
+        self.assertIn('corpus-${{ github.sha }}-${{ github.run_attempt }}',retained)
+
 
 if __name__=='__main__':
     unittest.main()
