@@ -1,0 +1,2 @@
+# A unified diff has single-space blank context lines; retain its hashed bytes.
+attempt-01.patch -text whitespace=-blank-at-eol
