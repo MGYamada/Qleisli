@@ -4,20 +4,19 @@
 
 Keep AGENTS.md and CLAUDE.md identical: **100 lines / 6,000 UTF-8 bytes** each.
 `scripts/check_docs.py` checks limits and equality. Keep rules/links here,
-specifications in docs, decisions in Issues, results beside fixtures, history
-in Git. No release/publication histories. Shorten rules to fit; raise limits
-only on explicit user instruction.
+specs in docs, decisions in Issues, results beside fixtures, history
+in Git. No release/publication histories. Shorten rules; only explicit user instruction may raise limits.
 
 ## Start from the design
 
-User instructions take precedence. At startup, model change or context reset,
+User instructions prevail. At startup, model change or context reset,
 follow [constitutional handoff](governance/README.md#agent-startup-and-handoff).
 AI cannot adopt interpretations or guarantees.
 Read [README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
 [adopted cutover](https://github.com/MGYamada/Qleisli/issues/276) and
 [algorithm drafts](docs/src/imaginary-v1/index.md).
-Read specifications before behavior changes; English is authoritative
-for production specifications, public library contracts, comments and examples.
+Read specs before behavior changes; English is authoritative
+for production specs, public library contracts, comments and examples.
 
 - Start with desired `.qli` programs and a bounded contract/checking experiment.
   Preserve first sources, real diagnostics and counterexamples under the
@@ -62,9 +61,9 @@ Until v0.5.0, add algorithms to `corpus` rather than generally expand `stdlib`.
 Follow [corpus policy](corpus/POLICY.md): only QuantumKatas, Qualtran Bloqs and
 PennyLane Demos; source changes need explicit approval. Pin commits/file hashes
 and preserve licenses/notices (Katas MIT; the other two Apache-2.0).
-Library work follows [STDLIB.md](STDLIB.md) and existing source contracts.
+Library work follows [STDLIB.md](STDLIB.md) and source contracts.
 
-Prioritize shared executable corpus source without waiting for general proofs.
+Prioritize shared executable corpus source; do not wait for general proofs.
 Follow the adopted cutover and [sized evidence](corpus/sized/README.md).
 Validate small qubit systems only;
 do not newly generate/check maximum-size cases. A version or bounded component
@@ -77,22 +76,23 @@ Write new chapters from adopted decisions, actual code and proofs;
 migration decisions live in Issues. The retired `docs-old/` tree is deleted.
 Do not restore it, its links (including pinned web links), redirects, replacement
 copies of retired prose or active build/check dependencies; use Git history.
-Preserve executable source, proofs, counterexamples, validation artifacts and
-notices outside retired documentation. Regenerate corpus counts with
+Keep executable source, proofs, counterexamples, validation artifacts and
+notices outside retired docs. Regenerate corpus counts with
 `python3 scripts/check_docs.py --write-corpus`; do not hand-edit generated views.
 
 ## Changes, versions and licensing
 
+PRs above 1,000,000 added+deleted lines are forbidden; only current #307 is exempt.
 Use GitHub Issues for decisions/friction; no duplicate backlog. Breaking changes
 need an Issue with target, contracts, reason, migration and acceptance criteria
 before implementation. Compatible changes use PATCH, breaks MINOR, except the
 explicitly approved v0.2.9 verifier migration (#276). Cargo.toml is authoritative; synchronize
 Cargo.lock, lakefiles, Python metadata/runtime, std Qargo and research Cargo via
-`scripts/maintain_release.py`; inspect its plan and source-review requirements. Never change dependency versions as part of synchronization. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
+`scripts/maintain_release.py`; inspect its plan and source-review requirements. Synchronization must not change dependency versions. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
 Qargo.toml. Accumulate changes in [CHANGELOG](CHANGELOG.md), not per-task bumps.
-Run relevant checks and record performed/skipped results accurately. For releases
+Run relevant checks; record performed/skipped results accurately. For releases
 validate source, packages, installation and full CI; tag the exact checked commit.
 Selection, tagging, pushing and publication are distinct; published artifacts
-are immutable. Documentation-only work need not rerun Rust/Lean tests.
+are immutable. Docs-only work need not rerun Rust/Lean tests.
 Preserve Apache-2.0, [LICENSE](LICENSE), [NOTICE](NOTICE), third-party attribution
 and Masahiko G. Yamada's copyright; public Rust packages declare Apache-2.0.

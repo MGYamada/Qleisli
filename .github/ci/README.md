@@ -8,6 +8,26 @@ exact checkout; missing/unknown lanes and failed/skipped selected jobs reject.
 Dependency archive misses take the same validation path. Cargo `target`, Lean
 project outputs and prior validation reports are never cached.
 
+PRs exceeding **1,000,000 added plus deleted text lines** are forbidden. The
+human-authorized exception is only the existing `MGYamada/Qleisli#307`; it does
+not cover later PRs, branches or repositories. `scripts/check_pr_size.py` counts
+the exact event head against the unique merge base of its exact base/head,
+using Git `--numstat -z --no-renames`: a move counts as deletion plus addition.
+Binary records are reported separately; this is not a file-byte limit. The
+first `changes` check binds repository/PR number, merge ref and both merge
+parents to the workflow context, rejects missing/malformed/shallow data, and
+runs before suite selection. Failure of `changes` fails the existing required
+contexts. Push/manual runs explicitly report the PR rule as not applicable.
+No claim is made that local JSON authenticates GitHub or that this installs
+branch protection; enforcement-code changes still require review.
+
+Before creating a later PR, run `python3 scripts/check_pr_size.py --base BASE_SHA
+--head HEAD_SHA` with complete history and full commit hashes. Local preflight
+has no exception and counts committed changes only; repeat it after committing
+the final tree. Splitting reviewable work must retain every required check and
+protected source, proof, evidence and history; deleting them to shrink a PR is
+not authorized by this rule.
+
 Constitution, governance records, constitutional fixtures and Reference changes
 select the full policy-risk lane. The always-run documentation job also checks
 the adopted constitutional identity, historical candidate evidence, pending

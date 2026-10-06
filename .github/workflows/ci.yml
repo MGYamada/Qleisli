@@ -50,9 +50,12 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
+      - name: Reject oversized PRs before scheduling validation
+        run: python3 scripts/check_pr_size.py --report "$RUNNER_TEMP/pr-size.json"
       - name: Test fail-closed routing and required-check aggregation
         run: |
+          python3 scripts/test_check_pr_size.py
           python3 scripts/test_ci_profiles.py
           python3 scripts/test_measure_ci.py
           python3 scripts/test_run_native_ci.py
@@ -66,7 +69,9 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: ci-selection-${{ github.sha }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/ci-selection.json
+          path: |
+            ${{ runner.temp }}/ci-selection.json
+            ${{ runner.temp }}/pr-size.json
           if-no-files-found: error
   check-rust:
     needs: changes
