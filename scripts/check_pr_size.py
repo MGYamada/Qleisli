@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Reject PRs exceeding 1,000,000 added plus deleted Git text lines.
+"""Reject PRs with at least 1,000,000 added plus deleted Git text lines.
 
 Only MGYamada/Qleisli PR #307 has the human-authorized existing-PR exception.
 Hosted mode binds that identity to the GitHub event, ref and exact merge parents.
@@ -94,7 +94,7 @@ def policy_result(counts: dict, repository: str | None = None,
                   number: int | None = None) -> dict:
     # Only hosted_context supplies this pair. No CLI/env exemption switch exists.
     exception = (repository, number) == EXCEPTION and type(number) is int
-    allowed = counts["changed_lines"] <= LIMIT or exception
+    allowed = counts["changed_lines"] < LIMIT or exception
     return dict(format=1, status="allowed" if allowed else "forbidden",
                 limit=LIMIT, repository=repository, pull_request=number,
                 exception="MGYamada/Qleisli#307" if exception else None,

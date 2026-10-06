@@ -8,7 +8,7 @@ exact checkout; missing/unknown lanes and failed/skipped selected jobs reject.
 Dependency archive misses take the same validation path. Cargo `target`, Lean
 project outputs and prior validation reports are never cached.
 
-PRs exceeding **1,000,000 added plus deleted text lines** are forbidden. The
+PRs with **1,000,000 or more added plus deleted text lines** are forbidden. The
 human-authorized exception is only the existing `MGYamada/Qleisli#307`; it does
 not cover later PRs, branches or repositories. `scripts/check_pr_size.py` counts
 the exact event head against the unique merge base of its exact base/head,

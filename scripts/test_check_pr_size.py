@@ -18,13 +18,17 @@ from ci_profiles import SUITES, check_needs
 
 class NumstatPolicy(unittest.TestCase):
     def test_exact_threshold_sums_additions_and_deletions(self):
-        for data in [b"1000000\t0\ta\0", b"0\t1000000\ta\0", b"500001\t499999\ta\0"]:
+        for data in [b"999999\t0\ta\0", b"0\t999999\ta\0", b"500000\t499999\ta\0",
+                     b"500000\t0\ta\0" + b"0\t499999\tb\0"]:
             with self.subTest(data=data):
                 result = size.policy_result(size.parse_numstat(data))
-                self.assertEqual(result["changed_lines"], 1_000_000)
+                self.assertEqual(result["changed_lines"], 999_999)
                 self.assertEqual(result["status"], "allowed")
-        for data in [b"1000001\t0\ta\0", b"0\t1000001\ta\0", b"1\t1000000\ta\0"]:
-            self.assertEqual(size.policy_result(size.parse_numstat(data))["status"], "forbidden")
+        for data in [b"1000000\t0\ta\0", b"0\t1000000\ta\0", b"500001\t499999\ta\0",
+                     b"500001\t0\ta\0" + b"0\t499999\tb\0",
+                     b"1000001\t0\ta\0", b"0\t1000001\ta\0", b"1\t1000000\ta\0"]:
+            with self.subTest(data=data):
+                self.assertEqual(size.policy_result(size.parse_numstat(data))["status"], "forbidden")
 
     def test_binary_records_and_arbitrary_path_characters_are_separate(self):
         result = size.parse_numstat(b"-\t-\tbinary\0" + b"3\t2\ttab\tnewline\ninvalid-utf8-\xff\0")
@@ -42,13 +46,14 @@ class NumstatPolicy(unittest.TestCase):
                     size.parse_numstat(data)
 
     def test_exception_is_only_the_exact_existing_repository_and_pr(self):
-        counts = size.parse_numstat(b"1000001\t0\tx\0")
-        self.assertEqual(size.policy_result(counts, "MGYamada/Qleisli", 307)["status"], "allowed")
-        for repository, number in [(None, None), ("other/Qleisli", 307), ("MGYamada/Qleisli", 308),
-                                   ("mgyamada/qleisli", 307), ("MGYamada/Qleisli", "307"),
-                                   ("MGYamada/Qleisli", 307.0)]:
-            with self.subTest(repository=repository, number=number):
-                self.assertEqual(size.policy_result(counts, repository, number)["status"], "forbidden")
+        for data in [b"1000000\t0\tx\0", b"1000001\t0\tx\0"]:
+            counts = size.parse_numstat(data)
+            self.assertEqual(size.policy_result(counts, "MGYamada/Qleisli", 307)["status"], "allowed")
+            for repository, number in [(None, None), ("other/Qleisli", 307), ("MGYamada/Qleisli", 308),
+                                       ("mgyamada/qleisli", 307), ("MGYamada/Qleisli", "307"),
+                                       ("MGYamada/Qleisli", 307.0)]:
+                with self.subTest(data=data, repository=repository, number=number):
+                    self.assertEqual(size.policy_result(counts, repository, number)["status"], "forbidden")
 
 
 class GitBoundPolicy(unittest.TestCase):
