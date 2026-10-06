@@ -78,7 +78,8 @@
         "observations-after/generic-size-public-explicit-kernel-run.json"
       ],
       "reports": [
-        "validation.json"
+        "validation.json",
+        "post-commit-validation.json"
       ]
     }
   ],
