@@ -3834,7 +3834,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "3ee1c8d39f2e20757b58a1f3e926e477915607bed42ff243d777982c3e2177d3",
+      "sha256": "f9707f3d878af6e34ac91918680baa571d842716c3b1674491f3b578f3f78752",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4806,6 +4806,16 @@
       "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "src/frontend/sized/meaning.rs",
+      "sha256": "30635076610e08127f406305af0bd800f6ea8d50ae3a748926ffdaa86cd05ec8",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [

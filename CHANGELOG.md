@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Validate all selected-source finite Meaning targets through original resolved
+  classical bodies, including unused nonpermutations and exact zero-width/product
+  interfaces. Keep selected provider binding unsupported until its native
+  artifact comparison is connected (#44).
 - Share original-AST finite-label evaluation for classical/Meaning preparation.
   Preserve eager operand order, exact product labels, lexical identities,
   diagnostics and existing budgets; selected Meaning integration remains open (#44).

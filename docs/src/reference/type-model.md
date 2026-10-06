@@ -353,6 +353,16 @@ concrete evidence gates discharge them. A selected projection of a declared
 Meaning or meaning-refined Op remains explicitly unsupported when requested;
 checking the original source never substitutes another specification or route.
 
+Selected preparation additionally evaluates every declared finite Meaning from
+its original classical body and resolved dependencies, including unused targets.
+Permutation targets must be total bijections; phase targets return the exact
+three-Bit product for powers of zeta_8, including scalar phase on Unit. These
+bounded checks retain Unit/Bit/Bits/product tags and leaf order and share the
+common work budget. They produce untrusted target data: they do not establish
+provider equality, enable Meaning-refined selected operations or authorize
+execution. Existing projection refusals remain until artifact-bound native
+comparison is connected.
+
 ### Opaque Basis specialization in the selected profile
 
 The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity

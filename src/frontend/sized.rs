@@ -9,6 +9,7 @@ mod check;
 mod elaborate;
 pub(super) mod linear;
 mod lower;
+mod meaning;
 mod parser;
 mod primitive;
 mod qpe;
@@ -248,7 +249,8 @@ impl ParsedProgram {
         let (checked, mut projections) = super::check::program_with(
             originals,
             super::check::SourceLimits::selected(),
-            |resolution, _, helpers, effects, indices, budget| {
+            |resolution, interfaces, helpers, effects, indices, budget| {
+                meaning::validate(&sources, resolution, interfaces, indices, budget)?;
                 let mut projections = BTreeMap::new();
                 for (id, declaration) in resolution.declarations() {
                     let original = &sources

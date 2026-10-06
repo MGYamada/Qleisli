@@ -28,6 +28,136 @@ fn kernel() -> Kernel {
     Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
 }
 
+#[test]
+fn selected_preparation_rejects_unused_nonpermutation_meanings() {
+    let source = "classical fn constant(b:Bit)->Bit{0}
+        meaning Invalid:Bit=permutation_by(constant);
+        pub observe fn main()->Unit{()}";
+    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    assert_eq!(error.code(), "meaning", "{error}");
+    assert_eq!(error.module(), Some("main"));
+    assert!(
+        error.message().contains("inputs 0 and 1 both map to 0"),
+        "{error}"
+    );
+    assert_eq!(
+        &source[error.span().start..error.span().end],
+        "meaning Invalid:Bit=permutation_by(constant);"
+    );
+    // An unused invalid target is a semantic failure in the finite route too.
+    let finite = check_project_with_kernel(
+        &SourceRoot::new(source).0,
+        SourcePolicy::default(),
+        &kernel(),
+    )
+    .unwrap_err();
+    assert!(
+        finite.message.contains("inputs 0 and 1 both map to 0"),
+        "{finite:?}"
+    );
+}
+
+#[test]
+fn selected_meaning_checks_follow_original_imports_and_forward_calls() {
+    let modules = BTreeMap::from([
+        (
+            "main".into(),
+            "use functions::flip;
+            meaning Flip:Bit=permutation_by(flip);
+            pub observe fn main()->Unit{()}"
+                .into(),
+        ),
+        (
+            "functions".into(),
+            "pub classical fn flip(b:Bit)->Bit{helper(b)}
+            classical fn helper(b:Bit)->Bit{not b}"
+                .into(),
+        ),
+    ]);
+    let parsed = ParsedProgram::parse(modules).unwrap();
+    parsed
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let modules = BTreeMap::from([
+        (
+            "main".into(),
+            "use functions::constant;
+            meaning Bad:Bit=permutation_by(constant);
+            pub observe fn main()->Unit{()}"
+                .into(),
+        ),
+        (
+            "functions".into(),
+            "pub classical fn constant(b:Bit)->Bit{helper(b)}
+            classical fn helper(b:Bit)->Bit{b xor b}"
+                .into(),
+        ),
+    ]);
+    let error = ParsedProgram::parse(modules).unwrap_err();
+    assert_eq!(error.code(), "meaning", "{error}");
+    assert_eq!(error.module(), Some("main"));
+    assert!(error.message().contains("inputs 0 and 1 both map to 0"));
+}
+
+#[test]
+fn selected_meaning_preparation_keeps_zero_width_and_product_type_tags() {
+    for (basis, body) in [
+        ("Unit", "b"),
+        ("Bits<0>", "b"),
+        ("Bits<1>", "b"),
+        ("(Bit,Unit)", "b"),
+        ("(Unit,Bit)", "b"),
+        ("(Bit,(Unit,Bit))", "b"),
+    ] {
+        let source = format!(
+            "classical fn identity(b:{basis})->{basis}{{{body}}}
+            meaning Id:{basis} = permutation_by(identity);
+            pub observe fn main()->Unit{{()}}"
+        );
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        parsed
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+    }
+    for (basis, domain) in [
+        ("Unit", "Bits<0>"),
+        ("Bit", "Bits<1>"),
+        ("(Bit,Unit)", "(Unit,Bit)"),
+    ] {
+        let source = format!(
+            "classical fn identity(b:{domain})->{domain}{{b}}
+            meaning Bad:{basis} = permutation_by(identity);
+            pub observe fn main()->Unit{{()}}"
+        );
+        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        assert_eq!(error.code(), "type", "{error}");
+    }
+}
+
+#[test]
+fn selected_meaning_preparation_handles_scalar_phase_and_pattern_leaf_order() {
+    // Preparation validates the exact total phase function, not its provider.
+    let source = "classical fn eighth(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
+        meaning Minus:Unit=phase_by(eighth);
+        classical fn swap((a,(u,b)):(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){(b,(u,a))}
+        meaning Swap:(Bit,(Unit,Bit))=permutation_by(swap);
+        pub observe fn main()->Unit{()}";
+    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+    let source = "classical fn duplicate((a,(u,b)):(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){(a,(u,a))}
+        meaning Bad:(Bit,(Unit,Bit))=permutation_by(duplicate);
+        pub observe fn main()->Unit{()}";
+    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    assert_eq!(error.code(), "meaning", "{error}");
+    assert!(
+        error.message().contains("inputs 0 and 2 both map to 0"),
+        "{error}"
+    );
+}
+
 fn finite(source: &str) -> AcceptedProgram {
     compile_project_with_kernel(
         &SourceRoot::new(source).0,
