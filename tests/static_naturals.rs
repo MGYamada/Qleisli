@@ -135,3 +135,57 @@ fn runtime_capture_scope_escape_dead_body_shadow_and_invalid_arithmetic_reject()
         );
     }
 }
+
+#[test]
+fn static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold() {
+    let source = "pub unitary fn thread[static n:Nat,static rounds:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{
+        qfor static i in 0..rounds carry r=q{yield r;}
+    }";
+    let program = parsed(source);
+    let kernel = qleisli::interchange::hierarchical::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"),
+    );
+    for n in 0..=3 {
+        for rounds in [0, 1, 3] {
+            let graph = program
+                .instantiate(
+                    "main::thread",
+                    BTreeMap::from([("n".into(), n), ("rounds".into(), rounds)]),
+                    BTreeMap::new(),
+                )
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            // Width changes only the interface, not the number of source
+            // definitions/steps. Fold work counts iterations, never basis rows.
+            assert_eq!(graph.definitions().len(), 1);
+            assert!(graph.definitions()[0].steps().is_empty());
+            assert_eq!(graph.call_instances(), 1);
+            assert_eq!(graph.fold_iterations(), rounds as usize);
+            let input_type = graph.definitions()[0].inputs()[0].ty();
+            assert!(input_type.is_quantum());
+            assert_eq!(input_type.kind(), "bits");
+            assert_eq!(input_type.width(), Some(n));
+            let proposal = graph.lower().unwrap();
+            let checked = kernel
+                .check_against_native(proposal.payload(), proposal.comparison_request())
+                .unwrap();
+            // The only enumeration here is this bounded independent simulation
+            // oracle, after elaboration/native checking have already completed.
+            let input: Vec<_> = (0..(2usize << n))
+                .map(|i| [0.25 + i as f64, 0.5 - 0.375 * i as f64])
+                .collect();
+            let output = checked
+                .execute_pure(
+                    &input,
+                    2,
+                    qleisli::interchange::hierarchical::execution::ExecutionLimits {
+                        max_amplitudes: 32,
+                        max_steps: 1000,
+                    },
+                )
+                .unwrap();
+            assert_eq!(output.amplitudes, input, "n={n}, rounds={rounds}");
+        }
+    }
+}

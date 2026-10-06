@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.bounded-static-accounting-contract.v1",
+  "issue": 28,
+  "source_base": "44378979db28387470ce431e91348eb5b19c9ae6",
+  "source": "pub unitary fn thread[static n:Nat,static rounds:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{qfor static i in 0..rounds carry r=q{yield r;}}",
+  "instances": {
+    "n": [0, 1, 2, 3],
+    "rounds": [0, 1, 3]
+  },
+  "expected_elaboration": {
+    "definitions": 1,
+    "source_steps": 0,
+    "call_instances": 1,
+    "fold_iterations": "rounds; independent of the basis dimension"
+  },
+  "independent_execution_contract": "Exact identity on every supplied unequal complex coefficient, including an external two-dimensional reference; retain the Bits constructor and zero-width owner.",
+  "scope": "Informed bounded conformance/checking experiment prepared before execution, not a blind authoring benchmark, general complexity proof, source-preservation theorem, quantitative RS certificate or generic QFT obligation.",
+  "license": "Apache-2.0",
+  "copyright": "Copyright 2026 Masahiko G. Yamada"
+}

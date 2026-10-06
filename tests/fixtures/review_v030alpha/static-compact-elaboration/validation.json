@@ -1,0 +1,181 @@
+{
+  "format": "qleisli.bounded-static-accounting-validation.v1",
+  "source_base": "44378979db28387470ce431e91348eb5b19c9ae6",
+  "contract_sha256": "650d40351e68e110feac01ee75b33aef4976d49da2feb38530df7a9b6862c1c8",
+  "source_sha256": {
+    "tests/static_naturals.rs": "a5c1eea973bc68682b8bccfbaf046032b5b3c2c5a613ea6349b5261ee3f19271",
+    "docs/src/reference/static-language.md": "e5ab2823884857ca6fff3253aabcc03eb1938905057677ff1271470489c94ddf",
+    "src/frontend/parser.rs": "3d33be8db64c57e8a15fab135924011178a709694478648abadae9fc7747cef1",
+    "tests/sized_source.rs": "59c5a7667ff09464958852315067b590b842acf4c290bc69e16c38a15aa83754",
+    "scripts/test_current_source_fixtures.py": "b68f5ca0ac1cb14685ad4b11230744c7ccbcaef98ab3f7f7574ea8cb8a669abb",
+    "tests/fixtures/frontend_v030/qfor/source-map.json": "349175240633e894d5b5f44404e04f4a55db8c41e68da8ae6e6298219e64bec8"
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "instances": {
+    "n": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "rounds": [
+      0,
+      1,
+      3
+    ],
+    "count": 12
+  },
+  "assertions_passed": {
+    "definitions": 1,
+    "source_steps": 0,
+    "call_instances": 1,
+    "fold_iterations": "rounds for each instance",
+    "input_type": "Quantum Bits<n>, including the zero-width owner",
+    "execution": "Every independently accepted identity returns all supplied unequal complex coefficients unchanged, with a two-dimensional external reference"
+  },
+  "verification": {
+    "latest": {
+      "compiler": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+      "command": "cargo test --test static_naturals",
+      "exit_code": 0,
+      "passed": 6,
+      "ignored": 0,
+      "test_seconds": 0.57,
+      "clippy": "cargo clippy --test static_naturals -- -D warnings: exit 0"
+    },
+    "msrv": {
+      "compiler": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+      "command": "rustup run 1.85.0 /Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo test --test static_naturals",
+      "environment": "Explicit RUSTC/RUSTDOC paths; independent fixed target; incremental/debug disabled; two build jobs",
+      "exit_code": 0,
+      "passed": 6,
+      "ignored": 0,
+      "test_seconds": 0.58,
+      "clippy": "Explicit 1.85.0 cargo-clippy clippy --test static_naturals -- -D warnings: exit 0"
+    },
+    "unique_tests": 6,
+    "formatting": "cargo fmt --check: exit 0",
+    "documentation": "2,181 source links passed; mdBook 0.5.4 build passed; 29 rendered HTML / 1,222 local links / 470 anchors passed"
+  },
+  "first_tool_invocation": {
+    "exit_code": 101,
+    "command": "cargo +1.98.1 test --test static_naturals static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold -- --exact",
+    "stderr": "error: no such command: `+1.98.1`\nhelp: invoke `cargo` through `rustup` to handle `+toolchain` directives",
+    "reason": "Local cargo is the Homebrew binary, not a rustup shim; no test or native invocation occurred. Verified its actual version before retrying without the shim-specific prefix."
+  },
+  "constitutional_scope": "Ordinary test/migration repairs and behavior-preserving parser frame refactor, with existing bounded source contracts and native acceptance unchanged. QS/PR/RS/EXACT and both scoped QLV1 guarantees remain unchanged; current identity checking is not a new Lean replay or guarantee admission.",
+  "limits": "Small identity/accounting example, not a general complexity theorem, polynomial bound, source-preservation proof or quantitative RS certificate. Other evidence representations may enumerate finite data. Generic QFT remains outside scope. Current hosted CI checks the preceding 44378979 commit, not this uncommitted test/documentation unit.",
+  "related_repairs": {
+    "migration_map": "Move whitespace explanation from strict four-field file entries into top-level context; retain all source bytes/hashes and strict selector checks.",
+    "qpe_paths": "Use the historical repository-relative corpus paths and the existing hash-checked current-source selector for three dependencies.",
+    "diagnostic_span": "Identify h(q) in the actual qfor source rather than using an obsolete hard-coded byte offset; still assert exact one-byte callee span and diagnostic.",
+    "parser_stack": "Extract unchanged fold parsing into a non-inlined helper; do not change the 64-level syntax limit or source acceptance rules."
+  },
+  "local_failure_observations": [
+    {
+      "test": "concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout",
+      "exit_code": 101,
+      "failure": "ValueError: invalid quantum fold source file migration",
+      "state": "Before migration metadata repair"
+    },
+    {
+      "test": "concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout",
+      "exit_code": 101,
+      "failure": "project: estimation: No such file or directory (os error 2)",
+      "state": "After metadata repair, before three repository-relative path repairs"
+    },
+    {
+      "test": "cargo test --test sized_source",
+      "exit_code": 101,
+      "failure": "Obsolete callee span assertion (131,132) != (130,131); preparation_limits_and_utf8_diagnostics_are_explicit stack overflow, SIGABRT",
+      "state": "Before diagnostic expectation and parser-frame repairs"
+    },
+    {
+      "test": "preparation_limits_and_utf8_diagnostics_are_explicit",
+      "exit_code": 0,
+      "environment": "RUST_MIN_STACK=16777216",
+      "meaning": "Diagnostic experiment before parser repair only; increasing the stack is not the repair."
+    },
+    {
+      "test": "parser/sized_source/static_naturals/qfor combined invocation",
+      "exit_code": 101,
+      "failure": "qfor native cases require QLEISLI_KERNEL; kernel selection omitted",
+      "meaning": "Both toolchain invocations retried with the explicit existing checker; no bypass or skipped qfor cases."
+    }
+  ],
+  "related_verification": {
+    "latest": {
+      "command": "cargo test --test sized_source --test parser --test static_naturals --test qfor",
+      "environment": "QLEISLI_KERNEL points to the recorded checker; no RUST_MIN_STACK override",
+      "exit_code": 0,
+      "passed": 75,
+      "ignored": 3,
+      "groups": {
+        "parser": 27,
+        "qfor": 4,
+        "sized_source": 38,
+        "static_naturals": 6
+      }
+    },
+    "msrv": {
+      "command": "Explicit Rust 1.85.0 cargo/RUSTC/RUSTDOC; same four test groups and native kernel selection",
+      "exit_code": 0,
+      "passed": 75,
+      "ignored": 3,
+      "meaning": "Same 75 unique tests, not 150 distinct tests"
+    },
+    "migration_clients": {
+      "command": "cargo test --test authoring_ergonomics",
+      "exit_code": 0,
+      "passed": 7,
+      "seconds": 1.88
+    },
+    "actual_map_regression": {
+      "command": "python3 scripts/test_current_source_fixtures.py",
+      "exit_code": 0,
+      "passed": 47,
+      "seconds": 0.96
+    },
+    "clippy": "Latest and explicit 1.85.0 Clippy for all four affected test targets passed with -D warnings",
+    "qpe_instances": [
+      [
+        1,
+        1
+      ],
+      [
+        1,
+        3
+      ],
+      [
+        2,
+        2
+      ]
+    ],
+    "ignored": "Three pre-existing separately selected native tests in sized_source remain ignored by the default command; this unit makes no fresh replay claim for them."
+  },
+  "hosted_failure": {
+    "run_id": 37452364586,
+    "head_source": "44378979db28387470ce431e91348eb5b19c9ae6",
+    "workflow_merge_sha": "43e4e7cabeecb6589e689c26204f97516b39974e",
+    "jobs": {
+      "check-interop": 112231794908,
+      "check-rust": 112231795006,
+      "check-rust-msrv": 112231794887,
+      "check-distribution": 112231795112
+    },
+    "failure": "ValueError: invalid quantum fold source file migration",
+    "interop": "External format tests: four run, two errors; installed API step not reached.",
+    "rust_and_distribution": "authoring_ergonomics: three passed, four failed in the strict current-source selector. Rust corpus step was not reached; the missing upload file is secondary.",
+    "repair_status": "Local repaired selector/client regressions pass. No successful repaired hosted run is claimed.",
+    "logs": "https://github.com/MGYamada/Qleisli/actions/runs/37452364586",
+    "cancellation": {
+      "authorization": "The human asked to stop heavy GitHub CI in this conversation.",
+      "normal_request": "Submitted successfully; run remained in_progress.",
+      "force_request": "Submitted successfully with gh run cancel --force.",
+      "observed_final_status": "completed",
+      "observed_final_conclusion": "cancelled",
+      "limit": "Cancellation is not successful full CI. Do not automatically push/restart heavy hosted CI while local repair verification continues."
+    }
+  }
+}

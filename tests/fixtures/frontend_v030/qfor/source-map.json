@@ -67,16 +67,14 @@
       "before_path": "tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
       "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
       "before_sha256": "0f09d5b9a7860427147ce5138ee47cd1bcc385093ccdece5011d217b3a1c6f0a",
-      "current_sha256": "d1007449d5583e172855a13895867350afbfde99536051514bf3f20a46756e97",
-      "whitespace_note": "Remove copied blank EOF line in current derivative for Git whitespace policy; historical predecessor is unchanged."
+      "current_sha256": "d1007449d5583e172855a13895867350afbfde99536051514bf3f20a46756e97"
     },
     {
       "before_path": "tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/concrete-control/main.qli",
       "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/concrete-control/main.qli",
       "before_sha256": "841cacfa8db7c5e76ee82821390eb59e9fb90489043b9ceb32d05d515828b64f",
-      "current_sha256": "c1e17733b36198e6473f3d5dcab8d50a7d8f2e22a52f3ab755e784d248093647",
-      "whitespace_note": "Remove copied blank EOF line in current derivative for Git whitespace policy; historical predecessor is unchanged."
+      "current_sha256": "c1e17733b36198e6473f3d5dcab8d50a7d8f2e22a52f3ab755e784d248093647"
     }
   ],
-  "context": "#194 original quantum folds migrate only their keyword; all predecessor source/attribution bytes remain fixed. Fixed historical Fourier clients receive grammar migration only, without generic-QFT delivery/integration work."
+  "context": "#194 original quantum folds migrate only their keyword; all predecessor source/attribution bytes remain fixed. Fixed historical Fourier clients receive grammar migration only, without generic-QFT delivery/integration work. The two basis-polymorphism current derivatives additionally remove a copied blank EOF line for Git whitespace policy; original predecessor bytes and their hashes remain fixed."
 }

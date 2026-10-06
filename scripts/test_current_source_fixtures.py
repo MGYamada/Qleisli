@@ -622,5 +622,18 @@ class SourceFileIdentity(unittest.TestCase):
             fixtures.current_source_file(self.original)
 
 
+class RepositoryMigrationTests(unittest.TestCase):
+    def test_actual_quantum_fold_map_has_canonical_entries_and_matching_sources(self):
+        # Synthetic maps alone did not catch explanatory metadata inserted in
+        # real strict file records. Exercise the same entry point as Rust tests.
+        data = json.loads((fixtures.ROOT / fixtures.QFOR_MAP).read_text())
+        entries = fixtures._file_entries(data, "quantum fold")
+        self.assertEqual(len(entries), 12)
+        for entry in entries.values():
+            before = fixtures.ROOT / entry["before_path"]
+            current = fixtures.ROOT / entry["current_path"]
+            self.assertEqual(fixtures.current_source_file(before), current)
+
+
 if __name__ == "__main__":
     unittest.main()

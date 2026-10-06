@@ -273,9 +273,9 @@ fn measured_sources() -> BTreeMap<String, PathBuf> {
             "corpus/sized/measured_qpe/initialization.qli",
         ),
         ("readout", "corpus/sized/measured_qpe/readout.qli"),
-        ("estimation", "fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/estimation.qli"),
-        ("preparation", "fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/preparation.qli"),
-        ("fourier", "fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"),
+        ("estimation", "corpus/sized/qualtran_qpe/estimation.qli"),
+        ("preparation", "corpus/sized/qualtran_qpe/preparation.qli"),
+        ("fourier", "corpus/sized/qualtran_qft/fourier.qli"),
         ("evolution", "corpus/sized/qualtran_qpe/evolution.qli"),
         ("order", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/order.qli"),
         ("amplitude", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/amplitude.qli"),
@@ -657,8 +657,12 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     let error = ParsedProgram::parse(sources(local_callee)).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
-    assert_eq!((error.span().start, error.span().end), (130, 131));
-    assert_eq!(&local_callee[130..131], "h");
+    let name_start = local_callee.rfind("h(q)").unwrap();
+    assert_eq!(
+        (error.span().start, error.span().end),
+        (name_start, name_start + 1)
+    );
+    assert_eq!(&local_callee[name_start..name_start + 1], "h");
     assert_eq!(error.message(), "a local value is not callable");
     let bad = "pub unitary fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let a = if static 0 == 0 { let old = q; let q = r; old } else { let old = q; let q = r; old }; (a,q) }";
     reject(bad, "ownership");

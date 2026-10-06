@@ -6,8 +6,8 @@ It records the existing rules tracked by
 [#28](https://github.com/MGYamada/Qleisli/issues/28),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#63](https://github.com/MGYamada/Qleisli/issues/63). It does not introduce a
-general compile-time programming language. General builders, static collections
-and the final loop surface remain separate work; describing this fragment does not complete those
+general compile-time programming language. General builders and static collections
+remain separate work; describing this fragment does not complete those
 Issues or discharge quantitative Resource Safety.
 
 ## Static categories and binding
@@ -269,6 +269,18 @@ has no meaning. Compiler capacities, termination, ownership safety, computed
 quantum resources and checked target budgets are distinct obligations.
 
 ## Evidence and remaining work
+
+Static evaluation need not enumerate the computational basis of a register.
+For example, a generic identity fold retains one definition and no source
+instructions as its width changes; its fold counter counts the requested
+iterations, independently of the basis dimension `2^n`. Width is retained in
+the interface, including the logical owner at `n = 0`. The bounded conformance
+test `static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold`
+checks widths 0–3 and iteration counts 0, 1 and 3, then independently accepts
+and executes each proposed identity with an external reference. The simulation
+oracle enumerates small amplitudes after elaboration; it is not the static
+evaluator. This example establishes no general complexity bound or quantitative
+resource certificate, and other representations may need explicit finite data.
 
 Existing small sized-source regressions cover guarded subtraction and affine
 equality, nonlinear refusal, original obligation spans, static dead arms,

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Repair strict qfor migration metadata and sized QPE test source selection;
+  check the real migration map in regression tests. Keep fold parsing out of
+  recursive expression dispatch frames so bounded nesting rejects on the
+  default test stack. Add small static identity-fold accounting checks (#28/#194).
 - Reduce ordinary corpus CI to all shipped entries, 20 representative X/Y
   entry pairs, four semantic faults and existing rejection cases at the
   maintainer's request. Record omitted coverage explicitly; retain exhaustive

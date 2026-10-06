@@ -1262,30 +1262,7 @@ impl Parser {
                     .get(self.pos + 1)
                     .is_some_and(|t| t.kind == TokenKind::Static))
         {
-            let open = self.bump();
-            self.expect(&TokenKind::Static)?;
-            let index = self.natural_ident()?;
-            self.expect_word("in")?;
-            let start = self.natural()?;
-            self.expect(&TokenKind::DotDot)?;
-            let end = self.natural()?;
-            self.expect_word("carry")?;
-            let carry = self.pattern()?;
-            self.expect(&TokenKind::Equals)?;
-            let initial = Box::new(self.expr()?);
-            let body = self.block_mode(true)?;
-            return Ok(Expr {
-                span: open.span.cover(body.span),
-                kind: ExprKind::StaticFold {
-                    quantum: quantum_fold,
-                    index,
-                    start,
-                    end,
-                    carry,
-                    initial,
-                    body,
-                },
-            });
+            return self.static_fold(quantum_fold);
         }
         if self.controlled_application() {
             let start = self.bump();
@@ -1363,6 +1340,35 @@ impl Parser {
             return self.with_computed(with_token);
         }
         self.expr_atom()
+    }
+
+    // Keep fold temporaries out of every recursive expression dispatch frame.
+    #[inline(never)]
+    fn static_fold(&mut self, quantum_fold: bool) -> Result<Expr, ParseError> {
+        let open = self.bump();
+        self.expect(&TokenKind::Static)?;
+        let index = self.natural_ident()?;
+        self.expect_word("in")?;
+        let start = self.natural()?;
+        self.expect(&TokenKind::DotDot)?;
+        let end = self.natural()?;
+        self.expect_word("carry")?;
+        let carry = self.pattern()?;
+        self.expect(&TokenKind::Equals)?;
+        let initial = Box::new(self.expr()?);
+        let body = self.block_mode(true)?;
+        Ok(Expr {
+            span: open.span.cover(body.span),
+            kind: ExprKind::StaticFold {
+                quantum: quantum_fold,
+                index,
+                start,
+                end,
+                carry,
+                initial,
+                body,
+            },
+        })
     }
 
     fn quantum_if(&mut self, start: Token) -> Result<Expr, ParseError> {
