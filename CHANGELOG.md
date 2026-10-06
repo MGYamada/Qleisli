@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Repair the native round-trip discovery test's stale corpus expectations:
+  require six namespace and two coherent-basis snapshots, each preserving its
+  logical project path. Retain 87 corpus roots, 14 examples and all original
+  history, exclusion, IR and evidence-cache checks (#142).
 - Specify the boundary between static operation descriptions and live quantum
   owners. Keep runtime calls eager and first-order, with complete argument lists;
   retain checked scoped bodies, decreasing Nat specialization, exact Unit

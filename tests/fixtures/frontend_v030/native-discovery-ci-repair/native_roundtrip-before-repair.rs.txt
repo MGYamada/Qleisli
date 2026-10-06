@@ -179,34 +179,11 @@ fn compiled_project_discovery_selects_current_sources() {
         .filter(|(before, after)| before != after)
         .map(|(_, after)| after.clone())
         .collect();
-    assert_eq!(snapshots.len(), 8, "current corpus snapshots not selected");
-    // Current selection retains six namespace snapshots and two later coherent
-    // basis snapshots. Each must keep its logical provider/project path.
-    let snapshot_roots = [
-        corpus.join("migrations/semantic-namespace-v030/sources"),
-        corpus.join("migrations/coherent-basis-v030/sources"),
-    ];
-    for (snapshot_root, expected) in snapshot_roots.iter().zip([6, 2]) {
-        assert_eq!(
-            snapshots
-                .iter()
-                .filter(|path| path.starts_with(snapshot_root))
-                .count(),
-            expected,
-            "current migration snapshot coverage changed: {}",
-            snapshot_root.display()
-        );
-    }
+    assert_eq!(snapshots.len(), 6, "current corpus snapshots not selected");
+    let snapshot_root = corpus.join("migrations/semantic-namespace-v030/sources");
     for (before, after) in logical.iter().zip(&current) {
         if before != after {
-            let logical_path = before.strip_prefix(&corpus).unwrap();
-            assert!(
-                snapshot_roots
-                    .iter()
-                    .any(|root| root.join(logical_path) == *after),
-                "current snapshot changed its logical project: {}",
-                after.display()
-            );
+            assert!(after.starts_with(&snapshot_root));
             assert!(
                 !selected.contains(before),
                 "original retired namespace source selected: {}",

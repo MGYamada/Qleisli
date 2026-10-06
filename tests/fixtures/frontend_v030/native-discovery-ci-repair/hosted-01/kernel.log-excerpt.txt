@@ -1,0 +1,38 @@
+Selected original decoded log lines 127-130; this is an excerpt, not a full log.
+2026-10-06T04:42:30.5076459Z HEAD is now at 12e78df Merge 5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726 into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T04:42:30.5111024Z ##[endgroup]
+2026-10-06T04:42:30.5158870Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T04:42:30.5185552Z 12e78df720405ae46fdb7c2ce7674d3e67708305
+
+Selected original decoded log lines 629-629; this is an excerpt, not a full log.
+2026-10-06T05:01:53.5229278Z test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.34s
+
+Selected original decoded log lines 632-634; this is an excerpt, not a full log.
+2026-10-06T05:01:53.5232301Z    Compiling qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-06T05:01:53.5233109Z     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.48s
+2026-10-06T05:01:53.5234052Z      Running tests/native_roundtrip.rs (target/debug/deps/native_roundtrip-e0e3087e107ff45c)
+
+Selected original decoded log lines 654-659; this is an excerpt, not a full log.
+2026-10-06T05:01:53.5768936Z thread 'compiled_project_discovery_selects_current_sources' (44556) panicked at tests/native_roundtrip.rs:182:5:
+2026-10-06T05:01:53.5769699Z assertion `left == right` failed: current corpus snapshots not selected
+2026-10-06T05:01:53.5770068Z   left: 8
+2026-10-06T05:01:53.5770251Z  right: 6
+2026-10-06T05:01:53.5770782Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T05:01:53.5771393Z test compiled_project_discovery_selects_current_sources ... FAILED
+
+Selected original decoded log lines 670-679; this is an excerpt, not a full log.
+2026-10-06T05:01:53.5882114Z test compiled_programs_reencode_exactly_and_caches_match_implementations ... ok
+2026-10-06T05:01:53.5882441Z 
+2026-10-06T05:01:53.5882530Z failures:
+2026-10-06T05:01:53.5882639Z 
+2026-10-06T05:01:53.5882719Z failures:
+2026-10-06T05:01:53.5882964Z     compiled_project_discovery_selects_current_sources
+2026-10-06T05:01:53.5883208Z 
+2026-10-06T05:01:53.5883480Z test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 121.41s
+2026-10-06T05:01:53.5883891Z 
+2026-10-06T05:01:53.5884063Z error: test failed, to rerun pass `--test native_roundtrip`
+
+Selected original decoded log lines 681-683; this is an excerpt, not a full log.
+2026-10-06T05:03:28.5410430Z passed: native-paths (232.4s)
+2026-10-06T05:03:28.9436230Z Native CI: failed or incomplete comparison: native-acceptance
+2026-10-06T05:03:28.9543527Z ##[error]Process completed with exit code 1.

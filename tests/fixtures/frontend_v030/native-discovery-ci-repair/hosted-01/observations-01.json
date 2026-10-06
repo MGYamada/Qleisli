@@ -1,0 +1,225 @@
+{
+  "format": "qleisli.hosted-native-discovery-failure",
+  "version": 1,
+  "captured_utc": "2026-10-06 05:08:26 UTC",
+  "run": {
+    "id": 37414784239,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37414784239",
+    "pull_request": 307,
+    "public_head": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+    "tested_merge": "12e78df720405ae46fdb7c2ce7674d3e67708305",
+    "base": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "all_observed_jobs_terminal": true,
+    "observation": "Terminal failed validation; four producer jobs failed and all eight global required aggregators failed. Release-readiness was skipped."
+  },
+  "source_hashes": {
+    "commit": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+    "method": "SHA-256 of exact local Git blobs from the public head. Logs independently identify the tested synthetic merge; these are not uncommitted repair-source hashes.",
+    "files": {
+      "tests/native_roundtrip.rs": "b96ec713a698e4992f6610c0999746438682493ebe5f50326e171238ad7bf8f9",
+      "tests/input_corpus.rs": "bdef063b8cf66317732b2b85d3208ab8de7f51883271ee3adf3322c8cfb53676",
+      "tests/common/mod.rs": "e077e152199e54c577a529d9413c8850484928a4c9806103ccc3694848cbe9b0",
+      "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+      "corpus/manifest.json": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+      "corpus/migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+      "corpus/migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb",
+      ".github/ci/native-comparisons.json": "18ed49fe1ba30a76b84d0257e6cda7d6718477f6147be59ecc6bd0686870db95"
+    }
+  },
+  "excerpts": [
+    {
+      "job_id": 112111462215,
+      "file": "rust-latest.log-excerpt.txt",
+      "ranges": [
+        [
+          122,
+          125
+        ],
+        [
+          1186,
+          1199
+        ]
+      ],
+      "decoded_log_lines": 1218,
+      "decoded_log_chars": 110573,
+      "sha256": "c28d9d20c9d2f01a6c2f1471fecc3e99ec78da050d1a429be7718dbf2e074904",
+      "bytes": 1457,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37414784239/job/112111462215"
+    },
+    {
+      "job_id": 112111462182,
+      "file": "rust-msrv.log-excerpt.txt",
+      "ranges": [
+        [
+          122,
+          125
+        ],
+        [
+          1179,
+          1192
+        ]
+      ],
+      "decoded_log_lines": 1211,
+      "decoded_log_chars": 110027,
+      "sha256": "1290bf7b281284507159c1add97f75292048e429d5768fb3e60af6b7db6f3f93",
+      "bytes": 1448,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37414784239/job/112111462182"
+    },
+    {
+      "job_id": 112111462181,
+      "file": "kernel.log-excerpt.txt",
+      "ranges": [
+        [
+          127,
+          130
+        ],
+        [
+          629,
+          629
+        ],
+        [
+          632,
+          634
+        ],
+        [
+          654,
+          659
+        ],
+        [
+          670,
+          679
+        ],
+        [
+          681,
+          683
+        ]
+      ],
+      "decoded_log_lines": 727,
+      "decoded_log_chars": 92162,
+      "sha256": "9421c621f9e2740cb3bfa276a69cc2b6d202894079a8d76167ce7b1585fda520",
+      "bytes": 2621,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37414784239/job/112111462181"
+    },
+    {
+      "job_id": 112111462277,
+      "file": "distribution.log-excerpt.txt",
+      "ranges": [
+        [
+          126,
+          129
+        ],
+        [
+          497,
+          499
+        ]
+      ],
+      "decoded_log_lines": 554,
+      "decoded_log_chars": 45957,
+      "sha256": "f40f83854e8c85267982583b7634a8d082f7548e6a9215518b89826c184f347a",
+      "bytes": 966,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37414784239/job/112111462277"
+    }
+  ],
+  "log_provenance": "github_fetch_workflow_job_logs returned decoded job logs. Files retain only exact selected lines with original timestamps and explicit range headers; digests bind excerpt files, not complete logs. No IR artifact hex lines are retained.",
+  "confirmed_failure": {
+    "jobs": [
+      112111462215,
+      112111462182,
+      112111462181
+    ],
+    "test": "compiled_project_discovery_selects_current_sources",
+    "path": "tests/native_roundtrip.rs",
+    "line": 182,
+    "assertion": "current corpus snapshots not selected",
+    "actual": 8,
+    "expected": 6,
+    "cause": "The public manifest explicitly selects six semantic-namespace snapshots and two coherent-basis snapshots. This discovery guard still expects six and restricts changed paths to the semantic-namespace root.",
+    "related_source_locations": [
+      "tests/native_roundtrip.rs:182-186",
+      "corpus/migrations/semantic-namespace-v030/migration.json",
+      "corpus/migrations/coherent-basis-v030/migration.json:8-10"
+    ],
+    "smallest_repair": "Update the discovery guard to require all eight approved snapshots, with six under the semantic-namespace record and two under the coherent-basis record. Preserve 101 logical projects, 87 corpus cases, 14 examples, original/historical exclusion, and all IR/cache/Meaning checks. Changing the count alone leaves the following prefix assertion invalid."
+  },
+  "kernel_result": {
+    "job_id": 112111462181,
+    "failed_step": 12,
+    "failed_comparison_group": "native-acceptance",
+    "actual_native_acceptance_tests": "4 passed / 0 failed",
+    "actual_native_roundtrip_tests": "4 passed / 1 failed",
+    "roundtrip_body": "compiled_programs_reencode_exactly_and_caches_match_implementations passed",
+    "successful_comparison_groups": 66,
+    "claim_limit": "This observed failure is the Rust discovery regression within the retained comparison runner; it is not a reported Lean proof/build/audit failure."
+  },
+  "distribution": {
+    "job_id": 112111462277,
+    "failed_step": 8,
+    "observed": "Extracted source-production cargo test --offline --all-targets exited 101; the wrapper points to logs/14.stderr.",
+    "inner_log": "/home/runner/work/_temp/qleisli-distribution-artifacts-6jnzdej4/logs/14.stderr",
+    "inner_failure_inspected": false,
+    "cause": "Unverified: do not infer the failing inner test from other jobs.",
+    "artifact_downloaded": false,
+    "artifact_id": 11392135545,
+    "zip_size_bytes_observed_in_job_log": 62317665
+  },
+  "successful_producers": [
+    "check-macos-source",
+    "check-lean",
+    "check-interop",
+    "check-docs"
+  ],
+  "failed_producers": [
+    "check-lean-kernel",
+    "check-rust-msrv",
+    "check-rust",
+    "check-distribution"
+  ],
+  "global_required_aggregators": [
+    {
+      "name": "lean-kernel",
+      "job_id": 112117092176,
+      "conclusion": "failure"
+    },
+    {
+      "name": "rust-msrv",
+      "job_id": 112117092206,
+      "conclusion": "failure"
+    },
+    {
+      "name": "lean",
+      "job_id": 112117092218,
+      "conclusion": "failure"
+    },
+    {
+      "name": "rust",
+      "job_id": 112117092221,
+      "conclusion": "failure"
+    },
+    {
+      "name": "macos-source",
+      "job_id": 112117092236,
+      "conclusion": "failure"
+    },
+    {
+      "name": "docs",
+      "job_id": 112117092277,
+      "conclusion": "failure"
+    },
+    {
+      "name": "distribution",
+      "job_id": 112117092286,
+      "conclusion": "failure"
+    },
+    {
+      "name": "interop",
+      "job_id": 112117092308,
+      "conclusion": "failure"
+    }
+  ],
+  "constitutional": {
+    "trusted_continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "startup": "Root reported PASS before this evidence capture.",
+    "scope": "No source behavior, protected text, interpretation, guarantee or proof status changed. Two scoped QLV1 guarantees remain protected; QS/PR/quantitative RS and EXACT obligations remain pending."
+  },
+  "actions": "Evidence capture only in this new hosted-01 directory. No tests, builds, source edits, ZIP inspection, reruns, cancellations, push or generic QFT work."
+}

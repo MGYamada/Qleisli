@@ -191,3 +191,7 @@ tests/fixtures/frontend_v030/checked-operation/implementation-01/hosted-predeces
 tests/fixtures/frontend_v030/functional-boundary/validation-01/*.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/functional-boundary/validation-01/*.stderr.txt -text -whitespace
 tests/fixtures/frontend_v030/functional-boundary/hosted-predecessor-01/*-log-excerpt.txt -text -whitespace
+# Preserve raw discovery-repair libtest output and hosted timestamped lines.
+tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/native-discovery-ci-repair/hosted-01/*.log-excerpt.txt -text -whitespace
