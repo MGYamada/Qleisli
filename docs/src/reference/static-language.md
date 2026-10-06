@@ -110,6 +110,10 @@ read runtime classical values or quantum owners. Static bindings cannot shadow
 another visible lexical binding. Their names end at the containing block and
 are unavailable as runtime values.
 
+The `static let` authoring spelling is provisional in 0.3.0. Its static
+category, exactness and authority laws remain fixed; #60/#61 may select the
+future typed-builder surface without introducing a second execution semantics.
+
 For example, `static let width = n+n;` supplies a normalized
 size to an already checked generic definition:
 
