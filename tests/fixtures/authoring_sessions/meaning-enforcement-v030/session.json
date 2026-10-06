@@ -1,70 +1,37 @@
 {
-  "format": "qleisli.meaning-enforcement-observations",
-  "version": 1,
-  "kind": "informed bounded checking experiment; after implementation only",
-  "context": "Same assistant had full source, prior provider-leaf tests and adopted requirements. No independent author/model or blind benchmark. Bit/Unit first source strings were retained before their first CLI observation; lying-bit is a deliberate identity-for-Flip counterexample derived from the retained Bit source.",
-  "sources": {
-    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli": "3ab95569d883199d9bc7937780b5be41e4c4c9226bd1f825d82c29c9b1428d4f",
-    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli": "d2aed93147e4c8905108cc80a7a85ca25ce879649831833324237e1189fa4798",
-    "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/lying-bit.qli": "da9b6d06711d69f737719262f352916116e7541b36dd9eca2ef805b9ced3d1b7"
-  },
-  "observations": [
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Original Meaning enforcement; retrospective schema registration with fresh actual observations",
+  "baseline_commit": "b7d749075593dd6a09541d7fa02c066028d2b1f6",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed source and specification access; exact model and sampling unavailable",
+  "context": "context.md",
+  "attempts": [
     {
-      "case": "bit-outer",
-      "argv": [
-        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
-        "check",
-        "--format=json",
-        "--entry=main::outer",
-        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
-        "--operation=U=main::implementation"
+      "id": "attempt-01",
+      "reason": "Original retained Bit/Unit first sources and separately identified lying counterexample; no source repairs or fabricated original timestamp. New observations recheck both invocation forms.",
+      "sha256": {
+        "unit.qli": "3ab95569d883199d9bc7937780b5be41e4c4c9226bd1f825d82c29c9b1428d4f",
+        "bit.qli": "d2aed93147e4c8905108cc80a7a85ca25ce879649831833324237e1189fa4798",
+        "lying-bit.qli": "da9b6d06711d69f737719262f352916116e7541b36dd9eca2ef805b9ced3d1b7",
+        "repeated-bit.qli": "4a9bccd2e5782e5775fa7ef4b02da36643ed26aa83ae68e8fcfa407c40574cba"
+      },
+      "observations": [
+        "observations-registered/unselected-bit-outer.json",
+        "observations-registered/unselected-bit-unused.json",
+        "observations-registered/unselected-unit-outer.json",
+        "observations-registered/unselected-lying-bit-unused.json",
+        "observations-registered/selected-bit-outer.json",
+        "observations-registered/selected-bit-unused.json",
+        "observations-registered/selected-unit-outer.json",
+        "observations-registered/selected-lying-bit-unused.json"
       ],
-      "exit_code": 1,
-      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/bit-outer.stdout.txt",
-      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/bit-outer.stderr.txt"
-    },
-    {
-      "case": "bit-unused",
-      "argv": [
-        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
-        "check",
-        "--format=json",
-        "--entry=main::unused",
-        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
-        "--operation=U=main::implementation"
-      ],
-      "exit_code": 1,
-      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/bit-unused.stdout.txt",
-      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/bit-unused.stderr.txt"
-    },
-    {
-      "case": "unit-outer",
-      "argv": [
-        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
-        "check",
-        "--format=json",
-        "--entry=main::outer",
-        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli",
-        "--operation=U=main::implementation"
-      ],
-      "exit_code": 1,
-      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/unit-outer.stdout.txt",
-      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/unit-outer.stderr.txt"
-    },
-    {
-      "case": "lying-bit-unused",
-      "argv": [
-        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
-        "check",
-        "--format=json",
-        "--entry=main::unused",
-        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/lying-bit.qli",
-        "--operation=U=main::implementation"
-      ],
-      "exit_code": 1,
-      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/lying-bit-unused.stdout.txt",
-      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed/lying-bit-unused.stderr.txt"
+      "reports": [
+        "unselected-checker-original.json",
+        "selected-checker.json",
+        "repeated-binding.json"
+      ]
     }
   ],
-  "limitations": "Four actual after-implementation CLI observations; no before baseline, source-preservation proof, general generic conformance or constitutional guarantee."
+  "scope": "Historical original streams are preserved. Fresh recorded checks validate invocation/exit consistency, not original-source preservation, global guarantees or a blind benchmark."
 }

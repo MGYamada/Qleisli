@@ -1210,6 +1210,13 @@ mod tests {
         for (basis, shape, wires) in [
             ("Unit", BasisShape::UNIT, vec![]),
             ("Bit", BasisShape::BIT, vec![WireId(0)]),
+            ("(Unit,Unit)", BasisShape::UNIT, vec![]),
+            ("(Unit,Bit,Unit)", BasisShape::BIT, vec![WireId(0)]),
+            (
+                "(Unit,(Bit,Bit))",
+                BasisShape { bits: 2 },
+                vec![WireId(0), WireId(1)],
+            ),
         ] {
             let source = elaborate(
                 &format!(

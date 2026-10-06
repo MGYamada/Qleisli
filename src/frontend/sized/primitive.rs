@@ -3,7 +3,7 @@
 //! Concrete capacity limits and lowering/translation checks remain separate.
 use super::ast::Effect;
 use super::{Error, Result, Span};
-use crate::frontend::types::{Kind, Type};
+use crate::frontend::types::Type;
 
 #[derive(Clone, Copy)]
 pub(super) enum Size {
@@ -47,18 +47,15 @@ impl TypeRule {
     }
 }
 
-/// The selected concrete scalar emitter preserves one exact quantum atom.
-/// The mandatory common source catalog admits a packaged quantum tuple;
-/// unsupported concrete preparation remains a separate eligibility failure.
+/// The selected scalar emitter preserves one owner's complete exact basis.
 pub(super) fn quantum_endomorphism<N: Clone>(input: &Type<N>, span: Span) -> Result<Type<N>> {
-    if matches!(&input.kind, Kind::Q(basis) if matches!(basis.kind, Kind::Unit | Kind::Bit | Kind::Bits(_)))
-    {
+    if input.quantum_basis().is_some_and(Type::is_basis) {
         Ok(input.clone())
     } else {
         Err(Error::new(
             "type",
             span,
-            "scalar phase requires one Q<Unit>, Q<Bit> or Q<Bits<n>> owner",
+            "scalar phase requires one Q<A> owner",
         ))
     }
 }

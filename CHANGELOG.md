@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Align selected `phase_eighth` preparation with its existing `Q<A>` signature,
+  preserving packaged basis trees, zero-width owners, ordered axes and exact
+  scalar phase through existing native checks. Repair stale `checked_op`
+  conformance expectations and register Meaning authoring observations without
+  rewriting their historical records.
+
 - Check original Meaning annotations for every retained concrete operation
   binding, including unused and nested callers, before selected hierarchy
   emission. Require the private all-binding collection, shared exact-work and

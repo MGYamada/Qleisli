@@ -238,7 +238,16 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
             "use std::quantum::split; use std::quantum::phase_eighth;",
         )
         .replace("join(u,join(b,a))", "join(phase_eighth(u),join(a,b))");
-    for (template, scalar) in [(original, false), (phase.as_str(), true)] {
+    let direct_phase = phase.replace(
+        "let (u,r)=split(q);\n    let (a,b)=split(r);\n    join(phase_eighth(u),join(a,b))",
+        "phase_eighth(q)",
+    );
+    assert_ne!(direct_phase, phase);
+    for (template, scalar) in [
+        (original, false),
+        (phase.as_str(), true),
+        (direct_phase.as_str(), true),
+    ] {
         for count in 0..=2 {
             for honest in [true, false] {
                 let text = template.replace(",2,checked_op", &format!(",{count},checked_op"));
@@ -246,6 +255,7 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
                     text
                 } else if scalar {
                     text.replace("phase_eighth(u)", "u")
+                        .replace("phase_eighth(q)", "q")
                 } else {
                     text.replace("join(b,a)", "join(a,b)")
                 };

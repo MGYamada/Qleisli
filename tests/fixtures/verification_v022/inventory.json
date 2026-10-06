@@ -3906,7 +3906,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "3f236d858bb92fd38c87d8b8512905a0075b501aa81e120ac28ce9fd0e86a3e5",
+      "sha256": "e58ca8555e7a9f7320ea4c5b6dbf430b8b8b10ec9553f8424006964da4df58e4",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4092,7 +4092,7 @@
     },
     {
       "path": "src/frontend/sized/primitive.rs",
-      "sha256": "60456760d69d05a438456dd98baaa54de49a8b9f4edd111a7f22744c55f424e4",
+      "sha256": "02acf3aa8bfba3b61e7e28ef68db13d45ab94b0d73525661774c7a303f0e747a",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4162,7 +4162,7 @@
     },
     {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "c7e1de1c971908540bdee2d2490837b974ea6b9728cb2646602bc1a8bf07aa13",
+      "sha256": "2b0c5f674ba6b358e37791447ba430bb36438934963bf8e0d1b3405c5136e735",
       "group": "sized-source",
       "surface": {
         "declarations": [],

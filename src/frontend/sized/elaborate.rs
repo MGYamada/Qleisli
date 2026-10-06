@@ -2017,18 +2017,6 @@ fn primitive(
     let (inputs, output) = match signature.types {
         TypeRule::Fixed(inputs, output) => (inputs, output),
         rule @ (TypeRule::QuantumEndomorphism | TypeRule::Split | TypeRule::Join) => {
-            if matches!(rule, TypeRule::QuantumEndomorphism)
-                && inputs.len() == 1
-                && inputs[0]
-                    .quantum_basis()
-                    .is_some_and(|basis| matches!(basis.kind, TypeKind::Tuple(_)))
-            {
-                return Err(error(
-                    "unsupported",
-                    span,
-                    "selected concrete scalar phase does not support a packaged tuple basis",
-                ));
-            }
             // Reject an oversized joined owner before cloning its basis tree.
             if matches!(rule, TypeRule::Join) && inputs.len() == 2 {
                 if let (Some(a), Some(b)) = (inputs[0].quantum_basis(), inputs[1].quantum_basis()) {

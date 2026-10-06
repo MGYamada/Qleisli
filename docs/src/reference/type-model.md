@@ -215,10 +215,13 @@ Unit owner; its inverse is `join(unit(()), a)`. The right unitor uses the other
 factor. The coefficient is exactly `+1` on every basis value and retained
 reference. Scalar work already performed on an eliminated Unit factor remains
 in the composition. These maps are never inserted by implicit coercion.
-The common source signature of `phase_eighth` also permits this packaged basis,
-but its selected concrete preparation still requires a Unit/Bit/Bits atom.
-Applying it directly to a packaged tuple therefore fails that concrete
-eligibility check; successful source typing supplies no missing emitter.
+`phase_eighth` preserves one `Q<A>` owner for any admitted closed basis tree,
+including packaged tuples with Unit and Bits factors. Its coefficient is
+exactly `exp(i*pi/4)` times identity on that complete ordered basis and any
+retained reference. Concrete preparation preserves the original tree and axes;
+it neither splits the owner nor erases a zero-width factor. An ordinary tuple
+of separate quantum owners is not one argument of this type. Existing type,
+width, work and backend limits still apply.
 
 Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.

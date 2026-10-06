@@ -318,14 +318,16 @@ impl Equation {
         }
     }
     fn scalar(&mut self, a: Port, b: Port, u: u32, v: u32) -> usize {
-        assert_eq!(a.basis, Basis::Unit);
-        assert_eq!(b.basis, Basis::Unit);
+        self.scalar_phase(a, b, u, v, 1)
+    }
+    fn scalar_phase(&mut self, a: Port, b: Port, u: u32, v: u32, phase: i32) -> usize {
+        assert_eq!(a.basis, b.basis);
         let identity = self.rename(std::slice::from_ref(&a), std::slice::from_ref(&a));
         let u = Port::new(u, Basis::Unit, 0);
         let v = Port::new(v, Basis::Unit, 0);
         let pack = self.structure(&[], std::slice::from_ref(&u), "pack_unit");
         let description = String::from_utf8(
-            finite_matrix::encode(&Matrix::new(1, 1, vec![Exact::phase(1)]).unwrap()).unwrap(),
+            finite_matrix::encode(&Matrix::new(1, 1, vec![Exact::phase(phase)]).unwrap()).unwrap(),
         )
         .unwrap();
         let finite = self.add(
@@ -775,17 +777,79 @@ fn binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules() {
         );
     }
     let text = "use std::quantum::phase_eighth; pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{phase_eighth(q)}";
-    let error = parsed(text)
-        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-        .unwrap()
-        .elaborate()
-        .unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert_eq!(error.module(), Some("main"));
+    let graph = elaborate(text, "main::f");
     assert_eq!(
-        &text[error.span().start..error.span().end],
-        "phase_eighth(q)"
+        basis_view(
+            graph.definitions()[graph.root()]
+                .output()
+                .ty()
+                .quantum_basis()
+                .unwrap()
+        ),
+        "(Unit,Bit)"
     );
+    reject(
+        "use std::quantum::phase_eighth;pub unitary fn f(a:Q<Unit>,b:Q<Bit>)->(Q<Unit>,Q<Bit>){phase_eighth((a,b))}",
+        "type",
+    );
+}
+
+#[test]
+fn direct_packaged_scalar_keeps_exact_tree_axes_and_external_reference() {
+    let first = include_str!(
+        "fixtures/authoring_sessions/meaning-enforcement-v030/direct-scalar-attempt-01/main.qli"
+    );
+    for basis in [
+        Basis::pair(Basis::Unit, Basis::pair(Basis::Bit, Basis::Bit)),
+        Basis::pair(Basis::Unit, Basis::Unit),
+        Basis::Tuple(vec![Basis::Unit, Basis::Bit, Basis::Unit]),
+        Basis::pair(Basis::Bits(1), Basis::pair(Basis::Unit, Basis::Bit)),
+        Basis::pair(Basis::Bits(0), Basis::Unit),
+    ] {
+        let text = first.replace("(Unit,(Bit,Bit))", &basis.qli());
+        let graph = elaborate(&text, "main::client");
+        assert_eq!(
+            basis_view(
+                graph.definitions()[graph.root()].inputs()[0]
+                    .ty()
+                    .quantum_basis()
+                    .unwrap()
+            ),
+            basis.qli()
+        );
+        assert_eq!(
+            graph.definitions()[graph.root()].inputs()[0].ty(),
+            graph.definitions()[graph.root()].output().ty()
+        );
+        let proposal = graph.lower().unwrap();
+        // Independently specified omega times identity: these ports and the
+        // exact requested coefficient are not recovered from the candidate.
+        let before = Port::new(101, basis.clone(), 0);
+        let after = Port::new(102, basis.clone(), 0);
+        let mut equation = Equation::default();
+        let scalar = equation.scalar(before.clone(), after.clone(), 103, 104);
+        let root = equation.sequence(&[scalar]);
+        let accepted = kernel()
+            .check_against_native(proposal.payload(), &equation.request(root))
+            .unwrap();
+        let joint = input(basis.width());
+        let expected = joint.iter().map(|z| mul(omega(), *z)).collect::<Vec<_>>();
+        close(
+            &accepted
+                .execute_pure(&joint, 2, limits())
+                .unwrap()
+                .amplitudes,
+            &expected,
+        );
+        let mut wrong = Equation::default();
+        let identity = wrong.scalar_phase(before, after, 103, 104, 0);
+        let identity = wrong.sequence(&[identity]);
+        assert!(
+            kernel()
+                .check_against_native(proposal.payload(), &wrong.request(identity))
+                .is_err()
+        );
+    }
 }
 
 #[test]

@@ -5,7 +5,7 @@ and a deliberate identity-for-Flip counterexample. The same assistant had full
 repository access, previous finite-leaf tests and adopted requirements. No
 independent model or blind benchmark was involved.
 
-[Unselected-checker observations](session.json) preserve four actual CLI refusals caused by
+[Original unselected-checker observations](unselected-checker-original.json) preserve four actual CLI refusals caused by
 missing checker selection. [Separate invocation repair](selected-checker.json)
 adds an explicit native checker without changing those source bytes: nested Bit,
 unused Bit and scalar Unit bindings pass; the unused lying provider rejects at
@@ -42,3 +42,16 @@ adapter implementation. Independent integration tests check n=0/1/2 swap and
 zero-factor phase actions, their lying implementations, and native-valid
 ordered-axis/owner substitutions. These checks do not prove original AST
 preservation or admit a new constitutional guarantee.
+
+The [schema registration](session.json) preserves that original record unchanged
+and registers eight newly executed selected/unselected observations. Hosted CI
+found the original ad hoc format incompatible with the authoring checker. Missing
+historical timestamps are not reconstructed; the new observations have their own
+actual recording times.
+
+The [direct packaged scalar first attempt](direct-scalar-attempt-01/before.json)
+retains the actual concrete eligibility refusal before implementation, using
+`Q<(Unit,(Bit,Bit))>` with two system qubits. Its [separate after observation](direct-scalar-attempt-01/after.json)
+uses the same source and command after the concrete adapter accepts the existing
+common signature. Independent requested equations and reference tests retain
+exact product trees, ordered axes, zero-width factors and scalar phase.

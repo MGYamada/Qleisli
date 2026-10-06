@@ -411,25 +411,45 @@ fn abstract_checked_provider_is_still_refused_by_finite_materialization() {
 }
 
 #[test]
-fn selected_public_entry_keeps_the_existing_constructor_projection_refusal() {
+fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
     let source = format!(
         "{PRELUDE}
         pub unitary fn client(q:Q<Bit>)->Q<Bit>{{use_op[checked_op(provider,ZMeaning)](q)}}"
     );
+    // Preserve the old repeat_static provider's concrete-profile limit;
+    // checked_op itself is now projected with its original request intact.
     let parsed = ParsedProgram::parse(sources(&source)).unwrap();
-    let error = parsed
+    let instance = parsed
         .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
-        .unwrap_err();
-    assert_eq!(error.code(), "unsupported", "{error}");
-    assert_eq!(error.module(), Some("main"));
-    assert!(
-        error
-            .message()
-            .contains("unsupported static operation constructor"),
-        "{error}"
-    );
-    assert_eq!(
-        &source[error.span().start..error.span().end],
-        "checked_op(provider,ZMeaning)"
-    );
+        .unwrap();
+    assert_eq!(instance.elaborate().unwrap_err().code(), "unsupported");
+    for honest in [true, false] {
+        let provider = if honest { "phase[1,1](q)" } else { "q" };
+        let text = source.replace("repeat_static(4,t,q)", provider).replace(
+            "use std::quantum::init0;",
+            "use std::quantum::init0; use std::quantum::phase;",
+        );
+        let source = ParsedProgram::parse(sources(&text))
+            .unwrap()
+            .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        assert!(source.has_operation_meanings());
+        assert_eq!(source.lower().unwrap_err().code(), "meaning");
+        let checked = source.check_operation_meanings(
+            &qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap()),
+            &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+        );
+        if honest {
+            let graph = checked.unwrap().lower_hierarchy().unwrap();
+            qleisli::interchange::hierarchical::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            )
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
+        } else {
+            assert_eq!(checked.unwrap_err().code(), "contract");
+        }
+    }
 }
