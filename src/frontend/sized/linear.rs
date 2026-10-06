@@ -166,6 +166,30 @@ impl Linear {
         let negative = b.scale_budgeted(-1, span, charge)?;
         self.add_budgeted(&negative, span, charge)
     }
+    /// Simultaneous substitution over original binder identities. Replacement
+    /// expressions belong to the caller: never substitute inside them again.
+    /// This is exact affine arithmetic, not evaluation or acceptance evidence.
+    pub fn substitute_budgeted(
+        &self,
+        values: &BTreeMap<BinderKey, Self>,
+        span: Span,
+        charge: &mut impl FnMut(Span, usize) -> Result<()>,
+    ) -> Result<Self> {
+        let mut result = Self::constant_budgeted(self.constant, span, charge)?;
+        for (key, coefficient) in &self.terms {
+            charge(span, 1)?;
+            let replacement = values.get(key).ok_or_else(|| {
+                Error::new(
+                    "static",
+                    span,
+                    format!("unbound natural parameter {}", key.name),
+                )
+            })?;
+            let scaled = replacement.scale_budgeted(*coefficient, span, charge)?;
+            result = result.add_budgeted(&scaled, span, charge)?;
+        }
+        Ok(result)
+    }
 }
 fn checked_cells(a: usize, b: usize) -> Result<usize> {
     a.checked_add(b).ok_or_else(|| {
@@ -175,6 +199,130 @@ fn checked_cells(a: usize, b: usize) -> Result<usize> {
             "linear storage accounting overflow",
         )
     })
+}
+
+#[cfg(test)]
+mod substitution_tests {
+    use super::*;
+    use crate::frontend::parser::parse_module;
+    use crate::frontend::resolve::Resolution;
+    use crate::frontend::resolve::locals::Index;
+
+    fn keys() -> (BinderKey, BinderKey, BinderKey) {
+        let module =
+            parse_module("fn f[static n:Nat,static p:Nat]()->Bit{0} fn g[static n:Nat]()->Bit{0}")
+                .unwrap();
+        let resolution = Resolution::new([("main", &module)]).unwrap();
+        let owner = resolution.module("main").unwrap();
+        let mut keys = Vec::new();
+        for declaration in &module.decls {
+            let id = resolution.local(owner, &declaration.name.text).unwrap();
+            let index = Index::new_budgeted(
+                id,
+                declaration,
+                |_| None,
+                |_, _| Ok::<_, std::convert::Infallible>(()),
+            )
+            .unwrap();
+            keys.extend(
+                declaration
+                    .static_params
+                    .iter()
+                    .map(|p| index.table.key(index.binder(&p.name)).clone()),
+            );
+        }
+        (keys.remove(0), keys.remove(0), keys.remove(0))
+    }
+    fn unlimited(_: Span, _: usize) -> Result<()> {
+        Ok(())
+    }
+    fn expression(constant: i128, terms: &[(BinderKey, i128)]) -> Linear {
+        Linear {
+            constant,
+            terms: terms.iter().cloned().collect(),
+        }
+    }
+
+    #[test]
+    fn same_spelling_in_another_definition_cannot_supply_a_binding() {
+        let (formal, _, caller) = keys();
+        assert_eq!(formal.name, caller.name);
+        let original = expression(0, &[(formal, 1)]);
+        let values = BTreeMap::from([(caller, Linear::constant(3))]);
+        let span = Span::new(17, 23);
+        let error = original
+            .substitute_budgeted(&values, span, &mut unlimited)
+            .unwrap_err();
+        assert_eq!(error.code(), "static");
+        assert_eq!(error.span(), span);
+    }
+
+    #[test]
+    fn replacements_are_simultaneous_even_when_keys_overlap() {
+        let (n, p, _) = keys();
+        let original = expression(0, &[(n.clone(), 1), (p.clone(), 1)]);
+        let values = BTreeMap::from([
+            (n, expression(1, &[(p.clone(), 1)])),
+            (p.clone(), Linear::constant(8)),
+        ]);
+        let result = original
+            .substitute_budgeted(&values, Span::default(), &mut unlimited)
+            .unwrap();
+        assert_eq!(result, expression(9, &[(p, 1)]));
+    }
+
+    #[test]
+    fn affine_substitution_agrees_with_an_independent_scalar_calculation() {
+        let (n, p, caller) = keys();
+        // 7 + 3*n - 2*p, with n = 2*x+1 and p = x+4.
+        let original = expression(7, &[(n.clone(), 3), (p.clone(), -2)]);
+        let values = BTreeMap::from([
+            (n, expression(1, &[(caller.clone(), 2)])),
+            (p, expression(4, &[(caller.clone(), 1)])),
+        ]);
+        let result = original
+            .substitute_budgeted(&values, Span::default(), &mut unlimited)
+            .unwrap();
+        for x in 0..=7 {
+            let actual = result.constant + result.terms[&caller] * x;
+            assert_eq!(actual, 7 + 3 * (2 * x + 1) - 2 * (x + 4));
+        }
+        assert_eq!(result, expression(2, &[(caller, 4)]));
+    }
+
+    #[test]
+    fn overflow_is_a_capacity_failure_without_wrapping() {
+        let (n, _, _) = keys();
+        let original = expression(0, &[(n.clone(), 2)]);
+        let values = BTreeMap::from([(n, Linear::constant(i128::MAX))]);
+        let error = original
+            .substitute_budgeted(&values, Span::default(), &mut unlimited)
+            .unwrap_err();
+        assert_eq!(error.code(), "limit");
+    }
+
+    #[test]
+    fn accounting_failure_stops_before_retaining_a_replacement() {
+        let (n, _, caller) = keys();
+        let original = expression(0, &[(n.clone(), 1)]);
+        let values = BTreeMap::from([(n, expression(0, &[(caller, 1)]))]);
+        let span = Span::new(20, 25);
+        let mut remaining = 3usize;
+        let mut visits = 0;
+        let error = original
+            .substitute_budgeted(&values, span, &mut |site, cells| {
+                visits += 1;
+                remaining = remaining
+                    .checked_sub(cells)
+                    .ok_or_else(|| Error::new("limit", site, "test budget exhausted"))?;
+                Ok(())
+            })
+            .unwrap_err();
+        assert_eq!(error.code(), "limit");
+        assert_eq!(error.span(), span);
+        assert!(visits <= 5, "accounting continued after a refusal");
+        assert_eq!(values.len(), 1);
+    }
 }
 #[derive(Clone, Debug)]
 pub(in crate::frontend) struct Context {

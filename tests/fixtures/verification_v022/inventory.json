@@ -3278,7 +3278,7 @@
     },
     {
       "path": "src/frontend/check/normalize.rs",
-      "sha256": "bd8dfc2f928bee5415a232d4b220b03e2200cc88ebf27886aaaa850291a8c68f",
+      "sha256": "2c855048816114eaf2e37d9442d06024f09e9ae21d8c5853a36deb339a51020b",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3948,7 +3948,7 @@
     },
     {
       "path": "src/frontend/sized/linear.rs",
-      "sha256": "98a0d14d0052e2281cc4c4b07e41f92c933ff836eb43cb0eda285cc07a66874e",
+      "sha256": "e99445b222ceaaa6413b209a6ec3584819466f0da04c34ff0e6ddda2398806ef",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3966,6 +3966,7 @@
           "pub fn scale_budgeted( &self, n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
           "pub fn storage_cells(&self) -> Result<usize>",
           "pub fn sub_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn substitute_budgeted( &self, values: &BTreeMap<BinderKey, Self>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
           "pub fn variable_budgeted( name: &BinderKey, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>"
         ],
         "capacity_constants": []

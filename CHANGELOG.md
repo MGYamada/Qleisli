@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share bounded exact affine Nat substitution with common type specialization;
+  preserve original binder identities, simultaneous replacement, capacity
+  refusals and source locations. Static helper syntax remains separate work (#63).
 - Add block-local `static let` Nat bindings through the common source judgment
   and concrete evaluator. Preserve lexical identities, exact normalization,
   guarded arithmetic, original-body checking and native output gates (#28/#63).

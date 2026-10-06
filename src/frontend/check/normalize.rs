@@ -328,27 +328,8 @@ pub(super) fn substitute(
     let result = ty.map_parts(
         &mut |n| {
             let mut charge = |span, cells| budget.sized_charge(span, cells);
-            let mut result = Linear::constant_budgeted(n.constant, span, &mut charge)?;
-            for (key, value) in &n.terms {
-                let replacement = naturals.get(key).ok_or_else(|| {
-                    SourceError::new(
-                        "static",
-                        span,
-                        format!("unbound natural parameter {}", key.name),
-                    )
-                })?;
-                let scaled = replacement
-                    .scale_budgeted(*value, span, &mut charge)
-                    .map_err(|error| {
-                        arithmetic_context(error, span, "substituted callee obligation")
-                    })?;
-                result = result
-                    .add_budgeted(&scaled, span, &mut charge)
-                    .map_err(|error| {
-                        arithmetic_context(error, span, "substituted callee obligation")
-                    })?;
-            }
-            Ok(result)
+            n.substitute_budgeted(naturals, span, &mut charge)
+                .map_err(|error| arithmetic_context(error, span, "substituted callee obligation"))
         },
         &mut |p| {
             let replacement = p
