@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Migrate the remaining positive parser test to `classical fn` and require the
+  pure runtime effect of classical stdlib helpers in the effect-report test.
 - Specify the implemented static fragment, guarded exact arithmetic, incomplete
   linear implication, decreasing recursion, definition/instance checking and
   concrete capacities in the Reference. Keep static helper and final loop work

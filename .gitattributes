@@ -217,3 +217,4 @@ tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stderr
 tests/fixtures/frontend_v030/classical-functions/validation/*.stdout.txt -text -whitespace
 corpus/migrations/classical-functions-v030/python-tests-first.txt -text -whitespace
 corpus/migrations/classical-functions-v030/semantic-replay-first.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-ci-classical-test-repair/*-excerpt.txt -text -whitespace

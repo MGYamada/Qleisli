@@ -8,7 +8,7 @@ const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"
 
 #[test]
 fn runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans() {
-    for kind in ["basis", "iso", "unitary", "observe"] {
+    for kind in ["classical", "iso", "unitary", "observe"] {
         let source = format!(
             "{kind} fn f(((a,_),()): ((Bit,Bit),Unit), _: Unit, (): Unit) -> Unit {{ () }}"
         );

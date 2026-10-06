@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "date": "2026-10-06",
+  "observer": "/root",
+  "kind": "actual-tool-observations-summary",
+  "scope": "Focused repair results observed through command tools; not a stored full raw-stream capture or complete build closure.",
+  "baseline": "fd0d88dc48ee428905d5fa448e5aca338eef11ac",
+  "latest": {
+    "version": "1.98.1",
+    "commands": [
+      "cargo test --locked -j 2 --lib frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans -- --exact",
+      "cargo test --locked -j 2 --test body_effects -- --test-threads=2"
+    ],
+    "exit_codes": [0, 0],
+    "passed": [1, 13],
+    "target": "/private/tmp/qleisli-bounded-validation-target"
+  },
+  "MSRV": {
+    "version": "1.85.0",
+    "commands": [
+      "rustup run 1.85.0 cargo test --locked -j 2 --lib frontend::parser::tests::runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans -- --exact",
+      "rustup run 1.85.0 cargo test --locked -j 2 --test body_effects -- --test-threads=2"
+    ],
+    "exit_codes": [0, 0],
+    "passed": [1, 13],
+    "target": "/private/tmp/qleisli-ci-repair-validation-target"
+  },
+  "environment": {
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "sandbox_retry": {
+    "command": "cargo test --locked -j 2 --lib interchange::process::tests::inherited_pipes_do_not_leave_descendants_or_transport_threads -- --exact",
+    "reason": "The initial sandboxed ps invocation returned PermissionDenied.",
+    "source_changed": false,
+    "execution": "Approved outside-sandbox rerun, same bounded latest target and environment",
+    "exit_code": 0,
+    "passed": 1
+  },
+  "inventory_review": {
+    "path": "src/frontend/parser/tests.rs",
+    "change": "Positive declaration kind basis -> classical; pattern/count/span assertions unchanged",
+    "old_sha256": "dbaa96f9b74cfb468274490de5068d06fab5d7d6760adcb097f3e434ca3a0e87",
+    "new_sha256": "d5b3c2a4c1ab4236dabdf06fa8f00180035999b0f786008f4b6cda58071ccd21",
+    "public_surface": "unchanged",
+    "capacities_groups_proof_gates": "unchanged"
+  },
+  "pending": "The first all-target run has failures and does not become a full pass through these focused repairs. New integrated full verification and release gates remain separate. No fresh Lean build/audit/replay or guarantee admission."
+}

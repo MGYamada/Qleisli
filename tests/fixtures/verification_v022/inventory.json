@@ -3631,7 +3631,7 @@
     },
     {
       "path": "src/frontend/parser/tests.rs",
-      "sha256": "dbaa96f9b74cfb468274490de5068d06fab5d7d6760adcb097f3e434ca3a0e87",
+      "sha256": "d5b3c2a4c1ab4236dabdf06fa8f00180035999b0f786008f4b6cda58071ccd21",
       "group": "source",
       "surface": {
         "declarations": [],

@@ -294,12 +294,11 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
         assert!(documentation.contains("Inferred quantum effect:"));
         assert!(!documentation.contains("Checked upper-bound assertion:"));
     }
-    // Basis functions have their distinct ordinary total-function checking.
-    assert!(
-        report
-            .function_effect("std::reflection::nonzero2")
-            .is_none()
-    );
+    // Total classical functions now have ordinary runtime calls. Their pure
+    // body participates in effect inference without an annotation/access grant.
+    let classical = report.function_effect("std::reflection::nonzero2").unwrap();
+    assert_eq!(classical.inferred(), Effect::Unitary);
+    assert_eq!(classical.asserted(), None);
 
     root.write(
         "arithmetic.qli",
