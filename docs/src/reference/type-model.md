@@ -48,6 +48,28 @@ An ordinary binding operation on `Q<A>` does not require a `qlet` spelling.
 Effects cannot be inferred from ownership alone, and an annotation cannot
 downgrade the effect of its body.
 
+The conceptual typing judgment is `Γ ; Δ ⊢ e : T ! ε`. Here `Γ` contains
+ordinary values and the separately classified static environment; `Δ` contains
+live linear quantum ownership, including quantum fields of ordinary products.
+`ε` is the semantic effect computed from the complete body and its callees.
+The implementation may store ordinary and linear bindings in one table, but
+it checks their different reuse rules from the exact type and tracks moves by
+binding identity. Moving a value removes its linear ownership from subsequent
+use; copying an ordinary value neither creates nor consumes a quantum owner.
+Static bindings cannot be used as runtime values. The judgment describes the
+source contract; it is not a claim that a general source-soundness theorem has
+been discharged.
+
+The surface follows three distinct roles. A `q` construct, such as `qif` or
+`qfor`, explicitly supplies coherent control or a quantum-owner fold. `Q<A>`
+marks quantum ownership even in ordinary syntax such as `let`, a function
+argument or an explicit call. Unmarked constructs operate according to their
+ordinary/static rules: an ordinary `if` requires `Bit`, not `Q<Bit>`, and a
+static fold cannot inspect quantum state. A prefix alone grants no operation
+access, effect or evidence. The conceptual `match`/`qmatch` distinction follows
+the same rule, but does not admit pattern forms before their own specification
+and implementation. Supported folds are specified in [static control](static-language.md).
+
 ## Structural equality, coherence and physical maps
 
 Definitional type equality compares constructor tags, evaluated static sizes,
