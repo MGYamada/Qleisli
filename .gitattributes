@@ -209,3 +209,7 @@ tests/fixtures/authoring_sessions/default-construction-v030/observations-before/
 tests/fixtures/authoring_sessions/default-construction-v030/observations-before/*.stderr.txt -text -whitespace
 tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*.stdout.txt -text -whitespace
 tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*.stderr.txt -text -whitespace
+# Preserve actual hosted failure excerpts and bounded local validation streams.
+tests/fixtures/review_v030alpha/hosted-ci-basis-failure-01/*-failure-01.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stderr.txt -text -whitespace

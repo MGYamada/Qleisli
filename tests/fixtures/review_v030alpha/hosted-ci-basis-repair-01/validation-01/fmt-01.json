@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "fmt",
+    "--all",
+    "--check"
+  ],
+  "exit_code": 0,
+  "seconds": 0.7662260420038365,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/fmt-01.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/fmt-01.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "capture_scope": "Actual command and streams only, not a complete build closure or replay of stored records."
+}

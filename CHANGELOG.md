@@ -6,6 +6,8 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Repair the tuple-unitor integration control to use canonical `basis` syntax;
+  retain historical `do/pure` sources and test their migration refusal.
 - Fix the 0.3.0 Default boundary: live quantum-containing types, including
   zero-axis Q<Unit>, have no Rust-like default construction. Preserve explicit
   ordinary values and checked user functions named `default`; preparation

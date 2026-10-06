@@ -5,7 +5,7 @@
 mod common;
 use common::SourceRoot;
 use qleisli::contract::exact::{Exact, Matrix};
-use qleisli::frontend::compile::{ErrorCode, check_project};
+use qleisli::frontend::compile::check_project;
 use qleisli::frontend::sized::{ElaboratedProgram, OperationBinding, ParsedProgram, SourceType};
 use qleisli::interchange::finite_matrix;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
@@ -863,13 +863,8 @@ fn structural_tuple_events_after_observation_retain_exact_basis_and_reference() 
 
 #[test]
 fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
-    // The first authoring source and observations retain retired do/pure.
-    // Check a recorded three-body syntax derivative, never rewrite that history.
-    let coherent = read(
-        "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/finite-coherent-unitors/main.qli",
-    );
-    for text in [study("finite-split-join"), coherent.clone()] {
-        check_project(&SourceRoot::new(&text).0).unwrap();
+    for name in ["finite-split-join", "finite-coherent-unitors"] {
+        check_project(&SourceRoot::new(&study(name)).0).unwrap();
     }
     let graph = elaborate(&study("finite-split-join"), "main::f");
     let error = graph.lower_raw().unwrap_err();
@@ -878,35 +873,11 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
     assert!(error.span().end > error.span().start);
     // Coherent lifting is a separate selected-source capability even though
     // the same exact Q<tuple> now passes common source type classification.
-    let error = parsed(&coherent)
+    let text = study("finite-coherent-unitors");
+    let error = parsed(&text)
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
         .unwrap_err();
     assert_eq!(error.code(), "unsupported");
     assert_eq!(error.module(), Some("main"));
-    assert!(error.span().end > error.span().start && error.span().end <= coherent.len());
-
-    let historical = study("finite-coherent-unitors");
-    let start = historical.find("do ((),x)").unwrap();
-    let migration = "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.";
-    let finite = check_project(&SourceRoot::new(&historical).0).unwrap_err();
-    assert_eq!(finite.code, ErrorCode::Project);
-    assert_eq!((finite.span.start, finite.span.end), (start, start + 2));
-    assert_eq!(&historical[finite.span.start..finite.span.end], "do");
-    assert_eq!(finite.message, format!("parse error: {migration}"));
-    let selected = match ParsedProgram::parse(BTreeMap::from([("main".into(), historical.clone())]))
-    {
-        Err(error) => error,
-        Ok(_) => panic!("historical do/pure must reject instead of becoming accepted syntax"),
-    };
-    assert_eq!(selected.code(), "parse");
-    assert_eq!(selected.module(), Some("main"));
-    assert_eq!(
-        (selected.span().start, selected.span().end),
-        (start, start + 2)
-    );
-    assert_eq!(
-        &historical[selected.span().start..selected.span().end],
-        "do"
-    );
-    assert_eq!(selected.message(), migration);
+    assert!(error.span().end > error.span().start && error.span().end <= text.len());
 }

@@ -1,0 +1,88 @@
+{
+  "format": "qleisli.derived-hosted-ci-source",
+  "version": 1,
+  "status": "prepared-before-validation",
+  "context": {
+    "kind": "informed maintenance translation",
+    "human_task": "Repair the current positive control without editing historical authoring sources",
+    "adopted_decision": "https://github.com/MGYamada/Qleisli/issues/81",
+    "observed_head": "294643d02ad62e4c1ffc58d6ce51c5be838bc815",
+    "trusted_constitutional_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+    "validation": "No Cargo/native/CLI execution has been performed by the source preparer."
+  },
+  "frozen": [
+    {
+      "path": "tests/quantum_tuple_unitors.rs",
+      "snapshot": "quantum_tuple_unitors.before.rs.txt",
+      "sha256": "f9d090547e3bf063af9ad98dc0b472bdc731f527b80e71da1bccfbc1b8c9e570",
+      "bytes": 31138
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors/main.qli",
+      "snapshot": "finite-coherent-unitors.before.qli.txt",
+      "sha256": "ddfc8d428823d56b7ebbe4ef7de52cea96f8db9dbec59e7ca5344cec38d78162",
+      "bytes": 294
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors/Qargo.toml",
+      "snapshot": "finite-coherent-unitors.before.Qargo.toml.txt",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    }
+  ],
+  "derivative": {
+    "path": "finite-coherent-unitors/main.qli",
+    "sha256": "c1751f06e2db0cda04decebd00c48b15698646e8b6edafdb2b56e03668410772",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "replacements": [
+      {
+        "before": "do ((),x)<-q;pure x",
+        "after": "basis q as ((),x) {x}"
+      },
+      {
+        "before": "do x<-q;pure ((),x)",
+        "after": "basis q as x {((),x)}"
+      },
+      {
+        "before": "do (x,())<-q;pure x",
+        "after": "basis q as (x,()) {x}"
+      }
+    ]
+  },
+  "contract": {
+    "edition": "2026",
+    "signatures": [
+      "pub unitary fn f(q:Q<(Unit,Bit)>)->Q<Bit>",
+      "unitary fn inverse(q:Q<Bit>)->Q<(Unit,Bit)>",
+      "unitary fn right(q:Q<(Bit,Unit)>)->Q<Bit>",
+      "observe fn main()->Unit"
+    ],
+    "maps": [
+      "f: |(),x> -> |x>",
+      "inverse: |x> -> |(),x>",
+      "right: |x,()> -> |x>"
+    ],
+    "coefficient": "+1 on every basis input, preserving incoming scalar phase and any retained reference",
+    "axes": "the single Bit axis remains in order; Unit introduces no physical axis",
+    "owners": "each map consumes its single input quantum owner and returns one owner with the declared complete basis tree"
+  },
+  "predictions": [
+    {
+      "case": "canonical finite control",
+      "expected": "check_project succeeds; all original declarations remain independently checked"
+    },
+    {
+      "case": "canonical selected main::f",
+      "expected": "common parse succeeds; instantiate rejects unsupported CoherentLift at its original canonical basis expression"
+    },
+    {
+      "case": "historical original",
+      "expected": "both finite loading and selected parsing reject at the exact first do token, retaining the canonical migration diagnostic"
+    },
+    {
+      "case": "other controls and independent action oracle",
+      "expected": "unchanged existing tests; no checks or oracle cases removed"
+    }
+  ],
+  "proof_limit": "A syntax derivative and check success are not source-preservation, general unitor, QS/PR/RS discharge or release validation."
+}
