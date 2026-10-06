@@ -71,7 +71,28 @@
       "log": "/private/tmp/qleisli-raw-regression-all-targets.log",
       "session_id": 33008,
       "sandbox_permissions": "require_escalated",
-      "notes": "Fresh rerun after sandbox denied ps; existing 4000-case differential is live. Observe the actual session, not this status field, before acting."
+      "notes": "Fresh rerun after sandbox denied ps; existing 4000-case differential is live. Observe the actual session, not this status field, before acting.",
+      "completed_observation": {
+        "exit_code": 0,
+        "observed_after_commit": "7c95ff87",
+        "rust_source_and_test_tree": "Unchanged from the actual inputs compiled for this run; this follow-up edits only this validation record",
+        "result_summaries": 101,
+        "passed": 898,
+        "failed": 0,
+        "ignored": 52,
+        "stdout_stderr_sha256": "424a7b2b93b8a2c42b259d6b1827f0af6e45e44d39508a96589b890324c625e1",
+        "stdout_stderr_bytes": 104114,
+        "transcript_note": "External local log; this checked-in record retains observed totals, not a reconstructed complete raw transcript",
+        "ownership_differential": {
+          "cases": 4000,
+          "seconds": 377.7,
+          "hosted_comparison_seconds": {
+            "latest": 636.64,
+            "msrv": 639.66
+          }
+        },
+        "limits": "Latest cargo --all-targets only, with retained ignores. Not a fresh Lean replay, full MSRV all-target run, package/install test, hosted CI pass, release approval or discharge"
+      }
     },
     "docs": "passed: 2186 links, 30 anchors, 206 Lean roots",
     "production_coverage": "passed: 22 production paths, 9 existing native modes",
