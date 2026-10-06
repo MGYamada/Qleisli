@@ -1,0 +1,43 @@
+
+running 13 tests
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test fn_suggestions_do_not_require_a_redundant_effect_annotation ... ok
+test host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json ... ok
+test host_selected_providers_distinguish_unsupported_effects_from_shape_errors ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test principal_classes_do_not_depend_on_declaration_order_or_call_expansion ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.13s
+
+
+running 3 tests
+test nested_quantum_environments_cannot_be_reused_as_callables_or_providers ... ok
+test ordinary_calls_are_complete_first_order_calls_in_both_source_paths ... ok
+test reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+
+running 4 tests
+test reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement ... ok
+test unresolved_drop_keeps_callee_priority_without_inspecting_its_argument ... ok
+test user_helpers_and_local_categories_do_not_acquire_rust_name_privileges ... ok
+test ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.76s
+
+
+running 3 tests
+test equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner ... ok
+test nested_projection_restores_classical_entries_and_preserves_mixed_pending_ownership ... ok
+test local_spent_names_expire_but_entry_spent_names_still_hide_functions ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.50s
+

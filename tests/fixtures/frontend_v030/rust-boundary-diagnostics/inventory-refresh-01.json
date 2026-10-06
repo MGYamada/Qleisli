@@ -1,0 +1,22 @@
+{
+  "format": "qleisli.reviewed-diagnostic-inventory-refresh",
+  "version": 1,
+  "review_basis": "Independent ordinary implementation review; error-only messages after existing rejection. No acceptance, type/effect/owner, work/capacity, constructor or public boundary change.",
+  "inventory_before": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/inventory-before-review-01.json",
+    "sha256": "03d0d971f9a00f647b0e92268e5ff2cd8a4326cbdc542130d707685e45fb7006"
+  },
+  "inventory_after": {
+    "path": "tests/fixtures/verification_v022/inventory.json",
+    "sha256": "2020ebfcba640c504587108a7710e350c4547b89736d32e0304ea53dcc519c56"
+  },
+  "only_change": {
+    "source": "src/frontend/check/body.rs",
+    "old_sha256": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+    "new_sha256": "435412d5d46cb6d04de1e437f0719905ece2b2b6b313b620df8d1eb017bf30ab"
+  },
+  "public_surface_unchanged": true,
+  "groups_enums_boundaries_capacities_unchanged": true,
+  "constitution_guarantees_and_evidence_unchanged": true,
+  "limits": "This technical inventory identity refresh is not a proof, Guardian act or universal source-preservation result."
+}

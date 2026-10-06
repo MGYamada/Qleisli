@@ -1,0 +1,10 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn drop(b: Bit) -> Unit { () }
+fn pair(b: Bit) -> (Bit,Bit) { (b,b) }
+observe fn main() -> (Bit,Bit) {
+    let ignored = 1;
+    let _ = 0;
+    drop(1);
+    let (a,b) = pair(1);
+    (a,b xor 1)
+}

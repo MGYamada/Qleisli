@@ -274,3 +274,13 @@ preserves ten complete first projects and forty actual pre-code observations.
 kind/access diagnostics, private unused-body checks, profile barriers and all46
 forwarded invocation attempts. Those attempts are not child-start attestation;
 unchanged original sources and raw results are the later comparison baseline.
+
+The [Rust-boundary diagnostic study](rust-boundary-diagnostics-v030/README.md)
+preserves nine informed first projects and 42 actual before/after CLI calls.
+Classical Bit ignoring/copying and user-defined `drop` remain valid; unresolved
+names, a local callable-category error, nested `Q<Unit>` loss and ignored reset
+results retain their original codes/spans. Five rejection explanations change;
+all three successful run distributions remain unchanged. The original mistaken
+prediction of internal `name` instead of public `unknown_name` remains recorded.
+There are zero source repairs and no general oracle, proof or umbrella-completion
+claim.

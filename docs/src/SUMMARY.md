@@ -20,6 +20,7 @@
 - [Source text and lexical boundary](reference/source-text.md)
 - [Ordinary types, quantum owners and equality](reference/type-model.md)
 - [Functional abstraction and the quantum boundary](reference/functional-boundary.md)
+- [Rust familiarity and quantum meaning](reference/rust-boundary.md)
 - [Coherent basis maps](reference/coherent-basis.md)
 - [Checked operations](reference/checked-operations.md)
 - [Standard-library semantic namespaces](reference/stdlib.md)

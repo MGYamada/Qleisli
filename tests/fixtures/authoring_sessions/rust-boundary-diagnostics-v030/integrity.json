@@ -1,0 +1,17 @@
+{
+  "format": "qleisli.authoring-record-integrity-result",
+  "version": 1,
+  "recorded_utc": "2026-10-06T05:18:01.041731+00:00",
+  "attempts": 1,
+  "actual_observations": 42,
+  "raw_streams_verified": 84,
+  "first_inventory_entries_unchanged": 21,
+  "files": {
+    "session.json": "1e852baffd1d95de1d68c03f68205e9adbade5ab53edb3550446f356c924da16",
+    "comparison-after.json": "b4718ba306150a8171bf71b4cfe6504996d8c04b6a90cf9c20e8146363641052",
+    "README.md": "3e2b4af89803a2ba0c4dac6a1e05f6e1b343b0c99206fbb413d59ee73010bbab",
+    "capture.py": "2aa54c3231dde37cc7fd36bca3a384c431f4e9a6fe58d0470ab3fba04f5d8f0d"
+  },
+  "commands_replayed": 0,
+  "scope": "Source/metadata/raw-stream identity only, not compiler/runtime or semantic proof."
+}

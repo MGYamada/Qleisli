@@ -3230,7 +3230,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+      "sha256": "435412d5d46cb6d04de1e437f0719905ece2b2b6b313b620df8d1eb017bf30ab",
       "surface": {
         "declarations": [],
         "functions": [],

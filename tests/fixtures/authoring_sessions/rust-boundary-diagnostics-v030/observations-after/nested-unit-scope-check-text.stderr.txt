@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/attempt-01/nested-unit-scope/main.qli:4:9: ownership: local quantum ownership `env` escapes neither through the result nor an explicit discard; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.

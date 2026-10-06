@@ -1,0 +1,36 @@
+{
+  "format": "qleisli.operator-invocation-observations",
+  "version": 1,
+  "provenance": "Transcription of functions.exec exec_command results in the current root turn, not newly rerun commands. The first two full Python stderr strings remain in the tool transcript; only argv/exit/classification are transcribed here.",
+  "observations": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_v022.py",
+        "--inventory-only"
+      ],
+      "exit_code": 2,
+      "classification": "operator supplied nonexistent script name; not an inventory result"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_v029.py",
+        "--inventory-only"
+      ],
+      "exit_code": 2,
+      "classification": "operator supplied nonexistent script name; not a production-coverage result"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py",
+        "--help"
+      ],
+      "exit_code": 1,
+      "stdout": "frozen source changed; review inventory/fixtures: src/frontend/check/body.rs\n",
+      "classification": "This checker has no argparse help mode; it ran the real source identity check and rejected the edited diagnostic source before inventory refresh."
+    }
+  ],
+  "limit": "No success or replay is attributed to these invocations; corrected actual check records will be separate."
+}

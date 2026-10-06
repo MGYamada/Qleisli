@@ -9,6 +9,36 @@ use super::*;
 use crate::ir::Effect;
 use std::borrow::Cow;
 
+// These explanations are attached only after an existing rejection. They do
+// not select a physical operation, inspect arguments or change acceptance.
+fn disposal_error(span: Span, message: impl std::fmt::Display) -> SourceError {
+    SourceError::new(
+        "ownership",
+        span,
+        format!(
+            "{message}; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner."
+        ),
+    )
+}
+
+fn unresolved_function_message(name: &str) -> String {
+    let mut message = format!("unresolved function {name}");
+    let explanation = match name {
+        "drop" | "forget" => {
+            "; there is no built-in Rust drop or forget operation. Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, it must be returned or explicitly consumed; scope exit is not destruction. Measurement, discard, reset and checked clean discharge have distinct meanings; reset returns a fresh owner."
+        }
+        "clone" | "copy" => {
+            "; there is no built-in Rust Clone/Copy operation. Ordinary data such as Bit/Unit is reusable; if a value contains live Q<T>, reusing a description or a basis label does not duplicate that owner."
+        }
+        "default" => {
+            "; there is no built-in Rust Default operation. Ordinary Bit/Unit can be constructed explicitly; quantum preparation is explicit and cannot be inferred from Default."
+        }
+        _ => return message,
+    };
+    message.push_str(explanation);
+    message
+}
+
 mod operations;
 mod special;
 
@@ -37,11 +67,7 @@ impl BindingContext<Pattern> for PatternBinding<'_, '_> {
         bind_name(name, value, self.index, self.scope, self.budget, span)
     }
     fn wildcard_error(&self, span: Span) -> SourceError {
-        SourceError::new(
-            "ownership",
-            span,
-            "wildcard would discard quantum ownership",
-        )
+        disposal_error(span, "wildcard would discard quantum ownership")
     }
     fn duplicate_error(&self, span: Span) -> SourceError {
         SourceError::new("binding", span, "duplicate name in binding pattern")
@@ -149,8 +175,7 @@ fn bind_name(
             .get(key)
             .is_some_and(|binding| binding.ty.linear())
         {
-            return Err(SourceError::new(
-                "ownership",
+            return Err(disposal_error(
                 span,
                 format!("binding {} would drop a live quantum owner", name.text),
             ));
@@ -247,8 +272,7 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         FnBody::Quantum(body) => {
             checker.block(body, &mut scope, Some(&expected))?;
             if let Some(key) = checker.live_owner(&scope, body.span)? {
-                return Err(SourceError::new(
-                    "ownership",
+                return Err(disposal_error(
                     checker.index().table.binder(key.id).span,
                     format!(
                         "quantum ownership `{}` was not returned or explicitly consumed",
@@ -318,7 +342,7 @@ impl Checker<'_, '_> {
             ResolvedUse::Unresolved => Err(SourceError::new(
                 "name",
                 name.span,
-                format!("unresolved function {}", name.text),
+                unresolved_function_message(&name.text),
             )),
         }
     }
@@ -350,8 +374,7 @@ impl Checker<'_, '_> {
                 }
                 StmtKind::Expr(expr) => {
                     if self.expr(expr, scope, None)?.linear() {
-                        return Err(SourceError::new(
-                            "ownership",
+                        return Err(disposal_error(
                             expr.span,
                             "expression statement would discard quantum ownership",
                         ));
@@ -362,8 +385,7 @@ impl Checker<'_, '_> {
         let result = self.expr(&block.result, scope, expected)?;
         for (key, binding) in &scope.values {
             if !outer.contains(&binding.identity) && binding.ty.linear() {
-                return Err(SourceError::new(
-                    "ownership",
+                return Err(disposal_error(
                     self.index().table.binder(key.id).span,
                     format!(
                         "local quantum ownership `{}` escapes neither through the result nor an explicit discard",

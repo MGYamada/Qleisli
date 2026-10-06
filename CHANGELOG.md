@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Explain absent Rust disposal/copy/default machinery and implicit quantum
+  owner loss in source diagnostics. Preserve ordinary Bit/Unit reuse and
+  omission, normal user declarations named `drop`, original error categories,
+  spans and priority. Distinguish measurement, discard, reset's fresh owner
+  and checked clean discharge without granting implicit destruction (#68).
 - Repair the native round-trip discovery test's stale corpus expectations:
   require six namespace and two coherent-basis snapshots, each preserving its
   logical project path. Retain 87 corpus roots, 14 examples and all original

@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#68 bounded Rust false-friend diagnostics without changing source acceptance",
+  "baseline_commit": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex subagent; informed repository/Issue/code/Reference context; exact model/sampling unavailable",
+  "context": "context.md",
+  "record_status": "first-sources-and-predictions-written-before-commands; observations pending",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Nine independent first desired controls/counterexamples; all complete sources precede commands; reset variants are not a repair sequence.",
+      "sha256": {
+        "classical-drop-controls/main.qli": "8290df61e5ef3fa0afbc8e2a2f349f010cfdcfd3d52850926a3519d2cf0969c5",
+        "local-drop-category/main.qli": "8e7f4d557d7d555e6de8f60386a477d15808fbcfe83090e95ad3c593b439be35",
+        "nested-unit-scope/main.qli": "d9410d5ef21453f4d2a1ce0735467e38dd8c58f72d3bf112c2146b2497f3e628",
+        "nested-unit-wildcard/main.qli": "3f6280c218f0aec7a3bb9576dbe75c0e89410338f1fd5e6eab52e1422555b4cb",
+        "reset-result-discarded/main.qli": "4a58f6664b16e22cb3dd43e915e31ea20b67117c7caf2a3ef06fc1aa00630f9d",
+        "reset-result-returned/main.qli": "3d6065b0dfafb024bd0dd73f7f31df73b3ca7452b3f71d4048624d5f5ea48409",
+        "unresolved-classical-drop/main.qli": "b09f68165525e30ef4d93b619421996fc0bbe2026b3abd6199e01f9b09594a2a",
+        "unresolved-quantum-drop/main.qli": "d91271c0a7e552a3535d020cfe8e9fb8eff1d8adfb80f784138cbe74be312965",
+        "user-quantum-drop/main.qli": "5a0177aad8b8c55e1d1a55b304675e0d2e872899b2f872f2aa067f931f536efa"
+      },
+      "observations": [],
+      "reports": [
+        "first-files.json",
+        "predictions-before.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "classical-drop-controls/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "local-drop-category/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-unit-scope/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-unit-wildcard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "reset-result-discarded/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "reset-result-returned/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "unresolved-classical-drop/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "unresolved-quantum-drop/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "user-quantum-drop/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "scope": "Bounded informed diagnostic study only; no umbrella completion or constitutional proof."
+}

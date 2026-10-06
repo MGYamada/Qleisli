@@ -1,0 +1,6 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 6.53s
+     Running tests/body_effects.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/body_effects-1bccd0daabefb9bb)
+     Running tests/functional_boundary.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/functional_boundary-866dadf1510778b4)
+     Running tests/rust_boundary_diagnostics.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/rust_boundary_diagnostics-091c631e15470d90)
+     Running tests/source_scope.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/source_scope-ae6acddcbb1627a2)

@@ -195,3 +195,10 @@ tests/fixtures/frontend_v030/functional-boundary/hosted-predecessor-01/*-log-exc
 tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/*.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/native-discovery-ci-repair/validation-01/*.stderr.txt -text -whitespace
 tests/fixtures/frontend_v030/native-discovery-ci-repair/hosted-01/*.log-excerpt.txt -text -whitespace
+# Preserve actual diagnostic study/validation output, including libtest EOFs.
+tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/rust-boundary-diagnostics/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-before/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-before/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-after/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-after/*.stderr.txt -text -whitespace

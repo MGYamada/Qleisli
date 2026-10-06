@@ -94,10 +94,9 @@ fn equal_value_rebinding_cannot_hide_a_local_leak_or_revive_an_outer_owner() {
         let root = SourceRoot::new(&source);
         let error = check_project(&root.0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Ownership, "{source}\n{error}");
-        assert_eq!(
-            error.message,
+        assert!(error.message.starts_with(
             "local quantum ownership `v` escapes neither through the result nor an explicit discard"
-        );
+        ));
         let binding_start = source.find("let v=carry").unwrap() + "let ".len();
         assert_eq!(error.span.start, binding_start);
         assert_eq!(error.span.end, binding_start + 1);
