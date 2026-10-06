@@ -64,3 +64,11 @@ identified separately. Regression tests retain inner Meaning checks for lying
 providers and zero repetitions, exact scalar phase with a zero-width factor,
 and independent rejection of native-valid provider/caller-frame substitutions.
 Inverse/control adapter paths and general source preservation remain unfinished.
+
+The [generic inverse/control first attempts](access-attempt-01/before.json)
+retain two one-system-qubit sources before implementation: inverse T on Bit,
+and controlled scalar omega on Q<Unit> with the control/target tree retained.
+Both currently reach the actual finite-adapter unsupported-capability refusal.
+They are desired executable contracts, not implemented support or proofs.
+Future validation must retain the original forward requests, inverse ordering,
+zero-width owners and conditional relative phase against actual native artifacts.
