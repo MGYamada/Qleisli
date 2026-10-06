@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#33 canonical static specialization and constructed operation application",
+  "baseline_commit": "1bf268ffbd826004d1565f59e9b80adab8cd3483",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed code/Reference access, model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete bounded desired source saved before application implementation.",
+      "sha256": {
+        "main.qli": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6"
+      },
+      "observations": [
+        "observation-before.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Correct observer manifest schema only; desired source bytes unchanged.",
+      "sha256": {
+        "main.qli": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6"
+      },
+      "observations": [
+        "observation-repaired-manifest.json"
+      ],
+      "reports": [
+        "expectations.json"
+      ]
+    }
+  ]
+}

@@ -1,5 +1,13 @@
 # Authoring and repair observations
 
+The [operation-application study](operation-application-v030/session.json)
+preserves one bounded Grover-style desired source before #33 implementation.
+Its first observation rejects a missing manifest schema; the manifest-only
+repair leaves source bytes unchanged and exposes the actual parser refusal.
+The independent two-qubit phase expectation uses explicit control/target labels.
+This is an informed syntax-boundary study, not executable Grover/QFT, downstream
+capability evidence or a completed language migration.
+
 These records begin in 0.1.8. They are development observations, not a controlled
 LLM benchmark. No external model was invoked. Context is documented honestly,
 including prior repository access and known workarounds; the exact deployed
