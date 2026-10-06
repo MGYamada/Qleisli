@@ -676,6 +676,22 @@ impl Replay<'_> {
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
         if let Some(id) = operation.definition() {
+            let definition =
+                self.source.definitions().get(id).ok_or_else(|| {
+                    site.invalid("source operation refers to a missing definition")
+                })?;
+            let [argument] = arguments else {
+                return Err(site.invalid("forward operation requires one whole argument"));
+            };
+            if definition.inputs().len() != 1
+                || definition.inputs()[0].ty() != argument.ty
+                || definition.output().ty() != argument.ty
+                || effect(definition.effect(), site)? != Effect::Unitary
+            {
+                return Err(site.invalid(
+                    "forward operation changes its exact endomorphism interface or effect",
+                ));
+            }
             return self.function(id, arguments, depth, site);
         }
         self.calls += 1;
@@ -719,12 +735,6 @@ impl Replay<'_> {
             .ok_or_else(|| call_site.invalid("source call refers to a missing definition"))?;
         let site = Site::definition(definition);
         let declared = effect(definition.effect(), site)?;
-        if !definition.operations().is_empty() {
-            return Err(site.error(
-                "unsupported",
-                "Raw replay does not support operation providers",
-            ));
-        }
         if arguments.len() != definition.inputs().len() {
             return Err(call_site.invalid("source call changes whole-argument arity"));
         }
@@ -773,19 +783,46 @@ impl Replay<'_> {
             } else if let Some(kind) = step.primitive_kind() {
                 self.primitive(kind, step, &inputs, site)?
             } else if let Some(child) = step.called_definition() {
-                if step
-                    .operation_bindings()
-                    .is_some_and(|bindings| !bindings.is_empty())
-                {
-                    return Err(site.error(
-                        "unsupported",
-                        "Raw replay does not support operation arguments",
-                    ));
-                }
                 let callee = source
                     .definitions()
                     .get(child)
                     .ok_or_else(|| site.invalid("source call refers to a missing definition"))?;
+                let actual = step
+                    .operation_bindings()
+                    .ok_or_else(|| site.invalid("source call has no operation binding map"))?;
+                self.charge(actual.len(), site)?;
+                if actual.len() != callee.operations().len() {
+                    return Err(site.invalid("source call changes its operation arguments"));
+                }
+                for (name, operation) in actual {
+                    let retained = callee.operations().get(name).ok_or_else(|| {
+                        site.invalid("source call changes an operation parameter identity")
+                    })?;
+                    for value in [operation, retained] {
+                        let mut value = value;
+                        let mut depth = 0;
+                        loop {
+                            self.charge(1, site)?;
+                            if depth > MAX_DEPTH {
+                                return Err(site.error(
+                                    "limit",
+                                    "Raw call binding exceeds operation depth bounds",
+                                ));
+                            }
+                            if let Some(child) = value.child() {
+                                value = child;
+                                depth += 1;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+                    if operation.key() != retained.key() {
+                        return Err(site.invalid(
+                            "source call substitutes an operation definition or Meaning request",
+                        ));
+                    }
+                }
                 if callee.output().ty() != step.output().ty()
                     || effect(callee.effect(), site)? != step_effect
                 {
@@ -794,6 +831,14 @@ impl Replay<'_> {
                     );
                 }
                 self.function(child, &inputs, depth + 1, site)?
+            } else if step.kind() == "apply" {
+                self.operation(
+                    step.operation()
+                        .ok_or_else(|| site.invalid("forward source operation is missing"))?,
+                    &inputs,
+                    depth + 1,
+                    site,
+                )?
             } else {
                 return Err(site.error(
                     "unsupported",
@@ -978,6 +1023,59 @@ mod tests {
         let accepted = kernel().accept_raw(raw).unwrap();
         validate(source, accepted.raw()).unwrap();
         accepted
+    }
+
+    #[test]
+    fn nested_forward_replay_rejects_native_valid_provider_and_caller_frame_substitutions() {
+        let source = elaborate(
+            "use std::quantum::x;unitary fn leaf(q:Q<Bit>)->Q<Bit>{x(q)}
+            unitary fn helper[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+            pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(helper[leaf](q),r)}",
+            "main::caller",
+        );
+        // Original two-owner interface and X action authored independently of
+        // the emitter. The second owner remains suspended during both calls.
+        let raw = RawProgram {
+            quantum_inputs: vec![
+                QuantumPort {
+                    token: TokenId(0),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(0)],
+                },
+                QuantumPort {
+                    token: TokenId(1),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(1)],
+                },
+            ],
+            classical_inputs: vec![],
+            operations: vec![RawOp::Gate {
+                gate: SingleGate::X,
+                input: TokenId(0),
+                output: TokenId(2),
+            }],
+            quantum_outputs: vec![TokenId(2), TokenId(1)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        checked(&source, raw.clone());
+        let mut wrong = raw.clone();
+        wrong.operations[0] = RawOp::Gate {
+            gate: SingleGate::H,
+            input: TokenId(0),
+            output: TokenId(2),
+        };
+        let accepted = kernel().accept_raw(wrong).unwrap();
+        assert!(validate(&source, accepted.raw()).is_err());
+        let mut wrong = raw;
+        wrong.operations[0] = RawOp::Gate {
+            gate: SingleGate::X,
+            input: TokenId(1),
+            output: TokenId(2),
+        };
+        wrong.quantum_outputs = vec![TokenId(0), TokenId(2)];
+        let accepted = kernel().accept_raw(wrong).unwrap();
+        assert!(validate(&source, accepted.raw()).is_err());
     }
 
     fn closed_pair() -> (ElaboratedProgram, RawProgram) {

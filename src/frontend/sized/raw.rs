@@ -445,14 +445,6 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
         if selected.is_some_and(|selected| !selected.contains(&id)) {
             continue;
         }
-        if !definition.operations().is_empty() {
-            return Err(located(
-                source,
-                id,
-                definition.span(),
-                "finite source lowering does not yet support operation providers",
-            ));
-        }
         for value in definition.inputs().iter().chain([definition.output()]) {
             if !supported(value.ty()) {
                 return Err(located(
@@ -481,7 +473,7 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                 continue;
             }
             if step.called_definition().is_some()
-                && step.operation_bindings().is_some_and(BTreeMap::is_empty)
+                || (step.kind() == "apply" && step.operation().is_some())
             {
                 continue;
             }
@@ -777,6 +769,12 @@ impl Emitter<'_> {
                         )]
                     } else if let Some(child) = step.called_definition() {
                         self.invoke(child, inputs, depth + 1, span)?
+                    } else if step.kind() == "apply" {
+                        self.operation(
+                            step.operation().expect("preflighted forward operation"),
+                            inputs,
+                            depth + 1,
+                        )?
                     } else {
                         use Primitive::*;
                         match step.primitive_kind().expect("preflighted finite primitive") {
@@ -1017,6 +1015,39 @@ fn lower_operation_site(
         for step in definition.steps() {
             if let Some(child) = step.called_definition() {
                 pending.push(child);
+            }
+        }
+        // Actual operation arguments are part of the immutable dependency
+        // closure even when the body or a repetition never invokes them.
+        for operation in definition
+            .operations()
+            .values()
+            .chain(definition.steps().iter().flat_map(|step| {
+                step.operation().into_iter().chain(
+                    step.operation_bindings()
+                        .into_iter()
+                        .flat_map(|bindings| bindings.values()),
+                )
+            }))
+        {
+            let mut base = operation;
+            let mut depth = 0;
+            loop {
+                cells = cells.saturating_add(1);
+                if cells > MAX_CELLS || depth > MAX_DEPTH {
+                    return Err(Error::new(
+                        "limit",
+                        operation.span(),
+                        "Raw operation dependency selection exceeds existing work/depth bounds",
+                    ));
+                }
+                if let Some(child) = base.child() {
+                    base = child;
+                    depth += 1;
+                } else {
+                    pending.push(base.definition().expect("closed actual operation"));
+                    break;
+                }
             }
         }
     }

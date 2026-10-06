@@ -29,6 +29,121 @@ fn kernel() -> Kernel {
 }
 
 #[test]
+fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::interchange::hierarchical;
+    let first = include_str!(
+        "fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli"
+    );
+    for count in 0..=2 {
+        for outer in 0..=1 {
+            for honest in [true, false] {
+                let text = first
+                    .replace("use std::quantum::x;", "use std::quantum::{x,h};classical fn ident(b:Bit)->Bit{b} meaning Identity:Bit=permutation_by(ident);")
+                    .replace("helper[static U:Op<Bit>]", "helper[static n:Nat,static U:Op<Bit,Flip>]")
+                                        .replace("requires Apply(U){U(q)}\npub unitary fn implementation", "requires Apply(U),n<=2{qfor static i in 0..n carry a=q{yield U(a)}}\npub unitary fn implementation")
+                    .replace("helper[leaf]", &format!("helper[{count},leaf]"))
+                    .replace("use_op[checked_op(implementation,Flip)]", &format!("use_op[repeat_op({outer},checked_op(implementation,{}))]", if count%2==0 {"Identity"} else {"Flip"}));
+                let text = if honest {
+                    text
+                } else {
+                    text.replace("{x(q)}", "{h(q)}")
+                };
+                let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                    .unwrap()
+                    .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap();
+                let checked = source
+                    .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
+                if !honest {
+                    assert_eq!(checked.unwrap_err().code(), "contract");
+                    continue;
+                }
+                assert!(checked.as_ref().unwrap().checked_bindings() >= 2);
+                let graph = checked.unwrap().lower_hierarchy().unwrap();
+                let accepted =
+                    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                        .check_against_native(graph.payload(), graph.comparison_request())
+                        .unwrap();
+                let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
+                let expected = (0..4)
+                    .map(|i| input[i ^ (count * outer % 2)])
+                    .collect::<Vec<_>>();
+                let actual = accepted
+                    .execute_pure(
+                        &input,
+                        2,
+                        hierarchical::execution::ExecutionLimits {
+                            max_amplitudes: 16,
+                            max_steps: 1000,
+                        },
+                    )
+                    .unwrap()
+                    .amplitudes;
+                for (a, b) in actual.iter().flatten().zip(expected.iter().flatten()) {
+                    assert!((a - b).abs() < 1e-12);
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::interchange::hierarchical;
+    for count in 0..=2 {
+        for honest in [true, false] {
+            let leaf = if honest { "phase_eighth(q)" } else { "q" };
+            let text=format!("use std::quantum::phase_eighth;
+                classical fn angle((u,b):(Unit,Bit))->(Bit,(Bit,Bit)){{(1,(0,0))}}
+                classical fn target((u,b):(Unit,Bit))->(Bit,(Bit,Bit)){{({},({},0))}}
+                meaning One:(Unit,Bit)=phase_by(angle); meaning M:(Unit,Bit)=phase_by(target);
+                unitary fn leaf(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{{leaf}}}
+                unitary fn helper[static U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Apply(U){{U(q)}}
+                pub unitary fn implementation(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{helper[repeat_op({count},checked_op(leaf,One))](q)}}
+                unitary fn run[static U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Apply(U){{U(q)}}
+                pub unitary fn client(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{run[checked_op(implementation,M)](q)}}",count & 1, count >> 1);
+            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                .unwrap()
+                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            let checked =
+                source.check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
+            if !honest {
+                assert_eq!(checked.unwrap_err().code(), "contract");
+                continue;
+            }
+            let graph = checked.unwrap().lower_hierarchy().unwrap();
+            let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                .check_against_native(graph.payload(), graph.comparison_request())
+                .unwrap();
+            let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
+            let actual = accepted
+                .execute_pure(
+                    &input,
+                    2,
+                    hierarchical::execution::ExecutionLimits {
+                        max_amplitudes: 16,
+                        max_steps: 1000,
+                    },
+                )
+                .unwrap()
+                .amplitudes;
+            let a = f64::from(count) * std::f64::consts::FRAC_PI_4;
+            for ([x, y], [u, v]) in input.into_iter().zip(actual) {
+                assert!((u - (x * a.cos() - y * a.sin())).abs() < 1e-12);
+                assert!((v - (x * a.sin() + y * a.cos())).abs() < 1e-12);
+            }
+        }
+    }
+}
+
+#[test]
 fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::interchange::hierarchical;
@@ -691,9 +806,13 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
             .unwrap()
             .elaborate()
             .unwrap();
-        // This opt-in leaf check does not enable the caller's operation profile
-        // or automatically discharge every unused binding.
-        assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+        // An unused unrefined binding does not change the caller's identity
+        // action or automatically prove the separate requested leaf Meaning.
+        let caller = source.lower_raw().unwrap();
+        assert_eq!(caller.definition().path(), "main::host");
+        let accepted_caller = kernel().accept(caller.proposal()).unwrap();
+        caller.validate_source_steps(&accepted_caller).unwrap();
+        assert!(accepted_caller.raw().operations.is_empty());
         assert_eq!(
             source.lower_raw_operation("missing").unwrap_err().code(),
             "unsupported"

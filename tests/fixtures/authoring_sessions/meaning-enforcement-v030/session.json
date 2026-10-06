@@ -33,5 +33,18 @@
       ]
     }
   ],
-  "scope": "Historical original streams are preserved. Fresh recorded checks validate invocation/exit consistency, not original-source preservation, global guarantees or a blind benchmark."
+  "scope": "Historical original streams are preserved. Fresh recorded checks validate invocation/exit consistency, not original-source preservation, global guarantees or a blind benchmark.",
+  "source_records": [
+    {
+      "id": "forward-helper-attempt-01",
+      "reason": "Pre-code original desired nested helper; actual before/after observations keep exactly the same source and invocation. Informed bounded component, not blind benchmark or source proof.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli": "e781ed3eff2dbfd4780b5cf6d14641b3d9634058cc44211316e7db179e533907"
+      },
+      "reports": [
+        "forward-helper-attempt-01/before.json",
+        "forward-helper-attempt-01/after.json"
+      ]
+    }
+  ]
 }

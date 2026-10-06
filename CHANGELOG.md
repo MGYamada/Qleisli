@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Materialize closed forward operation arguments through ordinary helpers in
+  the bounded finite Meaning adapter. Retain actual provider identities,
+  nested and zero-count Meaning obligations, exact interfaces and caller frames;
+  independently replay source calls and reject native-valid substituted actions.
+  Inverse/control adapter paths and general source preservation remain unfinished.
+
 - Align selected `phase_eighth` preparation with its existing `Q<A>` signature,
   preserving packaged basis trees, zero-width owners, ordered axes and exact
   scalar phase through existing native checks. Repair stale `checked_op`

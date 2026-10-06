@@ -55,3 +55,12 @@ retains the actual concrete eligibility refusal before implementation, using
 uses the same source and command after the concrete adapter accepts the existing
 common signature. Independent requested equations and reference tests retain
 exact product trees, ordered axes, zero-width factors and scalar phase.
+
+The [nested forward helper first attempt](forward-helper-attempt-01/before.json)
+retains the pre-code source and actual one-qubit unsupported diagnostic.
+The [separate after observation](forward-helper-attempt-01/after.json) reuses
+identical source bytes and invocation, with the new adapter implementation
+identified separately. Regression tests retain inner Meaning checks for lying
+providers and zero repetitions, exact scalar phase with a zero-width factor,
+and independent rejection of native-valid provider/caller-frame substitutions.
+Inverse/control adapter paths and general source preservation remain unfinished.

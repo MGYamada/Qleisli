@@ -68,6 +68,15 @@ Writing two uses of the original q instead would violate ownership. This
 fragment states a generic contract, not a closed CLI entry or proof about an
 arbitrary supplied implementation.
 
+Closed forward operation arguments can be materialized through ordinary helper
+calls in the bounded finite Meaning adapter. The retained specialization keeps
+the actual provider definition, exact argument tree and original Meaning requests;
+ordered source replay checks the callee bindings and the suspended caller frame.
+Nested repetitions retain their child obligations even at zero count. This adds
+no inverse or controlled execution path to that adapter, and is not a general
+source-preservation theorem. The selected route still checks every original
+request with the native checker before emitting a hierarchy artifact.
+
 ### Admitted operation construction
 
 The table gives common-source description/interface rules, rather than concrete
