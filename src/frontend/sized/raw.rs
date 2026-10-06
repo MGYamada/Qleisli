@@ -205,8 +205,9 @@ impl MeaningCollector<'_, '_> {
 
 /// An immutable finite transport proposal alongside its exact source instance.
 ///
-/// The current adapter supports Unit/Bit/`Q<Unit>`/`Q<Bit>`/products, specialized ordinary
-/// calls and the explicitly supported finite primitives. Native Raw validity
+/// The adapter supports ordinary Unit/Bit products and packaged quantum
+/// Unit/Bit/Bits/product bases, specialized ordinary calls and the explicitly
+/// supported finite primitives. Ordinary Bits values remain unsupported. Native Raw validity
 /// and source-step correspondence are distinct checks; neither proves source
 /// elaboration preserves meaning. Whole argument/result trees remain beside
 /// the separate classical SSA and quantum-owner transport interfaces.
@@ -265,7 +266,7 @@ impl RawSourceProposal {
                 .in_module(path.rsplit_once("::").map_or(path, |(module, _)| module))
         };
         let boundary = self.finite_boundary.as_ref().ok_or_else(|| {
-            error("unsupported", "source Meaning checking requires a unary exact Unit/Bit product quantum endomorphism with Unitary effect".into())
+            error("unsupported", "source Meaning checking requires a unary exact Unit/Bit/Bits/product quantum endomorphism with Unitary effect".into())
         })?;
         if required.signature() != boundary.signature() {
             return Err(error(
@@ -384,7 +385,7 @@ fn supported(ty: &SourceType) -> bool {
 }
 fn basis_supported(basis: &SourceType) -> bool {
     match &basis.kind {
-        Kind::Unit | Kind::Bit => true,
+        Kind::Unit | Kind::Bit | Kind::Bits(_) => true,
         Kind::Tuple(fields) => fields.iter().all(basis_supported),
         _ => false,
     }
@@ -393,6 +394,7 @@ fn finite_basis(basis: &SourceType) -> Option<BasisType> {
     match &basis.kind {
         Kind::Unit => Some(BasisType::Unit),
         Kind::Bit => Some(BasisType::Bit),
+        Kind::Bits(width) => Some(BasisType::Bits(*width)),
         Kind::Tuple(fields) => {
             let mut fields = fields
                 .iter()
@@ -452,7 +454,7 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                     source,
                     id,
                     definition.span(),
-                    "finite source lowering requires exact Unit/Bit ordinary or packaged quantum products; Bits tags need explicit target support",
+                    "finite source lowering requires ordinary Unit/Bit products or exact packaged quantum bases; ordinary Bits values need explicit target support",
                 ));
             }
         }

@@ -660,6 +660,7 @@ impl Lower<'_> {
             match basis {
                 BasisType::Unit => SourceType::unit(),
                 BasisType::Bit => SourceType::bit(),
+                BasisType::Bits(width) => SourceType::bits(*width),
                 BasisType::Pair(a, b) => SourceType::pair(source_basis(a), source_basis(b)),
                 BasisType::Tuple(fields) => {
                     SourceType::tuple(fields.iter().map(source_basis).collect())
@@ -672,8 +673,9 @@ impl Lower<'_> {
         let kind = match basis.kind() {
             "unit" => PortKind::Unit,
             "bit" => PortKind::Bit,
+            "bits" => PortKind::Bits,
             "tuple" => PortKind::Tuple,
-            _ => unreachable!("native exact Unit/Bit product signature"),
+            _ => unreachable!("native exact Unit/Bit/Bits/product signature"),
         };
         let port = |p: &QuantumPort| Port {
             owner: p.token.0,

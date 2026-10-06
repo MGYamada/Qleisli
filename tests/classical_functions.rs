@@ -1149,10 +1149,10 @@ fn finite_source_targets_preserve_product_tree_and_refuse_width_substitution() {
         )
     );
     assert_eq!(target.permutation_table(), &[0, 1, 2, 3]);
-    let error = parsed.finite_meaning_target("main::Sized").unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert_eq!(error.module(), Some("main"));
-    assert!(error.message().contains("Bits tags"));
+    let sized = parsed.finite_meaning_target("main::Sized").unwrap();
+    assert_eq!(sized.signature(), &BasisType::Bits(1));
+    assert_eq!(sized.permutation_table(), &[0, 1]);
+    assert_ne!(sized.signature(), &BasisType::Bit);
     assert_eq!(
         parsed
             .finite_meaning_target("main::identity")

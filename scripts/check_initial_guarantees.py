@@ -6,7 +6,7 @@ validates the separate human admission event. The default checks historical
 evidence and current source identities only. It does not replay Lean,
 authenticate human approval, review mathematical adequacy, or itself admit a
 constitutional guarantee. --verify-lean also checks the recorded
-type/axiom output and exact elaborated identity transport against the
+type/axiom output and the fixed identity or checked Basis transport against the
 already-built Lean environment; it does not build
 or independently certify that environment. Run the normal builds/audits first.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
@@ -447,7 +447,7 @@ def validate_current(root, proposal, archive, *, data=None):
     expected = expected_semantic_baseline(archive, proposal)
     require(json_object(data, "semantic baseline") == expected, "semantic baseline differs from the admitted historical dependency closure")
     # The original source manifest remains an immutable historical record.
-    # Actual current meanings are bound by the elaborated identity transport;
+    # Actual current meanings are bound by fixed identity or checked Basis transport;
     # source formatting and theorem proof-body changes need not repin history.
     for name in ("lean/lean-toolchain", "lean-kernel/lean-toolchain"):
         require(read_file(root, name).decode("utf-8").strip() == TOOLCHAIN,
@@ -490,7 +490,12 @@ def check(root=ROOT, *, verify_lean=False, require_adopted=False):
         require(read_file(root, CURRENT_PATH) == current_bytes, "current evidence changed during Lean replay")
         validate_current(root, proposal, archive, data=current_bytes)
         require(read_file(root, CURRENT_PATH) == current_bytes, "current evidence changed during Lean replay")
-    return {"mode": "current-Lean-identity-transport-and-source-identity" if verify_lean else "source-identity-only",
+    mode = "source-identity-only"
+    if verify_lean:
+        mode = ("current-Lean-basis-transport-and-source-identity"
+                if current["continuity"]["format"] == continuity.BASIS_FORMAT
+                else "current-Lean-identity-transport-and-source-identity")
+    return {"mode": mode,
             "scoped_guarantees": 2, "admitted_by_this_check": 0, "source_revision": record["source_revision"]["sha256"],
             "current_evidence_sha256": digest(current_bytes)}
 
@@ -498,7 +503,7 @@ def check(root=ROOT, *, verify_lean=False, require_adopted=False):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=ROOT)
-    parser.add_argument("--verify-lean", action="store_true", help="check actual type/axiom output and elaborated current-artifact identity in the already-built Lean environment")
+    parser.add_argument("--verify-lean", action="store_true", help="check actual type/axiom output and fixed identity or Basis transport in the already-built Lean environment")
     parser.add_argument("--require-adopted", action="store_true", help="fail: use check_constitution.py to validate the separate human admission event")
     args = parser.parse_args(argv)
     try:

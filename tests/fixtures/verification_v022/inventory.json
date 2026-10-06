@@ -662,6 +662,24 @@
         "path": "tests/hierarchical_qpe_host.rs",
         "test": "qpe_host_rejects_missing_duplicate_and_substituted_runtime_obligations"
       }
+    },
+    {
+      "id": "finite-bits-interface",
+      "producer": "Atomic BasisType::Bits(u32), finite Meaning and retained root interfaces",
+      "consumer": "Native finite/QIRF decoders and independent exact contract checking",
+      "obligation": "Keep Bits<0>, Bits<1> and wider registers structurally distinct from Unit, Bit and same-width product trees; retain exact phase under coherent control; reject malformed or out-of-capacity widths",
+      "reference": "docs/src/reference/type-model.md; tests/meaning_evidence.rs; tests/interchange.rs",
+      "replacement": [
+        "VM-24"
+      ],
+      "positive": {
+        "path": "tests/meaning_evidence.rs",
+        "test": "controlled_bits_zero_phase_is_an_exact_relative_phase"
+      },
+      "negative": {
+        "path": "tests/interchange.rs",
+        "test": "native_bits_wire_atoms_keep_exact_tags_and_reject_malformed_widths"
+      }
     }
   ],
   "enums": [
@@ -892,6 +910,10 @@
         "Tuple": {
           "declaration": "Tuple(Vec<BasisType>)",
           "group": "finite-contract"
+        },
+        "Bits": {
+          "declaration": "Bits(u32)",
+          "group": "finite-bits-interface"
         }
       }
     },
@@ -2087,7 +2109,7 @@
     },
     {
       "path": "lean-kernel/Protocol/FiniteCodec.lean",
-      "sha256": "af86cb8ccebe716eb24d5a542c1ce54377aa05fdb8cd91eb4d89fdd85f993b7b",
+      "sha256": "851cadc5483c7ffcf1fd0d6b11a446c81973f8cafd5bb9c3ae034d9ca2cbe948",
       "group": "hierarchy",
       "surface": null
     },
@@ -2099,7 +2121,7 @@
     },
     {
       "path": "lean-kernel/Protocol/HierarchicalFinite.lean",
-      "sha256": "8b142b456dee79ecfc6fbc95bd9d6b4b3640d8a3e9a211c89df4b6e2328165ce",
+      "sha256": "2c90dcd7995cc5de283869335210437f67267edfa73a8c6e9b798bda2e22304c",
       "group": "hierarchy",
       "surface": null
     },
@@ -2129,7 +2151,7 @@
     },
     {
       "path": "lean-kernel/Protocol/Qirf.lean",
-      "sha256": "022dc9af061fb627a04aef1db7963ed5a5dc444e03a4e0b7f70965387006bc7a",
+      "sha256": "6d033e538ba1d13d54c75757e47fbb17251b54f6037b327f6476c13fe66781cb",
       "group": "hierarchy",
       "surface": null
     },
@@ -2195,7 +2217,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Finite.lean",
-      "sha256": "fa717415750256e74565733e2b18700c88d8e3b7d82e10d0afcee764e02ba709",
+      "sha256": "2c755606db3aaaa3b095de5ed06f03da521424580c49fb13fbc96f7d00aa6a46",
       "group": "finite-contract",
       "surface": null
     },
@@ -2237,7 +2259,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Finite.lean",
-      "sha256": "0ba3bc69488f9f57cccfd8d6a1d2013bb8a0c736c80d93bc837f5b76d561e169",
+      "sha256": "b81e78106d1d577d639be6413f4949ea029875eedf830ddc715474d54e83f4c2",
       "group": "hierarchy",
       "surface": null
     },
@@ -2471,7 +2493,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/Checked.lean",
-      "sha256": "451ff77f0a05ad2fba8aaed6baabfac60aded921d21c97ec4ebdd35985788fc7",
+      "sha256": "89abbda386aa39a5de443c4217930a00699e0e0398c6d0ded05c858562f811f4",
       "group": "hierarchy",
       "surface": null
     },
@@ -2615,7 +2637,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Finite.lean",
-      "sha256": "89b7e9baefdd3a93ac941fd06268441847048c2b5250acc4df9cf38d1ef5f595",
+      "sha256": "e137932af966e439221cbc6660817eb8a888c8f6a654bbb366fb28dbc6c0b787",
       "group": "finite-contract",
       "surface": null
     },
@@ -2705,8 +2727,14 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "e17337ddfb483a61294092afa29462aab6ff9d958a1cd2417116f30edb706ee8",
+      "sha256": "d912420905f023f031f01f36f5c78e4ac784fd039a5a8bc9a6269246485a34bd",
       "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/FiniteBasisTransport.lean",
+      "sha256": "15759fd1b7ba69728b663b42523fb6d5b941deb36b2ccc79f47aad49386cf845",
+      "group": "finite-bits-interface",
       "surface": null
     },
     {
@@ -2759,7 +2787,7 @@
     },
     {
       "path": "lean/Qleisli/RawDenotation.lean",
-      "sha256": "3dcfa99abe873decec825013991e403ecfd7239ebc305c5395a13d3b9a1a51e4",
+      "sha256": "8782fc467fc2568077a02fad0abac60d248f66482b61c3ccb82f9fcef6e0896b",
       "group": "raw-core",
       "surface": null
     },
@@ -3139,7 +3167,7 @@
     },
     {
       "path": "src/contract/mod.rs",
-      "sha256": "4aa9dc811c8c09aa629e7d7411fd036a7906dc128e71142627986ff31747a580",
+      "sha256": "ebff335ba64c8a26235fbca33b59f57985a1644e1e6e3bd09bfff84a9abe4511",
       "group": "finite-contract",
       "surface": {
         "declarations": [
@@ -4015,7 +4043,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "b4ffbfe63f34abd5b77d0dc2e0004f84dd9c962e6f1038f845fa7e3975aa555b",
+      "sha256": "9897ff8e8f622bc1a32a8e9f2f3102b4923e896cbc96f43c96f9b7155f6e247d",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4081,6 +4109,16 @@
       }
     },
     {
+      "path": "src/frontend/sized/meaning.rs",
+      "sha256": "c9013f3da61767c55c09c7a2b1ad71700356ee61e53bd38f15034c6a4b49722d",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/sized/parser.rs",
       "sha256": "dbe792be18afb96f4299fc808c3dfae87b4e20c9a39d6e84daf3f5c1f97ff742",
       "group": "sized-source",
@@ -4123,7 +4161,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "f54a98b172b140b3cb98f531d281cd45635ed762210aec44267b73cebe755036",
+      "sha256": "111bfa9ccf6e3f1c026a0931f68aaa08d79b291834dea50a79ec10a3df60dc3d",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4161,8 +4199,18 @@
       }
     },
     {
+      "path": "src/frontend/sized/raw/circuit.rs",
+      "sha256": "2462cc356be12501b4068c0d0fa53c8ce5120645d575c697a34371e2d116531c",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "18c0376bf36c9ed6808389a2afdb19e078d68ac9a54fee185561e61a99d35226",
+      "sha256": "a6e717f070be07286fab480b7b8972a2ae61e68cdbebe3813b93e7f2e67eecc8",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4174,6 +4222,16 @@
           "const MAX_LIVE: usize = 16;",
           "const MAX_STEPS: usize = 10_000;"
         ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/raw/preservation/access.rs",
+      "sha256": "750e3b35b34668814c526b3fc330ec6df960491d55f7f9d3cedbec4f15152d3c",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
       }
     },
     {
@@ -4270,7 +4328,7 @@
     },
     {
       "path": "src/interchange/codec/evidence.rs",
-      "sha256": "3841a91b5c12d7f4cce7897081088dad968df1d9cc282af83055d1d2d93a93cf",
+      "sha256": "393969b0dc65bca4086d2e1c6a80f373fd5441925d53b673ad46db106d50c502",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -4344,7 +4402,7 @@
     },
     {
       "path": "src/interchange/hierarchical.rs",
-      "sha256": "a738128f551b38197c15507ed46266c51b54963cc40db6ada4f8f7b6dcb3c4a1",
+      "sha256": "33a1188281473762397bcad563b41ae37939e40f9c35580cdbe6ae30e6772b2c",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4487,7 +4545,7 @@
     },
     {
       "path": "src/interchange/mod.rs",
-      "sha256": "31a22f80a5d1aab62cb0af02d8b2a03d178c18852a041954714e3f1886bd8dbf",
+      "sha256": "781303e7ee553e28993f1fcecd421cc9f1cf05635926c0334f83dd04ac215773",
       "group": "transport",
       "surface": {
         "declarations": [
@@ -4566,7 +4624,7 @@
     },
     {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "0f7e9f24fef3bc0da1cfc0f7e116e143697fab27a8faf1e029f5c17fea397ae4",
+      "sha256": "54a8b0a7591c95babd7b5d2c8671eb1f312f88812fb9d2e0362e1857b2548d12",
       "group": "finite-contract",
       "surface": {
         "declarations": [],
@@ -4827,36 +4885,6 @@
       "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
       "group": "source",
       "surface": null
-    },
-    {
-      "path": "src/frontend/sized/meaning.rs",
-      "sha256": "59fa763151abfa105172d9b63d25a6cea675164d168c7203a29a1581bd89e19f",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/sized/raw/circuit.rs",
-      "sha256": "2462cc356be12501b4068c0d0fa53c8ce5120645d575c697a34371e2d116531c",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
-    },
-    {
-      "path": "src/frontend/sized/raw/preservation/access.rs",
-      "sha256": "750e3b35b34668814c526b3fc330ec6df960491d55f7f9d3cedbec4f15152d3c",
-      "group": "sized-source",
-      "surface": {
-        "declarations": [],
-        "functions": [],
-        "capacity_constants": []
-      }
     }
   ],
   "boundaries": [

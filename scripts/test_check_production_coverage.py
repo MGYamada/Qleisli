@@ -14,7 +14,7 @@ class ProductionCoverage(unittest.TestCase):
 
     def test_current_review_accounts_for_all_groups_and_boundaries(self):
         result = coverage.check(coverage.ROOT, self.data, self.inventory)
-        self.assertEqual(result['groups'], 36)
+        self.assertEqual(result['groups'], 37)
         self.assertEqual(result['public_boundaries'], 20)
         self.assertEqual(result['authority'], 'Lean')
         self.assertEqual(result['target_authority'], 'Lean')

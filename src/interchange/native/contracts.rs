@@ -13,6 +13,7 @@ fn atoms(ty: &BasisType, out: &mut Vec<Value>) {
     match ty {
         BasisType::Unit => out.push(Value::String("unit".into())),
         BasisType::Bit => out.push(Value::String("bit".into())),
+        BasisType::Bits(width) => out.push(Value::String(format!("bits:{width}"))),
         BasisType::Pair(a, b) => {
             out.push(Value::String("pair".into()));
             atoms(a, out);

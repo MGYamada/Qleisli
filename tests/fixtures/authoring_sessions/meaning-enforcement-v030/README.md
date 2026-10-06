@@ -99,3 +99,12 @@ Bits signature in both entries. These four calls are pre-implementation
 observations, with a frozen CLI hash before and after each invocation; they
 establish neither an accepted provider nor phase/ownership preservation.
 The original source and parser failures remain unchanged.
+
+The [separate Bits after observations](bits-attempt-01/after.json) accept the
+identical whitespace-repaired sources through native Meaning checks. Basis-zero
+execution retains the expected scalar phase on Bits0 and the repeated Bits1
+provider. Exact small-system contract tests separately expose Bits0 scalar phase
+under either control polarity and reject identity substitution. Atomic Bits
+interfaces remain distinct from same-width Unit/Bit/product trees. Historical
+parser and unsupported observations remain unchanged; these bounded results do
+not complete a source/runtime preservation theorem or admit a new guarantee.

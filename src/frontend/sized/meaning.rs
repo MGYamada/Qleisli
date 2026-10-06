@@ -144,6 +144,7 @@ impl TargetTable {
             Ok(match &ty.kind {
                 Kind::Unit => BasisType::Unit,
                 Kind::Bit => BasisType::Bit,
+                Kind::Bits(width) => BasisType::Bits(*width),
                 Kind::Tuple(fields) => {
                     let mut converted = fields
                         .iter()
@@ -160,7 +161,7 @@ impl TargetTable {
                     return Err(super::Error::new(
                         "unsupported",
                         span,
-                        "finite Meaning signatures require exact Unit, Bit or ordered products; Bits tags are unsupported",
+                        "finite Meaning signatures require an exact closed Unit/Bit/Bits/product basis",
                     ));
                 }
             })

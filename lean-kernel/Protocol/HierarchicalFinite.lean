@@ -14,7 +14,7 @@ def basis (atoms : Artifact.Basis) : QleisliKernel.Finite.WorkM Semantics.Finite
   atoms.toList.mapM fun atom => match atom with
     | .unit => pure .unit | .bit => pure .bit
     | .tuple 2 => pure .pair | .tuple arity => pure (.tuple arity)
-    | .bits _ => throw .request
+    | .bits n => pure (.bits n)
 
 def checkLeaf (program : ByteArray) (interface : Artifact.Interface)
     (required : Semantics.Exact.Matrix) : QleisliKernel.Finite.WorkM Unit := do

@@ -75,3 +75,4 @@ import Qleisli.HierarchicalQpeLayout
 import Qleisli.HierarchicalQpeRoot
 import Qleisli.HierarchicalQpeInstrument
 import Qleisli.RoutedControlCommutation
+import Qleisli.FiniteBasisTransport

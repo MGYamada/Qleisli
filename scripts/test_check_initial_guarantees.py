@@ -46,7 +46,20 @@ def copy_evidence_fixture(destination):
     current = json.loads((ROOT / checker.CURRENT_PATH).read_bytes())
     current["validation"] = copy.deepcopy(record)
     current["validation"]["status"] = "checked-current-evidence"
-    current["continuity"]["source_revision_sha256"] = record["source_revision"]["sha256"]
+    # These tests intentionally materialize the admitted historical checker.
+    # Reconstruct its exact identity profile from the immutable baseline rather
+    # than transplant a current representation-extension record into old code.
+    shutil.copyfile(destination / continuity.REVIEWED_PATH, destination / continuity.CURRENT_PATH)
+    current["continuity"] = dict(
+        format="qleisli.current-artifact-identity-transport", version=1,
+        baseline=dict(path=continuity.BASELINE_PATH, sha256=continuity.BASELINE_SHA256),
+        extractor=dict(path=continuity.EXTRACTOR_PATH, sha256=continuity.EXTRACTOR_SHA256),
+        source_revision_sha256=record["source_revision"]["sha256"],
+        command=dict(argv=continuity.ARGV, cwd="lean", exit_code=0),
+        stdout=dict(path=continuity.CURRENT_PATH, compression="gzip",
+                    sha256=baseline["expressions"]["sha256"],
+                    uncompressed_sha256=baseline["expressions"]["uncompressed_sha256"]),
+        stderr=dict(path=continuity.STDERR_PATH, sha256=continuity.digest(b"")))
     (destination / checker.CURRENT_PATH).write_text(json.dumps(current), encoding="utf-8")
     return record, proposal
 
@@ -530,6 +543,158 @@ class InitialGuaranteeEvidence(unittest.TestCase):
         path.write_bytes(path.read_bytes() + b" ")
         self.refresh_test_current_identity(continuity_replayed=True)
         self.rejected("external dependency manifest changed")
+
+
+
+
+class ProtectedBasisTransportProjection(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.reviewed = gzip.decompress((ROOT / checker.continuity.REVIEWED_PATH).read_bytes())
+        cls.snapshot = json.loads(cls.reviewed)
+
+    def mutated(self, name, change):
+        snapshot = copy.deepcopy(self.snapshot)
+        for entry in snapshot["declarations"]:
+            if checker.continuity.expression_name(entry["name"]) == name:
+                change(entry)
+                break
+        else:
+            self.fail("missing real declaration: " + name)
+        return json.dumps(snapshot).encode()
+
+    def test_real_independent_meaning_closure_and_bindings_are_selected(self):
+        result = checker.continuity.compare_protected_projection(self.reviewed, self.reviewed)
+        self.assertGreater(result["independent_meaning_declarations"], 200)
+        self.assertGreater(result["protected_declarations"], result["independent_meaning_declarations"])
+
+    def test_changed_property_program_and_actual_success_premise_reject(self):
+        for name in (*checker.continuity.SEMANTIC_ROOTS, *checker.continuity.ACTUAL_ENDPOINTS):
+            with self.subTest(name=name):
+                changed = self.mutated(name, lambda entry: entry.update(declaration=["forged-trivial-type"]))
+                with self.assertRaisesRegex(PacketError, "changed protected meaning or original-subject binding"):
+                    checker.continuity.compare_protected_projection(changed, self.reviewed)
+
+    def test_original_artifact_and_byte_witness_cannot_change_origin_or_fields(self):
+        for name in checker.continuity.BINDING_PREFIXES:
+            with self.subTest(name=name):
+                changed = self.mutated(name, lambda entry: entry.update(project=False))
+                with self.assertRaisesRegex(PacketError, "changed protected meaning or original-subject binding"):
+                    checker.continuity.compare_protected_projection(changed, self.reviewed)
+
+    def test_duplicate_declarations_and_changed_roots_reject(self):
+        for mutation in ("duplicate", "root", "boolean-version"):
+            snapshot = copy.deepcopy(self.snapshot)
+            if mutation == "duplicate":
+                snapshot["declarations"].append(snapshot["declarations"][0])
+            elif mutation == "root":
+                snapshot["roots"].pop()
+            else:
+                snapshot["version"] = True
+            with self.subTest(mutation=mutation), self.assertRaises(PacketError):
+                checker.continuity.compare_protected_projection(json.dumps(snapshot).encode(), self.reviewed)
+
+
+class CheckedBasisTransportProfile(unittest.TestCase):
+    def setUp(self):
+        c = checker.continuity
+        self.current = json.loads((ROOT / checker.CURRENT_PATH).read_text())["continuity"]
+        self.binding = copy.deepcopy(self.current)
+        self.binding.update(format=c.BASIS_FORMAT, transport=dict(
+            source=dict(path=c.TRANSPORT_SOURCE, sha256=c.TRANSPORT_SHA256),
+            review=dict(path=c.TRANSPORT_REVIEW, sha256=c.TRANSPORT_REVIEW_SHA256),
+            stdout=dict(path=c.TRANSPORT_STDOUT, sha256=c.TRANSPORT_STDOUT_SHA256),
+            stderr=dict(path=c.STDERR_PATH, sha256=c.digest(b"")),
+            command=dict(argv=c.TRANSPORT_ARGV, cwd="lean", exit_code=0)))
+        self.revision = dict(sha256=self.binding["source_revision_sha256"],
+                             files={c.TRANSPORT_SOURCE: c.TRANSPORT_SHA256})
+        self.expected = json.loads((ROOT / c.BASELINE_PATH).read_text())
+
+    def validate(self):
+        # The immutable baseline is already tested separately. Keep these unit
+        # tests focused on profile dispatch and real proof/review file binding.
+        with patch.object(checker.continuity, "baseline", return_value=self.expected), \
+             patch.object(checker.continuity, "compare_protected_projection", return_value={}):
+            return checker.continuity.validate(ROOT, self.binding, self.revision, {})
+
+    def test_recorded_projection_and_live_extraction_are_both_checked(self):
+        c = checker.continuity
+        with patch.object(c, "baseline", return_value=self.expected):
+            c.validate(ROOT, self.binding, self.revision, {})
+        current = gzip.decompress((ROOT / c.CURRENT_PATH).read_bytes())
+        transport = (ROOT / c.TRANSPORT_STDOUT).read_bytes()
+        def run(argv, **kwargs):
+            output = transport if argv == c.TRANSPORT_ARGV else current
+            return subprocess.CompletedProcess(argv, 0, output, b"")
+        with patch.object(c, "baseline", return_value=self.expected), patch.object(c.subprocess, "run", side_effect=run):
+            c.replay(ROOT, self.binding, self.revision, {})
+        def forged(argv, **kwargs):
+            result = run(argv, **kwargs)
+            if argv == c.ARGV:
+                result.stdout += b" "
+            return result
+        with patch.object(c, "baseline", return_value=self.expected), patch.object(c.subprocess, "run", side_effect=forged), \
+             self.assertRaisesRegex(PacketError, "fresh basis extraction differs"):
+            c.replay(ROOT, self.binding, self.revision, {})
+
+    def test_fixed_proof_and_review_are_required(self):
+        self.validate()
+        for field in ("source", "review", "stdout", "stderr", "command"):
+            original = copy.deepcopy(self.binding)
+            self.binding["transport"][field] = {}
+            with self.subTest(field=field), self.assertRaises(PacketError):
+                self.validate()
+            self.binding = original
+        del self.binding["transport"]
+        with self.assertRaises(PacketError):
+            self.validate()
+
+    def test_stale_revision_and_missing_source_closure_reject(self):
+        self.binding["source_revision_sha256"] = "0" * 64
+        with self.assertRaisesRegex(PacketError, "stale continuity"):
+            self.validate()
+        self.binding["source_revision_sha256"] = self.revision["sha256"]
+        self.revision["files"] = {}
+        with self.assertRaisesRegex(PacketError, "source closure"):
+            self.validate()
+
+    def test_boolean_command_exit_codes_cannot_stand_for_success(self):
+        for location in (self.binding["command"], self.binding["transport"]["command"]):
+            location["exit_code"] = False
+            with self.assertRaisesRegex(PacketError, "exit code type"):
+                self.validate()
+            location["exit_code"] = 0
+
+    def test_unknown_profile_and_boolean_version_reject(self):
+        self.binding["version"] = True
+        with self.assertRaisesRegex(PacketError, "version"):
+            self.validate()
+        self.binding["version"] = 1
+        self.binding["format"] += "-unchecked"
+        with self.assertRaises(PacketError):
+            self.validate()
+
+    def test_changed_transport_source_review_output_or_reference_semantics_reject(self):
+        c = checker.continuity
+        original_read = checker.read_file
+        for changed_path in (c.TRANSPORT_SOURCE, c.TRANSPORT_REVIEW, c.TRANSPORT_STDOUT, c.QIRF_SEMANTICS):
+            def altered(root, name):
+                data = original_read(root, name)
+                return data + b"\n-- changed evidence\n" if name == changed_path else data
+            with self.subTest(path=changed_path), patch("check_ratification_packet.read_file", side_effect=altered), \
+                 self.assertRaises(PacketError):
+                self.validate()
+
+    def test_live_type_review_rejects_failed_forged_or_warning_output(self):
+        c = checker.continuity
+        output = (ROOT / c.TRANSPORT_STDOUT).read_bytes()
+        for code, stdout, stderr in ((1, output, b""), (0, b"forged", b""), (0, output, b"warning")):
+            result = subprocess.CompletedProcess(c.TRANSPORT_ARGV, code, stdout, stderr)
+            with self.subTest(code=code, stderr=stderr), patch.object(c.subprocess, "run", return_value=result), \
+                 self.assertRaises(PacketError):
+                c.replay_transport(ROOT)
+        with patch.object(c.subprocess, "run", return_value=subprocess.CompletedProcess(c.TRANSPORT_ARGV, 0, output, b"")):
+            c.replay_transport(ROOT)
 
 
 if __name__ == "__main__":

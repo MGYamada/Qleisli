@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "83fa2d2ec8b86c57ca130676b20bd729e8f7d637805b1e853e27972a097858e6",
+  "surface_sha256": "54000705c8adef57e14ca6d685b83b78c0c4701ac601b65ef675ebd35ff7e8c8",
   "groups": [
     {
       "id": "raw-core",
@@ -792,6 +792,33 @@
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/hierarchical_qpe_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "finite-bits-interface",
+      "status": "mixed-boundary",
+      "blocker": "Atomic Bits use the existing native finite/QIRF acceptance paths. Checked legacy-basis transport retains old register action, original decoded roots and scoped ownership/scope meanings. Full source/compiler/native/runtime correspondence, independent specification review and quantitative obligations remain open; this is neither a new guarantee admission nor S05 closure.",
+      "evidence": [
+        "tests/meaning_evidence.rs",
+        "tests/interchange.rs",
+        "tests/ordinary_booleans.rs",
+        "tests/bits_cli.rs",
+        "lean/Qleisli/FiniteBasisTransport.lean",
+        "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
       ],
       "proof_gates": [
         "S05-C1",

@@ -101,6 +101,16 @@ with continuity for the protected meanings. A change in semantic representations
 requires checked transport support; a source hash or review marker alone cannot
 establish it.
 
+The explicit atomic-Bits extension uses a fixed checked representation
+transport in `lean/Qleisli/FiniteBasisTransport.lean`, with its fixed type review
+in `tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean`.
+Its current-evidence profile preserves the historical baseline, independent
+ownership/scope meanings and original-byte/root binding templates. The live
+check recompiles the review and compares fresh extraction; a recorded source
+hash alone is not a fresh proof check. The legacy full-expression identity
+profile remains available for unchanged representations. This is technical
+preservation of the two existing scopes, not a new guarantee admission.
+
 Changes to the checker or workflow remain subject to review. This implementation
 does not complete constitutional CI, prove a Fundamental Theorem, or implement
 an automated Article IX correction path. A valid human rectification would need

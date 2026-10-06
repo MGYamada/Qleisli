@@ -207,8 +207,9 @@ retains its complete ordered wire vector, including an empty vector for a
 zero-width factor. The independent ordered replay checks fresh owner identities,
 exact source field trees, split partitions and join operand order. Raw transport
 widths do not replace source types. The unary native finite request also retains
-the complete original Basis signature and actual returned wire order. Bits tags
-remain unsupported by this finite representation mapping.
+the complete original Basis signature and actual returned wire order. Atomic
+Bits tags are retained by this finite representation mapping; they are
+not expanded into Unit/Bit products or identified by width alone.
 
 An explicit left unitor on `Q<(Unit,A)>` is `split` followed by `finish` on its
 Unit owner; its inverse is `join(unit(()), a)`. The right unitor uses the other
@@ -380,10 +381,12 @@ satisfy those original requested tables through the native comparison below.
 
 The Rust preparation API `ParsedProgram::finite_meaning_target` resolves one
 original Meaning into an untrusted `FiniteMeaning` request. It selects no
-provider and issues no accepted handle. The legacy finite signature can describe
-exact Unit, Bit and ordered product trees; it cannot describe the distinct Bits
-tag, so this conversion rejects Bits instead of replacing it by a same-width
-type. The existing native finite-leaf gate can compare this request with actual
+provider and issues no accepted handle. The finite signature describes
+exact Unit, Bit, atomic Bits and ordered product trees. Its Bits width is an
+explicit unsigned 32-bit field; `Bits<0>` remains distinct from Unit,
+`Bits<1>` from Bit, and `Bits<2>` from a two-Bit product. Neither conversion
+nor native checking substitutes a same-width type. The existing native
+finite-leaf gate can compare this request with actual
 provider bytes. Callers must still bind that result to the source instance and
 dependencies; requesting a target alone does not enable a refined operation.
 
@@ -393,7 +396,8 @@ gate, then replays its retained ordered source steps. The returned
 `SourceMeaningCheck` borrows the immutable source and requested target and
 retains the native leaf; it cannot substitute another source or request.
 The current profile requires a unary Unitary endomorphism on an exact
-Unit/Bit/product quantum basis. Unsupported interfaces, same-width type substitutions and invalid
+Unit/Bit/Bits/product quantum basis. Unsupported interfaces, same-width type
+substitutions and invalid
 work budgets reject before native IO. This is not an AST-to-step theorem or
 automatic checking of a declared `Op<A,M>` annotation by this single-leaf API.
 Generic admission requires the all-binding collection below, including unused
@@ -461,9 +465,12 @@ alias; native failure cannot select another profile. `emit-proposal` for a
 refined source needs the checker selected by `QLEISLI_KERNEL` to perform these
 binding checks, while its output remains an untrusted proposal.
 
-This connects exact Unit/Bit/product provider bindings to actual emitted finite nodes.
-Distinct Bits quantum interfaces and unsupported provider capabilities
-continue to reject explicitly in this leaf profile. Original source-to-table,
+This connects exact Unit/Bit/Bits/product provider bindings to actual emitted
+finite nodes. Zero-width Bits owners retain scalar phase, including when
+control makes it a relative phase. Existing finite width, shape, depth and work
+limits remain; unsupported provider capabilities and ordinary runtime Bits
+materialization continue to reject explicitly in this leaf profile. Original
+source-to-table,
 AST-to-step, execution and general hierarchy preservation remain separate proof
 obligations; a successful collection is not a full source-preservation theorem
 or a new constitutional guarantee.
@@ -610,7 +617,8 @@ comparison independently checks the scalar opcode, exact phase, empty controls
 and axes, and the intended owner; fresh native validity is still mandatory.
 Preceding argument work and subsequent observation stay in source order.
 
-This Raw adapter still rejects Bits values, unsupported quantum basis shapes
+This Raw adapter still rejects ordinary `Bits<N>` values, including
+`Bits<0>`, unsupported quantum basis shapes
 and controlled-phase primitives. Closed Definition/Repeat providers support
 forward, adjoint and controlled access through ordinary calls within the exact
 pure-circuit profile; this includes conditional scalar action on a Unit owner.
@@ -625,9 +633,11 @@ decision is never retried as weaker Raw validity. Total `classical fn` bodies
 are reusable as ordinary runtime computations: supported Unit/Bit/product calls
 use the same checked expression nodes and eager ordinary operations in both
 consumers. Runtime argument effects remain in the caller, and an ordinary call
-does not grant coherent injectivity or Meaning evidence. Bits runtime lowering,
-selected coherent lifting and concrete Meaning-refined Basis materialization
-retain their explicit profile limitations. All original declarations and bodies
+does not grant coherent injectivity or Meaning evidence. Ordinary Bits runtime
+lowering and selected coherent lifting retain their explicit profile limitations.
+These are implementation limits, not source-type prohibitions: ordinary
+`Bits<0>` is a copyable singleton basis distinct from `Unit`; its rejection
+during Raw emission does not establish a semantic or ownership restriction. All original declarations and bodies
 are nevertheless checked by the common source judgment. Packaged hierarchy bases retain the
 selected-source concrete width limits and charge every basis-tree node,
 including zero-width factors, to preparation storage/depth limits before

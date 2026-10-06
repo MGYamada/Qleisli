@@ -69,6 +69,7 @@ fn basis_width(ty: &SourceType) -> Option<usize> {
         match &ty.kind {
             Kind::Unit => {}
             Kind::Bit => width += 1,
+            Kind::Bits(bits) => width = width.checked_add(*bits as usize)?,
             Kind::Tuple(fields) => pending.extend(fields),
             _ => return None,
         }

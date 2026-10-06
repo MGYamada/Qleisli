@@ -60,9 +60,9 @@ theorem project_unique (artifact : Artifact) (index : Nat) (first second : Reque
     (right : project artifact index = some second) : first = second := by
   exact Option.some.inj (left.symm.trans right)
 
-/-- Bits requires an explicit structural adapter; a width is not a type tree. -/
+/-- Exact finite atoms retain Bits tags; native reconstruction checks the tree. -/
 def legacy (basis : Basis) : Bool := basis.all fun atom => match atom with
-  | .bits _ => false
+  | .bits n => n ≤ 6
   | _ => true
 
 def unary (interface : Interface) : Bool :=

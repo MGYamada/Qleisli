@@ -265,10 +265,9 @@ fn unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked() {
 }
 
 #[test]
-fn raw_capability_boundary_explicitly_rejects_unimplemented_bits_targets() {
+fn raw_capability_boundary_explicitly_rejects_unimplemented_classical_bits_targets() {
     for source in [
         "pub unitary fn f(b: Bits<1>) -> Bits<1> { b }",
-        "pub unitary fn f(q: Q<Bits<0>>) -> Q<Bits<0>> { q }",
         "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
     ] {
         // Checking and elaboration succeed. This failure is the selected Raw
@@ -292,6 +291,26 @@ fn raw_capability_boundary_explicitly_rejects_unimplemented_bits_targets() {
     assert_eq!(error.code(), "unsupported", "{error}");
     assert_eq!(error.module(), Some("main"), "{error}");
     assert_eq!(&source[error.span().start..error.span().end], "0");
+}
+
+#[test]
+fn quantum_bits_raw_boundary_retains_atomic_types_and_zero_width_owner() {
+    use qleisli::contract::BasisType;
+    for width in 0..=2 {
+        let source = format!("pub unitary fn f(q: Q<Bits<{width}>>) -> Q<Bits<{width}>> {{ q }}");
+        let graph = elaborate(&source, "main::f", BTreeMap::new());
+        let accepted = accept(&graph);
+        let interface = accepted.root_interface().unwrap();
+        assert_eq!(interface.input, BasisType::Bits(width));
+        assert_eq!(interface.output, BasisType::Bits(width));
+        assert_eq!(accepted.raw().quantum_inputs.len(), 1);
+        assert_eq!(accepted.raw().quantum_inputs[0].wires.len(), width as usize);
+        assert_eq!(accepted.raw().quantum_outputs.len(), 1);
+        assert_eq!(
+            accepted.raw().quantum_outputs[0],
+            accepted.raw().quantum_inputs[0].token
+        );
+    }
 }
 
 #[test]

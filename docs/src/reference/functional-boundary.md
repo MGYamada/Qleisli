@@ -141,7 +141,8 @@ and retained evidence; the independent native gate checks the bound artifact.
 Selected-source specialization has its own concrete eligibility rules.
 Closed `checked_op` and Meaning-refined bindings use the all-binding native
 gate described in the [type model](type-model.md#direct-runtime-transforms-and-opaque-operations).
-Unsupported constructors and Bits interfaces retain explicit refusals.
+Exact Unit/Bit/Bits/product quantum interfaces are retained; unsupported
+constructors and ordinary runtime Bits materialization retain explicit refusals.
 A successful common judgment
 or pending obligation does not supply a missing emitter or an accepted handle.
 The [type model](type-model.md#direct-runtime-transforms-and-opaque-operations)

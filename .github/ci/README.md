@@ -117,8 +117,15 @@ baseline. This permits unchanged-meaning source formatting and theorem proof
 maintenance while rejecting witness, decoder or predicate weakening. Current
 checker-success types still quantify the actual input bytes and original root;
 recorded extraction alone is not a live proof check. Source and evidence records
-must remain unchanged throughout replay. Representation-changing transport is
-not yet supported. Historical reviewed meanings remain protected
+must remain unchanged throughout replay. The explicit atomic-Bits extension
+additionally requires the fixed Lean
+basis/artifact embedding and its fixed type/axiom review. Its profile checks
+unchanged independent meanings and original-byte/root binding templates,
+compiles the transport review, and binds fresh extraction to the current source
+revision. The legacy full-expression identity profile remains available.
+Other representation changes need reviewed checked transport support; a
+candidate cannot select arbitrary proofs, roots or extraction commands.
+Historical reviewed meanings remain protected
 separately from current implementation evidence. These checks preserve the
 recorded admission; they cannot supply the human adequacy judgment or complete
 production-wide QS, PR or RS.

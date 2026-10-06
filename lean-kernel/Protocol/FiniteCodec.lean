@@ -183,6 +183,12 @@ def basis (value : Json) : Except String Basis := do
     if text == "unit" then return .unit
     if text == "bit" then return .bit
     if text == "pair" then return .pair
+    if text.startsWith "bits:" then
+      if text.length > 15 then throw "invalid bits atom"
+      let some width := (text.drop 5).toString.toNat? | throw "invalid bits atom"
+      if width > 4294967295 || text != "bits:" ++ toString width then
+        throw "invalid bits atom"
+      return .bits width
     let some arity := (text.drop 6).toString.toNat? | throw "invalid basis atom"
     if text != "tuple:" ++ toString arity then throw "invalid basis atom"
     return .tuple arity

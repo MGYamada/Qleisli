@@ -860,7 +860,7 @@ fn nested_scalar_argument_is_evaluated_once_and_has_omega_squared_action() {
 }
 
 #[test]
-fn unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit() {
+fn unused_and_zero_count_bodies_check_ownership_and_raw_bits_phase() {
     for name in ["unused-invalid", "unused-zero-provider"] {
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), source(name))])).unwrap_err();
@@ -875,10 +875,27 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit() 
             graph.hierarchy_eligibility().unwrap(),
             HierarchyEligibility::Eligible
         ));
-        let error = graph.lower_raw().unwrap_err();
-        assert_eq!(error.code(), "unsupported");
-        assert_eq!(error.module(), Some("main"));
-        assert!(error.span().end > error.span().start);
+        let raw = graph.lower_raw().unwrap();
+        let selected = native::Kernel::selected().unwrap();
+        let accepted = selected.accept(raw.proposal()).unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+        let target =
+            qleisli::contract::meaning::FiniteMeaning::phase(BasisType::Bits(1), vec![1, 1])
+                .unwrap();
+        raw.check_finite_meaning(&selected, &target, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let substituted =
+            qleisli::contract::meaning::FiniteMeaning::phase(BasisType::Bit, vec![1, 1]).unwrap();
+        assert_eq!(
+            raw.check_finite_meaning(
+                &selected,
+                &substituted,
+                &mut Budget::new(DEFAULT_EXACT_WORK)
+            )
+            .unwrap_err()
+            .code(),
+            "type",
+        );
     }
 }
 

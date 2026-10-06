@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain atomic `Bits<n>` in finite Meaning signatures and native request
+  transport, including distinct zero-width owners, exact phase and ordered
+  products. Reject same-width type substitutions and false controlled scalar
+  contracts. Preserve the two admitted ordinary-root guarantees through a
+  fixed Lean basis/artifact transport proof, unchanged independent meanings
+  and original-subject templates, and fresh current proof checking. Historical
+  admission evidence remains immutable; broader source/QS/PR/RS proofs remain open.
+
 - Materialize existing adjoint and controlled access inside closed operation
   providers in the finite Meaning adapter. Preserve exact phase, structural
   routing, original requests and caller owners, including controlled zero-width

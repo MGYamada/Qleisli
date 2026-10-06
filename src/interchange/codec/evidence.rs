@@ -9,6 +9,10 @@ impl Codec for BasisType {
         Ok(match self {
             Self::Unit => Value::object([("tag", Value::String("unit".into()))]),
             Self::Bit => Value::object([("tag", Value::String("bit".into()))]),
+            Self::Bits(width) => Value::object([
+                ("tag", Value::String("bits".into())),
+                ("width", width.write(c)?),
+            ]),
             Self::Pair(a, b) => Value::object([
                 ("tag", Value::String("pair".into())),
                 ("left", a.write(c)?),
@@ -34,6 +38,10 @@ impl Codec for BasisType {
             "bit" => {
                 v.fields(&["tag"])?;
                 Ok(Self::Bit)
+            }
+            "bits" => {
+                v.fields(&["tag", "width"])?;
+                Ok(Self::Bits(u32::read(v.field("width")?, _c)?))
             }
             "pair" => {
                 v.fields(&["tag", "left", "right"])?;

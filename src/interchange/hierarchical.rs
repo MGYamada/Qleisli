@@ -585,6 +585,7 @@ fn legacy(value: &Value) -> Result<BasisType> {
         match atom.field("tag")?.text()? {
             "unit" => stack.push(BasisType::Unit),
             "bit" => stack.push(BasisType::Bit),
+            "bits" => stack.push(BasisType::Bits(bridge::number(atom.field("width")?)?)),
             "tuple" => {
                 let arity = bridge::number(atom.field("arity")?)? as usize;
                 if arity < 2 || arity > stack.len() {

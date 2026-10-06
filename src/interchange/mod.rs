@@ -383,7 +383,7 @@ fn encode_proposal(
                         }
                         pending.extend(fields.iter().map(|field| (field, depth + 1)));
                     }
-                    BasisType::Unit | BasisType::Bit => {}
+                    BasisType::Unit | BasisType::Bit | BasisType::Bits(_) => {}
                 }
             }
         }
@@ -648,7 +648,7 @@ fn graph(
 
 fn type_bits(ty: &BasisType) -> Result<usize> {
     let mut stack = vec![(ty, 1)];
-    let (mut bits, mut nodes) = (0, 0);
+    let (mut bits, mut nodes) = (0usize, 0usize);
     while let Some((ty, depth)) = stack.pop() {
         nodes += 1;
         if nodes > 4096 || depth > 64 {
@@ -656,7 +656,16 @@ fn type_bits(ty: &BasisType) -> Result<usize> {
         }
         match ty {
             BasisType::Unit => {}
-            BasisType::Bit => bits += 1,
+            BasisType::Bit => {
+                bits = bits
+                    .checked_add(1)
+                    .ok_or_else(|| Error::limit("root bit width overflows host capacity"))?;
+            }
+            BasisType::Bits(width) => {
+                bits = bits
+                    .checked_add(*width as usize)
+                    .ok_or_else(|| Error::limit("root bit width overflows host capacity"))?;
+            }
             BasisType::Pair(a, b) => {
                 stack.push((b, depth + 1));
                 stack.push((a, depth + 1));

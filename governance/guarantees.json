@@ -19,7 +19,7 @@
         "path": "governance/interpretations/initial-2026-reviewed.txt",
         "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
       },
-      "section": "1. Candidate QS-2026-01 — Meaning of accepted programs"
+      "section": "1. Candidate QS-2026-01 \u2014 Meaning of accepted programs"
     },
     {
       "id": "PR-2026-01",
@@ -32,7 +32,7 @@
         "path": "governance/interpretations/initial-2026-reviewed.txt",
         "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
       },
-      "section": "2. Candidate PR-2026-01 — Accepted target realizations"
+      "section": "2. Candidate PR-2026-01 \u2014 Accepted target realizations"
     },
     {
       "id": "RS-2026-01",
@@ -45,7 +45,7 @@
         "path": "governance/interpretations/initial-2026-reviewed.txt",
         "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
       },
-      "section": "3. Candidate RS-2026-01 — Quantitative resource accountability"
+      "section": "3. Candidate RS-2026-01 \u2014 Quantitative resource accountability"
     }
   ],
   "pending_obligations": [
@@ -114,7 +114,7 @@
       "verifier_profile": "qlv1-structural-identity-v1",
       "evidence": {
         "path": "governance/guarantees/current-evidence.json",
-        "sha256": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575"
+        "sha256": "2ee550768eba1e472ca67d34e9081c1d8e0d2bc89539caf9b89e66d83f48cf7c"
       }
     }
   ],

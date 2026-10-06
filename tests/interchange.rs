@@ -434,3 +434,72 @@ fn malformed_transport_and_declared_root_bindings_are_rejected() {
     );
     assert!(interchange::import(&[0xff], None).is_err());
 }
+
+#[test]
+fn native_bits_wire_atoms_keep_exact_tags_and_reject_malformed_widths() {
+    use qleisli::interchange::native::{Kernel, Proposal};
+    let kernel = Kernel::selected().unwrap();
+    for width in 0..=2 {
+        let mut raw = identity();
+        raw.quantum_inputs[0].wires = (0..width).map(WireId).collect();
+        raw.quantum_inputs[0].shape = BasisShape { bits: width as u8 };
+        let types = interface(BasisType::Bits(width));
+        let proposal = Proposal::from_raw(&raw, Some(&types), Version::V2, None).unwrap();
+        let signature = format!(r#"{{"tag":"bits","width":{width}}}"#);
+        let table = format!(
+            "[{}]",
+            (0..(1 << width))
+                .map(|n| n.to_string())
+                .collect::<Vec<_>>()
+                .join(",")
+        );
+        let required = request(&signature, "permutation", &table);
+        // Inspect invokes the actual native decoder and checker before any
+        // Rust execution view is derived from the very same accepted bytes.
+        kernel
+            .inspect(proposal.artifact(), Some(&required))
+            .unwrap();
+        let checked = kernel.check(proposal.artifact(), Some(&required)).unwrap();
+        assert_eq!(checked.imported().root_interface.as_ref(), Some(&types));
+        let same_width = match width {
+            0 => r#"{"tag":"unit"}"#,
+            1 => BIT,
+            _ => r#"{"tag":"pair","left":{"tag":"bit"},"right":{"tag":"bit"}}"#,
+        };
+        assert!(
+            kernel
+                .inspect(
+                    proposal.artifact(),
+                    Some(&request(same_width, "permutation", &table))
+                )
+                .is_err()
+        );
+    }
+    let types = interface(BasisType::Bits(1));
+    let proposal = Proposal::from_raw(&identity(), Some(&types), Version::V2, None).unwrap();
+    let original = std::str::from_utf8(proposal.artifact()).unwrap();
+    let atom = r#"{"tag":"bits","width":1}"#;
+    assert!(original.contains(atom));
+    for malformed in [
+        r#"{"tag":"bits"}"#,
+        r#"{"tag":"bits","width":-1}"#,
+        r#"{"tag":"bits","width":4294967296}"#,
+        r#"{"tag":"bits","width":"1"}"#,
+        r#"{"tag":"bits","width":1,"extra":0}"#,
+        r#"{"tag":"bits","width":1,"width":1}"#,
+        r#"{"tag":"Bits","width":1}"#,
+    ] {
+        let bad_artifact = original.replace(atom, malformed);
+        assert!(
+            kernel.inspect(bad_artifact.as_bytes(), None).is_err(),
+            "{malformed}"
+        );
+        let bad_request = request(malformed, "permutation", "[0,1]");
+        assert!(
+            kernel
+                .inspect(proposal.artifact(), Some(&bad_request))
+                .is_err(),
+            "{malformed}"
+        );
+    }
+}
