@@ -29,3 +29,12 @@ parser failure's cause. No full first-run success or release is claimed.
 
 Only the changed test-file hash and its derived VM29 fingerprint are refreshed;
 public surfaces, capacities, groups, acceptance routes and proof gates are unchanged.
+
+The continued first all-target command also found the separate input-corpus
+guard expecting eight current snapshots instead of fourteen. The new migration
+has four final namespace leaves and ten classical leaves; the two older coherent
+leaves advance to the classical stage. The original guard is immutable at
+7e942a7e3846179ec9df0490d393d821b507df14, `tests/input_corpus.rs`.
+The repair retains all 87 logical roots, validated unique selection, complete
+compilation/execution and probability checks. The exact local failure is retained
+in `corpus-local-excerpt.txt`; it is not a semantic corpus counterexample.
