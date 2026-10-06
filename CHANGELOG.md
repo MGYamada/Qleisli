@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add block-local `static let` Nat bindings through the common source judgment
+  and concrete evaluator. Preserve lexical identities, exact normalization,
+  guarded arithmetic, original-body checking and native output gates (#28/#63).
 - Select hash-checked current corpus derivatives in VM-22 and observing native
   comparisons, keeping frozen historical sources and oracle artifacts intact.
   Repair MSRV Clippy findings in classical predicate checking and local indexing.

@@ -358,7 +358,10 @@ impl Task<'_> {
                 for statement in &b.statements {
                     charge(statement.span, 1)?;
                     children = children.saturating_add(
-                        if matches!(statement.kind, StmtKind::Let { .. }) {
+                        if matches!(
+                            statement.kind,
+                            StmtKind::Let { .. } | StmtKind::StaticLet { .. }
+                        ) {
                             2
                         } else {
                             1
@@ -670,6 +673,10 @@ where
                     tasks.extend([Task::Leave, Task::Expression(&block.result)]);
                     for statement in block.statements.iter().rev() {
                         match &statement.kind {
+                            StmtKind::StaticLet { name, value } => tasks.extend([
+                                Task::Bind(name, BindingKind::StaticNatural),
+                                Task::Natural(value),
+                            ]),
                             StmtKind::Let { pattern, value } => tasks.extend([
                                 Task::Pattern(pattern, BindingKind::Runtime),
                                 Task::Expression(value),

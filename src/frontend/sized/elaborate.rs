@@ -1245,8 +1245,16 @@ impl Builder<'_> {
     ) -> Result<SourceValue> {
         let initial = scope.values.clone();
         let initial_ids: BTreeSet<_> = initial.values().map(|b| b.identity).collect();
+        let mut local_naturals = Vec::new();
         for statement in &block.statements {
             match statement {
+                Statement::StaticLet(name, value) => {
+                    self.charge_cells(4 + 2 * name.name.len(), value.span)?;
+                    let value = natural(value, &scope.naturals)?;
+                    let key = name.key.as_ref().expect("checked static binder").clone();
+                    scope.naturals.insert(key.clone(), value);
+                    local_naturals.push(key);
+                }
                 Statement::Let(pattern, expr) => {
                     let value = self.expr(expr, scope, frame, depth)?;
                     bind(pattern, value, scope, frame)?;
@@ -1263,6 +1271,9 @@ impl Builder<'_> {
             }
         }
         let result = self.expr(&block.result, scope, frame, depth)?;
+        for key in local_naturals {
+            scope.naturals.remove(&key);
+        }
         if scope
             .values
             .values()

@@ -102,6 +102,34 @@ structural Unit maps retain their specified effects and exact action.
 
 ## Static branches, folds and termination
 
+An ordinary function block may bind a natural expression with
+`static let name = expression;`. The initializer uses the static context and
+the same exact natural arithmetic as sizes and fold bounds. It sees preceding
+bindings, including an enclosing static parameter or fold index; it cannot
+read runtime classical values or quantum owners. Static bindings cannot shadow
+another visible lexical binding. Their names end at the containing block and
+are unavailable as runtime values.
+
+For example, `static let width = n+n;` supplies a normalized
+size to an already checked generic definition:
+
+```qli
+static let width = n+n;
+identity[width](q)
+```
+
+`static let rounds = n+1;`
+may supply a fold bound. Within a fold, `static let next = i+1;` is evaluated
+for the current index. Definition checking still visits dead arms and empty
+fold bodies. A closed instance evaluates aliases with the same checked Nat
+evaluator used for generic sizes and fold bounds. Alias storage is charged to
+the existing work/storage budgets. Finite lowering erases checked unused
+aliases; using a sized operation still requires a supported output profile.
+
+This binding produces no runtime instruction, new owner, operation access or
+trusted evidence. It does not introduce public `static fn`/`const fn` builders
+or complete static helper or phase-table evaluation.
+
 `if static comparison { ... } else { ... }` checks both original source arms
 under their respective premises. After all closed bindings are supplied, the
 concrete elaborator evaluates the comparison and elaborates the selected arm.

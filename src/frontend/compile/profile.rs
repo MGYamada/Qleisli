@@ -115,6 +115,7 @@ fn block(block: &Block) -> Result<(), Failure> {
     }
     for statement in &block.statements {
         match &statement.kind {
+            StmtKind::StaticLet { .. } => {}
             StmtKind::Let { value, .. } => expr(value)?,
             StmtKind::Expr(value) => expr(value)?,
         }

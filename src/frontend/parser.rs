@@ -886,6 +886,18 @@ impl Parser {
                     span: Span::new(start, close.span.end),
                 });
             }
+            if let Some(static_token) = self.consume(&TokenKind::Static) {
+                self.expect(&TokenKind::Let)?;
+                let name = self.ident()?;
+                self.expect(&TokenKind::Equals)?;
+                let value = self.natural()?;
+                let end = self.expect(&TokenKind::Semicolon)?.span.end;
+                statements.push(Stmt {
+                    kind: StmtKind::StaticLet { name, value },
+                    span: Span::new(static_token.span.start, end),
+                });
+                continue;
+            }
             if let Some(let_token) = self.consume(&TokenKind::Let) {
                 let pattern = self.pattern()?;
                 self.expect(&TokenKind::Equals)?;
@@ -1119,11 +1131,12 @@ impl Parser {
                     pending.push((condition, depth + 1));
                     for block in [then_branch, else_branch] {
                         pending.push((&block.result, depth + 1));
-                        pending.extend(block.statements.iter().map(|statement| {
+                        pending.extend(block.statements.iter().filter_map(|statement| {
                             let value = match &statement.kind {
+                                StmtKind::StaticLet { .. } => return None,
                                 StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
                             };
-                            (value, depth + 1)
+                            Some((value, depth + 1))
                         }));
                     }
                 }
@@ -1134,13 +1147,14 @@ impl Parser {
                 } => {
                     for block in [then_branch, else_branch] {
                         pending.push((&block.result, depth + 1));
-                        pending.extend(block.statements.iter().map(|s| {
-                            (
+                        pending.extend(block.statements.iter().filter_map(|s| {
+                            Some((
                                 match &s.kind {
+                                    StmtKind::StaticLet { .. } => return None,
                                     StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
                                 },
                                 depth + 1,
-                            )
+                            ))
                         }));
                     }
                 }
@@ -1153,11 +1167,12 @@ impl Parser {
                 | ExprKind::CertifiedComputed { source, body, .. } => {
                     pending.push((source, depth + 1));
                     pending.push((&body.result, depth + 1));
-                    pending.extend(body.statements.iter().map(|statement| {
+                    pending.extend(body.statements.iter().filter_map(|statement| {
                         let value = match &statement.kind {
+                            StmtKind::StaticLet { .. } => return None,
                             StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
                         };
-                        (value, depth + 1)
+                        Some((value, depth + 1))
                     }));
                 }
                 ExprKind::Name(_) | ExprKind::Bit(_) | ExprKind::Unit => {}

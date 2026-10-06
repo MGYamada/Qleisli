@@ -1072,6 +1072,10 @@
         "Expr": {
           "declaration": "Expr(Expr)",
           "group": "source"
+        },
+        "StaticLet": {
+          "declaration": "StaticLet { name: Ident, value: Natural }",
+          "group": "source"
         }
       }
     },
@@ -3171,7 +3175,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "e7dbdfc00ea34f4a9f9f73470557a04f3676cb460d1c62e3941a90107d6d2a35",
+      "sha256": "f4f608862ed1c9335d179a050a1c59508b2ecb0f1c6a4795d793c77b30d1ca13",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3234,7 +3238,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "9a7d136aa7057463abf32a8c7c7275d185ece5fa767d47d5a2916fb608c90b46",
+      "sha256": "86c995cd68de28703698686bc897bdfd2c4ba409957160f7769911dea5f0a934",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3363,7 +3367,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "66745e4108e328a5c3088ae8511c7d7e71f062ee40717d3917addd9b3374e563",
+      "sha256": "d68f89e1d095beb1c79efdda5d10350fe9187235d7cc645ea43191e575654262",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3469,7 +3473,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "sha256": "e4b3fccedf9d11c387015abafd5a9ca9c97ba331ee72eff592e79774ae9353b1",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3611,7 +3615,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "249a05f32ab4e6f0687a0a17ad5e19987c624792ca2cdec9c1d417b813fe40f7",
+      "sha256": "9a0c84901c814c7456c3eda637e173f59eab1b1bab311d9dba6cd7ff9ca37c44",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3752,7 +3756,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "26f9e4429579fd7729e47db65cc9aad4e618d8b409bbe009fb22ebebd994bd71",
+      "sha256": "b2d56cd87a6b93c9af240e417b98973a03b75235e6ce1a1e2e23a2aa1f13d5e5",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3841,7 +3845,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "a0ce4e1a4fcab238d5b0a65e214b5c7385e393ee4ac96defd518d55cd2aecc24",
+      "sha256": "66a9e7959a7644f807e5464674250356dae2ac220c112669e4ce1fcbab610025",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3865,7 +3869,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "b65fe34f7bffabc03e07534f7665905378cb30ecf067cf43057c232acbba4490",
+      "sha256": "be78a0806bf41b1fbc81a8b6b0abdbcac5fd1b20a11c426c892863e15fecc8c3",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4036,7 +4040,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "c414756add2706549549adc875fe1449266648bf0114b875d81bb0c844dc4987",
+      "sha256": "2911163c3b0c91928318b3f4a80aaf8e2bafc1ec1c5f495f2d32036861d35c07",
       "group": "sized-source",
       "surface": {
         "declarations": [],

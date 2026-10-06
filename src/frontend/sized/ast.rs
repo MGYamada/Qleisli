@@ -132,6 +132,7 @@ pub(super) enum ExprKind {
 }
 #[derive(Clone, Debug)]
 pub(super) enum Statement {
+    StaticLet(BindingName, Natural),
     Let(Pattern, Expr),
     Drop(Expr),
 }

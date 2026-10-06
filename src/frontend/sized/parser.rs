@@ -388,6 +388,9 @@ impl Projection<'_, '_> {
             .map(|statement| {
                 self.charge(statement.span, 1)?;
                 Ok(match &statement.kind {
+                    source::StmtKind::StaticLet { name, value } => {
+                        Statement::StaticLet(self.binding(name)?, self.natural(value)?)
+                    }
                     source::StmtKind::Let {
                         pattern: binder,
                         value,

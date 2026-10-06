@@ -43,6 +43,12 @@ clients may use separate `source_records` with repository-relative source hashes
 and reports; they are not numbered repair attempts. The checker validates these
 links and hashes without inventing missing commands, exit codes or timestamps.
 
+The [static Nat binding study](static-nat-bindings-v030/session.json) retains
+eight first programs and their pre-implementation parser refusals. Later
+observations distinguish genuine static-boundary refusals from missing public
+entry and checker-selection mistakes. The first sources remain unchanged;
+bounded execution and generic width/reference tests are separate evidence.
+
 For the next session:
 
 1. Record the task, available context and author/model information **before**

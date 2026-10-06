@@ -115,6 +115,7 @@ pub struct Stmt {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum StmtKind {
+    StaticLet { name: Ident, value: Natural },
     Let { pattern: Pattern, value: Expr },
     Expr(Expr),
 }

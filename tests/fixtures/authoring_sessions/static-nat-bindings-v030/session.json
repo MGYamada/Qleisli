@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#28/#63 lexical static Nat bindings, original identities and bounded evaluation",
+  "baseline_commit": "38baae7d19535602b21270e11e97617d45205b37",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/specification access, exact model and sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Eight desired first sources preserved before implementation; later checks append without source repair.",
+      "sha256": {
+        "finite-unused/main.qli": "564dfd20b88ac773fcfaff75db9d9f3a65e0fea15a142906c8440494f753502a",
+        "fold-count/main.qli": "be602285d86e2eacee9bbc8a14ebe6bfae8faad0bfaeaf235d0287bb517c2148",
+        "generic-size/main.qli": "1065c2b7838d080713476b0f25fada2a445057c3b4c20065df083faeeddcbe18",
+        "runtime-capture/main.qli": "324437dab012b1f2e6fa2a12da0a76b870f941d9e42035ff4ca8de17c01d7b10",
+        "quantum-capture/main.qli": "379324c5aff801a88397176edb202b9a7b326b590b7237210cb239c61fd0cebe",
+        "zero-body-invalid/main.qli": "6a70eca04ec096185e53cc4ea5de5763ab9f406c87ab0ff9adc8801697f95641",
+        "scope-escape/main.qli": "a0ce7125ddd0b66d4b37efbba22a38b205e2df2168c10b4e574373b4b1de541c",
+        "shadow/main.qli": "37551e22c5690e479452a4b647c3b5ad18957f0e08d66ee433195e92398aecf4"
+      },
+      "observations": [
+        "observations-before/finite-unused-finite.json",
+        "observations-before/finite-unused-selected.json",
+        "observations-before/fold-count-finite.json",
+        "observations-before/fold-count-selected.json",
+        "observations-before/generic-size-finite.json",
+        "observations-before/generic-size-selected.json",
+        "observations-before/runtime-capture-finite.json",
+        "observations-before/runtime-capture-selected.json",
+        "observations-before/quantum-capture-finite.json",
+        "observations-before/quantum-capture-selected.json",
+        "observations-before/zero-body-invalid-finite.json",
+        "observations-before/zero-body-invalid-selected.json",
+        "observations-before/scope-escape-finite.json",
+        "observations-before/scope-escape-selected.json",
+        "observations-before/shadow-finite.json",
+        "observations-before/shadow-selected.json",
+        "observations-after/finite-unused-finite.json",
+        "observations-after/finite-unused-selected.json",
+        "observations-after/fold-count-finite.json",
+        "observations-after/fold-count-selected.json",
+        "observations-after/generic-size-finite.json",
+        "observations-after/generic-size-selected.json",
+        "observations-after/quantum-capture-finite.json",
+        "observations-after/quantum-capture-selected.json",
+        "observations-after/runtime-capture-finite.json",
+        "observations-after/runtime-capture-selected.json",
+        "observations-after/scope-escape-finite.json",
+        "observations-after/scope-escape-selected.json",
+        "observations-after/shadow-finite.json",
+        "observations-after/shadow-selected.json",
+        "observations-after/zero-body-invalid-finite.json",
+        "observations-after/zero-body-invalid-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Correct observer-facing public entry in three positive sources; first attempt and its private-entry refusals remain unchanged.",
+      "sha256": {
+        "finite-unused/main.qli": "2705dad9c262d7d587abf63137149a5fcd0525257c0854a6d68623fa5615a9b6",
+        "fold-count/main.qli": "c4e17a1e98575b19edd6c4a6db7b6b9581db9062fdb091bcb652f398c100d50a",
+        "generic-size/main.qli": "9280319fec6578920a2853405dd8ce50a2d0d4ba25fd624d9a4df73c3ae26663"
+      },
+      "observations": [
+        "observations-after/finite-unused-public-check.json",
+        "observations-after/finite-unused-public-run.json",
+        "observations-after/fold-count-public-check.json",
+        "observations-after/fold-count-public-run.json",
+        "observations-after/generic-size-public-check.json",
+        "observations-after/generic-size-public-run.json",
+        "observations-after/finite-unused-public-explicit-kernel-check.json",
+        "observations-after/finite-unused-public-explicit-kernel-run.json",
+        "observations-after/fold-count-public-explicit-kernel-check.json",
+        "observations-after/fold-count-public-explicit-kernel-run.json",
+        "observations-after/generic-size-public-explicit-kernel-check.json",
+        "observations-after/generic-size-public-explicit-kernel-run.json"
+      ],
+      "reports": [
+        "validation.json"
+      ]
+    }
+  ],
+  "scope": "Bounded source observations; no mathematical proof, new guarantee or Issue completion."
+}

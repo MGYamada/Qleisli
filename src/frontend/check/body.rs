@@ -365,9 +365,26 @@ impl Checker<'_, '_> {
         self.program.budget.charge(block.span, scope.values.len())?;
         let initial = self.program.budget.values(block.span, &scope.values)?;
         let outer: BTreeSet<_> = initial.values().map(|b| b.identity).collect();
+        let mut local_naturals = Vec::new();
         for statement in &block.statements {
             self.tick(statement.span)?;
             match &statement.kind {
+                StmtKind::StaticLet { name, value } => {
+                    let info = self.index().table.binder(self.index().binder(name));
+                    if info.shadowed.is_some() {
+                        return Err(SourceError::new(
+                            "shadow",
+                            name.span,
+                            "static binding cannot shadow a visible lexical binding",
+                        ));
+                    }
+                    let value =
+                        normalize::natural(value, self.index(), scope, None, &self.program.budget)?;
+                    let key = self.program.budget.key(name.span, &info.key)?;
+                    self.program.budget.charge(name.span, key.name.len() + 2)?;
+                    scope.naturals.insert(key.clone(), value);
+                    local_naturals.push(key);
+                }
                 StmtKind::Let { pattern, value } => {
                     let value = self.expr(value, scope, None)?;
                     bind(pattern, value, self.index(), scope, &self.program.budget)?;
@@ -383,6 +400,9 @@ impl Checker<'_, '_> {
             }
         }
         let result = self.expr(&block.result, scope, expected)?;
+        for key in local_naturals {
+            scope.naturals.remove(&key);
+        }
         for (key, binding) in &scope.values {
             if !outer.contains(&binding.identity) && binding.ty.linear() {
                 return Err(disposal_error(

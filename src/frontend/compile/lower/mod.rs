@@ -507,6 +507,9 @@ impl Lowerer<'_, '_> {
         for stmt in &block.statements {
             self.compiler.tick(module, stmt.span)?;
             match &stmt.kind {
+                // The shared judgment checked this compile-time binding.
+                // It has no runtime value or owner in a finite body.
+                StmtKind::StaticLet { .. } => {}
                 StmtKind::Let { pattern, value } => {
                     let value = self.expr(module, value, &mut local)?;
                     let mut names = BTreeSet::new();
