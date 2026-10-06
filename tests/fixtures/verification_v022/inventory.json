@@ -4015,7 +4015,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "554894787bf6783faa0c861189952556388b678c382b2158924607ad219f85dc",
+      "sha256": "b4ffbfe63f34abd5b77d0dc2e0004f84dd9c962e6f1038f845fa7e3975aa555b",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4123,7 +4123,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "bfd1a57c03b929b25e04ccd9708662003a3d9eae344554437622df22e2e56bcf",
+      "sha256": "d7a8f7e6f7872ab0d48069a41d7545c54722fae27eeb7c00115601cba3d62662",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4162,7 +4162,7 @@
     },
     {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "9c858002142d70077c819868b3f00ac259c51c7e919d9ea0463d01be0ad69ecd",
+      "sha256": "c7e1de1c971908540bdee2d2490837b974ea6b9728cb2646602bc1a8bf07aa13",
       "group": "sized-source",
       "surface": {
         "declarations": [],

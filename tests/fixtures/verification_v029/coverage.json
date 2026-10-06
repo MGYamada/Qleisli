@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "69209605ab50ce697082ea81a62fb44e9cb6a9c304c2643da307b37f0a158755",
+  "surface_sha256": "41831bd703f79ad52f756a20b35ca72eb125de6ed3894391396df0c6176b305c",
   "groups": [
     {
       "id": "raw-core",
@@ -2763,6 +2763,16 @@
           ]
         },
         {
+          "path": "src/frontend/sized/raw/preservation.rs",
+          "markers": [
+            "Quantum(TokenId, Arc<[WireId]>)",
+            "Primitive::Split",
+            "Primitive::Join",
+            "Raw split changes its owner or exact ordered partition",
+            "Raw join changes or aliases its ordered owners"
+          ]
+        },
+        {
           "path": "src/interchange/finite_leaf.rs",
           "markers": [
             "pub(crate) fn check_with_kernel(",
@@ -2820,6 +2830,18 @@
         {
           "path": "tests/classical_functions.rs",
           "test": "explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "packaged_zero_and_nary_bases_keep_their_exact_native_signature"
+        },
+        {
+          "path": "src/frontend/sized/raw/preservation.rs",
+          "test": "packaged_product_replay_rejects_native_valid_axis_and_owner_substitutions"
         },
         {
           "path": "tests/classical_functions.rs",

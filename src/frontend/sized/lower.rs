@@ -656,14 +656,24 @@ impl Lower<'_> {
         &mut self,
         leaf: &crate::interchange::finite_leaf::CheckedUnitaryLeaf,
     ) -> Result<usize> {
-        let (kind, basis) = match leaf.boundary().signature() {
-            BasisType::Unit => (PortKind::Unit, SourceType::unit()),
-            BasisType::Bit => (PortKind::Bit, SourceType::bit()),
-            _ => {
-                return Err(fail(
-                    "checked source operation requires an exact Unit/Bit leaf",
-                ));
+        fn source_basis(basis: &BasisType) -> SourceType {
+            match basis {
+                BasisType::Unit => SourceType::unit(),
+                BasisType::Bit => SourceType::bit(),
+                BasisType::Pair(a, b) => SourceType::pair(source_basis(a), source_basis(b)),
+                BasisType::Tuple(fields) => {
+                    SourceType::tuple(fields.iter().map(source_basis).collect())
+                }
             }
+        }
+        // The native finite gate already bounds the signature tree. Retain its
+        // exact fields/association; physical width does not determine the type.
+        let basis = source_basis(leaf.boundary().signature());
+        let kind = match basis.kind() {
+            "unit" => PortKind::Unit,
+            "bit" => PortKind::Bit,
+            "tuple" => PortKind::Tuple,
+            _ => unreachable!("native exact Unit/Bit product signature"),
         };
         let port = |p: &QuantumPort| Port {
             owner: p.token.0,

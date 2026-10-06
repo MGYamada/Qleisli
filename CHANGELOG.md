@@ -44,6 +44,11 @@ development milestones from the scope of their evidence.
   repeated children under zero iterations. Check each original requested
   Meaning through the existing native finite-leaf gate before lowering; Raw
   bypasses reject. General Meaning/profile convergence remains open (#44).
+- Carry exact packaged Unit/Bit product bases through the source Raw leaf
+  adapter, structural split/join and independent ordered replay. Bind native
+  Meaning requests and emitted hierarchy leaves to the original tuple tree and
+  actual wire order, retaining zero-width owners and scalar phase. Bits tags
+  remain distinct and unsupported by this finite representation mapping (#44).
 - Remove two unnecessary lifetime parameters found by hosted MSRV Clippy;
   select actual local MSRV compiler and Clippy executables for validation.
 

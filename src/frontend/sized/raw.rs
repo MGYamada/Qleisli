@@ -264,7 +264,7 @@ impl RawSourceProposal {
                 .in_module(path.rsplit_once("::").map_or(path, |(module, _)| module))
         };
         let boundary = self.finite_boundary.as_ref().ok_or_else(|| {
-            error("unsupported", "source Meaning checking requires a unary exact Unit/Bit quantum endomorphism with Unitary effect".into())
+            error("unsupported", "source Meaning checking requires a unary exact Unit/Bit product quantum endomorphism with Unitary effect".into())
         })?;
         if required.signature() != boundary.signature() {
             return Err(error(
@@ -376,9 +376,35 @@ fn located(source: &ElaboratedProgram, id: usize, span: Span, message: &str) -> 
 fn supported(ty: &SourceType) -> bool {
     match &ty.kind {
         Kind::Unit | Kind::Bit => true,
-        Kind::Q(basis) => matches!(basis.kind, Kind::Unit | Kind::Bit),
+        Kind::Q(basis) => basis_supported(basis),
         Kind::Tuple(fields) => fields.iter().all(supported),
         Kind::Bits(_) | Kind::Parameter(_) => false,
+    }
+}
+fn basis_supported(basis: &SourceType) -> bool {
+    match &basis.kind {
+        Kind::Unit | Kind::Bit => true,
+        Kind::Tuple(fields) => fields.iter().all(basis_supported),
+        _ => false,
+    }
+}
+fn finite_basis(basis: &SourceType) -> Option<BasisType> {
+    match &basis.kind {
+        Kind::Unit => Some(BasisType::Unit),
+        Kind::Bit => Some(BasisType::Bit),
+        Kind::Tuple(fields) => {
+            let mut fields = fields
+                .iter()
+                .map(finite_basis)
+                .collect::<Option<Vec<_>>>()?;
+            if fields.len() == 2 {
+                let right = fields.pop()?;
+                Some(BasisType::pair(fields.pop()?, right))
+            } else {
+                Some(BasisType::Tuple(fields))
+            }
+        }
+        _ => None,
     }
 }
 fn atom_count(ty: &SourceType) -> usize {
@@ -433,7 +459,7 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                     source,
                     id,
                     definition.span(),
-                    "finite source lowering requires Unit, Bit, Q<Unit>, Q<Bit> or exact products; Bits and other quantum bases need explicit target support",
+                    "finite source lowering requires exact Unit/Bit ordinary or packaged quantum products; Bits tags need explicit target support",
                 ));
             }
         }
@@ -466,7 +492,9 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                     | Primitive::Cnot
                     | Primitive::Init0
                     | Primitive::MeasureZ
-                    | Primitive::PhaseEighth,
+                    | Primitive::PhaseEighth
+                    | Primitive::Split
+                    | Primitive::Join,
                 ) => {}
                 Some(Primitive::Phase) if eighths(step.natural_arguments()).is_some() => {}
                 Some(Primitive::Phase) => {
@@ -645,14 +673,39 @@ impl Emitter<'_> {
         match &value.ty().kind {
             Kind::Unit => Ok(vec![]),
             Kind::Bit => Ok(vec![Atom::Classical(self.raw.classical())]),
-            Kind::Q(basis) if matches!(basis.kind, Kind::Unit) => Ok(vec![Atom::Quantum(
-                self.raw.register(SourceType::unit(), vec![]),
-            )]),
-            Kind::Q(_) => {
-                self.reserve_qubit(span)?;
-                let wire = self.raw.wire();
+            Kind::Q(basis) => {
+                let width = basis.basis_width().expect("preflighted finite basis") as usize;
+                self.cells = self.cells.saturating_add(basis.tree_size().nodes + width);
+                if self.cells > MAX_CELLS {
+                    return Err(Error::new(
+                        "limit",
+                        span,
+                        "finite source lowering exceeds 100000 value cells",
+                    ));
+                }
+                let mut wires = Vec::new();
+                for _ in 0..width {
+                    // Pending input wires are not registered until allocation
+                    // ends, so account for them in the existing global bound.
+                    if self
+                        .raw
+                        .registers
+                        .values()
+                        .map(|r| r.wires.len())
+                        .sum::<usize>()
+                        + wires.len()
+                        >= MAX_LIVE_QUBITS
+                    {
+                        return Err(Error::new(
+                            "limit",
+                            span,
+                            "finite source lowering exceeds 16 globally live quantum wires",
+                        ));
+                    }
+                    wires.push(self.raw.wire());
+                }
                 Ok(vec![Atom::Quantum(
-                    self.raw.register(SourceType::bit(), vec![wire]),
+                    self.raw.register((**basis).clone(), wires),
                 )])
             }
             Kind::Tuple(_) => {
@@ -760,6 +813,86 @@ impl Emitter<'_> {
                                 self.reserve_operations(1, span)?;
                                 self.raw.scalar_eighth(slot).map_err(state_error)?;
                                 vec![Atom::Quantum(slot)]
+                            }
+                            Split => {
+                                let slot = quantum(&inputs[0], span)?;
+                                let fields = step.inputs()[0]
+                                    .ty()
+                                    .quantum_basis()
+                                    .and_then(SourceType::tuple_fields)
+                                    .expect("checked exact split basis");
+                                let left_bits =
+                                    fields[0].basis_width().expect("finite split basis") as usize;
+                                self.reserve_operations(1, span)?;
+                                self.cells = self.cells.saturating_add(
+                                    fields.iter().map(|f| f.tree_size().nodes).sum::<usize>(),
+                                );
+                                if self.cells > MAX_CELLS {
+                                    return Err(Error::new(
+                                        "limit",
+                                        span,
+                                        "finite source lowering exceeds 100000 value cells",
+                                    ));
+                                }
+                                let register =
+                                    self.raw.registers.remove(&slot).ok_or_else(|| {
+                                        invalid(span, "split source owner is absent")
+                                    })?;
+                                let left = self.raw.register(
+                                    fields[0].clone(),
+                                    register.wires[..left_bits].to_vec(),
+                                );
+                                let right = self.raw.register(
+                                    fields[1].clone(),
+                                    register.wires[left_bits..].to_vec(),
+                                );
+                                self.raw.operations.push(crate::ir::RawOp::Split {
+                                    input: register.token,
+                                    left: self.raw.registers[&left].token,
+                                    right: self.raw.registers[&right].token,
+                                    left_bits: left_bits as u8,
+                                });
+                                vec![Atom::Quantum(left), Atom::Quantum(right)]
+                            }
+                            Join => {
+                                let left = quantum(&inputs[0], span)?;
+                                let right = quantum(&inputs[1], span)?;
+                                if left == right {
+                                    return Err(invalid(span, "join source operands alias"));
+                                }
+                                self.reserve_operations(1, span)?;
+                                let left =
+                                    self.raw.registers.remove(&left).ok_or_else(|| {
+                                        invalid(span, "join left owner is absent")
+                                    })?;
+                                let right =
+                                    self.raw.registers.remove(&right).ok_or_else(|| {
+                                        invalid(span, "join right owner is absent")
+                                    })?;
+                                let basis = step
+                                    .output()
+                                    .ty()
+                                    .quantum_basis()
+                                    .expect("checked exact join result");
+                                self.cells = self.cells.saturating_add(
+                                    basis.tree_size().nodes + left.wires.len() + right.wires.len(),
+                                );
+                                if self.cells > MAX_CELLS {
+                                    return Err(Error::new(
+                                        "limit",
+                                        span,
+                                        "finite source lowering exceeds 100000 value cells",
+                                    ));
+                                }
+                                let wires =
+                                    left.wires.iter().chain(&right.wires).copied().collect();
+                                let output = self.raw.register(basis.clone(), wires);
+                                self.raw.operations.push(crate::ir::RawOp::Join {
+                                    left: left.token,
+                                    right: right.token,
+                                    output: self.raw.registers[&output].token,
+                                });
+                                vec![Atom::Quantum(output)]
                             }
                             Cnot => {
                                 let control = quantum(&inputs[0], span)?;
@@ -940,10 +1073,8 @@ fn lower_inner(
                 quantum_inputs.push(QuantumPort {
                     token: register.token,
                     wires: register.wires.clone(),
-                    shape: if register.wires.is_empty() {
-                        BasisShape::UNIT
-                    } else {
-                        BasisShape::BIT
+                    shape: BasisShape {
+                        bits: register.wires.len() as u8,
                     },
                 });
             }
@@ -1001,11 +1132,7 @@ fn lower_inner(
     // source tree; zero width alone never establishes a Unit signature.
     let interface = match root.inputs() {
         [input] if input.ty() == root.output().ty() => match &input.ty().kind {
-            Kind::Q(basis) => match basis.kind {
-                Kind::Unit => Some(BasisType::Unit),
-                Kind::Bit => Some(BasisType::Bit),
-                _ => None,
-            },
+            Kind::Q(basis) => finite_basis(basis),
             _ => None,
         },
         _ => None,
@@ -1041,10 +1168,8 @@ fn lower_inner(
                         QuantumPort {
                             token: output.token,
                             wires: output.wires.clone(),
-                            shape: if output.wires.is_empty() {
-                                BasisShape::UNIT
-                            } else {
-                                BasisShape::BIT
+                            shape: BasisShape {
+                                bits: output.wires.len() as u8,
                             },
                         },
                     )

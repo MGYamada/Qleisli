@@ -9,10 +9,13 @@ use crate::frontend::sized::{
     SourceValue, Span,
 };
 use crate::frontend::types::Kind;
+#[cfg(test)]
+use crate::ir::BasisShape;
 use crate::ir::{
-    BasisShape, CircuitAction, ClassicalId, Effect, RawOp, RawProgram, SingleGate, TokenId, WireId,
+    CircuitAction, ClassicalId, Effect, RawOp, RawProgram, SingleGate, TokenId, WireId,
 };
 use std::collections::{BTreeMap, BTreeSet};
+use std::sync::Arc;
 
 const MAX_CALLS: usize = 1024;
 const MAX_DEPTH: usize = 16;
@@ -56,21 +59,28 @@ fn quantum_bit(ty: &SourceType) -> bool {
     matches!(&ty.kind, Kind::Q(basis) if matches!(basis.kind, Kind::Bit))
 }
 
-fn quantum_width(ty: &SourceType) -> Option<usize> {
-    match &ty.kind {
-        Kind::Q(basis) => match basis.kind {
-            Kind::Unit => Some(0),
-            Kind::Bit => Some(1),
-            _ => None,
-        },
-        _ => None,
+fn basis_width(ty: &SourceType) -> Option<usize> {
+    ty.storage_size(4096, 64)?;
+    let mut pending = vec![ty];
+    let mut width = 0usize;
+    while let Some(ty) = pending.pop() {
+        match &ty.kind {
+            Kind::Unit => {}
+            Kind::Bit => width += 1,
+            Kind::Tuple(fields) => pending.extend(fields),
+            _ => return None,
+        }
     }
+    Some(width)
+}
+fn quantum_width(ty: &SourceType) -> Option<usize> {
+    ty.quantum_basis().and_then(basis_width)
 }
 
-#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 enum Atom {
     Classical(ClassicalId),
-    Quantum(TokenId, Option<WireId>),
+    Quantum(TokenId, Arc<[WireId]>),
 }
 
 #[derive(Default)]
@@ -96,7 +106,7 @@ struct Replay<'a> {
     classical: BTreeSet<ClassicalId>,
     tokens: BTreeSet<TokenId>,
     wires: BTreeSet<WireId>,
-    live: BTreeMap<TokenId, Option<WireId>>,
+    live: BTreeMap<TokenId, Arc<[WireId]>>,
 }
 
 impl Replay<'_> {
@@ -133,6 +143,17 @@ impl Replay<'_> {
                     if !value.fields().is_empty() {
                         return Err(site.invalid("source atom has product fields"));
                     }
+                    if let Some(basis) = expected.quantum_basis() {
+                        self.charge(
+                            basis
+                                .storage_size(4096, 64)
+                                .ok_or_else(|| {
+                                    site.error("limit", "quantum basis exceeds type capacity")
+                                })?
+                                .nodes,
+                            site,
+                        )?;
+                    }
                     result.push((
                         value
                             .identity()
@@ -161,7 +182,7 @@ impl Replay<'_> {
                 Kind::Bit | Kind::Bits(_) | Kind::Q(_) | Kind::Parameter(_) => {
                     return Err(site.error(
                         "unsupported",
-                        "Raw replay supports only Unit, Bit, Q<Unit>, Q<Bit> and their exact products",
+                        "Raw replay supports Unit/Bit and exact ordinary or packaged quantum products",
                     ));
                 }
             }
@@ -190,7 +211,7 @@ impl Replay<'_> {
             }
             match actual {
                 Atom::Quantum(token, wire) => {
-                    if quantum != Some(usize::from(wire.is_some()))
+                    if quantum != Some(wire.len())
                         || self.live.get(token) != Some(wire)
                         || !environment.quantum.insert(*token)
                     {
@@ -204,7 +225,7 @@ impl Replay<'_> {
                 }
                 Atom::Classical(_) => {}
             }
-            environment.values.insert(source, *actual);
+            environment.values.insert(source, actual.clone());
         }
         Ok(())
     }
@@ -220,15 +241,15 @@ impl Replay<'_> {
             let actual = environment
                 .values
                 .get(&id)
-                .copied()
+                .cloned()
                 .ok_or_else(|| site.invalid("source step uses an unavailable value"))?;
             if quantum.is_some() != matches!(actual, Atom::Quantum(..)) {
                 return Err(site.invalid("source read changes a leaf's ownership kind"));
             }
-            if let Atom::Quantum(token, wire) = actual {
-                if quantum != Some(usize::from(wire.is_some()))
-                    || self.live.get(&token) != Some(&wire)
-                    || !environment.quantum.remove(&token)
+            if let Atom::Quantum(token, wire) = &actual {
+                if quantum != Some(wire.len())
+                    || self.live.get(token) != Some(wire)
+                    || !environment.quantum.remove(token)
                 {
                     return Err(site.invalid("source read reuses a consumed quantum owner"));
                 }
@@ -253,41 +274,55 @@ impl Replay<'_> {
         fresh_wire: bool,
         site: Site<'_>,
     ) -> Result<Atom> {
-        self.introduce_owner(token, Some(wire), fresh_wire, site)
+        self.introduce_owner(token, &[wire], fresh_wire, site)
     }
 
     fn introduce_owner(
         &mut self,
         token: TokenId,
-        wire: Option<WireId>,
+        wires: &[WireId],
         fresh_wire: bool,
         site: Site<'_>,
     ) -> Result<Atom> {
-        self.charge(1, site)?;
-        if wire.is_some() && self.live.values().filter(|wire| wire.is_some()).count() >= MAX_LIVE {
+        self.charge(1 + wires.len(), site)?;
+        if wires.len() > MAX_LIVE
+            || self.live.values().map(|w| w.len()).sum::<usize>() + wires.len() > MAX_LIVE
+        {
             return Err(site.error("limit", "Raw replay exceeds 16 globally live quantum wires"));
         }
         if !self.tokens.insert(token)
-            || (fresh_wire && wire.is_some_and(|wire| !self.wires.insert(wire)))
+            || wires.iter().copied().collect::<BTreeSet<_>>().len() != wires.len()
+            || (fresh_wire && wires.iter().any(|wire| !self.wires.insert(*wire)))
         {
             return Err(site.invalid("Raw operation reuses an issued token or wire"));
         }
-        if wire.is_some() && self.live.values().any(|existing| *existing == wire) {
+        if self
+            .live
+            .values()
+            .any(|existing| wires.iter().any(|wire| existing.contains(wire)))
+        {
             return Err(site.invalid("Raw operation aliases a live wire"));
         }
-        self.live.insert(token, wire);
-        Ok(Atom::Quantum(token, wire))
+        let wires: Arc<[WireId]> = wires.into();
+        self.live.insert(token, wires.clone());
+        Ok(Atom::Quantum(token, wires))
     }
 
     fn quantum(input: &Argument<'_>, site: Site<'_>) -> Result<(TokenId, WireId)> {
         match input.atoms.as_slice() {
-            [Atom::Quantum(token, Some(wire))] if quantum_bit(input.ty) => Ok((*token, *wire)),
+            [Atom::Quantum(token, wires)] if quantum_bit(input.ty) && wires.len() == 1 => {
+                Ok((*token, wires[0]))
+            }
             _ => Err(site.invalid("primitive requires one exact Q<Bit> argument")),
         }
     }
 
     fn remove(&mut self, token: TokenId, wire: WireId, site: Site<'_>) -> Result<()> {
-        if self.live.remove(&token) != Some(Some(wire)) {
+        if self
+            .live
+            .remove(&token)
+            .is_none_or(|wires| wires.as_ref() != [wire])
+        {
             return Err(site.invalid("Raw instruction consumes an unavailable quantum owner"));
         }
         Ok(())
@@ -391,7 +426,9 @@ impl Replay<'_> {
             | Primitive::X
             | Primitive::Cnot
             | Primitive::Phase
-            | Primitive::PhaseEighth => Effect::Unitary,
+            | Primitive::PhaseEighth
+            | Primitive::Split
+            | Primitive::Join => Effect::Unitary,
             Primitive::Init0 => Effect::Iso,
             Primitive::MeasureZ => Effect::Observe,
             _ => {
@@ -435,12 +472,104 @@ impl Replay<'_> {
                     _ => return Err(site.invalid("Raw scalar differs from exact omega identity")),
                 }
                 let output = *output;
-                if self.live.remove(token) != Some(*wire) {
+                if self.live.remove(token).as_ref() != Some(wire) {
                     return Err(site.invalid("Raw scalar consumes an unavailable owner"));
                 }
-                let atom = self.introduce_owner(output, *wire, false, site)?;
+                let atom = self.introduce_owner(output, wire, false, site)?;
                 self.cursor += 1;
                 Ok(vec![atom])
+            }
+            (Primitive::Split, [input]) => {
+                let fields = input
+                    .ty
+                    .quantum_basis()
+                    .and_then(SourceType::tuple_fields)
+                    .filter(|fields| fields.len() == 2)
+                    .ok_or_else(|| site.invalid("split requires an exact packaged pair"))?;
+                let output_fields = step
+                    .output()
+                    .ty()
+                    .tuple_fields()
+                    .filter(|fields| fields.len() == 2)
+                    .ok_or_else(|| site.invalid("split result is not two owners"))?;
+                if output_fields[0].quantum_basis() != Some(&fields[0])
+                    || output_fields[1].quantum_basis() != Some(&fields[1])
+                {
+                    return Err(site.invalid("split changes its exact field types or order"));
+                }
+                let [Atom::Quantum(token, wires)] = input.atoms.as_slice() else {
+                    return Err(site.invalid("split requires one whole owner"));
+                };
+                let width = basis_width(&fields[0])
+                    .ok_or_else(|| site.invalid("split has an unsupported field basis"))?;
+                if width > wires.len() {
+                    return Err(site.invalid("split field exceeds original wires"));
+                }
+                let Some(RawOp::Split {
+                    input: actual,
+                    left,
+                    right,
+                    left_bits,
+                }) = self.raw.operations.get(self.cursor)
+                else {
+                    return Err(site.invalid("Raw program omits the source split"));
+                };
+                if actual != token || usize::from(*left_bits) != width {
+                    return Err(
+                        site.invalid("Raw split changes its owner or exact ordered partition")
+                    );
+                }
+                let (left, right) = (*left, *right);
+                if self.live.remove(token).as_ref() != Some(wires) {
+                    return Err(site.invalid("split consumes an unavailable owner"));
+                }
+                let outputs = vec![
+                    self.introduce_owner(left, &wires[..width], false, site)?,
+                    self.introduce_owner(right, &wires[width..], false, site)?,
+                ];
+                self.cursor += 1;
+                Ok(outputs)
+            }
+            (Primitive::Join, [left, right]) => {
+                let fields = step
+                    .output()
+                    .ty()
+                    .quantum_basis()
+                    .and_then(SourceType::tuple_fields)
+                    .filter(|fields| fields.len() == 2)
+                    .ok_or_else(|| site.invalid("join result is not an exact packaged pair"))?;
+                if left.ty.quantum_basis() != Some(&fields[0])
+                    || right.ty.quantum_basis() != Some(&fields[1])
+                {
+                    return Err(site.invalid("join changes its exact field types or order"));
+                }
+                let ([Atom::Quantum(l, lw)], [Atom::Quantum(r, rw)]) =
+                    (left.atoms.as_slice(), right.atoms.as_slice())
+                else {
+                    return Err(site.invalid("join requires two whole owners"));
+                };
+                let Some(RawOp::Join {
+                    left: actual_l,
+                    right: actual_r,
+                    output,
+                }) = self.raw.operations.get(self.cursor)
+                else {
+                    return Err(site.invalid("Raw program omits the source join"));
+                };
+                if actual_l != l || actual_r != r || l == r {
+                    return Err(site.invalid("Raw join changes or aliases its ordered owners"));
+                }
+                let output = *output;
+                if self.live.remove(l).as_ref() != Some(lw)
+                    || self.live.remove(r).as_ref() != Some(rw)
+                {
+                    return Err(site.invalid("join consumes an unavailable owner"));
+                }
+                self.charge(lw.len() + rw.len(), site)?;
+                let wires = lw.iter().chain(rw.iter()).copied().collect::<Vec<_>>();
+                let output = self.introduce_owner(output, &wires, false, site)?;
+                self.cursor += 1;
+                Ok(vec![output])
             }
             (Primitive::H | Primitive::X, [input]) if quantum_bit(step.output().ty()) => {
                 let input = Self::quantum(input, site)?;
@@ -469,13 +598,12 @@ impl Replay<'_> {
                     ));
                 }
                 for _ in 0..numerator / denominator {
-                    let Atom::Quantum(token, Some(wire)) = self.gate(input, SingleGate::T, site)?
-                    else {
+                    let Atom::Quantum(token, wires) = self.gate(input, SingleGate::T, site)? else {
                         unreachable!("gate returns a quantum atom")
                     };
-                    input = (token, wire);
+                    input = (token, wires[0]);
                 }
-                Ok(vec![Atom::Quantum(input.0, Some(input.1))])
+                Ok(vec![Atom::Quantum(input.0, Arc::from([input.1]))])
             }
             (Primitive::Cnot, [control, target]) if matches!(&step.output().ty().kind, Kind::Tuple(fields) if fields.len() == 2 && fields.iter().all(quantum_bit)) =>
             {
@@ -607,14 +735,14 @@ impl Replay<'_> {
             }
             self.bind(input, &actual.atoms, &mut environment, site)?;
         }
-        // At most 16 live owners: capture the actual suspended caller frame,
+        // Capture the actual suspended caller frame within the wire/storage bounds,
         // without assuming those wires are separable from this call's inputs.
         self.charge(self.live.len(), site)?;
         let suspended: BTreeMap<_, _> = self
             .live
             .iter()
             .filter(|(token, _)| !environment.quantum.contains(token))
-            .map(|(t, w)| (*t, *w))
+            .map(|(t, w)| (*t, w.clone()))
             .collect();
         for step in definition.steps() {
             self.steps += 1;
@@ -765,19 +893,10 @@ pub(super) fn validate_subject(
         replay.fresh_classical(*id, site)?;
     }
     for input in &raw.quantum_inputs {
-        if !matches!(input.shape, BasisShape::UNIT | BasisShape::BIT)
-            || usize::from(input.shape.bits) != input.wires.len()
-        {
-            return Err(site.invalid(
-                "Raw quantum source input must have exact Unit/Bit shape and wire count",
-            ));
+        if usize::from(input.shape.bits) != input.wires.len() {
+            return Err(site.invalid("Raw quantum source input shape and wire count disagree"));
         }
-        replay.introduce_owner(
-            input.token,
-            input.wires.first().copied(),
-            !input.wires.is_empty(),
-            site,
-        )?;
+        replay.introduce_owner(input.token, &input.wires, !input.wires.is_empty(), site)?;
     }
     replay.charge(definition.inputs().len(), site)?;
     let (mut classical, mut quantum) = (0, 0);
@@ -793,10 +912,10 @@ pub(super) fn validate_subject(
                 quantum += 1;
                 if usize::from(port.shape.bits) != width || port.wires.len() != width {
                     return Err(
-                        site.invalid("Raw input changes the source's exact Unit/Bit owner shape")
+                        site.invalid("Raw input changes the source's exact quantum owner shape")
                     );
                 }
-                atoms.push(Atom::Quantum(port.token, port.wires.first().copied()));
+                atoms.push(Atom::Quantum(port.token, Arc::from(port.wires.as_slice())));
             } else {
                 let id = raw
                     .classical_inputs
@@ -914,6 +1033,99 @@ mod tests {
             declared_effect: Effect::Observe,
         };
         (source, raw)
+    }
+
+    #[test]
+    fn packaged_product_replay_rejects_native_valid_axis_and_owner_substitutions() {
+        let source = elaborate(
+            "use std::quantum::{split,join};
+             pub unitary fn f(q:Q<(Unit,(Bit,Bit))>)->Q<(Unit,(Bit,Bit))>{
+                 let (u,r)=split(q); let (a,b)=split(r); join(u,join(b,a))}",
+            "main::f",
+        );
+        // Independently authored instructions, including the zero-wire owner
+        // and ordered physical wire slices. No emitter supplies this oracle.
+        let raw = RawProgram {
+            quantum_inputs: vec![crate::ir::QuantumPort {
+                token: TokenId(0),
+                wires: vec![WireId(0), WireId(1)],
+                shape: BasisShape { bits: 2 },
+            }],
+            classical_inputs: vec![],
+            operations: vec![
+                RawOp::Split {
+                    input: TokenId(0),
+                    left: TokenId(1),
+                    right: TokenId(2),
+                    left_bits: 0,
+                },
+                RawOp::Split {
+                    input: TokenId(2),
+                    left: TokenId(3),
+                    right: TokenId(4),
+                    left_bits: 1,
+                },
+                RawOp::Join {
+                    left: TokenId(4),
+                    right: TokenId(3),
+                    output: TokenId(5),
+                },
+                RawOp::Join {
+                    left: TokenId(1),
+                    right: TokenId(5),
+                    output: TokenId(6),
+                },
+            ],
+            quantum_outputs: vec![TokenId(6)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        checked(&source, raw.clone());
+        for changed in [
+            // Same widths, fresh valid owners, different axis action.
+            {
+                let mut r = raw.clone();
+                r.operations[2] = RawOp::Join {
+                    left: TokenId(3),
+                    right: TokenId(4),
+                    output: TokenId(5),
+                };
+                r
+            },
+            // A valid zero-width partition is still the wrong original tree.
+            {
+                let mut r = raw.clone();
+                r.operations[0] = RawOp::Split {
+                    input: TokenId(0),
+                    left: TokenId(1),
+                    right: TokenId(2),
+                    left_bits: 1,
+                };
+                r.operations[1] = RawOp::Split {
+                    input: TokenId(2),
+                    left: TokenId(3),
+                    right: TokenId(4),
+                    left_bits: 0,
+                };
+                r
+            },
+            // Native accepts this fresh owner, but the source's join order is fixed.
+            {
+                let mut r = raw.clone();
+                r.operations[3] = RawOp::Join {
+                    left: TokenId(5),
+                    right: TokenId(1),
+                    output: TokenId(6),
+                };
+                r
+            },
+        ] {
+            let accepted = kernel().accept_raw(changed).unwrap();
+            assert_eq!(
+                validate(&source, accepted.raw()).unwrap_err().code(),
+                "preservation"
+            );
+        }
     }
 
     #[test]

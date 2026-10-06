@@ -36,4 +36,9 @@ The [packaged-product first attempt](tuple-attempt-01/before.json) retains a
 two-system-qubit swap provider with a zero-width Unit factor and one shared
 Basis/Nat repetition body. At `c5f618f3` its checked source reaches the Raw
 leaf profile's actual unsupported quantum-basis diagnostic. This is a concrete
-remaining integration case, not an accepted provider, passing test or theorem.
+pre-code integration refusal. The [separate after observation](tuple-attempt-01/after.json)
+retains acceptance of the same source bytes and invocation after the product
+adapter implementation. Independent integration tests check n=0/1/2 swap and
+zero-factor phase actions, their lying implementations, and native-valid
+ordered-axis/owner substitutions. These checks do not prove original AST
+preservation or admit a new constitutional guarantee.

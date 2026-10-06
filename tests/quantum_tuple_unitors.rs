@@ -863,6 +863,7 @@ fn structural_tuple_events_after_observation_retain_exact_basis_and_reference() 
 
 #[test]
 fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
+    use qleisli::contract::BasisType;
     // The first authoring source and observations retain retired do/pure.
     // Check a recorded three-body syntax derivative, never rewrite that history.
     let coherent = read(
@@ -872,10 +873,20 @@ fn finite_controls_remain_checked_and_raw_tuple_limits_are_explicit() {
         check_project(&SourceRoot::new(&text).0).unwrap();
     }
     let graph = elaborate(&study("finite-split-join"), "main::f");
-    let error = graph.lower_raw().unwrap_err();
-    assert_eq!(error.code(), "unsupported");
-    assert_eq!(error.module(), Some("main"));
-    assert!(error.span().end > error.span().start);
+    let raw = graph.lower_raw().unwrap();
+    let target = qleisli::contract::meaning::FiniteMeaning::permutation(
+        BasisType::pair(BasisType::Bit, BasisType::Bit),
+        vec![0, 1, 2, 3],
+    )
+    .unwrap();
+    // The new structural Raw adapter must establish exact identity, rather
+    // than merely stop returning its historical unsupported diagnostic.
+    raw.check_finite_meaning(
+        &qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap()),
+        &target,
+        &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
     // Coherent lifting is a separate selected-source capability even though
     // the same exact Q<tuple> now passes common source type classification.
     let error = parsed(&coherent)

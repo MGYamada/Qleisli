@@ -221,6 +221,186 @@ fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
 }
 
 #[test]
+fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::interchange::hierarchical;
+    let original = include_str!(
+        "fixtures/authoring_sessions/meaning-enforcement-v030/tuple-attempt-01/main.qli"
+    );
+    let phase = original
+        .replace(
+            "classical fn swap((u,(a,b)):(Unit,(Bit,Bit)))->(Unit,(Bit,Bit)){(u,(b,a))}",
+            "classical fn angle((u,(a,b)):(Unit,(Bit,Bit)))->(Bit,(Bit,Bit)){(1,(0,0))}",
+        )
+        .replace("permutation_by(swap)", "phase_by(angle)")
+        .replace(
+            "use std::quantum::split;",
+            "use std::quantum::split; use std::quantum::phase_eighth;",
+        )
+        .replace("join(u,join(b,a))", "join(phase_eighth(u),join(a,b))");
+    for (template, scalar) in [(original, false), (phase.as_str(), true)] {
+        for count in 0..=2 {
+            for honest in [true, false] {
+                let text = template.replace(",2,checked_op", &format!(",{count},checked_op"));
+                let text = if honest {
+                    text
+                } else if scalar {
+                    text.replace("phase_eighth(u)", "u")
+                } else {
+                    text.replace("join(b,a)", "join(a,b)")
+                };
+                let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                    .unwrap()
+                    .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap();
+                let checked = source
+                    .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
+                if !honest {
+                    let error = checked.unwrap_err();
+                    assert_eq!(error.code(), "contract", "{scalar}/{count}: {error}");
+                    continue;
+                }
+                let graph = checked.unwrap().lower_hierarchy().unwrap();
+                let accepted =
+                    hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                        .check_against_native(graph.payload(), graph.comparison_request())
+                        .unwrap();
+                let input = (0..8)
+                    .map(|i| [(i + 1) as f64 / 7.0, (i as f64 - 2.0) / 11.0])
+                    .collect::<Vec<_>>();
+                let actual = accepted
+                    .execute_pure(
+                        &input,
+                        2,
+                        hierarchical::execution::ExecutionLimits {
+                            max_amplitudes: 16,
+                            max_steps: 1000,
+                        },
+                    )
+                    .unwrap()
+                    .amplitudes;
+                let angle = f64::from(count) * std::f64::consts::FRAC_PI_4;
+                let expected = if scalar {
+                    input
+                        .iter()
+                        .map(|[a, b]| {
+                            [
+                                a * angle.cos() - b * angle.sin(),
+                                a * angle.sin() + b * angle.cos(),
+                            ]
+                        })
+                        .collect::<Vec<_>>()
+                } else {
+                    (0..8)
+                        .map(|i| {
+                            let j = if count % 2 == 0 {
+                                i
+                            } else {
+                                (i & 4) | ((i & 1) << 1) | ((i & 2) >> 1)
+                            };
+                            input[j]
+                        })
+                        .collect()
+                };
+                assert_eq!(actual.len(), expected.len());
+                for (a, b) in actual.iter().flatten().zip(expected.iter().flatten()) {
+                    assert!(
+                        (a - b).abs() < 1e-12,
+                        "{scalar}/{count}: {actual:?} != {expected:?}"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::interchange::hierarchical;
+    for (basis, helper, meaning, body, scalar, signature) in [
+        (
+            "(Unit,Unit)",
+            "classical fn angle((u,v):(Unit,Unit))->(Bit,(Bit,Bit)){(1,(0,0))}",
+            "phase_by(angle)",
+            "let (u,v)=split(q);join(phase_eighth(u),v)",
+            true,
+            BasisType::pair(BasisType::Unit, BasisType::Unit),
+        ),
+        (
+            "(Unit,Bit,Unit)",
+            "classical fn ident((u,b,v):(Unit,Bit,Unit))->(Unit,Bit,Unit){(u,b,v)}",
+            "permutation_by(ident)",
+            "q",
+            false,
+            BasisType::Tuple(vec![BasisType::Unit, BasisType::Bit, BasisType::Unit]),
+        ),
+    ] {
+        let text=format!("use std::quantum::{{split,join,phase_eighth}};{helper}
+            meaning M:{basis}={meaning};
+            pub unitary fn implementation(q:Q<{basis}>)->Q<{basis}>{{{body}}}
+            pub unitary fn client[static U:Op<{basis},M>](q:Q<{basis}>)->Q<{basis}> requires Apply(U){{U(q)}}");
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text)])).unwrap();
+        let source = parsed
+            .instantiate(
+                "main::client",
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    qleisli::frontend::sized::OperationBinding::new(
+                        "main::implementation",
+                        BTreeMap::new(),
+                    ),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let leaf = source.lower_raw_operation("U").unwrap();
+        let target = parsed.finite_meaning_target("main::M").unwrap();
+        let checked = leaf
+            .check_finite_meaning(&kernel(), &target, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        assert_eq!(checked.leaf().boundary().signature(), &signature);
+        let all = source
+            .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let graph = all.lower_hierarchy().unwrap();
+        let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
+        let input = if scalar {
+            vec![[0.3, 0.4], [-0.5, 0.6]]
+        } else {
+            vec![[0.3, 0.4], [-0.5, 0.6], [0.7, -0.8], [-0.9, 0.1]]
+        };
+        let actual = accepted
+            .execute_pure(
+                &input,
+                2,
+                hierarchical::execution::ExecutionLimits {
+                    max_amplitudes: 8,
+                    max_steps: 1000,
+                },
+            )
+            .unwrap()
+            .amplitudes;
+        assert_eq!(actual.len(), input.len());
+        let s = std::f64::consts::FRAC_1_SQRT_2;
+        for ([a, b], [x, y]) in input.into_iter().zip(actual) {
+            let (a, b) = if scalar {
+                (s * (a - b), s * (a + b))
+            } else {
+                (a, b)
+            };
+            assert!((x - a).abs() < 1e-12 && (y - b).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
 fn original_annotations_check_every_nested_and_unused_provider_before_lowering() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::sized::OperationBinding;

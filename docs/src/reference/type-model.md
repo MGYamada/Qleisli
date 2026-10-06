@@ -201,6 +201,15 @@ basis tag, measures or silently discards an owner. They use the existing native
 `split_tuple` and `join_tuple` rules; native support for other arities does not
 widen this source signature.
 
+The source Raw leaf adapter supports these same binary structural maps for
+packaged bases built from exact Unit/Bit product trees. Each logical owner
+retains its complete ordered wire vector, including an empty vector for a
+zero-width factor. The independent ordered replay checks fresh owner identities,
+exact source field trees, split partitions and join operand order. Raw transport
+widths do not replace source types. The unary native finite request also retains
+the complete original Basis signature and actual returned wire order. Bits tags
+remain unsupported by this finite representation mapping.
+
 An explicit left unitor on `Q<(Unit,A)>` is `split` followed by `finish` on its
 Unit owner; its inverse is `join(unit(()), a)`. The right unitor uses the other
 factor. The coefficient is exactly `+1` on every basis value and retained
@@ -445,8 +454,8 @@ alias; native failure cannot select another profile. `emit-proposal` for a
 refined source needs the checker selected by `QLEISLI_KERNEL` to perform these
 binding checks, while its output remains an untrusted proposal.
 
-This connects exact Unit/Bit provider bindings to actual emitted finite nodes.
-Distinct Bits/product quantum interfaces and unsupported provider capabilities
+This connects exact Unit/Bit/product provider bindings to actual emitted finite nodes.
+Distinct Bits quantum interfaces and unsupported provider capabilities
 continue to reject explicitly in this leaf profile. Original source-to-table,
 AST-to-step, execution and general hierarchy preservation remain separate proof
 obligations; a successful collection is not a full source-preservation theorem
@@ -550,7 +559,8 @@ Both operands of `and` evaluate even when its left value is zero. Quantum
 operands, `Bits<1>`, static naturals and products are not coerced to Bit.
 
 The sized Rust API's `ElaboratedProgram::lower_raw` produces an untrusted finite
-proposal for `Unit`/`Bit`/`Q<Unit>`/`Q<Bit>`/products, including specialized ordinary helper
+proposal for Unit/Bit values and exact ordinary or packaged quantum products,
+including specialized ordinary helper
 calls and static folds. Its `source()` retains whole parameter/result trees and
 the original source instance. Native `Kernel::accept` must check `proposal()`
 before execution. `validate_source_steps` separately compares the exact accepted
