@@ -6,7 +6,7 @@ import json
 import tempfile
 import unittest
 
-from check_editions import HISTORY, HISTORICAL_ROOT, ROOT, check_editions
+from check_editions import HISTORY, HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, ROOT, check_editions
 
 MANIFEST = 'schema-version = 2\n[qrate]\nedition = "2026"\n'
 
@@ -38,25 +38,26 @@ class EditionTests(unittest.TestCase):
                                   "historical_manifests": 0, "historical_sources": 0})
 
     def copy_history(self):
-        """Only 56 small historical inputs and two anchors, never build archives."""
+        """Copy only exact source inputs and anchors, never build archives."""
         metadata = (ROOT / HISTORY).read_bytes()
-        record = json.loads(metadata)["records"][0]
+        records = json.loads(metadata)["records"]
         files = {HISTORY: metadata}
-        for name in {**record["anchors"], **record["files"]}:
-            name = str(Path(record["root"]) / name)
-            files[name] = (ROOT / name).read_bytes()
+        for record in records:
+            for name in {**record["anchors"], **record["files"]}:
+                name = str(Path(record["root"]) / name)
+                files[name] = (ROOT / name).read_bytes()
         for name, data in files.items():
             path = self.root / name
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_bytes(data)
-        return self.root / record["root"]
+        return self.root / HISTORICAL_ROOT
 
     def test_exact_historical_inputs_are_not_reported_as_filesystem_admission(self):
         self.copy_history()
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts, {"manifests": 2, "qli": 2, "qlt": 1,
-                                  "historical_manifests": 14, "historical_sources": 42})
+                                  "historical_manifests": 15, "historical_sources": 43})
 
     def test_historical_source_manifest_generator_and_record_are_immutable(self):
         base = self.copy_history()
@@ -100,7 +101,7 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts["qli"], 3)  # The new project has ordinary coverage.
-        self.assertEqual(counts["historical_sources"], 42)
+        self.assertEqual(counts["historical_sources"], 43)
 
     def test_exception_metadata_and_symlinks_cannot_redirect_history(self):
         base = self.copy_history()
@@ -119,6 +120,39 @@ class EditionTests(unittest.TestCase):
         path.unlink()
         path.symlink_to(other)
         self.assertTrue(any("must not follow symlinks" in e
+                            for e in check_editions(self.root)[0]))
+
+    def test_rejected_authoring_attempt_preserves_refusal_and_exact_inventory(self):
+        self.copy_history()
+        base = self.root / REJECTED_AUTHORING_ROOT
+        for name in ("attempt-01/main.qli", "attempt-01/Qargo.toml", "observation-before.json"):
+            with self.subTest(name=name):
+                path = base / name
+                original = path.read_bytes()
+                path.write_bytes(original + b"\n")
+                self.assertTrue(any("historical input identity changed" in e
+                                    for e in check_editions(self.root)[0]))
+                path.write_bytes(original)
+        self.write(f"{REJECTED_AUTHORING_ROOT}/attempt-01/new.qli", "new source")
+        self.assertTrue(any("historical source inventory changed" in e
+                            for e in check_editions(self.root)[0]))
+
+    def test_corrected_attempt_is_ordinary_and_missing_history_cannot_hide_refusal(self):
+        self.copy_history()
+        self.write(f"{REJECTED_AUTHORING_ROOT}/attempt-02/main.qli", "corrected source")
+        self.write(f"{REJECTED_AUTHORING_ROOT}/attempt-02/Qargo.toml", MANIFEST)
+        errors, counts = check_editions(self.root)
+        self.assertEqual(errors, [])
+        self.assertEqual(counts["qli"], 3)
+        self.write(f"{REJECTED_AUTHORING_ROOT}/attempt-02/Qargo.toml", '[qrate]\nedition = "2026"\n')
+        self.assertTrue(any("attempt-02/Qargo.toml: requires schema-version = 2" in e
+                            for e in check_editions(self.root)[0]))
+        # The second historical root also requires its frozen record even if
+        # the original in-memory experiment is absent from a checkout.
+        import shutil
+        shutil.rmtree(self.root / HISTORICAL_ROOT)
+        (self.root / HISTORY).unlink()
+        self.assertTrue(any(f"missing {HISTORY}" in e
                             for e in check_editions(self.root)[0]))
 
     def test_omitted_manifest_and_repository_root_placement_fail(self):

@@ -84,6 +84,22 @@
         "sources/wrong-output-route"
       ],
       "root": "tests/fixtures/constitution_v030/routed-control-commutation"
+    },
+    {
+      "anchors": {
+        "observation-before.json": "ba8b4770dd3954513199567d4ecde3a49c46b8ed38092765958bbbbe75033a05"
+      },
+      "explanation": "The first filesystem CLI attempt was actually refused because its manifest omitted schema-version = 2. Preserve the exact original source, manifest and recorded refusal; this classification does not admit the project. The separately corrected attempt-02 remains subject to ordinary schema-2 edition coverage.",
+      "files": {
+        "attempt-01/Qargo.toml": "df323886f5ef582f35cc99a3e41218126afa4e322fe20532edff4159a083c3ff",
+        "attempt-01/main.qli": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6"
+      },
+      "filesystem_admission": false,
+      "kind": "rejected-filesystem-authoring-attempt",
+      "projects": [
+        "attempt-01"
+      ],
+      "root": "tests/fixtures/authoring_sessions/operation-application-v030"
     }
   ],
   "version": 1

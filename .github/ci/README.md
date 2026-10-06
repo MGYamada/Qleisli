@@ -99,11 +99,14 @@ component of #141, not complete interpretation/proof/artifact enforcement.
 Human decisions and changes to enforcement code or workflows still need review.
 
 Edition coverage distinguishes filesystem projects from exact historical
-in-memory experiments. `scripts/edition_history.json` pins the original routed
+experiments, including refused filesystem authoring attempts.
+`scripts/edition_history.json` pins the original routed
 control experiment, generator, 42 sources and 14 unused manifests. The generator
 passed source strings directly to `ParsedProgram`; its malformed manifests were
 never filesystem-admission evidence. The checker preserves those bytes and
-reports them separately. Changed or additional inputs do not inherit this
+reports them separately. It also pins the operation-application study's
+first invalid manifest, source and actual CLI refusal; its separately corrected
+second attempt receives ordinary edition coverage. Changed or additional inputs do not inherit this
 classification; ordinary projects still require a valid schema-2 manifest.
 
 The live v5 ledger retains the v4 separation of append-only admitted identities

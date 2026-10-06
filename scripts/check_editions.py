@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check filesystem editions and exact retained in-memory experiment inputs.
+"""Check filesystem editions and exact retained historical experiment inputs.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
@@ -13,8 +13,9 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[1]
 SKIP = {".git", ".lake", "target", "__pycache__", ".venv"}
 HISTORY = "scripts/edition_history.json"
-HISTORY_SHA256 = "2c54f3a1ff98d6011565b88b855b693d191992238ea5c12346c8969ad4f46c69"
+HISTORY_SHA256 = "df6d69be76429feaff67dc1ec22c382c92126040305bc8f4ece6a868849ba6eb"
 HISTORICAL_ROOT = "tests/fixtures/constitution_v030/routed-control-commutation"
+REJECTED_AUTHORING_ROOT = "tests/fixtures/authoring_sessions/operation-application-v030"
 
 
 def historical_inputs(root):
@@ -38,8 +39,8 @@ def historical_inputs(root):
         return data
 
     if not (root / HISTORY).exists():
-        if (root / HISTORICAL_ROOT).exists():
-            raise ValueError(f"missing {HISTORY} for preserved in-memory inputs")
+        if any((root / name).exists() for name in (HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT)):
+            raise ValueError(f"missing {HISTORY} for preserved historical inputs")
         return set(), set()
     records = json.loads(frozen(HISTORY, HISTORY_SHA256))["records"]
     manifests, sources = set(), set()
@@ -151,8 +152,8 @@ def main():
     print(f'Edition 2026: {counts["qli"]} .qli and {counts["qlt"]} .qlt files covered by '
           f'{counts["manifests"]} explicit manifests; no repository-root manifest.')
     if counts["historical_sources"]:
-        print(f'Historical in-memory inputs: {counts["historical_sources"]} exact source files and '
-              f'{counts["historical_manifests"]} unused manifests retained by hash; '
+        print(f'Historical inputs: {counts["historical_sources"]} exact source files and '
+              f'{counts["historical_manifests"]} non-admitting manifests retained by hash; '
               'not valid filesystem source projects.')
     return 0
 
