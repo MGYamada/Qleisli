@@ -57,6 +57,16 @@ For the next session:
    backlog. A GitHub Issue needs no duplicate
    backlog entry, update or A020 ID.
 
+The [functional-boundary study](functional-boundary-v030/README.md) retains ten
+complete first projects, two explicit wrapper repairs and 44 actual CLI calls.
+Arity, local-callable/provider category, tuple-contained `Q<Unit>`, quantum
+conditions and owner reuse have bounded positive/refusal controls. The original
+wrong observer command forms and direct primitive-provider refusals remain;
+corrected adapters and source repairs are separate. Selected runtime-if and
+static-composition emission retain their existing profile limits. Independent
+exact-identity and reference tests accompany these observations; the study is
+not a general closure, source-preservation or resource theorem.
+
 The [operator-arrow study](operator-arrow-v030/README.md) retains twelve
 programs, three honest source snapshots and 72 actual check observations.
 It records private-entry/import repairs, the current Iso-root/quantum-Unit

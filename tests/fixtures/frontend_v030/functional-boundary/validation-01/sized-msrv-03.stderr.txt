@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized] target(s) in 0.13s
+     Running tests/sized_source.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/sized_source-9b8c70d5b5dabc10)

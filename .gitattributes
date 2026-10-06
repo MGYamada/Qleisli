@@ -187,3 +187,7 @@ tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-m
 tests/fixtures/frontend_v030/checked-operation/implementation-01/*.stdout.txt -text -whitespace
 tests/fixtures/frontend_v030/checked-operation/implementation-01/*.stderr.txt -text -whitespace
 tests/fixtures/frontend_v030/checked-operation/implementation-01/hosted-predecessor/*.exact-excerpt.txt -text -whitespace
+# Preserve actual functional-boundary libtest streams and hosted excerpts.
+tests/fixtures/frontend_v030/functional-boundary/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/functional-boundary/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/frontend_v030/functional-boundary/hosted-predecessor-01/*-log-excerpt.txt -text -whitespace

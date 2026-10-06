@@ -1,0 +1,11 @@
+2026-10-06T04:19:55.7780793Z HEAD is now at 1899754 Merge a6e09a5960d9615b1f4356dcbf32bc33fd608e1f into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T04:19:55.7846208Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T04:19:55.7867779Z 18997543f87b254063d65e60394b26f999d261ab
+2026-10-06T04:39:19.2911871Z command failed (101): ['cargo', 'test', '--offline', '--all-targets', '--target-dir', PosixPath('/home/runner/work/_temp/qleisli-distribution-target/source-production')]; see /home/runner/work/_temp/qleisli-distribution-artifacts-ixxu0994/logs/14.stderr
+2026-10-06T04:39:19.2924970Z Distribution validation failed; report: /home/runner/work/_temp/qleisli-distribution.json
+2026-10-06T04:39:19.3042938Z ##[error]Process completed with exit code 1.
+2026-10-06T04:39:19.3122213Z   name: distribution-18997543f87b254063d65e60394b26f999d261ab
+2026-10-06T04:39:23.6964465Z Finalizing artifact upload
+2026-10-06T04:39:23.9502590Z Artifact distribution-18997543f87b254063d65e60394b26f999d261ab.zip successfully finalized. Artifact ID 11390856980
+2026-10-06T04:39:23.9504539Z Artifact distribution-18997543f87b254063d65e60394b26f999d261ab has been successfully uploaded! Final size is 61916760 bytes. Artifact ID is 11390856980
+2026-10-06T04:39:23.9511569Z Artifact download URL: https://github.com/MGYamada/Qleisli/actions/runs/37413163947/artifacts/11390856980

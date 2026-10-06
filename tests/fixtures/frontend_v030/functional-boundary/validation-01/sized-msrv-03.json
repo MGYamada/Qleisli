@@ -1,0 +1,38 @@
+{
+  "argv": [
+    "rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "sized_source",
+    "shadowing_moves_tuple_shape_and_effects",
+    "--",
+    "--exact",
+    "--test-threads=1"
+  ],
+  "exit_code": 0,
+  "seconds": 0.16602133301785216,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-ci-repair-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-03.stdout.txt",
+      "sha256": "28e45bfd7fad06a8cc5a52f0de6dd00d0328038f056d7f81b72ae43d40ac8561"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/sized-msrv-03.stderr.txt",
+      "sha256": "01f6d66534dbe6f1c31ad33ccaff1a6cec43d701de7ec5da9154a764a36a7f3a"
+    }
+  }
+}

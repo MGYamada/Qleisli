@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Specify the boundary between static operation descriptions and live quantum
+  owners. Keep runtime calls eager and first-order, with complete argument lists;
+  retain checked scoped bodies, decreasing Nat specialization, exact Unit
+  ownership and separate capability evidence. Explain current refusals for
+  hidden callable captures, partial application, generic Monad/lazy/host-I/O
+  assumptions and unimplemented coherent sums without adopting those features
+  or enlarging native acceptance (#80).
 - Rename the exact-meaning static constructor to
   `checked_op(implementation, Meaning)`. Reject the retired `bind_op` spelling
   with a located migration diagnostic; reserve the new spelling and migrate

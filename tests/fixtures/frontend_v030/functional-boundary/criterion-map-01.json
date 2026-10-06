@@ -1,0 +1,174 @@
+{
+  "format": "qleisli.functional-boundary-criterion-map",
+  "version": 1,
+  "issue": 80,
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/80#issuecomment-6009479668",
+  "source_baseline": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "criteria": [
+    {
+      "ordinal": 1,
+      "original_criterion": "The Language Reference states the Haskell/Qleisli boundary explicitly.",
+      "reference_anchor": "runtime-calls-and-static-descriptions",
+      "checked_contract": "Explicit normative current-boundary classification under #80 ordinary decision and authority hierarchy.",
+      "implementation_or_evidence_paths": [
+        "docs/src/reference/functional-boundary.md"
+      ],
+      "limits": "No new constitutional interpretation or general abstraction feature."
+    },
+    {
+      "ordinal": 2,
+      "original_criterion": "Static/program-description values and live quantum owners are clearly separated.",
+      "reference_anchor": "runtime-calls-and-static-descriptions",
+      "checked_contract": "Static description fields/access are separate from runtime values; recursive quantum linearity includes tuple-contained zero-width owners.",
+      "implementation_or_evidence_paths": [
+        "src/frontend/types.rs",
+        "src/frontend/check/body/operations.rs",
+        "tests/functional_boundary.rs"
+      ],
+      "limits": "Description reuse is not owner duplication or separability."
+    },
+    {
+      "ordinal": 3,
+      "original_criterion": "Higher-order abstraction over static operations has a defined typing/lowering story.",
+      "reference_anchor": "admitted-operation-construction",
+      "checked_contract": "Exact current Op formal/interface, explicit static arguments, access transfer, pending Meaning and concrete finite/native lowering are specified and tested.",
+      "implementation_or_evidence_paths": [
+        "src/frontend/check/body/operations.rs",
+        "tests/operation_parameters.rs",
+        "tests/checked_operations.rs"
+      ],
+      "limits": "General arrows/builders and selected constructor convergence stay pending in their own Issues."
+    },
+    {
+      "ordinal": 4,
+      "original_criterion": "Unrestricted closure capture cannot duplicate or hide live quantum ownership.",
+      "reference_anchor": "runtime-calls-and-static-descriptions",
+      "checked_contract": "No reusable callable/closure type; runtime and spent local categories cannot become callees or static providers; actual negative controls run before an absent checker.",
+      "implementation_or_evidence_paths": [
+        "src/frontend/ast.rs",
+        "src/frontend/check/body.rs",
+        "tests/functional_boundary.rs"
+      ],
+      "limits": "No universal closure-capture theorem or unsupported syntax checker claim."
+    },
+    {
+      "ordinal": 5,
+      "original_criterion": "Classical pattern matching, structural quantum destructuring and physical observation are semantically distinct.",
+      "reference_anchor": "patterns-observation-and-unit",
+      "checked_contract": "Ordinary Bit conditions/patterns, explicit quantum structural maps/coherent lifting and explicit observation have distinct checked contracts.",
+      "implementation_or_evidence_paths": [
+        "tests/quantum_unit_maps.rs",
+        "tests/body_effects.rs",
+        "tests/fixtures/authoring_sessions/functional-boundary-v030/assessment.json"
+      ],
+      "limits": "General ADT match implementation remains separate; selected runtime-if emitter is still unsupported."
+    },
+    {
+      "ordinal": 6,
+      "original_criterion": "Classical ADTs do not silently define coherent quantum sum semantics.",
+      "reference_anchor": "patterns-observation-and-unit",
+      "checked_contract": "Current TypeKind/grammar has no general classical ADT/coherent-sum admission; Reference constrains later admissions without inheriting quantum sum semantics.",
+      "implementation_or_evidence_paths": [
+        "src/frontend/ast.rs",
+        "docs/src/reference/type-model.md"
+      ],
+      "limits": "This does not complete #64 or add either type family."
+    },
+    {
+      "ordinal": 7,
+      "original_criterion": "`Unit` / `Q<Unit>` / zero-width ownership behavior is documented consistently with exact semantics.",
+      "reference_anchor": "patterns-observation-and-unit",
+      "checked_contract": "Exact Unit/owner distinctions, argument/body execution, scalar action and controlled/reference unit-map controls are specified and checked.",
+      "implementation_or_evidence_paths": [
+        "tests/quantum_unit_maps.rs",
+        "tests/operation_parameters.rs",
+        "tests/functional_boundary.rs"
+      ],
+      "limits": "Finite/selected quantum-Unit profile limits and broader source/runtime proofs remain."
+    },
+    {
+      "ordinal": 8,
+      "original_criterion": "Trait/type-class-like semantic capabilities identify where verifier evidence is required.",
+      "reference_anchor": "admitted-operation-construction",
+      "checked_contract": "Current Apply/Adjoint/Controlled requirements are separate from concrete native-checked paths and exact Meaning evidence; wrong effects/access/meaning reject.",
+      "implementation_or_evidence_paths": [
+        "tests/operation_parameters.rs",
+        "tests/body_effects.rs",
+        "tests/checked_operations.rs"
+      ],
+      "limits": "General trait/class declarations and semantic laws are not implemented by this unit."
+    },
+    {
+      "ordinal": 9,
+      "original_criterion": "The verified Core does not depend on laziness, `bottom`, or unrestricted general recursion.",
+      "reference_anchor": "scoped-bodies-finite-elaboration-and-effects",
+      "checked_contract": "Eager calls and complete body checking; guarded natural arithmetic, checked decreasing self-call, zero-fold and cycle controls. Explicit finite proposals reach independent checking.",
+      "implementation_or_evidence_paths": [
+        "tests/body_effects.rs",
+        "tests/sized_source.rs"
+      ],
+      "limits": "No general compiler termination/source-preservation/quantitativeRS theorem; scoped bodies and checked Nat recursion remain permitted."
+    },
+    {
+      "ordinal": 10,
+      "original_criterion": "Currying/partial application cannot create reusable closures over hidden live quantum owners.",
+      "reference_anchor": "runtime-calls-and-static-descriptions",
+      "checked_contract": "Complete call arity and lexical local-callee/provider refusals prevent partial calls from producing reusable hidden-owner callables.",
+      "implementation_or_evidence_paths": [
+        "tests/functional_boundary.rs",
+        "tests/fixtures/authoring_sessions/functional-boundary-v030/assessment.json"
+      ],
+      "limits": "General currying/function values remain unsupported; no new linear closure surface."
+    },
+    {
+      "ordinal": 11,
+      "original_criterion": "No generic `Monad/do` abstraction can hide `Unitary` / `Iso` / `Observe` boundaries.",
+      "reference_anchor": "scoped-bodies-finite-elaboration-and-effects",
+      "checked_contract": "No general quantum Monad/do route; actual #81/#82 retirement diagnostics and principal effect assertions retain all three effects.",
+      "implementation_or_evidence_paths": [
+        "tests/body_effects.rs",
+        "docs/src/reference/coherent-basis.md",
+        "docs/src/reference/checked-operations.md"
+      ],
+      "limits": "Checked scoped compiler bodies are not outlawed or silently reclassified."
+    },
+    {
+      "ordinal": 12,
+      "original_criterion": "Future host I/O remains outside the current three-effect quantum core.",
+      "reference_anchor": "scoped-bodies-finite-elaboration-and-effects",
+      "checked_contract": "Host I/O is outside accepted source quantum effects; current primitives/AST admit no arbitrary host-I/O effect.",
+      "implementation_or_evidence_paths": [
+        "docs/src/reference/functional-boundary.md",
+        "src/frontend/ast.rs"
+      ],
+      "limits": "Host CLI/Python orchestration is separate; identifiers have no magic IO semantics."
+    },
+    {
+      "ordinal": 13,
+      "original_criterion": "qlippy/docs can diagnose or explain at least the major Haskell semantic false friends.",
+      "reference_anchor": "false-friends-and-diagnostics",
+      "checked_contract": "Reference explains the major false friends; actual arity/local-provider text/JSON plus #81/#82 migration/effect diagnostics are checked.",
+      "implementation_or_evidence_paths": [
+        "tests/fixtures/authoring_sessions/functional-boundary-v030/assessment.json",
+        "tests/body_effects.rs"
+      ],
+      "limits": "External qargo/qlippy diagnostic integration is omitted by explicit human authorization; no upgraded-consumer claim."
+    },
+    {
+      "ordinal": 14,
+      "original_criterion": "Any surface sugar introduced under this umbrella lowers to finite explicit structure that the independent verifier checks.",
+      "reference_anchor": "evidence-identity-and-proof-limits",
+      "checked_contract": "No new sugar in this boundary unit. Existing current constructors/coherent maps retain explicit finite lowering, source binding, native artifact checks and fail-closed unsupported projections.",
+      "implementation_or_evidence_paths": [
+        "tests/functional_boundary.rs",
+        "tests/operation_parameters.rs",
+        "tests/checked_operations.rs",
+        "tests/fixtures/frontend_v030/coherent-basis/implementation-01/integration-validation-01.json"
+      ],
+      "limits": "Valid outputIR is not a universal source-preservation theorem; QS/PR/RS/EXACT and two admitted guarantees retain exact scopes/statuses."
+    }
+  ],
+  "status": "criterion-evidence-index-awaiting-final-integration-review",
+  "scope": "Original14boundary criteria remain unchanged. The map is an ordinary technical evidence index, not a human Guardian act, feature-child completion, proof discharge or release approval. Performed command records and exact review/input identities are linked by a separate final validation manifest. QFT excluded; no new maximum cases."
+}

@@ -1,0 +1,124 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#80 complete first-order callable and quantum functional-boundary controls",
+  "baseline_commit": "5bcc36f868fdddc4f68d1d715b83ad8e8aeeb726",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex subagent; informed repository/Issue/code/design-document context; exact deployed model/sampling unavailable",
+  "context": "context.md",
+  "record_status": "actual-first-and-explicit-followup-observations-registered",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Ten informed independent desired and deliberate counterexample projects; no source repair or copied implementation oracle.",
+      "sha256": {
+        "complete-call/main.qli": "2cce03a05745338094b461b55ca1836e84c0bcef4ed101f0461ca645ad325da3",
+        "partial-call/main.qli": "9e472eabe7c171d25359208c18e391c9ffc7296d042f7e3676ea1fd4de642395",
+        "ordinary-local-callee/main.qli": "db1fdf0c2b549cacee2cc018c55dbb1f454e23c73193593227da17c5124f5b50",
+        "quantum-unit-tuple-callee/main.qli": "008b34cda450d1ffd4293cf09f1e35625217c549034db4a42370403b112479ee",
+        "quantum-unit-tuple-provider/main.qli": "35d0dda96c9ce2504378b88ef1692403050a7039f92b82500a5db7d9881f7802",
+        "static-description-reuse/main.qli": "bdaec9b5a07dab65aaab7f524433f9b3916556c0da3ef8e85f417bcc9a7aa9ec",
+        "owner-duplication/main.qli": "5a2ac049fc780207210c43256bfecd83891bfeaddf5b1126e92fa3f0c241bb10",
+        "classical-condition/main.qli": "4f97e254fd605a8e0b636868d1e805aafebdd78512d217c40e741c03cdae5a35",
+        "quantum-condition/main.qli": "22eaf8982596b5c15ef332896b868e79c7f91002e61e5397604ee9b3daf861bc",
+        "explicit-observation/main.qli": "2e7ed6848a5c3eb11897f6697717468b09bcb1a9db84c9ff233725479431c9e3"
+      },
+      "observations": [
+        "observations-first/complete-call-finite-check-json.json",
+        "observations-first/complete-call-sized-check-json.json",
+        "observations-first/partial-call-finite-check-json.json",
+        "observations-first/partial-call-sized-check-json.json",
+        "observations-first/ordinary-local-callee-finite-check-json.json",
+        "observations-first/ordinary-local-callee-sized-check-json.json",
+        "observations-first/quantum-unit-tuple-callee-finite-check-json.json",
+        "observations-first/quantum-unit-tuple-callee-sized-check-json.json",
+        "observations-first/quantum-unit-tuple-provider-finite-check-json.json",
+        "observations-first/quantum-unit-tuple-provider-sized-check-json.json",
+        "observations-first/static-description-reuse-finite-check-json.json",
+        "observations-first/static-description-reuse-sized-check-json.json",
+        "observations-first/owner-duplication-finite-check-json.json",
+        "observations-first/owner-duplication-sized-check-json.json",
+        "observations-first/classical-condition-finite-check-json.json",
+        "observations-first/classical-condition-sized-check-json.json",
+        "observations-first/quantum-condition-finite-check-json.json",
+        "observations-first/quantum-condition-sized-check-json.json",
+        "observations-first/explicit-observation-finite-check-json.json",
+        "observations-first/explicit-observation-sized-check-json.json",
+        "observations-first/partial-call-finite-check-text.json",
+        "observations-first/partial-call-sized-check-text.json",
+        "observations-first/ordinary-local-callee-finite-check-text.json",
+        "observations-first/ordinary-local-callee-sized-check-text.json",
+        "observations-first/complete-call-finite-run-json.json",
+        "observations-first/classical-condition-finite-run-json.json",
+        "observations-first/explicit-observation-finite-run-json.json",
+        "observations-followup/attempt-01-complete-call-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-partial-call-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-ordinary-local-callee-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-quantum-unit-tuple-callee-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-quantum-unit-tuple-provider-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-static-description-reuse-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-owner-duplication-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-classical-condition-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-quantum-condition-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-explicit-observation-sized-adapter-check-json.json",
+        "observations-followup/attempt-01-partial-call-sized-adapter-check-text.json",
+        "observations-followup/attempt-01-ordinary-local-callee-sized-adapter-check-text.json"
+      ],
+      "reports": [
+        "first-files.json",
+        "predictions-before.json",
+        "first-current-comparison.json",
+        "trusted-continuity-followup.json",
+        "observations-first/capture.json",
+        "observations-followup/capture.json",
+        "assessment.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "After real primitive-provider refusals, two complete wrapper projects preserve intended action while supplying ordinary source providers; original first failures remain unchanged.",
+      "sha256": {
+        "static-description-reuse/main.qli": "091e4f464c846aebb581d4e19f5be45b8f4f42064c6ca396093e34bcbdd122d7",
+        "owner-duplication/main.qli": "eeb9c096b53ccc57ccfc5c6495d5cc9f7fa1ab0bf463c92f8ee96035eb5aed53"
+      },
+      "observations": [
+        "observations-followup/attempt-02-static-description-reuse-finite-check-json.json",
+        "observations-followup/attempt-02-static-description-reuse-sized-adapter-check-json.json",
+        "observations-followup/attempt-02-static-description-reuse-finite-run-json.json",
+        "observations-followup/attempt-02-owner-duplication-finite-check-json.json",
+        "observations-followup/attempt-02-owner-duplication-sized-adapter-check-json.json"
+      ],
+      "reports": [
+        "followup-before.json",
+        "observations-followup/capture.json",
+        "assessment.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "complete-call/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "partial-call/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-local-callee/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-unit-tuple-callee/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-unit-tuple-provider/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "static-description-reuse/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "owner-duplication/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "classical-condition/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-condition/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "explicit-observation/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "scope": "Bounded public source observations, not Issue completion or constitutional proof.",
+  "attempt02_manifest_sha256": {
+    "static-description-reuse/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "owner-duplication/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "registration": {
+    "recorded_utc": "2026-10-06T04:48:35.136724+00:00",
+    "pending_file_sha256": "ca827fdae2fc29cd76eadd18e09cd69abc43d66222074601b0be75970713a7fa",
+    "first_inventory_sha256": "edcf5f9e25c7e391a4bf2d69c42137dc31afafca8c3d430ac4e482b7fecf59bc",
+    "first_capture_sha256": "54ac0968e27c506247d3398013df2dadf7b778165aa1682a6f1897fb40065697",
+    "followup_before_sha256": "2d867d75b95048d2ecabecf715f75f513e90603cb2d65a1194e60d266a9f41b5",
+    "followup_capture_sha256": "fd96dace8a23d0034ec30f63305b46b28250752b32e95200cb7f1d88748c78fb",
+    "assessment_sha256": "706246675e3900f29923777a3dbcc4410f85201e54b8f255037570d2bab114da"
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sized",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/static-description-reuse/main.qli",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "attempt": "attempt-01",
+  "case": "static-description-reuse",
+  "mode": "sized-adapter",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T04:47:42.468748+00:00",
+  "recorded_utc": "2026-10-06T04:47:42.519640+00:00",
+  "seconds": 0.0050633749924600124,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "bdaec9b5a07dab65aaab7f524433f9b3916556c0da3ef8e85f417bcc9a7aa9ec",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-followup/attempt-01-static-description-reuse-sized-adapter-check-json.stdout.txt",
+      "sha256": "e451b888471fa41adc4f30ea7ce6ff84e45e824b81e32aafe05184efa8763d82",
+      "bytes": 519
+    },
+    "stderr": {
+      "path": "observations-followup/attempt-01-static-description-reuse-sized-adapter-check-json.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "scope": "Actual bounded observation; shared selected-source adapter, not independent implementation or preservation proof.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "static provider requires an ordinary fn with inferred Unitary body effect; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/static-description-reuse/main.qli",
+          "start": 290,
+          "end": 291
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

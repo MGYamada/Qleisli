@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/partial-call/main.qli:6:19: arity: runtime argument arity mismatch
