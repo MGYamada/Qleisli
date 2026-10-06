@@ -12,6 +12,23 @@ Issues or discharge quantitative Resource Safety.
 
 ## Static categories and binding
 
+The static computation class consists of deterministic, terminating elaboration
+computations whose results are admitted sizes, exact constants, closed operation
+descriptions or constraint/capability inputs. Its evaluator has only the
+explicit static environment and admitted ordinary finite labels; it has no live
+quantum owner, runtime input, host environment or execution authority. Results
+are normalized/resolved before canonical Core. An operation description must
+still satisfy its independent evidence and native acceptance obligations.
+
+This semantic class is the 0.3.0 decision in
+[#40](https://github.com/MGYamada/Qleisli/issues/40). It does not stabilize a
+general public `static fn`, `const fn` or builder API: those spellings, static
+lambdas and quotation/splicing remain choices for #60/#61 in 0.4.0. Any later
+0.3.0 helper spelling is provisional unless separately stabilized. Existing
+specified forms retain their own contracts; this class alone grants no syntax
+or new result type. The bounded constant/helper sugar required by #63 remains
+0.3.0 work and is not deferred by the builder-syntax boundary.
+
 `Nat` denotes a nonnegative static integer. It is not a runtime integer or an
 ordinary `Bit`. `Basis` denotes an exact finite type tree, and `Op<A>` denotes
 a static operation description over that tree. None is a live `Q<A>` owner.
