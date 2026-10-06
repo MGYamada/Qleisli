@@ -284,3 +284,12 @@ all three successful run distributions remain unchanged. The original mistaken
 prediction of internal `name` instead of public `unknown_name` remains recorded.
 There are zero source repairs and no general oracle, proof or umbrella-completion
 claim.
+
+The [Default-construction study](default-construction-v030/README.md) preserves
+six complete first projects and thirty actual before/after CLI observations.
+Ordinary named helpers, explicit Iso preparation, false effect assertions,
+unused generic bodies and zero-width Unit owners have positive/refusal controls.
+Only the designated unresolved-default explanation changes; exits, categories,
+spans and successful outputs remain equal. The selected scalar observation
+retains its producer-consistency and unverified source-meaning disclosures.
+No trait machinery, source repair or broader proof is claimed.

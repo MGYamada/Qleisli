@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Fix the 0.3.0 Default boundary: live quantum-containing types, including
+  zero-axis Q<Unit>, have no Rust-like default construction. Preserve explicit
+  ordinary values and checked user functions named `default`; preparation
+  retains its inferred effect and zero-width owners remain linear (#79).
 - Explain absent Rust disposal/copy/default machinery and implicit quantum
   owner loss in source diagnostics. Preserve ordinary Bit/Unit reuse and
   omission, normal user declarations named `drop`, original error categories,

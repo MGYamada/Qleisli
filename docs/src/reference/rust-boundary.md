@@ -58,6 +58,48 @@ observe fn drop(q: Q<Bit>) -> Bit {
 The function consumes its quantum input through its checked body. It is not a
 quantum destructor or an escape from effect inference.
 
+## Explicit construction instead of Default
+
+For release 0.3.0, a Rust-like `Default` abstraction is unavailable for every
+runtime type containing a live quantum owner. This includes `Q<T>`, `Q<Unit>`,
+`Q<Bits<0>>` and ordinary products containing any such field. The
+[#79 decision](https://github.com/MGYamada/Qleisli/issues/79#issuecomment-6009973288)
+does not make ordinary/static basis data quantum resources: `0`, `()` and
+explicit ordinary constructors remain ordinary data, without preparation or a
+quantum owner. No default conversion is inserted between these types.
+
+The current language has no general trait/impl, associated `Default` call or
+generic `Default` bound. Broad ordinary trait ergonomics remain in #251. That
+grammar exclusion supplies no proof or implementation of future trait
+resolution; any later admitted facility must preserve this construction law.
+Current generic Basis bodies undergo the same complete source checks as other
+bodies, including declarations that the selected entry does not call.
+
+Preparation is an explicit operation with its individual contract. `init0()`
+creates a fresh zero qubit with Iso action. `unit(())` creates one fresh
+zero-axis `Q<Unit>` owner with exact coefficient `+1` and Unitary action;
+it allocates no physical wire. `empty()` introduces the separately typed
+`Q<Bits<0>>` owner. Neither zero physical width nor an ordinary Unit argument
+makes the returned owner unrestricted. Explicit `finish` preserves preceding
+scalar phase, and checked scoped cleanup retains its all-input fixed-state
+contract. Default construction provides no hidden clean workspace or cleanup.
+General clean/dirty facilities and quantitative resource certification retain
+their separate pending obligations; a source effect is not a resource bound.
+
+An ordinary function may be named `default`. For example, this checked function
+fragment has explicit preparation and principal Iso effect:
+
+```qli
+use std::quantum::init0;
+
+fn default() -> Q<Bit> { init0() }
+```
+
+Its caller retains that effect; a false Unitary assertion rejects. Conversely,
+a function named `default` that returns ordinary data gains no quantum action
+from its spelling. A name, return-type annotation or generic parameter cannot
+grant allocation, duplicate a quantum result, or excuse an abandoned owner.
+
 ## Quantum owners require an explicit transition
 
 `Q<A>` is linear, including `Q<Unit>` and `Q<Bits<0>>`. A product containing any
@@ -197,7 +239,7 @@ ordinary user-defined identifier with the same spelling.
 | `mem::swap` / exchange / physical SWAP | No builtin swap. Binding routing, an ordered axis map and a quantum gate are distinct contracts; tuple spelling grants no physical interchange. Their public boundary remains in [#76](https://github.com/MGYamada/Qleisli/issues/76). |
 | `mut` | No mutable-binding or place-assignment construct. Quantum gates already change states through consuming calls and explicit returned owners. Future binding mutability is tracked in [#77](https://github.com/MGYamada/Qleisli/issues/77). |
 | Ordinary `for` / `IntoIterator` over quantum data | No ordinary iterator/trait machinery. The existing bounded `for static ... carry ... yield ...` explicitly threads the carried value and checks its body even for an empty range. This is the current transitional spelling, not an implemented `qfor`; the replacement is tracked in [#194](https://github.com/MGYamada/Qleisli/issues/194) / #196. |
-| `Default` | No builtin default or default trait for quantum owners. Preparation is explicit, with its owner/effect contract; the final construction boundary remains in [#79](https://github.com/MGYamada/Qleisli/issues/79). |
+| `Default` | Unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary/static data construction and explicit quantum preparation retain their distinct contracts above; normal user functions named `default` remain checked calls. |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. Complete failure/path semantics remain in #86. |
 | Shared `&` / exclusive `&mut` / `ctrl` | Reference/access-expression syntax is absent. Existing controlled operations are explicit and retain their owners; control may accumulate phase or entanglement. Temporary exclusive access and basis-preserving coherent access remain in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |

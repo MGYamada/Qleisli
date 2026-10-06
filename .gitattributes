@@ -202,3 +202,10 @@ tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-be
 tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-before/*.stderr.txt -text -whitespace
 tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-after/*.stdout.txt -text -whitespace
 tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/observations-after/*.stderr.txt -text -whitespace
+# Retain first/corrected Default validation and public observation bytes.
+tests/fixtures/frontend_v030/default-construction/validation-01/*.stdout.txt -text -whitespace
+tests/fixtures/frontend_v030/default-construction/validation-01/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-before/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-before/*.stderr.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*.stdout.txt -text -whitespace
+tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*.stderr.txt -text -whitespace

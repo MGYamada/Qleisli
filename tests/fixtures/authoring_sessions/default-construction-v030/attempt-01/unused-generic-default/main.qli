@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// An unused generic Basis body still undergoes the common source judgment.
+pub fn construct[static A: Basis]() -> Q<A> { default() }
+
+observe fn main() -> Bit { 0 }

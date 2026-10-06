@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#79 explicit Default/quantum construction boundary with unchanged acceptance",
+  "baseline_commit": "294643d02ad62e4c1ffc58d6ce51c5be838bc815",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex subagent; informed Issue/code/specification access; exact model/sampling unavailable",
+  "context": "context.md",
+  "record_status": "sources/context/predictions frozen before commands; observations pending",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Six complete independent first-source controls and deliberate counterexamples; no repair sequence.",
+      "sha256": {
+        "explicit-isometry-default/main.qli": "14897ccf92a902370872ac5f3fc2ca3bd11a2404aaeb93faa6ad20f76ac75bb2",
+        "explicit-unit-default/main.qli": "981840738e540c46e3bc810dede63bc25206e6763c80f0c260efed5c6f7e15d9",
+        "false-unitary-caller/main.qli": "e38476f1ea125a94204a5ded78700889a17dea23b258b617f6334781ffee21c2",
+        "nested-unit-wildcard/main.qli": "ebb9d3aaba3a237e03eabc142a6d1e35fdf9f02012c1fdcfd79b3354972b15cf",
+        "ordinary-default/main.qli": "f078eb4797b7d7ffad615f893e4674f3a54b6c134d78282932add490efd58d74",
+        "unused-generic-default/main.qli": "19474cb91103f6084c3b9b42d866cea9b01928768f292cf8eff48e2dc1db5109"
+      },
+      "observations": [],
+      "reports": [
+        "first-files.json",
+        "predictions-before.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "explicit-isometry-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "explicit-unit-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "false-unitary-caller/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-unit-wildcard/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "unused-generic-default/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "scope": "Informed bounded source/diagnostic study; no trait feature or proof completion."
+}

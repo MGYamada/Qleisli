@@ -1,0 +1,55 @@
+{
+  "command": [
+    "/private/tmp/qleisli-rust-boundary-after",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/default-construction-v030/attempt-01/false-unitary-caller"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "case": "false-unitary-caller",
+  "phase": "before",
+  "mode": "finite",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T05:28:10.460252+00:00",
+  "recorded_utc": "2026-10-06T05:28:10.467222+00:00",
+  "seconds": 0.00695658300537616,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "e38476f1ea125a94204a5ded78700889a17dea23b258b617f6334781ffee21c2",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-before/false-unitary-caller-check-text.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "observations-before/false-unitary-caller-check-text.stderr.txt",
+      "sha256": "431d566848ac810ef0ae8f8eb0c1fbc1a682a2d22a4c8648b3988cfad9a5ff6b",
+      "bytes": 346
+    }
+  },
+  "scope": "Actual bounded public CLI observation; selected native bytes identify a path, not child-start attestation, authenticated build provenance or a source/runtime theorem.",
+  "transcript": "stdout:\n\nstderr:\n/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/default-construction-v030/attempt-01/false-unitary-caller/main.qli:8:42: effect: body effect `Iso` exceeds asserted `Unitary` effect of `pretend_unitary`. Semantic error: \"externally unitary\" is not supported; an external unitarity claim cannot override the effect inferred from the body\n"
+}

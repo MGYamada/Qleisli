@@ -31,7 +31,7 @@ fn unresolved_function_message(name: &str) -> String {
             "; there is no built-in Rust Clone/Copy operation. Ordinary data such as Bit/Unit is reusable; if a value contains live Q<T>, reusing a description or a basis label does not duplicate that owner."
         }
         "default" => {
-            "; there is no built-in Rust Default operation. Ordinary Bit/Unit can be constructed explicitly; quantum preparation is explicit and cannot be inferred from Default."
+            "; there is no built-in Rust Default operation. Ordinary Bit/Unit can be constructed explicitly; quantum preparation is explicit and cannot be inferred from Default. This includes Q<Unit> and products containing quantum owners; zero physical width does not grant Default."
         }
         _ => return message,
     };

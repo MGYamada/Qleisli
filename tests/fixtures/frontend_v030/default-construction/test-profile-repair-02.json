@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.default-test-profile-prediction-repair",
+  "version": 1,
+  "original_test": {
+    "path": "tests/fixtures/frontend_v030/default-construction/prepared-01.rs.txt",
+    "sha256": "bd26217b1568ec222aa6b31c023a4138d91f65c1ff4db094ad866d638e3970c1"
+  },
+  "original_plan": {
+    "path": "tests/fixtures/frontend_v030/default-construction/prepared-test-plan-01.json",
+    "sha256": "14a72e7f95e3634df7a14ea950d4842c51ba3c7b2d33ee0144f062b6aaae0b3c"
+  },
+  "first_actual_test_runs": [
+    {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/latest-tests-first-01.json",
+      "sha256": "3291d4ddae7c01be52039a0fd23a3fdacd7ae10f2a1f1ef6c240924e7ee4757a"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/msrv-tests-corrected-02.json",
+      "sha256": "07c94317784f1f5eaf5eae1a037d20b029560e1203ac768994133a1aa8e3c737"
+    }
+  ],
+  "actual_first_results": "Each actual toolchain ran four new tests: three passed and one failed. Cargo stopped before the other two requested test binaries.",
+  "incorrect_prediction": "Valid generic Basis identity default[type(Bit)] was expected to materialize through finite lowering. Common source judgment passes but finite static type arguments are unsupported.",
+  "repair": "Same original source now checks common principal effects and selected elaboration, and records exact finite unsupported category/message/span. No production profile is expanded or criterion removed.",
+  "corrected_test_before_rerun": {
+    "path": "tests/fixtures/frontend_v030/default-construction/test-profile-repair-02.rs.txt",
+    "sha256": "3ee9c28cc012c88bbe33931df2e8fc6b226515d1466190fde28cc59af96a0f87"
+  },
+  "scope": "Test expectation correction only; retain original test/predictions/first failures. No source change, native acceptance change or mathematical proof."
+}

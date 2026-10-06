@@ -1,0 +1,26 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_editions.py"
+  ],
+  "exit_code": 0,
+  "seconds": 4.4688387920032255,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/editions-01.stdout.txt",
+      "sha256": "6a50c3ab6131330dff81f8a8a284656387c6395cbd3525f15c404ec37f99a6a8"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/editions-01.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

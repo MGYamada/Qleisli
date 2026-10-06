@@ -1,0 +1,60 @@
+{
+  "format": "qleisli.default-construction-prepared-test-plan",
+  "version": 1,
+  "status": "prepared-before-first-compilation-and-execution-not-run",
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/79#issuecomment-6009973288",
+  "source_baseline_supplied_by_root": "294643d02ad62e4c1ffc58d6ce51c5be838bc815",
+  "observed_local_head": "294643d02ad62e4c1ffc58d6ce51c5be838bc815",
+  "public_head_supplied_by_root": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "active_test_source": {
+    "path": "tests/default_construction_boundary.rs",
+    "sha256": "bd26217b1568ec222aa6b31c023a4138d91f65c1ff4db094ad866d638e3970c1"
+  },
+  "prepared_original": {
+    "path": "tests/fixtures/frontend_v030/default-construction/prepared-01.rs.txt",
+    "sha256": "bd26217b1568ec222aa6b31c023a4138d91f65c1ff4db094ad866d638e3970c1"
+  },
+  "author_context": "Informed independent bounded test preparation after original constitutional and Issue 79 decision records, existing source APIs, body/effect implementation, prior Rust-boundary tests and Unit-map regressions were read. Root supplied the ordinary decision and diagnostic refinement. This is not a blind model attempt or an independent review/adoption of a binding interpretation; preparation owns no production changes.",
+  "test_groups": [
+    {
+      "name": "unresolved_default_has_one_conditional_hint_without_creating_a_factory",
+      "expectation": "Six result types (Bit, Unit, Q<Bit>, Q<Unit>, Q<Bits<0>>, nested product), an unused generic Basis body and an ill-typed not-q argument keep identical unresolved-default messages, common name / finite unknown_name categories and exact original callee byte spans. Unicode/CRLF prefix remains accountable. An unrelated missing function keeps its exact old unhinted message. The hint is name-level, not a claim that these arguments were evaluated or that any default trait exists."
+    },
+    {
+      "name": "resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation",
+      "expectation": "Checked ordinary functions named default return ordinary Bit/Unit with Unitary effect; ordinary Unit is reusable. A checked default explicitly calling init0 has principal Iso, retained transitively by its caller, and gets native finite acceptance. A generic Basis identity named default transfers its one input owner with Unitary effect. A runtime local named default retains exact local-not-callable category/message/span and no unresolved-default hint."
+    },
+    {
+      "name": "false_unitary_assertions_cannot_hide_default_named_preparation",
+      "expectation": "Direct Unitary assertion on the preparing default and transitive Unitary assertion on its caller reject with effect category at the actual init0/default call span. Existing semantic externally-unitary-not-supported explanation remains, without GitHub references or unresolved-name hints."
+    },
+    {
+      "name": "explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults",
+      "expectation": "A user default explicitly using unit(()) and a caller using finish(default()) pass common source judgment and selected elaboration with Unitary effect. Ordinary () does not implicitly construct Q<Unit>. The default name cannot excuse abandoned nested quantum ownership, a wildcard drop or duplicate use of Q<Unit>; their type/ownership categories and original spans remain checked."
+    }
+  ],
+  "expected_project_counts": {
+    "test_functions": 4,
+    "rejected": 16,
+    "accepted": 5
+  },
+  "negative_gate": "Every refusal is exercised through common ParsedProgram and finite explicit check_project_with_kernel. An owned absent kernel path is supplied without changing process environment; unintended source acceptance would reach that distinct failure instead of the required source category/span.",
+  "oracle": {
+    "effect_expectations": "Explicit init0 is Iso; ordinary literals/identity are Unitary; propagation includes actual user bodies and calls. Annotation cannot downgrade inferred effects.",
+    "zero_width_control": "unit/finish positive checks use common source judgment and selected elaboration only; finite concrete lowering of those maps is not required. Existing tests/quantum_unit_maps.rs supplies independent exact +1 map/scalar/reference/native checks and is not duplicated as a compiler-derived expected result.",
+    "maximum_physical_qubits_per_positive": 1,
+    "execution_qualification": "Native finite checks are bounded acceptance controls, not a source-preservation or future-trait theorem; these tests add no probability/scalar oracle."
+  },
+  "constitutional_scope": "Original records were read and check_constitution.py --base-ref faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2 passed before changes. Adopted QS/PR/RS/EXACT broader duties remain pending; both admitted ordinary QLV1 decoded-root ownership/scope guarantees and premises are preserved. This test preparation creates no new guarantee or acceptance rule and performs no fresh Lean replay. Generic QFT remains excluded.",
+  "performed": [
+    "Read original constitutional records, trusted continuity check, current Issue 79 decision, source APIs/specifications and relevant existing tests.",
+    "Prepared the four bounded test groups and formatted only tests/default_construction_boundary.rs with rustfmt --edition 2024.",
+    "Preserved this complete prepared test original and first expectation record before any compilation or execution."
+  ],
+  "not_performed": [
+    "No Cargo build/test, CLI command, native checker execution, Lean build/audit/replay or Git/GitHub mutation."
+  ],
+  "first_failure_policy": "Preserve prepared-01.rs.txt and every actual first result. Any compiler/formatting or semantic correction requires a separate revision/reason; do not replace the original or weaken the owner/effect/callee-priority contract to pass.",
+  "separate_authoring_study": "Root-assigned study retains first .qli projects and actual before/after CLI observations separately; this prepared test packet does not overwrite that session."
+}
