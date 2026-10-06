@@ -1,0 +1,80 @@
+{
+  "format": "qleisli.qfor-source-map",
+  "version": 1,
+  "projects": [],
+  "files": [
+    {
+      "before_path": "corpus/sized/qualtran_qpe/estimation.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/estimation.qli",
+      "before_sha256": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852",
+      "current_sha256": "8cb3baac74e74f3b78a15124b06775a4d27293b1a6ac044c6f548ccb547492b1"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_qpe/preparation.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/preparation.qli",
+      "before_sha256": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9",
+      "current_sha256": "2b0caf37c0d62b73e5154677784867a56798ebd9b7359496c6666b8c5289ba9d"
+    },
+    {
+      "before_path": "corpus/sized/katas_ghz/prepare.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/katas_ghz/prepare.qli",
+      "before_sha256": "756cad0efe7200c37082be1682e54cb85abaa0cde50f47c54cfe10712f89bfc6",
+      "current_sha256": "263afeebf537a484609d4467705178b9e12d35bda8fd38897fa5e235d561647b"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_qft/fourier.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli",
+      "before_sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122",
+      "current_sha256": "f399dd8ef6628a2ada2b7a3cf7ec099a331605d0fb39537ded9a736d449f7ab7"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_arithmetic/negation.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_arithmetic/negation.qli",
+      "before_sha256": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3",
+      "current_sha256": "c19df135d810397a8e8dc7727de73cf5a8f0269c1f1eca6d9a577cf93d7408c9"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_arithmetic/addition.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_arithmetic/addition.qli",
+      "before_sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6",
+      "current_sha256": "68d2bfa7174fad2311adc54a99d20a76fe7aa7944b1425cbcc3b0658644f2eeb"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_xor/bitwise.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_xor/bitwise.qli",
+      "before_sha256": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce",
+      "current_sha256": "3eec7d870c64be47f35697811b41fd0ce2574731943373abb1870181135085b7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
+      "before_sha256": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+      "current_sha256": "4ee23667711a938d293e3d03073ed0a9c93b6cf04fe0bdf505679b96de7f8fa0"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli",
+      "before_sha256": "a409a31d935afa7209fef23da297c559987aa98e9bf41218105efa1af6297b83",
+      "current_sha256": "bb6920fafa0efd72bbcc16fe23fd86c9d1e108706d3cf17e49ce4b2d842d3d14"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/main.qli",
+      "before_sha256": "02570313cb5e312acc96fcc9a94af7dd32b4c2f47ac96b4b7a7ddf175e411a0f",
+      "current_sha256": "c7a26e0866ca8721ac0de9c6c1eb12ba167e8f23aac71b256dfa98b3228340d0"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
+      "before_sha256": "0f09d5b9a7860427147ce5138ee47cd1bcc385093ccdece5011d217b3a1c6f0a",
+      "current_sha256": "4295bb1af7fa259b3475bda6a1d97791a7ccba85c8498a19bf3aee599711f847"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/concrete-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/concrete-control/main.qli",
+      "before_sha256": "841cacfa8db7c5e76ee82821390eb59e9fb90489043b9ceb32d05d515828b64f",
+      "current_sha256": "0cfa78fcc7bb089c34b61e17b36b44eae6f424a8d839714144ad1bdf16a8862a"
+    }
+  ],
+  "context": "#194 original quantum folds migrate only their keyword; all predecessor source/attribution bytes remain fixed. Fixed historical Fourier clients receive grammar migration only, without generic-QFT delivery/integration work."
+}

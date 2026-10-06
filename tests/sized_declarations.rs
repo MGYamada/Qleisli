@@ -19,7 +19,7 @@ fn sources(case: &str) -> BTreeMap<String, String> {
         .map(|path| {
             (
                 path.file_stem().unwrap().to_str().unwrap().to_owned(),
-                std::fs::read_to_string(path).unwrap(),
+                std::fs::read_to_string(common::current_namespace_fixture(&path)).unwrap(),
             )
         })
         .collect()
@@ -436,7 +436,7 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
         (
             "q:Q<Bit>",
             "Q<Bit>",
-            "for static i in 0..0 carry a=q {yield adjoint(U,a)}",
+            "qfor static i in 0..0 carry a=q {yield adjoint(U,a)}",
             "Adjoint",
             "adjoint(U,a)",
         ),
@@ -450,7 +450,7 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
         (
             "c:Q<Bit>,q:Q<Bit>",
             "(Q<Bit>,Q<Bit>)",
-            "for static i in 0..0 carry pair=(c,q) {let (c,q)=pair; yield controlled(U)(c,q)}",
+            "qfor static i in 0..0 carry pair=(c,q) {let (c,q)=pair; yield controlled(U)(c,q)}",
             "Controlled",
             "controlled(U)(c,q)",
         ),

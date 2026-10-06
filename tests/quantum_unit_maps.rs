@@ -691,7 +691,7 @@ fn every_isolated_owner_and_unused_zero_iteration_body_is_checked() {
         "pub unitary fn f(u: Unit) -> Unit { let q=unit(u); () }",
         "pub unitary fn f(u: Unit) -> Unit { let _=unit(u); () }",
         "pub unitary fn f(u: Unit) -> Unit { u } unitary fn unused(q:Q<Unit>)->Q<Unit>{let ()=finish(q);q}",
-        "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { for static k in 0..0 carry r=q { let ()=finish(r); yield r; } }",
+        "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { qfor static k in 0..0 carry r=q { let ()=finish(r); yield r; } }",
     ] {
         let text = format!("use std::quantum::{{unit,finish}}; {declaration}");
         let error =

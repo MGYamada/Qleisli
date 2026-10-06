@@ -28,7 +28,7 @@ IMPORTS = {
     'std::registers::put_bit': 'put_bit',
 }
 TOKEN = re.compile(r'\s+|//[^\n]*|::|->|\.\.|>=|<=|==|!=|[A-Za-z_][A-Za-z_0-9]*|[0-9]+|[][(){}<>,:;=+\-^]')
-RESERVED = {'pub', 'unitary', 'fn', 'static', 'let', 'for', 'in', 'carry', 'yield', 'use', 'requires', 'if', 'else', 'adjoint', 'controlled', 'repeat_op'}
+RESERVED = {'pub', 'unitary', 'fn', 'static', 'let', 'for', 'qfor', 'in', 'carry', 'yield', 'use', 'requires', 'if', 'else', 'adjoint', 'controlled', 'repeat_op'}
 
 
 class Parser:
@@ -201,7 +201,10 @@ class Parser:
             first = self.block()
             self.need('else')
             return ('if', condition, first, self.block())
-        if self.eat('for'):
+        # This independent proposal producer also retains historical `for`
+        # inputs for frozen oracle comparisons. It has no acceptance authority;
+        # production source checking requires qfor for quantum carry.
+        if self.eat('qfor') or self.eat('for'):
             self.need('static')
             variable = self.name()
             self.need('in')

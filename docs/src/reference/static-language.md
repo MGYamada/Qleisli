@@ -188,8 +188,12 @@ concrete elaborator evaluates the comparison and elaborates the selected arm.
 A constant condition does not hide an unresolved name, invalid owner use or
 missing operation access in the other arm.
 
-The current transitional fold spelling is
-`for static k in start..end carry pattern = initial { ... yield result; }`.
+The quantum-owner fold spelling is
+`qfor static k in start..end carry pattern = initial { ... yield result; }`.
+Its carry must contain at least one quantum owner, including a zero-width
+`Q<Unit>` owner. Mixed ordinary/quantum products are permitted. Ordinary-only
+carry uses `for static` with the same header and tail; that spelling rejects
+quantum carry with a located suggestion to use `qfor static`.
 The range is half-open and must be nonnegative: `end >= start`. The carried
 value has the same exact type/tree across iterations. Each iteration receives
 its declared carry owners; unrelated live owners cannot be captured as hidden
@@ -198,9 +202,21 @@ returns the evaluated initial value and still checks the original body for
 names, types, ownership and capabilities. No implicit discard implements a
 fold exit.
 
-This spelling does not establish the planned `qfor` API. Its replacement and
-the distinction from ordinary iteration remain tracked in
-[#194](https://github.com/MGYamada/Qleisli/issues/194).
+The initializer is evaluated once. Non-carried quantum owners remain in the
+caller frame and cannot be accessed by the body. Both branch arms must preserve
+the required owner interface and carry tree. `yield` supplies the next carry;
+omitting it rejects, even for an empty range. There is no implicit quantum
+capture, discard, carry-shape conversion or runtime bound. `qfor` without the
+explicit `static` marker is unsupported. The loop's operations retain the
+ordinary effect and capability rules; its syntax grants no inverse or control
+access. Concrete iterations use the common checked natural-expression
+evaluator and existing specialization/work capacities.
+
+Both forms lower through the existing fold representation to proposed
+raw/hierarchical IR and independent native checking. This implements the
+explicit threading boundary tracked by
+[#194](https://github.com/MGYamada/Qleisli/issues/194); small-system conformance
+checks do not establish a general source-preservation theorem.
 
 Runtime function self-recursion is admitted only when checked static Nat
 arguments do not increase and at least one strictly decreases under the

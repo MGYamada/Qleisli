@@ -56,7 +56,7 @@ fn static_exponent_schedule_preserves_complex_phase_and_an_external_reference() 
     let source = "use std::quantum::phase;
         static fn exponent[static stage:Nat]()->Nat{stage+1}
         pub unitary fn schedule[static count:Nat](q:Q<Bit>)->Q<Bit> requires count<=3 {
-            for static i in 0..count carry r=q {
+            qfor static i in 0..count carry r=q {
                 static let k=exponent[i](); yield phase[1,k](r);
             }
         }";

@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{init0,h,x,cnot}; use std::observe::measure_z; pub observe fn main()->(Bit,Bit){let(c,t)=qfor static k in 0..1 carry pair=(h(init0()),h(x(init0()))){let(c,t)=pair;yield cnot(c,t);};(measure_z(h(c)),measure_z(h(t)))}

@@ -248,9 +248,9 @@ mod tests {
                 "corpus/sized/measured_qpe/initialization.qli",
             ),
             ("readout", "corpus/sized/measured_qpe/readout.qli"),
-            ("estimation", "corpus/sized/qualtran_qpe/estimation.qli"),
-            ("preparation", "corpus/sized/qualtran_qpe/preparation.qli"),
-            ("fourier", "corpus/sized/qualtran_qft/fourier.qli"),
+            ("estimation", "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/estimation.qli"),
+            ("preparation", "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/preparation.qli"),
+            ("fourier", "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"),
             ("evolution", "corpus/sized/qualtran_qpe/evolution.qli"),
         ]
         .into_iter()
@@ -420,7 +420,9 @@ mod tests {
     fn native_named_qpe_commuting_fourier_variants_have_the_same_outcome() {
         let kernel =
             Kernel::new(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
-        let delayed = include_str!("../../../tests/fixtures/sized_clients/delayed_fourier.qli");
+        let delayed = include_str!(
+            "../../../tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+        );
         for m in [2, 3] {
             let textbook = source(1, m, 1);
             // This detached provider is fixed before building the reordered

@@ -1254,14 +1254,16 @@ impl Parser {
     }
 
     fn expr_primary(&mut self) -> Result<Expr, ParseError> {
-        if self.word("for")
-            && self
-                .tokens
-                .get(self.pos + 1)
-                .is_some_and(|t| t.kind == TokenKind::Static)
+        let quantum_fold = self.at(&TokenKind::Qfor);
+        if quantum_fold
+            || (self.word("for")
+                && self
+                    .tokens
+                    .get(self.pos + 1)
+                    .is_some_and(|t| t.kind == TokenKind::Static))
         {
             let open = self.bump();
-            self.bump();
+            self.expect(&TokenKind::Static)?;
             let index = self.natural_ident()?;
             self.expect_word("in")?;
             let start = self.natural()?;
@@ -1275,6 +1277,7 @@ impl Parser {
             return Ok(Expr {
                 span: open.span.cover(body.span),
                 kind: ExprKind::StaticFold {
+                    quantum: quantum_fold,
                     index,
                     start,
                     end,

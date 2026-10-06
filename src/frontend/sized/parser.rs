@@ -395,6 +395,7 @@ impl Projection<'_, '_> {
                 carry,
                 initial,
                 body,
+                ..
             } => ExprKind::Fold {
                 index: self.binding(index)?,
                 start: self.natural(start)?,

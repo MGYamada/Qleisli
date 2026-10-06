@@ -17,11 +17,11 @@ fn types(name: &str, ty: &str) -> BTreeMap<String, BasisBinding> {
     BTreeMap::from([(name.into(), BasisBinding::parse(ty).unwrap())])
 }
 fn study(name: &str) -> String {
-    std::fs::read_to_string(
-        std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
+    std::fs::read_to_string(common::current_namespace_fixture(
+        &std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
             "tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/{name}/main.qli"
         )),
-    )
+    ))
     .unwrap()
 }
 
@@ -118,7 +118,7 @@ fn all_first_opaque_rejections_reach_their_actual_rules_before_binding() {
 fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
     for body in [
         "U(q)",
-        "for static i in 0..0 carry a=q {yield U(a)}",
+        "qfor static i in 0..0 carry a=q {yield U(a)}",
         "if static 0 == 0 {q} else {U(q)}",
     ] {
         let source = format!(
@@ -306,7 +306,7 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
 fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
     let kernel =
         Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker"));
-    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[static A:Basis,static k:Nat,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=4 {for static i in 0..k carry a=q {yield U(a)}}";
+    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[static A:Basis,static k:Nat,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
     let p = parsed(source);
     for (ty, provider, width) in [("Bit", "main::flip", 1), ("Unit", "main::scalar", 0)] {
         for n in 0..=4 {

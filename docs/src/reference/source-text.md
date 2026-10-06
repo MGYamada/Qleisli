@@ -161,7 +161,7 @@ identifier positions formerly treated contextually by the sized parser:
 `use`, `meaning`, `static`, `Op`, `requires`, `Apply`, `Adjoint`, `Controlled`,
 `permutation_by`, `phase_by`, `checked_op`, `bind_op`, `inverse_op`, `then_op`, `tensor_op`,
 `controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `classical`, `basis`, `iso`, `unitary`,
-`observe`, `fn`, `let`, `if`, `else`, `do`, `pure`, `with_computed`,
+`observe`, `fn`, `let`, `if`, `else`, `qfor`, `do`, `pure`, `with_computed`,
 `apply_contract`, `adjoint`, `repeat_static`, `qif`, `true`, `false`, `not`,
 `xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits
 `basis`, `observe` and `classical` immediately after `std::` as module names.
@@ -190,7 +190,8 @@ an ordinary identifier elsewhere. Retained tokens for `CBit`, `true` and `false`
 targeted rejection of their old type/literal uses; they do not keep those uses
 accepted. Type-position `CBits<n>` likewise rejects. The replacement types and
 literals are `Bit`, `Bits<n>` and `0`/`1`.
-`for static`, the `in`/`carry` parts of that header,
+`qfor` is reserved and starts an explicitly static quantum-owner fold.
+`for static` starts an ordinary-only fold. The `for` word, the `in`/`carry` parts of either header,
 and `yield` at the start of a fold tail recognize their existing sized roles.
 Those words remain identifiers in other positions. `controlled(op)(args)` is
 the existing controlled-application construct; `controlled(q)` remains an

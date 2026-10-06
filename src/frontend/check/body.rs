@@ -587,6 +587,7 @@ impl Checker<'_, '_> {
                 span,
             )?,
             ExprKind::StaticFold {
+                quantum,
                 index,
                 start,
                 end,
@@ -594,7 +595,7 @@ impl Checker<'_, '_> {
                 initial,
                 body,
             } => self.fold(
-                index, start, end, carry, initial, body, scope, expected, span,
+                *quantum, index, start, end, carry, initial, body, scope, expected, span,
             )?,
             ExprKind::QuantumIf {
                 control,
@@ -774,6 +775,7 @@ impl Checker<'_, '_> {
     #[allow(clippy::too_many_arguments)]
     fn fold(
         &mut self,
+        quantum: bool,
         index: &Ident,
         start: &Natural,
         end: &Natural,
@@ -809,6 +811,17 @@ impl Checker<'_, '_> {
             ));
         }
         let carry_ty = self.expr(initial, scope, expected)?;
+        if quantum != carry_ty.linear() {
+            return Err(SourceError::new(
+                "type",
+                span,
+                if quantum {
+                    "qfor carry must contain a quantum owner; use for static for ordinary values"
+                } else {
+                    "for static cannot thread quantum owners; use qfor static with explicit carry and yield"
+                },
+            ));
+        }
         let mut inner = scope.copy(&self.program.budget, span)?;
         inner.values.retain(|_, binding| !binding.ty.linear());
         let i = Linear::variable_budgeted(&key, span, &mut |span, cells| {

@@ -27,6 +27,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.coherent_manifest = self.root / "coherent-source-map.json"
         self.checked_manifest = self.root / "checked-source-map.json"
         self.classical_manifest = self.root / "classical-source-map.json"
+        self.qfor_manifest = self.root / "qfor-source-map.json"
+        self.qfor_manifest.write_text(json.dumps(dict(format="qleisli.qfor-source-map", version=1, files=[], projects=[])))
         self.classical_manifest.write_text(json.dumps(dict(format="qleisli.classical-function-source-map", version=1, files=[], projects=[])))
         files = []
         for directory in (self.original, self.current):
@@ -47,7 +49,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("NAMESPACE_MAP", self.namespace_manifest.name),
                             ("COHERENT_MAP", self.coherent_manifest.name),
                             ("CHECKED_MAP", self.checked_manifest.name),
-                            ("CLASSICAL_MAP", self.classical_manifest.name)):
+                            ("CLASSICAL_MAP", self.classical_manifest.name),
+                            ("QFOR_MAP", self.qfor_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -391,6 +394,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.coherent_manifest = self.root / "coherent-map.json"
         self.checked_manifest = self.root / "checked-map.json"
         self.classical_manifest = self.root / "classical-map.json"
+        self.qfor_manifest = self.root / "qfor-map.json"
+        self.qfor_manifest.write_text(json.dumps(dict(format="qleisli.qfor-source-map", version=1, files=[], projects=[])))
         self.classical_manifest.write_text(json.dumps(dict(format="qleisli.classical-function-source-map", version=1, files=[], projects=[])))
         self.namespace_entry = self.entry(self.original, self.namespace)
         self.coherent_entry = self.entry(self.namespace, self.coherent)
@@ -400,7 +405,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("NAMESPACE_MAP", self.namespace_manifest.name),
                             ("COHERENT_MAP", self.coherent_manifest.name),
                             ("CHECKED_MAP", self.checked_manifest.name),
-                            ("CLASSICAL_MAP", self.classical_manifest.name)):
+                            ("CLASSICAL_MAP", self.classical_manifest.name),
+                            ("QFOR_MAP", self.qfor_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -458,6 +464,25 @@ class SourceFileIdentity(unittest.TestCase):
     def test_missing_classical_stage_has_no_old_spelling_fallback(self):
         self.classical_manifest.unlink()
         with self.assertRaisesRegex(ValueError, "missing classical function source map"):
+            fixtures.current_source_file(self.original)
+
+    def test_quantum_fold_stage_preserves_history_and_rejects_stale_final_source(self):
+        before = {path: path.read_bytes() for path in
+                  (self.original, self.namespace, self.coherent, self.current)}
+        selected = self.root / "qfor-current.qli"
+        selected.write_text("fn f(q: Q<Bit>) -> Q<Bit> { qfor static i in 0..0 carry a=q { yield a; } }")
+        self.qfor_manifest.write_text(json.dumps(dict(
+            format="qleisli.qfor-source-map", version=1,
+            files=[self.entry(self.current, selected)], projects=[])))
+        self.assertEqual(fixtures.current_source_file(self.original), selected)
+        self.assertEqual({path: path.read_bytes() for path in before}, before)
+        selected.write_text("stale quantum fold source")
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_file(self.original)
+
+    def test_missing_quantum_fold_stage_has_no_previous_source_fallback(self):
+        self.qfor_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing quantum fold source map"):
             fixtures.current_source_file(self.original)
 
     def test_classical_stage_cannot_hide_stale_checked_predecessor(self):

@@ -273,9 +273,9 @@ fn measured_sources() -> BTreeMap<String, PathBuf> {
             "corpus/sized/measured_qpe/initialization.qli",
         ),
         ("readout", "corpus/sized/measured_qpe/readout.qli"),
-        ("estimation", "corpus/sized/qualtran_qpe/estimation.qli"),
-        ("preparation", "corpus/sized/qualtran_qpe/preparation.qli"),
-        ("fourier", "corpus/sized/qualtran_qft/fourier.qli"),
+        ("estimation", "fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/estimation.qli"),
+        ("preparation", "fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/preparation.qli"),
+        ("fourier", "fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"),
         ("evolution", "corpus/sized/qualtran_qpe/evolution.qli"),
         ("order", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/order.qli"),
         ("amplitude", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/amplitude.qli"),
@@ -289,7 +289,7 @@ fn measured_sources() -> BTreeMap<String, PathBuf> {
         ("modular", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/modular.qli"),
     ]
     .into_iter()
-    .map(|(name, file)| (name.into(), root.join(file)))
+    .map(|(name, file)| (name.into(), common::current_namespace_fixture(&root.join(file))))
     .collect()
 }
 fn naturals(values: &[(&str, u32)]) -> BTreeMap<String, u32> {
@@ -393,15 +393,15 @@ fn unreachable_branch_and_empty_fold_still_check_names_access_and_ownership() {
         "ownership",
     );
     reject(
-        "pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { for static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(repeat_op(0,U))(c,q); } }",
+        "pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { qfor static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(repeat_op(0,U))(c,q); } }",
         "access",
     );
     reject(
-        "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { for static k in 0..0 carry q = q { yield missing(q); } }",
+        "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { qfor static k in 0..0 carry q = q { yield missing(q); } }",
         "name",
     );
     reject(
-        "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { for static k in 0..0 carry q = q { let copy = q; yield q; } }",
+        "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { qfor static k in 0..0 carry q = q { let copy = q; yield q; } }",
         "ownership",
     );
 }
@@ -429,7 +429,7 @@ fn shadowing_moves_tuple_shape_and_effects() {
         "effect",
     );
     reject(
-        "pub unitary fn f(q: Q<Bit>, p: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = for static k in 0..0 carry q = q { yield p; }; (q,p) }",
+        "pub unitary fn f(q: Q<Bit>, p: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = qfor static k in 0..0 carry q = q { yield p; }; (q,p) }",
         "ownership",
     );
 }
@@ -653,7 +653,7 @@ fn file_loader_reuses_regular_file_and_byte_guards() {
 
 #[test]
 fn lexical_binding_identity_prevents_shadowed_owner_escape() {
-    let local_callee = "use std::quantum::h; pub unitary fn f(h: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = for static k in 0..1 carry q = q { yield h(q); }; (h,q) }";
+    let local_callee = "use std::quantum::h; pub unitary fn f(h: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { yield h(q); }; (h,q) }";
     let error = ParsedProgram::parse(sources(local_callee)).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
@@ -667,7 +667,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     ParsedProgram::parse(sources(good)).unwrap();
     let moved = "pub unitary fn f(q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let a = if static 0 == 0 { let q = q; q } else { let q = q; q }; (a,q) }";
     reject(moved, "ownership");
-    let fold = "pub unitary fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Q<Bit>) { for static k in 0..1 carry pair = (q,r) { let (q,r) = pair; let a = if static k == 0 { let old = q; let q = r; old } else { let old = q; let q = r; old }; yield (a,q); } }";
+    let fold = "pub unitary fn f(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Q<Bit>) { qfor static k in 0..1 carry pair = (q,r) { let (q,r) = pair; let a = if static k == 0 { let old = q; let q = r; old } else { let old = q; let q = r; old }; yield (a,q); } }";
     reject(fold, "ownership");
     let local_callee =
         "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let h = q; let q = h; h(q) }";
@@ -706,7 +706,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
 fn classical_shadows_restore_outer_bindings_in_branches_and_folds() {
     let branch = "use std::classical::empty_bits; pub unitary fn f(x: Bit) -> Bit { let bits = if static 0 == 0 { let x = empty_bits(); x } else { let x = empty_bits(); x }; x }";
     ParsedProgram::parse(sources(branch)).unwrap();
-    let fold = "use std::classical::empty_bits; pub unitary fn f(x: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { let q = for static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
+    let fold = "use std::classical::empty_bits; pub unitary fn f(x: Bit, q: Q<Bit>) -> (Bit,Q<Bit>) { let q = qfor static k in 0..1 carry q = q { let x = empty_bits(); yield q; }; (x,q) }";
     ParsedProgram::parse(sources(fold)).unwrap();
 }
 
@@ -939,7 +939,7 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
             .code(),
         "limit"
     );
-    let source = "use std::quantum::h; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { let q = for static k in 0..n carry q = q { yield h(q); }; for static k in 0..n carry q = q { yield h(q); } }";
+    let source = "use std::quantum::h; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { let q = qfor static k in 0..n carry q = q { yield h(q); }; qfor static k in 0..n carry q = q { yield h(q); } }";
     let program = ParsedProgram::parse(sources(source)).unwrap();
     assert_eq!(
         program
@@ -988,7 +988,7 @@ fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
     }).unwrap().join().unwrap();
     assert_eq!(nested.code(), "limit");
     assert!(nested.message().contains("combined"));
-    let source = "use dep::identity; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { for static k in 0..n carry q = q { yield identity(q); } }";
+    let source = "use dep::identity; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static k in 0..n carry q = q { yield identity(q); } }";
     let modules = BTreeMap::from([
         ("main".into(), source.into()),
         (
@@ -1121,7 +1121,7 @@ fn evolution(n: u32) -> BTreeMap<String, OperationBinding> {
 
 fn delayed_fourier_source() -> String {
     include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+        "fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
     )
     .into()
 }
@@ -1275,7 +1275,9 @@ fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
 
 #[test]
 fn root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source() {
-    let textbook = include_str!("../corpus/sized/qualtran_qft/fourier.qli");
+    let textbook = include_str!(
+        "../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+    );
     let delayed = delayed_fourier_source();
     for n in 1..=3 {
         let standard = fourier_source_proposal(textbook, n);
@@ -1324,7 +1326,9 @@ fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
         max_amplitudes: 4096,
         max_steps: 1_000_000,
     };
-    let textbook = include_str!("../corpus/sized/qualtran_qft/fourier.qli");
+    let textbook = include_str!(
+        "../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+    );
     let delayed = delayed_fourier_source();
     for n in 1..=3 {
         for inverse in [false, true] {
@@ -1958,7 +1962,7 @@ fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
             "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/contextual-type-name.qli"
         ),
         include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli"
+            "fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli"
         ),
         include_str!(
             "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli"
@@ -2129,7 +2133,7 @@ fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
     send_sync::<Instantiation>();
     send_sync::<ElaboratedProgram>();
 
-    let source = "use std::quantum::x; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { for static i in 0..n carry q = q { let q = x(q); yield q; } }";
+    let source = "use std::quantum::x; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static i in 0..n carry q = q { let q = x(q); yield q; } }";
     let original = ParsedProgram::parse(sources(source)).unwrap();
     let retained = original.clone();
     drop(original);

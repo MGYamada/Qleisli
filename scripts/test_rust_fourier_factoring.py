@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 
 from test_sized_qft import probes
+from current_source_fixtures import current_source_file
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -69,6 +70,11 @@ def main():
              'corpus/sized/qualtran_qft/fourier.qli',
              'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli',
              'scripts/test_rust_fourier_factoring.py')},
+        current_sources={p:dict(path=current_source_file(ROOT/p).relative_to(ROOT).as_posix(),
+            sha256=hashlib.sha256(current_source_file(ROOT/p).read_bytes()).hexdigest()) for p in
+            ('corpus/sized/qualtran_qft/fourier.qli',
+             'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli')},
+        source_map_sha256=hashlib.sha256((ROOT/'tests/fixtures/frontend_v030/qfor/source-map.json').read_bytes()).hexdigest(),
         artifacts=artifacts,semantic=semantic,commands=commands)
     if args.record:
         args.record.write_text(json.dumps(report,indent=2)+'\n')

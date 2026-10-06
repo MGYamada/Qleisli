@@ -80,11 +80,11 @@ fn contextual_naturals_keep_all_comparisons_separate_from_type_angles() {
 fn contextual_naturals_are_retained_in_fold_indices_and_bounds() {
     for name in TYPE_WORDS {
         let source = format!(
-            "pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ for static {name} in 0..2 carry a = q {{ yield if static {name} < 1 {{ a }} else {{ a }} }} }}"
+            "pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ qfor static {name} in 0..2 carry a = q {{ yield if static {name} < 1 {{ a }} else {{ a }} }} }}"
         );
         prepare(&source, BTreeMap::new());
         let bounded = format!(
-            "pub unitary fn f[static {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ for static i in 0..{name} carry a = q {{ yield a }} }}"
+            "pub unitary fn f[static {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ qfor static i in 0..{name} carry a = q {{ yield a }} }}"
         );
         prepare(&bounded, BTreeMap::from([(name.into(), 2)]));
     }

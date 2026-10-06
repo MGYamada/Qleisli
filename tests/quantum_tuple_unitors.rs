@@ -795,7 +795,7 @@ fn isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject() {
         "pub unitary fn f(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);a}",
         "pub unitary fn f(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,a)=split(q);let()=finish(u);join(u,a)}",
         "pub unitary fn f(q:Q<(Unit,Bit)>)->Q<Bit>{let(_,a)=split(q);a}",
-        "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{for static k in 0..0 carry r=q{let(a,b)=split(r);yield join(a,a);}}",
+        "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{qfor static k in 0..0 carry r=q{let(a,b)=split(r);yield join(a,a);}}",
         "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q} unitary fn unused(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);a}",
     ] {
         reject(

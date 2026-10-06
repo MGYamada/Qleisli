@@ -174,6 +174,8 @@ pub enum ExprKind {
         else_branch: Block,
     },
     StaticFold {
+        /// True for explicit quantum-owner threading; false for ordinary carry.
+        quantum: bool,
         index: Ident,
         start: Natural,
         end: Natural,

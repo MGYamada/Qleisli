@@ -212,7 +212,7 @@ def main():
         pub unitary fn looping[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { looping[n](q) }'''
     reject_call('operation-cycle', cycle, 'looping', {'cycle': cycle})
     helper = '''pub unitary fn idle[static n: Nat, static tag: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {
-        for static i in 0..600 carry state = q { yield state; }
+        qfor static i in 0..600 carry state = q { yield state; }
     }'''
     consumer = '''use helper::idle;
         pub unitary fn over[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {

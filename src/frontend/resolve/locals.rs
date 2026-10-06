@@ -734,6 +734,7 @@ where
                         carry,
                         initial,
                         body,
+                        ..
                     } => tasks.extend([
                         Task::Leave,
                         Task::Block(body),

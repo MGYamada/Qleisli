@@ -1134,7 +1134,7 @@
           "group": "source"
         },
         "StaticFold": {
-          "declaration": "StaticFold { index: Ident, start: Natural, end: Natural, carry: Pattern, initial: Box<Expr>, body: Block, }",
+          "declaration": "StaticFold { quantum: bool, index: Ident, start: Natural, end: Natural, carry: Pattern, initial: Box<Expr>, body: Block, }",
           "group": "source"
         },
         "Name": {
@@ -1663,6 +1663,10 @@
         },
         "Eof": {
           "declaration": "Eof",
+          "group": "source"
+        },
+        "Qfor": {
+          "declaration": "Qfor",
           "group": "source"
         }
       }
@@ -3187,7 +3191,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "bb7ea3cc28bb2b969a1c7602bde5d4e6bf8e28a8c30c6e60af22a7c90c78e40f",
+      "sha256": "5cd24a228babe6f076433713be0d274cd1d39c9da1ccd5bcd73e3aa8bdae981d",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3250,7 +3254,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "d4ec4985555042a47ef277a25f75cd1623c16cbb651810b9068674434a754d37",
+      "sha256": "a78a248323f3fd72e55ee83eeb2d547e6adbb4ecf5bef86cd93871108eb82777",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3589,7 +3593,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "14b909af00445d0cc016b5a1aaefbc80007abc4b3a3a03d52c00853303cb45a5",
+      "sha256": "ce0dc7865c3e9a7447dfa0af2e2d758b405cda563e2d721c97775c6b42a66967",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3637,7 +3641,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "1d02163d967c1e0967ca2af64a060f12a065e8340f3e18267bad8a50b90b0331",
+      "sha256": "4767aabe6472a5b77434260cf4e16cc635782d41ba4ad8a2561b813a491aa3b5",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3657,7 +3661,7 @@
     },
     {
       "path": "src/frontend/parser/tests.rs",
-      "sha256": "d5b3c2a4c1ab4236dabdf06fa8f00180035999b0f786008f4b6cda58071ccd21",
+      "sha256": "ed367dcc004146deb8798ae2bca73a1ffb8afe897e52577f46b70bcaa4ec120c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3778,7 +3782,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "b7d980c8b3e850e29b2336a863548d6016fbb67e71b264c410a89373e40ba434",
+      "sha256": "1e9feac634f376de5eb35a97fbdb1031d42c811ed2a323ae125353dc11eb5d19",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3960,7 +3964,7 @@
     },
     {
       "path": "src/frontend/sized/fourier.rs",
-      "sha256": "a0742c45503a91cbc7402d749fe607efe7c257fbcfc310b5aac6be173a3cbaee",
+      "sha256": "94a854e37c304403fc58fe1607d0144b63af8face5ba1538e2b6aae80d02eced",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4063,7 +4067,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "672ff7948f04504bfa68eb3d897b566278255356b59f94f8d14e8104e5982982",
+      "sha256": "03d566cc0bc198f9612020a54185693f73c1ecfae8562ebdc152356938a69132",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4088,7 +4092,7 @@
     },
     {
       "path": "src/frontend/sized/qpe.rs",
-      "sha256": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+      "sha256": "4f464baf7eed5024531f1fcbc4d092127c78a7d1d89b13ec65e42642068ea8ff",
       "surface": {
         "declarations": [
           "QpeBindingProposal"
@@ -5665,7 +5669,7 @@
       "scripts/test_hierarchical_instrument.py": "d51ff8e84b6b5e66d09b518f06a89f111b479685c7b3f8a620b46abd07849d43",
       "tests/sized_corpus.rs": "78ebff4a5dc00aec6e06497b7c632d5df65fae4fa6cff3547d2a55ad90371832",
       "scripts/test_instrument_host.py": "dd092f990088732ab43cfbab33154f8eba66e353039fe1efef65503985eace64",
-      "scripts/test_sized_qft.py": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
+      "scripts/test_sized_qft.py": "f616763147d07fff2f2d461113a093759f348c1d04b35cb4b25e154c79c21318",
       "scripts/test_hierarchical_contract_typing.py": "1c4bc5213f62e11ed85f97e5a13abf1f882db436daaed707907298ba1c8d7392",
       "scripts/test_hierarchical_request.py": "ecf6c1c2e1f1982c55dca366cf9ebb60dcbe2aeb9768c32fa76037614276db18",
       "scripts/test_hierarchical_routed_power.py": "746d772fa7b2be51885e12f910a79548aa2ce4909607c3546f321fbaec02898d",

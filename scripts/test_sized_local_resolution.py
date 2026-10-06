@@ -100,7 +100,7 @@ class LocalResolution(unittest.TestCase):
     def test_fold_index_shadowing_rejects_in_every_pure_body(self):
         for count in (0, 1):
             with self.subTest(count=count):
-                body = f'for static step in 0..{count} carry q=q {{ yield step[n](q); }}'
+                body = f'qfor static step in 0..{count} carry q=q {{ yield step[n](q); }}'
                 _, declaration = self.parse(body)
                 with self.assertRaisesRegex(SourceError, 'binding hides'):
                     self.check_moves(declaration)
@@ -110,7 +110,7 @@ class LocalResolution(unittest.TestCase):
     def test_fold_index_shadowing_rejects_in_every_instrument_body(self):
         for count in (0, 1):
             with self.subTest(count=count):
-                body = f'for static step in 0..{count} carry q=q {{ yield step[n](q); }}'
+                body = f'qfor static step in 0..{count} carry q=q {{ yield step[n](q); }}'
                 source = IDENTITY.replace('{ q }', '{ '+body+' }')
                 producer = InstrumentProducer({'register_tools': source})
                 declaration = producer.declarations['register_tools::step']

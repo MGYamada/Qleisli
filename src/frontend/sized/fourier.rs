@@ -830,7 +830,9 @@ impl Graph {
 mod tests {
     use super::*;
     use crate::frontend::sized::ParsedProgram;
-    const SOURCE: &str = include_str!("../../../corpus/sized/qualtran_qft/fourier.qli");
+    const SOURCE: &str = include_str!(
+        "../../../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+    );
 
     fn source(text: &str, width: u32) -> ElaboratedProgram {
         ParsedProgram::parse(BTreeMap::from([("fourier".into(), text.into())]))
@@ -981,7 +983,9 @@ mod tests {
     }
     #[test]
     fn actual_source_fourier_factoring_commuting_variant_preserves_complete_trace() {
-        let delayed = include_str!("../../../tests/fixtures/sized_clients/delayed_fourier.qli");
+        let delayed = include_str!(
+            "../../../tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
+        );
         for width in 1..=3 {
             let source = source(delayed, width);
             let (lower, original, candidate) = factor(&source);

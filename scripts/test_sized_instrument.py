@@ -191,7 +191,7 @@ def main():
     copied = source | {'readout':source['readout'].replace('let first = measure_z(bit);',
         'let first = measure_z(bit); let unused = first; let first = first;').replace(
         'prepend_bit[n-1](first,tail)',
-        'let tail = for static k in 0..2 carry value = tail { let unused = first; yield value; }; prepend_bit[n-1](first,tail)')}
+        'let tail = qfor static k in 0..2 carry value = tail { let unused = first; yield value; }; prepend_bit[n-1](first,tail)')}
     proposals['classical-copy-capture']=qpe(copied)
     parameters['classical-copy-capture']=(1,2,1,3,'qpe')
     wrong_sources = {

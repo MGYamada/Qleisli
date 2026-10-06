@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add explicit `qfor static` quantum-owner threading and restrict `for static`
+  to ordinary carry. Preserve zero-iteration body checks, exact mixed tuple
+  shapes, caller frames and native gates; migrate active tests and bounded
+  corpus clients through hash-checked derivatives (#194).
 - Add provisional acyclic `static fn` Nat helpers through original-source
   checking, exact affine normalization and the shared concrete Nat evaluator.
   Check callee premises and all unused bodies; reject runtime dependencies and

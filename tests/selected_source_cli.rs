@@ -591,7 +591,8 @@ fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() 
             command.arg("--basis=1");
         }
         for (name, path) in module_paths {
-            command.arg(format!("--module={name}={}", root.join(path).display()));
+            let current = common::current_namespace_fixture(&root.join(path));
+            command.arg(format!("--module={name}={}", current.display()));
         }
         log.attach(&mut command, true);
         let text = result(command.output().unwrap(), action, success);

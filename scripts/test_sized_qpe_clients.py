@@ -115,7 +115,7 @@ def source_rejections(base):
         ('forward-alias', order.replace('(phase,target)\n}', '(target,target)\n}')),
         ('forward-access-empty-fold', order.replace(', Controlled(U)','').replace(
             'estimate[n,m,U](phase,target)',
-            'for static k in 0..0 carry pair = (phase,target) { let (p,t) = pair; yield estimate[n,m,U](p,t); }')),
+            'qfor static k in 0..0 carry pair = (phase,target) { let (p,t) = pair; yield estimate[n,m,U](p,t); }')),
         ('forward-access-unselected-branch', order.replace(', Controlled(U)','').replace(
             'estimate[n,m,U](phase,target)',
             'if static n == 2 { (phase,target) } else { estimate[n,m,U](phase,target) }')),
