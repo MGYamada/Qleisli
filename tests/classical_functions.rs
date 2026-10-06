@@ -930,8 +930,8 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
             }
         }
     }
-    // A zero-count wrapper must not hide a provider capability unsupported by
-    // the leaf profile. Its original body remains checked before emission.
+    // Zero-count wrappers retain preflight of the original body. The now
+    // supported inverse-X body passes; a finer phase remains unsupported.
     let unsupported = "use std::quantum::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{adjoint(turn,q)}\nunitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}\npub unitary fn outer[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[repeat_op(0,U)](q)}";
     let parsed =
         ParsedProgram::parse(BTreeMap::from([("main".into(), unsupported.into())])).unwrap();
@@ -952,11 +952,33 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
         .iter()
         .position(|d| d.path() == "main::inner")
         .unwrap();
+    let proposal = source.lower_raw_operation_at(caller, "U").unwrap();
+    let accepted = kernel().accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    assert!(accepted.raw().operations.is_empty());
+    let fine = unsupported
+        .replace("use std::quantum::x;", "use std::quantum::phase;")
+        .replace("x(q)", "phase[1,4](q)");
+    let fine = ParsedProgram::parse(BTreeMap::from([("main".into(), fine)]))
+        .unwrap()
+        .instantiate(
+            "main::outer",
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("main::implementation", BTreeMap::new()),
+            )]),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let caller = fine
+        .definitions()
+        .iter()
+        .position(|d| d.path() == "main::inner")
+        .unwrap();
     assert_eq!(
-        source
-            .lower_raw_operation_at(caller, "U")
-            .unwrap_err()
-            .code(),
+        fine.lower_raw_operation_at(caller, "U").unwrap_err().code(),
         "unsupported"
     );
 }
@@ -1880,6 +1902,227 @@ fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phas
             checked.unwrap();
         } else {
             assert_eq!(checked.unwrap_err().code, "contract");
+        }
+    }
+}
+
+#[test]
+fn generic_access_providers_check_original_requests_and_preserve_reference_phase() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::interchange::hierarchical;
+    for (original, phase, leaf, lie) in [
+        (
+            include_str!(
+                "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli"
+            ),
+            7.0,
+            "phase[1,3](q)",
+            "phase[0,3](q)",
+        ),
+        (
+            include_str!(
+                "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli"
+            ),
+            1.0,
+            "phase_eighth(q)",
+            "q",
+        ),
+    ] {
+        for honest in [true, false] {
+            let text = if honest {
+                original.to_owned()
+            } else {
+                original.replace(leaf, lie)
+            };
+            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                .unwrap()
+                .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            let checked =
+                source.check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
+            if !honest {
+                assert_eq!(checked.unwrap_err().code(), "contract");
+                continue;
+            }
+            let checked = checked.unwrap();
+            assert!(checked.checked_bindings() >= 2);
+            let graph = checked.lower_hierarchy().unwrap();
+            let accepted = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                .check_against_native(graph.payload(), graph.comparison_request())
+                .unwrap();
+            let input = vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]];
+            let actual = accepted
+                .execute_pure(
+                    &input,
+                    2,
+                    hierarchical::execution::ExecutionLimits {
+                        max_amplitudes: 8,
+                        max_steps: 2000,
+                    },
+                )
+                .unwrap()
+                .amplitudes;
+            let angle = phase * std::f64::consts::FRAC_PI_4;
+            for (i, ([a, b], [x, y])) in input.into_iter().zip(actual).enumerate() {
+                let (real, imag) = if i & 1 == 0 {
+                    (a, b)
+                } else {
+                    (
+                        a * angle.cos() - b * angle.sin(),
+                        a * angle.sin() + b * angle.cos(),
+                    )
+                };
+                assert!(
+                    (x - real).abs() < 1e-12 && (y - imag).abs() < 1e-12,
+                    "phase {phase}, coordinate {i}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
+fn access_routing_and_nested_controls_match_independent_exact_and_reference_actions() {
+    use qleisli::contract::{
+        BasisType, DEFAULT_EXACT_WORK,
+        exact::{Budget, Exact, Matrix},
+    };
+    use qleisli::interchange::{
+        finite_leaf::{UnitaryBoundary, check_unitary},
+        hierarchical,
+    };
+    use qleisli::ir::QuantumPort;
+    let inverse = "use std::quantum::{h,phase,split,join};unitary fn turn(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(h(b),phase[1,3](a))}pub unitary fn client(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(turn,q)}";
+    let control = "use std::quantum::{phase_eighth,split,join};unitary fn leaf(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}unitary fn inner(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{let(c,u)=split(q);let(c,u)=controlled(leaf)(c,u);join(c,u)}pub unitary fn client(q:Q<(Bit,(Bit,Unit))>)->Q<(Bit,(Bit,Unit))>{let(c,q)=split(q);let(c,q)=controlled(inner)(c,q);join(c,q)}";
+    for (text, controlled, signature) in [
+        (
+            inverse,
+            false,
+            BasisType::pair(BasisType::Bit, BasisType::Bit),
+        ),
+        (
+            control,
+            true,
+            BasisType::pair(
+                BasisType::Bit,
+                BasisType::pair(BasisType::Bit, BasisType::Unit),
+            ),
+        ),
+    ] {
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+            .unwrap()
+            .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut exact = vec![];
+        for row in 0..4 {
+            for column in 0..4 {
+                let coefficient = if controlled {
+                    if row != column {
+                        Exact::zero()
+                    } else {
+                        Exact::phase(if row == 3 { 1 } else { 0 })
+                    }
+                } else if column >> 1 != row & 1 {
+                    Exact::zero()
+                } else {
+                    let coefficient = Exact::inv_sqrt2()
+                        .mul(Exact::phase(if row & 1 == 1 { 7 } else { 0 }))
+                        .unwrap();
+                    if row >> 1 == 1 && column & 1 == 1 {
+                        coefficient.neg().unwrap()
+                    } else {
+                        coefficient
+                    }
+                };
+                exact.push(coefficient);
+            }
+        }
+        let exact = Matrix::new(4, 4, exact).unwrap();
+        let proposal = source.lower_raw().unwrap();
+        let accepted = kernel().accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+        let input = accepted.raw().quantum_inputs[0].clone();
+        let output = QuantumPort {
+            token: accepted.raw().quantum_outputs[0],
+            ..input.clone()
+        };
+        let boundary = UnitaryBoundary::new(signature, input, output).unwrap();
+        check_unitary(
+            proposal.payload(),
+            &boundary,
+            &exact,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        let graph = source.lower().unwrap();
+        let graph = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+            .check_against_native(graph.payload(), graph.comparison_request())
+            .unwrap();
+        let input = vec![
+            [0.1, -0.2],
+            [0.3, 0.4],
+            [-0.5, 0.6],
+            [0.7, -0.8],
+            [-0.2, 0.1],
+            [0.4, -0.3],
+            [0.6, 0.5],
+            [-0.8, -0.7],
+        ];
+        let actual = graph
+            .execute_pure(
+                &input,
+                2,
+                hierarchical::execution::ExecutionLimits {
+                    max_amplitudes: 16,
+                    max_steps: 4000,
+                },
+            )
+            .unwrap()
+            .amplitudes;
+        for reference in 0..2 {
+            for row in 0..4 {
+                let mut expected = [0.0, 0.0];
+                for column in 0..4 {
+                    let (scale, angle) = if controlled {
+                        (
+                            if row == column { 1.0 } else { 0.0 },
+                            if row == 3 {
+                                std::f64::consts::FRAC_PI_4
+                            } else {
+                                0.0
+                            },
+                        )
+                    } else if column >> 1 != row & 1 {
+                        (0.0, 0.0)
+                    } else {
+                        let sign = if row >> 1 == 1 && column & 1 == 1 {
+                            -1.0
+                        } else {
+                            1.0
+                        };
+                        (
+                            sign * std::f64::consts::FRAC_1_SQRT_2,
+                            if row & 1 == 1 {
+                                -std::f64::consts::FRAC_PI_4
+                            } else {
+                                0.0
+                            },
+                        )
+                    };
+                    let [a, b] = input[column + 4 * reference];
+                    expected[0] += scale * (angle.cos() * a - angle.sin() * b);
+                    expected[1] += scale * (angle.sin() * a + angle.cos() * b);
+                }
+                let [real, imag] = actual[row + 4 * reference];
+                assert!(
+                    (real - expected[0]).abs() < 1e-12 && (imag - expected[1]).abs() < 1e-12,
+                    "control {controlled}, row {row}, reference {reference}"
+                );
+            }
         }
     }
 }

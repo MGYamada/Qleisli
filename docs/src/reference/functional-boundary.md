@@ -68,14 +68,23 @@ Writing two uses of the original q instead would violate ownership. This
 fragment states a generic contract, not a closed CLI entry or proof about an
 arbitrary supplied implementation.
 
-Closed forward operation arguments can be materialized through ordinary helper
-calls in the bounded finite Meaning adapter. The retained specialization keeps
-the actual provider definition, exact argument tree and original Meaning requests;
-ordered source replay checks the callee bindings and the suspended caller frame.
-Nested repetitions retain their child obligations even at zero count. This adds
-no inverse or controlled execution path to that adapter, and is not a general
-source-preservation theorem. The selected route still checks every original
-request with the native checker before emitting a hierarchy artifact.
+Closed operation arguments can be materialized through ordinary helper calls
+in the bounded finite Meaning adapter. Forward, adjoint and controlled access
+retain the actual provider definition, exact argument tree and original Meaning
+requests. Adjoint reverses the actual pure circuit and its exact phases;
+controlled access retains conditional scalar phase even for `Q<Unit>`.
+Structural split/join routing preserves ordered logical coordinates. Independent
+source replay checks callee bindings, ordered actions and suspended caller owners.
+Nested repetitions retain their child obligations even at zero count.
+
+This path uses the existing exact pure Raw circuit profile and unchanged work,
+depth, storage and wire bounds. Finer-than-eighth-turn phases, other unsupported
+primitive forms and opaque provider assertions retain explicit target refusals.
+The common source access requirements remain mandatory; neither a Unitary label
+nor a Meaning annotation grants a missing capability. The selected route checks
+every original request with the native checker before emitting a hierarchy
+artifact. This is not a general source-preservation theorem or a full QS/PR/RS
+or EXACT discharge.
 
 ### Admitted operation construction
 

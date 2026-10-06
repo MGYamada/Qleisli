@@ -17,6 +17,8 @@ use crate::ir::{
 use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
+mod access;
+
 const MAX_CALLS: usize = 1024;
 const MAX_DEPTH: usize = 16;
 const MAX_STEPS: usize = 10_000;
@@ -110,6 +112,137 @@ struct Replay<'a> {
 }
 
 impl Replay<'_> {
+    fn access(
+        &mut self,
+        operation: &SourceOperation,
+        inputs: &[Argument<'_>],
+        depth: usize,
+        controlled: bool,
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
+        if inputs.len() != 1 + usize::from(controlled) {
+            return Err(site.invalid("source access changes argument arity"));
+        }
+        let target = &inputs[usize::from(controlled)];
+        let [Atom::Quantum(target_token, target_wires)] = target.atoms.as_slice() else {
+            return Err(site.invalid("source access requires one whole target owner"));
+        };
+        let mut base = operation;
+        let mut d = 0;
+        while let Some(child) = base.child() {
+            self.charge(1, site)?;
+            d += 1;
+            if d > MAX_DEPTH {
+                return Err(site.error("limit", "source access binding exceeds depth bounds"));
+            }
+            base = child;
+        }
+        let definition = self
+            .source
+            .definitions()
+            .get(
+                base.definition()
+                    .ok_or_else(|| site.invalid("source access has no provider"))?,
+            )
+            .ok_or_else(|| site.invalid("source access provider is missing"))?;
+        if definition.inputs().len() != 1
+            || definition.inputs()[0].ty() != target.ty
+            || definition.output().ty() != target.ty
+            || definition.effect() != "unitary"
+        {
+            return Err(site.invalid("source access substitutes an exact interface or effect"));
+        }
+        let expected = access::expected(
+            self.source,
+            operation,
+            depth,
+            &mut self.calls,
+            &mut self.cells,
+            controlled,
+            site,
+        )?;
+        if !controlled {
+            let Some(RawOp::ApplyUnitary {
+                input,
+                output,
+                steps,
+            }) = self.raw.operations.get(self.cursor)
+            else {
+                return Err(site.invalid("Raw program omits the source inverse action"));
+            };
+            if input != target_token || steps != &expected {
+                return Err(
+                    site.invalid("Raw inverse differs from the original ordered source action")
+                );
+            }
+            let output = *output;
+            if self.live.remove(target_token).as_ref() != Some(target_wires) {
+                return Err(site.invalid("source inverse consumes an unavailable owner"));
+            }
+            let result = self.introduce_owner(output, target_wires, false, site)?;
+            self.cursor += 1;
+            return Ok(vec![result]);
+        }
+        let (control_token, control_wire) = Self::quantum(&inputs[0], site)?;
+        if control_token == *target_token {
+            return Err(site.invalid("source control aliases its target owner"));
+        }
+        let Some(RawOp::Join {
+            left,
+            right,
+            output: joined,
+        }) = self.raw.operations.get(self.cursor)
+        else {
+            return Err(site.invalid("Raw control omits its exact joint frame"));
+        };
+        if *left != control_token || right != target_token {
+            return Err(site.invalid("Raw control changes operand order or caller owners"));
+        }
+        let joined = *joined;
+        self.remove(control_token, control_wire, site)?;
+        if self.live.remove(target_token).as_ref() != Some(target_wires) {
+            return Err(site.invalid("source control consumes an unavailable target"));
+        }
+        self.charge(1 + target_wires.len(), site)?;
+        let wires: Vec<_> = std::iter::once(control_wire)
+            .chain(target_wires.iter().copied())
+            .collect();
+        self.introduce_owner(joined, &wires, false, site)?;
+        let Some(RawOp::ApplyUnitary {
+            input,
+            output: transformed,
+            steps,
+        }) = self.raw.operations.get(self.cursor + 1)
+        else {
+            return Err(site.invalid("Raw control omits its conditional exact action"));
+        };
+        if *input != joined || steps != &expected {
+            return Err(
+                site.invalid("Raw controlled action changes phase, axes or original provider")
+            );
+        }
+        let transformed = *transformed;
+        self.live.remove(&joined);
+        self.introduce_owner(transformed, &wires, false, site)?;
+        let Some(RawOp::Split {
+            input,
+            left,
+            right,
+            left_bits,
+        }) = self.raw.operations.get(self.cursor + 2)
+        else {
+            return Err(site.invalid("Raw control omits its returned owner interface"));
+        };
+        if *input != transformed || *left_bits != 1 {
+            return Err(site.invalid("Raw control changes its exact returned split"));
+        }
+        let (left, right) = (*left, *right);
+        self.live.remove(&transformed);
+        let control = self.introduce(left, control_wire, false, site)?;
+        let target = self.introduce_owner(right, target_wires, false, site)?;
+        self.cursor += 3;
+        Ok(vec![control, target])
+    }
     fn charge(&mut self, count: usize, site: Site<'_>) -> Result<()> {
         self.cells = self.cells.saturating_add(count);
         if self.cells > MAX_CELLS {
@@ -831,14 +964,18 @@ impl Replay<'_> {
                     );
                 }
                 self.function(child, &inputs, depth + 1, site)?
-            } else if step.kind() == "apply" {
-                self.operation(
-                    step.operation()
-                        .ok_or_else(|| site.invalid("forward source operation is missing"))?,
-                    &inputs,
-                    depth + 1,
-                    site,
-                )?
+            } else if let Some(operation) = step.operation() {
+                if step.kind() == "apply" {
+                    self.operation(operation, &inputs, depth + 1, site)?
+                } else {
+                    self.access(
+                        operation,
+                        &inputs,
+                        depth + 1,
+                        step.kind() == "controlled",
+                        site,
+                    )?
+                }
             } else {
                 return Err(site.error(
                     "unsupported",
@@ -1001,6 +1138,137 @@ pub(super) fn validate_subject(
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn access_replay_rejects_native_valid_inverse_order_phase_and_control_frame_substitutions() {
+        let source = elaborate(
+            "use std::quantum::{h,phase};unitary fn turn(q:Q<Bit>)->Q<Bit>{h(phase[1,3](q))} pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(adjoint(turn,q),r)}",
+            "main::caller",
+        );
+        let phase = crate::ir::CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: vec![0],
+                permutation: vec![0, 1],
+                phases: vec![0, 7],
+            },
+        };
+        let hadamard = crate::ir::CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Hadamard { target: 0 },
+        };
+        let raw = RawProgram {
+            quantum_inputs: vec![
+                QuantumPort {
+                    token: TokenId(0),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(0)],
+                },
+                QuantumPort {
+                    token: TokenId(1),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(1)],
+                },
+            ],
+            classical_inputs: vec![],
+            operations: vec![RawOp::ApplyUnitary {
+                input: TokenId(0),
+                output: TokenId(2),
+                steps: vec![hadamard.clone(), phase.clone()],
+            }],
+            quantum_outputs: vec![TokenId(2), TokenId(1)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        checked(&source, raw.clone());
+        let mut wrong = raw;
+        let RawOp::ApplyUnitary { steps, .. } = &mut wrong.operations[0] else {
+            unreachable!()
+        };
+        steps.reverse();
+        let accepted = kernel().accept_raw(wrong).unwrap();
+        assert!(validate(&source, accepted.raw()).is_err());
+
+        let source = elaborate(
+            "use std::quantum::phase_eighth;unitary fn turn(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn caller(c:Q<Bit>,q:Q<Unit>,r:Q<Bit>)->(Q<Bit>,Q<Unit>,Q<Bit>){let(c,q)=controlled(turn)(c,q);(c,q,r)}",
+            "main::caller",
+        );
+        let raw = RawProgram {
+            quantum_inputs: vec![
+                QuantumPort {
+                    token: TokenId(0),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(0)],
+                },
+                QuantumPort {
+                    token: TokenId(1),
+                    shape: BasisShape { bits: 0 },
+                    wires: vec![],
+                },
+                QuantumPort {
+                    token: TokenId(2),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(1)],
+                },
+            ],
+            classical_inputs: vec![],
+            operations: vec![
+                RawOp::Join {
+                    left: TokenId(0),
+                    right: TokenId(1),
+                    output: TokenId(3),
+                },
+                RawOp::ApplyUnitary {
+                    input: TokenId(3),
+                    output: TokenId(4),
+                    steps: vec![crate::ir::CircuitStep {
+                        controls: vec![crate::ir::BitControl {
+                            index: 0,
+                            when_one: true,
+                        }],
+                        action: CircuitAction::Monomial {
+                            indices: vec![],
+                            permutation: vec![0],
+                            phases: vec![1],
+                        },
+                    }],
+                },
+                RawOp::Split {
+                    input: TokenId(4),
+                    left: TokenId(5),
+                    right: TokenId(6),
+                    left_bits: 1,
+                },
+            ],
+            quantum_outputs: vec![TokenId(5), TokenId(6), TokenId(2)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        checked(&source, raw.clone());
+        for mutation in 0..3 {
+            let mut wrong = raw.clone();
+            if mutation == 2 {
+                let RawOp::Join { left, .. } = &mut wrong.operations[0] else {
+                    unreachable!()
+                };
+                *left = TokenId(2);
+                wrong.quantum_outputs = vec![TokenId(0), TokenId(6), TokenId(5)];
+            } else {
+                let RawOp::ApplyUnitary { steps, .. } = &mut wrong.operations[1] else {
+                    unreachable!()
+                };
+                if mutation == 0 {
+                    steps[0].controls.clear();
+                } else {
+                    let CircuitAction::Monomial { phases, .. } = &mut steps[0].action else {
+                        unreachable!()
+                    };
+                    phases[0] = 7;
+                }
+            }
+            let accepted = kernel().accept_raw(wrong).unwrap();
+            assert!(validate(&source, accepted.raw()).is_err());
+        }
+    }
     use super::*;
     use crate::frontend::sized::ParsedProgram;
     use crate::interchange::native::{AcceptedProgram, Kernel};

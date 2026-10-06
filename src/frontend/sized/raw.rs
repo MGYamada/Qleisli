@@ -10,6 +10,7 @@ use crate::interchange::{RootInterface, Version, native};
 use crate::ir::{BasisShape, ClassicalId, Effect, QuantumPort, RawProgram, SingleGate};
 use std::collections::{BTreeMap, BTreeSet};
 
+mod circuit;
 mod preservation;
 
 const MAX_OPERATIONS: usize = 10_000;
@@ -473,7 +474,8 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                 continue;
             }
             if step.called_definition().is_some()
-                || (step.kind() == "apply" && step.operation().is_some())
+                || (matches!(step.kind(), "apply" | "adjoint" | "controlled")
+                    && step.operation().is_some())
             {
                 continue;
             }
@@ -594,6 +596,159 @@ struct Emitter<'a> {
     cells: usize,
 }
 impl Emitter<'_> {
+    fn access(
+        &mut self,
+        op: &super::SourceOperation,
+        arguments: Vec<Vec<Atom>>,
+        depth: usize,
+        controlled: bool,
+    ) -> Result<Vec<Atom>> {
+        let span = op.span();
+        if arguments.len() != 1 + usize::from(controlled) {
+            return Err(invalid(span, "source access changes whole-argument arity"));
+        }
+        let target = quantum(&arguments[usize::from(controlled)], span)?;
+        let control = if controlled {
+            Some(quantum(&arguments[0], span)?)
+        } else {
+            None
+        };
+        if control == Some(target) {
+            return Err(invalid(span, "controlled source operands alias"));
+        }
+        let mut base = op;
+        let mut operation_depth = 0;
+        while let Some(child) = base.child() {
+            self.cells = self.cells.saturating_add(1);
+            operation_depth += 1;
+            if self.cells > MAX_CELLS || operation_depth > MAX_DEPTH {
+                return Err(Error::new(
+                    "limit",
+                    span,
+                    "Raw access binding exceeds existing work/depth bounds",
+                ));
+            }
+            base = child;
+        }
+        let definition =
+            &self.source.definitions()[base.definition().expect("closed source operation")];
+        let basis = &self.raw.registers[&target].basis;
+        if definition.inputs().len() != 1
+            || definition.inputs()[0].ty().quantum_basis() != Some(basis)
+            || definition.output().ty() != definition.inputs()[0].ty()
+            || definition.effect() != "unitary"
+        {
+            return Err(invalid(
+                span,
+                "source access changes its exact endomorphism interface",
+            ));
+        }
+        // Compile the actual retained provider in an isolated canonical frame.
+        // The shared counters carry through nested transforms, never resetting
+        // the work/depth budget for a new temporary state.
+        let mut child = Emitter {
+            source: self.source,
+            raw: RawState::new(),
+            calls: self.calls,
+            cells: self.cells,
+        };
+        let input = child.input(&definition.inputs()[0], span)?;
+        let input_slot = quantum(&input, span)?;
+        let input_token = child.raw.registers[&input_slot].token;
+        let input_wires = child.raw.registers[&input_slot].wires.clone();
+        let output = child.operation(op, vec![input], depth)?;
+        let output_slot = quantum(&output, span)?;
+        if child.raw.registers[&output_slot].basis != self.raw.registers[&target].basis {
+            return Err(invalid(
+                span,
+                "source access changes its exact returned basis tree",
+            ));
+        }
+        let mut steps = circuit::flatten(
+            &child.raw.operations,
+            input_token,
+            &input_wires,
+            child.raw.registers[&output_slot].token,
+            &mut child.cells,
+            span,
+        )?;
+        self.calls = child.calls;
+        self.cells = child.cells;
+        if controlled {
+            steps = circuit::controlled(steps);
+        } else {
+            crate::contract::invert_steps(&mut steps);
+        }
+        circuit::charge(&steps, &mut self.cells, span)?;
+        self.reserve_operations(if controlled { 3 } else { 1 }, span)?;
+        let target_register = self
+            .raw
+            .registers
+            .remove(&target)
+            .ok_or_else(|| invalid(span, "source access owner is absent"))?;
+        if let Some(control) = control {
+            let control_register = self
+                .raw
+                .registers
+                .remove(&control)
+                .ok_or_else(|| invalid(span, "source control owner is absent"))?;
+            if control_register.basis != SourceType::bit() || control_register.wires.len() != 1 {
+                return Err(invalid(span, "source control is not exact Q<Bit>"));
+            }
+            let joined = self.raw.token();
+            let transformed = self.raw.token();
+            let control_out = self.raw.token();
+            let target_out = self.raw.token();
+            self.raw.operations.extend([
+                crate::ir::RawOp::Join {
+                    left: control_register.token,
+                    right: target_register.token,
+                    output: joined,
+                },
+                crate::ir::RawOp::ApplyUnitary {
+                    input: joined,
+                    output: transformed,
+                    steps,
+                },
+                crate::ir::RawOp::Split {
+                    input: transformed,
+                    left: control_out,
+                    right: target_out,
+                    left_bits: 1,
+                },
+            ]);
+            self.raw.registers.insert(
+                control,
+                crate::frontend::raw_state::Register {
+                    token: control_out,
+                    ..control_register
+                },
+            );
+            self.raw.registers.insert(
+                target,
+                crate::frontend::raw_state::Register {
+                    token: target_out,
+                    ..target_register
+                },
+            );
+            Ok(vec![Atom::Quantum(control), Atom::Quantum(target)])
+        } else {
+            let output = self.raw.token();
+            self.raw.operations.push(crate::ir::RawOp::ApplyUnitary {
+                input: target_register.token,
+                output,
+                steps,
+            });
+            self.raw.registers.insert(
+                target,
+                crate::frontend::raw_state::Register {
+                    token: output,
+                    ..target_register
+                },
+            );
+            Ok(vec![Atom::Quantum(target)])
+        }
+    }
     fn operation(
         &mut self,
         op: &super::SourceOperation,
@@ -769,12 +924,12 @@ impl Emitter<'_> {
                         )]
                     } else if let Some(child) = step.called_definition() {
                         self.invoke(child, inputs, depth + 1, span)?
-                    } else if step.kind() == "apply" {
-                        self.operation(
-                            step.operation().expect("preflighted forward operation"),
-                            inputs,
-                            depth + 1,
-                        )?
+                    } else if let Some(operation) = step.operation() {
+                        if step.kind() == "apply" {
+                            self.operation(operation, inputs, depth + 1)?
+                        } else {
+                            self.access(operation, inputs, depth + 1, step.kind() == "controlled")?
+                        }
                     } else {
                         use Primitive::*;
                         match step.primitive_kind().expect("preflighted finite primitive") {

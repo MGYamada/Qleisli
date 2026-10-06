@@ -48,13 +48,15 @@
     },
     {
       "id": "access-attempt-01",
-      "reason": "Two original desired generic Basis inverse/control programs, recorded before the implementation. Actual current target refusal; not an implemented feature or source theorem.",
+      "reason": "Original pre-code inverse/control sources retained; separate actual after observations use identical source bytes and invocations. Informed bounded component; no source theorem.",
       "sha256": {
         "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli": "ef23bd0d9cd0d018492e56773cb366ce4af34cb28b773fe66d7c0fc71c725737",
         "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli": "0f8cf52a31f0e1c05f2a3e11cf41ed7203cd59e093424dd1b85a0d7168e04aba"
       },
       "reports": [
-        "access-attempt-01/before.json"
+        "access-attempt-01/before.json",
+        "access-attempt-01/after.json",
+        "access-attempt-01/after-final.json"
       ]
     }
   ]

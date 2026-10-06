@@ -4123,7 +4123,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "67d90514906627d79cea603d93101bff0f2bc16fb5ba1154bef1592da2fc2ea9",
+      "sha256": "f54a98b172b140b3cb98f531d281cd45635ed762210aec44267b73cebe755036",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4162,7 +4162,7 @@
     },
     {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "3aa15543afed8c045a9542e6ee4d1b3a6db3cd252141ddbce3772e0881838924",
+      "sha256": "18c0376bf36c9ed6808389a2afdb19e078d68ac9a54fee185561e61a99d35226",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4831,6 +4831,26 @@
     {
       "path": "src/frontend/sized/meaning.rs",
       "sha256": "59fa763151abfa105172d9b63d25a6cea675164d168c7203a29a1581bd89e19f",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/raw/circuit.rs",
+      "sha256": "2462cc356be12501b4068c0d0fa53c8ce5120645d575c697a34371e2d116531c",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/raw/preservation/access.rs",
+      "sha256": "750e3b35b34668814c526b3fc330ec6df960491d55f7f9d3cedbec4f15152d3c",
       "group": "sized-source",
       "surface": {
         "declarations": [],

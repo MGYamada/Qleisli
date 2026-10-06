@@ -81,3 +81,11 @@ controlled request. The latter retains a separate zero-width owner through
 split/control/join. Both actual Rust toolchains pass these tests. This shows
 representability in the existing native profile, not source translation support.
 The first sources and their actual unsupported outputs remain unchanged.
+
+The [separate source-access after observations](access-attempt-01/after.json)
+now accept the identical first sources and invocations through the finite
+adapter and original Meaning checks. Independent source replay and small-system
+exact/reference tests cover inverse order, swapped output axes, nested controls,
+zero-width phase and suspended caller owners. Wrong native-valid actions remain
+counterexamples. Earlier unsupported and feasibility records stay historical;
+this component is not a general source-preservation or constitutional discharge.

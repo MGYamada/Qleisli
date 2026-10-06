@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Materialize existing adjoint and controlled access inside closed operation
+  providers in the finite Meaning adapter. Preserve exact phase, structural
+  routing, original requests and caller owners, including controlled zero-width
+  targets. Independently replay transformed source actions and retain the
+  existing native acceptance and capacity limits; broader source proofs remain open.
+
 - Materialize closed forward operation arguments through ordinary helpers in
   the bounded finite Meaning adapter. Retain actual provider identities,
   nested and zero-count Meaning obligations, exact interfaces and caller frames;
