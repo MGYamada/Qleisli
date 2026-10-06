@@ -2,9 +2,10 @@
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 use super::primitive::Primitive;
 use super::{ElaboratedProgram, Error, Result, SourceType, SourceValue, Span};
+use crate::contract::BasisType;
 use crate::frontend::raw_state::{RawState, Slot};
 use crate::frontend::types::Kind;
-use crate::interchange::{Version, native};
+use crate::interchange::{RootInterface, Version, native};
 use crate::ir::{BasisShape, ClassicalId, Effect, QuantumPort, RawProgram, SingleGate};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -18,7 +19,7 @@ const MAX_LIVE_QUBITS: usize = 16;
 
 /// An immutable finite transport proposal alongside its exact source instance.
 ///
-/// The current adapter supports Unit/Bit/`Q<Bit>`/products, specialized ordinary
+/// The current adapter supports Unit/Bit/`Q<Unit>`/`Q<Bit>`/products, specialized ordinary
 /// calls and the explicitly supported finite primitives. Native Raw validity
 /// and source-step correspondence are distinct checks; neither proves source
 /// elaboration preserves meaning. Whole argument/result trees remain beside
@@ -61,7 +62,7 @@ fn located(source: &ElaboratedProgram, id: usize, span: Span, message: &str) -> 
 fn supported(ty: &SourceType) -> bool {
     match &ty.kind {
         Kind::Unit | Kind::Bit => true,
-        Kind::Q(basis) => matches!(basis.kind, Kind::Bit),
+        Kind::Q(basis) => matches!(basis.kind, Kind::Unit | Kind::Bit),
         Kind::Tuple(fields) => fields.iter().all(supported),
         Kind::Bits(_) | Kind::Parameter(_) => false,
     }
@@ -115,7 +116,7 @@ fn check_profile(source: &ElaboratedProgram) -> Result<()> {
                     source,
                     id,
                     definition.span(),
-                    "finite source lowering requires Unit, Bit, Q<Bit> or exact products; Bits and other quantum bases need explicit target support",
+                    "finite source lowering requires Unit, Bit, Q<Unit>, Q<Bit> or exact products; Bits and other quantum bases need explicit target support",
                 ));
             }
         }
@@ -279,7 +280,14 @@ impl Emitter<'_> {
         Ok(())
     }
     fn reserve_qubit(&self, span: Span) -> Result<()> {
-        if self.raw.registers.len() >= MAX_LIVE_QUBITS {
+        if self
+            .raw
+            .registers
+            .values()
+            .map(|r| r.wires.len())
+            .sum::<usize>()
+            >= MAX_LIVE_QUBITS
+        {
             return Err(Error::new(
                 "limit",
                 span,
@@ -292,6 +300,9 @@ impl Emitter<'_> {
         match &value.ty().kind {
             Kind::Unit => Ok(vec![]),
             Kind::Bit => Ok(vec![Atom::Classical(self.raw.classical())]),
+            Kind::Q(basis) if matches!(basis.kind, Kind::Unit) => Ok(vec![Atom::Quantum(
+                self.raw.register(SourceType::unit(), vec![]),
+            )]),
             Kind::Q(_) => {
                 self.reserve_qubit(span)?;
                 let wire = self.raw.wire();
@@ -472,7 +483,11 @@ fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
                 quantum_inputs.push(QuantumPort {
                     token: register.token,
                     wires: register.wires.clone(),
-                    shape: BasisShape::BIT,
+                    shape: if register.wires.is_empty() {
+                        BasisShape::UNIT
+                    } else {
+                        BasisShape::BIT
+                    },
                 });
             }
         }
@@ -516,7 +531,25 @@ fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
         declared_effect: effect(source),
     };
     preservation::validate(source, &raw)?;
-    let proposal = native::Proposal::from_raw(&raw, None, Version::V2, None)
+    // A finite request binds the actual artifact's declared type as well as
+    // its ports. Retain a unary quantum boundary only for an exact matching
+    // source tree; zero width alone never establishes a Unit signature.
+    let interface = match root.inputs() {
+        [input] if input.ty() == root.output().ty() => match &input.ty().kind {
+            Kind::Q(basis) => match basis.kind {
+                Kind::Unit => Some(BasisType::Unit),
+                Kind::Bit => Some(BasisType::Bit),
+                _ => None,
+            },
+            _ => None,
+        },
+        _ => None,
+    }
+    .map(|basis| RootInterface {
+        input: basis.clone(),
+        output: basis,
+    });
+    let proposal = native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
         .map_err(|error| Error::new("transport", root.span(), error.to_string()))?;
     Ok(RawSourceProposal {
         source: source.clone(),

@@ -868,7 +868,7 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit() 
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start);
     }
-    for text in [study("id"), source("scalar-unit"), source("scalar-bit")] {
+    for text in [source("scalar-unit"), source("scalar-bit")] {
         let graph = elaborate(&text, "main::f", BTreeMap::new());
         assert!(matches!(
             graph.hierarchy_eligibility().unwrap(),
@@ -879,6 +879,80 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit() 
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start);
     }
+}
+
+#[test]
+fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
+    let graph = elaborate(&study("id"), "main::f", BTreeMap::new());
+    let proposal = graph.lower_raw().unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(proposal.proposal())
+        .unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    let raw = accepted.raw();
+    assert_eq!(raw.quantum_inputs.len(), 1);
+    assert_eq!(raw.quantum_inputs[0].shape, qleisli::ir::BasisShape::UNIT);
+    assert!(raw.quantum_inputs[0].wires.is_empty());
+    assert_eq!(raw.quantum_outputs, [raw.quantum_inputs[0].token]);
+    assert!(raw.operations.is_empty());
+    let boundary = qleisli::interchange::finite_leaf::UnitaryBoundary::new(
+        BasisType::Unit,
+        raw.quantum_inputs[0].clone(),
+        raw.quantum_inputs[0].clone(),
+    )
+    .unwrap();
+    let identity = Matrix::new(1, 1, vec![Exact::one()]).unwrap();
+    let leaf = check_unitary(
+        proposal.payload(),
+        &boundary,
+        &identity,
+        &mut Budget::new(DEFAULT_EXACT_WORK),
+    )
+    .unwrap();
+    assert_eq!(leaf.payload(), proposal.payload());
+    let minus = Matrix::new(1, 1, vec![Exact::phase(4)]).unwrap();
+    assert!(
+        check_unitary(
+            proposal.payload(),
+            &boundary,
+            &minus,
+            &mut Budget::new(DEFAULT_EXACT_WORK)
+        )
+        .is_err()
+    );
+}
+
+#[test]
+fn raw_nested_products_and_calls_keep_empty_owners_beside_a_live_bit() {
+    let text = "unitary fn keep(q: Q<Unit>) -> Q<Unit> { q }\n\
+        pub unitary fn f(a: Q<Unit>, b: Q<Unit>, c: Q<Bit>)\n\
+        -> (Q<Unit>, (Q<Bit>, Q<Unit>)) { (keep(a), (c, keep(b))) }";
+    let graph = elaborate(text, "main::f", BTreeMap::new());
+    let proposal = graph.lower_raw().unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(proposal.proposal())
+        .unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    let raw = accepted.raw();
+    assert_eq!(raw.quantum_inputs.len(), 3);
+    assert_eq!(
+        raw.quantum_inputs
+            .iter()
+            .map(|port| port.wires.len())
+            .collect::<Vec<_>>(),
+        [0, 0, 1]
+    );
+    assert_eq!(
+        raw.quantum_outputs,
+        [
+            raw.quantum_inputs[0].token,
+            raw.quantum_inputs[2].token,
+            raw.quantum_inputs[1].token
+        ]
+    );
+    assert!(raw.operations.is_empty());
 }
 
 #[test]

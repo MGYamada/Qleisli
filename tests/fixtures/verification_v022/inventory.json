@@ -4118,7 +4118,7 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "28d2d849c5cc93d626ed0156073f31cad289724f3d199c6d277991002fa0a233",
+      "sha256": "5868a6af7503bd60db9bbd0b32485301aabc0f92b92eaa8c6480c0f5dba09bc9",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4141,7 +4141,7 @@
     },
     {
       "path": "src/frontend/sized/raw/preservation.rs",
-      "sha256": "06ad8186d8f00e612aea9d02d7874b9612172803b633a51f617f8b128b7ec5cf",
+      "sha256": "78c20dcfcae6097ec82d9af81a071bc4a0dd2f462eb350aff4a81346b68be780",
       "group": "sized-source",
       "surface": {
         "declarations": [],

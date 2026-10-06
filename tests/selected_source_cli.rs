@@ -88,6 +88,19 @@ fn scope(text: &str, entry: &str, target: &str) {
     }
 }
 
+#[test]
+fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/id/main.qli");
+    let output = selected("check", &path, "main::f")
+        .arg("--ir-profile=raw")
+        .arg(format!("--lean-kernel={}", kernel().display()))
+        .output()
+        .unwrap();
+    let text = result(output, "check", true);
+    scope(&text, "main::f", "raw");
+}
+
 fn distribution(text: &str, expected: &[(&[bool], f64)]) {
     // Parse only the documented compact distribution rows. The numerical oracle
     // below is independent of both lowering paths and of the CLI serializer.

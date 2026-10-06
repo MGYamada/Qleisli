@@ -53,10 +53,21 @@ fn quantum_bit(ty: &SourceType) -> bool {
     matches!(&ty.kind, Kind::Q(basis) if matches!(basis.kind, Kind::Bit))
 }
 
+fn quantum_width(ty: &SourceType) -> Option<usize> {
+    match &ty.kind {
+        Kind::Q(basis) => match basis.kind {
+            Kind::Unit => Some(0),
+            Kind::Bit => Some(1),
+            _ => None,
+        },
+        _ => None,
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Atom {
     Classical(ClassicalId),
-    Quantum(TokenId, WireId),
+    Quantum(TokenId, Option<WireId>),
 }
 
 #[derive(Default)]
@@ -82,7 +93,7 @@ struct Replay<'a> {
     classical: BTreeSet<ClassicalId>,
     tokens: BTreeSet<TokenId>,
     wires: BTreeSet<WireId>,
-    live: BTreeMap<TokenId, WireId>,
+    live: BTreeMap<TokenId, Option<WireId>>,
 }
 
 impl Replay<'_> {
@@ -96,7 +107,7 @@ impl Replay<'_> {
 
     /// Exact source constructors, including ordinary Unit versus zero-width
     /// owners/registers. Charge pending children before extending the stack.
-    fn atoms(&mut self, value: &SourceValue, site: Site<'_>) -> Result<Vec<(u32, bool)>> {
+    fn atoms(&mut self, value: &SourceValue, site: Site<'_>) -> Result<Vec<(u32, Option<usize>)>> {
         self.charge(1, site)?;
         let mut pending = vec![(value, value.ty(), 0usize)];
         let mut result = Vec::new();
@@ -114,16 +125,16 @@ impl Replay<'_> {
                     }
                 }
                 Kind::Bit | Kind::Q(_)
-                    if matches!(expected.kind, Kind::Bit) || quantum_bit(expected) =>
+                    if matches!(expected.kind, Kind::Bit) || quantum_width(expected).is_some() =>
                 {
                     if !value.fields().is_empty() {
-                        return Err(site.invalid("source Bit leaf has product fields"));
+                        return Err(site.invalid("source atom has product fields"));
                     }
                     result.push((
                         value
                             .identity()
-                            .ok_or_else(|| site.invalid("source Bit leaf lacks its identity"))?,
-                        quantum_bit(expected),
+                            .ok_or_else(|| site.invalid("source atom lacks its identity"))?,
+                        quantum_width(expected),
                     ));
                 }
                 Kind::Tuple(fields) => {
@@ -147,7 +158,7 @@ impl Replay<'_> {
                 Kind::Bit | Kind::Bits(_) | Kind::Q(_) | Kind::Parameter(_) => {
                     return Err(site.error(
                         "unsupported",
-                        "Raw replay supports only Unit, Bit, Q<Bit> and their exact products",
+                        "Raw replay supports only Unit, Bit, Q<Unit>, Q<Bit> and their exact products",
                     ));
                 }
             }
@@ -167,7 +178,8 @@ impl Replay<'_> {
             return Err(site.invalid("Raw values differ from the source value's leaf count"));
         }
         for ((source, quantum), actual) in atoms.into_iter().zip(actual) {
-            if quantum != matches!(actual, Atom::Quantum(..)) || !environment.issued.insert(source)
+            if quantum.is_some() != matches!(actual, Atom::Quantum(..))
+                || !environment.issued.insert(source)
             {
                 return Err(site.invalid(
                     "source step changes leaf ownership kind or redefines a local identity",
@@ -175,7 +187,10 @@ impl Replay<'_> {
             }
             match actual {
                 Atom::Quantum(token, wire) => {
-                    if self.live.get(token) != Some(wire) || !environment.quantum.insert(*token) {
+                    if quantum != Some(usize::from(wire.is_some()))
+                        || self.live.get(token) != Some(wire)
+                        || !environment.quantum.insert(*token)
+                    {
                         return Err(
                             site.invalid("source binding aliases or loses a live quantum owner")
                         );
@@ -204,11 +219,14 @@ impl Replay<'_> {
                 .get(&id)
                 .copied()
                 .ok_or_else(|| site.invalid("source step uses an unavailable value"))?;
-            if quantum != matches!(actual, Atom::Quantum(..)) {
+            if quantum.is_some() != matches!(actual, Atom::Quantum(..)) {
                 return Err(site.invalid("source read changes a leaf's ownership kind"));
             }
             if let Atom::Quantum(token, wire) = actual {
-                if self.live.get(&token) != Some(&wire) || !environment.quantum.remove(&token) {
+                if quantum != Some(usize::from(wire.is_some()))
+                    || self.live.get(&token) != Some(&wire)
+                    || !environment.quantum.remove(&token)
+                {
                     return Err(site.invalid("source read reuses a consumed quantum owner"));
                 }
                 environment.values.remove(&id);
@@ -232,16 +250,26 @@ impl Replay<'_> {
         fresh_wire: bool,
         site: Site<'_>,
     ) -> Result<Atom> {
-        if self.live.len() >= MAX_LIVE {
-            return Err(site.error(
-                "limit",
-                "Raw replay exceeds 16 globally live quantum owners",
-            ));
+        self.introduce_owner(token, Some(wire), fresh_wire, site)
+    }
+
+    fn introduce_owner(
+        &mut self,
+        token: TokenId,
+        wire: Option<WireId>,
+        fresh_wire: bool,
+        site: Site<'_>,
+    ) -> Result<Atom> {
+        self.charge(1, site)?;
+        if wire.is_some() && self.live.values().filter(|wire| wire.is_some()).count() >= MAX_LIVE {
+            return Err(site.error("limit", "Raw replay exceeds 16 globally live quantum wires"));
         }
-        if !self.tokens.insert(token) || (fresh_wire && !self.wires.insert(wire)) {
+        if !self.tokens.insert(token)
+            || (fresh_wire && wire.is_some_and(|wire| !self.wires.insert(wire)))
+        {
             return Err(site.invalid("Raw operation reuses an issued token or wire"));
         }
-        if self.live.values().any(|existing| *existing == wire) {
+        if wire.is_some() && self.live.values().any(|existing| *existing == wire) {
             return Err(site.invalid("Raw operation aliases a live wire"));
         }
         self.live.insert(token, wire);
@@ -250,13 +278,13 @@ impl Replay<'_> {
 
     fn quantum(input: &Argument<'_>, site: Site<'_>) -> Result<(TokenId, WireId)> {
         match input.atoms.as_slice() {
-            [Atom::Quantum(token, wire)] if quantum_bit(input.ty) => Ok((*token, *wire)),
+            [Atom::Quantum(token, Some(wire))] if quantum_bit(input.ty) => Ok((*token, *wire)),
             _ => Err(site.invalid("primitive requires one exact Q<Bit> argument")),
         }
     }
 
     fn remove(&mut self, token: TokenId, wire: WireId, site: Site<'_>) -> Result<()> {
-        if self.live.remove(&token) != Some(wire) {
+        if self.live.remove(&token) != Some(Some(wire)) {
             return Err(site.invalid("Raw instruction consumes an unavailable quantum owner"));
         }
         Ok(())
@@ -401,12 +429,13 @@ impl Replay<'_> {
                     ));
                 }
                 for _ in 0..numerator / denominator {
-                    let Atom::Quantum(token, wire) = self.gate(input, SingleGate::T, site)? else {
+                    let Atom::Quantum(token, Some(wire)) = self.gate(input, SingleGate::T, site)?
+                    else {
                         unreachable!("gate returns a quantum atom")
                     };
                     input = (token, wire);
                 }
-                Ok(vec![Atom::Quantum(input.0, input.1)])
+                Ok(vec![Atom::Quantum(input.0, Some(input.1))])
             }
             (Primitive::Cnot, [control, target]) if matches!(&step.output().ty().kind, Kind::Tuple(fields) if fields.len() == 2 && fields.iter().all(quantum_bit)) =>
             {
@@ -625,12 +654,19 @@ pub(super) fn validate(source: &ElaboratedProgram, raw: &RawProgram) -> Result<(
         replay.fresh_classical(*id, site)?;
     }
     for input in &raw.quantum_inputs {
-        if input.shape != BasisShape::BIT || input.wires.len() != 1 {
-            return Err(
-                site.invalid("Raw quantum source input must have exact Bit shape and one wire")
-            );
+        if !matches!(input.shape, BasisShape::UNIT | BasisShape::BIT)
+            || usize::from(input.shape.bits) != input.wires.len()
+        {
+            return Err(site.invalid(
+                "Raw quantum source input must have exact Unit/Bit shape and wire count",
+            ));
         }
-        replay.introduce(input.token, input.wires[0], true, site)?;
+        replay.introduce_owner(
+            input.token,
+            input.wires.first().copied(),
+            !input.wires.is_empty(),
+            site,
+        )?;
     }
     replay.charge(definition.inputs().len(), site)?;
     let (mut classical, mut quantum) = (0, 0);
@@ -638,13 +674,18 @@ pub(super) fn validate(source: &ElaboratedProgram, raw: &RawProgram) -> Result<(
     for input in definition.inputs() {
         let mut atoms = Vec::new();
         for (_, is_quantum) in replay.atoms(input, site)? {
-            if is_quantum {
+            if let Some(width) = is_quantum {
                 let port = raw
                     .quantum_inputs
                     .get(quantum)
                     .ok_or_else(|| site.invalid("Raw program omits a quantum source input"))?;
                 quantum += 1;
-                atoms.push(Atom::Quantum(port.token, port.wires[0]));
+                if usize::from(port.shape.bits) != width || port.wires.len() != width {
+                    return Err(
+                        site.invalid("Raw input changes the source's exact Unit/Bit owner shape")
+                    );
+                }
+                atoms.push(Atom::Quantum(port.token, port.wires.first().copied()));
             } else {
                 let id = raw
                     .classical_inputs
@@ -758,6 +799,83 @@ mod tests {
             declared_effect: Effect::Observe,
         };
         (source, raw)
+    }
+
+    #[test]
+    fn raw_source_replay_preserves_zero_width_owners_and_order_through_calls() {
+        let source = elaborate(
+            "unitary fn keep(q: Q<Unit>) -> Q<Unit> { q }\n\
+             pub unitary fn f(a: Q<Unit>, b: Q<Unit>, c: Q<Bit>)\n\
+             -> (Q<Unit>, Q<Bit>, Q<Unit>) { (keep(a), c, keep(b)) }",
+            "main::f",
+        );
+        // Independently authored ports retain two distinct zero-width owners.
+        // Neither owner aliases the other's empty wire list or c's wire zero.
+        let raw = RawProgram {
+            quantum_inputs: vec![
+                QuantumPort {
+                    token: TokenId(0),
+                    shape: BasisShape::UNIT,
+                    wires: vec![],
+                },
+                QuantumPort {
+                    token: TokenId(1),
+                    shape: BasisShape::UNIT,
+                    wires: vec![],
+                },
+                QuantumPort {
+                    token: TokenId(2),
+                    shape: BasisShape::BIT,
+                    wires: vec![WireId(0)],
+                },
+            ],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![TokenId(0), TokenId(2), TokenId(1)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        checked(&source, raw.clone());
+
+        let mut reordered = raw.clone();
+        reordered.quantum_outputs.swap(0, 2);
+        let accepted = kernel().accept_raw(reordered).unwrap();
+        assert!(validate(&source, accepted.raw()).is_err());
+
+        for outputs in [
+            vec![TokenId(0), TokenId(2)],
+            vec![TokenId(0), TokenId(2), TokenId(0)],
+        ] {
+            let mut changed = raw.clone();
+            changed.quantum_outputs = outputs;
+            assert!(validate(&source, &changed).is_err());
+            assert!(kernel().accept_raw(changed).is_err());
+        }
+        for (port, shape) in [(0, BasisShape::BIT), (2, BasisShape::UNIT)] {
+            let mut changed = raw.clone();
+            changed.quantum_inputs[port].shape = shape;
+            assert!(validate(&source, &changed).is_err());
+            assert!(kernel().accept_raw(changed).is_err());
+        }
+    }
+
+    #[test]
+    fn raw_source_replay_distinguishes_plain_unit_from_a_zero_width_owner() {
+        let source = elaborate("pub unitary fn f(u: Unit) -> Unit { u }", "main::f");
+        let raw = RawProgram {
+            quantum_inputs: vec![QuantumPort {
+                token: TokenId(0),
+                shape: BasisShape::UNIT,
+                wires: vec![],
+            }],
+            classical_inputs: vec![],
+            operations: vec![],
+            quantum_outputs: vec![TokenId(0)],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let accepted = kernel().accept_raw(raw).unwrap();
+        assert!(validate(&source, accepted.raw()).is_err());
     }
 
     #[test]

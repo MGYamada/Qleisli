@@ -461,7 +461,7 @@ Both operands of `and` evaluate even when its left value is zero. Quantum
 operands, `Bits<1>`, static naturals and products are not coerced to Bit.
 
 The sized Rust API's `ElaboratedProgram::lower_raw` produces an untrusted finite
-proposal for `Unit`/`Bit`/`Q<Bit>`/products, including specialized ordinary helper
+proposal for `Unit`/`Bit`/`Q<Unit>`/`Q<Bit>`/products, including specialized ordinary helper
 calls and static folds. Its `source()` retains whole parameter/result trees and
 the original source instance. Native `Kernel::accept` must check `proposal()`
 before execution. `validate_source_steps` separately compares the exact accepted
@@ -470,6 +470,15 @@ preceding source elaboration or grant native acceptance. Ordinary open inputs
 are represented and checked, but `sim::run_closed` still requires a closed
 artifact. A closed source wrapper is a distinct specialization of an open
 function, not execution of that original open artifact.
+
+`Q<Unit>` inputs and returns retain distinct linear owners with empty wire
+lists through ordinary calls and exact products. Ordinary `Unit` supplies no
+owner. Independent source-step comparison checks the ordered owner result;
+native validity alone cannot establish that a source returned the intended
+zero-width owner. Exact unary `Q<Unit>` and `Q<Bit>` endomorphisms retain their
+source-derived finite root interface so a separate native finite request can
+bind the same artifact to an independently supplied matrix. No width-based
+conversion to a different basis is inferred.
 
 Finite and sized Raw emission share quantum registers, fresh identities and the
 actual init0/H/X/CNOT/measurement transitions. A measurement consumes its owner
@@ -554,9 +563,10 @@ without removing scalar phase. A retained `Q<Unit>` owner, explicit
 `unit`/`finish` work and every live caller frame retain their original
 ownership and phase obligations. `sample` and named-QPE selection require a
 principal Observe entry; a broader annotation does not turn Iso into Observe.
-This adapter introduces no native primitive or new theorem. Raw still rejects
-quantum Unit entries and intermediates, so selecting Raw does not supply a
-second implementation of these structural maps. The existing source, native
+This adapter introduces no native primitive or new theorem. Raw supports
+retained quantum Unit inputs/returns, but still rejects scalar `phase_eighth`
+and the structural Unit introduction/elimination maps; selecting Raw does not
+supply a second implementation of these maps. The existing source, native
 and execution proof limits continue to apply.
 
 Raw checking retains the original source signature. Raw `run` and `sample`

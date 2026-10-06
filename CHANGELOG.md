@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain zero-width `Q<Unit>` owners through selected Raw inputs, ordinary
+  calls and ordered products; independently reject owner loss, duplication,
+  reordering and Unit/Bit substitution. Attach exact unary quantum source
+  interfaces for fresh native finite requests. Raw scalar and Unit-map lowering
+  remain unfinished (#43/#44).
+
 - Validate all selected-source finite Meaning targets through original resolved
   classical bodies, including unused nonpermutations and exact zero-width/product
   interfaces. Keep selected provider binding unsupported until its native
