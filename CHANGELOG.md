@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain selected Meaning request tables under original definition identities,
+  exact basis trees and phase/permutation rows. Check the closed provider's
+  requested basis within existing budgets; keep native provider equality and
+  unused-binding enforcement unfinished (#44).
+
 - Materialize existing `phase_eighth` on Raw Q<Unit>/Q<Bit> through the shared
   finite emitter's exact zero-axis monomial. Independently recheck its phase,
   owner and ordered source work; keep pure Unit-map Raw lowering open (#43/#44).

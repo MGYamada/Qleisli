@@ -13,6 +13,122 @@ use std::collections::BTreeMap;
 
 type Ty = Type<u32>;
 type Environment = BTreeMap<BinderKey, Value>;
+/// A requested source meaning, never a provider receipt or accepted handle.
+#[derive(Debug)]
+pub(super) struct TargetTable {
+    pub basis: Ty,
+    pub rows: Rows,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::frontend::sized::{OperationBinding, ParsedProgram};
+
+    fn target<'a>(program: &'a ParsedProgram, name: &str) -> &'a TargetTable {
+        let id = program.checked.resolution.qualified(name).unwrap();
+        &program.meaning_targets[&id]
+    }
+
+    #[test]
+    fn retained_targets_use_original_definition_identity_and_survive_clone() {
+        let program = ParsedProgram::parse(BTreeMap::from([
+            (
+                "left".into(),
+                "classical fn f(b:Bit)->Bit{not b} meaning M:Bit=permutation_by(f);".into(),
+            ),
+            (
+                "right".into(),
+                "classical fn f(b:Bit)->Bit{b} meaning M:Bit=permutation_by(f);".into(),
+            ),
+        ]))
+        .unwrap();
+        let retained = program.clone();
+        drop(program);
+        let Rows::Permutation(left) = &target(&retained, "left::M").rows else {
+            panic!()
+        };
+        let Rows::Permutation(right) = &target(&retained, "right::M").rows else {
+            panic!()
+        };
+        assert_eq!(left, &[1, 0]);
+        assert_eq!(right, &[0, 1]);
+        assert_eq!(retained.meaning_targets.len(), 2);
+    }
+
+    #[test]
+    fn retained_targets_keep_zero_width_tags_axis_order_and_scalar_phase() {
+        let program = ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "classical fn unit(u:Unit)->Unit{u}
+             classical fn bits(u:Bits<0>)->Bits<0>{u}
+             classical fn minus(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
+             classical fn swap((a,(u,b)):(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){(b,(u,a))}
+             meaning U:Unit=permutation_by(unit);
+             meaning B:Bits<0> = permutation_by(bits);
+             meaning Minus:Unit=phase_by(minus);
+             meaning Swap:(Bit,(Unit,Bit))=permutation_by(swap);"
+                .into(),
+        )]))
+        .unwrap();
+        assert_eq!(target(&program, "main::U").basis, Ty::unit());
+        assert_eq!(target(&program, "main::B").basis, Ty::bits(0));
+        assert_ne!(
+            target(&program, "main::U").basis,
+            target(&program, "main::B").basis
+        );
+        let Rows::Phase(minus) = &target(&program, "main::Minus").rows else {
+            panic!()
+        };
+        assert_eq!(minus, &[4]);
+        let swap = target(&program, "main::Swap");
+        assert_eq!(
+            swap.basis,
+            Ty::tuple(vec![Ty::bit(), Ty::tuple(vec![Ty::unit(), Ty::bit()])])
+        );
+        let Rows::Permutation(rows) = &swap.rows else {
+            panic!()
+        };
+        assert_eq!(rows, &[0, 2, 1, 3]);
+    }
+
+    #[test]
+    fn retained_target_does_not_authorize_an_unused_lying_provider() {
+        let program = ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "classical fn flip(b:Bit)->Bit{not b}
+             meaning Flip:Bit=permutation_by(flip);
+             pub unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
+             pub unitary fn unused[static U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}"
+                .into(),
+        )]))
+        .unwrap();
+        let error = program
+            .instantiate(
+                "main::unused",
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::identity", BTreeMap::new()),
+                )]),
+            )
+            .unwrap_err();
+        assert_eq!(error.code(), "unsupported", "{error}");
+        assert!(error.message().contains("meaning-refined"), "{error}");
+    }
+}
+#[derive(Debug)]
+pub(super) enum Rows {
+    Permutation(Vec<u16>),
+    Phase(Vec<u16>),
+}
+impl TargetTable {
+    pub(super) fn cells(&self) -> usize {
+        match &self.rows {
+            Rows::Permutation(rows) | Rows::Phase(rows) => rows.len(),
+        }
+    }
+}
 struct Value {
     ty: Ty,
     label: u16,
@@ -37,7 +153,8 @@ pub(super) fn validate<'ast>(
     interfaces: &BTreeMap<DefId, Interface>,
     indices: &BTreeMap<DefId, Index<'ast>>,
     budget: &Budget,
-) -> Result<()> {
+) -> Result<BTreeMap<DefId, TargetTable>> {
+    let mut targets = BTreeMap::new();
     for (id, declaration) in resolution.declarations() {
         budget.charge(Span::default(), 1)?;
         if declaration.kind != FnKind::Meaning {
@@ -51,11 +168,13 @@ pub(super) fn validate<'ast>(
             budget,
             definition: id,
         };
-        context
+        let target = context
             .target()
             .map_err(|e| e.in_module(&declaration.name.0))?;
+        budget.charge(context.declaration().span, 1)?;
+        targets.insert(id, target);
     }
-    Ok(())
+    Ok(targets)
 }
 
 impl<'a, 'ast> Context<'a, 'ast> {
@@ -159,7 +278,7 @@ impl<'a, 'ast> Context<'a, 'ast> {
         }
         Ok(())
     }
-    fn target(&self) -> Result<()> {
+    fn target(&self) -> Result<TargetTable> {
         let declaration = self.declaration();
         let FnBody::Meaning {
             permutation,
@@ -197,7 +316,7 @@ impl<'a, 'ast> Context<'a, 'ast> {
             self.budget.charge(declaration.span, 5)?;
             Ty::tuple(vec![Ty::bit(), Ty::tuple(vec![Ty::bit(), Ty::bit()])])
         };
-        if domain != [basis] || result != expected {
+        if domain.len() != 1 || domain[0] != basis || result != expected {
             return Err(self.error(
                 function.span,
                 "meaning function has the wrong exact basis signature",
@@ -230,7 +349,7 @@ impl<'a, 'ast> Context<'a, 'ast> {
             }
             table.push(value.label);
         }
-        for (input, output) in table.into_iter().enumerate() {
+        for (input, &output) in table.iter().enumerate() {
             self.budget.charge(declaration.span, 1)?;
             if *permutation {
                 let previous = seen.get_mut(usize::from(output)).ok_or_else(|| {
@@ -246,7 +365,14 @@ impl<'a, 'ast> Context<'a, 'ast> {
                 return Err(self.error(declaration.span, "phase label is outside zeta_8"));
             }
         }
-        Ok(())
+        Ok(TargetTable {
+            basis,
+            rows: if *permutation {
+                Rows::Permutation(table)
+            } else {
+                Rows::Phase(table)
+            },
+        })
     }
 }
 

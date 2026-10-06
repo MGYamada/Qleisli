@@ -1,0 +1,71 @@
+{
+  "format": "qleisli.local-review",
+  "version": 1,
+  "issue": 44,
+  "status": "retained-request-preparation; provider-native-binding unfinished",
+  "base": "3253e3cf",
+  "source_sha256": {
+    "src/frontend/sized.rs": "7edbdb149ec7eb6d2c60cf03c34cdcb44f8964c1e0356cce23b63e50768dc9e7",
+    "src/frontend/sized/check.rs": "e6251faaf7031ba5ca96fbcdc89a529fd5ea9729c04e786ad22392ee8e9782b5",
+    "src/frontend/sized/meaning.rs": "03b08164517a2e02a97b5fc25716b6f09aac7b6dbf57c04c1a62054b6edf00b6",
+    "docs/src/reference/type-model.md": "0b1ea5b2ea2f8cafbcbd79e0d0d19bba9b945f3b8637f8c001139e21837ce970"
+  },
+  "contract": "Keep every original resolved Meaning DefId, exact Unit/Bit/Bits/product basis and complete permutation/phase table. Closed bindings check the retained requested basis before backend eligibility. Tables are untrusted requests, not equality evidence.",
+  "implementation_review": [
+    "Every declared target is still evaluated, including unused targets, under the original shared aggregate source budget. Existing table/collision reservation precedes row allocation; retained map entry is charged before insertion.",
+    "Retained immutable Arc targets survive ParsedProgram cloning and retain resolved IDs instead of spelling/width keys. No public API or capacity constant changes.",
+    "Closed provider preparation charges table rows and bounded exact-tree traversal, then compares complete basis trees. The located meaning-refined operation projection rejection remains.",
+    "Native Artifact.finish schedules only the entry implementation/proof roots; compact_export follows proof premises and drops disconnected nodes. An orphan finite proof does not enforce an unused binding. Future binding must check actual provider bytes and every applicable obligation through mandatory native gates."
+  ],
+  "tests": {
+    "new_private_tests": 3,
+    "latest_rust": "1.98.1: 3 new library tests and 35 related integration tests passed, none ignored",
+    "msrv": "1.85.0: same 38 tests passed, none ignored",
+    "targets": [
+      "classical_functions",
+      "basis_polymorphism",
+      "selected_source_cli"
+    ],
+    "new_checks": [
+      "same-spelled targets in distinct modules retain different rows after clone/drop",
+      "Unit and Bits<0> remain distinct, nested swap is [0,2,1,3], Unit minus phase is [4]",
+      "unused lying provider retains unsupported refusal"
+    ],
+    "all_target_check": "passed on latest Rust",
+    "all_target_clippy": "passed on both Rust versions with -D warnings"
+  },
+  "actual_initial_test_failure": {
+    "command": "cargo test --lib frontend::sized::meaning::tests",
+    "result": "1 passed, 2 failed",
+    "diagnostics": [
+      "expected `>`, found `>=` at source span 324..326",
+      "unsupported: sized preparation profile: meaning-refined operation parameters are not supported"
+    ],
+    "repair": "Corrected test source Bits<0>= to Bits<0> = and assertion from uppercase Meaning to actual meaning-refined; parser and refusal behavior were not changed."
+  },
+  "checks": {
+    "constitutional_continuity": "passed against 38baae7d19535602b21270e11e97617d45205b37; identity/evidence only",
+    "inventories": "VM-22 and VM-29 pass after reviewing three source hashes; public surfaces/capacities unchanged",
+    "docs": "2186 local links, 30 Markdown anchors, 206 Lean root modules",
+    "mdbook": "pinned 0.5.4 build passed; 29 HTML files, 1224 local links, 471 anchors",
+    "format_and_whitespace": "passed",
+    "fixture_preflight": "passed before this small record was added; rerun required before commit"
+  },
+  "hosted_run": {
+    "id": 37468828239,
+    "head": "815a053b4ebdacceb71c4fdfde66ea8471bf224e",
+    "observed_utc": "2026-10-06T13:46:55Z",
+    "scope": "old head; does not verify these local changes",
+    "state": "still in progress: distribution running; docs and MSRV Clippy failed; Rust and native kernel succeeded. Detailed failure log unavailable until run terminal."
+  },
+  "not_claimed": [
+    "provider equality",
+    "unused binding native enforcement",
+    "general source preservation",
+    "new Lean build/audit/replay",
+    "new guarantee or human adequacy judgment",
+    "package/install/full exact-head CI",
+    "Issue closure or release"
+  ],
+  "completion": "22/111 (19.82%); #44 remains open"
+}

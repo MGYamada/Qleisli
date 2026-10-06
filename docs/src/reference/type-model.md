@@ -358,7 +358,11 @@ its original classical body and resolved dependencies, including unused targets.
 Permutation targets must be total bijections; phase targets return the exact
 three-Bit product for powers of zeta_8, including scalar phase on Unit. These
 bounded checks retain Unit/Bit/Bits/product tags and leaf order and share the
-common work budget. They produce untrusted target data: they do not establish
+common work budget. The immutable preparation retains these tables under the
+original resolved Meaning definition IDs, with the complete basis tree and
+permutation or phase rows. Closed operation binding checks that same requested
+basis, rather than substituting another same-width target. Tables remain
+untrusted requested data: they do not establish
 provider equality, enable Meaning-refined selected operations or authorize
 execution. Existing projection refusals remain until artifact-bound native
 comparison is connected.

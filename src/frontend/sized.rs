@@ -118,6 +118,8 @@ pub struct ParsedProgram {
     // siblings retain their identity and checked facts; selecting one reports
     // its actual located lowering restriction.
     projections: Arc<BTreeMap<DefId, Result<Arc<ast::Function>>>>,
+    // Original resolved identities and exact trees, not spelling/width keys.
+    meaning_targets: Arc<BTreeMap<DefId, meaning::TargetTable>>,
 }
 impl ParsedProgram {
     /// Render only this preparation's immutable retained bytes and body facts.
@@ -246,11 +248,12 @@ impl ParsedProgram {
             .iter()
             .map(|(name, source)| (name, source.syntax()))
             .collect();
-        let (checked, mut projections) = super::check::program_with(
+        let (checked, (mut projections, meaning_targets)) = super::check::program_with(
             originals,
             super::check::SourceLimits::selected(),
             |resolution, interfaces, helpers, effects, indices, budget| {
-                meaning::validate(&sources, resolution, interfaces, indices, budget)?;
+                let meaning_targets =
+                    meaning::validate(&sources, resolution, interfaces, indices, budget)?;
                 let mut projections = BTreeMap::new();
                 for (id, declaration) in resolution.declarations() {
                     let original = &sources
@@ -276,7 +279,7 @@ impl ParsedProgram {
                     }
                     projections.insert(id, result);
                 }
-                Ok(projections)
+                Ok((projections, meaning_targets))
             },
         )
         .map_err(Error::from)?;
@@ -291,6 +294,7 @@ impl ParsedProgram {
             sources: Arc::new(sources),
             checked: Arc::new(checked),
             projections: Arc::new(projections),
+            meaning_targets: Arc::new(meaning_targets),
         })
     }
 

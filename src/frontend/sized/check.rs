@@ -316,7 +316,7 @@ pub(super) fn instantiate(
         let mut providers = BTreeMap::new();
         let mut nested_operation_provider = false;
         for formal in &interface.statics {
-            if let StaticKind::Operation { .. } = &formal.kind {
+            if let StaticKind::Operation { meaning, .. } = &formal.kind {
                 let binding = &operations[&formal.key.name];
                 let (provider_id, provider) = visible_definition(
                     program,
@@ -368,6 +368,29 @@ pub(super) fn instantiate(
                         span,
                         "concrete provider type or tuple/size shape mismatch",
                     ));
+                }
+                if let Some(meaning_id) = meaning {
+                    let target = program.meaning_targets.get(meaning_id).ok_or_else(|| {
+                        Error::new("meaning", span, "missing original Meaning target")
+                    })?;
+                    charge(span, target.cells())?;
+                    type_size_budgeted(&target.basis, 4096, 64, true, span, &mut |s, n| {
+                        charge(s, n).map_err(crate::frontend::check::SourceError::from)
+                    })
+                    .map_err(Error::from)?;
+                    let crate::frontend::types::Kind::Q(basis) = &provider_closed.result.kind
+                    else {
+                        unreachable!("quantum provider checked above")
+                    };
+                    if **basis != target.basis {
+                        return Err(Error::new(
+                            "type",
+                            span,
+                            "provider and Meaning have different exact basis trees",
+                        ));
+                    }
+                    // This checks the requested interface only. The located
+                    // backend restriction still rejects an unproved provider.
                 }
                 charge(span, formal.key.name.len() + 1)?;
                 providers.insert(formal.key.name.clone(), provider_id);
