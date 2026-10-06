@@ -36,8 +36,8 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
             "Unitary",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<(Bit,Bit)>{do x <- q; pure (x,x)}",
-            "do x <- q; pure (x,x)",
+            "unitary fn bad(q:Q<Bit>)->Q<(Bit,Bit)>{basis q as x { (x,x) }}",
+            "basis q as x { (x,x) }",
             "Iso",
             "Unitary",
         ),

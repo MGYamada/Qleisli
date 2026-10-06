@@ -149,7 +149,7 @@ fn inverse_reverses_noncommuting_gates_and_output_axis_reordering() {
         unitary fn mix(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
             let (a,b) = split(q);
             let a = t(h(a));
-            let b = do x <- b; pure not x;
+            let b = basis b as x {{ not x }};
             let (a,b) = cnot(a,b);
             join(b,a)
         }}
@@ -207,7 +207,7 @@ fn computed_zero_width_phase_survives_inverse_and_control() {
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(a) }} }}
         unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ adjoint(phase,q) }}
         observe fn main() -> (Bit,Bit) {{
-            let pair = do b <- init0(); pure ((),b);
+            let pair = basis init0() as b {{ ((),b) }};
             let (u,b) = split(pair);
             let (c,u) = qif(h(init0()),u) {{ 0 => identity, 1 => phase_back }};
             let c = t(c);

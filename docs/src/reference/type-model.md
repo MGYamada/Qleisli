@@ -184,8 +184,10 @@ Unit owner; its inverse is `join(unit(()), a)`. The right unitor uses the other
 factor. The coefficient is exactly `+1` on every basis value and retained
 reference. Scalar work already performed on an eliminated Unit factor remains
 in the composition. These maps are never inserted by implicit coercion.
-`phase_eighth` retains its atom-only selected-source signature: applying it
-directly to a packaged tuple still rejects.
+The common source signature of `phase_eighth` also permits this packaged basis,
+but its selected concrete preparation still requires a Unit/Bit/Bits atom.
+Applying it directly to a packaged tuple therefore fails that concrete
+eligibility check; successful source typing supplies no missing emitter.
 
 Ordinary `Unit` has no quantum owner identity. Its value may be copied, dropped
 or matched by the empty pattern `()`, including inside an ordinary tuple.
@@ -211,10 +213,13 @@ ordinary Rust pattern ergonomics, required by the
 [#35 pattern contract](https://github.com/MGYamada/Qleisli/issues/35); it does not
 admit rest syntax or promise those diagnostics before that syntax is implemented.
 
-The binder in `do () <- q; pure ()` describes the ordinary Unit basis of its
-quantum input. The existing coherent lift still consumes and returns a
-`Q<Unit>` owner and retains its scalar action; it is not runtime `let () = q`
-or an implicit owner elimination. Sized lowering omits
+The pattern in `basis q as () { () }` describes the ordinary Unit basis of its
+quantum input. The [coherent basis map](coherent-basis.md) consumes and returns
+a `Q<Unit>` owner with coefficient `+1`, retaining any scalar already present
+on its input; it is not runtime `let () = q` or an implicit owner elimination.
+This source rule does not supply the selected concrete projection with
+CoherentLift support, or remove the finite profile's existing quantum Unit
+limitations. Sized lowering omits
 ordinary Unit value ports while retaining the exact source interface and all
 executed operations. A computation returning Unit can still consume owners or
 perform observable work; omitting its result port does not omit its body.

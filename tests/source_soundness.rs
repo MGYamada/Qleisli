@@ -139,7 +139,7 @@ use std::observe::measure_z;
 use std::observe::reset;
 observe fn main() -> (Bit,(Bit,Bit)) {{
     let (a,r) = cnot(h(init0()),init0());
-    let (a,b) = split(do x <- t(a); pure (x,x));
+    let (a,b) = split(basis t(a) as x {{ (x,x) }});
     {}
     (measure_z(h(a)),(measure_z(h(b)),measure_z(h(r))))
 }}

@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.coherent-basis-external-consumer-audit",
+  "version": 1,
+  "method": "Read repository code and contracts; no external build, install, command execution or dependency update.",
+  "qargo_checkout": "28682a2b79772ed66a98dfc94d5e48fa85bd025e",
+  "inputs": [
+    {
+      "path": "/Users/masa/git/qargo/Cargo.toml",
+      "sha256": "726aed7f65d7a3e31a9dd46d98564deefca8919b995eb7f53aefaf95885df131"
+    },
+    {
+      "path": "/Users/masa/git/qargo/qrates/qlippy/src/adapter.rs",
+      "sha256": "4d175777a857d447e0e1e88745d1effeff9d3b5b1a6b8aacd63179eb8418817e"
+    },
+    {
+      "path": "/Users/masa/git/qargo/qrates/qlippy/src/qlippy.rs",
+      "sha256": "8c70e38765c50e2e981a37a8d73508149607e0040a37e88b3a0d2f31fbf8dea8"
+    },
+    {
+      "path": "docs/src/reference/discovery.md",
+      "sha256": "bed6a665600f412139ada8b27d7a791f467d8e8c0451200f24ed7badb450f9cb"
+    }
+  ],
+  "findings": [
+    {
+      "path": "/Users/masa/git/qargo/Cargo.toml",
+      "line": 24,
+      "fact": "The external qargo product links exactly Qleisli 0.2.1, not the current 0.3.0-alpha checkout."
+    },
+    {
+      "path": "/Users/masa/git/qargo/qrates/qlippy/src/adapter.rs",
+      "line": 42,
+      "fact": "Ordinary compiler checking runs through linked check_project_with_policy before advisory linting."
+    },
+    {
+      "path": "/Users/masa/git/qargo/qrates/qlippy/src/adapter.rs",
+      "line": 100,
+      "fact": "compiler_diagnostic forwards compiler code/message and original spans as category compiler; suggestion is None. It does not rewrite coherent syntax."
+    },
+    {
+      "path": "/Users/masa/git/qargo/qrates/qlippy/src/qlippy.rs",
+      "line": 469,
+      "fact": "Existing lint traversal handles CoherentLift fields structurally."
+    },
+    {
+      "path": "docs/src/reference/discovery.md",
+      "line": 39,
+      "fact": "Qleisli supplies no standalone qlippy executable; availability/tooling contracts belong to qargo."
+    }
+  ],
+  "completion_limit": "Updating upstream parse/diagnostic API alone does not validate an actual updated qlippy consumer. Issue #81 criterion12 includes qlippy diagnostics; keep that component pending until real compatible consumer validation. No criterion waiver, issue close or future target is inferred."
+}

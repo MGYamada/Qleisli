@@ -1,0 +1,471 @@
+{
+  "format": "qleisli.hosted-ci-failure-review",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:16:01.420773+00:00",
+  "workflow_run": 37410058344,
+  "binding": {
+    "branch_head_sha": "73355382a3db94893982e5954e9400fffcd7f48e",
+    "actual_checkout_sha": "7e768e6ccdbb98077818664f985886bb5a86a374",
+    "merge_base_sha": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "event_ref": "refs/remotes/pull/307/merge",
+    "correction": "This hosted run checks the PR merge commit, not branch HEAD directly. Earlier branch-HEAD shorthand must not be treated as executable-checkout identity."
+  },
+  "jobs": [
+    {
+      "id": 112096318343,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 37410058344,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Run cargo +1.98.1 fmt --check",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Run cargo +1.98.1 test --all-targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        },
+        {
+          "name": "Sized Rust and Python source dialect comparisons on small inputs",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 9
+        },
+        {
+          "name": "Sized primitive omissions must fail compilation",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Build public API documentation without warnings",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Execute public API documentation examples",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 12
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout/first_source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 13
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 14
+        },
+        {
+          "name": "Run target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 15
+        },
+        {
+          "name": "Run python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 16
+        },
+        {
+          "name": "Run python3 scripts/test_lean_interference.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 17
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qft.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 18
+        },
+        {
+          "name": "Run python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 19
+        },
+        {
+          "name": "Run python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 20
+        },
+        {
+          "name": "Run python3 scripts/test_cli_json.py target/debug/qleisli",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21
+        },
+        {
+          "name": "Seeded source differential checks with an independent complex oracle",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 22
+        },
+        {
+          "name": "Frozen VM-22 finite/source comparison inputs",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 23
+        },
+        {
+          "name": "Run python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 24
+        },
+        {
+          "name": "Run cargo +1.98.1 clippy --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 25
+        },
+        {
+          "name": "Run cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 26
+        },
+        {
+          "name": "Run cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 27
+        },
+        {
+          "name": "Run cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 28
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 29
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 30
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 59
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 60
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 61
+        }
+      ]
+    },
+    {
+      "id": 112096318406,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_id": 37410058344,
+      "logs_url": null,
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 1
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 2
+        },
+        {
+          "name": "Build the required native acceptance runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 3
+        },
+        {
+          "name": "Audit and select the matching native checker",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 4
+        },
+        {
+          "name": "Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 5
+        },
+        {
+          "name": "Install the tested Rust toolchain",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 6
+        },
+        {
+          "name": "Fetch package dependencies before offline distribution checks",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 7
+        },
+        {
+          "name": "Verify clean package and complete source archive",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        },
+        {
+          "name": "Retain candidate hashes, archives and command logs",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 9
+        },
+        {
+          "name": "Bind successful producer evidence for scoped release readiness",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 10
+        },
+        {
+          "name": "Retain exact producer receipt and planned artifact bytes",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 11
+        },
+        {
+          "name": "Post Restore dependency archives (never source, target or Lean project outputs)",
+          "status": "completed",
+          "conclusion": "skipped",
+          "number": 21
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 22
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "number": 23
+        }
+      ]
+    }
+  ],
+  "excerpts": {
+    "rust": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-rust-02.excerpt.txt",
+      "sha256": "f7b6f142aa9e8ae88419955172924441dd463d323680f59f03f8b52a4847ec86",
+      "original_log_lines": 1731,
+      "retained_original_line_numbers": [
+        95,
+        122,
+        125,
+        472,
+        1697,
+        1698,
+        1699,
+        1700,
+        1701,
+        1702,
+        1703,
+        1704,
+        1705,
+        1706,
+        1707,
+        1708,
+        1709,
+        1710,
+        1711,
+        1712
+      ],
+      "source_url": "https://github.com/MGYamada/Qleisli/actions/runs/37410058344/job/112096318343"
+    },
+    "distribution": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/previous-head-ci-check-distribution-02.excerpt.txt",
+      "sha256": "e7c97c83be7b914f7be59946ac6c09fdd007533cf1f71d99eaae648df54bbd32",
+      "original_log_lines": 549,
+      "retained_original_line_numbers": [
+        95,
+        122,
+        125,
+        486,
+        492,
+        493,
+        494,
+        497
+      ],
+      "source_url": "https://github.com/MGYamada/Qleisli/actions/runs/37410058344/job/112096318406"
+    }
+  },
+  "rust_finding": {
+    "test": "common_syntax_does_not_grant_missing_profile_or_capability_support",
+    "location": "tests/sized_source.rs:2028",
+    "actual_failure": "assertion failed: error.message.contains(\"expected Q(Bit), found Unit\")",
+    "failure_class": "stale canonical type-display expectation; actual test assertion failure, not network/environment",
+    "hosted_test_summary": "37 passed; 1 failed; 3 ignored",
+    "current_expected_text": "expected `Q<Bit>`, found `Unit`",
+    "candidate_fix_present": true,
+    "current_test_source_sha256": "c8cd0cf868d10c3435d0565114d561a3fb38a06f441416ec28744f26306634b5",
+    "existing_local_revalidation": [
+      {
+        "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.json",
+        "sha256": "d632adcb4dcde435317e7e7c0062b250fbe4943011abf9b3622225c5bdbf16bb",
+        "argv": [
+          "/opt/homebrew/bin/cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "--jobs=2",
+          "--test",
+          "sized_source",
+          "--",
+          "--test-threads=2"
+        ],
+        "exit_code": 0,
+        "streams": {
+          "stdout": {
+            "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stdout.txt",
+            "sha256": "6b25c715b3ecf222034d4e229ddd890943e7ea7e8fb063d666652b938a3e7558",
+            "identity_verified": true
+          },
+          "stderr": {
+            "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stderr.txt",
+            "sha256": "bf53b223f41a807b6272053fcac9645150877d0330ba07b81a5af5bcd2350c0c",
+            "identity_verified": true
+          }
+        },
+        "summary": "38 passed; 0 failed; 3 ignored"
+      },
+      {
+        "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.json",
+        "sha256": "4798906a8d5c99dba2e958c6569c41391e6479b67c5513ef8463f6f09395f2a8",
+        "argv": [
+          "rustup",
+          "run",
+          "1.85.0",
+          "cargo",
+          "test",
+          "--offline",
+          "--locked",
+          "--jobs=2",
+          "--test",
+          "sized_source",
+          "--",
+          "--test-threads=2"
+        ],
+        "exit_code": 0,
+        "streams": {
+          "stdout": {
+            "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stdout.txt",
+            "sha256": "3757d3dea06a7df53059fd57eec0765b8ff1c03f80f6b057f44fa81abdf1ad21",
+            "identity_verified": true
+          },
+          "stderr": {
+            "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-msrv-01.stderr.txt",
+            "sha256": "88481d501e9c38e85559594c8ece49a8b3c54d8ef59506cb521d6d6cffd6628e",
+            "identity_verified": true
+          }
+        },
+        "summary": "38 passed; 0 failed; 3 ignored"
+      }
+    ],
+    "scope_limit": "These two targeted local runs do not establish successful all-targets hosted CI for the candidate."
+  },
+  "distribution_finding": {
+    "actual_failure": "cargo test --offline --all-targets --target-dir <runner-temp>/qleisli-distribution-target/source-production returned101",
+    "known_failure_stage": "production tests in extracted repository source archive",
+    "underlying_failure": "unresolved; private artifact member logs/14.stderr and logs/14.stdout were not inspected",
+    "network_or_environment_cause": "not established; job-level dependency fetch/build/audit passed, but child test log is needed for classification",
+    "same_as_rust_stale_assertion": "plausible inference only; not confirmed or reported as fact",
+    "candidate_fix_verified_for_distribution": false,
+    "retained_artifact": {
+      "id": 11389428183,
+      "name": "distribution-7e768e6ccdbb98077818664f985886bb5a86a374",
+      "size_in_bytes": 61352274,
+      "url": "https://api.github.com/repos/MGYamada/Qleisli/actions/artifacts/11389428183",
+      "archive_download_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/artifacts/11389428183/zip",
+      "expired": false,
+      "created_at": "2026-10-06T04:06:59Z",
+      "expires_at": "2027-01-04T03:40:06Z",
+      "updated_at": "2026-10-06T04:06:59Z",
+      "digest": "sha256:767dc327d81c5e1f9979562ab3fd26a2c5a995ebc5fb81e7d46727d6f4835bc7",
+      "workflow_run": {
+        "id": 37410058344,
+        "repository_id": 1388276590,
+        "head_repository_id": 1388276590,
+        "head_branch": "codex/v0.3.0-foundation",
+        "head_sha": "73355382a3db94893982e5954e9400fffcd7f48e"
+      }
+    },
+    "retrieval_limit": "GitHub reusable ZIP URL returned403. A full authenticated ZIP stream began before the no-full-artifact restriction and was interrupted with exit130 on receipt; no archive file or package/native contents were saved or extracted."
+  },
+  "missing_validation": [
+    "Inspect the small actual distribution logs/14.stderr and relevant logs/14.stdout, if independently accessible; otherwise retain underlying-cause uncertainty.",
+    "After committing the candidate, complete clean-HEAD scripts/check_distribution.py with source archive tests, research tests, fresh packaged docs/install and final identity validation.",
+    "Obtain a complete passing exact-candidate hosted check-rust/all-targets lane and downstream steps skipped by this previous-merge failure; existing targeted local checks are not equivalent."
+  ],
+  "scope": "Read-only hosted/local-record inspection with only these small excerpts and this JSON added; no production edits, build/test execution, CI rerun, GitHub mutation, closure, guarantee or release claim."
+}

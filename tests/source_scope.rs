@@ -61,7 +61,7 @@ observe fn read(held: Q<Bit>, result: (Bit,(Bit,(Bit,(Q<Unit>,Q<Bit>)))))
 }}
 observe fn main() -> ((Bit,Bit),(Bit,(Bit,Bit))) {{
     let (q,r)=cnot(h(init0()),init0());
-    let (u,q)=split(do b <- q; pure ((),b));
+    let (u,q)=split(basis q as b {{ ((),b) }});
     let flag={flag_literal};
     read(r,relay(flag,(1,(u,q))))
 }}"

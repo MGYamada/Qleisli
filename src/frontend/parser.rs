@@ -1254,8 +1254,11 @@ impl Parser {
         if let Some(if_token) = self.consume(&TokenKind::If) {
             return self.classical_if(if_token);
         }
-        if let Some(do_token) = self.consume(&TokenKind::Do) {
-            return self.coherent_lift(do_token);
+        if self.at(&TokenKind::Do) || self.at(&TokenKind::Pure) {
+            return Err(self.retired_coherent_syntax());
+        }
+        if let Some(basis_token) = self.consume(&TokenKind::Basis) {
+            return self.coherent_lift(basis_token);
         }
         if let Some(with_token) = self.consume(&TokenKind::WithComputed) {
             return self.with_computed(with_token);
@@ -1319,14 +1322,12 @@ impl Parser {
         })
     }
 
-    fn coherent_lift(&mut self, do_token: Token) -> Result<Expr, ParseError> {
-        let binder = self.pattern()?;
-        self.expect(&TokenKind::LeftArrow)?;
+    fn coherent_lift(&mut self, basis_token: Token) -> Result<Expr, ParseError> {
         let input = self.expr()?;
-        self.expect(&TokenKind::Semicolon)?;
-        self.expect(&TokenKind::Pure)?;
-        let basis = self.basis_expr()?;
-        let span = Span::new(do_token.span.start, basis.span.end);
+        self.expect_word("as")?;
+        let binder = self.pattern()?;
+        let (basis, body_span) = self.basis_block()?;
+        let span = basis_token.span.cover(body_span);
         Ok(Expr {
             kind: ExprKind::CoherentLift {
                 binder,
@@ -1335,6 +1336,12 @@ impl Parser {
             },
             span,
         })
+    }
+
+    fn retired_coherent_syntax(&self) -> ParseError {
+        self.error(
+            "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+        )
     }
 
     fn with_computed(&mut self, with_token: Token) -> Result<Expr, ParseError> {
@@ -1587,6 +1594,9 @@ impl Parser {
     }
 
     fn basis_atom_inner(&mut self) -> Result<BasisExpr, ParseError> {
+        if self.at(&TokenKind::Do) || self.at(&TokenKind::Pure) {
+            return Err(self.retired_coherent_syntax());
+        }
         if matches!(self.current().kind, TokenKind::Natural(_)) {
             return Err(self.error("Bit literal must be 0 or 1"));
         }

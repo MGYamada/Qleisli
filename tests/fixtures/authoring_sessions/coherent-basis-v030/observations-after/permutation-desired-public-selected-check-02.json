@@ -1,0 +1,55 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::map",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-desired/main.qli",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "case": "permutation-desired",
+  "entry": "main::map",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T04:00:27.412043+00:00",
+  "elapsed_seconds": 0.009362249984405935,
+  "cwd": "/Users/masa/git/Qleisli",
+  "source_sha256": "72ce1def6345ec1bea4a5dc9a401492d381b8893da53b9608bf88e68e0a79004",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "raw_stdout": {
+    "path": "observations-after/permutation-desired-public-selected-check-02.stdout.txt",
+    "sha256": "b8bc14b5569b88530555481d6d253c95933f8e90fd4e3cf929269c1f146b6abb"
+  },
+  "raw_stderr": {
+    "path": "observations-after/permutation-desired-public-selected-check-02.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "sized preparation profile: unsupported runtime expression",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-desired/main.qli",
+          "start": 342,
+          "end": 374
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

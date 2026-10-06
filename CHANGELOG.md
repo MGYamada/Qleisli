@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Replace coherent `do p <- q; pure e` with `basis q as p { e }` in the common
+  source grammar. Retain the existing isolated basis-expression checker and
+  finite injectivity/lowering rules, exact types, owners, phase and ordered
+  axes; reserve the old tokens for explicit removal diagnostics. Preserve
+  original source/diagnostics beside explicit migration derivatives. Selected
+  concrete CoherentLift support remains separate; external qargo/qlippy
+  diagnostics are excluded by explicit maintainer decision, without claiming
+  that integration. Add no primitive, native schema or guarantee (#81).
 - Organize ordinary std source into `basis`, singular `transform`, `reflection`
   and `measurement`, with mathematical admission rules and exact contracts.
   Retire `routines`, `transforms` and fixed demo arithmetic exports; preserve

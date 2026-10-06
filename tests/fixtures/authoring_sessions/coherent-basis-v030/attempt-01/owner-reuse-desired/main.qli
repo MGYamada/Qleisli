@@ -1,0 +1,6 @@
+//! Informed before-code #81 source, not a benchmark or proof.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+use std::quantum::init0;
+use std::observe::measure_z;
+observe fn main() -> (Bit,Bit) { let q=init0(); let next=basis q as x { x }; (measure_z(q),measure_z(next)) }

@@ -1,0 +1,43 @@
+{
+  "format": "qleisli.coherent-basis-public-entry-predictions",
+  "version": 1,
+  "recorded_before_commands_utc": "2026-10-06T04:00:26.853493+00:00",
+  "driver_sha256": "88f14bbced40ad0ef4893a986fab9331e9b20ee327d380eaf740a79e962d0908",
+  "cli_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cases": [
+    {
+      "case": "entangle-desired",
+      "entry": "main::entangle",
+      "source_sha256": "30f66e367d7b45e0a68a92b1b8e7f37f5f6ae575a17e5294955d77d7c5d26fb8",
+      "predicted_exit": 1,
+      "predicted_code": "unsupported",
+      "predicted_message": "sized preparation profile: unsupported runtime expression"
+    },
+    {
+      "case": "phase-reference-desired",
+      "entry": "main::entangle",
+      "source_sha256": "b4b044a949d7234c67a6861f27e3ef4d31c486d207c9cbfb3ebeda0b77124f05",
+      "predicted_exit": 1,
+      "predicted_code": "unsupported",
+      "predicted_message": "sized preparation profile: unsupported runtime expression"
+    },
+    {
+      "case": "permutation-desired",
+      "entry": "main::map",
+      "source_sha256": "72ce1def6345ec1bea4a5dc9a401492d381b8893da53b9608bf88e68e0a79004",
+      "predicted_exit": 1,
+      "predicted_code": "unsupported",
+      "predicted_message": "sized preparation profile: unsupported runtime expression"
+    },
+    {
+      "case": "unit-owner-desired",
+      "entry": "main::identity",
+      "source_sha256": "ccee9e558fb7e894b16b191e9d17417d012a3d61ff67c3687d667329a532aef3",
+      "predicted_exit": 1,
+      "predicted_code": "unsupported",
+      "predicted_message": "sized preparation profile: unsupported runtime expression"
+    }
+  ],
+  "reason": "The frozen original main entries are private, which preempts projection. Selecting existing public helpers should expose the unchanged CoherentLift projection restriction; no source change is authorized."
+}

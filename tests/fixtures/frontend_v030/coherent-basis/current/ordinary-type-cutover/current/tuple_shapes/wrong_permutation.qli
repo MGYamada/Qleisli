@@ -1,0 +1,30 @@
+//! Explicit shape conversion preserves basis order and an entangled reference.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+
+basis fn flatten3(((a,b),c): ((Bit,Bit),Bit)) -> (Bit,Bit,Bit) { (a,b,c) }
+basis fn nest3((a,b,c): (Bit,Bit,Bit)) -> ((Bit,Bit),Bit) { ((a,b),c) }
+unitary fn to_flat(q: Q<((Bit,Bit),Bit)>) -> Q<(Bit,Bit,Bit)> {
+    basis q as x { flatten3(x) }
+}
+unitary fn to_nested(q: Q<(Bit,Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {
+    basis q as x { nest3(x) }
+}
+unitary fn identity(q: Q<(Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit)> { q }
+unitary fn round_trip(q: Q<(Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit)> {
+    basis q as (a,b,c) { (c,b,a) }
+}
+observe fn main() -> (Bit,Bit,Bit,Bit) {
+    let (reference,a) = cnot(h(init0()),init0());
+    let q = to_flat(join(join(a,x(init0())),init0()));
+    let q = apply_contract(round_trip,identity,q);
+    let (ab,c) = split(to_nested(q));
+    let (a,b) = split(ab);
+    let (reference,a) = cnot(reference,a);
+    (measure_z(h(reference)),measure_z(a),measure_z(b),measure_z(c))
+}

@@ -36,24 +36,24 @@ fn basis_lifts_destructure_exact_product_patterns() {
     accepted(
         r#"
 iso fn duplicate(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),(Bit,Bit))> {
-    do x <- q; pure (x,x)
+    basis q as x { (x,x) }
 }
 unitary fn collapse_units(q: Q<(Unit,Unit)>) -> Q<Unit> {
-    do x <- q; pure ()
+    basis q as x { () }
 }
 "#,
     );
     accepted(
         "unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-            do (a,b) <- q; pure (b,a)
+            basis q as (a,b) { (b,a) }
         }",
     );
     accepted(
         "unitary fn remove_unit(q: Q<(Bit,Unit)>) -> Q<Bit> {
-            do (a,_) <- q; pure a
+            basis q as (a,_) { a }
         }
         unitary fn regroup(q: Q<(Bit,(Unit,Bit))>) -> Q<(Bit,Bit)> {
-            do (a,(_,b)) <- q; pure (b,a)
+            basis q as (a,(_,b)) { (b,a) }
         }",
     );
     // Basis declarations still use named parameters and expression bodies.
@@ -76,9 +76,9 @@ unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
 #[test]
 fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     for source in [
-        "unitary fn bad(q: Q<Bit>) -> Q<(Bit,Bit)> { do (a,b) <- q; pure (a,b) }",
+        "unitary fn bad(q: Q<Bit>) -> Q<(Bit,Bit)> { basis q as (a,b) { (a,b) } }",
         "unitary fn bad(q: Q<(Bit,(Bit,Bit))>) -> Q<((Bit,Bit),Bit)> {
-            do ((a,b),c) <- q; pure ((a,b),c)
+            basis q as ((a,b),c) { ((a,b),c) }
         }",
     ] {
         rejected(source, ErrorCode::TypeMismatch);
@@ -86,16 +86,16 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     for (source, expected) in [
         (
             "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-            do (a,a) <- q; pure (a,a)
+            basis q as (a,a) { (a,a) }
         }",
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,_) <- q; pure a }",
+            "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<Bit> { basis q as (a,_) { a } }",
             ErrorCode::Effect,
         ),
         (
-            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { do _ <- q; pure 0 }",
+            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { basis q as _ { 0 } }",
             ErrorCode::Ownership,
         ),
     ] {
@@ -111,10 +111,10 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
                     use std::quantum::join; use std::quantum::split;
                     use std::observe::measure_z;
                     unitary fn regroup(q: Q<((Bit,Bit),Unit)>) -> Q<(Bit,Bit)> {{
-                        do ((a,b),_) <- q; pure (b,a)
+                        basis q as ((a,b),_) {{ (b,a) }}
                     }}
                     observe fn main() -> (Bit,Bit) {{
-                        let q = do p <- join({left},{right}); pure (p,());
+                        let q = basis join({left},{right}) as p {{ (p,()) }};
                         let (b,a) = split(regroup(q));
                         (measure_z(b),measure_z(a))
                     }}"
@@ -128,8 +128,8 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
         "use std::quantum::init0; use std::quantum::h;
         use std::observe::measure_z;
         observe fn main() -> Bit {
-            let q = do a <- h(init0()); pure (a,());
-            let q = do (a,_) <- q; pure a;
+            let q = basis h(init0()) as a { (a,()) };
+            let q = basis q as (a,_) { a };
             measure_z(h(q))
         }",
         &[false],
@@ -147,7 +147,7 @@ fn zero_wire_ownership_requires_explicit_consumption() {
     );
     // A Unit basis result remains quantum ownership, not an ordinary Unit.
     rejected(
-        "unitary fn remove(q: Q<Unit>) -> Unit { do u <- q; pure () }",
+        "unitary fn remove(q: Q<Unit>) -> Unit { basis q as u { () } }",
         ErrorCode::TypeMismatch,
     );
     rejected(
@@ -167,14 +167,14 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
     accepted(&format!(
         "{declaration}
         unitary fn lifted(flip: Bit, q: Q<Bit>) -> Q<Bit> {{
-            do x <- q; pure flip(x)
+            basis q as x {{ flip(x) }}
         }}"
     ));
     rejected(
         &format!(
             "{declaration}
             unitary fn lifted(q: Q<Bit>) -> Q<Bit> {{
-                do flip <- q; pure flip(flip)
+                basis q as flip {{ flip(flip) }}
             }}"
         ),
         ErrorCode::TypeMismatch,
@@ -183,7 +183,7 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
         &format!(
             "{declaration}
             unitary fn lifted(q: Q<(Bit,Unit)>) -> Q<Bit> {{
-                do (flip,_) <- q; pure flip(flip)
+                basis q as (flip,_) {{ flip(flip) }}
             }}"
         ),
         ErrorCode::TypeMismatch,
@@ -358,7 +358,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
             &format!(
                 "{import}
                 unitary fn invalid(q: Q<(Bit,Bit)>) -> Q<Bit> {{
-                    do p <- q; pure {name}(p)
+                    basis q as p {{ {name}(p) }}
                 }}"
             ),
             ErrorCode::Arity,
@@ -369,7 +369,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
             &format!(
                 "{import}
                 unitary fn invalid(q: Q<Bit>) -> Q<Bit> {{
-                    do x <- q; pure {name}(x,{constant})
+                    basis q as x {{ {name}(x,{constant}) }}
                 }}"
             ),
             ErrorCode::Ownership,
@@ -378,7 +378,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
             &format!(
                 "{import}
                 unitary fn invalid(q: Q<(Bit,Bit)>) -> Q<Bit> {{
-                    do (a,b) <- q; pure {name}(a,b)
+                    basis q as (a,b) {{ {name}(a,b) }}
                 }}"
             ),
             ErrorCode::Effect,
@@ -386,13 +386,13 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
         accepted(&format!(
             "{import}
             iso fn retain_inputs(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
-                do (a,b) <- q; pure ((a,b),{name}(a,b))
+                basis q as (a,b) {{ ((a,b),{name}(a,b)) }}
             }}"
         ));
         accepted(&format!(
             "{import}
             unitary fn identity(q: Q<Bit>) -> Q<Bit> {{
-                do x <- q; pure {name}(x,{identity})
+                basis q as x {{ {name}(x,{identity}) }}
             }}"
         ));
     }

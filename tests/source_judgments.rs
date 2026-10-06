@@ -191,7 +191,7 @@ fn basis_domains_and_branch_results_preserve_exact_product_trees() {
     );
     accepted(
         "unitary fn explicit_regroup(q: Q<Bit>) -> Q<(Unit,Bit)> {
-            do x <- q; pure ((),x)
+            basis q as x { ((),x) }
         }",
     );
 }
@@ -203,19 +203,19 @@ fn basis_context_is_closed_and_has_its_own_callable_shadowing() {
     // basis context; the top-level basis function remains available there.
     accepted(&format!(
         "{function} unitary fn lifted(flip: Unit, q: Q<Bit>) -> Q<Bit> {{
-            do x <- q; pure flip(x)
+            basis q as x {{ flip(x) }}
         }}"
     ));
     rejected(
         &format!(
             "{function} unitary fn lifted(q: Q<Bit>) -> Q<Bit> {{
-                do flip <- q; pure flip(flip)
+                basis q as flip {{ flip(flip) }}
             }}"
         ),
         ErrorCode::TypeMismatch,
     );
     rejected(
-        "unitary fn lifted(q: Q<Bit>) -> Q<Bit> { do x <- q; pure q }",
+        "unitary fn lifted(q: Q<Bit>) -> Q<Bit> { basis q as x { q } }",
         ErrorCode::UnknownName,
     );
 }
@@ -324,7 +324,7 @@ use std::quantum::z;
 unitary fn flip(q: Q<Bit>) -> Q<Bit> { x(q) }
 basis fn predicate(x: Bit) -> Bit { not x }
 pub unitary fn ordinary(q: Q<Bit>) -> Q<Bit> { flip(q) }
-pub unitary fn lifted(q: Q<Bit>) -> Q<Bit> { do b <- q; pure predicate(b) }
+pub unitary fn lifted(q: Q<Bit>) -> Q<Bit> { basis q as b { predicate(b) } }
 pub unitary fn oracle(q: Q<Bit>) -> Q<Bit> {
     with_computed(q,predicate) { |a| z(a) }
 }

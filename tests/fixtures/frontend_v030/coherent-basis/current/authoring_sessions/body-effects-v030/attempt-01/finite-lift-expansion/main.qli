@@ -1,0 +1,1 @@
+pub fn f(q:Q<Unit>)->Q<Bit>{basis q as x { 0 }} observe fn main()->Unit{()}

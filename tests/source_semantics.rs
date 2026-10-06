@@ -166,7 +166,7 @@ use std::observe::measure_z;
 use std::observe::discard;
 observe fn main() -> ((Bit,Bit),((Bit,Bit),(Bit,Bit))) {
     let (a,r) = cnot(h(init0()),init0());
-    let (u,a) = split(do k <- a; pure ((),k));
+    let (u,a) = split(basis a as k { ((),k) });
     let b = measure_z(h(init0()));
     let zero = measure_z(init0());
     let one = measure_z(x(init0()));

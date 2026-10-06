@@ -184,13 +184,13 @@ fn typed_finite_lifts_preserve_width_and_scalar_phase_classification() {
     for (source, effect) in [
         (
             include_str!(
-                "fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli"
+                "fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli"
             ),
             Effect::Unitary,
         ),
         (
             include_str!(
-                "fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli"
+                "fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli"
             ),
             Effect::Iso,
         ),

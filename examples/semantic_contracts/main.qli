@@ -10,8 +10,7 @@ basis fn copy_bit(value: Bit) -> Bit { value }
 unitary fn logical_identity(q: Q<Bit>) -> Q<Bit> { q }
 unitary fn logical_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
 unitary fn logical_flip(q: Q<Bit>) -> Q<Bit> {
-    do value <- q;
-    pure not value
+    basis q as value { not value }
 }
 
 unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {

@@ -11,6 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MAP = ROOT / "tests/fixtures/frontend_v030/ordinary-type-client-integration/source-map.json"
 # Relative to ROOT at selection time, including isolated unit-test roots.
 NAMESPACE_MAP = "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/namespace-source-map.json"
+COHERENT_MAP = "tests/fixtures/frontend_v030/coherent-basis/source-map.json"
 
 
 def _read_map(path):
@@ -103,6 +104,73 @@ def _verify_pair(before, current, entry, before_field):
             raise ValueError(f"source fixture identity changed: {directory}")
 
 
+def _file_entries(data, label):
+    if not isinstance(data.get("files"), list):
+        raise ValueError(f"invalid {label} source file migrations")
+    entries, destinations = {}, set()
+    for entry in data["files"]:
+        if not isinstance(entry, dict) or set(entry) != {
+                "before_path", "current_path", "before_sha256", "current_sha256"}:
+            raise ValueError(f"invalid {label} source file migration")
+        for field in ("before_path", "current_path"):
+            relative = entry[field]
+            _local(ROOT, relative)
+            if PurePosixPath(relative).suffix != ".qli":
+                raise ValueError(f"non-source fixture file: {relative}")
+        before, current = entry["before_path"], entry["current_path"]
+        if before in entries or current in destinations:
+            raise ValueError(f"duplicate {label} source file migration: {before}")
+        for field in ("before_sha256", "current_sha256"):
+            if not isinstance(entry[field], str) or not re.fullmatch(r"[0-9a-f]{64}", entry[field]):
+                raise ValueError(f"invalid source fixture hash: {before}")
+        entries[before] = entry
+        destinations.add(current)
+    return entries
+
+
+def _migration_maps():
+    maps = []
+    for relative, format_name, label in (
+            (NAMESPACE_MAP, "qleisli.semantic-namespace-source-map", "semantic namespace"),
+            (COHERENT_MAP, "qleisli.coherent-basis-source-map", "coherent basis")):
+        path = _local(ROOT, relative)
+        if not path.is_file():
+            raise ValueError(f"missing {label} source map: {path}")
+        data = _read_map(path)
+        if (data.get("format") != format_name or
+                type(data.get("version")) is not int or data["version"] != 1):
+            raise ValueError(f"invalid {label} source map")
+        files = _file_entries(data, label)
+        # Validate even unselected project metadata; a file selector cannot
+        # turn a malformed or escaping recorded project into a fallback.
+        projects = _projects(data, "before_path", "namespace" if label == "semantic namespace"
+                             else label)
+        maps.append((files, projects))
+    return maps
+
+
+def current_source_file(historical):
+    """Check each explicit file migration and return its final .qli path."""
+    historical = Path(historical)
+    if not historical.is_absolute():
+        historical = ROOT / historical
+    key = historical.relative_to(ROOT).as_posix()
+    current = _local(ROOT, key)
+    if PurePosixPath(key).suffix != ".qli":
+        raise ValueError(f"non-source fixture file: {key}")
+    for files, _ in _migration_maps():
+        entry = files.get(current.relative_to(ROOT).as_posix())
+        if entry is None:
+            continue
+        selected = _local(ROOT, entry["current_path"])
+        for path, field in ((current, "before_sha256"), (selected, "current_sha256")):
+            if (not path.is_file() or
+                    hashlib.sha256(path.read_bytes()).hexdigest() != entry[field]):
+                raise ValueError(f"source fixture identity changed: {path}")
+        current = selected
+    return current
+
+
 def current_source_fixture(historical):
     """Check each explicit migration link and return its final project path."""
     historical = Path(historical)
@@ -113,18 +181,12 @@ def current_source_fixture(historical):
         raise ValueError(f"missing or duplicate explicit source migration: {key}")
     current = _local(ROOT, entry["current_path"])
     _verify_pair(historical, current, entry, "historical_sha256")
-    namespace_map = _local(ROOT, NAMESPACE_MAP)
-    if not namespace_map.is_file():
-        raise ValueError(f"missing semantic namespace source map: {namespace_map}")
-    namespaces = _read_map(namespace_map)
-    if (namespaces.get("format") != "qleisli.semantic-namespace-source-map" or
-            type(namespaces.get("version")) is not int or namespaces["version"] != 1):
-        raise ValueError("invalid semantic namespace source map")
-    next_entry = _projects(namespaces, "before_path", "namespace").get(entry["current_path"])
-    if next_entry is not None:
-        selected = _local(ROOT, next_entry["current_path"])
-        _verify_pair(current, selected, next_entry, "before_sha256")
-        return selected
+    for _, projects in _migration_maps():
+        next_entry = projects.get(current.relative_to(ROOT).as_posix())
+        if next_entry is not None:
+            selected = _local(ROOT, next_entry["current_path"])
+            _verify_pair(current, selected, next_entry, "before_sha256")
+            current = selected
     return current
 
 

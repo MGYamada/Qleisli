@@ -2025,7 +2025,10 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
     let source = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{}";
     let error = check_project(&common::SourceRoot::new(source).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
-    assert!(error.message.contains("expected Q(Bit), found Unit"));
+    assert!(
+        error.message.contains("expected `Q<Bit>`, found `Unit`"),
+        "{error}"
+    );
     let source =
         "pub unitary fn f[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {U(q)}}";
     parse_module(source).unwrap();

@@ -260,7 +260,7 @@ fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
         }}
         unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         observe fn main() -> Bit {{
-            let q = do x <- init0(); pure ((),x);
+            let q = basis init0() as x {{ ((),x) }};
             let (u,q) = split(q);
             let (c,u) = qif(h(init0()),u) {{ 0 => unit_identity, 1 => certified }};
             discard(u); discard(q); measure_z(h(c))

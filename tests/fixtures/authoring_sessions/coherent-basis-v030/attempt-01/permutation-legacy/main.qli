@@ -1,0 +1,11 @@
+//! Informed before-code #81 source, not a benchmark or proof.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::quantum::join;
+pub unitary fn map(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { do (a,b) <- q; pure (a,a xor b) }
+observe fn main() -> (Bit,Bit) { let (a,b)=split(map(join(h(init0()),init0()))); (measure_z(a),measure_z(b)) }

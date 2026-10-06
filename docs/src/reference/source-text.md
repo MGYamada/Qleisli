@@ -123,8 +123,16 @@ identifier positions formerly treated contextually by the sized parser:
 `xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits
 `basis` and `observe` immediately after `std::` as module names.
 
+`do` and `pure` remain reserved tokens solely to reject the removed coherent
+notation with a migration diagnostic. They introduce no accepted expression,
+alias, monadic operation or state preparation. `basis fn` retains its separate
+declaration role; the expression role is specified in
+[Coherent basis maps](coherent-basis.md).
+
 `Bits`, `CBits` and `Nat` are contextual type/kind names and remain valid names
-in identifier positions. Retained tokens for `CBit`, `true` and `false` permit
+in identifier positions. `as` is contextual: it separates the quantum input
+expression and pattern in `basis input as pattern { expression }`, and remains
+an ordinary identifier elsewhere. Retained tokens for `CBit`, `true` and `false` permit
 targeted rejection of their old type/literal uses; they do not keep those uses
 accepted. Type-position `CBits<n>` likewise rejects. The replacement types and
 literals are `Bit`, `Bits<n>` and `0`/`1`.
@@ -328,5 +336,14 @@ ordinary callers or provide a separate unary wrapper. The
 `predicate-domain-independent/` packets retain old diagnostics, explicit current
 translations, small proposal comparisons and independent phase/reference
 checks. Source-bearing artifact identities change when embedded source changes.
+
+The former `do p <- q; pure e` expression is removed. Its explicit migration is
+`basis q as p { e }`, preserving the input expression, complete pattern and
+single basis expression. The braces delimit the restricted basis-expression
+grammar, not an ordinary statement block. The migration does not join separate
+owners, allow outer runtime captures, remove injectivity checking or prepare a
+state. [Coherent basis maps](coherent-basis.md) specifies the semantics,
+diagnostics and concrete-profile limits. Both finite and selected source use
+this one parser; a profile cannot retain the retired notation as an alias.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

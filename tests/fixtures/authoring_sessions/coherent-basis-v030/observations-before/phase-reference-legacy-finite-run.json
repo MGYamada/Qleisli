@@ -1,0 +1,61 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-legacy",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-06T03:45:15.702790+00:00",
+  "elapsed_seconds": 0.39187558402772993,
+  "case": "phase-reference-legacy",
+  "action": "finite-run",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "18a145e5254ee65506165d54672033f1f3bd755b3d355ff4db5bb87780eba942",
+  "raw_stdout": {
+    "path": "observations-before/phase-reference-legacy-finite-run.stdout.txt",
+    "sha256": "79e4547a3067f56956f6eadc76a2cdbc59e218a345d8234e60f0284daae185c6"
+  },
+  "raw_stderr": {
+    "path": "observations-before/phase-reference-legacy-finite-run.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            false
+          ],
+          "probability": 1
+        },
+        {
+          "bits": [
+            true,
+            false,
+            false
+          ],
+          "probability": 6.162975822039156e-33
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,82 @@
+{
+  "format": "qleisli.coherent-basis-corpus-first-sources",
+  "version": 1,
+  "created_utc": "2026-10-06T03:53:25.497589+00:00",
+  "baseline_checkout": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "manifest_sha256": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d",
+  "shared_qargo_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "prior_migrations": {
+    "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+    "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+    "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b"
+  },
+  "projects": [
+    {
+      "project": "qualtran/less_than2",
+      "selected_predecessor": "/Users/masa/git/Qleisli/corpus/qualtran/less_than2",
+      "selected_files": {
+        "README.md": "e2d5d58700246388070aa10a2c8820ee07eb7294c7c593b3433274dd301a4efc",
+        "kernel.qli": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20",
+        "main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce"
+      },
+      "original_files": {
+        "README.md": "e2d5d58700246388070aa10a2c8820ee07eb7294c7c593b3433274dd301a4efc",
+        "kernel.qli": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20",
+        "main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce"
+      },
+      "case": {
+        "id": "qualtran/less_than2",
+        "source": "qualtran",
+        "upstream_path": "qualtran/bloqs/arithmetic/comparison.py",
+        "symbol": "LessThan",
+        "license": "Apache-2.0",
+        "qubits": 5,
+        "kind": "unitary",
+        "contract": "Map |a,b,t> to |a,b,t xor [a<b]>, where a=a0+2*a1 and b=b0+2*b1.",
+        "limitations": "Finite total basis permutation checked by existing enumeration; not a scalable comparator synthesis or a reproduction of the upstream gate count.",
+        "project": "qualtran/less_than2",
+        "default_input": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "selected_predecessor": "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation",
+      "selected_files": {
+        "README.md": "92c03cc1e12146fd60e0d2d08bdafd999086907a7278d06efe8ee89bac7ea652",
+        "kernel.qli": "408befa07092dedfcbc46b22142928d1a906c7e35cec0d4d71576299594a5b41",
+        "main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd"
+      },
+      "original_files": {
+        "README.md": "92c03cc1e12146fd60e0d2d08bdafd999086907a7278d06efe8ee89bac7ea652",
+        "kernel.qli": "408befa07092dedfcbc46b22142928d1a906c7e35cec0d4d71576299594a5b41",
+        "main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd"
+      },
+      "case": {
+        "id": "pennylane_demos/vqe_excitation",
+        "source": "pennylane_demos",
+        "upstream_path": "demonstrations_v2/tutorial_vqe/demo.py",
+        "symbol": "circuit / DoubleExcitation",
+        "license": "Apache-2.0",
+        "qubits": 4,
+        "kind": "unitary",
+        "contract": "DoubleExcitation(pi): |0011> -> |1100>, |1100> -> -|0011>, all other basis vectors unchanged. The default input is Hartree-Fock |1100>.",
+        "limitations": "Finite signed-permutation specialization of the four-orbital ansatz. Host tests Z expectations and excitation signs; molecular Hamiltonian construction, continuous angles, chemistry data and VQE minimization are not imported.",
+        "project": "pennylane_demos/vqe_excitation",
+        "default_input": [
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    }
+  ],
+  "intended_change": "Only old coherent expression spelling becomes basis input as existing pattern { same basis expression }. Existing tuples, coefficients, phases, axis order, inputs, pins, notices and body stay fixed. These existing finite projects use 5 and 4 qubits; no maximum cases are generated.",
+  "pending": "This first source record predates OLD command observation and any migrated kernel source."
+}

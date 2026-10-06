@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "tuple_shapes",
+    "--test",
+    "unit_patterns",
+    "--test",
+    "qli_corpus",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 35.850986167031806,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.stdout.txt",
+      "sha256": "a4f53963de1fd4802f61f6533e3181b399dca83ca0863ad936772e6f225d6433"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.stderr.txt",
+      "sha256": "9e533ab26671c9e0f46a4df02139cd76c4e2987e46cb83f5b99af403b50ad4be"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"emit-ir","outcome":"ok","diagnostics":[],"result":{"path":"/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/observations-before/artifacts/qualtran-less_than2.qirf"}}

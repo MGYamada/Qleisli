@@ -74,8 +74,9 @@ fn example_and_stdlib_token_prefixes_parse_without_panicking() {
 fn parses_bell_modules_and_keeps_owned_resource_syntax_distinct() {
     let bell = r#"
 pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
-    do x <- q;
-    pure (x, x)
+    basis q as x {
+        (x, x)
+    }
 }
 "#;
     let module = parse_module(bell).unwrap();
@@ -224,7 +225,7 @@ fn malformed_syntax_has_precise_error_spans() {
     let cases = [
         ("use oracle::*;", "*", "expected an identifier"),
         (
-            "iso fn f(q: Q<Bit>) -> Q<Bit> { do x <- q; let y = x; pure y }",
+            "iso fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { let y = x; y } }",
             "let",
             "expected",
         ),
@@ -397,7 +398,7 @@ fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
 #[test]
 fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
     let source = "unitary fn f(q: Q<((Bit,Unit),Bit)>) -> Q<(Bit,Bit)> {
-        do ((a,_),b) <- q; pure (a,b)
+        basis q as ((a,_),b) { (a,b) }
     }";
     let module = parse_module(source).unwrap();
     let FnBody::Quantum(body) = &module.decls[0].body else {
@@ -424,14 +425,227 @@ fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
     assert!(matches!(&right.kind, PatternKind::Name(name) if name.text == "b"));
     assert!(matches!(basis.kind, BasisExprKind::Tuple(_)));
 
-    parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { do _ <- q; pure 0 }").unwrap();
+    assert_eq!(
+        &source[body.result.span.start..body.result.span.end],
+        "basis q as ((a,_),b) { (a,b) }"
+    );
+    assert_eq!(&source[basis.span.start..basis.span.end], "(a,b)");
+
+    parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { basis q as _ { 0 } }").unwrap();
     // Duplicate names are syntactically valid; the basis pattern checker must
     // reject them. Empty tuple patterns are shared syntax for the sized profile;
     // singleton patterns and trailing commas remain invalid.
-    parse_module("unitary fn f(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,a) <- q; pure a }").unwrap();
+    parse_module("unitary fn f(q: Q<(Bit,Bit)>) -> Q<Bit> { basis q as (a,a) { a } }").unwrap();
     for pattern in ["(a)", "(a,)", "(a,b,c,)"] {
-        let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {pattern} <- q; pure 0 }}");
+        let source =
+            format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ basis q as {pattern} {{ 0 }} }}");
         assert!(parse_module(&source).is_err(), "{source}");
+    }
+}
+
+#[test]
+fn coherent_basis_as_is_contextual_and_preserves_identifier_positions() {
+    use qleisli::frontend::lexer::TokenKind;
+
+    let tokens = lex("as").unwrap();
+    assert_eq!(tokens[0].kind, TokenKind::Ident("as".into()));
+    let source = r#"
+use as::{f,as};
+unitary fn as(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn call(q: Q<Bit>) -> Q<Bit> { basis as(q) as as { as } }
+unitary fn direct(as: Q<Bit>) -> Q<Bit> { basis as as as { as } }
+unitary fn sized[static as: Nat](q: Q<Bits<as>>) -> Q<Bits<as>> { q }
+"#;
+    let module = parse_module(source).unwrap();
+    assert_eq!(module.uses.len(), 2);
+    assert_eq!(module.uses[0].path[0].text, "as");
+    assert_eq!(module.uses[1].path[1].text, "as");
+    assert_eq!(module.decls[0].name.text, "as");
+    assert_eq!(module.decls[3].static_params[0].name.text, "as");
+    for (index, called) in [(1, true), (2, false)] {
+        let FnBody::Quantum(body) = &module.decls[index].body else {
+            panic!("expected ordinary body")
+        };
+        let ExprKind::CoherentLift {
+            binder,
+            input,
+            basis,
+        } = &body.result.kind
+        else {
+            panic!("expected coherent lift")
+        };
+        assert!(matches!(&binder.kind, PatternKind::Name(name) if name.text == "as"));
+        assert!(matches!(&basis.kind, BasisExprKind::Name(name) if name.text == "as"));
+        match &input.kind {
+            ExprKind::Call { callee, .. } if called => assert_eq!(callee.text, "as"),
+            ExprKind::Name(name) if !called => assert_eq!(name.text, "as"),
+            _ => panic!("input must retain its original expression category"),
+        }
+    }
+}
+
+#[test]
+fn coherent_basis_input_retains_existing_expression_grammar() {
+    for (input, category) in [
+        ("f(q)", "call"),
+        ("(q,r)", "tuple"),
+        ("if b { q } else { r }", "conditional"),
+        ("basis q as inner { inner }", "lift"),
+    ] {
+        let source = format!(
+            "unitary fn f(q: Q<Bit>, r: Q<Bit>, b: Bit) -> Q<Bit> {{ basis {input} as label {{ label }} }}"
+        );
+        let module = parse_module(&source).unwrap();
+        let FnBody::Quantum(body) = &module.decls[0].body else {
+            panic!("expected ordinary body")
+        };
+        let ExprKind::CoherentLift { input: parsed, .. } = &body.result.kind else {
+            panic!("expected coherent lift")
+        };
+        assert_eq!(&source[parsed.span.start..parsed.span.end], input);
+        assert!(
+            matches!(
+                (&parsed.kind, category),
+                (ExprKind::Call { .. }, "call")
+                    | (ExprKind::Tuple(_), "tuple")
+                    | (ExprKind::If { .. }, "conditional")
+                    | (ExprKind::CoherentLift { .. }, "lift")
+            ),
+            "{source}"
+        );
+    }
+    // Parsing preserves the ordinary expression; the source checker, rather
+    // than a second parser grammar, enforces that it produces one Q<A> owner.
+    let module = parse_module(
+        "unitary fn f(a: Bit, b: Bit, c: Bit) -> Q<Bit> { basis not a and b xor c as label { label } }",
+    )
+    .unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("expected ordinary body")
+    };
+    let ExprKind::CoherentLift { input, .. } = &body.result.kind else {
+        panic!("expected coherent lift")
+    };
+    let ExprKind::Xor(left, _) = &input.kind else {
+        panic!("expected lower-precedence xor in the input")
+    };
+    assert!(matches!(left.kind, ExprKind::And(_, _)));
+}
+
+#[test]
+fn coherent_basis_body_keeps_basis_precedence_and_unit_patterns() {
+    let source =
+        "unitary fn f(q: Q<(Bit,Bit,Bit)>) -> Q<Bit> { basis q as (a,b,c) { not a and b xor c } }";
+    let module = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("expected ordinary body")
+    };
+    let ExprKind::CoherentLift { basis, .. } = &body.result.kind else {
+        panic!("expected coherent lift")
+    };
+    let BasisExprKind::Xor(left, _) = &basis.kind else {
+        panic!("expected lower-precedence xor in the basis body")
+    };
+    let BasisExprKind::And(first, _) = &left.kind else {
+        panic!("expected higher-precedence and")
+    };
+    assert!(matches!(first.kind, BasisExprKind::Not(_)));
+    let module =
+        parse_module("unitary fn f(q: Q<Unit>) -> Q<Unit> { basis q as () { () } }").unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("expected ordinary body")
+    };
+    let ExprKind::CoherentLift { binder, basis, .. } = &body.result.kind else {
+        panic!("expected coherent lift")
+    };
+    assert!(matches!(&binder.kind, PatternKind::Tuple(fields) if fields.is_empty()));
+    assert!(matches!(basis.kind, BasisExprKind::Unit));
+}
+
+#[test]
+fn coherent_basis_body_is_one_expression_without_statements_or_a_semicolon() {
+    for basis in [
+        "",
+        "x;",
+        "let y = x; y",
+        "{ x }",
+        "basis q as y { y }",
+        "if x { x } else { x }",
+        "x, x",
+    ] {
+        let prefix = "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { ";
+        let source = format!("{prefix}{basis} }} }}");
+        let error = parse_module(&source).unwrap_err();
+        assert!(error.span.start >= prefix.len(), "{source}\n{error}");
+        assert!(error.span.start < source.len(), "{source}\n{error}");
+    }
+}
+
+#[test]
+fn coherent_basis_delimiter_errors_point_to_the_missing_as_or_body() {
+    for (suffix, at, expected) in [
+        ("basis q label { label }", "label", "expected `as`"),
+        ("basis q AS label { label }", "AS", "expected `as`"),
+        ("basis q as label label", "label }", "expected `{`"),
+    ] {
+        let prefix = "unitary fn f(q: Q<Bit>) -> Q<Bit> { ";
+        let source = format!("{prefix}{suffix} }}");
+        let error = parse_module(&source).unwrap_err();
+        assert!(error.message.contains(expected), "{source}\n{error}");
+        assert_eq!(error.span.start, source.find(at).unwrap(), "{source}");
+    }
+    let source = "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q";
+    let error = parse_module(source).unwrap_err();
+    assert_eq!(error.message, "expected `as`");
+    assert_eq!(error.span, Span::new(source.len(), source.len()));
+}
+
+#[test]
+fn retired_coherent_do_and_pure_have_located_migration_diagnostics() {
+    for (source, keyword) in [
+        (
+            "unitary fn f(q: Q<Bit>) -> Q<Bit> { do x <- q; pure x }",
+            "do",
+        ),
+        ("unitary fn f(q: Q<Bit>) -> Q<Bit> { pure q }", "pure"),
+        (
+            "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { pure x } }",
+            "pure",
+        ),
+        ("basis fn f(x: Bit) -> Bit { not pure x }", "pure"),
+        (
+            "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { do y <- q; pure y } }",
+            "do",
+        ),
+        (
+            "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { x xor pure x } }",
+            "pure",
+        ),
+    ] {
+        let error = parse_module(source).unwrap_err();
+        let start = source.find(keyword).unwrap();
+        assert_eq!(error.span, Span::new(start, start + keyword.len()));
+        for message in [
+            "removed in Qleisli 0.3.0",
+            "basis q as p { e }",
+            "not monadic bind or measurement",
+            "`pure` does not prepare a state",
+        ] {
+            assert!(error.message.contains(message), "{source}\n{error}");
+        }
+    }
+}
+
+#[test]
+fn coherent_basis_token_prefixes_parse_without_panicking() {
+    for expression in [
+        "basis q as label { (label,label) }",
+        "basis f(q) as (a,_) { not a }",
+        "basis basis q as a { a } as b { b }",
+        "basis as(q) as as { as }",
+    ] {
+        let source = format!("iso fn f(q: Q<Bit>) -> Q<Bit> {{ {expression} }}");
+        check_token_prefixes(&source, expression);
     }
 }
 
@@ -491,7 +705,7 @@ fn canonical_bit_literals_share_spelling_with_basis_bits() {
             format!("use m::{keyword};"),
             format!("use {keyword}::f;"),
             format!("basis fn f() -> Bit {{ {keyword} }}"),
-            format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {keyword} <- q; pure 0 }}"),
+            format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ basis q as {keyword} {{ 0 }} }}"),
         ] {
             assert!(parse_module(&source).is_err(), "{source}");
         }
@@ -520,7 +734,8 @@ fn classical_operator_chains_and_basis_patterns_obey_depth_limits() {
         assert!(error.span.start < source.len());
     }
     let deep_pattern = format!("{}a{}", "(".repeat(10_000), ",_)".repeat(10_000));
-    let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ do {deep_pattern} <- q; pure a }}");
+    let source =
+        format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ basis q as {deep_pattern} {{ a }} }}");
     assert!(parse_module(&source).unwrap_err().message.contains("limit"));
 
     for expression in [

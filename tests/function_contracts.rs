@@ -360,7 +360,7 @@ fn ordered_function_outputs_are_part_of_the_contract() {
             let (a,b)=split(q); join(b,a)
         }}
         unitary fn specified(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
-            do (a,b) <- q; pure (b,a)
+            basis q as (a,b) {{ (b,a) }}
         }}"
     );
     let result = run(&format!(
@@ -493,7 +493,7 @@ fn zero_width_contract_phase_survives_coherent_control() {
         unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ apply_contract(implementation,specified,q) }}
         observe fn main() -> Bit {{
-            let pair=do value <- init0(); pure ((),value);
+            let pair=basis init0() as value {{ ((),value) }};
             let (unit,q)=split(pair);
             let (control,unit)=qif(h(init0()),unit) {{ 0 => unit_identity, 1 => phase }};
             discard(unit); discard(q); measure_z(h(control))

@@ -5,7 +5,7 @@ use std::quantum::join;
 use std::measurement::parity_zz;
 
 pub iso fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
-    do a <- q; pure ((a, a), a)
+    basis q as a { ((a, a), a) }
 }
 
 // Contract: an encoded state with at most one X error, ideal operations.

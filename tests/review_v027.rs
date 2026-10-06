@@ -223,7 +223,7 @@ fn dependency_scopes_do_not_hide_unknown_names_or_recursive_initializers() {
 fn basis_and_coherent_lift_bindings_are_not_global_dependencies() {
     for source in [
         "basis fn bad(f:Bit)->Bit{f(f)}",
-        "unitary fn bad(q:Q<Bit>)->Q<Bit>{do f <- q; pure f(f)}",
+        "unitary fn bad(q:Q<Bit>)->Q<Bit>{basis q as f { f(f) }}",
     ] {
         let root = SourceRoot::new(source);
         let error = check_project(&root.0).unwrap_err();

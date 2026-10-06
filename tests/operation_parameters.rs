@@ -249,7 +249,7 @@ fn scalar_phase_and_zero_width_ownership_survive_control() {
         unitary fn zero(q:Q<Unit>)->Q<Unit>{q}
         unitary fn ctrl[static U:Op<Unit,Minus>](c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)
         requires Controlled(U){qif(c,q){0=>U,1=>zero}}
-        observe fn main()->Bit{let q=do b<-init0();pure ((),b);let(e,b)=split(q);discard(b);
+        observe fn main()->Bit{let q=basis init0() as b { ((),b) };let(e,b)=split(q);discard(b);
             let(c,e)=ctrl[bind_op(minus,Minus)](h(init0()),e);discard(e);measure_z(h(c))}",
         &[true],
     );

@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
-/// Select an explicitly recorded namespace translation and verify both sources.
+/// Verify the explicit namespace/coherent file chain without changing originals.
 pub(super) fn current_namespace_fixture(path: &Path) -> PathBuf {
     // Python's standard library supplies the repository's fixture hashing,
     // without adding a Rust dependency or changing production acceptance.
@@ -17,27 +17,12 @@ pub(super) fn current_namespace_fixture(path: &Path) -> PathBuf {
         .args([
             "-B",
             "-c",
-            r#"import hashlib, json, sys
+            r#"import sys
 from pathlib import Path
 root = Path(sys.argv[1])
-historical = Path(sys.argv[2])
-if not historical.is_absolute():
-    historical = root / historical
-key = historical.relative_to(root).as_posix()
-mapping = root / 'tests/fixtures/frontend_v030/stdlib-semantic-namespaces/namespace-source-map.json'
-matches = [entry for entry in json.loads(mapping.read_text())['files']
-           if entry['before_path'] == key]
-if not matches:
-    print(historical)
-else:
-    if len(matches) != 1:
-        raise ValueError(f'duplicate namespace fixture mapping: {key}')
-    entry = matches[0]
-    current = root / entry['current_path']
-    for source, field in ((historical, 'before_sha256'), (current, 'current_sha256')):
-        if hashlib.sha256(source.read_bytes()).hexdigest() != entry[field]:
-            raise ValueError(f'namespace fixture identity changed: {source}')
-    print(current)
+sys.path.insert(0, str(root / 'scripts'))
+from current_source_fixtures import current_source_file
+print(current_source_file(Path(sys.argv[2])))
 "#,
         ])
         .arg(env!("CARGO_MANIFEST_DIR"))
@@ -46,7 +31,7 @@ else:
         .expect("Python 3 is required for recorded fixture identity checks");
     assert!(
         output.status.success(),
-        "namespace fixture selection failed for {}: {}",
+        "source fixture selection failed for {}: {}",
         path.display(),
         String::from_utf8_lossy(&output.stderr)
     );

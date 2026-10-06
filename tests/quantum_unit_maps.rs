@@ -798,7 +798,7 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
             2
         );
         let text =
-            format!("pub unitary fn f(q:{input})->Q<Bit>{{do {pattern} <- q; pure {output}}}");
+            format!("pub unitary fn f(q:{input})->Q<Bit>{{basis q as {pattern} {{ {output} }}}}");
         // The common source judgment checks the coherent pattern. The selected
         // concrete projection still cannot instantiate this source form.
         let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())]))

@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/measurement-in-body-desired",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:57:42.012880+00:00",
+  "elapsed_seconds": 0.006204542005434632,
+  "case": "measurement-in-body-desired",
+  "action": "finite-check",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "3ec93a712b402b03ef346cf6fd139edff9f36c657df3006a24104d167b299bb2",
+  "raw_stdout": {
+    "path": "observations-after/measurement-in-body-desired-finite-check.stdout.txt",
+    "sha256": "1cf26801dad535b8b79b3fd07bbda60edf52e9f57686b64b7e1b2ba38e096162"
+  },
+  "raw_stderr": {
+    "path": "observations-after/measurement-in-body-desired-finite-check.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "basis expression requires a basis function",
+        "primary": {
+          "path": "main.qli",
+          "start": 226,
+          "end": 235,
+          "line": 5,
+          "column": 58
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

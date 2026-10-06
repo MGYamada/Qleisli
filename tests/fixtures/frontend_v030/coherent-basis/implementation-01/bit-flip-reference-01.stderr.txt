@@ -1,0 +1,3 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.55s
+     Running tests/algorithms.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/algorithms-ba29021bfd61cd10)

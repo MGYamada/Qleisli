@@ -18,13 +18,13 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 fn source(category: &str, name: &str) -> String {
-    std::fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
+    std::fs::read_to_string(common::current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
             .join("tests/fixtures/authoring_sessions/finite-unit-pattern-v030")
             .join(category)
             .join(name)
             .join("main.qli"),
-    )
+    ))
     .unwrap()
 }
 

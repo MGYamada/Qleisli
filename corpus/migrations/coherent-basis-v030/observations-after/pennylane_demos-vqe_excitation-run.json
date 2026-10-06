@@ -1,0 +1,46 @@
+{
+  "project": "pennylane_demos/vqe_excitation",
+  "action": "run",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/corpus/migrations/coherent-basis-v030/sources/pennylane_demos/vqe_excitation",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 0.38230712502263486,
+  "recorded_utc": "2026-10-06T03:55:42.749137+00:00",
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,true,true],\"probability\":1}]}}\n",
+  "stderr": "",
+  "parsed_stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            false,
+            false,
+            true,
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  },
+  "raw_stdout": {
+    "path": "observations-after/pennylane_demos-vqe_excitation-run.stdout.txt",
+    "sha256": "6ab036d6040bdb4a2d5a12551e017ed9201a274e22c762abe7b2071aa6244b4c"
+  },
+  "raw_stderr": {
+    "path": "observations-after/pennylane_demos-vqe_excitation-run.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true
+}

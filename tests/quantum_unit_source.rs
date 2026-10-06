@@ -20,7 +20,10 @@ use std::fmt::Write;
 use std::path::Path;
 
 fn read(path: &str) -> String {
-    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(path)).unwrap()
+    std::fs::read_to_string(common::current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR")).join(path),
+    ))
+    .unwrap()
 }
 
 fn study(name: &str) -> String {

@@ -1,0 +1,20 @@
+2026-10-06T03:40:25.7713052Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +7e768e6ccdbb98077818664f985886bb5a86a374:refs/remotes/pull/307/merge
+2026-10-06T03:40:28.0739756Z HEAD is now at 7e768e6 Merge 73355382a3db94893982e5954e9400fffcd7f48e into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T03:40:28.0872955Z 7e768e6ccdbb98077818664f985886bb5a86a374
+2026-10-06T03:42:50.4529988Z ##[group]Run cargo +1.98.1 test --all-targets
+2026-10-06T04:05:44.0475116Z failures:
+2026-10-06T04:05:44.0475308Z 
+2026-10-06T04:05:44.0475717Z ---- common_syntax_does_not_grant_missing_profile_or_capability_support stdout ----
+2026-10-06T04:05:44.0476274Z 
+2026-10-06T04:05:44.0476931Z thread 'common_syntax_does_not_grant_missing_profile_or_capability_support' (159046) panicked at tests/sized_source.rs:2028:5:
+2026-10-06T04:05:44.0479499Z assertion failed: error.message.contains("expected Q(Bit), found Unit")
+2026-10-06T04:05:44.0480411Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-10-06T04:05:44.0480720Z 
+2026-10-06T04:05:44.0480723Z 
+2026-10-06T04:05:44.0480808Z failures:
+2026-10-06T04:05:44.0481098Z     common_syntax_does_not_grant_missing_profile_or_capability_support
+2026-10-06T04:05:44.0481394Z 
+2026-10-06T04:05:44.0481657Z test result: FAILED. 37 passed; 1 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.82s
+2026-10-06T04:05:44.0482032Z 
+2026-10-06T04:05:44.0482203Z error: test failed, to rerun pass `--test sized_source`
+2026-10-06T04:05:44.0509362Z ##[error]Process completed with exit code 101.

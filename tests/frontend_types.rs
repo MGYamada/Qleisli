@@ -76,7 +76,7 @@ fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_sup
     }
     // The complete coherent-lift source is valid; concrete selected lowering
     // remains a separate capability from explicit split/join.
-    let source = "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<Unit> { do ((),u) <- q; pure u }";
+    let source = "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<Unit> { basis q as ((),u) { u } }";
     let program = parsed(source);
     assert_eq!(program.source("main"), Some(source));
     assert_eq!(program.syntax("main"), Some(&parse_module(source).unwrap()));
@@ -91,7 +91,7 @@ fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_sup
     );
     assert_eq!(
         &source[error.span().start..error.span().end],
-        "do ((),u) <- q; pure u"
+        "basis q as ((),u) { u }"
     );
 }
 

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"run","outcome":"ok","diagnostics":[],"result":{"distribution":[{"bits":[false,false,false,false,false],"probability":1}]}}

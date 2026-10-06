@@ -195,11 +195,11 @@ fn unit_factors_and_product_labels_match_every_explicit_basis_image() {
             "
 unitary fn relabel(q: Q<((Bit,Unit),(Bit,(Unit,Bit)))>)
     -> Q<((Unit,Bit),((Bit,Bit),Unit))> {{
-    do ((a,_),(b,(_,c))) <- q; pure (((),c),((a xor b,b),()))
+    basis q as ((a,_),(b,(_,c))) {{ (((),c),((a xor b,b),())) }}
 }}
 observe fn main() -> ((Bit,Bit),Bit) {{
-    let a = do a <- {}; pure (a,());
-    let c = do c <- {}; pure ((),c);
+    let a = basis {} as a {{ (a,()) }};
+    let c = basis {} as c {{ ((),c) }};
     let q = relabel(join(a,join({},c)));
     let (uc,abu) = split(q); let (u,c) = split(uc);
     let (ab,v) = split(abu); let (a,b) = split(ab);
@@ -250,7 +250,7 @@ fn growing_lift_matches_joint_pauli_statistics_with_two_reference_wires() {
         let source = format!(
             "
 iso fn grow(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
-    do (a,b) <- q; pure ((a,b),a xor b)
+    basis q as (a,b) {{ ((a,b),a xor b) }}
 }}
 observe fn main() -> (((Bit,Bit),Bit),(Bit,Bit)) {{
     let (a,r) = cnot(t(h(init0())),init0());
@@ -365,7 +365,7 @@ fn computed_predicate_packing_and_phase_match_coherent_and_controlled_inputs() {
         let source = format!(
             "{COMPUTED}
 observe fn main() -> ((Bit,Bit),Bit) {{
-    let au = do a <- h(init0()); pure (a,());
+    let au = basis h(init0()) as a {{ (a,()) }};
     let q = oracle(join(join(au,h(init0())),h(init0())));
     let (aub,c) = split(q); let (au,b) = split(aub); let (a,u) = split(au);
     discard(u); (({},{}),{})
@@ -401,7 +401,7 @@ observe fn main() -> ((Bit,Bit),Bit) {{
             let source = format!(
                 "{COMPUTED}
 observe fn main() -> (((Bit,Bit),Bit),Bit) {{
-    let au = do a <- {}; pure (a,());
+    let au = basis {} as a {{ (a,()) }};
     let q = join(join(au,{}),{});
     let (control,q) = qif(h(init0()),q) {{ 0=>identity, 1=>oracle }};
     let (aub,c) = split(q); let (au,b) = split(aub); let (a,u) = split(au);
@@ -435,7 +435,7 @@ unitary fn identity(q: Q<{basis}>) -> Q<{basis}> {{ q }}
             let source = format!(
                 "{definitions}
 observe fn main() -> Bit {{
-    let (q,b)=split(do b <- init0(); pure ({label},b)); discard(b);
+    let (q,b)=split(basis init0() as b {{ ({label},b) }}); discard(b);
     let q=scalar(q);
     let (control,q)=qif(h(init0()),q) {{ 0=>identity, 1=>scalar }};
     discard(q); {}
@@ -521,7 +521,7 @@ observe fn read(u: Q<Unit>, result: ((Bit,Q<Bit>),(Bit,Q<Bit>)),
 observe fn main() -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
     let (a,ra)=cnot(t(h(init0())),init0());
     let (b,rb)=cnot(t(t(h(init0()))),init0());
-    let (u,a)=split(do a <- a; pure ((),a));
+    let (u,a)=split(basis a as a {{ ((),a) }});
     let flag=measure_z(h(init0()));
     read(u,route(flag,a,b),ra,rb,flag)
 }}",
@@ -557,7 +557,7 @@ observe fn main() -> (Bit,((Bit,Bit),((Bit,Bit),(Bit,Bit)))) {{
 fn verified_ir_does_not_by_itself_establish_source_correspondence() {
     let checked = compile(
         "
-observe fn main() -> Bit { measure_z(do b <- init0(); pure not b) }
+observe fn main() -> Bit { measure_z(basis init0() as b { not b }) }
 ",
     );
     let expected = Distribution::from([(vec![true], 1.0)]);

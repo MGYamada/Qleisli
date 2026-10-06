@@ -223,7 +223,7 @@ const MIX: &str = "
 unitary fn mix(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (a,b) = split(q);
     let a = t(h(a));
-    let b = do label <- b; pure not label;
+    let b = basis b as label { not label };
     let (a,b) = cnot(a,b);
     join(b,a)
 }
@@ -342,7 +342,7 @@ unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
     let (c,u) = split(q); let (c,u) = qif(c,u) { 0 => phase, 1 => identity }; join(c,u)
 }";
     let preparation =
-        "let pair = do b <- init0(); pure ((),b); let (u,b) = split(pair); discard(b);";
+        "let pair = basis init0() as b { ((),b) }; let (u,b) = split(pair); discard(b);";
     // C_yes^dagger Z T^3 C_yes contributes zeta^7 on the one-dimensional space.
     for (operation, phase) in [("repeat_static(1,phase,u)", 7), ("adjoint(phase,u)", 1)] {
         let steps = compiled_steps(definitions, preparation, operation);
@@ -422,7 +422,7 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
 #[test]
 fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectations() {
     let imports = "use std::quantum::{id,phase_eighth};";
-    let unit = "let pair = do b <- init0(); pure ((),b);
+    let unit = "let pair = basis init0() as b { ((),b) };
         let (q,b) = split(pair); discard(b);";
     for (operation, exponent) in [
         ("repeat_static(1,id,q)", 0),
@@ -564,8 +564,9 @@ fn determinant_exponent(width: usize, steps: &[CircuitStep]) -> usize {
 
 #[test]
 fn review_same_wire_obstructions_do_not_reject_semantic_unitaries() {
-    let c3x =
-        include_str!("fixtures/frontend_v030/ordinary-type-cutover/current/review_v023/c3x.qli");
+    let c3x = include_str!(
+        "fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/review_v023/c3x.qli"
+    );
     let root = SourceRoot::new(&format!(
         "{IMPORTS}\n{c3x}
         observe fn main()->Unit {{
@@ -697,7 +698,7 @@ unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
 }";
     let scalar = compiled_steps(
         scalar_definitions,
-        "let q=do b <- init0(); pure (b,());",
+        "let q=basis init0() as b { (b,()) };",
         "repeat_static(1,controlled,q)",
     );
     assert_operator(1, &scalar, |row, column| {
@@ -713,7 +714,7 @@ unitary fn controlled(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> {
 fn product_pattern_lift_is_a_full_basis_permutation_under_inverse_and_control() {
     let definitions = "
 unitary fn permute(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-    do (a,b) <- q; pure (b,a xor b)
+    basis q as (a,b) { (b,a xor b) }
 }
 unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
 unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {

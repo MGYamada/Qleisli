@@ -1,0 +1,5 @@
+<p>[
+V_f |a\rangle = |f(a)\rangle,\qquad
+V_f\left(\sum_a \alpha_a |a\rangle\right)
+= \sum_a \alpha_a |f(a)\rangle.
+]</p>

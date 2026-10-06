@@ -1,0 +1,1895 @@
+{
+  "format": "qleisli.coherent-basis-after-analysis",
+  "version": 1,
+  "capture": {
+    "path": "observations-after/capture.json",
+    "sha256": "dadbec7479ca94025cb8e1c1b714da007a4ee95c7b8ef519fff761390a3c371d"
+  },
+  "driver_sha256": "591a42a638d2b58bc7bcfb730e0547d9b42bae76734a186083df59bf070336ad",
+  "cli_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "first_sources_sha256": "e1b9a175b4221bf2eb52ebbec0f84c6d725fa21398c905e1f73cda262133f755",
+  "historical_and_first_source_identities_preserved": true,
+  "observations": 53,
+  "assertions": [
+    {
+      "name": "entangle-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": [],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "entangle-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-legacy/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-desired/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "entangle-desired-finite-run-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": []
+      }
+    },
+    {
+      "name": "entangle-desired-finite-emit-ir-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": []
+      }
+    },
+    {
+      "name": "entangle-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 313,
+              "end": 315,
+              "line": 9,
+              "column": 50
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          313,
+          315
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 313,
+            "end": 315,
+            "line": 9,
+            "column": 50
+          }
+        ]
+      }
+    },
+    {
+      "name": "entangle-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-legacy/main.qli",
+              "start": 313,
+              "end": 315
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          313,
+          315
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-legacy/main.qli",
+            "start": 313,
+            "end": 315
+          }
+        ]
+      }
+    },
+    {
+      "name": "entangle-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 313,
+          "end": 315,
+          "line": 9,
+          "column": 50
+        },
+        "rendered_line_column": ":9:50"
+      }
+    },
+    {
+      "name": "phase-reference-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": [],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "phase-reference-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-legacy/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-desired/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "phase-reference-desired-finite-run-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": []
+      }
+    },
+    {
+      "name": "phase-reference-desired-finite-emit-ir-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": []
+      }
+    },
+    {
+      "name": "phase-reference-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 357,
+              "end": 359,
+              "line": 11,
+              "column": 50
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          357,
+          359
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 357,
+            "end": 359,
+            "line": 11,
+            "column": 50
+          }
+        ]
+      }
+    },
+    {
+      "name": "phase-reference-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-legacy/main.qli",
+              "start": 357,
+              "end": 359
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          357,
+          359
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-legacy/main.qli",
+            "start": 357,
+            "end": 359
+          }
+        ]
+      }
+    },
+    {
+      "name": "phase-reference-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 357,
+          "end": 359,
+          "line": 11,
+          "column": 50
+        },
+        "rendered_line_column": ":11:50"
+      }
+    },
+    {
+      "name": "permutation-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": [],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "permutation-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-legacy/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-desired/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "permutation-desired-finite-run-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": []
+      }
+    },
+    {
+      "name": "permutation-desired-finite-emit-ir-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [],
+        "after_diagnostics": []
+      }
+    },
+    {
+      "name": "permutation-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 342,
+              "end": 344,
+              "line": 10,
+              "column": 55
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          342,
+          344
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 342,
+            "end": 344,
+            "line": 10,
+            "column": 55
+          }
+        ]
+      }
+    },
+    {
+      "name": "permutation-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-legacy/main.qli",
+              "start": 342,
+              "end": 344
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          342,
+          344
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-legacy/main.qli",
+            "start": 342,
+            "end": 344
+          }
+        ]
+      }
+    },
+    {
+      "name": "permutation-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 342,
+          "end": 344,
+          "line": 10,
+          "column": 55
+        },
+        "rendered_line_column": ":10:55"
+      }
+    },
+    {
+      "name": "unit-owner-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "finite lowering profile does not support `std::quantum::unit`",
+            "primary": {
+              "path": "main.qli",
+              "start": 305,
+              "end": 313,
+              "line": 7,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "finite lowering profile does not support `std::quantum::unit`",
+            "primary": {
+              "path": "main.qli",
+              "start": 306,
+              "end": 314,
+              "line": 7,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "unit-owner-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-legacy/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-desired/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "unit-owner-desired-finite-run-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "finite lowering profile does not support `std::quantum::unit`",
+            "primary": {
+              "path": "main.qli",
+              "start": 305,
+              "end": 313,
+              "line": 7,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "finite lowering profile does not support `std::quantum::unit`",
+            "primary": {
+              "path": "main.qli",
+              "start": 306,
+              "end": 314,
+              "line": 7,
+              "column": 45
+            },
+            "related": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "unit-owner-desired-finite-emit-ir-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "finite lowering profile does not support `std::quantum::unit`",
+            "primary": {
+              "path": "main.qli",
+              "start": 305,
+              "end": 313,
+              "line": 7,
+              "column": 45
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "finite lowering profile does not support `std::quantum::unit`",
+            "primary": {
+              "path": "main.qli",
+              "start": 306,
+              "end": 314,
+              "line": 7,
+              "column": 45
+            },
+            "related": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "unit-owner-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 239,
+              "end": 241,
+              "line": 6,
+              "column": 50
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          239,
+          241
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 239,
+            "end": 241,
+            "line": 6,
+            "column": 50
+          }
+        ]
+      }
+    },
+    {
+      "name": "unit-owner-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-legacy/main.qli",
+              "start": 239,
+              "end": 241
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          239,
+          241
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-legacy/main.qli",
+            "start": 239,
+            "end": 241
+          }
+        ]
+      }
+    },
+    {
+      "name": "unit-owner-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 239,
+          "end": 241,
+          "line": 6,
+          "column": 50
+        },
+        "rendered_line_column": ":6:50"
+      }
+    },
+    {
+      "name": "noninjective-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "coherent basis lift is not injective",
+            "primary": {
+              "path": "main.qli",
+              "start": 236,
+              "end": 253,
+              "line": 6,
+              "column": 43
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "coherent basis lift is not injective",
+            "primary": {
+              "path": "main.qli",
+              "start": 236,
+              "end": 254,
+              "line": 6,
+              "column": 43
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "noninjective-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/noninjective-legacy/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "visibility",
+            "severity": "error",
+            "message": "dependency main::main is private",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/noninjective-desired/main.qli",
+              "start": 0,
+              "end": 0
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "noninjective-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 236,
+              "end": 238,
+              "line": 6,
+              "column": 43
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          236,
+          238
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 236,
+            "end": 238,
+            "line": 6,
+            "column": 43
+          }
+        ]
+      }
+    },
+    {
+      "name": "noninjective-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/noninjective-legacy/main.qli",
+              "start": 236,
+              "end": 238
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          236,
+          238
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/noninjective-legacy/main.qli",
+            "start": 236,
+            "end": 238
+          }
+        ]
+      }
+    },
+    {
+      "name": "noninjective-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 236,
+          "end": 238,
+          "line": 6,
+          "column": 43
+        },
+        "rendered_line_column": ":6:43"
+      }
+    },
+    {
+      "name": "quantum-capture-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "unknown_name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "path": "main.qli",
+              "start": 229,
+              "end": 230,
+              "line": 4,
+              "column": 90
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "unknown_name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "path": "main.qli",
+              "start": 228,
+              "end": 229,
+              "line": 4,
+              "column": 89
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "quantum-capture-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/quantum-capture-legacy/main.qli",
+              "start": 229,
+              "end": 230
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/quantum-capture-desired/main.qli",
+              "start": 228,
+              "end": 229
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "quantum-capture-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 213,
+              "end": 215,
+              "line": 4,
+              "column": 74
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          213,
+          215
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 213,
+            "end": 215,
+            "line": 4,
+            "column": 74
+          }
+        ]
+      }
+    },
+    {
+      "name": "quantum-capture-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/quantum-capture-legacy/main.qli",
+              "start": 213,
+              "end": 215
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          213,
+          215
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/quantum-capture-legacy/main.qli",
+            "start": 213,
+            "end": 215
+          }
+        ]
+      }
+    },
+    {
+      "name": "quantum-capture-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 213,
+          "end": 215,
+          "line": 4,
+          "column": 74
+        },
+        "rendered_line_column": ":4:74"
+      }
+    },
+    {
+      "name": "ordinary-capture-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "unknown_name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "path": "main.qli",
+              "start": 212,
+              "end": 213,
+              "line": 4,
+              "column": 73
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "unknown_name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "path": "main.qli",
+              "start": 211,
+              "end": 212,
+              "line": 4,
+              "column": 72
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "ordinary-capture-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/ordinary-capture-legacy/main.qli",
+              "start": 212,
+              "end": 213
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "name",
+            "severity": "error",
+            "message": "unbound basis value",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/ordinary-capture-desired/main.qli",
+              "start": 211,
+              "end": 212
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "ordinary-capture-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 190,
+              "end": 192,
+              "line": 4,
+              "column": 51
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          190,
+          192
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 190,
+            "end": 192,
+            "line": 4,
+            "column": 51
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordinary-capture-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/ordinary-capture-legacy/main.qli",
+              "start": 190,
+              "end": 192
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          190,
+          192
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/ordinary-capture-legacy/main.qli",
+            "start": 190,
+            "end": 192
+          }
+        ]
+      }
+    },
+    {
+      "name": "ordinary-capture-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 190,
+          "end": 192,
+          "line": 4,
+          "column": 51
+        },
+        "rendered_line_column": ":4:51"
+      }
+    },
+    {
+      "name": "owner-reuse-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 281,
+              "end": 282,
+              "line": 6,
+              "column": 88
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "path": "main.qli",
+              "start": 282,
+              "end": 283,
+              "line": 6,
+              "column": 89
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "owner-reuse-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/owner-reuse-legacy/main.qli",
+              "start": 281,
+              "end": 282
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "ownership",
+            "severity": "error",
+            "message": "quantum ownership `q` has already been consumed",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/owner-reuse-desired/main.qli",
+              "start": 282,
+              "end": 283
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "owner-reuse-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 251,
+              "end": 253,
+              "line": 6,
+              "column": 58
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          251,
+          253
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 251,
+            "end": 253,
+            "line": 6,
+            "column": 58
+          }
+        ]
+      }
+    },
+    {
+      "name": "owner-reuse-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/owner-reuse-legacy/main.qli",
+              "start": 251,
+              "end": 253
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          251,
+          253
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/owner-reuse-legacy/main.qli",
+            "start": 251,
+            "end": 253
+          }
+        ]
+      }
+    },
+    {
+      "name": "owner-reuse-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 251,
+          "end": 253,
+          "line": 6,
+          "column": 58
+        },
+        "rendered_line_column": ":6:58"
+      }
+    },
+    {
+      "name": "measurement-in-body-desired-finite-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "type_mismatch",
+            "severity": "error",
+            "message": "basis expression requires a basis function",
+            "primary": {
+              "path": "main.qli",
+              "start": 227,
+              "end": 236,
+              "line": 5,
+              "column": 59
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "type_mismatch",
+            "severity": "error",
+            "message": "basis expression requires a basis function",
+            "primary": {
+              "path": "main.qli",
+              "start": 226,
+              "end": 235,
+              "line": 5,
+              "column": 58
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "measurement-in-body-desired-selected-check-legacy-contract",
+      "passed": true,
+      "details": {
+        "before_diagnostics": [
+          {
+            "code": "type",
+            "severity": "error",
+            "message": "basis expression requires a basis function",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/measurement-in-body-legacy/main.qli",
+              "start": 227,
+              "end": 236
+            },
+            "related": []
+          }
+        ],
+        "after_diagnostics": [
+          {
+            "code": "type",
+            "severity": "error",
+            "message": "basis expression requires a basis function",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/measurement-in-body-desired/main.qli",
+              "start": 226,
+              "end": 235
+            },
+            "related": []
+          }
+        ],
+        "comparison": "exit/outcome and exact code/severity/message; source byte spans are separately recorded and may move"
+      }
+    },
+    {
+      "name": "measurement-in-body-legacy-finite-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "path": "main.qli",
+              "start": 211,
+              "end": 213,
+              "line": 5,
+              "column": 43
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          211,
+          213
+        ],
+        "actual_spans": [
+          {
+            "path": "main.qli",
+            "start": 211,
+            "end": 213,
+            "line": 5,
+            "column": 43
+          }
+        ]
+      }
+    },
+    {
+      "name": "measurement-in-body-legacy-selected-check-targeted-removal",
+      "passed": true,
+      "details": {
+        "diagnostics": [
+          {
+            "code": "parse",
+            "severity": "error",
+            "message": "Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/measurement-in-body-legacy/main.qli",
+              "start": 211,
+              "end": 213
+            },
+            "related": []
+          }
+        ],
+        "expected_byte_span": [
+          211,
+          213
+        ],
+        "actual_spans": [
+          {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/measurement-in-body-legacy/main.qli",
+            "start": 211,
+            "end": 213
+          }
+        ]
+      }
+    },
+    {
+      "name": "measurement-in-body-legacy-text-diagnostic",
+      "passed": true,
+      "details": {
+        "json_byte_location": {
+          "path": "main.qli",
+          "start": 211,
+          "end": 213,
+          "line": 5,
+          "column": 43
+        },
+        "rendered_line_column": ":5:43"
+      }
+    },
+    {
+      "name": "entangle-exact-qirf-bytes",
+      "passed": true,
+      "details": {
+        "historical_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f",
+        "current_sha256": "90fe097135d63b88cd096830106c56c89af58b88103ce4beeb794f1db19de63f"
+      }
+    },
+    {
+      "name": "entangle-literal-run-distribution-identity",
+      "passed": true,
+      "details": {
+        "before": [
+          {
+            "bits": [
+              false,
+              false
+            ],
+            "probability": 0.5000000000000001
+          },
+          {
+            "bits": [
+              true,
+              true
+            ],
+            "probability": 0.5000000000000001
+          }
+        ],
+        "after": [
+          {
+            "bits": [
+              false,
+              false
+            ],
+            "probability": 0.5000000000000001
+          },
+          {
+            "bits": [
+              true,
+              true
+            ],
+            "probability": 0.5000000000000001
+          }
+        ]
+      }
+    },
+    {
+      "name": "entangle-independent-final-distribution",
+      "passed": true,
+      "details": {
+        "specified_exact_distribution": {
+          "00": 0.5,
+          "11": 0.5
+        },
+        "actual_numeric_distribution": {
+          "00": 0.5000000000000001,
+          "11": 0.5000000000000001
+        },
+        "independent_numeric_distribution": {
+          "00": 0.4999999999999999,
+          "10": 0.0,
+          "01": 0.0,
+          "11": 0.4999999999999999
+        },
+        "tolerance": 1e-12,
+        "comparison": "union of outcomes, no normalization or probability pruning; tolerance is regression evidence, not exact semantic identity"
+      }
+    },
+    {
+      "name": "entangle-independent-complex-lift-amplitudes",
+      "passed": true,
+      "details": {
+        "specified_exact_amplitudes": {
+          "00": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          },
+          "11": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          }
+        },
+        "independent_actual_ir_amplitudes": {
+          "00": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          },
+          "10": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "01": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "11": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          }
+        },
+        "ordered_axes": [
+          0,
+          1
+        ],
+        "tolerance": 1e-12
+      }
+    },
+    {
+      "name": "phase-reference-exact-qirf-bytes",
+      "passed": true,
+      "details": {
+        "historical_sha256": "8ab58b1e02a21e05e4ede4020180b2e2ab62d9909e1394ff91cfdfbd0f9a0e71",
+        "current_sha256": "8ab58b1e02a21e05e4ede4020180b2e2ab62d9909e1394ff91cfdfbd0f9a0e71"
+      }
+    },
+    {
+      "name": "phase-reference-literal-run-distribution-identity",
+      "passed": true,
+      "details": {
+        "before": [
+          {
+            "bits": [
+              false,
+              false,
+              false
+            ],
+            "probability": 1
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false
+            ],
+            "probability": 6.162975822039156e-33
+          }
+        ],
+        "after": [
+          {
+            "bits": [
+              false,
+              false,
+              false
+            ],
+            "probability": 1
+          },
+          {
+            "bits": [
+              true,
+              false,
+              false
+            ],
+            "probability": 6.162975822039156e-33
+          }
+        ]
+      }
+    },
+    {
+      "name": "phase-reference-independent-final-distribution",
+      "passed": true,
+      "details": {
+        "specified_exact_distribution": {
+          "000": 1.0
+        },
+        "actual_numeric_distribution": {
+          "000": 1,
+          "100": 6.162975822039156e-33
+        },
+        "independent_numeric_distribution": {
+          "000": 1.0,
+          "100": 2.7733391199176196e-32,
+          "001": 0.0,
+          "101": 0.0,
+          "010": 0.0,
+          "110": 0.0,
+          "011": 0.0,
+          "111": 0.0
+        },
+        "tolerance": 1e-12,
+        "comparison": "union of outcomes, no normalization or probability pruning; tolerance is regression evidence, not exact semantic identity"
+      }
+    },
+    {
+      "name": "phase-reference-independent-complex-lift-amplitudes",
+      "passed": true,
+      "details": {
+        "specified_exact_amplitudes": {
+          "000": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          },
+          "111": {
+            "real": 0.5,
+            "imaginary": 0.5
+          }
+        },
+        "independent_actual_ir_amplitudes": {
+          "000": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          },
+          "100": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "001": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "101": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "010": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "110": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "011": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "111": {
+            "real": 0.5,
+            "imaginary": 0.5
+          }
+        },
+        "ordered_axes": [
+          0,
+          2,
+          1
+        ],
+        "tolerance": 1e-12
+      }
+    },
+    {
+      "name": "permutation-exact-qirf-bytes",
+      "passed": true,
+      "details": {
+        "historical_sha256": "aa8dece56bb70aa47d0c9609859654b41f1e1c96f398f5eee25e2caa275151b7",
+        "current_sha256": "aa8dece56bb70aa47d0c9609859654b41f1e1c96f398f5eee25e2caa275151b7"
+      }
+    },
+    {
+      "name": "permutation-literal-run-distribution-identity",
+      "passed": true,
+      "details": {
+        "before": [
+          {
+            "bits": [
+              false,
+              false
+            ],
+            "probability": 0.5000000000000001
+          },
+          {
+            "bits": [
+              true,
+              true
+            ],
+            "probability": 0.5000000000000001
+          }
+        ],
+        "after": [
+          {
+            "bits": [
+              false,
+              false
+            ],
+            "probability": 0.5000000000000001
+          },
+          {
+            "bits": [
+              true,
+              true
+            ],
+            "probability": 0.5000000000000001
+          }
+        ]
+      }
+    },
+    {
+      "name": "permutation-independent-oracle",
+      "passed": false,
+      "details": {
+        "error": "unsupported literal oracle operation: join"
+      }
+    },
+    {
+      "name": "phase-reference-control-distinguishes-conjugated-phase",
+      "passed": true,
+      "details": {
+        "correct_exact_final_000_probability": 1,
+        "conjugated_T_phase_final_000_probability": 0.5000000000000001,
+        "reference_dephasing_final_000_probability": 0.5,
+        "reason": "For the conjugated phase, undoing with Tdag leaves relative phase -i; reference dephasing removes the off-diagonal interference."
+      }
+    }
+  ],
+  "passed_assertions": 64,
+  "failed_assertions": [
+    {
+      "name": "permutation-independent-oracle",
+      "passed": false,
+      "details": {
+        "error": "unsupported literal oracle operation: join"
+      }
+    }
+  ],
+  "independent_literal_oracles": {
+    "entangle": {
+      "distribution": {
+        "00": 0.4999999999999999,
+        "10": 0.0,
+        "01": 0.0,
+        "11": 0.4999999999999999
+      },
+      "after_lift": {
+        "00": {
+          "real": 0.7071067811865475,
+          "imaginary": 0.0
+        },
+        "10": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "01": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "11": {
+          "real": 0.7071067811865475,
+          "imaginary": 0.0
+        }
+      },
+      "lift_tables": [
+        [
+          0,
+          3
+        ]
+      ],
+      "gates": [
+        {
+          "gate": "h",
+          "axis": 0
+        }
+      ],
+      "cnots": [],
+      "maximum_source_qubits": 2,
+      "coefficient_contract": "+1",
+      "logical_snapshot_axes": [
+        0,
+        1
+      ]
+    },
+    "phase-reference": {
+      "distribution": {
+        "000": 1.0,
+        "100": 2.7733391199176196e-32,
+        "001": 0.0,
+        "101": 0.0,
+        "010": 0.0,
+        "110": 0.0,
+        "011": 0.0,
+        "111": 0.0
+      },
+      "after_lift": {
+        "000": {
+          "real": 0.7071067811865475,
+          "imaginary": 0.0
+        },
+        "100": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "001": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "101": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "010": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "110": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "011": {
+          "real": 0.0,
+          "imaginary": 0.0
+        },
+        "111": {
+          "real": 0.5,
+          "imaginary": 0.5
+        }
+      },
+      "lift_tables": [
+        [
+          0,
+          3
+        ]
+      ],
+      "gates": [
+        {
+          "gate": "h",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "t",
+          "axis": 0
+        },
+        {
+          "gate": "h",
+          "axis": 0
+        }
+      ],
+      "cnots": [
+        {
+          "control_axis": 0,
+          "target_axis": 1
+        },
+        {
+          "control_axis": 0,
+          "target_axis": 2
+        },
+        {
+          "control_axis": 0,
+          "target_axis": 1
+        }
+      ],
+      "maximum_source_qubits": 3,
+      "coefficient_contract": "+1",
+      "logical_snapshot_axes": [
+        0,
+        2,
+        1
+      ]
+    }
+  },
+  "review_independence_limit": "The author implemented the parser. This is actual command capture and a separately authored literal numerical oracle, not an independent parser implementation review.",
+  "scope": "Frozen 0–3-qubit migration/isolation controls; unchanged native choice. Numeric regression and exact three-artifact byte comparisons are not a general source/runtime preservation proof, Lean replay, full QS/PR/RS discharge, Issue completion or release validation."
+}

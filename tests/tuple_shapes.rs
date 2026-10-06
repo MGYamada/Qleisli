@@ -22,15 +22,10 @@ fn formerly_silent_reassociation_now_rejects() {
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);
     assert!(
-        error
-            .message
-            .contains("expected Tuple([Tuple([Bit, Bit]), Bit])"),
+        error.message.contains("expected `((Bit,Bit),Bit)`"),
         "{error}"
     );
-    assert!(
-        error.message.contains("found Tuple([Bit, Bit, Bit])"),
-        "{error}"
-    );
+    assert!(error.message.contains("found `(Bit,Bit,Bit)`"), "{error}");
     for source in [
         "basis fn f((a,b,c): ((Bit,Bit),Bit)) -> Bit { a }",
         "basis fn f(((a,b),c): (Bit,Bit,Bit)) -> Bit { a }",
@@ -48,7 +43,7 @@ fn formerly_silent_reassociation_now_rejects() {
 #[test]
 fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
     let root = SourceRoot::new(include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/explicit_layout.qli"
+        "fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/tuple_shapes/explicit_layout.qli"
     ));
     let program = compile_project(&root.0).unwrap();
     let result = run_closed(&program, SimulationLimits::default()).unwrap();
@@ -68,7 +63,7 @@ fn explicit_layout_is_exact_and_preserves_an_entangled_reference() {
 #[test]
 fn same_shape_wrong_permutation_does_not_pass_identity_evidence() {
     let root = SourceRoot::new(include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/wrong_permutation.qli"
+        "fixtures/frontend_v030/coherent-basis/current/ordinary-type-cutover/current/tuple_shapes/wrong_permutation.qli"
     ));
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Contract);
@@ -93,7 +88,7 @@ fn nary_static_meanings_retain_shape_and_order() {
         ErrorCode::TypeMismatch,
     );
     reject(
-        &prefix.replace("{q}", "{do (a,b,c) <- q; pure (c,b,a)}"),
+        &prefix.replace("{q}", "{basis q as (a,b,c) { (c,b,a) }}"),
         ErrorCode::Contract,
     );
 }

@@ -124,7 +124,7 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::Effect,
         ),
         (
-            "observe fn main() -> Bit { let q = init0(); let q = do b <- q; pure 0; measure_z(q) }",
+            "observe fn main() -> Bit { let q = init0(); let q = basis q as b { 0 }; measure_z(q) }",
             ErrorCode::Ownership,
         ),
         (
@@ -316,11 +316,11 @@ fn growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack() {
         ),
         format!(
             "use std::observe::discard; observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
-            "let q = do x <- q; pure (x, x);".repeat(18)
+            "let q = basis q as x { (x, x) };".repeat(18)
         ),
         format!(
             "use std::observe::discard; observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}",
-            "let q = do x <- q; pure ((), x);".repeat(8192)
+            "let q = basis q as x { ((), x) };".repeat(8192)
         ),
     ];
     // Stack overflow aborts the process rather than unwinding. Use the same
@@ -373,7 +373,7 @@ fn common_work_limits_preserve_the_original_copy_case_and_a_bounded_control() {
             "use std::observe::discard;
          observe fn f(q: Q<Unit>) -> Unit {{ {} discard(q) }}
          observe fn main() -> Unit {{ let v = (); {} {} () }}",
-            "let q = do x <- q; pure (x, x);".repeat(doublings),
+            "let q = basis q as x { (x, x) };".repeat(doublings),
             "let v = (v, v);".repeat(doublings),
             "let v = ((), v);".repeat(wrappers),
         )
@@ -409,7 +409,7 @@ fn repeated_tree_copies_and_branch_frames_spend_the_work_budget() {
             "use std::observe::discard;
              unitary fn noop(b: Bit) -> Unit {{ if b {{ () }} else {{ () }} }}
              observe fn f(b: Bit, q: Q<Unit>) -> Unit {{ {} {} discard(q) }}",
-            "let q = do x <- q; pure (x, x);".repeat(9),
+            "let q = basis q as x { (x, x) };".repeat(9),
             "noop(b);".repeat(600),
         ),
     ];
@@ -566,19 +566,19 @@ fn finite_v0_mixed_values_move_as_a_whole() {
 fn finite_v0_basis_lifts_are_injective_and_closed() {
     check_project(
         &SourceRoot::new(
-            "iso fn prepare(q: Q<Unit>) -> Q<Bit> { do x <- q; pure 0 }
-             unitary fn swap_label(q: Q<Bit>) -> Q<Bit> { do x <- q; pure not x }",
+            "iso fn prepare(q: Q<Unit>) -> Q<Bit> { basis q as x { 0 } }
+             unitary fn swap_label(q: Q<Bit>) -> Q<Bit> { basis q as x { not x } }",
         )
         .0,
     )
     .unwrap();
     for (source, code) in [
         (
-            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { do x <- q; pure 0 }",
+            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { basis q as x { 0 } }",
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn bad(b: Bit, q: Q<Bit>) -> Q<Bit> { do x <- q; pure b }",
+            "unitary fn bad(b: Bit, q: Q<Bit>) -> Q<Bit> { basis q as x { b } }",
             ErrorCode::UnknownName,
         ),
     ] {
@@ -719,7 +719,7 @@ unitary fn choose(b: Bit, u: Q<Unit>) -> Q<Unit> {
     if b { u } else { u }
 }
 observe fn main() -> (Bit,Bit) {
-    let pair = do b <- init0(); pure ((),b);
+    let pair = basis init0() as b { ((),b) };
     let (u,q) = split(pair);
     let b = measure_z(h(init0()));
     let u = choose(b,u);

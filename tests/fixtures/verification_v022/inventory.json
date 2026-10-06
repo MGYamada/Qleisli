@@ -3597,7 +3597,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "e1125ac9d3d5d1ce517e538b72c8bad124fc57f21aaddc73aeb6d1f528e33c67",
+      "sha256": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
       "group": "source",
       "surface": {
         "declarations": [
@@ -5539,7 +5539,7 @@
       "corpus/quantum_katas/swap2/kernel.qli": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/swap2/main.qli": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
       "corpus/validation-v0.2.2.json": "0cde88f0e1e98f5ed8acf0e59b3b983bc9e663f37c44e54eaefe81af10bd181c",
-      "examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
+      "tests/fixtures/frontend_v030/coherent-basis/before/examples/bell/bell.qli": "1e2397cf0f8868c230995101c96244c6236cc25a402f08bca148fb179f51c353",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bell/main.qli": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/control.qli": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/main.qli": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",

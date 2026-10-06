@@ -1,0 +1,19 @@
+// Upstream authors (repository usernames): adgran. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_vqe/demo.py
+// Selected symbol(s): circuit / DoubleExcitation
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::z;
+basis fn occupied((((a, b), c), d): (((Bit, Bit), Bit), Bit)) -> Bit { a and b and not c and not d }
+basis fn flip(a: Bit, b: Bit, c: Bit, d: Bit) -> Bit {
+    (a and b and not c and not d) xor (not a and not b and c and d)
+}
+basis fn swap_excitation(a: Bit, b: Bit, c: Bit, d: Bit) -> (((Bit, Bit), Bit), Bit) {
+    (((a xor flip(a,b,c,d), b xor flip(a,b,c,d)), c xor flip(a,b,c,d)), d xor flip(a,b,c,d))
+}
+pub unitary fn kernel(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {
+    let q = with_computed(q, occupied) { |flag| z(flag) };
+    basis q as (((a, b), c), d) { swap_excitation(a, b, c, d) }
+}
