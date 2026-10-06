@@ -20,6 +20,7 @@ import subprocess
 import sys
 import tomllib
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "corpus"
@@ -783,6 +784,8 @@ def current_project(case, corpus=None):
 
 
 def check_case(case, binary, exhaustive, project=None):
+    started = time.monotonic()
+    print(f"[corpus] start {case['id']}", file=sys.stderr, flush=True)
     project = current_project(case) if project is None else project
     shipped = run(binary, project)
     probes = 0
@@ -795,6 +798,9 @@ def check_case(case, binary, exhaustive, project=None):
             (temp / "main.qli").write_text(source)
             compare(run(binary, temp), expected, f"{case['id']} {label}")
             probes += 1
+            if probes % 64 == 0:
+                print(f"[corpus] {case['id']}: {probes} probes checked, "
+                      f"{time.monotonic() - started:.1f}s elapsed", file=sys.stderr, flush=True)
         if case["kind"] == "unitary":
             n = case["qubits"]
             dim = 1 << n
@@ -824,6 +830,8 @@ def check_case(case, binary, exhaustive, project=None):
                 expected = {(a, b, c): (p if not c else 1 - p) / 4 for a in [False, True] for b in [False, True] for c in [False, True]}
             compare(shipped, expected, f"{case['id']} shipped main")
             observed = {}
+    print(f"[corpus] passed {case['id']}: {probes} probes, "
+          f"{time.monotonic() - started:.1f}s elapsed", file=sys.stderr, flush=True)
     return {"id": case["id"], "semantic_probes": probes, "shipped_main": "passed", "host_observables": observed}
 
 
@@ -884,12 +892,15 @@ def check_negative(case, binary):
 def run_checks(cases, faults, negatives, binary, exhaustive, report, path):
     """Retain completed cases even when a peer fails, times out or crashes."""
     def completed(stage, identifier, action):
+        status = "passed"
         try:
             report[stage].append(action())
         except Exception as error:
+            status = "failed"
             record_failure(report, stage, identifier, error)
         report[stage].sort(key=lambda row: row["id"])
         save_report(path, report)
+        print(f"[corpus] completed {stage}/{identifier}: {status}", file=sys.stderr, flush=True)
 
     with ThreadPoolExecutor(max_workers=4) as pool:
         futures = {pool.submit(check_case, case, binary, exhaustive): case["id"] for case in cases}

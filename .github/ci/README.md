@@ -204,6 +204,21 @@ Qualify earlier mistaken toolchain claims explicitly while preserving historical
 records. All-target Clippy, focused tests and complete all-target tests are
 different evidence and must be reported separately.
 
+## Corpus runtime visibility
+
+The exhaustive finite corpus checks every complex matrix entry through separate
+X/Y interference drivers. A unitary case of dimension `d` requires `d + 2*d*d`
+drivers, plus its shipped entry. Each driver retains source checking and a fresh
+native acceptance decision; repeated CLI/setup work is part of the runtime.
+The four case workers do not remove that cost.
+
+The checker writes case starts, progress every 64 completed semantic probes,
+elapsed monotonic time and completion/failure to stderr with immediate flushing.
+Its stdout summary and JSON report format are unchanged. Progress is diagnostic;
+only completed checks and the retained failure report determine success. A
+future CI split must preserve the complete case/fault/negative inventory and
+exact-commit release evidence, rather than dropping exhaustive coverage.
+
 ## Native comparisons (#206)
 
 `native-comparisons.json` retains all 65 comparison groups (66 commands) from

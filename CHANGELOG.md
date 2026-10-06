@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Show corpus CI case starts, bounded probe progress, elapsed times and
+  completion/failure on stderr. Preserve stdout summaries, JSON reports and all independent oracle
+  checks, fresh native decisions and partial failure records (#142).
 - Add explicit `qfor static` quantum-owner threading and restrict `for static`
   to ordinary carry. Preserve zero-iteration body checks, exact mixed tuple
   shapes, caller frames and native gates; migrate active tests and bounded
