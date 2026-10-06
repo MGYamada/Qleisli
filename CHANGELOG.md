@@ -6,10 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Materialize existing `phase_eighth` on Raw Q<Unit>/Q<Bit> through the shared
+  finite emitter's exact zero-axis monomial. Independently recheck its phase,
+  owner and ordered source work; keep pure Unit-map Raw lowering open (#43/#44).
+
 - Retain zero-width `Q<Unit>` owners through selected Raw inputs, ordinary
   calls and ordered products; independently reject owner loss, duplication,
   reordering and Unit/Bit substitution. Attach exact unary quantum source
-  interfaces for fresh native finite requests. Raw scalar and Unit-map lowering
+  interfaces for fresh native finite requests. Raw Unit-map lowering
   remain unfinished (#43/#44).
 
 - Validate all selected-source finite Meaning targets through original resolved
@@ -176,7 +180,7 @@ development milestones from the scope of their evidence.
   unitary hierarchy and zero-measurement readout transport, retaining quantum
   result trees, Unit-owner phase and complete caller frames. Return the single
   unnormalized coefficient vector from `run`; require a principal Observe
-  entry for sampling and named QPE. Raw quantum Unit support and general source
+  entry for sampling and named QPE. Raw quantum Unit-map support and general source
   preservation remain unfinished; no native primitive or guarantee is added
   (#43).
   Report incompatible native hierarchy checker versions explicitly while

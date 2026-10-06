@@ -868,8 +868,9 @@ fn unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit() 
         assert_eq!(error.module(), Some("main"));
         assert!(error.span().end > error.span().start);
     }
-    for text in [source("scalar-unit"), source("scalar-bit")] {
-        let graph = elaborate(&text, "main::f", BTreeMap::new());
+    {
+        let text = source("scalar-bits");
+        let graph = elaborate(&text, "main::f", BTreeMap::from([("n".into(), 1)]));
         assert!(matches!(
             graph.hierarchy_eligibility().unwrap(),
             HierarchyEligibility::Eligible
@@ -921,6 +922,105 @@ fn raw_unit_identity_retains_one_owner_and_independent_exact_scalar_request() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn raw_scalar_keeps_exact_omega_on_unit_and_every_bit_label() {
+    for (name, basis, dimension) in [
+        ("scalar-unit", BasisType::Unit, 1),
+        ("scalar-bit", BasisType::Bit, 2),
+    ] {
+        let graph = elaborate(&source(name), "main::f", BTreeMap::new());
+        let proposal = graph.lower_raw().unwrap();
+        let accepted = native::Kernel::selected()
+            .unwrap()
+            .accept(proposal.proposal())
+            .unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+        let raw = accepted.raw();
+        let mut output = raw.quantum_inputs[0].clone();
+        output.token = raw.quantum_outputs[0];
+        let boundary = qleisli::interchange::finite_leaf::UnitaryBoundary::new(
+            basis,
+            raw.quantum_inputs[0].clone(),
+            output,
+        )
+        .unwrap();
+        // Independent full matrices distinguish a scalar on Bit from T.
+        let entries = (0..dimension * dimension)
+            .map(|index| {
+                if index / dimension == index % dimension {
+                    Exact::phase(1)
+                } else {
+                    Exact::zero()
+                }
+            })
+            .collect();
+        let required = Matrix::new(dimension, dimension, entries).unwrap();
+        check_unitary(
+            proposal.payload(),
+            &boundary,
+            &required,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+        let mut wrong = Matrix::identity(dimension).unwrap();
+        if dimension == 2 {
+            wrong = Matrix::new(
+                2,
+                2,
+                vec![Exact::one(), Exact::zero(), Exact::zero(), Exact::phase(1)],
+            )
+            .unwrap();
+        }
+        assert!(
+            check_unitary(
+                proposal.payload(),
+                &boundary,
+                &wrong,
+                &mut Budget::new(DEFAULT_EXACT_WORK)
+            )
+            .is_err()
+        );
+        let mut changed = raw.clone();
+        let RawOp::ApplyUnitary { steps, .. } = &mut changed.operations[0] else {
+            panic!("scalar action");
+        };
+        let CircuitAction::Monomial { phases, .. } = &mut steps[0].action else {
+            panic!("exact monomial");
+        };
+        phases[0] = 0;
+        let wrong_accepted = native::Kernel::selected()
+            .unwrap()
+            .accept_raw(changed)
+            .unwrap();
+        assert!(proposal.validate_source_steps(&wrong_accepted).is_err());
+    }
+}
+
+#[test]
+fn raw_scalar_argument_work_is_ordered_and_matches_finite_emission() {
+    let text = "use std::quantum::{init0,phase_eighth}; use std::observe::measure_z;\n\
+        unitary fn twice(q: Q<Bit>) -> Q<Bit> { phase_eighth(phase_eighth(q)) }\n\
+        pub observe fn main() -> Bit { measure_z(twice(init0())) }";
+    let finite = compile_project(&SourceRoot::new(text).0).unwrap();
+    let graph = elaborate(text, "main::main", BTreeMap::new());
+    let proposal = graph.lower_raw().unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(proposal.proposal())
+        .unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    assert_eq!(accepted.raw(), finite.raw());
+    let [
+        RawOp::Init0 { .. },
+        RawOp::ApplyUnitary { .. },
+        RawOp::ApplyUnitary { .. },
+        RawOp::MeasureZ { .. },
+    ] = accepted.raw().operations.as_slice()
+    else {
+        panic!("both scalar calls must follow preparation and precede observation");
+    };
 }
 
 #[test]

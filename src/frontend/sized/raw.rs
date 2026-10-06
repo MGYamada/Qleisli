@@ -148,7 +148,8 @@ fn check_profile(source: &ElaboratedProgram) -> Result<()> {
                     | Primitive::X
                     | Primitive::Cnot
                     | Primitive::Init0
-                    | Primitive::MeasureZ,
+                    | Primitive::MeasureZ
+                    | Primitive::PhaseEighth,
                 ) => {}
                 Some(Primitive::Phase) if eighths(step.natural_arguments()).is_some() => {}
                 Some(Primitive::Phase) => {
@@ -408,6 +409,12 @@ impl Emitter<'_> {
                                         .gate_bit(SingleGate::T, slot)
                                         .map_err(state_error)?;
                                 }
+                                vec![Atom::Quantum(slot)]
+                            }
+                            PhaseEighth => {
+                                let slot = quantum(&inputs[0], span)?;
+                                self.reserve_operations(1, span)?;
+                                self.raw.scalar_eighth(slot).map_err(state_error)?;
                                 vec![Atom::Quantum(slot)]
                             }
                             Cnot => {

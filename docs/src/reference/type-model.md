@@ -496,6 +496,14 @@ requires the existing hierarchy phase target. This is a target capability
 distinction, not a source type or edition distinction. The adapter enforces the
 existing 16-live-wire bound across whole call frames, before allocation.
 
+`phase_eighth(q)` uses the existing zero-axis monomial to multiply the complete
+`Q<Unit>` or `Q<Bit>` owner by exactly `exp(i*pi/4)`. On Bit this is a scalar
+times identity on both basis labels, not T on one axis. It consumes the original
+token and returns a fresh token with the same shape and wires. Raw source-step
+comparison independently checks the scalar opcode, exact phase, empty controls
+and axes, and the intended owner; fresh native validity is still mandatory.
+Preceding argument work and subsequent observation stay in source order.
+
 This Raw adapter still rejects Bits values, other quantum basis shapes,
 controlled-phase primitives and operation providers. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
@@ -564,8 +572,8 @@ without removing scalar phase. A retained `Q<Unit>` owner, explicit
 ownership and phase obligations. `sample` and named-QPE selection require a
 principal Observe entry; a broader annotation does not turn Iso into Observe.
 This adapter introduces no native primitive or new theorem. Raw supports
-retained quantum Unit inputs/returns, but still rejects scalar `phase_eighth`
-and the structural Unit introduction/elimination maps; selecting Raw does not
+retained quantum Unit inputs/returns and exact `phase_eighth`, but still rejects
+the structural Unit introduction/elimination maps; selecting Raw does not
 supply a second implementation of these maps. The existing source, native
 and execution proof limits continue to apply.
 

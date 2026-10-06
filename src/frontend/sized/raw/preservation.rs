@@ -8,7 +8,9 @@ use crate::frontend::sized::{
     ElaboratedProgram, Error, Result, SourceDefinition, SourceStep, SourceType, SourceValue, Span,
 };
 use crate::frontend::types::Kind;
-use crate::ir::{BasisShape, ClassicalId, Effect, RawOp, RawProgram, SingleGate, TokenId, WireId};
+use crate::ir::{
+    BasisShape, CircuitAction, ClassicalId, Effect, RawOp, RawProgram, SingleGate, TokenId, WireId,
+};
 use std::collections::{BTreeMap, BTreeSet};
 
 const MAX_CALLS: usize = 1024;
@@ -384,7 +386,11 @@ impl Replay<'_> {
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
         let required = match kind {
-            Primitive::H | Primitive::X | Primitive::Cnot | Primitive::Phase => Effect::Unitary,
+            Primitive::H
+            | Primitive::X
+            | Primitive::Cnot
+            | Primitive::Phase
+            | Primitive::PhaseEighth => Effect::Unitary,
             Primitive::Init0 => Effect::Iso,
             Primitive::MeasureZ => Effect::Observe,
             _ => {
@@ -402,6 +408,39 @@ impl Replay<'_> {
             ));
         }
         match (kind, inputs) {
+            (Primitive::PhaseEighth, [input])
+                if input.ty == step.output().ty() && quantum_width(input.ty).is_some() =>
+            {
+                let [Atom::Quantum(token, wire)] = input.atoms.as_slice() else {
+                    return Err(site.invalid("scalar phase requires one quantum owner"));
+                };
+                let Some(RawOp::ApplyUnitary {
+                    input: actual,
+                    output,
+                    steps,
+                }) = self.raw.operations.get(self.cursor)
+                else {
+                    return Err(site.invalid("Raw program omits the source scalar phase"));
+                };
+                if actual != token || steps.len() != 1 || !steps[0].controls.is_empty() {
+                    return Err(site.invalid("Raw scalar changes its owner or controlled action"));
+                }
+                match &steps[0].action {
+                    CircuitAction::Monomial {
+                        indices,
+                        permutation,
+                        phases,
+                    } if indices.is_empty() && permutation == &[0] && phases == &[1] => {}
+                    _ => return Err(site.invalid("Raw scalar differs from exact omega identity")),
+                }
+                let output = *output;
+                if self.live.remove(token) != Some(*wire) {
+                    return Err(site.invalid("Raw scalar consumes an unavailable owner"));
+                }
+                let atom = self.introduce_owner(output, *wire, false, site)?;
+                self.cursor += 1;
+                Ok(vec![atom])
+            }
             (Primitive::H | Primitive::X, [input]) if quantum_bit(step.output().ty()) => {
                 let input = Self::quantum(input, site)?;
                 let gate = if kind == Primitive::H {
@@ -876,6 +915,70 @@ mod tests {
         };
         let accepted = kernel().accept_raw(raw).unwrap();
         assert!(validate(&source, accepted.raw()).is_err());
+    }
+
+    #[test]
+    fn raw_source_replay_rejects_native_valid_scalar_substitutions() {
+        for (basis, shape, wires) in [
+            ("Unit", BasisShape::UNIT, vec![]),
+            ("Bit", BasisShape::BIT, vec![WireId(0)]),
+        ] {
+            let source = elaborate(
+                &format!(
+                    "use std::quantum::phase_eighth; pub unitary fn f(q: Q<{basis}>) -> Q<{basis}> {{ phase_eighth(q) }}"
+                ),
+                "main::f",
+            );
+            let raw = RawProgram {
+                quantum_inputs: vec![QuantumPort {
+                    token: TokenId(0),
+                    shape,
+                    wires,
+                }],
+                classical_inputs: vec![],
+                operations: vec![RawOp::ApplyUnitary {
+                    input: TokenId(0),
+                    output: TokenId(1),
+                    steps: vec![crate::ir::CircuitStep {
+                        controls: vec![],
+                        action: CircuitAction::Monomial {
+                            indices: vec![],
+                            permutation: vec![0],
+                            phases: vec![1],
+                        },
+                    }],
+                }],
+                quantum_outputs: vec![TokenId(1)],
+                classical_outputs: vec![],
+                declared_effect: Effect::Unitary,
+            };
+            checked(&source, raw.clone());
+            for phase in [0, 2] {
+                let mut changed = raw.clone();
+                let RawOp::ApplyUnitary { steps, .. } = &mut changed.operations[0] else {
+                    unreachable!()
+                };
+                let CircuitAction::Monomial { phases, .. } = &mut steps[0].action else {
+                    unreachable!()
+                };
+                phases[0] = phase;
+                let accepted = kernel().accept_raw(changed).unwrap();
+                assert!(validate(&source, accepted.raw()).is_err());
+            }
+            if basis == "Bit" {
+                let mut changed = raw;
+                let RawOp::ApplyUnitary { steps, .. } = &mut changed.operations[0] else {
+                    unreachable!()
+                };
+                steps[0].action = CircuitAction::Monomial {
+                    indices: vec![0],
+                    permutation: vec![0, 1],
+                    phases: vec![0, 1],
+                };
+                let accepted = kernel().accept_raw(changed).unwrap();
+                assert!(validate(&source, accepted.raw()).is_err());
+            }
+        }
     }
 
     #[test]

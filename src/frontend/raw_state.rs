@@ -7,7 +7,7 @@
 
 use super::ordinary::{self, Boolean};
 use super::types::{Kind, Type};
-use crate::ir::{ClassicalId, RawOp, SingleGate, TokenId, WireId};
+use crate::ir::{CircuitAction, CircuitStep, ClassicalId, RawOp, SingleGate, TokenId, WireId};
 use std::collections::BTreeMap;
 use std::fmt;
 
@@ -129,6 +129,33 @@ impl<N> RawState<N> {
             gate,
             input,
             output,
+        });
+        self.registers
+            .get_mut(&slot)
+            .ok_or(StateError::MissingRegister(slot))?
+            .token = output;
+        Ok(())
+    }
+    pub(crate) fn scalar_eighth(&mut self, slot: Slot) -> Result<(), StateError> {
+        let input = self
+            .registers
+            .get(&slot)
+            .ok_or(StateError::MissingRegister(slot))?
+            .token;
+        let output = self.token();
+        // An empty-axis monomial multiplies the entire owner by omega,
+        // including an owner with no physical wires. It is not a T gate.
+        self.operations.push(RawOp::ApplyUnitary {
+            input,
+            output,
+            steps: vec![CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Monomial {
+                    indices: vec![],
+                    permutation: vec![0],
+                    phases: vec![1],
+                },
+            }],
         });
         self.registers
             .get_mut(&slot)

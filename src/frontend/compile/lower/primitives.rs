@@ -6,7 +6,7 @@
 use super::super::{CompileError, ErrorCode, MAX_BITS, Ty};
 use super::{Lowerer, Slot, Value};
 use crate::frontend::ast::{Expr, ExprKind, Span};
-use crate::ir::{CircuitAction, CircuitStep, Effect, RawOp, SingleGate};
+use crate::ir::{Effect, RawOp, SingleGate};
 use std::collections::BTreeSet;
 
 impl Lowerer<'_, '_> {
@@ -168,23 +168,9 @@ impl Lowerer<'_, '_> {
                 let slot =
                     self.quantum_argument(module, span, &value, false, source_args.first())?;
                 if name == "phase_eighth" {
-                    let output = self.token();
-                    let reg = self.raw.registers.get_mut(&slot).expect("owned register");
-                    // The zero-axis monomial is the existing exact scalar action.
-                    // It also acts on Q<Unit>; no ancilla or physical wire is added.
-                    self.raw.operations.push(RawOp::ApplyUnitary {
-                        input: reg.token,
-                        output,
-                        steps: vec![CircuitStep {
-                            controls: vec![],
-                            action: CircuitAction::Monomial {
-                                indices: vec![],
-                                permutation: vec![0],
-                                phases: vec![1],
-                            },
-                        }],
-                    });
-                    reg.token = output;
+                    self.raw.scalar_eighth(slot).map_err(|failure| {
+                        self.error(module, span, ErrorCode::InvalidIr, failure.to_string())
+                    })?;
                 }
                 Ok(value)
             }

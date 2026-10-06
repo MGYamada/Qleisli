@@ -90,15 +90,20 @@ fn scope(text: &str, entry: &str, target: &str) {
 
 #[test]
 fn selected_explicit_raw_checks_a_retained_zero_width_quantum_owner() {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/id/main.qli");
-    let output = selected("check", &path, "main::f")
-        .arg("--ir-profile=raw")
-        .arg(format!("--lean-kernel={}", kernel().display()))
-        .output()
-        .unwrap();
-    let text = result(output, "check", true);
-    scope(&text, "main::f", "raw");
+    for relative in [
+        "tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/id/main.qli",
+        "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-unit.qli",
+        "tests/fixtures/frontend_v030/quantum-unit-source/current/scalar-bit.qli",
+    ] {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR")).join(relative);
+        let output = selected("check", &path, "main::f")
+            .arg("--ir-profile=raw")
+            .arg(format!("--lean-kernel={}", kernel().display()))
+            .output()
+            .unwrap();
+        let text = result(output, "check", true);
+        scope(&text, "main::f", "raw");
+    }
 }
 
 fn distribution(text: &str, expected: &[(&[bool], f64)]) {
@@ -253,8 +258,8 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
     );
     let bit = SourceRoot::new("pub unitary fn f(b: Bit) -> Bit { b }");
     let quantum = SourceRoot::new("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
-    // Q<Unit> is a distinct, currently unsupported sized basis. Preserve that
-    // boundary instead of treating the zero-width Bits owner as this type.
+    // Q<Unit> is supported by Raw checking but is still an open runtime
+    // argument; its zero wire count does not turn it into a closed entry.
     let quantum_unit = SourceRoot::new("pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }");
     let returned_quantum =
         SourceRoot::new("use std::quantum::init0; pub iso fn f() -> Q<Bit> { init0() }");

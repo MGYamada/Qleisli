@@ -1,0 +1,123 @@
+{
+  "format": "qleisli.bounded-raw-scalar-review",
+  "version": 1,
+  "issues": [
+    43,
+    44
+  ],
+  "base_commit": "27207344",
+  "contract_comment": "https://github.com/MGYamada/Qleisli/issues/43#issuecomment-6017320872",
+  "implementation": [
+    "Share the existing finite zero-axis omega monomial emitter in RawState; preserve current native acceptance and exact fresh owner transitions.",
+    "Selected Raw phase_eighth retains Q<Unit>/Q<Bit> shape and wires; independent replay checks intended owner, fresh output, exact phase [1], empty axes and controls.",
+    "Independent 1x1 and 2x2 matrices require omega I and reject identity/T substitutions. Private replay rejects native-valid phase 0, phase 2 and T replacements against the original source.",
+    "Nested arguments retain Init0, two scalar actions, then measurement; finite and selected actual Raw snapshots match. Explicit Raw CLI check covers identity, scalar Unit and scalar Bit."
+  ],
+  "sources": {
+    "src/frontend/raw_state.rs": "3082fe6ad3acbed6f3df3587d7effa40341eb0cb16e84cb0246dfa534f2d3c1f",
+    "src/frontend/compile/lower/primitives.rs": "c3c83bf2c58068e622e89196238225e1f50d67a3affa7245cd7a3fea0f2b8603",
+    "src/frontend/sized/raw.rs": "0c35e56c064c5a9e622085f3674cee1cdb43ea5bb9184381c38da8a668e637bb",
+    "src/frontend/sized/raw/preservation.rs": "c402ba1db98bcbd50f7914728cd697e572f7999f5727c35dea82ae26eb9e924a",
+    "tests/quantum_unit_source.rs": "6363ea4f78c60487aa2a4681772fa67c59b337cbb665027614b8ea717a65671e",
+    "tests/selected_source_cli.rs": "650455d7234866b1beab56758370200f41032293355de3a06fabe81fa7bc0f59",
+    "docs/src/reference/type-model.md": "06547488f01ef2086b2e703352a376350956b29f236bc7e9e03826e35d4a33ae"
+  },
+  "native_binary": {
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "mode": "Existing separately built selected native binary; fresh requests during tests; invocation count not instrumented. No fresh Lean build/audit/replay claimed."
+  },
+  "validation": [
+    {
+      "session": 67836,
+      "command": "cargo check --locked --all-targets",
+      "exit_code": 0,
+      "note": "Initial success with unused-import warnings; unused imports removed before lint."
+    },
+    {
+      "session": 6629,
+      "command": "cargo test --locked --test quantum_unit_source",
+      "exit_code": 101,
+      "note": "14 passed; scalar-bits refusal control omitted required n binding. Corrected to n=1; implementation phase tests passed."
+    },
+    {
+      "session": 40045,
+      "command": "cargo test --locked --test quantum_unit_source --test selected_source_cli --test unit_patterns --test mixed_booleans",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 42
+    },
+    {
+      "session": 22594,
+      "command": "cargo test --locked --lib frontend::sized::raw",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 8
+    },
+    {
+      "session": 89946,
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "exit_code": 101,
+      "note": "Single-element test loop lint; replaced loop by block, not lint suppression."
+    },
+    {
+      "session": 98299,
+      "command": "rustup run 1.85.0 cargo test --locked --test quantum_unit_source --test selected_source_cli --test unit_patterns --test mixed_booleans",
+      "rust": "1.85.0",
+      "exit_code": 0,
+      "passed": 42
+    },
+    {
+      "session": 56437,
+      "command": "rustup run 1.85.0 cargo test --locked --lib frontend::sized::raw",
+      "rust": "1.85.0",
+      "exit_code": 0,
+      "passed": 8
+    },
+    {
+      "session": 7196,
+      "command": "cargo test --locked --test quantum_unit_source",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 16,
+      "note": "After test-loop lint repair."
+    },
+    {
+      "session": 17010,
+      "command": "rustup run 1.85.0 cargo clippy --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "session": 44366,
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    }
+  ],
+  "checks": {
+    "docs": "2186 links / 30 anchors / 206 Lean root modules",
+    "book": "mdBook 0.5.4; 29 HTML files / 1224 local links / 471 anchors",
+    "authoring": "50 records / 73 snapshots / 1231 observations; original recorded commands not executed",
+    "inventory": "Reviewed four source hash changes; public signatures/capacity constants unchanged; VM29 aggregate rebound with route/proof classifications unchanged",
+    "constitution": "Identity/continuity passed against 38baae7d19535602b21270e11e97617d45205b37; broader QS/PR/RS/EXACT remain pending",
+    "formatting": "cargo fmt --all --check and Git whitespace checks passed"
+  },
+  "hosted_predecessor": {
+    "run": 37468828239,
+    "commit": "815a053b4ebdacceb71c4fdfde66ea8471bf224e",
+    "last_observed_status": "in_progress",
+    "completed_success": [
+      "check-lean",
+      "check-macos-source",
+      "check-interop"
+    ],
+    "completed_failure": [
+      "check-docs: frozen experimental patch blank context whitespace; local repair 5031481a already committed"
+    ],
+    "not_claimed": "No hosted success for this new implementation; push waits for prior run termination."
+  },
+  "remaining": [
+    "Raw Unit introduction/elimination/structural maps require actual representation and independent native checking; never erase owners or substitute measurement/discard.",
+    "Bits Raw lowering, selected Meaning/provider binding and general source-preservation obligations remain unfinished. #43/#44 stay open.",
+    "No new native primitive/schema, constitutional interpretation, guarantee admission, release approval, full CI/package/install validation or maximum-size cases.",
+    "22/111 Issues complete (19.82%); this prerequisite is not another completed Issue."
+  ]
+}
