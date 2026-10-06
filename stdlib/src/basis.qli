@@ -1,15 +1,17 @@
-//! Total finite basis functions, implemented as ordinary checked source.
+//! Total finite classical functions, implemented as ordinary checked source.
 //!
-//! These functions take basis labels, not quantum owners or measurement results.
-//! Importing them grants no quantum primitive or verification privilege.
+//! These functions take ordinary labels, including already measured Bit results.
+//! They cannot inspect live quantum owners or perform observation.
+//! Runtime argument effects remain in the caller. Importing or calling these
+//! helpers grants no quantum primitive, access or verification privilege.
 //! Contracts and finite regression status: Contract identifiers: B001-B002.
 
 /// Return x xor y for all four pairs of Bit inputs.
 /// This two-argument map is total but not injective on the product domain.
 /// A coherent lift must check injectivity of its complete enclosing map.
-pub basis fn xor2(x: Bit, y: Bit) -> Bit { x xor y }
+pub classical fn xor2(x: Bit, y: Bit) -> Bit { x xor y }
 
 /// Return x and y for all four pairs of Bit inputs.
 /// This total, noninjective predicate can describe reversible XOR computation
 /// into an auxiliary; calling it does not measure a quantum register.
-pub basis fn and2(x: Bit, y: Bit) -> Bit { x and y }
+pub classical fn and2(x: Bit, y: Bit) -> Bit { x and y }

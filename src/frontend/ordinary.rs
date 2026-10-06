@@ -2,8 +2,53 @@
 //! Native acceptance and source-preservation validation remain independent.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
 
+use super::ast::{BasisExpr, BasisExprKind, Ident};
 use super::types::{Kind, Type};
 use crate::ir::{ClassicalId, RawOp};
+
+/// Allocation-free view of an original finite classical expression. Both
+/// runtime consumers use ordinary operations while retaining the original
+/// Ident addresses required by the one checked lexical occurrence table.
+/// Consumers charge their existing traversal/allocation budgets; this view
+/// creates no second source tree, truth table, acceptance or evidence.
+pub(crate) enum RuntimeExpression<'a> {
+    Name(&'a Ident),
+    Unit,
+    Tuple(&'a [BasisExpr]),
+    Call {
+        callee: &'a Ident,
+        args: &'a [BasisExpr],
+    },
+    Boolean {
+        operation: Boolean,
+        inputs: [Option<&'a BasisExpr>; 2],
+    },
+}
+
+pub(crate) fn runtime_expression(expr: &BasisExpr) -> RuntimeExpression<'_> {
+    match &expr.kind {
+        BasisExprKind::Name(name) => RuntimeExpression::Name(name),
+        BasisExprKind::Unit => RuntimeExpression::Unit,
+        BasisExprKind::Tuple(fields) => RuntimeExpression::Tuple(fields),
+        BasisExprKind::Call { callee, args } => RuntimeExpression::Call { callee, args },
+        BasisExprKind::Bit(value) => RuntimeExpression::Boolean {
+            operation: Boolean::Constant(*value),
+            inputs: [None, None],
+        },
+        BasisExprKind::Not(input) => RuntimeExpression::Boolean {
+            operation: Boolean::Not,
+            inputs: [Some(input), None],
+        },
+        BasisExprKind::And(left, right) => RuntimeExpression::Boolean {
+            operation: Boolean::And,
+            inputs: [Some(left), Some(right)],
+        },
+        BasisExprKind::Xor(left, right) => RuntimeExpression::Boolean {
+            operation: Boolean::Xor,
+            inputs: [Some(left), Some(right)],
+        },
+    }
+}
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub(crate) enum Boolean {

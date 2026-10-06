@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "recorded_utc": "2026-10-06T06:45:33.797532+00:00",
+  "context": "Fresh independent first response from corrected two-example context, preserved before checking; not a repair of attempt-01.",
+  "files": {
+    "attempt-02/copy-ordinary/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/copy-ordinary/main.qli": "7be73cb51764c40ab911867e29fe8d6ae58bb7903a62fba2a5b7a82728b7a9ee",
+    "attempt-02/duplicate-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/duplicate-owner/main.qli": "f93e6e7c560de22af0e2ed5b1f82a1761820b88f9e879e1f04d881ecc58419ea",
+    "attempt-02/implicit-readout/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/implicit-readout/main.qli": "9cd52b003735b4c66f655aa8bbeead4c8b904004b453614526540ae591928a12",
+    "attempt-02/observe-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/observe-pair/main.qli": "a9feda7247a7851c96fd29e0086aa7bb03f79db931ce719b77c76d601780f6d2",
+    "context-02.md": "749ab037a30ee78087d0a9b714ebe02861d069f064cb646da29d798f1bd615a9",
+    "predictions-02.json": "7473c675f166fa96b63036ab40f59e5ecc0e3251c3237e1b45d0756089b16859"
+  }
+}

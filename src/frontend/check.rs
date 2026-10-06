@@ -469,7 +469,7 @@ impl<'a> Program<'a> {
                 || span.start > span.end
                 || span.start < declaration.span.start
                 || span.end > declaration.span.end
-                || matches!(interface.kind, FnKind::Basis | FnKind::Meaning)
+                || matches!(interface.kind, FnKind::Classical | FnKind::Meaning)
             {
                 return Err(failure().in_module(&interface.module));
             }
@@ -500,7 +500,7 @@ impl<'a> Program<'a> {
             let provider = |id: DefId| -> Result<()> {
                 self.budget.charge(span, 1)?;
                 let target = self.interfaces.get(&id).ok_or_else(failure)?;
-                if matches!(target.kind, FnKind::Basis | FnKind::Meaning)
+                if matches!(target.kind, FnKind::Classical | FnKind::Meaning)
                     || target.params.len() != 1
                     || !target.params[0].is_quantum_owner()
                     || !target.result.is_quantum_owner()
@@ -528,7 +528,7 @@ impl<'a> Program<'a> {
                     let registered = self.resolution.declaration(*id);
                     self.budget
                         .charge(span, target.module.len() + registered.name.0.len() + 1)?;
-                    if matches!(target.kind, FnKind::Basis | FnKind::Meaning)
+                    if matches!(target.kind, FnKind::Classical | FnKind::Meaning)
                         || target.ast_index != registered.ast_index
                         || target.module != registered.name.0
                         || target.kind != original.kind
@@ -715,7 +715,7 @@ pub(super) fn program_with<'a, R>(
     let mut effects = BTreeMap::new();
     for id in &order {
         let decl = program.decl(*id);
-        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning) {
+        if decl.kind == FnKind::Meaning {
             continue;
         }
         let fact = FunctionEffect::checked(decl.kind, inferred[id]).ok_or_else(|| {

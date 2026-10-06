@@ -153,7 +153,7 @@ unitary fn reserved(b: Bit, h: Q<Bit>) -> Q<Bit> {
     );
     rejected(
         r#"
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn reserved(predicate: Q<Unit>, q: Q<Bit>) -> (Q<Unit>,Q<Bit>) {
     let saved = predicate;
     (saved,with_computed(q,predicate) { |a| a })
@@ -165,7 +165,7 @@ unitary fn reserved(predicate: Q<Unit>, q: Q<Bit>) -> (Q<Unit>,Q<Bit>) {
 
 #[test]
 fn basis_domains_and_branch_results_preserve_exact_product_trees() {
-    let predicate = "basis fn p(((a,u),b): ((Bit,Unit),Bit)) -> Bit { a xor b }";
+    let predicate = "classical fn p(((a,u),b): ((Bit,Unit),Bit)) -> Bit { a xor b }";
     accepted(&format!(
         "{predicate} unitary fn oracle(q: Q<((Bit,Unit),Bit)>) -> Q<((Bit,Unit),Bit)> {{
             with_computed(q,p) {{ |a| a }}
@@ -198,9 +198,9 @@ fn basis_domains_and_branch_results_preserve_exact_product_trees() {
 
 #[test]
 fn basis_context_is_closed_and_has_its_own_callable_shadowing() {
-    let function = "basis fn flip(x: Bit) -> Bit { not x }";
+    let function = "classical fn flip(x: Bit) -> Bit { not x }";
     // The surrounding ordinary value named flip is absent from the separate
-    // basis context; the top-level basis function remains available there.
+    // basis context; the top-level classical function remains available there.
     accepted(&format!(
         "{function} unitary fn lifted(flip: Unit, q: Q<Bit>) -> Q<Bit> {{
             basis q as x {{ flip(x) }}
@@ -224,7 +224,7 @@ fn basis_context_is_closed_and_has_its_own_callable_shadowing() {
 fn computed_certificates_preserve_effects_and_outer_name_restrictions() {
     let prefix = r#"
 use std::quantum::z;
-basis fn p(x: Bit) -> Bit { x }
+classical fn p(x: Bit) -> Bit { x }
 unitary fn forget(b: Bit) -> Unit { () }
 "#;
     for classification in ["unitary", "iso", "observe"] {
@@ -307,7 +307,7 @@ use std::quantum::init0;
 use std::quantum::h;
 use std::observe::measure_z;
 unitary fn flip(q: Q<Bit>) -> Q<Bit> { q }
-basis fn predicate(x: Bit) -> Bit { 0 }
+classical fn predicate(x: Bit) -> Bit { 0 }
 observe fn main() -> (Bit,(Bit,Bit)) {
     let a = ordinary(init0());
     let b = lifted(init0());
@@ -322,7 +322,7 @@ observe fn main() -> (Bit,(Bit,Bit)) {
 use std::quantum::x;
 use std::quantum::z;
 unitary fn flip(q: Q<Bit>) -> Q<Bit> { x(q) }
-basis fn predicate(x: Bit) -> Bit { not x }
+classical fn predicate(x: Bit) -> Bit { not x }
 pub unitary fn ordinary(q: Q<Bit>) -> Q<Bit> { flip(q) }
 pub unitary fn lifted(q: Q<Bit>) -> Q<Bit> { basis q as b { predicate(b) } }
 pub unitary fn oracle(q: Q<Bit>) -> Q<Bit> {

@@ -1,0 +1,67 @@
+{
+  "command": [
+    "/private/tmp/qleisli-classical-functions-after",
+    "run",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/attempt-01/copy-ordinary/main.qli",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T06:44:25.772389+00:00",
+  "case": "copy-ordinary",
+  "mode": "selected",
+  "verb": "run",
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "scope": "Actual bounded observation; no child-start attestation, general LLM benchmark or source-preservation proof.",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations/copy-ordinary-selected-run.stdout.txt",
+      "sha256": "eb9a2968a7fd673301d905a0d4c4e8ed59d9eae8c123ecf59baf96c82012d36a"
+    },
+    "stderr": {
+      "path": "observations/copy-ordinary-selected-run.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "name",
+        "severity": "error",
+        "message": "module `std::transform` has no name `init0`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/attempt-01/copy-ordinary/main.qli",
+          "start": 97,
+          "end": 102
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

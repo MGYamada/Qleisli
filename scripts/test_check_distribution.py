@@ -25,6 +25,119 @@ from check_distribution import (
 from check_installation import check_registry_links
 
 
+class CommandDiagnosticsTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.report = {"commands": []}
+        self.commands = check_distribution.Commands(self.root, self.report)
+
+    def invoke(self, stdout, stderr, exit_code=101, **kwargs):
+        def child(argv, **options):
+            options["stdout"].write(stdout)
+            options["stderr"].write(stderr)
+            return subprocess.CompletedProcess(argv, exit_code)
+
+        console = io.StringIO()
+        with patch.object(check_distribution.subprocess, "run", child), \
+                patch.object(sys, "stderr", console):
+            if exit_code:
+                with self.assertRaises(DistributionError) as raised:
+                    self.commands.run(["synthetic", "test"], self.root, **kwargs)
+                result = raised.exception
+            else:
+                result = self.commands.run(["synthetic", "test"], self.root, **kwargs)
+        return result, console.getvalue()
+
+    def test_failure_previews_both_streams_and_retains_exact_bytes_and_exit_code(self):
+        stdout, stderr = b"test panic details\n\xff", b"Cargo failed\n"
+        error, console = self.invoke(stdout, stderr)
+        self.assertIn("stdout preview:", console)
+        self.assertIn("stderr preview:", console)
+        self.assertIn("test panic details\n\ufffd", console)
+        self.assertIn("Cargo failed", console)
+        record = self.report["commands"][0]
+        self.assertEqual(record["exit_code"], 101)
+        self.assertEqual(Path(record["stdout"]).read_bytes(), stdout)
+        self.assertEqual(Path(record["stderr"]).read_bytes(), stderr)
+        self.assertEqual(str(error),
+                         f"command failed (101): ['synthetic', 'test']; see {record['stderr']}")
+
+    def test_large_logs_read_bounded_tails_and_disclose_truncation(self):
+        stdout = b"omitted stdout prefix" + b"x" * 8192 + b"stdout panic tail"
+        stderr = b"omitted stderr prefix" + b"y" * 8192 + b"stderr error tail"
+        reads = []
+        real_open = Path.open
+
+        class PreviewReader(io.BytesIO):
+            def read(self, size=-1):
+                reads.append(size)
+                return super().read(size)
+
+        def open_path(path, mode="r", *args, **kwargs):
+            if mode == "rb":
+                return PreviewReader(stdout if path.suffix == ".stdout" else stderr)
+            return real_open(path, mode, *args, **kwargs)
+
+        with patch.object(Path, "open", open_path):
+            _, console = self.invoke(stdout, stderr)
+        self.assertEqual(reads, [8192, 8192])
+        self.assertEqual(console.count("truncated to last 8192"), 2)
+        self.assertNotIn("omitted stdout prefix", console)
+        self.assertNotIn("omitted stderr prefix", console)
+        self.assertIn("stdout panic tail", console)
+        self.assertIn("stderr error tail", console)
+        self.assertEqual((self.root / "logs/00.stdout").read_bytes(), stdout)
+        self.assertEqual((self.root / "logs/00.stderr").read_bytes(), stderr)
+
+    def test_success_is_silent_and_returns_exact_stdout_bytes(self):
+        stdout = b"success\n\x00\xff"
+        returned, console = self.invoke(stdout, b"successful warning\n", exit_code=0)
+        self.assertEqual(returned, stdout)
+        self.assertEqual(console, "")
+        self.assertEqual(self.report["commands"][0]["exit_code"], 0)
+
+    def test_binary_stdout_artifact_is_retained_without_a_console_dump(self):
+        archive = self.root / "source.tar"
+        payload = b"binary archive payload\x00\xff"
+        _, console = self.invoke(payload, b"archive command failed", stdout_path=archive)
+        self.assertIn(f"stdout retained as binary artifact: {archive}; preview omitted", console)
+        self.assertNotIn("binary archive payload", console)
+        self.assertIn("archive command failed", console)
+        self.assertEqual(archive.read_bytes(), payload)
+        self.assertEqual(self.report["commands"][0]["stdout"], str(archive))
+
+    def test_unreadable_preview_preserves_child_error_and_previews_other_stream(self):
+        real_open = Path.open
+
+        def open_path(path, mode="r", *args, **kwargs):
+            if mode == "rb" and path.suffix == ".stdout":
+                raise OSError("synthetic preview read failure")
+            return real_open(path, mode, *args, **kwargs)
+
+        with patch.object(Path, "open", open_path):
+            error, console = self.invoke(b"retained stdout", b"remaining stderr")
+        self.assertIn("stdout preview unavailable:", console)
+        self.assertIn("synthetic preview read failure", console)
+        self.assertIn("remaining stderr", console)
+        self.assertIn("command failed (101)", str(error))
+        self.assertEqual((self.root / "logs/00.stdout").read_bytes(), b"retained stdout")
+
+    def test_console_write_failure_does_not_mask_child_error(self):
+        class BrokenConsole(io.StringIO):
+            def write(self, text):
+                raise BrokenPipeError("synthetic console failure")
+
+        with patch.object(check_distribution, "sys"), \
+                patch.object(check_distribution.subprocess, "run") as child:
+            check_distribution.sys.stderr = BrokenConsole()
+            child.return_value = subprocess.CompletedProcess(["synthetic"], 101)
+            with self.assertRaisesRegex(DistributionError, "command failed \\(101\\)"):
+                self.commands.run(["synthetic"], self.root)
+        self.assertEqual(self.report["commands"][0]["exit_code"], 101)
+
+
 class ArchiveTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()

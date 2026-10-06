@@ -47,7 +47,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "with_computed requires a basis function name, not a local value",
+                "with_computed requires a classical function name, not a local value",
             ));
         }
         let Callee::User(key) = self.compiler.resolve(module, function)? else {
@@ -55,7 +55,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             ));
         };
         let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
@@ -63,7 +63,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             )
         })?;
         let size = predicate

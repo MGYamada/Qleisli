@@ -13,7 +13,7 @@ use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z;
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
 
@@ -137,7 +137,7 @@ unitary fn candidate(tag: Bit, q: Q<Bit>) -> Q<Bit> {{
 fn joined_source_data_supports_the_suggested_controlled_gate_repair() {
     let source = format!(
         "{IMPORTS}
-basis fn first((x,y): (Bit,Bit)) -> Bit {{ x }}
+classical fn first((x,y): (Bit,Bit)) -> Bit {{ x }}
 unitary fn controlled_x(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
     let (control,target)=split(q);
     let (control,target)=cnot(control,target);

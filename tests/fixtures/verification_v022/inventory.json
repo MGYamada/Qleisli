@@ -991,8 +991,8 @@
           "declaration": "Meaning",
           "group": "source"
         },
-        "Basis": {
-          "declaration": "Basis",
+        "Classical": {
+          "declaration": "Classical",
           "group": "source"
         },
         "Iso": {
@@ -1439,6 +1439,10 @@
         },
         "Pub": {
           "declaration": "Pub",
+          "group": "source"
+        },
+        "Classical": {
+          "declaration": "Classical",
           "group": "source"
         },
         "Basis": {
@@ -3167,7 +3171,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "sha256": "e7dbdfc00ea34f4a9f9f73470557a04f3676cb460d1c62e3941a90107d6d2a35",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3212,7 +3216,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "f0060cecd778ff199ada98d24776244427c0309f4637004ac46a21dff0f9b6e5",
+      "sha256": "f0e04add88a28415883865ac689ae632697de7ae7b41c744dd40580f0e37fa14",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3240,7 +3244,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "6d6faa315e9b7839be68df81b68371918ccd721b8d3053fd3f2f3e12215809c4",
+      "sha256": "3ffde076389b659e82b9de03c31da365ed54114a6de39d7a36cc2f733e81ff04",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3250,7 +3254,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "116245387985c10b013c46cf8dbadbd255c4ea59bab726461006ebd2208b3079",
+      "sha256": "dca128ce783714072ed6a6fb943f0b261eef01f85dc19d909c05066032c30f79",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3260,7 +3264,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "7c5e2f2c297e24e16e71359936376d3c5ae3546f9c0bd755e926f853b98b76a3",
+      "sha256": "4bfd62aaced4719201f26bdce777fe0a1646849bd68edeca8c83932409c721b3",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3299,7 +3303,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "302b8c13d53af4d1a65d8a418599ff44933774ca12dab7f93e712a928adfd86a",
+      "sha256": "2e68bfb8b3ce96712da4cc5af31ea2c6ee8dbd53b09c338e56f57d8df1644a62",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3329,7 +3333,17 @@
     },
     {
       "path": "src/frontend/compile/lower/certified.rs",
-      "sha256": "d65a1f70a07dfa0d0b31de4faad7eeff8ffa832b310fc8c5087276d3c1140501",
+      "sha256": "80966a1605dd72758bb15b4b615bd9b7ced506484eeb10ec133736f9254e80db",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/classical.rs",
+      "sha256": "c584c03fb70d718caa9d7184d9af82e9decd497838a46ebd83cf9afc1cfdb1b7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3349,7 +3363,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "c75920f6961ee5ee590880ee00f28dc0dd254247a36ac234fa2fee3487cb7848",
+      "sha256": "66745e4108e328a5c3088ae8511c7d7e71f062ee40717d3917addd9b3374e563",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3409,7 +3423,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "cc70a9c5a9fa5fe445cf7299c08f454dc624bec36a3f07561675075aa45e64bd",
+      "sha256": "98a9e4ee986bef0704a68d69c65870d615994c12978e502dee93f0361db4e8ee",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3445,7 +3459,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "540d50f809150256cac8f709ee8e6102907c2dcf615700171626308ee73bd830",
+      "sha256": "bbd44fb36956fbc369b975ce7dd2936bc117ec5c8596bf3da8d3e82b7be28186",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3511,7 +3525,7 @@
     },
     {
       "path": "src/frontend/effects.rs",
-      "sha256": "2487abe584b3f6bf4c5877fc18d0636e44155682ecde53012ca9b43ad9108da1",
+      "sha256": "b5ab580809ae2fe042833ac1483862d72f5858a60e80c5487391e0bc3a96d9e5",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3549,7 +3563,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "1cc1c470d921fbe8536959f55cfad56dfa779bfa10fb4a5713299bca3b129985",
+      "sha256": "14b909af00445d0cc016b5a1aaefbc80007abc4b3a3a03d52c00853303cb45a5",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3587,7 +3601,7 @@
     },
     {
       "path": "src/frontend/ordinary.rs",
-      "sha256": "b551edb7bb76bb223f577a3a7b9daeb40b92444a08e4cdb5b5f77f3748ad5363",
+      "sha256": "07f203b9b04b41385442c6281a9f1ca905c369b20ba8711e3e3c886eb0c21ace",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3597,7 +3611,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
+      "sha256": "249a05f32ab4e6f0687a0a17ad5e19987c624792ca2cdec9c1d417b813fe40f7",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3738,7 +3752,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "01c50d14dc89756d4d4131a0bbb0a01d3bfe1c83fe54ea451d3f980195ad7ed4",
+      "sha256": "4d6887a0e38965fe267e99f570fadec68182eb4f2085cb43c9c6f85a449d7faa",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4022,7 +4036,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "9bd9baffd118a4850c068df06e104a0077f32c8303d4b701c81f7e53e6ae754f",
+      "sha256": "c414756add2706549549adc875fe1449266648bf0114b875d81bb0c844dc4987",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4730,7 +4744,7 @@
     },
     {
       "path": "stdlib/src/basis.qli",
-      "sha256": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+      "sha256": "e91479c3f78593ad4b07b411178feeef9dec482aa201c4930fa8b2e36d537c23",
       "group": "source",
       "surface": null
     },
@@ -4742,7 +4756,7 @@
     },
     {
       "path": "stdlib/src/reflection.qli",
-      "sha256": "99ea6514ac57b990894291101a580e39256c5e5471f8bf14de8d0856876a1382",
+      "sha256": "4a983705c170a3ba30787e2a0f92797cc26b4306fd66924036f4e57da6cae512",
       "group": "source",
       "surface": null
     },

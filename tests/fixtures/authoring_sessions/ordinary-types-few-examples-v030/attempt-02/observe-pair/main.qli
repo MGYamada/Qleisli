@@ -1,0 +1,15 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+
+use std::quantum::init0;
+use std::observe::measure_z;
+
+fn observe_pair(first: Q<Bit>, second: Q<Bit>) -> (Bit, Bit) {
+    (measure_z(first), measure_z(second))
+}
+
+pub fn main() -> (Bit, Bit) {
+    let first = init0();
+    let second = init0();
+    observe_pair(first, second)
+}

@@ -130,6 +130,7 @@ impl Parser {
             if self.at(&TokenKind::Use) {
                 uses.extend(self.use_decl()?);
             } else if self.at(&TokenKind::Pub)
+                || self.at(&TokenKind::Classical)
                 || self.at(&TokenKind::Basis)
                 || self.at(&TokenKind::Iso)
                 || self.at(&TokenKind::Unitary)
@@ -187,14 +188,17 @@ impl Parser {
             // Declaration keywords are admitted only in the std module position.
             let name = if path.len() == 1
                 && path[0].text == "std"
-                && matches!(self.current().kind, TokenKind::Basis | TokenKind::Observe)
-            {
+                && matches!(
+                    self.current().kind,
+                    TokenKind::Basis | TokenKind::Observe | TokenKind::Classical
+                ) {
                 let token = self.bump();
                 Ident {
-                    text: if token.kind == TokenKind::Basis {
-                        "basis"
-                    } else {
-                        "observe"
+                    text: match token.kind {
+                        TokenKind::Basis => "basis",
+                        TokenKind::Observe => "observe",
+                        TokenKind::Classical => "classical",
+                        _ => unreachable!("matched std module keyword"),
                     }
                     .into(),
                     span: token.span,
@@ -270,8 +274,11 @@ impl Parser {
                 span: Span::new(start, end),
             });
         }
-        let kind = if self.consume(&TokenKind::Basis).is_some() {
-            FnKind::Basis
+        if self.at(&TokenKind::Basis) {
+            return Err(self.error("`basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct"));
+        }
+        let kind = if self.consume(&TokenKind::Classical).is_some() {
+            FnKind::Classical
         } else if self.consume(&TokenKind::Iso).is_some() {
             FnKind::Iso
         } else if self.consume(&TokenKind::Unitary).is_some() {
@@ -282,15 +289,17 @@ impl Parser {
             FnKind::Inferred
         } else {
             return Err(self.error(
-                "expected `fn`, `basis`, `iso`, `unitary`, `observe`, or `meaning` after `pub`",
+                "expected `fn`, `classical fn`, `iso`, `unitary`, `observe`, or `meaning` after `pub`",
             ));
         };
         self.expect(&TokenKind::Fn)?;
         let name = self.ident()?;
         let mut static_params = Vec::new();
         if self.consume(&TokenKind::LBracket).is_some() {
-            if kind == FnKind::Basis {
-                return Err(self.error("basis functions cannot have static operation parameters"));
+            if kind == FnKind::Classical {
+                return Err(
+                    self.error("classical functions cannot have static operation parameters")
+                );
             }
             loop {
                 self.expect(&TokenKind::Static)?;
@@ -337,7 +346,7 @@ impl Parser {
             loop {
                 let pattern = self.pattern()?;
                 self.expect(&TokenKind::Colon)?;
-                let ty = if kind == FnKind::Basis {
+                let ty = if kind == FnKind::Classical {
                     self.basis_type()?
                 } else {
                     self.ty()?
@@ -351,16 +360,16 @@ impl Parser {
         }
         self.expect(&TokenKind::RParen)?;
         self.expect(&TokenKind::Arrow)?;
-        let return_type = if kind == FnKind::Basis {
+        let return_type = if kind == FnKind::Classical {
             self.basis_type()?
         } else {
             self.ty()?
         };
         let mut requires = Vec::new();
         if let Some(requires_token) = self.consume(&TokenKind::Requires) {
-            if kind == FnKind::Basis {
+            if kind == FnKind::Classical {
                 return Err(ParseError {
-                    message: "basis functions cannot have requires clauses".into(),
+                    message: "classical functions cannot have requires clauses".into(),
                     span: requires_token.span,
                 });
             }
@@ -391,7 +400,7 @@ impl Parser {
                 }
             }
         }
-        let (body, end) = if kind == FnKind::Basis {
+        let (body, end) = if kind == FnKind::Classical {
             let (basis, block_span) = self.basis_block()?;
             (FnBody::Basis(basis), block_span.end)
         } else {

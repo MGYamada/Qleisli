@@ -1,0 +1,17 @@
+{
+  "format": 1,
+  "scope": "Actual Python validator regressions, including six new synthetic source-selection tests; synthetic observations are not compiler or native evidence.",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/test_check_input_corpus.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_utc": "2026-10-06T06:37:58.337364+00:00",
+  "recorded_utc": "2026-10-06T06:38:23.160854+00:00",
+  "seconds": 24.82309045898728,
+  "exit_code": 0,
+  "stdout": "Passed 1 cases, 10 semantic probes and 4 rejection cases; detected 1 type-correct semantic faults; upstream frameworks not executed.\n",
+  "stderr": ".......................................................................[\n  {\n    \"stage\": \"run\",\n    \"id\": null,\n    \"type\": \"ValueError\",\n    \"message\": \"invalid provenance\"\n  }\n]\n..[\n  {\n    \"stage\": \"cases\",\n    \"id\": \"quantum_katas/minus_state1\",\n    \"type\": \"SemanticMismatch\",\n    \"message\": \"wrong phase\"\n  }\n]\n.\n----------------------------------------------------------------------\nRan 74 tests in 24.535s\n\nOK\n",
+  "validator_sha256": "99dbba16d9d3d89d2eed882546dfaa1263b9ba02899c4ee2fd92bf74268c60b5",
+  "tests_sha256": "5188bc00a301632c9a396a17c74c16f5f463671415e3cbf324d74034beea0cae"
+}

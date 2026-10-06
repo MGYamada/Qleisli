@@ -26,6 +26,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.namespace_manifest = self.root / "namespace-source-map.json"
         self.coherent_manifest = self.root / "coherent-source-map.json"
         self.checked_manifest = self.root / "checked-source-map.json"
+        self.classical_manifest = self.root / "classical-source-map.json"
+        self.classical_manifest.write_text(json.dumps(dict(format="qleisli.classical-function-source-map", version=1, files=[], projects=[])))
         files = []
         for directory in (self.original, self.current):
             directory.mkdir()
@@ -44,7 +46,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         for name, value in (("ROOT", self.root), ("MAP", self.manifest),
                             ("NAMESPACE_MAP", self.namespace_manifest.name),
                             ("COHERENT_MAP", self.coherent_manifest.name),
-                            ("CHECKED_MAP", self.checked_manifest.name)):
+                            ("CHECKED_MAP", self.checked_manifest.name),
+                            ("CLASSICAL_MAP", self.classical_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -387,6 +390,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.namespace_manifest = self.root / "namespace-map.json"
         self.coherent_manifest = self.root / "coherent-map.json"
         self.checked_manifest = self.root / "checked-map.json"
+        self.classical_manifest = self.root / "classical-map.json"
+        self.classical_manifest.write_text(json.dumps(dict(format="qleisli.classical-function-source-map", version=1, files=[], projects=[])))
         self.namespace_entry = self.entry(self.original, self.namespace)
         self.coherent_entry = self.entry(self.namespace, self.coherent)
         self.checked_entry = self.entry(self.coherent, self.current)
@@ -394,7 +399,8 @@ class SourceFileIdentity(unittest.TestCase):
         for name, value in (("ROOT", self.root),
                             ("NAMESPACE_MAP", self.namespace_manifest.name),
                             ("COHERENT_MAP", self.coherent_manifest.name),
-                            ("CHECKED_MAP", self.checked_manifest.name)):
+                            ("CHECKED_MAP", self.checked_manifest.name),
+                            ("CLASSICAL_MAP", self.classical_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -433,6 +439,36 @@ class SourceFileIdentity(unittest.TestCase):
         original = source.read_bytes()
         self.assertEqual(fixtures.current_source_file(source), source)
         self.assertEqual(source.read_bytes(), original)
+
+    def test_classical_file_stage_preserves_every_previous_source(self):
+        before = {path: path.read_bytes() for path in
+                  (self.original, self.namespace, self.coherent, self.current)}
+        selected = self.root / "classical-current.qli"
+        selected.write_text("classical fn flip(b: Bit) -> Bit { not b }")
+        entry = self.entry(self.current, selected)
+        self.classical_manifest.write_text(json.dumps(dict(
+            format="qleisli.classical-function-source-map", version=1,
+            files=[entry], projects=[])))
+        self.assertEqual(fixtures.current_source_file(self.original), selected)
+        self.assertEqual({path: path.read_bytes() for path in before}, before)
+        selected.write_text("changed classical function")
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_file(self.original)
+
+    def test_missing_classical_stage_has_no_old_spelling_fallback(self):
+        self.classical_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing classical function source map"):
+            fixtures.current_source_file(self.original)
+
+    def test_classical_stage_cannot_hide_stale_checked_predecessor(self):
+        selected = self.root / "classical-current.qli"
+        selected.write_text("classical fn flip(b: Bit) -> Bit { not b }")
+        self.current.write_text("changed checked predecessor")
+        self.classical_manifest.write_text(json.dumps(dict(
+            format="qleisli.classical-function-source-map", version=1,
+            files=[self.entry(self.current, selected)], projects=[])))
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_file(self.original)
 
     def test_all_file_maps_are_required_even_for_unmapped_input(self):
         for path, label in ((self.namespace_manifest, "semantic namespace"),

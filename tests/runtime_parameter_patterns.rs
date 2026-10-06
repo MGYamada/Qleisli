@@ -34,6 +34,27 @@ fn case(category: &str, name: &str) -> String {
 }
 
 fn validation(name: &str) -> String {
+    if name == "phase-through-product" {
+        // Preserve the original source and its hosted parse failure. This
+        // explicit current translation changes only the retired coherent form;
+        // the Unit/product owners, scalar phase and independent oracle remain.
+        let original = source("validation-sources/phase-through-product.qli");
+        let current = std::fs::read_to_string(
+            Path::new(env!("CARGO_MANIFEST_DIR")).join(
+                "tests/fixtures/review_v030alpha/hosted-ci-runtime-pattern-repair/phase-through-product.qli",
+            ),
+        )
+        .unwrap();
+        assert_eq!(
+            current,
+            original.replace(
+                "let pair = do bit <- init0(); pure ((),bit);",
+                "let pair = basis init0() as bit { ((),bit) };",
+            ),
+            "current phase source must preserve every other original byte",
+        );
+        return current;
+    }
     let directory = match name {
         "static-forwarding"
         | "operation-binding"

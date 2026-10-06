@@ -26,6 +26,7 @@ pub enum TokenKind {
     LBracket,
     RBracket,
     Pub,
+    Classical,
     Basis,
     Iso,
     Unitary,
@@ -103,6 +104,7 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "conjugate_op" => TokenKind::ConjugateOp,
 
         "pub" => TokenKind::Pub,
+        "classical" => TokenKind::Classical,
         "basis" => TokenKind::Basis,
         "iso" => TokenKind::Iso,
         "unitary" => TokenKind::Unitary,
@@ -155,6 +157,7 @@ impl TokenKind {
             Self::LBracket => "`[`",
             Self::RBracket => "`]`",
             Self::Pub => "`pub`",
+            Self::Classical => "`classical`",
             Self::Basis => "`basis`",
             Self::Iso => "`iso`",
             Self::Unitary => "`unitary`",

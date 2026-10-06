@@ -6,6 +6,7 @@
 
 mod branch;
 mod certified;
+mod classical;
 mod function_contract;
 mod operations;
 mod primitives;
@@ -22,10 +23,24 @@ use crate::ir::*;
 use std::borrow::Cow;
 
 #[derive(Clone, Copy)]
+enum CallArguments<'a> {
+    Runtime(&'a [Expr]),
+    Classical(&'a [BasisExpr]),
+}
+impl CallArguments<'_> {
+    fn span(self, index: usize) -> Span {
+        match self {
+            Self::Runtime(args) => args[index].span,
+            Self::Classical(args) => args[index].span,
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
 struct CallSite<'a> {
     module: &'a str,
     span: Span,
-    args: &'a [Expr],
+    args: CallArguments<'a>,
 }
 
 // Diagnostic metadata only: acceptance still depends solely on raw IR.
@@ -327,12 +342,12 @@ impl Lowerer<'_, '_> {
         let key_name = self.compiler.resolution.declaration(*key).name.clone();
         self.compiler.tick(&key_name.0, decl.span)?;
         let (params, return_ty) = self.compiler.signature(key)?;
-        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning) {
+        if decl.kind == FnKind::Meaning {
             return Err(self.error(
                 &key_name.0,
                 decl.span,
                 ErrorCode::TypeMismatch,
-                "basis functions are used only in basis expressions and with_computed",
+                "Meaning declarations are not ordinary runtime callees",
             ));
         }
         if args.len() != params.len() {
@@ -350,7 +365,7 @@ impl Lowerer<'_, '_> {
         let mut names = BTreeSet::new();
         for (index, ((param, ty), value)) in decl.params.iter().zip(params).zip(args).enumerate() {
             let (module, span) = site.map_or((key_name.0.as_str(), param.span), |site| {
-                (site.module, site.args[index].span)
+                (site.module, site.args.span(index))
             });
             self.compiler
                 .charge(module, span, value.tree_size().nodes)?;
@@ -375,16 +390,25 @@ impl Lowerer<'_, '_> {
         let previous_effect = self.effect;
         let previous_effect_source = self.effect_source.take();
         self.effect = Effect::Unitary;
-        let FnBody::Quantum(body) = &decl.body else {
-            unreachable!("ordinary function")
+        let (value, result_span, body_span) = match &decl.body {
+            FnBody::Quantum(body) => (
+                self.block(&key_name.0, body, &mut env)?,
+                body.result.span,
+                body.span,
+            ),
+            FnBody::Basis(body) if decl.kind == FnKind::Classical => (
+                self.classical_expr(&key_name.0, body, &mut env)?,
+                body.span,
+                body.span,
+            ),
+            _ => unreachable!("complete checked callable declaration"),
         };
-        let value = self.block(&key_name.0, body, &mut env)?;
         self.compiler
-            .charge(&key_name.0, body.result.span, value.tree_size().nodes)?;
+            .charge(&key_name.0, result_span, value.tree_size().nodes)?;
         if value.ty() != return_ty {
             return Err(self.error(
                 &key_name.0,
-                body.result.span,
+                result_span,
                 ErrorCode::TypeMismatch,
                 format!(
                     "result does not match the function return type: expected `{}`, found `{}`",
@@ -402,7 +426,7 @@ impl Lowerer<'_, '_> {
                 PatternKind::Wildcard => {}
             }
         }
-        self.no_owned_bindings(&key_name.0, body.span, &env, parameter_names)?;
+        self.no_owned_bindings(&key_name.0, body_span, &env, parameter_names)?;
         let inferred = self.effect;
         let Some(fact) = crate::frontend::effects::FunctionEffect::checked(decl.kind, inferred)
         else {
@@ -423,7 +447,7 @@ impl Lowerer<'_, '_> {
         if fact.inferred() > source_fact.inferred() {
             return Err(self.error(
                 &key_name.0,
-                body.result.span,
+                result_span,
                 ErrorCode::Effect,
                 "concrete expansion exceeds the complete checked source effect",
             ));
@@ -752,7 +776,7 @@ impl Lowerer<'_, '_> {
             }
             ExprKind::Unit => Ok(Value::Unit),
             ExprKind::Bit(_) | ExprKind::Not(_) | ExprKind::And(..) | ExprKind::Xor(..) => {
-                use crate::frontend::ordinary::{self, Boolean, OperandFailure};
+                use crate::frontend::ordinary::Boolean;
                 let (operation, operands): (_, Vec<&Expr>) = match &expr.kind {
                     ExprKind::Bit(value) => (Boolean::Constant(*value), vec![]),
                     ExprKind::Not(input) => (Boolean::Not, vec![input]),
@@ -760,98 +784,16 @@ impl Lowerer<'_, '_> {
                     ExprKind::Xor(left, right) => (Boolean::Xor, vec![left, right]),
                     _ => unreachable!("matched Boolean source expression"),
                 };
-                let values = ordinary::evaluate(
+                self.boolean(
+                    module,
+                    expr.span,
                     operation,
                     operands.into_iter(),
-                    &mut (&mut *self, &mut *env),
-                    |(lowerer, env), operand| lowerer.expr(module, operand, env),
-                    Value::ty,
-                    |(lowerer, _), failure| {
-                        let message = match failure {
-                            OperandFailure::Arity { expected, actual } => format!(
-                                "Boolean operation requires {expected} operands, found {actual}"
-                            ),
-                            OperandFailure::Type(ty) if operation == Boolean::Not => format!(
-                                "not requires a Bit operand: expected `Bit`, found `{}`",
-                                ty.runtime()
-                            ),
-                            OperandFailure::Type(ty) => format!(
-                                "and/xor require Bit operands: expected `Bit`, found `{}`",
-                                ty.runtime()
-                            ),
-                        };
-                        lowerer.error(module, expr.span, ErrorCode::TypeMismatch, message)
-                    },
-                )?;
-                let inputs = values
-                    .into_iter()
-                    .map(|value| match value {
-                        Value::Classical(id) => Ok(id),
-                        _ => Err(self.error(
-                            module,
-                            expr.span,
-                            ErrorCode::InvalidIr,
-                            "Boolean operand lost its classical representation",
-                        )),
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
-                let output = self.raw.boolean(operation, &inputs).map_err(|failure| {
-                    self.error(module, expr.span, ErrorCode::InvalidIr, failure.to_string())
-                })?;
-                Ok(Value::Classical(output))
+                    env,
+                    |lowerer, operand, env| lowerer.expr(module, operand, env),
+                )
             }
-            ExprKind::Name(name) => {
-                let binding = self
-                    .compiler
-                    .locals
-                    .local_key(name)
-                    .and_then(|key| env.get_mut(key))
-                    .ok_or_else(|| {
-                        self.error(
-                            module,
-                            name.span,
-                            ErrorCode::UnknownName,
-                            format!("unknown value `{}`", name.text),
-                        )
-                    })?;
-                let value = match binding {
-                    Binding::Live(value) => value,
-                    Binding::Consumed => {
-                        return Err(self.error(
-                            module,
-                            name.span,
-                            ErrorCode::Ownership,
-                            format!(
-                                "quantum ownership `{}` has already been consumed",
-                                name.text
-                            ),
-                        ));
-                    }
-                    Binding::Hidden { quantum } => {
-                        let repair = if *quantum {
-                            "include it in the source data with `join` and access it through the data binder of three-argument `with_computed`, or restructure the body"
-                        } else {
-                            "use a closed classical expression or restructure the body"
-                        };
-                        return Err(self.error(
-                            module,
-                            name.span,
-                            ErrorCode::Ownership,
-                            format!(
-                                "with_computed body cannot capture outer binding `{}`; {repair}",
-                                name.text
-                            ),
-                        ));
-                    }
-                };
-                self.compiler
-                    .charge(module, name.span, value.tree_size().nodes)?;
-                Ok(if value.owns_quantum() {
-                    binding.take().expect("live value")
-                } else {
-                    value.clone()
-                })
-            }
+            ExprKind::Name(name) => self.read_name(module, name, env),
             ExprKind::Tuple(fields) => Ok(Value::tuple(
                 fields
                     .iter()
@@ -910,7 +852,7 @@ impl Lowerer<'_, '_> {
                 let site = CallSite {
                     module,
                     span: expr.span,
-                    args,
+                    args: CallArguments::Runtime(args),
                 };
                 match legacy_target
                     .map(Ok)
@@ -978,7 +920,7 @@ impl Lowerer<'_, '_> {
                         module,
                         function.span,
                         ErrorCode::TypeMismatch,
-                        "with_computed requires a basis function name",
+                        "with_computed requires a classical function name",
                     ));
                 }
                 self.computed(module, expr.span, source, function, binder, body, env)
@@ -1242,7 +1184,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             ));
         };
         let predicate = self.compiler.basis.get(&key).ok_or_else(|| {
@@ -1250,7 +1192,7 @@ impl Lowerer<'_, '_> {
                 module,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             )
         })?;
         let size = predicate

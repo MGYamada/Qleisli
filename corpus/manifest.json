@@ -1899,10 +1899,14 @@
     "migrations/predicate-domain-v030/migration.json",
     "migrations/ordinary-type-v030/migration.json",
     "migrations/semantic-namespace-v030/migration.json",
-    "migrations/coherent-basis-v030/migration.json"
+    "migrations/coherent-basis-v030/migration.json",
+    "migrations/classical-functions-v030/migration.json"
   ],
   "negative_expectations": {
     "path": "negative/current-manifest.json",
     "sha256": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
-  }
+  },
+  "counterexample_source_migrations": [
+    "migrations/classical-functions-v030/counterexamples.json"
+  ]
 }

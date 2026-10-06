@@ -1,0 +1,96 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#22 criterion 10 bounded ordinary type inference from two examples; wrong API context retained and independent corrected context",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "project_version": "0.3.0-alpha",
+  "author": "Two independent local author agents; observer has Issue/code context; inherited model, exact deployment/sampling unavailable",
+  "context": "context.md",
+  "record_status": "two independent first-author responses registered consecutively; original prompt failure preserved",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "author": "/root/ordinary_type_few_examples",
+      "context": "context.md",
+      "context_sha256": "2c3112e907065dc9eaf3f8398b423ad97876d9a10a4a2471db99e688710cae7a",
+      "reason": "Initial independent response to the observer-supplied two examples; the incorrect init0 API import and all name-resolution failures remain intact.",
+      "sha256": {
+        "copy-ordinary/main.qli": "7a2123c2082b1abbb449868357a5a1394b7b1fd6f8ea5fc2e185a252f4d14342",
+        "duplicate-owner/main.qli": "4abe94caead6cc86f1e32236529112e7e7c19297e4ec858710e5afdc9b62c286",
+        "implicit-readout/main.qli": "a46cbab063ea93b90beadb1465e42043e906aab2711f244b8b178b10ef19383f",
+        "observe-pair/main.qli": "bf49b141a8d6d634022fa26050488613c0da85d410d0582dd0ee01c7be7f85f9"
+      },
+      "observations": [
+        "observations/copy-ordinary-finite-check.json",
+        "observations/copy-ordinary-selected-check.json",
+        "observations/observe-pair-finite-check.json",
+        "observations/observe-pair-selected-check.json",
+        "observations/implicit-readout-finite-check.json",
+        "observations/implicit-readout-selected-check.json",
+        "observations/duplicate-owner-finite-check.json",
+        "observations/duplicate-owner-selected-check.json",
+        "observations/copy-ordinary-finite-run.json",
+        "observations/copy-ordinary-selected-run.json",
+        "observations/observe-pair-finite-run.json",
+        "observations/observe-pair-selected-run.json"
+      ],
+      "reports": [
+        "first-files.json",
+        "predictions.json",
+        "observations/capture.json",
+        "assessment.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "author": "/root/ordinary_type_few_examples_valid",
+      "context": "context-02.md",
+      "context_sha256": "749ab037a30ee78087d0a9b714ebe02861d069f064cb646da29d798f1bd615a9",
+      "reason": "Fresh independent first response to a new prompt correcting only the example init0 namespace; no prior failed sources or observer repair supplied.",
+      "sha256": {
+        "copy-ordinary/main.qli": "7be73cb51764c40ab911867e29fe8d6ae58bb7903a62fba2a5b7a82728b7a9ee",
+        "duplicate-owner/main.qli": "f93e6e7c560de22af0e2ed5b1f82a1761820b88f9e879e1f04d881ecc58419ea",
+        "implicit-readout/main.qli": "9cd52b003735b4c66f655aa8bbeead4c8b904004b453614526540ae591928a12",
+        "observe-pair/main.qli": "a9feda7247a7851c96fd29e0086aa7bb03f79db931ce719b77c76d601780f6d2"
+      },
+      "observations": [
+        "observations-02/copy-ordinary-finite-check.json",
+        "observations-02/copy-ordinary-selected-check.json",
+        "observations-02/observe-pair-finite-check.json",
+        "observations-02/observe-pair-selected-check.json",
+        "observations-02/implicit-readout-finite-check.json",
+        "observations-02/implicit-readout-selected-check.json",
+        "observations-02/duplicate-owner-finite-check.json",
+        "observations-02/duplicate-owner-selected-check.json",
+        "observations-02/copy-ordinary-finite-run.json",
+        "observations-02/copy-ordinary-selected-run.json",
+        "observations-02/observe-pair-finite-run.json",
+        "observations-02/observe-pair-selected-run.json"
+      ],
+      "reports": [
+        "first-files-02.json",
+        "predictions-02.json",
+        "observations-02/capture.json",
+        "assessment.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "attempt-01/copy-ordinary/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/duplicate-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/implicit-readout/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-01/observe-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/copy-ordinary/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/duplicate-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/implicit-readout/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "attempt-02/observe-pair/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "scope": "Eight complete programs from two independent four-program first responses and 24 actual finite/selected CLI observations; no source repair or language/API change. Initial 12 observations are name-resolution failures and do not count as type/ownership validation. Corrected 12 observations supply bounded criterion-10 evidence, not a general benchmark, full Issue completion or theorem.",
+  "registration": {
+    "assessment_sha256": "4b25a0d77e29d4178128d86af18be758a4cfd61d586d2a9b4f95affbd359246e",
+    "first_files_sha256": "af0512d31592d38e102a32dc1ca9e2e5d24aa8b8c3af941099ce94195ff291ea",
+    "first_files_02_sha256": "bf67fb53c2c9547bed7c16320acde8a74e28b8b19ffbfb5f80cbb4da0fa155c1",
+    "capture_sha256": "77b04562b625381bfd44307b85c83c318915b5ff4a38a19599d56c4e909fb2d4",
+    "capture_02_sha256": "705cfb9331418a628aab03421357e10d243c9cbeca0bc5ab8dab78f68ce20e64"
+  }
+}

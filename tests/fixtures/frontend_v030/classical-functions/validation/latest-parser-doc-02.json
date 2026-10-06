@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--locked",
+    "-j",
+    "2",
+    "--test",
+    "parser",
+    "--test",
+    "documentation",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 101,
+  "seconds": 7.149911583052017,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/classical-functions/validation/latest-parser-doc-02.stdout.txt",
+      "sha256": "8f3d1c8b053e987b6d5abd2cec7804a6abe15f3f4c416a15a384886a479ebad9"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/classical-functions/validation/latest-parser-doc-02.stderr.txt",
+      "sha256": "9b045c2d0d79c62c25ed41f8f89fe0f23f0d840c2c3d0f58d75aba31cd6b7f5b"
+    }
+  },
+  "capture_scope": "Actual command and streams only, not a complete build closure or replay of stored records."
+}

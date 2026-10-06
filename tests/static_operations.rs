@@ -202,7 +202,7 @@ fn computed_zero_width_phase_survives_inverse_and_control() {
         "main.qli",
         &format!(
             "{IMPORTS}
-        basis fn yes(x: Unit) -> Bit {{ 1 }}
+        classical fn yes(x: Unit) -> Bit {{ 1 }}
         unitary fn identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(a) }} }}
         unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ adjoint(phase,q) }}

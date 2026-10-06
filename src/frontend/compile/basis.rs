@@ -115,7 +115,7 @@ impl Compiler<'_> {
                 &key_name.0,
                 decl.span,
                 ErrorCode::Limit,
-                "basis function domain exceeds 12 bits",
+                "classical function domain exceeds 12 bits",
             ));
         }
         let FnBody::Basis(body) = &decl.body else {
@@ -275,7 +275,7 @@ impl Compiler<'_> {
                         module,
                         callee.span,
                         ErrorCode::TypeMismatch,
-                        "basis expressions may call only basis functions",
+                        "basis expressions may call only classical functions",
                     )
                 })?;
                 let size = function.signature_size();

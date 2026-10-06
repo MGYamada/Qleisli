@@ -293,3 +293,24 @@ Only the designated unresolved-default explanation changes; exits, categories,
 spans and successful outputs remain equal. The selected scalar observation
 retains its producer-consistency and unverified source-meaning disclosures.
 No trait machinery, source repair or broader proof is claimed.
+
+The [classical-function study](classical-runtime-v030/README.md) preserves four
+complete first projects and 21 actual observations: eight BEFORE parser
+refusals, eight AFTER checks and five AFTER runs. Ordinary noninjective AND
+and nested Unit/measured-Bit calls work in both profiles; the finite shared
+flip returns `(1,0)`, while selected coherent lifting remains unsupported.
+Live `Q<Bit>` arguments retain an explicit type refusal. The separate
+[withdrawn Basis proposal](basis-runtime-v030/README.md) preserves its four
+original projects and eight earlier callee-category refusals. Both collections
+retain their first context and raw streams; neither claims a blind/few-example
+benchmark, general source preservation, full CI or Issue completion.
+
+The [ordinary types from two examples study](ordinary-types-few-examples-v030/README.md)
+preserves two independent four-program first responses and 24 actual CLI calls.
+The observer's first API example was wrong; its twelve name-resolution refusals
+do not count as type/ownership checks. A new author received only the corrected
+two-example context: four positive checks and four runs pass across both profiles, while
+implicit readout and repeated observation reject at their actual type/owner
+locations. Neither answer invents a separate classical-type spelling. The
+prompts, both source collections, predictions and raw outputs remain intact;
+this is bounded criterion-10 evidence, not a general model benchmark or proof.

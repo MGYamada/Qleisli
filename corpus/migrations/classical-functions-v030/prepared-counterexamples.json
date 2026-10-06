@@ -1,0 +1,90 @@
+{
+  "format": 1,
+  "kind": "explicit-counterexample-source-migration",
+  "issue": 22,
+  "project_version": "0.3.0-alpha",
+  "created_utc": "2026-10-06T06:30:25.532533+00:00",
+  "context": "Prepared bounded source snapshots for the human-selected classical fn spelling. Only declaration keywords change; original sources, earlier selections, licenses, bit order, exact phase and independent oracle contracts remain frozen. Actual observations are pending; no proof, source-preservation theorem, general feature completion, QFT work or release certification is asserted.",
+  "projects": [
+    "semantic_faults/majority_replaced_by_parity",
+    "semantic_faults/erased_rotation_scalar",
+    "semantic_faults/rx_missing_scalar",
+    "semantic_faults/zz_erased_scalar",
+    "semantic_faults/negative_rx_missing_scalar",
+    "semantic_faults/reflection_minus_missing_phase",
+    "semantic_faults/controlled_reflection_missing_phase",
+    "negative/dirty_auxiliary"
+  ],
+  "files": {
+    "semantic_faults/majority_replaced_by_parity/kernel.qli": {
+      "before": "c00074dfe4ae380db2a86f633092afcc2d35fb5d8d14f19753b7305b58484d0d",
+      "after": "86614711f7e5382be6ad15cda98581f099f4b6e7f93190aae0e86ea73eb4ad0d"
+    },
+    "semantic_faults/majority_replaced_by_parity/main.qli": {
+      "before": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+      "after": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0"
+    },
+    "semantic_faults/erased_rotation_scalar/kernel.qli": {
+      "before": "f5d5a00a71b5f9a274afc6df177de1467a89eea5bd120670b176be0e97ab6d68",
+      "after": "c88ce68c96d63d2129ee3cbd812005754ad99377dcc102ba34eebcbb8bb700c8"
+    },
+    "semantic_faults/erased_rotation_scalar/main.qli": {
+      "before": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "after": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf"
+    },
+    "semantic_faults/rx_missing_scalar/kernel.qli": {
+      "before": "3f8a24387c68ebddae05041f23be2ce27ff54040d16c3ed7186650fd0f189014",
+      "after": "6e9ba0d10ba0b2775c0d93c46cc6e55c5af61bea6f93efadb338c3ac77f7c949"
+    },
+    "semantic_faults/rx_missing_scalar/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    "semantic_faults/zz_erased_scalar/kernel.qli": {
+      "before": "146c773dc671e295e31b9e9cf619261f7a0d34db8801c34c7ff8c7b1fec4f0f4",
+      "after": "6609439105c38fbdef41758e2a56cf64f03761b60185a5d654df34285c0f7975"
+    },
+    "semantic_faults/zz_erased_scalar/main.qli": {
+      "before": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "after": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0"
+    },
+    "semantic_faults/negative_rx_missing_scalar/kernel.qli": {
+      "before": "93ca56300f737fd097c367eccc41f1415af59f28249cf4cae12f57eb8eb9477e",
+      "after": "951cb4730a8de869a8849a68895cb155e0abcc1c413a369e0b2b56da88f69c86"
+    },
+    "semantic_faults/negative_rx_missing_scalar/main.qli": {
+      "before": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "after": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+    },
+    "semantic_faults/reflection_minus_missing_phase/kernel.qli": {
+      "before": "e29e61e1fa4ceb8f4fa311ea21d25be4d81a708813e433d6a18c2a0aa48401ac",
+      "after": "d4e8e161fc1a93fd16abf7ddfeef1f1de0dc407e141cb58f64f060cb1c4ad0aa"
+    },
+    "semantic_faults/reflection_minus_missing_phase/main.qli": {
+      "before": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+      "after": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284"
+    },
+    "semantic_faults/controlled_reflection_missing_phase/kernel.qli": {
+      "before": "02faaf87e82ef63146c27ef1a6bb95be02a5a7b6889f56e92566d7c80d83d922",
+      "after": "952d2527f437962ccfc4ab3974043b3515a1d3a10c7c3764104d7c2adaaef9eb"
+    },
+    "semantic_faults/controlled_reflection_missing_phase/main.qli": {
+      "before": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+      "after": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884"
+    },
+    "negative/dirty_auxiliary/main.qli": {
+      "before": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18",
+      "after": "58eb819f711ebaa0a7b2a2903c8419465f56c97da004f653ccfe63d5ba951345"
+    }
+  },
+  "observations": [
+    "counterexample-checks.json"
+  ],
+  "source_selection": "snapshot",
+  "baselines": {
+    "semantic_faults/manifest.json": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+    "negative/manifest.json": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "negative/current-manifest.json": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4"
+  },
+  "transformation": "basis-to-classical-function"
+}

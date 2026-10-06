@@ -1,0 +1,14 @@
+//! Pattern arguments keep source arity, retain Unit nodes and bind whole subtrees.
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::join;
+use std::quantum::split;
+use std::measurement::measure_z2;
+classical fn combine((a,_): (Bit,Unit), (b,c): (Bit,Bit), _: Unit) -> (Bit,Bit) { (a xor b,c) }
+classical fn whole((pair,_): ((Bit,Bit),Unit)) -> (Bit,Bit) { pair }
+classical fn map((a,b): (Bit,Bit)) -> (Bit,Bit) { whole((combine((a,()),(0,b),()),())) }
+observe fn main() -> (Bit,Bit) {
+    let q = join(x(init0()),init0());
+    let q = basis q as pair { map(pair) };
+    measure_z2(q)
+}

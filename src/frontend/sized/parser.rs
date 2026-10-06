@@ -109,7 +109,8 @@ impl Projection<'_, '_> {
             source::FnKind::Unitary
             | source::FnKind::Iso
             | source::FnKind::Observe
-            | source::FnKind::Inferred => {}
+            | source::FnKind::Inferred
+            | source::FnKind::Classical => {}
             _ => {
                 return Err(unsupported(
                     declaration.span,
@@ -140,15 +141,70 @@ impl Projection<'_, '_> {
             .iter()
             .map(|parameter| Ok((self.pattern(&parameter.pattern)?, parameter.pattern.span)))
             .collect::<Result<_>>()?;
-        let source::FnBody::Quantum(body) = &declaration.body else {
-            return Err(unsupported(declaration.span, "requires a runtime block"));
+        let body = match &declaration.body {
+            source::FnBody::Quantum(body) => self.block(body)?,
+            source::FnBody::Basis(body) if declaration.kind == source::FnKind::Classical => {
+                self.charge(body.span, 2)?;
+                Block {
+                    statements: vec![],
+                    result: Box::new(self.classical_expression(body)?),
+                    span: body.span,
+                }
+            }
+            _ => return Err(unsupported(declaration.span, "requires a runtime block")),
         };
         Ok(Function {
             lexical: None,           // Attach the one authoritative Arc<Table> after finish.
             effect: Effect::Unitary, // Private typed-pass placeholder, never published.
             arguments,
-            body: self.block(body)?,
+            body,
             span: declaration.span,
+        })
+    }
+
+    fn classical_expression(&self, expression: &source::BasisExpr) -> Result<Expr> {
+        use crate::frontend::ordinary::RuntimeExpression;
+
+        // The shared view borrows original identifiers: occurrence lookup must
+        // keep their addresses rather than resolve names in a copied AST.
+        self.charge(expression.span, 1)?;
+        let kind = match crate::frontend::ordinary::runtime_expression(expression) {
+            RuntimeExpression::Name(name) => ExprKind::Name(self.ident(name)?),
+            RuntimeExpression::Unit => ExprKind::Unit,
+            RuntimeExpression::Tuple(fields) => {
+                self.charge(expression.span, fields.len())?;
+                ExprKind::Tuple(
+                    fields
+                        .iter()
+                        .map(|field| self.classical_expression(field))
+                        .collect::<Result<_>>()?,
+                )
+            }
+            RuntimeExpression::Call { callee, args } => {
+                self.charge(expression.span, args.len())?;
+                ExprKind::Call(
+                    self.ident(callee)?,
+                    vec![],
+                    args.iter()
+                        .map(|argument| self.classical_expression(argument))
+                        .collect::<Result<_>>()?,
+                )
+            }
+            RuntimeExpression::Boolean { operation, inputs } => {
+                self.charge(expression.span, operation.arity())?;
+                ExprKind::Boolean(
+                    operation,
+                    inputs
+                        .into_iter()
+                        .flatten()
+                        .map(|input| self.classical_expression(input))
+                        .collect::<Result<_>>()?,
+                )
+            }
+        };
+        Ok(Expr {
+            kind,
+            span: expression.span,
         })
     }
 

@@ -13,6 +13,7 @@ MAP = ROOT / "tests/fixtures/frontend_v030/ordinary-type-client-integration/sour
 NAMESPACE_MAP = "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/namespace-source-map.json"
 COHERENT_MAP = "tests/fixtures/frontend_v030/coherent-basis/source-map.json"
 CHECKED_MAP = "tests/fixtures/frontend_v030/checked-operation/source-map.json"
+CLASSICAL_MAP = "tests/fixtures/frontend_v030/classical-functions/source-map.json"
 
 
 def _read_map(path):
@@ -134,7 +135,8 @@ def _migration_maps():
     for relative, format_name, label in (
             (NAMESPACE_MAP, "qleisli.semantic-namespace-source-map", "semantic namespace"),
             (COHERENT_MAP, "qleisli.coherent-basis-source-map", "coherent basis"),
-            (CHECKED_MAP, "qleisli.checked-operation-source-map", "checked operation")):
+            (CHECKED_MAP, "qleisli.checked-operation-source-map", "checked operation"),
+            (CLASSICAL_MAP, "qleisli.classical-function-source-map", "classical function")):
         path = _local(ROOT, relative)
         if not path.is_file():
             raise ValueError(f"missing {label} source map: {path}")

@@ -547,7 +547,7 @@ where
             },
             Task::Type(&declaration.return_type),
         ];
-        let kind = if declaration.kind == FnKind::Basis {
+        let kind = if declaration.kind == FnKind::Classical {
             BindingKind::Basis
         } else {
             BindingKind::Runtime

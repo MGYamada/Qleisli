@@ -1,0 +1,23 @@
+{
+  "author": "/root/ordinary_type_few_examples_valid",
+  "context": "A new author with only two corrected examples; no prior sources, forked history, tools, repository reads or repair.",
+  "transport": "Qargo.toml schema2/edition2026 supplied by observer after source authorship.",
+  "predictions": [
+    {
+      "case": "copy-ordinary",
+      "text": "checks successfully; ordinary measured `Bit` values can be duplicated or unused."
+    },
+    {
+      "case": "observe-pair",
+      "text": "checks successfully; each quantum-owned input is observed once, preserving the ordered pair."
+    },
+    {
+      "case": "implicit-readout",
+      "text": "rejected because the returned quantum-owned value does not match `Bit`."
+    },
+    {
+      "case": "duplicate-owner",
+      "text": "rejected because the same quantum-owned value is consumed by two observations."
+    }
+  ]
+}

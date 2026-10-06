@@ -1,0 +1,32 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "build",
+    "--locked",
+    "-j",
+    "2",
+    "--bin",
+    "qleisli"
+  ],
+  "exit_code": 0,
+  "seconds": 0.39743008400546387,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/classical-functions/validation/latest-cli-build.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/classical-functions/validation/latest-cli-build.stderr.txt",
+      "sha256": "7577aa7e72bd95d44e50fb707f07dc512d91a639aa3e0b6d5893dc2b5958ae45"
+    }
+  },
+  "capture_scope": "Actual command and streams only, not a complete build closure or replay of stored records."
+}

@@ -160,7 +160,7 @@ the spelling to `drop(q)` cannot justify any of these different operations.
 
 The current two-argument `with_computed(source, predicate)` exposes one private
 computed auxiliary to a scoped body and protects the source data. The predicate
-is a total ordinary basis function with one argument of the data's exact basis
+is a total `classical fn` with one ordinary argument of the data's exact basis
 tree and result `Bit`. The body must return the auxiliary owner and satisfy the
 Unitary requirement. Current finite concrete lowering restricts its expanded
 auxiliary body to identity or the admitted Z/T sequence; it does not synthesize

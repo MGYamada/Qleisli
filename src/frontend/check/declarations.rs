@@ -122,7 +122,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
     let budget = &p.budget;
     if !matches!(
         (decl.kind, &decl.body),
-        (FnKind::Basis, ast::FnBody::Basis(_))
+        (FnKind::Classical, ast::FnBody::Basis(_))
             | (FnKind::Meaning, ast::FnBody::Meaning { .. })
             | (
                 FnKind::Inferred | FnKind::Iso | FnKind::Unitary | FnKind::Observe,
@@ -282,7 +282,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             &parameter.ty,
             index,
             &scope,
-            if decl.kind == FnKind::Basis {
+            if decl.kind == FnKind::Classical {
                 Stage::Basis
             } else {
                 Stage::Runtime
@@ -304,7 +304,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
         &decl.return_type,
         index,
         &scope,
-        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning) {
+        if matches!(decl.kind, FnKind::Classical | FnKind::Meaning) {
             Stage::Basis
         } else {
             Stage::Runtime

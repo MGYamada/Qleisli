@@ -1,0 +1,62 @@
+
+running 11 tests
+test all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics ... ok
+test deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax ... ok
+test doc_text_normalizes_crlf_but_preserves_utf8_source_spans ... ok
+test common_parser_shares_documentation_attachment_with_sized_source ... ok
+test every_bundled_module_and_public_or_private_definition_has_documentation ... ok
+test markdown_includes_private_docs_and_uses_safe_signature_fences ... ok
+test misplaced_documentation_is_rejected_in_both_parse_entry_points ... ok
+test ordinary_and_nested_comment_delimiters_follow_rust_distinctions ... ok
+test rust_style_docs_attach_to_modules_imports_and_functions_in_source_order ... ok
+test unfinished_comment_blocks_cannot_swallow_later_declarations ... ok
+test documentation_neither_changes_ir_nor_authorizes_invalid_ownership ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.79s
+
+
+running 27 tests
+test accepts_comments_and_reports_utf8_byte_offsets ... ok
+test basis_operators_have_documented_precedence_and_left_associativity ... ok
+test basis_requires_rejects_before_documentation_attachment ... FAILED
+test canonical_bit_literals_share_spelling_with_basis_bits ... ok
+test classical_boolean_operators_have_precedence_and_left_associativity ... ok
+test all_static_constructor_token_prefixes_parse_without_panicking ... ok
+test coherent_basis_as_is_contextual_and_preserves_identifier_positions ... ok
+test coherent_basis_body_is_one_expression_without_statements_or_a_semicolon ... ok
+test coherent_basis_body_keeps_basis_precedence_and_unit_patterns ... ok
+test coherent_basis_delimiter_errors_point_to_the_missing_as_or_body ... ok
+test coherent_basis_input_retains_existing_expression_grammar ... ok
+test coherent_basis_token_prefixes_parse_without_panicking ... ok
+test coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans ... ok
+test common_natural_and_count_syntax_keeps_precedence_and_source_spans ... ok
+test common_token_stream_includes_sized_punctuation_without_trivia_joining ... ok
+test classical_operator_chains_and_basis_patterns_obey_depth_limits ... ok
+test deep_syntax_is_rejected_without_exhausting_the_stack ... ok
+test invisible_separators_and_bad_bit_literals_have_precise_errors ... ok
+test malformed_syntax_has_precise_error_spans ... ok
+test nested_operator_chains_share_the_ast_depth_limit ... ok
+test parses_bell_modules_and_keeps_owned_resource_syntax_distinct ... ok
+test parses_phase_oracle_and_measurement_feedback ... ok
+test reserved_std_module_keywords_allow_further_identifier_components ... ok
+test retired_coherent_do_and_pure_have_located_migration_diagnostics ... ok
+test static_operation_errors_point_to_the_unconsumed_token_or_eof ... ok
+test unicode_format_characters_are_comment_text_but_not_source_tokens ... ok
+test example_and_stdlib_token_prefixes_parse_without_panicking ... ok
+
+failures:
+
+---- basis_requires_rejects_before_documentation_attachment stdout ----
+
+thread 'basis_requires_rejects_before_documentation_attachment' (17861684) panicked at tests/parser.rs:826:9:
+assertion `left == right` failed
+  left: "classical functions cannot have requires clauses"
+ right: "basis functions cannot have requires clauses"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    basis_requires_rejects_before_documentation_attachment
+
+test result: FAILED. 26 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.55s
+

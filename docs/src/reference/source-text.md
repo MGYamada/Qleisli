@@ -100,6 +100,45 @@ A principal-Unitary body with a broader assertion remains eligible, subject to
 its separate type, ownership, access and native checks. A provider input/output
 shape mismatch remains a type error; it is not external effect justification.
 
+## Total classical declarations
+
+`classical fn f(pattern: T, ...) -> U { expression }` declares a total, pure
+finite function on ordinary values. Its body is one restricted label expression:
+names, `()`, `0`/`1`, ordered products, eager `not`/`and`/`xor`, and acyclic calls
+to other classical functions. It has no runtime statements, observation or
+quantum capture. Parameter/result trees and argument-list arity remain exact;
+noninjective functions are permitted.
+
+The same checked body may be called in ordinary runtime expressions, existing
+Meaning/predicate construction and coherent `basis` expressions. Runtime
+arguments evaluate once, left to right, before parameter binding. Their effects
+and owner consumption remain in the caller, including when an ordinary result
+is ignored. An already measured Bit is ordinary data; a live `Q<T>` cannot be
+passed as `T` without explicit observation. For example:
+
+```qli
+use std::observe::measure_z;
+classical fn flip(b: Bit) -> Bit { not b }
+fn invert(q: Q<Bit>) -> Q<Bit> { basis q as b { flip(b) } }
+fn read_flipped(q: Q<Bit>) -> Bit { flip(measure_z(q)) }
+```
+
+Coherent lifting independently requires injectivity of the complete map;
+computed predicates retain their separate exact cleanup contracts. A classical
+declaration or its name grants no inverse/control access, Meaning evidence or
+native acceptance. Meaning declarations remain descriptions, not runtime
+callees. Supported Unit/Bit/product runtime calls lower their original
+expression nodes through ordinary operations in both concrete consumers;
+ordinary execution does not evaluate a precomputed truth table. Existing Bits,
+selected coherent-lift and target-profile limitations remain separate.
+
+The retired declaration spelling `basis fn` rejects with a located migration
+diagnostic directing authors to `classical fn`; there is no compatibility alias.
+The coherent expression `basis q as pattern { expression }` and static
+`A: Basis` parameters keep their existing meanings. Historical first sources
+and validation records retain their original spelling; current replay selects
+explicitly recorded derivatives.
+
 ## Bytes, characters and positions
 
 Source is UTF-8. Every source span is a half-open byte interval in the original
@@ -117,16 +156,16 @@ The existing finite keywords are reserved in the common grammar, including
 identifier positions formerly treated contextually by the sized parser:
 `use`, `meaning`, `static`, `Op`, `requires`, `Apply`, `Adjoint`, `Controlled`,
 `permutation_by`, `phase_by`, `checked_op`, `bind_op`, `inverse_op`, `then_op`, `tensor_op`,
-`controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `basis`, `iso`, `unitary`,
+`controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `classical`, `basis`, `iso`, `unitary`,
 `observe`, `fn`, `let`, `if`, `else`, `do`, `pure`, `with_computed`,
 `apply_contract`, `adjoint`, `repeat_static`, `qif`, `true`, `false`, `not`,
 `xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits
-`basis` and `observe` immediately after `std::` as module names.
+`basis`, `observe` and `classical` immediately after `std::` as module names.
 
 `do` and `pure` remain reserved tokens solely to reject the removed coherent
 notation with a migration diagnostic. They introduce no accepted expression,
-alias, monadic operation or state preparation. `basis fn` retains its separate
-declaration role; the expression role is specified in
+alias, monadic operation or state preparation. `classical fn` declares total
+ordinary computations; the distinct `basis` expression is specified in
 [Coherent basis maps](coherent-basis.md).
 
 `checked_op` is the reserved exact-meaning constructor described in
@@ -227,7 +266,7 @@ elaboration, evidence, native work and loader/parser limits are separate.
 Exhaustion rejects; it is not a discharged quantitative Resource Safety
 certificate or evidence that the program's mathematical obligation is false.
 
-Ordinary and basis function parameters use the existing name, wildcard and
+Ordinary and classical function parameters use the existing name, wildcard and
 tuple pattern syntax. The colon annotates the entire parameter pattern, and
 the source argument list keeps that parameter as one argument. For example,
 `unitary fn first((a, _): (Bit, Bit)) -> Bit { a }` takes one ordinary pair.
@@ -258,11 +297,11 @@ points to the complete `use` span.
 
 Same-module sibling calls may refer forward or backward and may use private
 declarations. Cross-module imports and host-selected entries require public
-visibility. Runtime calls, static providers, Basis and Meaning dependencies
+visibility. Runtime calls, static providers, classical and Meaning dependencies
 from every original body enter the checked graph. Mutual cycles reject. Only
 an actual runtime self-call to the identical DefId with the checked Nat decrease
 is permitted, including its directly transformed runtime form; a recursive
-opaque provider, Basis/Meaning cycle or failed decrease does not qualify.
+opaque provider, classical/Meaning cycle or failed decrease does not qualify.
 Finite may subsequently refuse to materialize such a source definition under
 its concrete profile. Names, effect fixed points and zero-count repetition
 cannot stand for the required decrease proof.

@@ -27,14 +27,16 @@ static-name collisions retain the ordinary pattern checks.
 
 The braces contain exactly one existing `BasisExpr`, not an ordinary block.
 The admitted forms are bound labels, `()`, `0`/`1`, grouping, ordered tuples,
-`not`, `and`, `xor`, and calls to declared `basis fn` functions with their exact
+`not`, `and`, `xor`, and calls to declared `classical fn` functions with their exact
 argument-list arity and types. There is no `let`, statement sequence, semicolon,
 measurement, ordinary runtime call or nested coherent map in this body.
-`basis fn` remains the declaration form for ordinary basis computations.
+`classical fn` declares total ordinary computations. Its body can also be called
+on ordinary runtime values, including measured Bits, under the
+[classical declaration rules](source-text.md#total-classical-declarations).
 
 The body's runtime-value context consists only of its pattern's ordinary
 labels. It cannot capture an outer ordinary value or quantum owner, even if
-that value is immutable. Declared basis functions and the static premises
+that value is immutable. Declared classical functions and the static premises
 needed for their checking retain their normal resolution and dependency
 checks. A retained static premise is not an outer runtime-value capture.
 The input expression may itself contain an ordinary call or another coherent
@@ -125,7 +127,7 @@ that an old spelling remains accepted.
 
 Other diagnostics retain their actual stage: an input with the wrong owner
 shape is a type error; an isolated body's outer value is unbound; an ordinary
-or measuring call is not a basis function; a finite map with colliding labels
+or measuring call is not a classical function; a finite map with colliding labels
 fails injectivity; reuse of the consumed input fails ownership. Text and JSON
 diagnostics retain original source locations and the frontend's public code
 and message. A syntax suggestion must not bypass these semantic requirements.

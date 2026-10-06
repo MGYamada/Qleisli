@@ -23,7 +23,7 @@ use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t;
 use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z;
-basis fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning:Bit=phase_by(z_phase);
 unitary fn provider(q:Q<Bit>)->Q<Bit>{repeat_static(4,t,q)}
 unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}

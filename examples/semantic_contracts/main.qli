@@ -4,7 +4,7 @@ use std::quantum::x;
 use std::quantum::z;
 use std::observe::measure_z;
 
-basis fn copy_bit(value: Bit) -> Bit { value }
+classical fn copy_bit(value: Bit) -> Bit { value }
 
 // The logical meanings are specified independently of the auxiliary bodies.
 unitary fn logical_identity(q: Q<Bit>) -> Q<Bit> { q }

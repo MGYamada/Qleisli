@@ -1,14 +1,14 @@
 //! Phase-fixed reflections, implemented as ordinary checked source.
 //!
 //! Inputs may be entangled with external references; no product-state promise.
-//! Contract identifier: R002. Private basis helpers grant no evidence privilege.
+//! Contract identifier: R002. Private classical helpers grant no evidence privilege.
 use std::transform::hadamard2;
 use std::quantum::z;
 
 /// Return 0 exactly on (0,0), and 1 on every other pair of basis labels.
 /// Computing this predicate and applying Z to its auxiliary gives phase +1
 /// on 00 and -1 elsewhere: 2|00><00| - I, including its sign.
-basis fn nonzero2((a, b): (Bit, Bit)) -> Bit { not (not a and not b) }
+classical fn nonzero2((a, b): (Bit, Bit)) -> Bit { not (not a and not b) }
 
 /// Apply the phase-fixed reflection 2|s><s| - I, with |s> = (H tensor H)|00>.
 /// Consume and return the two data owners with no input-state promise.

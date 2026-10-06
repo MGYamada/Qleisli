@@ -169,7 +169,7 @@ fn corpus_dropped_owner_now_points_to_b_not_the_body() {
 
 #[test]
 fn nary_patterns_types_and_basis_values_preserve_immediate_arity() {
-    let source = "basis fn rotate((a,b,c): (Bit,Bit,Bit)) -> (Bit,Bit,Bit) { (c,a,b) }";
+    let source = "classical fn rotate((a,b,c): (Bit,Bit,Bit)) -> (Bit,Bit,Bit) { (c,a,b) }";
     let ast = parse_module(source).unwrap();
     let param = &ast.decls[0].params[0];
     assert_eq!(
@@ -198,9 +198,9 @@ fn nary_patterns_types_and_basis_values_preserve_immediate_arity() {
     let document = render_markdown(&format!("/// Rotate a three-bit label.\n{source}")).unwrap();
     assert!(document.contains("(a,b,c): (Bit,Bit,Bit)"), "{document}");
     for bad in [
-        "basis fn bad((a,b,): (Bit,Bit)) -> Bit { a }",
-        "basis fn bad(a: (Bit,Bit,)) -> Bit { 0 }",
-        "basis fn bad(a:Bit) -> (Bit,Bit,Bit) { (a,a,a,) }",
+        "classical fn bad((a,b,): (Bit,Bit)) -> Bit { a }",
+        "classical fn bad(a: (Bit,Bit,)) -> Bit { 0 }",
+        "classical fn bad(a:Bit) -> (Bit,Bit,Bit) { (a,a,a,) }",
         "observe fn main() -> (Bit,Bit,Bit) { (0,0,1,) }",
     ] {
         assert!(parse_module(bad).is_err(), "{bad}");
@@ -222,15 +222,15 @@ fn flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits() {
                     vec!["()"; 10_000].join(",")
                 ),
                 format!(
-                    "basis fn f() -> Unit {{ ({}) }}",
+                    "classical fn f() -> Unit {{ ({}) }}",
                     vec!["()"; 10_000].join(",")
                 ),
                 format!(
-                    "basis fn f(({}):Unit) -> Unit {{ () }}",
+                    "classical fn f(({}):Unit) -> Unit {{ () }}",
                     vec!["_"; 10_000].join(",")
                 ),
                 format!(
-                    "basis fn f(a:Bit) -> Unit {{ ((),(),{}) }}",
+                    "classical fn f(a:Bit) -> Unit {{ ((),(),{}) }}",
                     vec!["a"; 64].join(" xor ")
                 ),
                 format!(

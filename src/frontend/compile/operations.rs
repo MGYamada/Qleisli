@@ -146,7 +146,7 @@ impl Compiler<'_> {
                 &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "meaning requires an ordinary total basis function",
+                "meaning requires an ordinary total classical function",
             ));
         };
         let f = self.basis.get(&fkey).ok_or_else(|| {
@@ -154,7 +154,7 @@ impl Compiler<'_> {
                 &key_name.0,
                 function.span,
                 ErrorCode::TypeMismatch,
-                "meaning requires an ordinary total basis function",
+                "meaning requires an ordinary total classical function",
             )
         })?;
         let result = if *permutation {

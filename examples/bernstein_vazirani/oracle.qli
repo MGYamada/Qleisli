@@ -1,7 +1,7 @@
 use std::quantum::z;
 
 // f(a, b) = (1, 0) dot (a, b) mod 2.
-basis fn linear((a, b): (Bit, Bit)) -> Bit { a }
+classical fn linear((a, b): (Bit, Bit)) -> Bit { a }
 
 pub unitary fn mark(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
     with_computed(q, linear) { |ancilla| z(ancilla) }

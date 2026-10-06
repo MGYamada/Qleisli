@@ -15,7 +15,7 @@ unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
 unitary fn phase(q:Q<Bit>)->Q<Bit>{t(q)}
 unitary fn had(q:Q<Bit>)->Q<Bit>{h(q)}
 unitary fn direct_z(q:Q<Bit>)->Q<Bit>{z(q)}
-basis fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning: Bit = phase_by(z_phase);
 unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 ";
@@ -49,7 +49,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     assert!(rendered.contains("requires Apply(U)"));
     for source in [
         "unitary fn f[static U:Op<Bit>,](q:Q<Bit>)->Q<Bit>{q}",
-        "basis fn f[static U:Op<Bit>](b:Bit)->Bit{b}",
+        "classical fn f[static U:Op<Bit>](b:Bit)->Bit{b}",
         "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(01,u)](q)}",
         "unitary fn f(q:Q<Bit>)->Q<Bit>{inverse_op(u)}",
         "unitary fn meaning(q:Q<Bit>)->Q<Bit>{q}",
@@ -86,14 +86,14 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     );
     root.write(
         "meanings.qli",
-        "use std::quantum::x; basis fn flip(b:Bit)->Bit{not b}
+        "use std::quantum::x; classical fn flip(b:Bit)->Bit{not b}
         pub meaning Flip:Bit=permutation_by(flip);
         pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}",
     );
     check_project(&root.0).unwrap();
     root.write(
         "meanings.qli",
-        "basis fn flip(b:Bit)->Bit{not b} meaning Flip:Bit=permutation_by(flip);
+        "classical fn flip(b:Bit)->Bit{not b} meaning Flip:Bit=permutation_by(flip);
         pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{q}",
     );
     assert_eq!(check_project(&root.0).unwrap_err().code, ErrorCode::Project);
@@ -242,8 +242,8 @@ fn parameter_adjoint_repeat_and_both_qif_polarities_are_correct() {
 #[test]
 fn scalar_phase_and_zero_width_ownership_survive_control() {
     deterministic(
-        "basis fn yes(u:Unit)->Bit{1}
-        basis fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
+        "classical fn yes(u:Unit)->Bit{1}
+        classical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
         meaning Minus:Unit=phase_by(scalar);
         unitary fn minus(q:Q<Unit>)->Q<Unit>{with_computed(q,yes){|a|z(a)}}
         unitary fn zero(q:Q<Unit>)->Q<Unit>{q}
@@ -335,11 +335,11 @@ fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
         ErrorCode::Contract,
     );
     rejects(
-        "basis fn constant(b:Bit)->Bit{0} meaning Bad:Bit=permutation_by(constant);",
+        "classical fn constant(b:Bit)->Bit{0} meaning Bad:Bit=permutation_by(constant);",
         ErrorCode::Contract,
     );
     rejects(
-        "basis fn wrong(b:Bit)->Bit{b} meaning Bad:Bit=phase_by(wrong);",
+        "classical fn wrong(b:Bit)->Bit{b} meaning Bad:Bit=phase_by(wrong);",
         ErrorCode::TypeMismatch,
     );
     rejects(
@@ -356,7 +356,7 @@ fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
 
 #[test]
 fn generic_cleanup_obligations_are_discharged_for_each_actual_instance() {
-    let generic = "basis fn pred(b:Bit)->Bit{b}
+    let generic = "classical fn pred(b:Bit)->Bit{b}
         unitary fn clean[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){
             with_computed(q,pred,direct_z){|d,a|(d,U(a))}}
         unitary fn client(q:Q<Bit>)->Q<Bit>{clean[PROVIDER](q)}";

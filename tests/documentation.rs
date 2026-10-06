@@ -12,7 +12,7 @@ fn rust_style_docs_attach_to_modules_imports_and_functions_in_source_order() {
         /// Import.\nuse std::quantum::h;\n\
         /// Outer.\n/** More outer. */\npub unitary fn f(q: Q<Bit>) -> Q<Bit> {\n\
         //! Inner.\n/*! More inner. */\nh(q)\n}\n\
-        basis fn identity(x: Bit) -> Bit { //! Basis inner.\n x }";
+        classical fn identity(x: Bit) -> Bit { //! Basis inner.\n x }";
     let parsed = parse_documented_module(source).unwrap();
     assert_eq!(parsed.syntax, parse_module(source).unwrap());
     assert_eq!(parsed.module_docs.len(), 2);
@@ -48,20 +48,22 @@ fn ordinary_and_nested_comment_delimiters_follow_rust_distinctions() {
         "/* outer /*! inner */ /** nested */ */",
     ] {
         let parsed =
-            parse_documented_module(&format!("{prefix}basis fn f() -> Bit {{ 0 }}")).unwrap();
+            parse_documented_module(&format!("{prefix}classical fn f() -> Bit {{ 0 }}")).unwrap();
         assert!(parsed.module_docs.is_empty(), "{prefix}");
         assert!(parsed.declaration_docs[0].is_empty(), "{prefix}");
     }
-    let parsed =
-        parse_documented_module("/*!*/ /** outer /* nested */ tail */ basis fn f() -> Bit { 0 }")
-            .unwrap();
+    let parsed = parse_documented_module(
+        "/*!*/ /** outer /* nested */ tail */ classical fn f() -> Bit { 0 }",
+    )
+    .unwrap();
     assert_eq!(parsed.module_docs[0].text, "");
     assert_eq!(
         parsed.declaration_docs[0][0].text,
         " outer /* nested */ tail "
     );
     let parsed =
-        parse_documented_module("//!! bang\n///! outer bang\nbasis fn f() -> Bit { 0 }").unwrap();
+        parse_documented_module("//!! bang\n///! outer bang\nclassical fn f() -> Bit { 0 }")
+            .unwrap();
     assert_eq!(parsed.module_docs[0].text, "! bang");
     assert_eq!(parsed.declaration_docs[0][0].text, "! outer bang");
     assert!(
@@ -78,12 +80,12 @@ fn misplaced_documentation_is_rejected_in_both_parse_entry_points() {
     for source in [
         "/// orphan",
         "/** orphan */",
-        "/// outer\n//! inner after outer\nbasis fn f() -> Bit { 0 }",
+        "/// outer\n//! inner after outer\nclassical fn f() -> Bit { 0 }",
         "use std::quantum::h; //! late module",
-        "pub /// inside header\nbasis fn f() -> Bit { 0 }",
-        "basis fn f(/// parameter\nx: Bit) -> Bit { x }",
-        "basis fn f() -> Bit { /// expression\n0 }",
-        "basis fn f() -> Bit { 0 //! after body value\n }",
+        "pub /// inside header\nclassical fn f() -> Bit { 0 }",
+        "classical fn f(/// parameter\nx: Bit) -> Bit { x }",
+        "classical fn f() -> Bit { /// expression\n0 }",
+        "classical fn f() -> Bit { 0 //! after body value\n }",
         "unitary fn f() -> Bit { let b = 1; //! after statement\n b }",
         "unitary fn f() -> Bit { if 1 { //! expression block\n 1 } else { 0 } }",
     ] {
@@ -96,7 +98,7 @@ fn misplaced_documentation_is_rejected_in_both_parse_entry_points() {
 
 #[test]
 fn doc_text_normalizes_crlf_but_preserves_utf8_source_spans() {
-    let source = "//! 日本語\r\n/** α\r\n β */\r\nbasis fn f() -> Bit { 0 }";
+    let source = "//! 日本語\r\n/** α\r\n β */\r\nclassical fn f() -> Bit { 0 }";
     let parsed = parse_documented_module(source).unwrap();
     assert_eq!(parsed.module_docs[0].text, " 日本語");
     assert_eq!(parsed.module_docs[0].span.end, "//! 日本語".len());
@@ -105,11 +107,11 @@ fn doc_text_normalizes_crlf_but_preserves_utf8_source_spans() {
     assert_eq!(&source[doc.span.start..doc.span.end], "/** α\r\n β */");
     assert_eq!(
         parsed.syntax.decls[0].span.start,
-        source.find("basis").unwrap()
+        source.find("classical").unwrap()
     );
     for source in [
         "//! bare\r",
-        "/// bare\r\nbasis fn f() -> Bit { 0 }",
+        "/// bare\r\nclassical fn f() -> Bit { 0 }",
         "/*! bare\r */",
     ] {
         if source.contains("\r\n") {
@@ -121,12 +123,12 @@ fn doc_text_normalizes_crlf_but_preserves_utf8_source_spans() {
         }
     }
     assert!(
-        parse_module("// ordinary\rbasis fn hidden() -> Bit { 0 }")
+        parse_module("// ordinary\rclassical fn hidden() -> Bit { 0 }")
             .unwrap_err()
             .message
             .contains("bare carriage return")
     );
-    assert!(parse_module("/* ordinary\r */basis fn visible() -> Bit { 0 }").is_err());
+    assert!(parse_module("/* ordinary\r */classical fn visible() -> Bit { 0 }").is_err());
 }
 
 #[test]
@@ -140,7 +142,7 @@ fn all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics() {
         ("/** ", "*/"),
     ] {
         for character in ['\u{202e}', '\u{2028}', '\u{0085}', '\u{00a0}', '\0'] {
-            let source = format!("{prefix} text{character}{suffix}basis fn f() -> Bit {{ 0 }}");
+            let source = format!("{prefix} text{character}{suffix}classical fn f() -> Bit {{ 0 }}");
             let error = lex(&source).unwrap_err();
             assert_eq!(
                 &source[error.span.start..error.span.end],
@@ -158,7 +160,7 @@ fn all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics() {
 #[test]
 fn deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax() {
     let source = format!(
-        "{} text {}basis fn f() -> Bit {{ 1 }}",
+        "{} text {}classical fn f() -> Bit {{ 1 }}",
         "/*".repeat(20_000),
         "*/".repeat(20_000)
     );
@@ -188,13 +190,13 @@ fn documentation_neither_changes_ir_nor_authorizes_invalid_ownership() {
 
 #[test]
 fn markdown_includes_private_docs_and_uses_safe_signature_fences() {
-    let source = "//! Module text.\n/// Function text.\npub /* ``` */ basis fn f(x: Bit) -> Bit { x }\n/// Private text.\nbasis fn hidden() -> Bit { 0 }";
+    let source = "//! Module text.\n/// Function text.\npub /* ``` */ classical fn f(x: Bit) -> Bit { x }\n/// Private text.\nclassical fn hidden() -> Bit { 0 }";
     let rendered = render_markdown(source).unwrap();
     assert!(rendered.contains("Module text."));
     assert!(rendered.contains("f (public)"));
     assert!(rendered.contains("hidden (private)"));
     assert!(rendered.contains("Private text."));
-    assert!(rendered.contains("````qli\npub /* ``` */ basis fn f(x: Bit) -> Bit\n````"));
+    assert!(rendered.contains("````qli\npub /* ``` */ classical fn f(x: Bit) -> Bit\n````"));
     assert!(!rendered.contains("{ x }"));
 }
 
@@ -202,7 +204,7 @@ fn markdown_includes_private_docs_and_uses_safe_signature_fences() {
 fn unfinished_comment_blocks_cannot_swallow_later_declarations() {
     for comment in ["```", "~~~~rust", "<!--", "<script>", "``````\n/// <!--"] {
         let source = format!(
-            "/// {comment}\nbasis fn hidden()->Bit{{0}}\n/// visible\npub basis fn visible()->Bit{{1}}"
+            "/// {comment}\nclassical fn hidden()->Bit{{0}}\n/// visible\npub classical fn visible()->Bit{{1}}"
         );
         let rendered = render_markdown(&source).unwrap();
         // Independently scan fenced blocks: the later heading must occur at
@@ -219,7 +221,7 @@ fn unfinished_comment_blocks_cannot_swallow_later_declarations() {
             }
         }
         assert!(heading && fence.is_none(), "{rendered}");
-        assert!(rendered.contains("```qli\npub basis fn visible()->Bit\n```"));
+        assert!(rendered.contains("```qli\npub classical fn visible()->Bit\n```"));
     }
 }
 

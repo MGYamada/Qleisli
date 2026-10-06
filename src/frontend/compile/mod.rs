@@ -333,7 +333,7 @@ impl Compiler<'_> {
             decl.static_params.len(),
             "checked static count"
         );
-        let stage = if decl.kind == FnKind::Basis {
+        let stage = if decl.kind == FnKind::Classical {
             Stage::Basis
         } else {
             Stage::Runtime
@@ -363,7 +363,7 @@ impl Compiler<'_> {
         })();
         self.work = work;
         let (params, result) = result?;
-        if decl.kind == FnKind::Basis {
+        if decl.kind == FnKind::Classical {
             for (ordinal, parameter) in decl.params.iter().enumerate() {
                 if !matches!(parameter.pattern.kind, PatternKind::Name(_)) {
                     // Concrete labels still use the actual finite pattern/label binder.
@@ -760,7 +760,7 @@ fn process_loaded_project_details(
         entry.and_then(|id| compiler.declarations.get(&id).map(|decl| (id, *decl)))
     {
         let (_, result) = compiler.signature(&entry)?;
-        if matches!(decl.kind, FnKind::Basis | FnKind::Meaning)
+        if matches!(decl.kind, FnKind::Classical | FnKind::Meaning)
             || !decl.params.is_empty()
             || !decl.static_params.is_empty()
             || !result.classical()
@@ -782,11 +782,11 @@ fn process_loaded_project_details(
             message: "expected ordinary fn main() with a closed classical result".to_owned(),
         });
     }
-    // All basis functions precede their callers; ordinary functions may only
-    // invoke them through a coherent lift or with_computed predicate.
+    // Prepare finite descriptions for static/coherent obligations. Ordinary
+    // calls lower the original classical body; they do not execute this table.
     for key in &order {
         compiler.checking = Some(*key);
-        if compiler.declarations[key].kind == FnKind::Basis {
+        if compiler.declarations[key].kind == FnKind::Classical {
             let function = compiler.compile_basis(key)?;
             compiler.basis.insert(*key, function);
         }
@@ -803,7 +803,7 @@ fn process_loaded_project_details(
         if compiler.declarations[key].static_params.is_empty()
             && !matches!(
                 compiler.declarations[key].kind,
-                FnKind::Basis | FnKind::Meaning
+                FnKind::Classical | FnKind::Meaning
             )
         {
             let program = lower::lower_function(&mut compiler, key)?;

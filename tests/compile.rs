@@ -136,19 +136,19 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::Ownership,
         ),
         (
-            "basis fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_computed(init0(), p) { |a| h(a) }) }",
+            "classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_computed(init0(), p) { |a| h(a) }) }",
             ErrorCode::Unsupported,
         ),
         (
-            "basis fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_computed(init0(), p) { |a| let b = measure_z(a); init0() }) }",
+            "classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { measure_z(with_computed(init0(), p) { |a| let b = measure_z(a); init0() }) }",
             ErrorCode::Effect,
         ),
         (
-            "basis fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { let q = init0(); measure_z(with_computed(q, p) { |a| let q = h(q); a }) }",
+            "classical fn p(x: Bit) -> Bit { x } observe fn main() -> Bit { let q = init0(); measure_z(with_computed(q, p) { |a| let q = h(q); a }) }",
             ErrorCode::Ownership,
         ),
         (
-            "basis fn bad(x: Bit) -> Bit { missing } observe fn main() -> Unit { () }",
+            "classical fn bad(x: Bit) -> Bit { missing } observe fn main() -> Unit { () }",
             ErrorCode::UnknownName,
         ),
         (
@@ -217,7 +217,7 @@ use std::quantum::z;
 use std::quantum::join;
 use std::quantum::split;
 use std::observe::measure_z;
-basis fn predicate((a,b): (Bit,Bit)) -> Bit { xor2(and2(a, b), 0) }
+classical fn predicate((a,b): (Bit,Bit)) -> Bit { xor2(and2(a, b), 0) }
 observe fn main() -> (Bit, Bit) {
     let q = join(h(init0()), x(init0()));
     let q = with_computed(q, predicate) { |a| z(a) };
@@ -356,7 +356,7 @@ fn annotated_types_and_computed_domains_share_the_tree_limits() {
     for source in [
         format!("unitary fn f(v: {ty}) -> Unit {{ () }}"),
         format!(
-            "basis fn p(value: {ty}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}"
+            "classical fn p(value: {ty}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}"
         ),
     ] {
         let root = SourceRoot::new(&source);
@@ -590,7 +590,7 @@ fn finite_v0_basis_lifts_are_injective_and_closed() {
 #[test]
 fn finite_v0_computed_blocks_require_the_structural_certificate() {
     let prefix = "use std::quantum::h; use std::quantum::z; use std::quantum::t;
-                  basis fn p(x: Bit) -> Bit { x }
+                  classical fn p(x: Bit) -> Bit { x }
                   unitary fn phase(a: Q<Bit>) -> Q<Bit> { t(z(a)) }";
     for body in ["a", "phase(a)"] {
         let source = format!(
@@ -616,8 +616,8 @@ fn finite_v0_computed_blocks_require_the_structural_certificate() {
 #[test]
 fn finite_v0_local_names_shadow_static_callees() {
     for source in [
-        "basis fn f(x: Bit) -> Bit { x }
-         basis fn bad(f: Bit) -> Bit { f(f) }",
+        "classical fn f(x: Bit) -> Bit { x }
+         classical fn bad(f: Bit) -> Bit { f(f) }",
         "use std::quantum::h;
          unitary fn bad(h: Q<Bit>) -> Q<Bit> { let q = h; adjoint(h,q) }",
     ] {

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"module `std::transform` has no name `init0`; help: public alternatives: `use std::quantum::init0;`","primary":{"path":"main.qli","start":97,"end":102,"line":4,"column":21},"related":[]}],"result":null}

@@ -33,6 +33,16 @@ common source judgment. Checking both arms does not mean executing both arms.
 The [source rules](source-text.md#ordinary-function-effects-and-assertions)
 specify principal effects and assertion checking.
 
+Total finite `classical fn` declarations also have ordinary runtime calls.
+Their restricted pure expression bodies use the same ordered ordinary argument
+and exact type rules. Argument observation remains an effect of the caller;
+a live `Q<A>` cannot become ordinary `A` by calling a classical function.
+The same definition may be used in a static Meaning or coherent basis body,
+where the existing finite-domain and injectivity checks still apply.
+Noninjective ordinary computation grants neither coherent access nor inverse
+or control evidence. See [classical declarations](source-text.md#total-classical-declarations)
+for the grammar, migration and concrete profile limits.
+
 `Q<A>` is one live linear quantum owner. A tuple containing such an owner is
 also linear, including an owner of zero physical width. Ordinary `Unit`, `Bit`,
 `Bits<n>` and products containing only ordinary fields may be copied or dropped;

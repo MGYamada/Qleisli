@@ -175,10 +175,10 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
         ),
         (
             "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=1;with_computed(q,f){|a|a}}",
-            "with_computed requires a basis function name",
+            "with_computed requires a classical function name",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|f|f(f)}} basis fn p(b:Bit)->Bit{b}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|f|f(f)}} classical fn p(b:Bit)->Bit{b}",
             "a local value is not callable",
         ),
     ] {
@@ -222,7 +222,7 @@ fn dependency_scopes_do_not_hide_unknown_names_or_recursive_initializers() {
 #[test]
 fn basis_and_coherent_lift_bindings_are_not_global_dependencies() {
     for source in [
-        "basis fn bad(f:Bit)->Bit{f(f)}",
+        "classical fn bad(f:Bit)->Bit{f(f)}",
         "unitary fn bad(q:Q<Bit>)->Q<Bit>{basis q as f { f(f) }}",
     ] {
         let root = SourceRoot::new(source);

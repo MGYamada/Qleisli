@@ -58,7 +58,7 @@ unitary fn collapse_units(q: Q<(Unit,Unit)>) -> Q<Unit> {
     );
     // Basis declarations still use named parameters and expression bodies.
     rejected(
-        "basis fn first(p: (Bit,Bit)) -> Bit { let (a,b) = p; a }",
+        "classical fn first(p: (Bit,Bit)) -> Bit { let (a,b) = p; a }",
         ErrorCode::Project,
     );
     accepted(
@@ -163,7 +163,7 @@ fn zero_wire_ownership_requires_explicit_consumption() {
 
 #[test]
 fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
-    let declaration = "basis fn flip(x: Bit) -> Bit { not x }";
+    let declaration = "classical fn flip(x: Bit) -> Bit { not x }";
     accepted(&format!(
         "{declaration}
         unitary fn lifted(flip: Bit, q: Q<Bit>) -> Q<Bit> {{
@@ -192,7 +192,7 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
 
 #[test]
 fn computed_auxiliary_shadow_preserves_the_outer_owner() {
-    let prefix = "use std::quantum::z; basis fn p(x: Bit) -> Bit { x }";
+    let prefix = "use std::quantum::z; classical fn p(x: Bit) -> Bit { x }";
     deterministic(
         &format!(
             r#"{prefix}
@@ -271,7 +271,7 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
     // The computed certificate still accepts only a complete empty/Z/T IR
     // sequence, even when an extra classical instruction is harmless.
     rejected(
-        "basis fn p(b:Bit)->Bit { b }
+        "classical fn p(b:Bit)->Bit { b }
         unitary fn f(q:Q<Bit>)->Q<Bit> {
             with_computed(q,p) { |a| let unused = 1; a }
         }",

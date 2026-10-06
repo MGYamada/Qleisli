@@ -31,7 +31,7 @@ operation-parameter grammar:
 ```qli
 use std::quantum::z;
 
-basis fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
+classical fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
 meaning ZMeaning: Bit = phase_by(z_phase);
 unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
 

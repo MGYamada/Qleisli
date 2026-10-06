@@ -246,6 +246,31 @@ def compare_package_metadata(original, packaged):
     require(targets(original) == targets(packaged), "packaged build targets changed")
 
 
+LOG_PREVIEW_BYTES = 8192
+
+
+def preview_log(path, stream, *, binary_artifact=False):
+    """Best-effort failure diagnostics; retained bytes remain authoritative."""
+    if binary_artifact:
+        message = f"{stream} retained as binary artifact: {path}; preview omitted"
+    else:
+        try:
+            with path.open("rb") as handle:
+                size = handle.seek(0, os.SEEK_END)
+                handle.seek(max(0, size - LOG_PREVIEW_BYTES))
+                data = handle.read(LOG_PREVIEW_BYTES)
+            detail = (f"; truncated to last {LOG_PREVIEW_BYTES} of {size} bytes"
+                      if size > LOG_PREVIEW_BYTES else "")
+            message = f"{stream} preview: {path}{detail}\n" + data.decode("utf-8", errors="replace")
+        except OSError as error:
+            message = f"{stream} preview unavailable: {path}: {error}"
+    try:
+        print(message, file=sys.stderr)
+    except (OSError, UnicodeError):
+        # Diagnostics must not replace the original child-command failure.
+        pass
+
+
 class Commands:
     def __init__(self, artifacts, report):
         self.artifacts, self.report = artifacts, report
@@ -264,6 +289,10 @@ class Commands:
                                      check=False)
         entry.update(exit_code=process.returncode,
                      elapsed_seconds=round(time.monotonic() - start, 3))
+        if process.returncode != 0:
+            # Explicit stdout destinations hold artifacts, currently git archives.
+            preview_log(output, "stdout", binary_artifact=stdout_path is not None)
+            preview_log(error, "stderr")
         require(process.returncode == 0, f"command failed ({process.returncode}): {argv}; see {error}")
         return output.read_bytes()
 

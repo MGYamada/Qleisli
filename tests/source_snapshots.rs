@@ -123,7 +123,7 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
         let root = SourceRoot::new(&format!(
             "use dep::implementation; use std::quantum::init0; use std::quantum::x;
              use std::observe::measure_z;
-             basis fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
+             classical fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
              unitary fn specified(q:Q<Bit>)->Q<Bit>{{x(q)}}
              unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}
              observe fn main()->Bit{{let q=init0(); let q={call}; measure_z(q)}}"

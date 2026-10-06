@@ -78,14 +78,14 @@ impl Checker<'_, '_> {
                     return Err(SourceError::new(
                         "type",
                         callee.span,
-                        "basis expression requires a basis function",
+                        "basis expression requires a classical function",
                     ));
                 };
-                if self.program.decl(id).kind != FnKind::Basis {
+                if self.program.decl(id).kind != FnKind::Classical {
                     return Err(SourceError::new(
                         "type",
                         callee.span,
-                        "basis expression requires a basis function",
+                        "basis expression requires a classical function",
                     ));
                 }
                 let (params, result, _) = self.specialize(id, &[], scope, callee.span, false)?;
@@ -93,7 +93,7 @@ impl Checker<'_, '_> {
                     return Err(SourceError::new(
                         "arity",
                         callee.span,
-                        "basis function argument arity mismatch",
+                        "classical function argument arity mismatch",
                     ));
                 }
                 for (arg, expected) in args.iter().zip(&params) {
@@ -153,14 +153,14 @@ impl Checker<'_, '_> {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "meaning requires a basis function",
+                "meaning requires a classical function",
             ));
         };
-        if self.program.decl(id).kind != FnKind::Basis {
+        if self.program.decl(id).kind != FnKind::Classical {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "meaning requires a basis function",
+                "meaning requires a classical function",
             ));
         }
         let (params, result, _) = self.specialize(id, &[], scope, function.span, false)?;
@@ -421,7 +421,10 @@ impl Checker<'_, '_> {
                 "apply_contract requires ordinary functions with inferred Unitary body effects",
             ));
         };
-        if matches!(self.program.decl(id).kind, FnKind::Basis | FnKind::Meaning) {
+        if matches!(
+            self.program.decl(id).kind,
+            FnKind::Classical | FnKind::Meaning
+        ) {
             return Err(SourceError::new(
                 "type",
                 name.span,
@@ -470,21 +473,21 @@ impl Checker<'_, '_> {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "with_computed requires a basis function name",
+                "with_computed requires a classical function name",
             ));
         }
         let Target::Declaration(predicate) = self.resolve(function)? else {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             ));
         };
-        if self.program.decl(predicate).kind != FnKind::Basis {
+        if self.program.decl(predicate).kind != FnKind::Classical {
             return Err(SourceError::new(
                 "type",
                 function.span,
-                "predicate must be a basis function",
+                "predicate must be a classical function",
             ));
         }
         let (params, result, _) = self.specialize(predicate, &[], scope, function.span, false)?;

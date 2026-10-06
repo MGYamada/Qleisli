@@ -139,7 +139,7 @@ observe fn main() -> (Bit, Bit) {
 fn parses_phase_oracle_and_measurement_feedback() {
     let source = r#"
 use std::quantum::z;
-basis fn predicate(x: Bit) -> Bit { not x }
+classical fn predicate(x: Bit) -> Bit { not x }
 pub unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
     with_computed(q, predicate) { |a| z(a) }
 }
@@ -151,7 +151,7 @@ observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (Bit, Q<Bit>) {
 "#;
     let module = parse_module(source).unwrap();
     assert_eq!(module.decls.len(), 3);
-    assert_eq!(module.decls[0].kind, FnKind::Basis);
+    assert_eq!(module.decls[0].kind, FnKind::Classical);
     assert!(matches!(module.decls[0].body, FnBody::Basis(_)));
     assert_eq!(module.decls[1].kind, FnKind::Unitary);
     let FnBody::Quantum(body) = &module.decls[1].body else {
@@ -183,7 +183,7 @@ observe fn feedback(q: Q<Bit>, r: Q<Bit>) -> (Bit, Q<Bit>) {
 #[test]
 fn basis_operators_have_documented_precedence_and_left_associativity() {
     let module =
-        parse_module("basis fn f(x: Bit, y: Bit, z: Bit) -> Bit { not x and y xor z xor 1 }")
+        parse_module("classical fn f(x: Bit, y: Bit, z: Bit) -> Bit { not x and y xor z xor 1 }")
             .unwrap();
     let FnBody::Basis(expr) = &module.decls[0].body else {
         panic!("expected basis body")
@@ -229,7 +229,7 @@ fn malformed_syntax_has_precise_error_spans() {
             "let",
             "expected",
         ),
-        ("basis fn f(x: CBit) -> Bit { x }", "CBit", "removed"),
+        ("classical fn f(x: CBit) -> Bit { x }", "CBit", "removed"),
     ];
     for (source, at, message) in cases {
         let error = parse_module(source).unwrap_err();
@@ -245,9 +245,12 @@ fn deep_syntax_is_rejected_without_exhausting_the_stack() {
         "(".repeat(10_000),
         ")".repeat(10_000)
     );
-    let negations = format!("basis fn f(x: Bit) -> Bit {{ {}x }}", "not ".repeat(10_000));
+    let negations = format!(
+        "classical fn f(x: Bit) -> Bit {{ {}x }}",
+        "not ".repeat(10_000)
+    );
     let types = format!(
-        "basis fn f(x: {}Bit{}) -> Bit {{ 0 }}",
+        "classical fn f(x: {}Bit{}) -> Bit {{ 0 }}",
         "(".repeat(10_000),
         ", Bit)".repeat(10_000)
     );
@@ -276,7 +279,7 @@ fn nested_operator_chains_share_the_ast_depth_limit() {
     for _ in 0..20 {
         expr = format!("({expr}){}", " xor x".repeat(20));
     }
-    let source = format!("basis fn f(x: Bit) -> Bit {{ {expr} }}");
+    let source = format!("classical fn f(x: Bit) -> Bit {{ {expr} }}");
     assert!(parse_module(&source).unwrap_err().message.contains("limit"));
 }
 
@@ -301,17 +304,17 @@ fn invisible_separators_and_bad_bit_literals_have_precise_errors() {
         ),
         ("// note\u{0000}hidden", "control character", "\u{0000}"),
         (
-            "basis fn f() -> Bit { 10 }",
+            "classical fn f() -> Bit { 10 }",
             "Bit literal must be 0 or 1",
             "10",
         ),
         (
-            "basis fn f() -> Bit { 2 }",
+            "classical fn f() -> Bit { 2 }",
             "Bit literal must be 0 or 1",
             "2",
         ),
         (
-            "basis fn f() -> Bit {\u{3000}0 }",
+            "classical fn f() -> Bit {\u{3000}0 }",
             "unsupported whitespace",
             "\u{3000}",
         ),
@@ -361,11 +364,11 @@ fn reserved_std_module_keywords_allow_further_identifier_components() {
 
 #[test]
 fn unicode_format_characters_are_comment_text_but_not_source_tokens() {
-    let declaration = "basis fn visible() -> Bit { 0 }";
+    let declaration = "classical fn visible() -> Bit { 0 }";
     for format_character in ['\u{200b}', '\u{feff}'] {
         for line_ending in ["\n", "\r\n"] {
             let source = format!(
-                "// note{format_character}basis fn hidden() -> Bit {{ 1 }}{line_ending}{declaration}"
+                "// note{format_character}classical fn hidden() -> Bit {{ 1 }}{line_ending}{declaration}"
             );
             let module = parse_module(&source).unwrap();
             assert_eq!(module.decls.len(), 1);
@@ -612,7 +615,7 @@ fn retired_coherent_do_and_pure_have_located_migration_diagnostics() {
             "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { pure x } }",
             "pure",
         ),
-        ("basis fn f(x: Bit) -> Bit { not pure x }", "pure"),
+        ("classical fn f(x: Bit) -> Bit { not pure x }", "pure"),
         (
             "unitary fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { do y <- q; pure y } }",
             "do",
@@ -693,7 +696,7 @@ fn classical_boolean_operators_have_precedence_and_left_associativity() {
 fn canonical_bit_literals_share_spelling_with_basis_bits() {
     for source in [
         "unitary fn f() -> (Bit,Bit) { (1,0) }",
-        "basis fn f() -> (Bit,Bit) { (0,1) }",
+        "classical fn f() -> (Bit,Bit) { (0,1) }",
     ] {
         parse_module(source).unwrap();
     }
@@ -704,7 +707,7 @@ fn canonical_bit_literals_share_spelling_with_basis_bits() {
             format!("unitary fn f() -> Unit {{ let {keyword} = (); () }}"),
             format!("use m::{keyword};"),
             format!("use {keyword}::f;"),
-            format!("basis fn f() -> Bit {{ {keyword} }}"),
+            format!("classical fn f() -> Bit {{ {keyword} }}"),
             format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ basis q as {keyword} {{ 0 }} }}"),
         ] {
             assert!(parse_module(&source).is_err(), "{source}");
@@ -817,12 +820,12 @@ fn common_natural_and_count_syntax_keeps_precedence_and_source_spans() {
 #[test]
 fn basis_requires_rejects_before_documentation_attachment() {
     for clause in ["0 == 0", "Apply(U)"] {
-        let source = format!("/// title\nbasis fn f(x:Bit)->Bit requires {clause} {{x}}");
+        let source = format!("/// title\nclassical fn f(x:Bit)->Bit requires {clause} {{x}}");
         let error = parse_module(&source).unwrap_err();
         assert_eq!(&source[error.span.start..error.span.end], "requires");
         assert_eq!(
             error.message,
-            "basis functions cannot have requires clauses"
+            "classical functions cannot have requires clauses"
         );
     }
 }

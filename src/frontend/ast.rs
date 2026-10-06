@@ -44,7 +44,8 @@ pub struct UseDecl {
 pub enum FnKind {
     /// A finite mathematical target, never a callable runtime function.
     Meaning,
-    Basis,
+    /// A total finite classical expression, reusable ordinarily and in basis maps.
+    Classical,
     /// An ordinary body-bearing function with no effect assertion.
     Inferred,
     Iso,

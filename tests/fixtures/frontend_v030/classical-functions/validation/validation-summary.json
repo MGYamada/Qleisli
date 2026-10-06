@@ -1,0 +1,312 @@
+{
+  "format": 1,
+  "recorded_utc": "2026-10-06T06:50:46.191625+00:00",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "scope": "Actual local bounded records, not a complete build closure, current-commit hosted CI, fresh Lean replay, theorem/guarantee admission, Issue closure or release approval.",
+  "latest_Rust": {
+    "toolchain": "1.98.1",
+    "unique_passing_tests": 331,
+    "exercised_targets": 30,
+    "existing_ignored": 5,
+    "counting": "57 core +159 successful first integration tests excluding its failed sampling target +114 repaired/remaining integration tests +1 discovery control; no double-counted sampling passes.",
+    "all_target_clippy": "passed"
+  },
+  "MSRV": {
+    "toolchain": "1.85.0",
+    "focused_passing_tests": 63,
+    "all_target_clippy": "passed"
+  },
+  "repairs": "Initial parser/effect facts and test-helper assumptions are preserved in failed records. First integration sampling failed because the new declaration migration precedes its old C-type diagnostic; the unchanged historical source and explicit current derivative now pass. Hosted stale do/pure phase reader has a byte-exact current derivative and unchanged independent phase oracle.",
+  "commands": {
+    "latest-core-03.json": {
+      "sha256": "0ee15cef76cd0fdd24d7a746e8a83e41add1140a69837add6f3ccc55f2cb6f88",
+      "exit_code": 0,
+      "seconds": 12.775766042002942,
+      "test_summaries": [
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 27,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    "latest-integration-01.json": {
+      "sha256": "402b4cf497c55d4ddebf8182fcef9ddfa4a963350b7c365f5fd3e2937b637250",
+      "exit_code": 101,
+      "seconds": 95.58614908298478,
+      "test_summaries": [
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 30,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 17,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 15,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 13,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "FAILED",
+          "passed": 8,
+          "failed": 1,
+          "ignored": 0
+        }
+      ]
+    },
+    "latest-integration-02.json": {
+      "sha256": "d5b6b11eb74d3b31a2745e353a7e2967116d9ad9a533420303c282c33b76f6fd",
+      "exit_code": 0,
+      "seconds": 178.81364641699474,
+      "test_summaries": [
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 38,
+          "failed": 0,
+          "ignored": 3
+        },
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 2
+        },
+        {
+          "status": "ok",
+          "passed": 10,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 7,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    "latest-native-discovery.json": {
+      "sha256": "fb4b3cd4d2c1a074cfdfd583df6508daa91f520f5afbe054611de2b3390cbb8b",
+      "exit_code": 0,
+      "seconds": 4.113716124964412,
+      "test_summaries": [
+        {
+          "status": "ok",
+          "passed": 1,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    "msrv-core-01.json": {
+      "sha256": "5cc50479dd80a97500b9a65206a1d95a0f717b44fdae9b9f3fa151e257671070",
+      "exit_code": 0,
+      "seconds": 23.14403633400798,
+      "test_summaries": [
+        {
+          "status": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 27,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 9,
+          "failed": 0,
+          "ignored": 0
+        },
+        {
+          "status": "ok",
+          "passed": 8,
+          "failed": 0,
+          "ignored": 0
+        }
+      ]
+    },
+    "latest-clippy.json": {
+      "sha256": "73482550de0759f7866603fec0aa29f9ffbca7d4a60cfa86575cea8379a83144",
+      "exit_code": 0,
+      "seconds": 5.750500791997183,
+      "test_summaries": []
+    },
+    "msrv-clippy.json": {
+      "sha256": "8dd2fc5b422406b1d29476e28eef8bdb85e26c1589f111a26aa9b02bc2f58462",
+      "exit_code": 0,
+      "seconds": 6.756061916996259,
+      "test_summaries": []
+    },
+    "latest-cli-build.json": {
+      "sha256": "ef88c38bcada4db35762783340ef260774e3ea37b5c9be9281445ecc300fd58d",
+      "exit_code": 0,
+      "seconds": 0.39743008400546387,
+      "test_summaries": []
+    },
+    "mdbook-build.json": {
+      "sha256": "1a0d4ce096edd52ef247083ac57b3e53ce87f766aa33cf0c0c1888c476d1753f",
+      "exit_code": 0,
+      "seconds": 0.12595270900055766,
+      "test_summaries": []
+    },
+    "book-links.json": {
+      "sha256": "d0169e13e2a3cbe9444cc3bd31230386e90584b200aa71edffe53a6491624ca4",
+      "exit_code": 0,
+      "seconds": 0.17823529202723876,
+      "test_summaries": []
+    }
+  },
+  "additional_evidence": {
+    "corpus": "corpus/migrations/classical-functions-v030/validation-summary.json",
+    "first_sources": "tests/fixtures/authoring_sessions/classical-runtime-v030/session.json",
+    "few_examples": "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/session.json",
+    "inventory_review": "inventory-review.json",
+    "distribution_diagnostics": "distribution-diagnostics.json"
+  },
+  "constitutional_status": "Original identity, human adoption/admission records and reviewed-base continuity checked. Two existing scoped QLV1 guarantees preserved; broader QS/PR/quantitative RS/EXACT pending. No new native rules, Lean definitions, axioms or proofs.",
+  "pending": "New-commit hosted CI/package/source archive/fresh installation/bundles and all broader feature/constitutional obligations remain separate."
+}

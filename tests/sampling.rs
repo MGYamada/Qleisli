@@ -215,7 +215,14 @@ fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
     ))
     .unwrap_err();
     assert_eq!(original.code, ErrorCode::Project);
-    assert!(original.message.contains("CBit/CBits types were removed"));
+    // The preserved project now encounters its retired declaration before
+    // its retired C-prefixed type. Keep the first source unchanged and test
+    // the actual current migration priority before its explicit translation.
+    assert!(
+        original
+            .message
+            .contains("`basis fn` was replaced by `classical fn`")
+    );
     let directory = Path::new(env!("CARGO_MANIFEST_DIR")).join(
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020",
     );

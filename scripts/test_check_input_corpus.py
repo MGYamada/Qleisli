@@ -438,6 +438,171 @@ class MigrationTests(unittest.TestCase):
             self.check()
 
 
+class CounterexampleMigrationTests(unittest.TestCase):
+    """Synthetic selection records test provenance, never compiler acceptance."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "corpus"
+        self.root.mkdir()
+        self.fault = {"id": "fault", "reference": "reference", "project": "semantic_faults/fault",
+                      "reason": "Synthetic retained semantic mutation."}
+        self.negative = {"id": "dirty", "project": "negative/dirty", "expected_code": "unsupported",
+                         "expected_message": "Synthetic retained negative contract."}
+        self.write(self.root / "semantic_faults/manifest.json", {"format": 1, "cases": [self.fault]})
+        baseline = {"format": 1, "kind": "curated_local_counterexamples", "cases": [self.negative]}
+        self.write(self.root / "negative/manifest.json", baseline)
+        self.write(self.root / "negative/current-manifest.json",
+                   {**baseline, "baseline_sha256": corpus.sha256(self.root / "negative/manifest.json")})
+        self.stage = self.root / "migrations/classical"
+        self.record = self.stage / "counterexamples.json"
+        files = {}
+        for project, names in ((self.fault["project"], ("main.qli", "kernel.qli")),
+                               (self.negative["project"], ("main.qli",))):
+            for name in names:
+                relative = project + "/" + name
+                before = self.root / relative
+                after = self.stage / "counterexample-sources" / relative
+                before.parent.mkdir(parents=True, exist_ok=True)
+                after.parent.mkdir(parents=True, exist_ok=True)
+                before.write_text("// Synthetic fixture, not compiler evidence.\nbasis fn one(b: Bit) -> Bit { 1 }\n")
+                after.write_text(before.read_text().replace("basis fn", "classical fn"))
+                files[relative] = {"before": corpus.sha256(before), "after": corpus.sha256(after)}
+        self.write(self.record, {
+            "format": 1, "kind": "explicit-counterexample-source-migration", "issue": 22,
+            "project_version": "0.3.0-alpha", "created_utc": "2026-10-06T00:00:00Z",
+            "context": "Synthetic validator regression; no compiler was executed.",
+            "source_selection": "snapshot", "transformation": "basis-to-classical-function",
+            "projects": [self.fault["project"], self.negative["project"]], "files": files,
+            "baselines": {name: corpus.sha256(self.root / name) for name in
+                          ("semantic_faults/manifest.json", "negative/manifest.json", "negative/current-manifest.json")},
+            "observations": ["checks.json"],
+        })
+        self.write(self.stage / "checks.json", {
+            "sources": {source: record["after"] for source, record in files.items()},
+            "results": [self.observation(self.fault["project"], 0, {"outcome": "ok"}),
+                        self.observation(self.negative["project"], 1,
+                                         {"outcome": "error", "result": None,
+                                          "diagnostics": [{"code": "unsupported"}]})],
+        })
+        self.write(self.root / "manifest.json", {
+            "source_migrations": [], "counterexample_source_migrations": ["migrations/classical/counterexamples.json"],
+            "negative_expectations": {"path": "negative/current-manifest.json",
+                                      "sha256": corpus.sha256(self.root / "negative/current-manifest.json")},
+        })
+
+    @staticmethod
+    def write(path, value):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value))
+
+    def mutate(self, path, action):
+        data = json.loads(path.read_text())
+        action(data)
+        self.write(path, data)
+
+    def observation(self, project, exit_code, output):
+        return {"project": project, "argv": ["synthetic-check"], "cwd": str(self.root),
+                "exit_code": exit_code, "stdout": json.dumps(output), "stderr": ""}
+
+    def test_execution_and_report_binding_share_the_explicit_current_sources(self):
+        expected = self.stage / "counterexample-sources"
+        with patch.object(corpus, "CORPUS", self.root), patch.object(corpus.subprocess, "run") as run, \
+             patch.object(corpus, "check_case", side_effect=corpus.SemanticMismatch("synthetic expected mismatch")) as check:
+            run.return_value.returncode = 0
+            run.return_value.stderr = ""
+            run.return_value.stdout = '{"outcome":"ok"}'
+            result = corpus.check_semantic_fault(self.fault, {"id": "reference"}, Path("synthetic-compiler"))
+            self.assertEqual(result["typecheck"], "passed")
+            self.assertEqual(run.call_args.args[0][2], str((expected / self.fault["project"]).resolve()))
+            self.assertEqual(check.call_args.kwargs["project"], (expected / self.fault["project"]).resolve())
+            run.return_value.returncode = 1
+            run.return_value.stdout = '{"outcome":"error","result":null,"diagnostics":[{"code":"unsupported"}]}'
+            corpus.check_negative(self.negative, Path("synthetic-compiler"))
+            self.assertEqual(run.call_args.args[0][2], str((expected / self.negative["project"]).resolve()))
+            binding = corpus.input_binding([], [self.fault], [self.negative], Path(__file__))
+        self.assertEqual(len(binding["source_sha256"]), 3)
+        self.assertTrue(all(name.startswith("migrations/classical/counterexample-sources/")
+                            for name in binding["source_sha256"]))
+        self.assertEqual(set(binding["semantic_fault_source_sha256"]),
+                         {str(path.relative_to(self.root)) for path in (expected / self.fault["project"]).glob("*.qli")})
+        self.assertEqual(set(binding["counterexample_source_migration_sha256"]),
+                         {"migrations/classical/counterexamples.json"})
+        self.assertEqual(corpus.current_negatives(self.root), [self.negative])
+
+    def test_current_and_predecessor_changes_and_extra_edition_overrides_reject(self):
+        selected = self.stage / "counterexample-sources" / self.fault["project"]
+        path = selected / "kernel.qli"
+        original = path.read_text()
+        path.write_text(original + "// changed\n")
+        with self.assertRaisesRegex(ValueError, "counterexample snapshot changed"):
+            corpus.current_project(self.fault, self.root)
+        path.write_text(original)
+        (selected / "Qargo.toml").write_text("unrecorded edition override")
+        with self.assertRaisesRegex(ValueError, "snapshot inventory changed"):
+            corpus.current_project(self.fault, self.root)
+        (selected / "Qargo.toml").unlink()
+        (self.root / self.fault["project"] / "kernel.qli").write_text("changed frozen source")
+        with self.assertRaisesRegex(ValueError, "stale counterexample migration predecessor"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_rehashed_semantic_changes_cannot_hide_behind_keyword_migration(self):
+        source = self.fault["project"] + "/kernel.qli"
+        path = self.stage / "counterexample-sources" / source
+        path.write_text(path.read_text().replace("{ 1 }", "{ b }"))
+        self.mutate(self.record, lambda data: data["files"][source].update(after=corpus.sha256(path)))
+        with self.assertRaisesRegex(ValueError, "more than the declaration keyword"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_deleted_records_duplicate_paths_and_unknown_projects_reject(self):
+        manifest = self.root / "manifest.json"
+        original = manifest.read_text()
+        self.mutate(manifest, lambda data: data.update(counterexample_source_migrations=[]))
+        with self.assertRaisesRegex(ValueError, "unrecorded counterexample"):
+            corpus.current_project(self.fault, self.root)
+        manifest.write_text(original)
+        self.mutate(manifest, lambda data: data["counterexample_source_migrations"].append(
+            "migrations/classical/../classical/counterexamples.json"))
+        with self.assertRaisesRegex(ValueError, "duplicate counterexample source migration path"):
+            corpus.current_project(self.fault, self.root)
+        manifest.write_text(original)
+        self.mutate(self.record, lambda data: data["projects"].append("semantic_faults/unknown"))
+        with self.assertRaisesRegex(ValueError, "unknown/duplicate counterexample migration project"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_stale_observation_rejected_fault_and_changed_negative_code_reject(self):
+        path = self.stage / "checks.json"
+        original = path.read_text()
+        self.mutate(path, lambda data: data.update(sources={}))
+        with self.assertRaisesRegex(ValueError, "observation source identity mismatch"):
+            corpus.current_project(self.fault, self.root)
+        path.write_text(original)
+        self.mutate(path, lambda data: data["results"].__setitem__(0, self.observation(
+            self.fault["project"], 1, {"outcome": "error"})))
+        with self.assertRaisesRegex(ValueError, "must remain type-correct"):
+            corpus.current_project(self.fault, self.root)
+        path.write_text(original)
+        self.mutate(path, lambda data: data["results"].__setitem__(1, self.observation(
+            self.negative["project"], 1, {"outcome": "error", "diagnostics": [{"code": "type_mismatch"}]})))
+        with self.assertRaisesRegex(ValueError, "negative source migration diagnostic changed"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_changed_baseline_and_escaping_snapshot_root_reject(self):
+        baseline = self.root / "semantic_faults/manifest.json"
+        original = baseline.read_text()
+        baseline.write_text(original + " ")
+        with self.assertRaisesRegex(ValueError, "counterexample migration baseline changed"):
+            corpus.current_project(self.fault, self.root)
+        baseline.write_text(original)
+        with tempfile.TemporaryDirectory() as directory:
+            outside = Path(directory) / "sources"
+            shutil.move(self.stage / "counterexample-sources", outside)
+            (self.stage / "counterexample-sources").symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "snapshot root escapes intake"):
+                corpus.current_project(self.fault, self.root)
+
+
 class OracleTests(unittest.TestCase):
     def test_even_preparation_keeps_low_bit_on_all_input_columns(self):
         case = {"id": "quantum_katas/even_numbers3", "qubits": 3}

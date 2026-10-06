@@ -1,0 +1,129 @@
+{
+  "format": 1,
+  "kind": "independent_acceptance_criterion_review",
+  "issue": "https://github.com/MGYamada/Qleisli/issues/22",
+  "reviewer": "/root/pr_size_policy",
+  "review_date": "2026-10-06",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "reviewed_state": "Current working source and retained observations after the classical-function unit; the baseline commit alone does not contain all reviewed changes.",
+  "source_binding": {
+    "path": "tests/fixtures/frontend_v030/classical-functions/validation/inventory-review.json",
+    "sha256": "b49adf4a5f14472625f679a8b8b7b50608b51f47fb1426e5f79bd165fa447653",
+    "scope": "Previously independent review of the changed production sources and VM-22/VM-29 bindings; not a fresh build or complete dependency closure."
+  },
+  "criteria": [
+    {
+      "number": 1,
+      "requirement": "Ordinary finite types are unmarked; Q<T> denotes quantum ownership.",
+      "status": "evidence_present",
+      "evidence": ["docs/src/reference/type-model.md:16", "src/frontend/types.rs:17", "tests/ordinary_types.rs:183"],
+      "finding": "One Unit/Bit/Bits/product universe and a structurally distinct Q constructor; the public view retains the separate is_quantum ownership flag."
+    },
+    {
+      "number": 2,
+      "requirement": "CBit, CBits<n> and general surface C<T> are absent from the adopted model.",
+      "status": "evidence_present",
+      "evidence": ["docs/src/reference/type-model.md:27", "src/frontend/types.rs:315", "src/frontend/parser.rs:701", "tests/ordinary_types.rs:126"],
+      "finding": "Canonical source types have no C constructor. Retired CBit/CBits syntax rejects with migration advice. Retained removal tokens and private native classical-port role tags do not admit another source type universe."
+    },
+    {
+      "number": 3,
+      "requirement": "Measurement examples express Q<Bit> -> Bit and Q<Bits<n>> -> Bits<n>.",
+      "status": "evidence_present",
+      "evidence": ["src/frontend/check/primitive.rs:185", "corpus/sized/measured_qpe/readout.qli:10", "tests/ordinary_types.rs:85", "tests/sized_source.rs:714"],
+      "finding": "measure_z consumes a Q<Bit> and has Observe effect. The checked recursive measure_bits source consumes each register bit and returns ordinary Bits<n>, including explicit zero-width consumption. Ordered readout has bounded regression coverage."
+    },
+    {
+      "number": 4,
+      "requirement": "Classical control takes Bit; coherent control takes and preserves Q<Bit>.",
+      "status": "evidence_present",
+      "evidence": ["src/frontend/check/body.rs:542", "src/frontend/check/body/special.rs:263", "tests/ordinary_types.rs:149", "tests/ordinary_booleans.rs:215"],
+      "finding": "The ordinary if guard checks exact Bit. qif checks a quantum control and target, requires controlled access and returns both owners; names or unitarity alone grant no such access."
+    },
+    {
+      "number": 5,
+      "requirement": "One finite predicate/decoder can be reused ordinarily and in checked coherent/static contexts where typing permits.",
+      "status": "evidence_present",
+      "evidence": ["docs/src/reference/source-text.md:103", "src/frontend/check/body/operations.rs:541", "src/frontend/compile/lower/classical.rs", "tests/classical_functions.rs:125", "tests/classical_functions.rs:153", "tests/classical_functions.rs:219", "tests/classical_functions.rs:241"],
+      "finding": "The same classical fn body is called on ordinary values, used by static Meaning/predicates and coherently lifted. Native-accepted finite flip has an independent exact X tensor identity/reference oracle. Noninjective AND runs ordinarily but coherent lifting rejects. Unit/product trees, arity, caller measurement order, private helpers and invalid unused bodies have focused checks. Meaning declarations remain unavailable as runtime callees; selected coherent lifting remains an explicit unsupported profile."
+    },
+    {
+      "number": 6,
+      "requirement": "Implicit inspection of Q<A> as ordinary A rejects on every public source path.",
+      "status": "evidence_present_with_proof_limit",
+      "evidence": ["src/frontend/compile/mod.rs:677", "src/frontend/sized.rs:248", "src/frontend/check.rs:668", "src/frontend/check/body/operations.rs:541", "src/frontend/check/body.rs:622", "src/frontend/types.rs:264", "tests/ordinary_types.rs:149", "tests/ordinary_types.rs:164", "tests/unit_patterns.rs:93", "tests/source_judgments.rs:199", "tests/classical_functions.rs:373"],
+      "finding": "Both consumers mandate the complete original-AST judgment, including unused declarations, before projection. Exact call, return, guard, Boolean and pattern rules keep Q atomic and distinct from ordinary values. Explicit basis evaluation has its restricted label scope. Source inspection and bounded regressions support the rejection rule; they do not establish a universal source-preservation or noninterference theorem."
+    },
+    {
+      "number": 7,
+      "requirement": "Sized QPE and measured clients migrate CBits<m> to Bits<m>.",
+      "status": "evidence_present",
+      "evidence": ["corpus/sized/measured_qpe/measurement.qli:9", "corpus/sized/measured_qpe/readout.qli:10", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients", "tests/sized_source.rs:303", "tests/sized_source.rs:714", "tests/fixtures/frontend_v030/classical-functions/validation/latest-integration-02.json"],
+      "finding": "Current measured client signatures return Bits<m> alongside retained quantum targets. Existing small concrete shared-QPE regressions retain dependency calls and ordered results, and their current replay succeeded. This does not reinstate the excluded generic QFT implementation obligation."
+    },
+    {
+      "number": 8,
+      "requirement": "Diagnostics do not teach a parallel C-type universe.",
+      "status": "evidence_present",
+      "evidence": ["src/frontend/types.rs:315", "src/frontend/types.rs:354", "tests/ordinary_types.rs:126", "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/observations-02/implicit-readout-finite-check.json", "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/observations-02/implicit-readout-selected-check.json"],
+      "finding": "Removal diagnostics direct authors to ordinary Bit/Bits. Current finite and selected semantic errors say expected Bit, found Q<Bit>; private transport-role debug spellings are not the public type diagnostic."
+    },
+    {
+      "number": 9,
+      "requirement": "Unit and Q<Unit> obey the same T/Q<T> model.",
+      "status": "evidence_present",
+      "evidence": ["docs/src/reference/type-model.md:107", "docs/src/reference/type-model.md:399", "tests/quantum_unit_source.rs:364", "tests/quantum_unit_source.rs:406", "tests/quantum_unit_source.rs:580", "tests/unit_patterns.rs:93", "tests/quantum_tuple_unitors.rs:504", "tests/quantum_tuple_unitors.rs:706"],
+      "finding": "Ordinary Unit is duplicable singleton data; zero-axis Q<Unit> remains a linear owner with a nontrivial scalar phase. Exact Unit versus Bits<0> and tuple trees remain distinct, with bounded native phase/reference and invalid pattern checks. This finding does not close the wider #43 or coherence obligations."
+    },
+    {
+      "number": 10,
+      "requirement": "A first author given a few examples infers Bit versus Q<Bit> without inventing CBit.",
+      "status": "bounded_first_author_observation_matches_predictions",
+      "session": "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/session.json",
+      "session_sha256": "3165b6d04c0fbb24f536f2b0a8d15f35de35290980b10d7c8c0c9a2cf257dee5",
+      "assessment": "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/assessment.json",
+      "assessment_sha256": "4b25a0d77e29d4178128d86af18be758a4cfd61d586d2a9b4f95affbd359246e",
+      "included_attempt": "attempt-02",
+      "protocol": "A fresh author with no forked conversation history received context-02.md containing two examples, used no tools/repository reads/execution/repairs and supplied four first sources plus predictions. The observer supplied Qargo transport metadata afterward. This is the declared local authoring protocol, not authenticated external authorship or a controlled model benchmark.",
+      "context_sha256": "749ab037a30ee78087d0a9b714ebe02861d069f064cb646da29d798f1bd615a9",
+      "capture": "tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/observations-02/capture.json",
+      "capture_sha256": "705cfb9331418a628aab03421357e10d243c9cbeca0bc5ab8dab78f68ce20e64",
+      "actual_observations": {
+        "profiles": ["finite", "selected"],
+        "count": 12,
+        "positive_checks": 4,
+        "positive_runs": 4,
+        "positive_cases": ["copy-ordinary", "observe-pair"],
+        "run_distribution": "Both cases in both profiles return (0,0) with probability 1.",
+        "implicit_readout": {"count": 2, "codes": ["type_mismatch", "type"], "byte_span": [130, 137], "expected": "Bit", "found": "Q<Bit>"},
+        "duplicate_owner": {"count": 2, "code": "ownership", "byte_span": [212, 213]},
+        "source_notation": "All four corrected first sources use Bit/products and Q<Bit>; none invents CBit, CBits or C<T>."
+      },
+      "excluded_attempt": {
+        "id": "attempt-01",
+        "context": "context.md",
+        "capture": "observations/capture.json",
+        "reason": "The observer supplied std::transform::init0 instead of std::quantum::init0. All 12 actual checks/runs reject name resolution at bytes 97..102 (project/name). None reaches the intended type or ownership condition; none counts as a successful semantic negative. Original prompt, sources, predictions and failures are preserved. The fresh corrected response is not a repair of those sources."
+      },
+      "limits": "The requested tasks already designate positive and invalid cases. Four sources and twelve corrected observations give bounded criterion-10 evidence, not unrestricted syntax discovery or general LLM capability. All-zero outputs cannot distinguish swapped pair order. Selected successes explicitly report native-validity, source_steps_checked:true and source_meaning_verified:false."
+    }
+  ],
+  "verification_separate_from_criteria": {
+    "local_records_reviewed": {
+      "latest-core-03.json": "exit 0; 57 tests passed",
+      "latest-integration-01.json": "exit 101; successful target results retained separately from a failed sampling translation test",
+      "latest-integration-02.json": "exit 0; includes the repaired sampling target",
+      "latest-native-discovery.json": "exit 0; one targeted discovery test passed",
+      "msrv-core-01.json": "exit 0; 63 tests passed",
+      "latest-clippy.json": "exit 0; all-target Clippy",
+      "msrv-clippy.json": "exit 0; all-target Clippy"
+    },
+    "record_directory": "tests/fixtures/frontend_v030/classical-functions/validation",
+    "integration_lead_report": "331 unique latest-toolchain tests and 63 MSRV tests passed; all-target Clippy passed on both. Corpus validation passed 10 script tests, 716 probes, seven fault controls and four negative controls. These aggregate counts are the integration lead's report, not new executions by this reviewer.",
+    "hosted_full_ci": "pending on the new integrated commit",
+    "issue_state": "No close performed; the final integrated verification duty is independent of the ten criterion findings.",
+    "historical_failures": "Earlier failed parser/core attempts and the original namespace-invalid authoring observations remain retained; later successful runs do not rewrite them."
+  },
+  "review_operations": "Read the original Issue criteria, production source, Reference, focused test code and saved actual observations; verified the corrected session records and hashes. Wrote only this review record. No Cargo/native/Lean build, test replay, Git/GitHub mutation, acceptance implementation or guarantee registration was performed for this record.",
+  "remaining_limits": "Finite Bits lowering, selected coherent lifting and finite classical root entry restrictions remain explicit profile limits, not alternative C types. This review neither reduces those obligations nor requires unrelated umbrellas to close automatically. Generic QFT stays outside the current goal. The two admitted decoded-QLV1 ownership/scope guarantees retain their precise scope; wider QS, PR, quantitative RS and EXACT obligations remain pending."
+}

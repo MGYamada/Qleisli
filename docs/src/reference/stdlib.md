@@ -55,13 +55,13 @@ namespace migration changes none of those entries or their trust status.
 ## Current interfaces and contracts
 
 The four bundled ordinary modules expose nine public definitions and one private
-basis helper. Contract identifiers retain their existing meanings after the
+classical helper. Contract identifiers retain their existing meanings after the
 move; they are not constitutional ledger entries or verification badges.
 
 | Public path | Exact interface | Source contract / principal effect |
 | --- | --- | --- |
-| `std::basis::xor2` | `basis fn (Bit, Bit) -> Bit` (two arguments) | B001: total XOR on four input-label pairs; noninjective on the product domain. |
-| `std::basis::and2` | `basis fn (Bit, Bit) -> Bit` (two arguments) | B002: total AND on four input-label pairs; noninjective on the product domain. |
+| `std::basis::xor2` | `classical fn (Bit, Bit) -> Bit` (two arguments) | B001: total XOR on four input-label pairs; noninjective on the product domain. |
+| `std::basis::and2` | `classical fn (Bit, Bit) -> Bit` (two arguments) | B002: total AND on four input-label pairs; noninjective on the product domain. |
 | `std::transform::hadamard2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R001: ordered H tensor H; Unitary. |
 | `std::transform::qft2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | F001: positive F4 with included reversal; Unitary. |
 | `std::transform::qft3` | `fn (Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)>` | F002: positive F8 with included reversal; Unitary. |
@@ -73,8 +73,11 @@ move; they are not constitutional ledger entries or verification badges.
 These rows are interface descriptions, not declaration syntax or new function
 types. Runtime principal effects are derived from checked bodies under
 `Unitary <= Iso <= Observe`, separately from optional effect assertions.
-Basis functions have their own total static meaning; their truth tables do not
-grant quantum preparation, observation or coherent lifting.
+Classical functions have total ordinary meaning and may also receive ordinary
+runtime values, including already measured Bits. They preserve the effects of
+their evaluated arguments and cannot inspect live quantum owners. Their truth
+tables grant no quantum preparation, observation, inverse/control access or
+coherent injectivity evidence; coherent use retains its separate checks.
 
 For F001 and F002, `F_d[y,x] = exp(2*pi*i*x*y/d)/sqrt(d)` for `d = 4, 8`.
 For the two-bit input `(a,b)`, `x = a + 2*b`; for `((a,b),c)`,
@@ -84,7 +87,7 @@ are part of the contract; equal bit width, probability agreement or an inverse
 round trip cannot substitute for them. R001 likewise preserves the original
 two-owner order and specifies exact Hadamard coefficients.
 
-R002 uses the private total basis predicate `nonzero2`: it returns zero exactly
+R002 uses the private total classical predicate `nonzero2`: it returns zero exactly
 on `00`, and one elsewhere. Its computed auxiliary supplies phase +1 on `00`
 and -1 elsewhere before conjugation by R001. The protected computed scope
 requires exact zero return and separation of that temporary auxiliary for all

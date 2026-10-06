@@ -1,6 +1,6 @@
 use std::quantum::z;
 
-basis fn predicate(x: Bit) -> Bit { not x }
+classical fn predicate(x: Bit) -> Bit { not x }
 
 unitary fn phase(a: Q<Bit>) -> Q<Bit> { z(a) }
 

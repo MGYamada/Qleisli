@@ -1,0 +1,67 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#22 classical fn ordinary/static/coherent reuse with the human-selected name",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed specification/code access, exact model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Four complete human-selected classical fn first-source derivatives preserved before implementation; matching before/after commands use the same sources without repair.",
+      "sha256": {
+        "nested-label/main.qli": "2508c13a742c4103f2f073a416cdafffa7b441329f4a2da7663e366ec79458a9",
+        "ordinary-and/main.qli": "f29e5137689495936d010ced6db137625015faf161496c6dc261cd4c13c58aa8",
+        "quantum-argument/main.qli": "30ffb4906c9c77ca44ddfd1b961e5c6dec7f977416ff0a0a0936b3e5b7f65ee7",
+        "shared-flip/main.qli": "4d630bdb5026205aa180150cb9decf6336cf2a722b659850bc9d6e304c206ecc"
+      },
+      "observations": [
+        "observations-before/shared-flip-finite-check.json",
+        "observations-before/shared-flip-selected-check.json",
+        "observations-before/ordinary-and-finite-check.json",
+        "observations-before/ordinary-and-selected-check.json",
+        "observations-before/nested-label-finite-check.json",
+        "observations-before/nested-label-selected-check.json",
+        "observations-before/quantum-argument-finite-check.json",
+        "observations-before/quantum-argument-selected-check.json",
+        "observations-after/shared-flip-finite-check.json",
+        "observations-after/shared-flip-selected-check.json",
+        "observations-after/ordinary-and-finite-check.json",
+        "observations-after/ordinary-and-selected-check.json",
+        "observations-after/nested-label-finite-check.json",
+        "observations-after/nested-label-selected-check.json",
+        "observations-after/quantum-argument-finite-check.json",
+        "observations-after/quantum-argument-selected-check.json",
+        "observations-after/shared-flip-finite-run.json",
+        "observations-after/ordinary-and-finite-run.json",
+        "observations-after/ordinary-and-selected-run.json",
+        "observations-after/nested-label-finite-run.json",
+        "observations-after/nested-label-selected-run.json"
+      ],
+      "reports": [
+        "first-files.json",
+        "session.pending.json",
+        "observations-before/capture.json",
+        "observations-after/capture.json",
+        "assessment.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "nested-label/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-and/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-argument/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "shared-flip/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "record_status": "actual-before-and-after-observations-registered; zero source repairs",
+  "scope": "Four informed complete first projects; 21 actual observations. No blind or few-example model benchmark, exact semantic oracle, general source-preservation/resource theorem, full CI success, Issue completion or new guarantee. Broader QS/PR/quantitative RS/EXACT duties remain pending; existing two ordinary QLV1 guarantees retain their scope.",
+  "registration": {
+    "pending_sha256": "ded9f5b41e90dc03e2da0e561d3bf2b064feeb1d254f3f6eb1c4826773ac08ce",
+    "first_files_sha256": "8869e1d72c64d9d58b7e699a235b4d30a234aa2528ca9f1145e238dce46e0bfe",
+    "context_sha256": "d16b165fd1e2410f2c771f76ca72e6c85219d0a06fca73fe8ce4d036bae0a479",
+    "capture_before_sha256": "1e927e1f7f23d23b19d62334c8291f883379c528900529a38a02e77cd01090e9",
+    "capture_after_sha256": "a3904ec54e0c8ad49ff2cfa964253cb799d1a7eee178916cddd1c24e1f128d02",
+    "assessment_sha256": "6a2b01f497c95f31cdadebdb1c4ceb36037af0c957d522cab91c9fc2428a7626"
+  }
+}

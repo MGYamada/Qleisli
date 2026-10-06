@@ -59,7 +59,10 @@ impl Checker<'_, '_> {
             if let ResolvedUse::Global(Target::Declaration(id)) =
                 self.index().table.usage(self.index().usage(name)).target
             {
-                if matches!(self.program.decl(id).kind, FnKind::Basis | FnKind::Meaning) {
+                if matches!(
+                    self.program.decl(id).kind,
+                    FnKind::Classical | FnKind::Meaning
+                ) {
                     return Err(SourceError::new(
                         "type",
                         name.span,
@@ -528,14 +531,16 @@ impl Checker<'_, '_> {
                 }
             }
             Target::Declaration(id) => {
-                if matches!(self.program.decl(id).kind, FnKind::Basis | FnKind::Meaning) {
+                let kind = self.program.decl(id).kind;
+                if kind == FnKind::Meaning {
                     return Err(SourceError::new(
                         "type",
                         name.span,
-                        "Basis and Meaning declarations are not ordinary runtime callees",
+                        "Meaning declarations are not ordinary runtime callees",
                     ));
                 }
-                let (inputs, result, _) = self.specialize(id, static_args, scope, span, true)?;
+                let (inputs, result, _) =
+                    self.specialize(id, static_args, scope, span, kind != FnKind::Classical)?;
                 self.tick(span)?;
                 self.effects.call(id, span);
                 if inputs.len() != runtime.len() {
@@ -637,7 +642,10 @@ impl Checker<'_, '_> {
                 Err(SourceError::new("type", name.span, message))
             }
             Target::Declaration(id) => {
-                if matches!(self.program.decl(id).kind, FnKind::Basis | FnKind::Meaning) {
+                if matches!(
+                    self.program.decl(id).kind,
+                    FnKind::Classical | FnKind::Meaning
+                ) {
                     return Err(SourceError::new(
                         "type",
                         name.span,

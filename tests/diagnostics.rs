@@ -8,7 +8,7 @@ use qleisli::frontend::compile::{check_project_diagnostic, compile_project_diagn
 
 const IMPORTS: &str = "use std::quantum::x;
 use std::quantum::z;
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
 

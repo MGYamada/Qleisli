@@ -83,12 +83,12 @@ argument list is not implicitly folded into a tuple. This is the same exact
 single-domain convention already required of a `Meaning` function.
 
 For example, a register of basis `((Bit,Bit),Bit)` may use
-`basis fn p(((a,b),c): ((Bit,Bit),Bit)) -> Bit { a and c }`.
+`classical fn p(((a,b),c): ((Bit,Bit),Bit)) -> Bit { a and c }`.
 A flat `(Bit,Bit,Bit)` or right-nested `(Bit,(Bit,Bit))` register requires a
 parameter with that precise tree. A predicate on `Q<Unit>` takes `u: Unit` or
 `_: Unit`; a nullary function is not an implicit Unit-domain predicate.
 
-Ordinary basis calls continue to use their declared argument-list arity.
+Classical function calls continue to use their declared argument-list arity.
 `f(a,b)` and `f((a,b))` are distinct, and ordinary nullary calls remain nullary.
 When migrating a predicate used in both roles, update its ordinary callers or
 write a separate unary wrapper with an explicit product pattern. No implicit
@@ -194,7 +194,7 @@ or matched by the empty pattern `()`, including inside an ordinary tuple.
 That pattern matches only ordinary `Unit`, not an empty tuple, `Bits<0>`,
 `Q<Unit>` or `Q<Bits<0>>`. Nonempty tuple patterns preserve the same immediate
 arity and recursively match each child's exact shape. Ordinary function
-parameters, `let` bindings, basis function parameters and coherent basis lifts
+parameters, `let` bindings, classical function parameters and coherent basis lifts
 use this same pattern shape rule. A typed parameter remains one argument:
 `unitary fn f((a, b): (Bit, Bit), (): Unit) -> Bit { a xor b }` takes two
 arguments. Matching its first
@@ -457,10 +457,14 @@ controlled-phase primitives and operation providers. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy
-decision is never retried as weaker Raw validity. Concrete Meaning-refined Basis
-materialization and reuse of Basis functions as runtime computations remain
-unsupported selected-profile obligations; all their original declarations and
-bodies are nevertheless checked by the common source judgment. Packaged hierarchy bases retain the
+decision is never retried as weaker Raw validity. Total `classical fn` bodies
+are reusable as ordinary runtime computations: supported Unit/Bit/product calls
+use the same checked expression nodes and eager ordinary operations in both
+consumers. Runtime argument effects remain in the caller, and an ordinary call
+does not grant coherent injectivity or Meaning evidence. Bits runtime lowering,
+selected coherent lifting and concrete Meaning-refined Basis materialization
+retain their explicit profile limitations. All original declarations and bodies
+are nevertheless checked by the common source judgment. Packaged hierarchy bases retain the
 selected-source concrete width limits and charge every basis-tree node,
 including zero-width factors, to preparation storage/depth limits before
 materializing copied trees.
@@ -483,6 +487,9 @@ requires its concrete declarations to fit its profile; selected input seeks
 native acceptance only for the requested concrete specialization. Native
 results distinguish those scopes and do not certify every possible
 specialization or establish general source preservation.
+Finite directory execution still requires an ordinary zero-argument `fn main`
+with a closed classical result. Selected execution may name a public
+`classical fn` as its ordinary root, subject to its existing input and profile restrictions.
 Selected commands return a JSON result object; `--format=json` uses the common
 `qleisli.result` envelope for success and diagnostics. Without that flag,
 errors remain text on stderr, as in the legacy selected-input command.

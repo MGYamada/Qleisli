@@ -6,6 +6,19 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Use `classical fn` for total finite classical declarations, reserving
+  `basis q as pattern { expression }` for coherent basis maps. Reject the
+  retired `basis fn` declaration with a located migration diagnostic. Run
+  the original classical body through ordinary eager calls as well as the
+  existing static/Meaning and coherent paths; noninjective ordinary functions
+  remain legal while coherent use retains its independent checks. Preserve
+  exact tuple/Unit shapes, caller effects, lexical identities, existing profile
+  limits and native acceptance. Migrate active sources through small explicit
+  derivatives without rewriting first attempts or validation history (#22).
+- Repair the hosted runtime-pattern phase test to select a canonical `basis`
+  derivative; preserve its original source and independent phase oracle.
+- Show bounded retained command stdout/stderr on distribution-check failure,
+  keeping original logs, exit status and binary archive output intact.
 - Reject future PRs with at least one million added/deleted text lines, and
   bound fixture totals and PR additions before CI scheduling. Preserve the
   current #307 growth exception and require local agent size preflight.

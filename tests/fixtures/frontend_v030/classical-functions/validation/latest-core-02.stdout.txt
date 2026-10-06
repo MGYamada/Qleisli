@@ -1,0 +1,34 @@
+
+running 11 tests
+test canonical_declaration_retains_expression_ast_and_old_spelling_has_migration_error ... ok
+test coherent_flip_preserves_exact_phase_axis_and_entangled_external_reference ... ok
+test frozen_flip_is_reused_coherently_and_ordinarily_with_explicit_profile_limit ... ok
+test meaning_is_still_a_static_target_and_not_an_ordinary_runtime_function ... ok
+test eager_argument_effects_belong_to_the_caller_in_source_order ... ok
+test one_classical_body_remains_a_static_meaning_and_exact_computed_predicate ... FAILED
+test open_ordinary_inputs_are_explicit_ports_and_closed_wrappers_execute ... ok
+test private_classical_helpers_resolve_lexically_and_cycles_remain_illegal ... ok
+test quantum_arguments_and_invalid_unused_declarations_are_rejected_before_native ... ok
+test noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry ... FAILED
+test unit_and_nested_products_retain_exact_trees_and_argument_list_arity ... ok
+
+failures:
+
+---- one_classical_body_remains_a_static_meaning_and_exact_computed_predicate stdout ----
+
+thread 'one_classical_body_remains_a_static_meaning_and_exact_computed_predicate' (17871168) panicked at tests/classical_functions.rs:99:10:
+called `Result::unwrap()` on an `Err` value: Error { code: "unsupported", module: Some("main"), span: Span { start: 258, end: 292 }, message: "sized preparation profile: unsupported runtime expression" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry stdout ----
+
+thread 'noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry' (17871046) panicked at tests/classical_functions.rs:99:10:
+called `Result::unwrap()` on an `Err` value: Error { code: "unsupported", module: Some("main"), span: Span { start: 112, end: 136 }, message: "sized preparation profile: unsupported runtime expression" }
+
+
+failures:
+    noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry
+    one_classical_body_remains_a_static_meaning_and_exact_computed_predicate
+
+test result: FAILED. 9 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.75s
+

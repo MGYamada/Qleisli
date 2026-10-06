@@ -335,7 +335,7 @@ unitary fn nested(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
 #[test]
 fn computed_scalar_phase_is_retained_on_unit_and_under_adjoint_and_control() {
     let definitions = "
-basis fn yes(value: Unit) -> Bit { 1 }
+classical fn yes(value: Unit) -> Bit { 1 }
 unitary fn identity(q: Q<Unit>) -> Q<Unit> { q }
 unitary fn phase(q: Q<Unit>) -> Q<Unit> { with_computed(q,yes) { |a| z(t(t(t(a)))) } }
 unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
@@ -684,7 +684,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
         }
     });
     let scalar_definitions = "
-basis fn one(u:Unit)->Bit { 1 }
+classical fn one(u:Unit)->Bit { 1 }
 unitary fn identity(q:Q<Unit>)->Q<Unit> { q }
 unitary fn scalar(q:Q<Unit>)->Q<Unit> {
     if not 0 {

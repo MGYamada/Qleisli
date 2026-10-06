@@ -2192,7 +2192,7 @@ fn common_lexical_static_substitution_uses_callee_binders_and_caller_values() {
 #[test]
 fn complete_parsing_and_source_errors_precede_selected_projection() {
     let ordinary = "pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}";
-    let unsupported = "basis fn b(x:Bit)->Bit{x}";
+    let unsupported = "classical fn b(x:Bit)->Bit{x}";
     for (a, z, expected_module, expected_code) in [
         (
             unsupported.to_owned(),

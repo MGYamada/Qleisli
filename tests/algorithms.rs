@@ -61,7 +61,7 @@ fn grover_all_targets_and_iteration_counts_match_amplitude_amplification() {
             "oracle.qli",
             &format!(
                 "use std::quantum::z;
-             basis fn marked((a,b): (Bit,Bit)) -> Bit {{ ({a}) and ({b}) }}
+             classical fn marked((a,b): (Bit,Bit)) -> Bit {{ ({a}) and ({b}) }}
              pub unitary fn mark(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {{
                  with_computed(q, marked) {{ |ancilla| z(ancilla) }}
              }}"
@@ -111,7 +111,7 @@ fn bernstein_vazirani_recovers_every_two_bit_secret() {
             "oracle.qli",
             &format!(
                 "use std::quantum::z;
-             basis fn linear((a,b): (Bit,Bit)) -> Bit {{ {a} xor {b} }}
+             classical fn linear((a,b): (Bit,Bit)) -> Bit {{ {a} xor {b} }}
              pub unitary fn mark(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {{
                  with_computed(q, linear) {{ |ancilla| z(ancilla) }}
              }}"

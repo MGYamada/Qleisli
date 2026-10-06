@@ -333,7 +333,7 @@ fn observation_instruments_preserve_public_weights_and_reference_statistics() {
 }
 
 const COMPUTED: &str = "
-basis fn predicate((((a,u),b),c): (((Bit,Unit),Bit),Bit)) -> Bit { (a and not b) xor c }
+classical fn predicate((((a,u),b),c): (((Bit,Unit),Bit),Bit)) -> Bit { (a and not b) xor c }
 unitary fn oracle(q: Q<(((Bit,Unit),Bit),Bit)>) -> Q<(((Bit,Unit),Bit),Bit)> {
     with_computed(q,predicate) { |ancilla| z(t(t(t(ancilla)))) }
 }
@@ -424,7 +424,7 @@ observe fn main() -> (((Bit,Bit),Bit),Bit) {{
     ] {
         let definitions = format!(
             "
-basis fn one({params}) -> Bit {{ 1 }}
+classical fn one({params}) -> Bit {{ 1 }}
 unitary fn scalar(q: Q<{basis}>) -> Q<{basis}> {{
     with_computed(q,one) {{ |a| z(t(t(t(a)))) }}
 }}
@@ -460,7 +460,7 @@ observe fn main() -> Bit {{
         }
         let rejected = SourceRoot::new(&format!(
             "{IMPORTS}
-basis fn one({params}) -> Bit {{ 1 }}
+classical fn one({params}) -> Bit {{ 1 }}
 unitary fn wrong(q: Q<{wrong_basis}>) -> Q<{wrong_basis}> {{
     with_computed(q,one) {{ |a| t(a) }}
 }}"

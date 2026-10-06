@@ -17,7 +17,7 @@ use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z; use std::observe::discard;
-basis fn predicate(value: Bit) -> Bit { value }
+classical fn predicate(value: Bit) -> Bit { value }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 unitary fn specified_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
 ";
@@ -136,7 +136,7 @@ fn incorrect_implementations_cannot_change_the_clients_meaning() {
     for body in ["q", "x(q)", "t(q)", "with_computed(q,zero) { |a| z(a) }"] {
         rejects(
             &format!(
-                "{IMPORTS} basis fn zero(value: Bit) -> Bit {{ 0 }}
+                "{IMPORTS} classical fn zero(value: Bit) -> Bit {{ 0 }}
                 unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ {body} }}
                 unitary fn client(q: Q<Bit>) -> Q<Bit> {{
                     apply_contract(implementation,specified_phase,q)
@@ -487,7 +487,7 @@ fn input_ownership_is_consumed_once_and_quantum_frames_remain_owned() {
 fn zero_width_contract_phase_survives_coherent_control() {
     let result = run(&format!(
         "{IMPORTS}
-        basis fn yes(value: Unit) -> Bit {{ 1 }}
+        classical fn yes(value: Unit) -> Bit {{ 1 }}
         unitary fn implementation(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| z(a) }} }}
         unitary fn specified(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(t(t(t(a)))) }} }}
         unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}

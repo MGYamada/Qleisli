@@ -14,7 +14,7 @@ use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z; use std::observe::discard;
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
 
@@ -133,7 +133,7 @@ fn predicate_and_returned_axis_order_participate_in_the_equation() {
     for body in ["(a,d)", "(d,z(a))"] {
         rejects(
             &format!(
-                "{IMPORTS} basis fn zero(x: Bit) -> Bit {{ 0 }}
+                "{IMPORTS} classical fn zero(x: Bit) -> Bit {{ 0 }}
                 unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
                     with_computed(q,zero,z) {{ |d,a| {body} }}
                 }}"
@@ -253,7 +253,7 @@ fn exact_basis_shape_and_declared_unitary_effect_are_required() {
 #[test]
 fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
     let source = format!(
-        "{IMPORTS} basis fn yes(q: Unit) -> Bit {{ 1 }}
+        "{IMPORTS} classical fn yes(q: Unit) -> Bit {{ 1 }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| z(a) }} }}
         unitary fn certified(q: Q<Unit>) -> Q<Unit> {{
             with_computed(q,yes,phase) {{ |d,a| (d,z(a)) }}
@@ -269,7 +269,7 @@ fn zero_width_data_ownership_and_scalar_phase_are_preserved() {
     probability(&run(&source), &[true], 1.0);
     rejects(
         &format!(
-            "{IMPORTS} basis fn no(q: Unit) -> Bit {{ 0 }}
+            "{IMPORTS} classical fn no(q: Unit) -> Bit {{ 0 }}
             unitary fn unit_identity(q: Q<Unit>) -> Q<Unit> {{ q }}
             unitary fn candidate(q: Q<Unit>) -> Q<Unit> {{
                 with_computed(q,no,unit_identity) {{ |d,a| ((),a) }}
@@ -331,7 +331,7 @@ fn certified_source_checks_step_width_and_recursion_limits() {
         ErrorCode::Limit,
     );
     rejects(
-        "basis fn predicate((((((a,b),c),d),e),f): (((((Bit,Bit),Bit),Bit),Bit),Bit)) -> Bit { a }
+        "classical fn predicate((((((a,b),c),d),e),f): (((((Bit,Bit),Bit),Bit),Bit),Bit)) -> Bit { a }
         unitary fn identity(q: Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)>) -> Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)> { q }
         unitary fn candidate(q: Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)>) -> Q<(((((Bit,Bit),Bit),Bit),Bit),Bit)> {
             with_computed(q,predicate,identity) { |d,a| (d,a) }

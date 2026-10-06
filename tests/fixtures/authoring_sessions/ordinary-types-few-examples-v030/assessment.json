@@ -1,0 +1,107 @@
+{
+  "format": 1,
+  "kind": "bounded_two_example_authoring_observation",
+  "registered_utc": "2026-10-06T06:47:26.887918+00:00",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "criterion": "#22 criterion 10; bounded ordinary-versus-quantum type inference from two examples",
+  "authoring_protocol": "Two distinct author agents with no forked conversation history; each received its exact stored prompt, used no tools/repository reads/execution/repairs, and supplied first sources plus predictions. The observer supplied Qargo transport metadata separately. This records the declared local protocol, not external authenticated authorship or a controlled model benchmark.",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "author": "/root/ordinary_type_few_examples",
+      "context": "context.md",
+      "context_sha256": "2c3112e907065dc9eaf3f8398b423ad97876d9a10a4a2471db99e688710cae7a",
+      "prompt_sha256": "9fd6c1c1cd3a5c40e5701a8e2f450960d6988687abeb1f72cb0c8bb2d05d6ed0",
+      "predictions": "predictions.json",
+      "predictions_sha256": "23bee2ec69cfe4150f3c0c17ce0ea1812f1b1b85fd207388d2be3a31da8a5a66",
+      "first_files": "first-files.json",
+      "first_files_sha256": "af0512d31592d38e102a32dc1ca9e2e5d24aa8b8c3af941099ce94195ff291ea",
+      "capture": "observations/capture.json",
+      "capture_sha256": "77b04562b625381bfd44307b85c83c318915b5ff4a38a19599d56c4e909fb2d4",
+      "observations": 12,
+      "successful_observations": 0,
+      "rejected_observations": 12,
+      "identity": {
+        "cli": {
+          "path": "/private/tmp/qleisli-classical-functions-after",
+          "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+        },
+        "kernel": {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+        }
+      },
+      "assessment": "All 12 actual checks/runs reject the wrong imported init0 name at97..102. The observer context supplied that wrong API. No intended ordinary typing, observation or duplicate-owner condition was reached."
+    },
+    {
+      "id": "attempt-02",
+      "author": "/root/ordinary_type_few_examples_valid",
+      "context": "context-02.md",
+      "context_sha256": "749ab037a30ee78087d0a9b714ebe02861d069f064cb646da29d798f1bd615a9",
+      "prompt_sha256": "418a6b8cf00e67c287077099c8f6607955299c89caadc0d12d03738548e1e7d6",
+      "predictions": "predictions-02.json",
+      "predictions_sha256": "7473c675f166fa96b63036ab40f59e5ecc0e3251c3237e1b45d0756089b16859",
+      "first_files": "first-files-02.json",
+      "first_files_sha256": "bf67fb53c2c9547bed7c16320acde8a74e28b8b19ffbfb5f80cbb4da0fa155c1",
+      "capture": "observations-02/capture.json",
+      "capture_sha256": "705cfb9331418a628aab03421357e10d243c9cbeca0bc5ab8dab78f68ce20e64",
+      "observations": 12,
+      "successful_observations": 8,
+      "rejected_observations": 4,
+      "identity": {
+        "cli": {
+          "path": "/private/tmp/qleisli-classical-functions-after",
+          "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+        },
+        "kernel": {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+        }
+      },
+      "assessment": "Four positive checks and four runs pass; two implicit-readout checks reject Bit versus Q<Bit> at130..137, and two duplicate-owner checks reject the second use of q at212..213. These outcomes agree with the independently stored predictions."
+    }
+  ],
+  "context_correction": "The exact author prompts differ only by std::transform::init0 -> std::quantum::init0. Attempt-02 was independently authored without the prior failed sources; it is not an observer repair of attempt-01.",
+  "notation_observation": "Both preserved source collections use ordinary Bit/products and Q<Bit>; neither invents CBit, CBits or C<> notation. Attempt-01 demonstrates source notation only, because its API name-resolution error masks all intended semantic checks.",
+  "observed_corrected_controls": {
+    "copy-ordinary": {
+      "finite_and_selected_check_exit": 0,
+      "finite_and_selected_run_exit": 0,
+      "run_bits": [
+        false,
+        false
+      ],
+      "probability": 1,
+      "source_behavior": "The helper ignores its second ordinary Bit and uses the first twice."
+    },
+    "observe-pair": {
+      "finite_and_selected_check_exit": 0,
+      "finite_and_selected_run_exit": 0,
+      "run_bits": [
+        false,
+        false
+      ],
+      "probability": 1,
+      "source_behavior": "The helper observes each Q<Bit> input once and constructs an ordinary ordered pair."
+    },
+    "implicit-readout": {
+      "finite_diagnostic": "type_mismatch",
+      "selected_diagnostic": "type",
+      "span": [
+        130,
+        137
+      ],
+      "expected_type": "Bit",
+      "found_type": "Q<Bit>"
+    },
+    "duplicate-owner": {
+      "finite_and_selected_diagnostic": "ownership",
+      "span": [
+        212,
+        213
+      ],
+      "source_location": "Second use of q in the second measure_z call."
+    }
+  },
+  "limits": "Only corrected-context observations reach the intended type/ownership controls. The closed all-zero outputs cannot independently distinguish a swapped output order or establish arbitrary-state/reference behavior. Selected successes report source_steps_checked:true and source_meaning_verified:false under native-validity. No full CI result, generic source-preservation/resource theorem, general model capability, Issue completion or new guarantee is established."
+}

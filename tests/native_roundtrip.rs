@@ -179,14 +179,16 @@ fn compiled_project_discovery_selects_current_sources() {
         .filter(|(before, after)| before != after)
         .map(|(_, after)| after.clone())
         .collect();
-    assert_eq!(snapshots.len(), 8, "current corpus snapshots not selected");
-    // Current selection retains six namespace snapshots and two later coherent
-    // basis snapshots. Each must keep its logical provider/project path.
+    assert_eq!(snapshots.len(), 14, "current corpus snapshots not selected");
+    // Later classical declarations advance ten logical projects, including
+    // both coherent snapshots and two namespace snapshots. All historical
+    // stages remain frozen; each current leaf retains its logical project path.
     let snapshot_roots = [
         corpus.join("migrations/semantic-namespace-v030/sources"),
         corpus.join("migrations/coherent-basis-v030/sources"),
+        corpus.join("migrations/classical-functions-v030/sources"),
     ];
-    for (snapshot_root, expected) in snapshot_roots.iter().zip([6, 2]) {
+    for (snapshot_root, expected) in snapshot_roots.iter().zip([4, 0, 10]) {
         assert_eq!(
             snapshots
                 .iter()

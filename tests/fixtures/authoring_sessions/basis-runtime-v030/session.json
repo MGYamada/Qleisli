@@ -1,0 +1,44 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#22 ordinary reuse of original checked Basis bodies",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed specification/code access, exact model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Four informed first-source cases before changing common or concrete runtime calls.",
+      "sha256": {
+        "nested-label/main.qli": "459c710264d04a066c2bdf64d0bc676e37934feb43f0bbeadfec188074ae0e82",
+        "ordinary-and/main.qli": "a2773e21303fb734ee08cc04fcf26b63a79c784c14fe7bb1205763eb4ccace0c",
+        "quantum-argument/main.qli": "c1377cee24b3c60a75e9b88696f5d8d248bd8874a296580baef311b9f4bceebe",
+        "shared-flip/main.qli": "6276c6e81ec745683be66326bfe98fd873bb1e91d496c3be5f57db38dbca1289"
+      },
+      "observations": [
+        "observations-before/shared-flip-finite-check.json",
+        "observations-before/shared-flip-selected-check.json",
+        "observations-before/ordinary-and-finite-check.json",
+        "observations-before/ordinary-and-selected-check.json",
+        "observations-before/nested-label-finite-check.json",
+        "observations-before/nested-label-selected-check.json",
+        "observations-before/quantum-argument-finite-check.json",
+        "observations-before/quantum-argument-selected-check.json"
+      ],
+      "reports": [
+        "first-files.json",
+        "observations-before/capture.json",
+        "withdrawal.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "nested-label/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-and/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-argument/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "shared-flip/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "record_status": "withdrawn-before-production-changes; baseline observations only",
+  "scope": "Withdrawn informed proposal; not adopted syntax, implemented capability, criterion10 authoring evidence, semantic oracle or completion evidence."
+}

@@ -49,7 +49,7 @@ impl TempRoot {
                 .map_or_else(String::new, |next| format!("use m{next:04}::f{next:04};\n"));
             self.write(
                 &format!("m{index:04}.qli"),
-                &format!("// π\n{import}pub basis fn f{index:04}(x: Bit) -> Bit {{ x }}\n"),
+                &format!("// π\n{import}pub classical fn f{index:04}(x: Bit) -> Bit {{ x }}\n"),
             );
         }
     }
@@ -82,7 +82,10 @@ fn bell_module_and_bundled_imports_resolve() {
         "main.qli",
         "use bell::entangle;\nuse std::quantum::h;\nuse std::quantum::init0;\nuse std::basis::xor2;\nuse std::observe::measure_z;\nobserve fn main() -> Bit { measure_z(init0()) }",
     );
-    root.write("nested/helper.qli", "pub basis fn id(x: Bit) -> Bit { x }");
+    root.write(
+        "nested/helper.qli",
+        "pub classical fn id(x: Bit) -> Bit { x }",
+    );
 
     let project = Project::load(root.path()).unwrap();
     assert!(project.module("nested::helper").is_some());
@@ -102,7 +105,7 @@ fn bell_module_and_bundled_imports_resolve() {
 #[test]
 fn nonpublic_import_reports_calling_file_and_utf8_byte_span() {
     let root = TempRoot::new();
-    root.write("lib.qli", "basis fn hidden(x: Bit) -> Bit { x }");
+    root.write("lib.qli", "classical fn hidden(x: Bit) -> Bit { x }");
     let source = "// π\nuse lib::hidden;\n";
     root.write("main.qli", source);
     let error = Project::load(root.path()).unwrap_err();
@@ -120,7 +123,7 @@ fn missing_module_and_name_are_distinct_errors() {
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("missing module `absent`"), "{error}");
 
-    root.write("present.qli", "pub basis fn item(x: Bit) -> Bit { x }");
+    root.write("present.qli", "pub classical fn item(x: Bit) -> Bit { x }");
     root.write("main.qli", "use present::other;");
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("has no name `other`"), "{error}");
@@ -129,14 +132,17 @@ fn missing_module_and_name_are_distinct_errors() {
 #[test]
 fn import_only_cycles_load_but_call_cycles_and_name_collisions_reject() {
     let root = TempRoot::new();
-    root.write("a.qli", "use b::g; pub basis fn f(x: Bit) -> Bit { x }");
-    root.write("b.qli", "use a::f; pub basis fn g(x: Bit) -> Bit { x }");
+    root.write("a.qli", "use b::g; pub classical fn f(x: Bit) -> Bit { x }");
+    root.write("b.qli", "use a::f; pub classical fn g(x: Bit) -> Bit { x }");
     let project = Project::load(root.path()).unwrap();
     assert_eq!(project.module("a").unwrap().imports["g"].module, "b");
     assert_eq!(project.module("b").unwrap().imports["f"].module, "a");
 
-    root.write("a.qli", "use b::g; pub basis fn f(x: Bit) -> Bit { g(x) }");
-    let cyclic = "use a::f; pub basis fn g(x: Bit) -> Bit { f(x) }";
+    root.write(
+        "a.qli",
+        "use b::g; pub classical fn f(x: Bit) -> Bit { g(x) }",
+    );
+    let cyclic = "use a::f; pub classical fn g(x: Bit) -> Bit { f(x) }";
     root.write("b.qli", cyclic);
     Project::load(root.path()).unwrap();
     let error = check_project(root.path()).unwrap_err();
@@ -144,8 +150,8 @@ fn import_only_cycles_load_but_call_cycles_and_name_collisions_reject() {
     assert!(error.path.ends_with("b.qli"), "{error}");
     assert_eq!(&cyclic[error.span.start..error.span.end], "f");
 
-    root.write("b.qli", "pub basis fn g(x: Bit) -> Bit { x }");
-    root.write("a.qli", "use b::g; basis fn g(x: Bit) -> Bit { x }");
+    root.write("b.qli", "pub classical fn g(x: Bit) -> Bit { x }");
+    root.write("a.qli", "use b::g; classical fn g(x: Bit) -> Bit { x }");
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("collides"), "{error}");
 }
@@ -216,13 +222,13 @@ fn converging_import_paths_do_not_report_a_cycle() {
     root.write("a.qli", "use b::left; use c::right; use d::shared;");
     root.write(
         "b.qli",
-        "use d::shared; pub basis fn left(x: Bit) -> Bit { x }",
+        "use d::shared; pub classical fn left(x: Bit) -> Bit { x }",
     );
     root.write(
         "c.qli",
-        "use d::shared; pub basis fn right(x: Bit) -> Bit { x }",
+        "use d::shared; pub classical fn right(x: Bit) -> Bit { x }",
     );
-    root.write("d.qli", "pub basis fn shared(x: Bit) -> Bit { x }");
+    root.write("d.qli", "pub classical fn shared(x: Bit) -> Bit { x }");
     let project = Project::load(root.path()).unwrap();
     for name in ["a", "b", "c"] {
         assert_eq!(project.module(name).unwrap().imports["shared"].module, "d");
@@ -232,12 +238,12 @@ fn converging_import_paths_do_not_report_a_cycle() {
 #[test]
 fn std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules() {
     let root = TempRoot::new();
-    root.write("std/quantum.qli", "pub basis fn h(x: Bit) -> Bit { x }");
+    root.write("std/quantum.qli", "pub classical fn h(x: Bit) -> Bit { x }");
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.message.contains("reserved"), "{error}");
 
     fs::remove_dir_all(root.path().join("std")).unwrap();
-    root.write("bad-name.qli", "basis fn f(x: Bit) -> Bit { x }");
+    root.write("bad-name.qli", "classical fn f(x: Bit) -> Bit { x }");
     let error = Project::load(root.path()).unwrap_err();
     assert!(
         error.message.contains("invalid module path component"),
@@ -248,7 +254,7 @@ fn std_prefix_and_invalid_module_names_cannot_shadow_bundled_modules() {
 #[test]
 fn reserved_word_cannot_name_a_local_module() {
     let root = TempRoot::new();
-    root.write("if.qli", "pub basis fn item(x: Bit) -> Bit { x }");
+    root.write("if.qli", "pub classical fn item(x: Bit) -> Bit { x }");
     let error = Project::load(root.path()).unwrap_err();
     assert!(error.path.ends_with("if.qli"));
     assert!(error.message.contains("invalid module path component"));
