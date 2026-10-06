@@ -174,6 +174,36 @@ source-hash refresh.
 release lane. Rollback is to select `full` in `ci_profiles.py` for all executable
 changes; the retained full commands require no reconstruction.
 
+## Local MSRV tool selection
+
+Validate the executable identities before reporting a local MSRV result.
+`rustup run 1.85.0 cargo clippy` can discover an ambient `cargo-clippy` through
+Cargo's external-subcommand lookup; Cargo's version alone does not establish
+the compiler or Clippy version. Resolve all four executables from the selected
+toolchain, inspect their `--version` output, and retain the selected identities
+with the command result:
+
+```sh
+qleisli_msrv_cargo=$(rustup which --toolchain 1.85.0 cargo)
+qleisli_msrv_clippy=$(rustup which --toolchain 1.85.0 cargo-clippy)
+qleisli_msrv_rustc=$(rustup which --toolchain 1.85.0 rustc)
+qleisli_msrv_rustdoc=$(rustup which --toolchain 1.85.0 rustdoc)
+"$qleisli_msrv_cargo" --version
+"$qleisli_msrv_clippy" --version
+"$qleisli_msrv_rustc" --version
+"$qleisli_msrv_rustdoc" --version
+RUSTC="$qleisli_msrv_rustc" RUSTDOC="$qleisli_msrv_rustdoc" \
+  "$qleisli_msrv_clippy" clippy --all-targets -- -D warnings
+```
+
+Use the resolved Cargo with the same explicit compiler/doc selection for tests.
+Select an audited native kernel for tests that require acceptance. Keep bounded
+validation targets separate by toolchain; incompatible cached compiler artifacts
+are a failed invocation, not a test failure or permission to suppress a check.
+Qualify earlier mistaken toolchain claims explicitly while preserving historical
+records. All-target Clippy, focused tests and complete all-target tests are
+different evidence and must be reported separately.
+
 ## Native comparisons (#206)
 
 `native-comparisons.json` retains all 65 comparison groups (66 commands) from
