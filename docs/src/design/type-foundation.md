@@ -42,10 +42,14 @@ entry points belong here; their additional rules require their own decisions
 and tests. Deferring a convenience under #197 does not defer its 0.3.0 safety
 law or the whole parent Issue.
 
-## Current implementation and the required convergence
+## Frontend snapshot used to plan convergence
 
-The following observations come from the current repository, not from a
-proposed public contract. Paths refer to the
+The following table preserves the earlier implementation snapshot used to plan
+convergence. It is not a report of current completion: both consumers now use
+the mandatory common original-source judgment, and selected Raw transports
+bounded ordinary Bits values. The [type Reference](../reference/type-model.md)
+records current source rules and the remaining concrete consumer restrictions.
+Paths refer to the
 [repository](https://github.com/MGYamada/Qleisli).
 
 | Area | Current finite frontend | Current sized frontend | Required common result |

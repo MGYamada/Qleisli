@@ -58,11 +58,18 @@ consumes and returns the specified owners; a runtime local, spent value or
 captured owner cannot be used as its provider. Separate owners do not imply
 separable states, and zero-width owners retain their phase and ownership rules.
 
-The selected concrete projection retains its existing unsupported-static-
-constructor refusal. A common source judgment, successful parsing or a pending
-obligation does not add concrete lowering, emitter support or native acceptance.
-This rename changes no AST meaning, primitive, protocol/schema, checker or
-constitutional edition.
+The selected concrete projection retains this constructor and its original
+Meaning request. Within the supported closed-provider profile,
+`ElaboratedProgram::check_operation_meanings` checks every binding through
+the native finite gate before the checked collection can produce a hierarchy
+proposal. That proposal still needs fresh hierarchy acceptance. Direct
+unchecked hierarchy lowering rejects when original Meaning obligations remain;
+refined Raw root emission remains unsupported. A provider outside its concrete
+profile also rejects, rather than losing its Meaning request. Other static
+constructors retain their explicit projection restrictions.
+The rename changes no AST meaning, primitive, protocol/schema, checker or
+constitutional edition; the later bounded implementation retains the existing
+independent evidence gates.
 
 ## Migration and evidence identity
 

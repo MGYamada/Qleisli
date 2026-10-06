@@ -573,8 +573,8 @@ Measurement explicitly consumes a supported `Q<A>` and produces ordinary data
 with Observe semantics. An ordinary `if` consumes an ordinary Bit condition;
 it cannot read a `Q<Bit>`. Coherent control has its separate rule.
 
-The finite QIRF basis representation currently has Unit/Bit/Pair/Tuple but no
-Bits atom. Hierarchy distinguishes Unit/Bit/Bits/tuple. The common frontend must
+The finite QIRF basis representation has Unit/Bit/Pair/Tuple and an explicit
+Bits atom. Hierarchy also distinguishes Unit/Bit/Bits/tuple. The common frontend must
 retain the full source tree and use an explicit representation mapping or
 reject an unsupported lowering profile. It must not silently map `Bits<1>` to
 Bit or `Bits<0>` to Unit to obtain evidence.
@@ -586,7 +586,7 @@ Both operands of `and` evaluate even when its left value is zero. Quantum
 operands, `Bits<1>`, static naturals and products are not coerced to Bit.
 
 The sized Rust API's `ElaboratedProgram::lower_raw` produces an untrusted finite
-proposal for Unit/Bit values and exact ordinary or packaged quantum products,
+proposal for Unit/Bit/Bits values and exact ordinary or packaged quantum products,
 including specialized ordinary helper
 calls and static folds. Its `source()` retains whole parameter/result trees and
 the original source instance. Native `Kernel::accept` must check `proposal()`
@@ -630,9 +630,9 @@ comparison independently checks the scalar opcode, exact phase, empty controls
 and axes, and the intended owner; fresh native validity is still mandatory.
 Preceding argument work and subsequent observation stay in source order.
 
-This Raw adapter still rejects ordinary `Bits<N>` values, including
-`Bits<0>`, unsupported quantum basis shapes
-and controlled-phase primitives. Closed Definition/Repeat providers support
+This Raw adapter transports ordinary `Bits<N>` within the selected concrete
+bounds described above. Unsupported quantum basis shapes
+and controlled-phase primitives still reject. Closed Definition/Repeat providers support
 forward, adjoint and controlled access through ordinary calls within the exact
 pure-circuit profile; this includes conditional scalar action on a Unit owner.
 Their original Meaning requests remain mandatory, including unused bindings
@@ -646,11 +646,11 @@ decision is never retried as weaker Raw validity. Total `classical fn` bodies
 are reusable as ordinary runtime computations: supported Unit/Bit/product calls
 use the same checked expression nodes and eager ordinary operations in both
 consumers. Runtime argument effects remain in the caller, and an ordinary call
-does not grant coherent injectivity or Meaning evidence. Ordinary Bits runtime
-lowering and selected coherent lifting retain their explicit profile limitations.
-These are implementation limits, not source-type prohibitions: ordinary
-`Bits<0>` is a copyable singleton basis distinct from `Unit`; its rejection
-during Raw emission does not establish a semantic or ownership restriction. All original declarations and bodies
+does not grant coherent injectivity or Meaning evidence. Selected Raw additionally
+transports ordinary Bits values; the finite project consumer and selected coherent
+lifting retain their explicit profile limitations. These are implementation limits,
+not source-type prohibitions: ordinary `Bits<0>` is a copyable singleton basis
+distinct from `Unit`. All original declarations and bodies
 are nevertheless checked by the common source judgment. Packaged hierarchy bases retain the
 selected-source concrete width limits and charge every basis-tree node,
 including zero-width factors, to preparation storage/depth limits before
