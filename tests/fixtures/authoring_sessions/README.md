@@ -351,3 +351,9 @@ separate classical-body/static-Nat/import mistakes from genuine Raw register
 refusals. Intended ordered output and Bell distributions were not produced;
 finite project runs encounter their register/static-Nat boundaries. No transport,
 source proof, type-rejection rule or new guarantee is established by this study.
+
+The same ordinary-Bits study separately appends sixteen selected Raw check/run
+observations after implementation. All eight unchanged repaired projects match
+independent ordered distributions, including copied Bell outcomes. First
+failures remain intact; Raw native validity and source-step replay do not prove
+original AST preservation or eliminate the finite-project profile limitations.

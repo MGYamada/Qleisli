@@ -20,3 +20,13 @@ This is informed design/diagnostic evidence for bug #342 and #32/#250/#44, not a
 blind author benchmark, implementation completion, new guarantee or proof.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+## Selected Raw implementation observations
+
+The separate observations-after collection runs the unchanged current repaired
+projects through explicit selected Raw check/run. All eight checks and runs pass;
+source-step verification remains distinct from the disclosed unproved original
+source meaning. Four ordered rows, nested copies, empty output and Bell-correlated
+readout match the independently specified distributions. Finite project profile
+limitations remain. These observations precede an internal replay leaf-kind
+refactor; final source identities and test reruns are recorded separately.

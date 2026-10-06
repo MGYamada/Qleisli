@@ -265,22 +265,21 @@ fn unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked() {
 }
 
 #[test]
-fn raw_capability_boundary_explicitly_rejects_unimplemented_classical_bits_targets() {
-    for source in [
-        "pub unitary fn f(b: Bits<1>) -> Bits<1> { b }",
-        "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
-    ] {
-        // Checking and elaboration succeed. This failure is the selected Raw
-        // target's stated capability boundary, not a parser/type workaround.
-        let graph = elaborate(source, "main::f", BTreeMap::new());
-        let error = graph.lower_raw().unwrap_err();
-        assert_eq!(error.code(), "unsupported", "{error}");
-        assert_eq!(error.module(), Some("main"), "{error}");
-        assert!(error.span().end > error.span().start, "{error}");
-        assert!(
-            error.message().starts_with("finite source lowering"),
-            "{error}"
+fn ordinary_registers_retain_exact_source_types_at_the_raw_boundary() {
+    for width in 0..=2 {
+        let source = format!("pub unitary fn f(b: Bits<{width}>) -> Bits<{width}> {{ b }}");
+        let graph = elaborate(&source, "main::f", BTreeMap::new());
+        let accepted = accept(&graph);
+        let root = &graph.definitions()[graph.root()];
+        assert_eq!(root.inputs()[0].ty(), root.output().ty());
+        assert_eq!(root.inputs()[0].ty().kind(), "bits");
+        assert!(root.inputs()[0].fields().is_empty());
+        assert_eq!(accepted.raw().classical_inputs.len(), width);
+        assert_eq!(
+            accepted.raw().classical_inputs,
+            accepted.raw().classical_outputs
         );
+        assert!(accepted.raw().quantum_inputs.is_empty());
     }
 
     // An otherwise valid quantum hierarchy cannot silently erase an unused
@@ -393,4 +392,85 @@ fn open_classical_inputs_remain_explicit_and_are_not_quantum_basis_arguments() {
         run_closed(&accepted, SimulationLimits::default()),
         Err(SimulationError::NotClosed("classical inputs are present"))
     ));
+}
+
+#[test]
+fn ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_results() {
+    for (a, b) in [(0, 0), (0, 1), (1, 0), (1, 1)] {
+        let source = format!("use std::classical::{{empty_bits,prepend_bit}};
+            unitary fn pack(a:Bit,b:Bit)->Bits<2>{{prepend_bit[1](a,prepend_bit[0](b,empty_bits()))}}
+            pub unitary fn main()->Bits<2>{{pack({a},{b})}}");
+        let graph = elaborate(&source, "main::main", BTreeMap::new());
+        let accepted = accept(&graph);
+        assert_eq!(
+            run_closed(&accepted, SimulationLimits::default()).unwrap(),
+            BTreeMap::from([(vec![a == 1, b == 1], 1.0)])
+        );
+    }
+    let source = include_str!(
+        "fixtures/authoring_sessions/ordinary-bits-v030/attempt-02/nested-copy/main.qli"
+    );
+    let graph = elaborate(source, "main::main", BTreeMap::new());
+    assert_eq!(
+        run_closed(&accept(&graph), SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![false, true, true, false, true], 1.0)])
+    );
+}
+
+#[test]
+fn zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners() {
+    let source = "use std::classical::empty_bits;
+        classical fn copy(b:Bits<0>)->(Bits<0>,Bits<0>){(b,b)}
+        unitary fn discard(b:Bits<0>)->Unit{let _=b;()}
+        pub unitary fn main()->(Bits<0>,Bits<0>){let b=empty_bits();let _=discard(b);copy(b)}";
+    let graph = elaborate(source, "main::main", BTreeMap::new());
+    assert_eq!(
+        run_closed(&accept(&graph), SimulationLimits::default()).unwrap(),
+        BTreeMap::from([(vec![], 1.0)])
+    );
+    for n in 0..=2 {
+        let graph = elaborate(
+            "pub unitary fn f[static n:Nat](b:Bits<n>)->Bits<n>{b}",
+            "main::f",
+            BTreeMap::from([("n".into(), n)]),
+        );
+        let accepted = accept(&graph);
+        assert_eq!(accepted.raw().classical_inputs.len(), n as usize);
+        assert_eq!(
+            accepted.raw().classical_inputs,
+            accepted.raw().classical_outputs
+        );
+    }
+}
+
+#[test]
+fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/ordinary-bits-v030/attempt-03/measured-copy/main.qli"
+    );
+    let graph = elaborate(source, "main::main", BTreeMap::new());
+    let accepted = accept(&graph);
+    assert_eq!(accepted.raw().declared_effect, Effect::Observe);
+    let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert_eq!(distribution.len(), 2);
+    for key in [vec![false; 4], vec![true; 4]] {
+        assert!((distribution[&key] - 0.5).abs() < 1e-12);
+    }
+    // Dropping an ordinary packed result cannot erase its measurement.
+    let graph = elaborate(
+        "use std::classical::{empty_bits,prepend_bit};use std::quantum::init0;
+        use std::observe::measure_z; pub observe fn main()->Unit{
+        let _=prepend_bit[0](measure_z(init0()),empty_bits());()}",
+        "main::main",
+        BTreeMap::new(),
+    );
+    let accepted = accept(&graph);
+    assert_eq!(accepted.raw().declared_effect, Effect::Observe);
+    assert!(
+        accepted
+            .raw()
+            .operations
+            .iter()
+            .any(|op| matches!(op, RawOp::MeasureZ { .. }))
+    );
 }

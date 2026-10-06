@@ -83,7 +83,29 @@ fn quantum_width(ty: &SourceType) -> Option<usize> {
 #[derive(Clone, Debug, PartialEq, Eq)]
 enum Atom {
     Classical(ClassicalId),
+    Register(Arc<[ClassicalId]>),
     Quantum(TokenId, Arc<[WireId]>),
+}
+
+#[derive(Clone, Copy)]
+enum SourceLeafKind {
+    Bit,
+    Register(usize),
+    Quantum(usize),
+}
+impl SourceLeafKind {
+    fn quantum_width(self) -> Option<usize> {
+        match self {
+            Self::Quantum(width) => Some(width),
+            _ => None,
+        }
+    }
+    fn register_width(self) -> Option<usize> {
+        match self {
+            Self::Register(width) => Some(width),
+            _ => None,
+        }
+    }
 }
 
 #[derive(Default)]
@@ -254,7 +276,7 @@ impl Replay<'_> {
 
     /// Exact source constructors, including ordinary Unit versus zero-width
     /// owners/registers. Charge pending children before extending the stack.
-    fn atoms(&mut self, value: &SourceValue, site: Site<'_>) -> Result<Vec<(u32, Option<usize>)>> {
+    fn atoms(&mut self, value: &SourceValue, site: Site<'_>) -> Result<Vec<(u32, SourceLeafKind)>> {
         self.charge(1, site)?;
         let mut pending = vec![(value, value.ty(), 0usize)];
         let mut result = Vec::new();
@@ -270,6 +292,18 @@ impl Replay<'_> {
                     if value.identity().is_some() || !value.fields().is_empty() {
                         return Err(site.invalid("ordinary Unit has an identity or fields"));
                     }
+                }
+                Kind::Bits(width) => {
+                    if !value.fields().is_empty() {
+                        return Err(site.invalid("ordinary register has product fields"));
+                    }
+                    self.charge(*width as usize, site)?;
+                    result.push((
+                        value.identity().ok_or_else(|| {
+                            site.invalid("ordinary register lacks its source identity")
+                        })?,
+                        SourceLeafKind::Register(*width as usize),
+                    ));
                 }
                 Kind::Bit | Kind::Q(_)
                     if matches!(expected.kind, Kind::Bit) || quantum_width(expected).is_some() =>
@@ -292,7 +326,10 @@ impl Replay<'_> {
                         value
                             .identity()
                             .ok_or_else(|| site.invalid("source atom lacks its identity"))?,
-                        quantum_width(expected),
+                        match quantum_width(expected) {
+                            Some(width) => SourceLeafKind::Quantum(width),
+                            None => SourceLeafKind::Bit,
+                        },
                     ));
                 }
                 Kind::Tuple(fields) => {
@@ -313,7 +350,7 @@ impl Replay<'_> {
                             .map(|(value, ty)| (value, ty, depth + 1)),
                     );
                 }
-                Kind::Bit | Kind::Bits(_) | Kind::Q(_) | Kind::Parameter(_) => {
+                Kind::Bit | Kind::Q(_) | Kind::Parameter(_) => {
                     return Err(site.error(
                         "unsupported",
                         "Raw replay supports Unit/Bit and exact ordinary or packaged quantum products",
@@ -335,7 +372,9 @@ impl Replay<'_> {
         if atoms.len() != actual.len() {
             return Err(site.invalid("Raw values differ from the source value's leaf count"));
         }
-        for ((source, quantum), actual) in atoms.into_iter().zip(actual) {
+        for ((source, kind), actual) in atoms.into_iter().zip(actual) {
+            let quantum = kind.quantum_width();
+            let register = kind.register_width();
             if quantum.is_some() != matches!(actual, Atom::Quantum(..))
                 || !environment.issued.insert(source)
             {
@@ -343,7 +382,22 @@ impl Replay<'_> {
                     "source step changes leaf ownership kind or redefines a local identity",
                 ));
             }
+            if register
+                != match actual {
+                    Atom::Register(ids) => Some(ids.len()),
+                    _ => None,
+                }
+            {
+                return Err(site.invalid("source binding changes ordinary register type or width"));
+            }
             match actual {
+                Atom::Register(ids) => {
+                    if ids.iter().any(|id| !self.classical.contains(id)) {
+                        return Err(
+                            site.invalid("source register names an unissued classical value")
+                        );
+                    }
+                }
                 Atom::Quantum(token, wire) => {
                     if quantum != Some(wire.len())
                         || self.live.get(token) != Some(wire)
@@ -371,7 +425,9 @@ impl Replay<'_> {
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
         let mut result = Vec::new();
-        for (id, quantum) in self.atoms(value, site)? {
+        for (id, kind) in self.atoms(value, site)? {
+            let quantum = kind.quantum_width();
+            let register = kind.register_width();
             let actual = environment
                 .values
                 .get(&id)
@@ -379,6 +435,14 @@ impl Replay<'_> {
                 .ok_or_else(|| site.invalid("source step uses an unavailable value"))?;
             if quantum.is_some() != matches!(actual, Atom::Quantum(..)) {
                 return Err(site.invalid("source read changes a leaf's ownership kind"));
+            }
+            if register
+                != match &actual {
+                    Atom::Register(ids) => Some(ids.len()),
+                    _ => None,
+                }
+            {
+                return Err(site.invalid("source read changes ordinary register type or width"));
             }
             if let Atom::Quantum(token, wire) = &actual {
                 if quantum != Some(wire.len())
@@ -562,7 +626,9 @@ impl Replay<'_> {
             | Primitive::Phase
             | Primitive::PhaseEighth
             | Primitive::Split
-            | Primitive::Join => Effect::Unitary,
+            | Primitive::Join
+            | Primitive::EmptyBits
+            | Primitive::PrependBit => Effect::Unitary,
             Primitive::Init0 => Effect::Iso,
             Primitive::MeasureZ => Effect::Observe,
             _ => {
@@ -573,13 +639,39 @@ impl Replay<'_> {
             }
         };
         if effect(step.effect(), site)? != required
-            || (kind != Primitive::Phase && !step.natural_arguments().is_empty())
+            || (!matches!(kind, Primitive::Phase | Primitive::PrependBit)
+                && !step.natural_arguments().is_empty())
         {
             return Err(site.invalid(
                 "primitive effect or natural arguments differ from its source signature",
             ));
         }
         match (kind, inputs) {
+            (Primitive::EmptyBits, []) if matches!(step.output().ty().kind, Kind::Bits(0)) => {
+                Ok(vec![Atom::Register(Arc::from([]))])
+            }
+            (Primitive::PrependBit, [head, tail]) => {
+                let ([Atom::Classical(bit)], [Atom::Register(ids)]) =
+                    (head.atoms.as_slice(), tail.atoms.as_slice())
+                else {
+                    return Err(site.invalid("packing changes ordinary argument categories"));
+                };
+                let [width] = step.natural_arguments() else {
+                    return Err(site.invalid("packing loses its exact Nat argument"));
+                };
+                if *width >= 8
+                    || !matches!(head.ty.kind, Kind::Bit)
+                    || !matches!(tail.ty.kind, Kind::Bits(n) if n == *width)
+                    || !matches!(step.output().ty().kind, Kind::Bits(n) if n == width + 1)
+                    || ids.len() != *width as usize
+                {
+                    return Err(site.invalid("packing changes source width or output type"));
+                }
+                self.charge(ids.len() + 1, site)?;
+                Ok(vec![Atom::Register(
+                    std::iter::once(*bit).chain(ids.iter().copied()).collect(),
+                )])
+            }
             (Primitive::PhaseEighth, [input])
                 if input.ty == step.output().ty() && quantum_width(input.ty).is_some() =>
             {
@@ -1082,11 +1174,13 @@ pub(super) fn validate_subject(
         replay.introduce_owner(input.token, &input.wires, !input.wires.is_empty(), site)?;
     }
     replay.charge(definition.inputs().len(), site)?;
-    let (mut classical, mut quantum) = (0, 0);
+    let (mut classical, mut quantum) = (0usize, 0usize);
     let mut arguments = Vec::new();
     for input in definition.inputs() {
         let mut atoms = Vec::new();
-        for (_, is_quantum) in replay.atoms(input, site)? {
+        for (_, kind) in replay.atoms(input, site)? {
+            let is_quantum = kind.quantum_width();
+            let register_width = kind.register_width();
             if let Some(width) = is_quantum {
                 let port = raw
                     .quantum_inputs
@@ -1099,6 +1193,15 @@ pub(super) fn validate_subject(
                     );
                 }
                 atoms.push(Atom::Quantum(port.token, Arc::from(port.wires.as_slice())));
+            } else if let Some(width) = register_width {
+                let end = classical
+                    .checked_add(width)
+                    .ok_or_else(|| site.error("limit", "ordinary input width overflow"))?;
+                let ids = raw.classical_inputs.get(classical..end).ok_or_else(|| {
+                    site.invalid("Raw program omits ordinary register input elements")
+                })?;
+                atoms.push(Atom::Register(Arc::from(ids)));
+                classical = end;
             } else {
                 let id = raw
                     .classical_inputs
@@ -1128,6 +1231,7 @@ pub(super) fn validate_subject(
     for atom in outputs {
         match atom {
             Atom::Classical(id) => classical.push(id),
+            Atom::Register(ids) => classical.extend(ids.iter().copied()),
             Atom::Quantum(token, _) => quantum.push(token),
         }
     }
@@ -1282,6 +1386,67 @@ mod tests {
             .unwrap()
             .elaborate()
             .unwrap()
+    }
+
+    #[test]
+    fn ordinary_register_replay_rejects_native_valid_order_and_computation_faults() {
+        let source = elaborate(
+            "use std::classical::{empty_bits,prepend_bit};
+            pub unitary fn main()->Bits<2>{prepend_bit[1](0,prepend_bit[0](1,empty_bits()))}",
+            "main::main",
+        );
+        let proposal = source.lower_raw().unwrap();
+        let accepted = kernel().accept(proposal.proposal()).unwrap();
+        validate(&source, accepted.raw()).unwrap();
+        let original = accepted.raw().clone();
+        let mut reversed = original.clone();
+        reversed.classical_outputs.reverse();
+        let mut duplicated = original.clone();
+        duplicated.classical_outputs[1] = duplicated.classical_outputs[0];
+        let mut computed = original.clone();
+        let RawOp::ClassicalConst { value, .. } = &mut computed.operations[0] else {
+            panic!("first source constant")
+        };
+        *value = !*value;
+        for fault in [reversed, duplicated, computed] {
+            // Each counterexample passes the real native scope/ownership gate.
+            let accepted_fault = kernel().accept_raw(fault).unwrap();
+            assert!(validate(&source, accepted_fault.raw()).is_err());
+            assert!(proposal.validate_source_steps(&accepted_fault).is_err());
+        }
+        let mut missing = original;
+        missing.classical_outputs.pop();
+        let accepted_fault = kernel().accept_raw(missing).unwrap();
+        assert!(validate(&source, accepted_fault.raw()).is_err());
+    }
+
+    #[test]
+    fn ordinary_register_storage_is_charged_before_emission() {
+        let source = elaborate("pub unitary fn f(b:Bits<2>)->Bits<2>{b}", "main::f");
+        let root = &source.definitions()[source.root()];
+        let mut emitter = super::super::Emitter {
+            source: &source,
+            raw: crate::frontend::raw_state::RawState::new(),
+            calls: 0,
+            cells: MAX_CELLS - 1,
+        };
+        let error = emitter
+            .charge_value(&root.inputs()[0], root.span())
+            .unwrap_err();
+        assert_eq!(error.code(), "limit");
+        assert!(error.message().contains("value cells"));
+        assert!(emitter.raw.operations.is_empty());
+        assert!(emitter.raw.registers.is_empty());
+        let parsed = ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "pub unitary fn f(b:Bits<9>)->Bits<9>{b}".into(),
+        )]))
+        .unwrap();
+        let error = parsed
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap_err();
+        assert_eq!(error.code(), "limit");
+        assert!(error.message().contains("eight bits"));
     }
 
     fn kernel() -> Kernel {

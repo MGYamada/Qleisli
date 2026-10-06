@@ -9,6 +9,7 @@ use crate::interchange::finite_leaf::{self, CheckedUnitaryLeaf, UnitaryBoundary}
 use crate::interchange::{RootInterface, Version, native};
 use crate::ir::{BasisShape, ClassicalId, Effect, QuantumPort, RawProgram, SingleGate};
 use std::collections::{BTreeMap, BTreeSet};
+use std::sync::Arc;
 
 mod circuit;
 mod preservation;
@@ -205,9 +206,9 @@ impl MeaningCollector<'_, '_> {
 
 /// An immutable finite transport proposal alongside its exact source instance.
 ///
-/// The adapter supports ordinary Unit/Bit products and packaged quantum
+/// The adapter supports ordinary Unit/Bit/Bits products and packaged quantum
 /// Unit/Bit/Bits/product bases, specialized ordinary calls and the explicitly
-/// supported finite primitives. Ordinary Bits values remain unsupported. Native Raw validity
+/// supported finite primitives. Native Raw validity
 /// and source-step correspondence are distinct checks; neither proves source
 /// elaboration preserves meaning. Whole argument/result trees remain beside
 /// the separate classical SSA and quantum-owner transport interfaces.
@@ -377,10 +378,10 @@ fn located(source: &ElaboratedProgram, id: usize, span: Span, message: &str) -> 
 }
 fn supported(ty: &SourceType) -> bool {
     match &ty.kind {
-        Kind::Unit | Kind::Bit => true,
+        Kind::Unit | Kind::Bit | Kind::Bits(_) => true,
         Kind::Q(basis) => basis_supported(basis),
         Kind::Tuple(fields) => fields.iter().all(supported),
-        Kind::Bits(_) | Kind::Parameter(_) => false,
+        Kind::Parameter(_) => false,
     }
 }
 fn basis_supported(basis: &SourceType) -> bool {
@@ -413,9 +414,9 @@ fn finite_basis(basis: &SourceType) -> Option<BasisType> {
 fn atom_count(ty: &SourceType) -> usize {
     match &ty.kind {
         Kind::Unit => 0,
-        Kind::Bit | Kind::Q(_) => 1,
+        Kind::Bit | Kind::Bits(_) | Kind::Q(_) => 1,
         Kind::Tuple(fields) => fields.iter().map(atom_count).sum(),
-        Kind::Bits(_) | Kind::Parameter(_) => unreachable!("preflighted closed finite source type"),
+        Kind::Parameter(_) => unreachable!("preflighted closed finite source type"),
     }
 }
 fn effect(source: &ElaboratedProgram, subject: usize) -> Effect {
@@ -454,7 +455,7 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                     source,
                     id,
                     definition.span(),
-                    "finite source lowering requires ordinary Unit/Bit products or exact packaged quantum bases; ordinary Bits values need explicit target support",
+                    "finite source lowering requires closed ordinary finite products or exact packaged quantum bases",
                 ));
             }
         }
@@ -490,7 +491,9 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                     | Primitive::MeasureZ
                     | Primitive::PhaseEighth
                     | Primitive::Split
-                    | Primitive::Join,
+                    | Primitive::Join
+                    | Primitive::EmptyBits
+                    | Primitive::PrependBit,
                 ) => {}
                 Some(Primitive::Phase) if eighths(step.natural_arguments()).is_some() => {}
                 Some(Primitive::Phase) => {
@@ -515,9 +518,10 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
     Ok(())
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone)]
 enum Atom {
     Classical(ClassicalId),
+    Register(Arc<[ClassicalId]>),
     Quantum(Slot),
 }
 type Values = BTreeMap<u32, Atom>;
@@ -528,12 +532,12 @@ fn invalid(span: Span, message: &str) -> Error {
 fn read(value: &SourceValue, values: &mut Values, span: Span) -> Result<Vec<Atom>> {
     match &value.ty().kind {
         Kind::Unit => Ok(vec![]),
-        Kind::Bit | Kind::Q(_) => {
+        Kind::Bit | Kind::Bits(_) | Kind::Q(_) => {
             let id = value.identity().expect("source atom identity");
             let atom = if value.ty().is_quantum() {
                 values.remove(&id)
             } else {
-                values.get(&id).copied()
+                values.get(&id).cloned()
             }
             .ok_or_else(|| {
                 invalid(
@@ -559,15 +563,25 @@ fn bind(value: &SourceValue, atoms: &[Atom], values: &mut Values, span: Span) ->
     }
     match &value.ty().kind {
         Kind::Unit => {}
-        Kind::Bit | Kind::Q(_) => {
+        Kind::Bit | Kind::Bits(_) | Kind::Q(_) => {
             if !matches!(
-                (&value.ty().kind, atoms[0]),
-                (Kind::Bit, Atom::Classical(_)) | (Kind::Q(_), Atom::Quantum(_))
+                (&value.ty().kind, &atoms[0]),
+                (Kind::Bit, Atom::Classical(_))
+                    | (Kind::Bits(_), Atom::Register(_))
+                    | (Kind::Q(_), Atom::Quantum(_))
             ) {
                 return Err(invalid(span, "source atom changes its ownership category"));
             }
+            if let (Kind::Bits(width), Atom::Register(ids)) = (&value.ty().kind, &atoms[0]) {
+                if ids.len() != *width as usize {
+                    return Err(invalid(span, "source register changes its exact width"));
+                }
+            }
             if values
-                .insert(value.identity().expect("source atom identity"), atoms[0])
+                .insert(
+                    value.identity().expect("source atom identity"),
+                    atoms[0].clone(),
+                )
                 .is_some()
             {
                 return Err(invalid(span, "source step redefines a live value identity"));
@@ -779,6 +793,16 @@ impl Emitter<'_> {
         Ok(value)
     }
     fn charge_value(&mut self, value: &SourceValue, span: Span) -> Result<()> {
+        // Ordinary register elements occupy transport storage even when the
+        // type has only one node. Bound every allocation before emission.
+        let mut pending = vec![value.ty()];
+        while let Some(ty) = pending.pop() {
+            match &ty.kind {
+                Kind::Bits(width) => self.cells = self.cells.saturating_add(*width as usize),
+                Kind::Tuple(fields) => pending.extend(fields),
+                _ => {}
+            }
+        }
         self.cells = self
             .cells
             .saturating_add(value.ty().owner_shape_size().nodes);
@@ -822,6 +846,9 @@ impl Emitter<'_> {
         match &value.ty().kind {
             Kind::Unit => Ok(vec![]),
             Kind::Bit => Ok(vec![Atom::Classical(self.raw.classical())]),
+            Kind::Bits(width) => Ok(vec![Atom::Register(
+                (0..*width).map(|_| self.raw.classical()).collect(),
+            )]),
             Kind::Q(basis) => {
                 let width = basis.basis_width().expect("preflighted finite basis") as usize;
                 self.cells = self.cells.saturating_add(basis.tree_size().nodes + width);
@@ -907,6 +934,7 @@ impl Emitter<'_> {
                     let state_error = |error: crate::frontend::raw_state::StateError| {
                         invalid(span, &error.to_string()).in_module(step.module())
                     };
+                    self.charge_value(step.output(), span)?;
                     let output = if let Some(operation) = step.boolean() {
                         let operands = inputs
                             .iter()
@@ -935,6 +963,20 @@ impl Emitter<'_> {
                     } else {
                         use Primitive::*;
                         match step.primitive_kind().expect("preflighted finite primitive") {
+                            EmptyBits => vec![Atom::Register(Arc::from([]))],
+                            PrependBit => {
+                                let ([Atom::Classical(head)], [Atom::Register(tail)]) =
+                                    (inputs[0].as_slice(), inputs[1].as_slice())
+                                else {
+                                    return Err(invalid(
+                                        span,
+                                        "packing requires a Bit and ordinary register",
+                                    ));
+                                };
+                                vec![Atom::Register(
+                                    std::iter::once(*head).chain(tail.iter().copied()).collect(),
+                                )]
+                            }
                             Init0 => {
                                 self.reserve_operations(1, span)?;
                                 self.reserve_qubit(span)?;
@@ -1066,7 +1108,6 @@ impl Emitter<'_> {
                             _ => unreachable!("preflighted finite primitive"),
                         }
                     };
-                    self.charge_value(step.output(), span)?;
                     bind(step.output(), &output, &mut values, span)?;
                     Ok(())
                 })()
@@ -1256,6 +1297,7 @@ fn lower_inner(
     for atom in arguments.iter().flatten() {
         match atom {
             Atom::Classical(id) => classical_inputs.push(*id),
+            Atom::Register(ids) => classical_inputs.extend(ids.iter().copied()),
             Atom::Quantum(slot) => {
                 let register = &emitter.raw.registers[slot];
                 quantum_inputs.push(QuantumPort {
@@ -1283,6 +1325,7 @@ fn lower_inner(
     for atom in outputs {
         match atom {
             Atom::Classical(id) => classical_outputs.push(id),
+            Atom::Register(ids) => classical_outputs.extend(ids.iter().copied()),
             Atom::Quantum(slot) => {
                 if !retained.insert(slot) {
                     return Err(invalid(

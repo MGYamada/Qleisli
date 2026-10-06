@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "54000705c8adef57e14ca6d685b83b78c0c4701ac601b65ef675ebd35ff7e8c8",
+  "surface_sha256": "77b5084805004c020648d5aa17282a73c04bcb3adff06ad9cc05d9fe72755634",
   "groups": [
     {
       "id": "raw-core",
@@ -2274,6 +2274,26 @@
         {
           "path": "tests/ordinary_booleans.rs",
           "test": "all_four_truth_rows_match_independent_constants_in_both_profiles"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_results"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "copied_measured_registers_preserve_bell_correlation_and_eager_effects"
+        },
+        {
+          "path": "src/frontend/sized/raw/preservation.rs",
+          "test": "ordinary_register_replay_rejects_native_valid_order_and_computation_faults"
+        },
+        {
+          "path": "src/frontend/sized/raw/preservation.rs",
+          "test": "ordinary_register_storage_is_charged_before_emission"
         },
         {
           "path": "tests/mixed_booleans.rs",

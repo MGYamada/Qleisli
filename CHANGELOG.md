@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Transport ordinary `Bits<n>` through selected Raw source lowering and
+  independent ordered replay, retaining exact source values including width
+  zero, copying/drop, Nat specialization and eager measurement effects.
+  Materialize existing empty/prepend construction without new native acceptance
+  rules; preserve concrete width/storage limits and reject native-valid order
+  and computation faults. The finite project profile and general source proofs
+  retain their separate limitations.
+
 - Consolidate the historical common-AST implementation packet into a lossless
   archive retaining all 946 original files. Verify complete original Git
   inventory, contents and executable modes in CI; preserve historical sources,

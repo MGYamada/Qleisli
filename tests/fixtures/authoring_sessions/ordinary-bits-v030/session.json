@@ -72,7 +72,19 @@
         "observations-repaired/pack-11-finite-run.json",
         "observations-repaired/pack-11-raw-check.json",
         "observations-repaired/zero-copy-finite-run.json",
-        "observations-repaired/zero-copy-raw-check.json"
+        "observations-repaired/zero-copy-raw-check.json",
+        "observations-after/nested-copy-check.json",
+        "observations-after/nested-copy-run.json",
+        "observations-after/pack-00-check.json",
+        "observations-after/pack-00-run.json",
+        "observations-after/pack-01-check.json",
+        "observations-after/pack-01-run.json",
+        "observations-after/pack-10-check.json",
+        "observations-after/pack-10-run.json",
+        "observations-after/pack-11-check.json",
+        "observations-after/pack-11-run.json",
+        "observations-after/zero-copy-check.json",
+        "observations-after/zero-copy-run.json"
       ]
     },
     {
@@ -86,10 +98,15 @@
         "observations-repaired-03/generic-one-finite-run.json",
         "observations-repaired-03/generic-one-raw-check.json",
         "observations-repaired-03/measured-copy-finite-run.json",
-        "observations-repaired-03/measured-copy-raw-check.json"
+        "observations-repaired-03/measured-copy-raw-check.json",
+        "observations-after/generic-one-check.json",
+        "observations-after/generic-one-run.json",
+        "observations-after/measured-copy-check.json",
+        "observations-after/measured-copy-run.json"
       ],
       "reports": [
-        "assessment.json"
+        "assessment.json",
+        "validation-local.json"
       ]
     }
   ],

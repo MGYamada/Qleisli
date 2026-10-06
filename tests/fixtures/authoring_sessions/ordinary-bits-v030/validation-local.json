@@ -1,0 +1,52 @@
+{
+  "format": "qleisli.ordinary-bits-local-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-06T22:38:02.058397+00:00",
+  "scope": "Selected Raw source adapter and independent source-step replay; finite project profile and generic source theorem remain incomplete.",
+  "source_files": {
+    "src/frontend/sized/raw.rs": "662e35998080e4c6531d34ace5acc395a02c50d97579f5067226ebfef7ca0c30",
+    "src/frontend/sized/raw/preservation.rs": "5fab8724a448a1abfa43aa97b8b1267de74fd9c14abc7e8b1b3ba9cf7902486c",
+    "tests/ordinary_booleans.rs": "b885c67d1161e660db8c2c9bc4c540a28e9a02ee161a9c07219bd1ca71a7afa7",
+    "scripts/check_production_coverage.py": "0c7a4694b23a5d5c85fc784cb4c9ce9128becca9c716fb14b9d7f7b319ba9535",
+    "tests/fixtures/verification_v022/inventory.json": "64987920d897925f2a773c473fbb02da010aef80265095a4819a5a5c6b03a4f4",
+    "tests/fixtures/verification_v029/coverage.json": "3cce046ca6881045dab8c5cd1d2110f074da86e4e87fba3a789c58828a6cddb2"
+  },
+  "validation": {
+    "rust_versions": [
+      "1.98.1",
+      "1.85.0"
+    ],
+    "library": "Each version: 133 passed, one ps PermissionDenied under sandbox, three ignored; affected process test then passed separately with normal execution permissions. No test condition was weakened.",
+    "focused_integrations": {
+      "bits_cli": 1,
+      "classical_functions": 37,
+      "meaning_evidence": 5,
+      "ordinary_booleans": 12,
+      "failed": 0,
+      "versions": "both"
+    },
+    "adversarial": "Actual native-accepted reversed, duplicated, changed computation and missing output artifacts rejected by independent source replay. Small near-capacity accounting rejects before emission; existing width-nine refusal remains.",
+    "clippy": "Latest and MSRV all targets passed; initial latest type-complexity error was repaired with explicit SourceLeafKind, without suppressing the lint.",
+    "cli": "Eight actual selected Raw checks and eight runs passed on unchanged repaired projects; independent expected distributions matched. Captures precede internal leaf-kind refactor.",
+    "checks": [
+      "constitutional continuity against 38baae7d19535602b21270e11e97617d45205b37",
+      "verification inventory",
+      "production coverage",
+      "14 production-coverage checker tests",
+      "authoring records",
+      "docs links",
+      "fixture budgets"
+    ],
+    "not_run": [
+      "full all-target Rust on final source",
+      "full corpus",
+      "new Lean replay for this Rust-only untrusted adapter change"
+    ],
+    "remaining": [
+      "Final exact-commit CI",
+      "Additional Basis/provider and source/type mutation coverage before declaring #342 complete",
+      "Finite project register/static-Nat profile integration under common-frontend scope"
+    ],
+    "guarantees": "No interpretation or ledger admission; two existing scopes and broad pending obligations unchanged."
+  }
+}

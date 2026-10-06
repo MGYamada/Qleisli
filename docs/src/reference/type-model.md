@@ -35,6 +35,19 @@ its linear obligations. There is no `C<A>` constructor.
 | `Q<A>` | One linear quantum owner with basis `A` |
 | `(Q<A>,Q<B>)` | Two linear owners, without any assumption of state separability |
 
+The selected Raw source adapter retains ordinary `Bits<n>` as one typed source
+value with ordered classical elements, including an empty `Bits<0>` value.
+Ordinary registers may be copied or ignored; quantum `Q<Bits<n>>` owners retain
+linear rules. `empty_bits()` constructs `Bits<0>`;
+`prepend_bit` with static argument `n` takes `Bit` and `Bits<n>` and returns `Bits<n+1>`,
+with head before tail. Existing concrete specialization bounds remain `n <= 8`
+(and `n < 8` for prepend). Exact Unit/Bit/Bits tags and tuple trees stay in the
+retained source graph; flattening classical transport ports creates no type
+coercion. Source-step replay checks ordered elements against the actual
+native-accepted artifact. This bounded check is not an AST preservation theorem.
+The ordinary finite project profile retains its register/static-Nat limitation;
+use the selected source route for this register transport.
+
 The Bit literal spelling is `0` / `1` in both ordinary and basis
 computations. `false` / `true` migrate explicitly to `0` / `1`. A numeral in a
 static-Nat position instead denotes a natural; this stage/category distinction
