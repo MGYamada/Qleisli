@@ -168,174 +168,214 @@ impl Compiler<'_> {
         env: &BTreeMap<BinderKey, BasisValue>,
         depth: usize,
     ) -> Result<BasisValue, CompileError> {
-        self.tick(module, expr.span)?;
-        if depth >= MAX_DEPTH {
-            return Err(self.error(
+        super::super::ordinary::finite::evaluate(
+            &mut LabelContext {
+                compiler: self,
                 module,
-                expr.span,
+            },
+            expr,
+            env,
+            depth,
+        )
+    }
+}
+
+struct LabelContext<'context, 'source> {
+    compiler: &'context mut Compiler<'source>,
+    module: &'context str,
+}
+struct LabelTuple {
+    types: Vec<Ty>,
+    bits: usize,
+    label: u16,
+}
+impl super::super::ordinary::finite::Context for LabelContext<'_, '_> {
+    type Value = BasisValue;
+    type Environment = BTreeMap<BinderKey, BasisValue>;
+    type Tuple = LabelTuple;
+    type Error = CompileError;
+
+    fn enter(&mut self, span: Span, depth: usize) -> Result<(), CompileError> {
+        self.compiler.tick(self.module, span)?;
+        if depth >= MAX_DEPTH {
+            return Err(self.compiler.error(
+                self.module,
+                span,
                 ErrorCode::Limit,
                 "basis evaluation exceeds the initial depth limit",
             ));
         }
-        let value = match &expr.kind {
-            BasisExprKind::Name(name) => {
-                let value = self
-                    .locals
-                    .local_key(name)
-                    .and_then(|key| env.get(key))
-                    .ok_or_else(|| {
-                        self.error(
-                            module,
-                            name.span,
-                            ErrorCode::UnknownName,
-                            format!("unknown basis value `{}`", name.text),
-                        )
-                    })?;
-                self.charge(module, name.span, value.ty.tree_size().nodes)?;
-                value.clone()
-            }
-            BasisExprKind::Bit(bit) => BasisValue {
-                ty: Ty::bit(),
-                label: u16::from(*bit),
-            },
-            BasisExprKind::Unit => BasisValue {
-                ty: Ty::unit(),
-                label: 0,
-            },
-            BasisExprKind::Tuple(fields) => {
-                let mut types = Vec::with_capacity(fields.len());
-                let mut bits = 0;
-                let mut label = 0;
-                for field in fields {
-                    let value = self.eval_basis(module, field, env, depth + 1)?;
-                    let width = value.ty.basis_bits().expect("basis value");
-                    if bits + width > MAX_BITS {
-                        return Err(self.error(
-                            module,
-                            expr.span,
-                            ErrorCode::Limit,
-                            "basis result exceeds 12 bits",
-                        ));
-                    }
-                    label |= value.label << bits;
-                    bits += width;
-                    types.push(value.ty);
-                }
-                BasisValue {
-                    ty: Ty::tuple(types),
-                    label,
-                }
-            }
-            BasisExprKind::Not(a) => {
-                let a = self.eval_basis(module, a, env, depth + 1)?;
-                self.require_bit(module, expr.span, &a)?;
-                BasisValue {
-                    ty: Ty::bit(),
-                    label: a.label ^ 1,
-                }
-            }
-            BasisExprKind::Xor(a, b) | BasisExprKind::And(a, b) => {
-                let a = self.eval_basis(module, a, env, depth + 1)?;
-                let b = self.eval_basis(module, b, env, depth + 1)?;
-                self.require_bit(module, expr.span, &a)?;
-                self.require_bit(module, expr.span, &b)?;
-                let label = if matches!(expr.kind, BasisExprKind::Xor(..)) {
-                    a.label ^ b.label
-                } else {
-                    a.label & b.label
-                };
-                BasisValue {
-                    ty: Ty::bit(),
-                    label,
-                }
-            }
-            BasisExprKind::Call { callee, args } => {
-                if self
-                    .locals
-                    .local_key(callee)
-                    .is_some_and(|key| env.contains_key(key))
-                {
-                    return Err(self.error(
-                        module,
-                        callee.span,
-                        ErrorCode::TypeMismatch,
-                        "a basis value is not callable",
-                    ));
-                }
-                let Callee::User(key) = self.resolve(module, callee)? else {
-                    return Err(self.error(
-                        module,
-                        callee.span,
-                        ErrorCode::TypeMismatch,
-                        "quantum operation in a basis expression",
-                    ));
-                };
-                let function = self.basis.get(&key).ok_or_else(|| {
-                    self.error(
-                        module,
-                        callee.span,
-                        ErrorCode::TypeMismatch,
-                        "basis expressions may call only classical functions",
-                    )
-                })?;
-                let size = function.signature_size();
-                self.charge(module, expr.span, size)?;
-                let function = &self.basis[&key];
-                let params = function.params.clone();
-                let result = function.result.clone();
-                if args.len() != params.len() {
-                    return Err(self.error(
-                        module,
-                        expr.span,
-                        ErrorCode::Arity,
-                        "basis argument count does not match",
-                    ));
-                }
-                let mut label = 0;
-                let mut offset = 0;
-                for (arg, ty) in args.iter().zip(&params) {
-                    let value = self.eval_basis(module, arg, env, depth + 1)?;
-                    if value.ty != *ty {
-                        return Err(self.error(
-                            module,
-                            arg.span,
-                            ErrorCode::TypeMismatch,
-                            format!(
-                                "basis argument type does not match: expected `{ty}`, found `{}`",
-                                value.ty
-                            ),
-                        ));
-                    }
-                    label |= usize::from(value.label) << offset;
-                    offset += ty.basis_bits().expect("basis parameter");
-                }
-                BasisValue {
-                    ty: result,
-                    label: self.basis[&key].table[label],
-                }
-            }
-        };
-        // Each child was already checked; at most one bounded tuple layer is
-        // constructed before this check, including types inferred from names.
-        self.check_tree(module, expr.span, value.ty.tree_size())?;
-        Ok(value)
+        Ok(())
     }
-
-    fn require_bit(
-        &self,
-        module: &str,
+    fn name(&mut self, name: &Ident, env: &Self::Environment) -> Result<BasisValue, CompileError> {
+        let value = self
+            .compiler
+            .locals
+            .local_key(name)
+            .and_then(|key| env.get(key))
+            .ok_or_else(|| {
+                self.compiler.error(
+                    self.module,
+                    name.span,
+                    ErrorCode::UnknownName,
+                    format!("unknown basis value `{}`", name.text),
+                )
+            })?;
+        self.compiler
+            .charge(self.module, name.span, value.ty.tree_size().nodes)?;
+        Ok(value.clone())
+    }
+    fn unit(&mut self) -> BasisValue {
+        BasisValue {
+            ty: Ty::unit(),
+            label: 0,
+        }
+    }
+    fn bit(&mut self, value: bool) -> BasisValue {
+        BasisValue {
+            ty: Ty::bit(),
+            label: u16::from(value),
+        }
+    }
+    fn tuple(&mut self, fields: usize) -> LabelTuple {
+        LabelTuple {
+            types: Vec::with_capacity(fields),
+            bits: 0,
+            label: 0,
+        }
+    }
+    fn push(
+        &mut self,
         span: Span,
-        value: &BasisValue,
+        tuple: &mut LabelTuple,
+        value: BasisValue,
     ) -> Result<(), CompileError> {
+        let width = value.ty.basis_bits().expect("basis value");
+        if tuple.bits + width > MAX_BITS {
+            return Err(self.compiler.error(
+                self.module,
+                span,
+                ErrorCode::Limit,
+                "basis result exceeds 12 bits",
+            ));
+        }
+        tuple.label |= value.label << tuple.bits;
+        tuple.bits += width;
+        tuple.types.push(value.ty);
+        Ok(())
+    }
+    fn product(&mut self, tuple: LabelTuple) -> BasisValue {
+        BasisValue {
+            ty: Ty::tuple(tuple.types),
+            label: tuple.label,
+        }
+    }
+    fn require_bit(&mut self, span: Span, value: &BasisValue) -> Result<(), CompileError> {
         if value.ty == Ty::bit() {
             Ok(())
         } else {
-            Err(self.error(
-                module,
+            Err(self.compiler.error(
+                self.module,
                 span,
                 ErrorCode::TypeMismatch,
                 "not/xor/and require Bit operands",
             ))
         }
+    }
+    fn boolean(
+        &mut self,
+        operation: super::super::ordinary::Boolean,
+        a: BasisValue,
+        b: Option<BasisValue>,
+    ) -> BasisValue {
+        use super::super::ordinary::Boolean;
+        let label = match operation {
+            Boolean::Not => a.label ^ 1,
+            Boolean::And => a.label & b.expect("binary operand").label,
+            Boolean::Xor => a.label ^ b.expect("binary operand").label,
+            Boolean::Constant(_) => unreachable!("literal handled directly"),
+        };
+        BasisValue {
+            ty: Ty::bit(),
+            label,
+        }
+    }
+    fn call(
+        &mut self,
+        span: Span,
+        callee: &Ident,
+        args: &[BasisExpr],
+        env: &Self::Environment,
+        depth: usize,
+    ) -> Result<BasisValue, CompileError> {
+        if self
+            .compiler
+            .locals
+            .local_key(callee)
+            .is_some_and(|key| env.contains_key(key))
+        {
+            return Err(self.compiler.error(
+                self.module,
+                callee.span,
+                ErrorCode::TypeMismatch,
+                "a basis value is not callable",
+            ));
+        }
+        let Callee::User(key) = self.compiler.resolve(self.module, callee)? else {
+            return Err(self.compiler.error(
+                self.module,
+                callee.span,
+                ErrorCode::TypeMismatch,
+                "quantum operation in a basis expression",
+            ));
+        };
+        let function = self.compiler.basis.get(&key).ok_or_else(|| {
+            self.compiler.error(
+                self.module,
+                callee.span,
+                ErrorCode::TypeMismatch,
+                "basis expressions may call only classical functions",
+            )
+        })?;
+        let size = function.signature_size();
+        self.compiler.charge(self.module, span, size)?;
+        let function = &self.compiler.basis[&key];
+        let params = function.params.clone();
+        let result = function.result.clone();
+        if args.len() != params.len() {
+            return Err(self.compiler.error(
+                self.module,
+                span,
+                ErrorCode::Arity,
+                "basis argument count does not match",
+            ));
+        }
+        let mut label = 0;
+        let mut offset = 0;
+        for (arg, ty) in args.iter().zip(&params) {
+            let value = self.compiler.eval_basis(self.module, arg, env, depth + 1)?;
+            if value.ty != *ty {
+                return Err(self.compiler.error(
+                    self.module,
+                    arg.span,
+                    ErrorCode::TypeMismatch,
+                    format!(
+                        "basis argument type does not match: expected `{ty}`, found `{}`",
+                        value.ty
+                    ),
+                ));
+            }
+            label |= usize::from(value.label) << offset;
+            offset += ty.basis_bits().expect("basis parameter");
+        }
+        Ok(BasisValue {
+            ty: result,
+            label: self.compiler.basis[&key].table[label],
+        })
+    }
+    fn finish(&mut self, span: Span, value: BasisValue) -> Result<BasisValue, CompileError> {
+        self.compiler
+            .check_tree(self.module, span, value.ty.tree_size())?;
+        Ok(value)
     }
 }

@@ -2,6 +2,8 @@
 //! Native acceptance and source-preservation validation remain independent.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
 
+pub(super) mod finite;
+
 use super::ast::{BasisExpr, BasisExprKind, Ident};
 use super::types::{Kind, Type};
 use crate::ir::{ClassicalId, RawOp};

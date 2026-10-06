@@ -3333,7 +3333,7 @@
     },
     {
       "path": "src/frontend/compile/basis.rs",
-      "sha256": "2e68bfb8b3ce96712da4cc5af31ea2c6ee8dbd53b09c338e56f57d8df1644a62",
+      "sha256": "f6f89e4715acf40003e4b3361c759f3e796c0ba4c9c24adf65c009adfa05cbd7",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3631,7 +3631,17 @@
     },
     {
       "path": "src/frontend/ordinary.rs",
-      "sha256": "07f203b9b04b41385442c6281a9f1ca905c369b20ba8711e3e3c886eb0c21ace",
+      "sha256": "a1def1da99e3571a913b22b28bba862f5ac42d7ff754d54d8f3f542a30cfc395",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/ordinary/finite.rs",
+      "sha256": "9bf4ba3245e7d470d28e07af6cc5638fbc200133fed53c8c2a98b507e3a93c88",
       "group": "source",
       "surface": {
         "declarations": [],

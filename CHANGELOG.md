@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Share original-AST finite-label evaluation for classical/Meaning preparation.
+  Preserve eager operand order, exact product labels, lexical identities,
+  diagnostics and existing budgets; selected Meaning integration remains open (#44).
 - Repair strict qfor migration metadata and retained CLI/Python corpus source
   selection, including zero-fold ownership counterexamples;
   check the real migration map in regression tests. Keep fold parsing out of
