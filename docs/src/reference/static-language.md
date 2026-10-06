@@ -27,7 +27,9 @@ lambdas and quotation/splicing remain choices for #60/#61 in 0.4.0. Any later
 0.3.0 helper spelling is provisional unless separately stabilized. Existing
 specified forms retain their own contracts; this class alone grants no syntax
 or new result type. The bounded constant/helper sugar required by #63 remains
-0.3.0 work and is not deferred by the builder-syntax boundary.
+0.3.0 work and is not deferred by the builder-syntax boundary. Its additional
+static collections are deferred for 0.3.0-alpha; the scalar fragment specified
+here remains supported.
 
 `Nat` denotes a nonnegative static integer. It is not a runtime integer or an
 ordinary `Bit`. `Basis` denotes an exact finite type tree, and `Op<A>` denotes

@@ -1,0 +1,21 @@
+{
+  "base_commit": "ae0b2804177aa31f56a3ac21735240d41f1863e5",
+  "patch_sha256": "0a2a94784bc25040f1986b64334a4b2cd9a6c5dabc395ef19c3dc88ac9a3f2f9",
+  "status": "unfinished; deferred for 0.3.0-alpha by explicit maintainer instruction",
+  "files": {
+    "src/frontend/ast.rs": "3371718d004f4ca32c085e330c3622c84b908557ea5c5e1d7e354192332c5422",
+    "src/frontend/check.rs": "02c43152766fac855987ec87361f1cb9d042d69359cc35ae82fa9d1251b0ca8d",
+    "src/frontend/check/body.rs": "184a98f9819d3a35883a3b9af49295fc2bfbf7136700f41bb6e1b499f50b8a45",
+    "src/frontend/check/body/operations.rs": "89c5b497fbcd35dfe4b6d50ff62b7bbe365095f8ed640c7052ed7872ef973578",
+    "src/frontend/check/declarations.rs": "3eba9b14d953bb75f8cbc1c73a06b47c3176967ab2cfd339eeead5dc52c6d1fe",
+    "src/frontend/check/normalize.rs": "c0bf6289caf92e6aa5bf9a67c6b78345d8ac532075c4d555e3e74c2d54bed85a",
+    "src/frontend/check/static_helpers.rs": "bce7d3bd5d26f62098420348fab53dcb8ccc599077d462e121a575ff93192b03",
+    "src/frontend/parser.rs": "d0d3671cd9714cf3c0dc42a90bec41f7e69258244f916711114cc53ae7a5e6db",
+    "src/frontend/resolve/locals.rs": "d680c6624fccd20355fb49b5425a09c4254441451adfd57159db0132d8d71de1",
+    "src/frontend/sized.rs": "7a4df44f502d22712a8f7d701c81696e30735d5e2384543bb016a59dc2148f2d",
+    "src/frontend/sized/elaborate.rs": "b26ed59fbb4c719b61a228e644501fa67061ed769b505fadf01a6a0dbd12e65d",
+    "src/frontend/sized/parser.rs": "c7d22fa9bbc6bffa7c2f25f767ebaed39aaffe951f23495bc94afacc3a4ef748",
+    "src/frontend/types.rs": "f22e80a0bd835a08036920f31e5cc13b0a14f14bd738bbe9f359e81fa1934048",
+    "src/frontend/check/static_tables.rs": "faf2502eac8ad1ba3e059a628cf8259949890e8e2eb2888135d818f7853b25dd"
+  }
+}
