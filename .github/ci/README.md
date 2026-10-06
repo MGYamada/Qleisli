@@ -177,6 +177,11 @@ changes; the retained full commands require no reconstruction.
 ## Local MSRV tool selection
 
 Validate the executable identities before reporting a local MSRV result.
+Use `python3 scripts/run_msrv.py clippy --version` and then the same wrapper
+for Cargo commands, for example `python3 scripts/run_msrv.py test --test
+classical_functions`. It resolves Cargo.toml's MSRV through rustup, explicitly
+selects compiler/doc binaries and places matching subcommands first on PATH.
+It installs nothing and preserves caller-supplied native/target/work settings.
 `rustup run 1.85.0 cargo clippy` can discover an ambient `cargo-clippy` through
 Cargo's external-subcommand lookup; Cargo's version alone does not establish
 the compiler or Clippy version. Resolve all four executables from the selected

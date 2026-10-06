@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Expose retained finite source Meanings as untrusted exact requests, preserving
+  Unit/Bit/product trees and refusing unsupported Bits signature substitution.
+  Check actual X/scalar provider bytes and reject lying implementations through
+  the existing native finite-leaf gate; generic binding remains open (#44).
+- Remove two unnecessary lifetime parameters found by hosted MSRV Clippy;
+  select actual local MSRV compiler and Clippy executables for validation.
+
 - Retain selected Meaning request tables under original definition identities,
   exact basis trees and phase/permutation rows. Check the closed provider's
   requested basis within existing budgets; keep native provider equality and

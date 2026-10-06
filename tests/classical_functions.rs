@@ -29,6 +29,121 @@ fn kernel() -> Kernel {
 }
 
 #[test]
+fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
+    use qleisli::contract::exact::{Budget, Exact};
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    use qleisli::ir::QuantumPort;
+    let correct = include_str!(
+        "fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli"
+    );
+    let wrong = include_str!(
+        "fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli"
+    );
+    let scalar = include_str!(
+        "fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli"
+    );
+    let wrong_scalar = scalar.replace(
+        "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
+        "phase_eighth(phase_eighth(phase_eighth(q)))",
+    );
+    assert_ne!(wrong_scalar, scalar);
+    for (source, name, correct, signature) in [
+        (correct, "Flip", true, BasisType::Bit),
+        (wrong, "Flip", false, BasisType::Bit),
+        (scalar, "Minus", true, BasisType::Unit),
+        (wrong_scalar.as_str(), "Minus", false, BasisType::Unit),
+    ] {
+        let parsed =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+        let target = parsed
+            .finite_meaning_target(&format!("main::{name}"))
+            .unwrap();
+        assert_eq!(target.signature(), &signature);
+        let required = target.matrix(&mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
+        if name == "Minus" {
+            assert_eq!(required.get(0, 0), Some(Exact::phase(4)));
+        } else {
+            assert_eq!(required.get(0, 1), Some(Exact::one()));
+            assert_eq!(required.get(0, 0), Some(Exact::zero()));
+        }
+        let proposal = parsed
+            .instantiate("main::implementation", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower_raw()
+            .unwrap();
+        let valid = kernel().accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&valid).unwrap();
+        let raw = valid.raw();
+        assert_eq!(raw.quantum_inputs.len(), 1);
+        assert_eq!(raw.quantum_outputs.len(), 1);
+        let input = raw.quantum_inputs[0].clone();
+        let boundary = UnitaryBoundary::new(
+            signature,
+            input.clone(),
+            QuantumPort {
+                token: raw.quantum_outputs[0],
+                wires: input.wires,
+                shape: input.shape,
+            },
+        )
+        .unwrap();
+        let result = check_unitary(
+            proposal.payload(),
+            &boundary,
+            &required,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        );
+        if correct {
+            assert!(
+                result
+                    .unwrap()
+                    .matches(proposal.payload(), &boundary, &required)
+            );
+        } else {
+            assert_eq!(result.unwrap_err().code, "contract");
+        }
+    }
+}
+
+#[test]
+fn finite_source_targets_preserve_product_tree_and_refuse_width_substitution() {
+    use qleisli::contract::BasisType;
+    let parsed = ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        "classical fn identity(b:(Bit,(Unit,Bit)))->(Bit,(Unit,Bit)){b}
+         classical fn bits(b:Bits<1>)->Bits<1>{b}
+         meaning Product:(Bit,(Unit,Bit))=permutation_by(identity);
+         meaning Sized:Bits<1> = permutation_by(bits);"
+            .into(),
+    )]))
+    .unwrap();
+    let target = parsed.finite_meaning_target("main::Product").unwrap();
+    assert_eq!(
+        target.signature(),
+        &BasisType::pair(
+            BasisType::Bit,
+            BasisType::pair(BasisType::Unit, BasisType::Bit)
+        )
+    );
+    assert_eq!(target.permutation_table(), &[0, 1, 2, 3]);
+    let error = parsed.finite_meaning_target("main::Sized").unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert_eq!(error.module(), Some("main"));
+    assert!(error.message().contains("Bits tags"));
+    assert_eq!(
+        parsed
+            .finite_meaning_target("main::identity")
+            .unwrap_err()
+            .code(),
+        "meaning"
+    );
+    assert!(parsed.finite_meaning_target("main::Missing").is_err());
+}
+
+#[test]
 fn selected_preparation_rejects_unused_nonpermutation_meanings() {
     let source = "classical fn constant(b:Bit)->Bit{0}
         meaning Invalid:Bit=permutation_by(constant);

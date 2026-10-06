@@ -123,6 +123,54 @@ pub(super) enum Rows {
     Phase(Vec<u16>),
 }
 impl TargetTable {
+    pub(super) fn finite(
+        &self,
+        span: Span,
+    ) -> super::Result<crate::contract::meaning::FiniteMeaning> {
+        use crate::contract::{BasisType, meaning::FiniteMeaning};
+        fn signature(ty: &Ty, span: Span) -> super::Result<BasisType> {
+            Ok(match &ty.kind {
+                Kind::Unit => BasisType::Unit,
+                Kind::Bit => BasisType::Bit,
+                Kind::Tuple(fields) => {
+                    let mut converted = fields
+                        .iter()
+                        .map(|ty| signature(ty, span))
+                        .collect::<super::Result<Vec<_>>>()?;
+                    if converted.len() == 2 {
+                        let right = converted.pop().expect("two fields");
+                        BasisType::pair(converted.pop().expect("first field"), right)
+                    } else {
+                        BasisType::Tuple(converted)
+                    }
+                }
+                _ => {
+                    return Err(super::Error::new(
+                        "unsupported",
+                        span,
+                        "finite Meaning signatures require exact Unit, Bit or ordered products; Bits tags are unsupported",
+                    ));
+                }
+            })
+        }
+        // The retained table/tree was bounded before preparation. Conversion
+        // visits at most 4096 nodes/depth 64 and copies at most 64 rows.
+        let basis = signature(&self.basis, span)?;
+        let requested = match &self.rows {
+            Rows::Permutation(rows) => FiniteMeaning::permutation(basis, rows.clone()),
+            Rows::Phase(rows) => {
+                let phases = rows
+                    .iter()
+                    .map(|&phase| u8::try_from(phase))
+                    .collect::<std::result::Result<Vec<_>, _>>()
+                    .map_err(|_| {
+                        super::Error::new("meaning", span, "invalid retained phase label")
+                    })?;
+                FiniteMeaning::phase(basis, phases)
+            }
+        };
+        requested.map_err(|e| super::Error::new("meaning", span, e.to_string()))
+    }
     pub(super) fn cells(&self) -> usize {
         match &self.rows {
             Rows::Permutation(rows) | Rows::Phase(rows) => rows.len(),
@@ -147,11 +195,11 @@ struct Context<'a, 'ast> {
     definition: DefId,
 }
 
-pub(super) fn validate<'ast>(
+pub(super) fn validate(
     sources: &SourceCollection,
     resolution: &Resolution,
     interfaces: &BTreeMap<DefId, Interface>,
-    indices: &BTreeMap<DefId, Index<'ast>>,
+    indices: &BTreeMap<DefId, Index<'_>>,
     budget: &Budget,
 ) -> Result<BTreeMap<DefId, TargetTable>> {
     let mut targets = BTreeMap::new();
@@ -177,7 +225,7 @@ pub(super) fn validate<'ast>(
     Ok(targets)
 }
 
-impl<'a, 'ast> Context<'a, 'ast> {
+impl<'a> Context<'a, '_> {
     fn declaration(&self) -> &'a Decl {
         let declaration = self.resolution.declaration(self.definition);
         &self

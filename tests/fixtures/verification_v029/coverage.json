@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "7c2c910c5ce8d8c9e7f6dccc8e2d3098fe874c6c9d2b4d3778c19a0a1a30394f",
+  "surface_sha256": "74a6eb6b87e563c20ce1b52ba62b434bc5db188262c2fc3fd60f8a39107565a4",
   "groups": [
     {
       "id": "raw-core",
@@ -2170,7 +2170,8 @@
             "pub fn instantiate(",
             "pub struct BasisBinding",
             "pub fn instantiate_with_types(",
-            "pub fn with_types("
+            "pub fn with_types(",
+            "pub fn finite_meaning_target("
           ]
         },
         {
@@ -2242,6 +2243,14 @@
         {
           "path": "tests/basis_polymorphism.rs",
           "test": "all_first_opaque_rejections_reach_their_actual_rules_before_binding"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "finite_source_targets_preserve_product_tree_and_refuse_width_substitution"
         },
         {
           "path": "tests/basis_polymorphism.rs",

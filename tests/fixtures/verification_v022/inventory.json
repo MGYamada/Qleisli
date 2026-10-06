@@ -3834,7 +3834,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "7edbdb149ec7eb6d2c60cf03c34cdcb44f8964c1e0356cce23b63e50768dc9e7",
+      "sha256": "475aa86c54a4ded12eee6c5675fac1e2590f22e1a894959fd8a2ae1e3110c5c6",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3850,6 +3850,7 @@
           "pub fn documentation( &self, module: &str, ) -> Option<std::result::Result<String, super::parser::ParseError>>",
           "pub fn elaborate(&self) -> Result<ElaboratedProgram>",
           "pub fn entry(&self) -> &str",
+          "pub fn finite_meaning_target( &self, path: &str, ) -> Result<crate::contract::meaning::FiniteMeaning>",
           "pub fn function_effect(&self, path: &str) -> Option<super::effects::FunctionEffect>",
           "pub fn instantiate( &self, entry: &str, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
           "pub fn instantiate_with_types( &self, entry: &str, types: BTreeMap<String, BasisBinding>, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
@@ -4809,7 +4810,7 @@
     },
     {
       "path": "src/frontend/sized/meaning.rs",
-      "sha256": "03b08164517a2e02a97b5fc25716b6f09aac7b6dbf57c04c1a62054b6edf00b6",
+      "sha256": "b8bebb30d4ae62447bb8c01bfe1161bab5d7ed3c861ad3a9880d8cab561a143b",
       "group": "sized-source",
       "surface": {
         "declarations": [],

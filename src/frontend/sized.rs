@@ -122,6 +122,41 @@ pub struct ParsedProgram {
     meaning_targets: Arc<BTreeMap<DefId, meaning::TargetTable>>,
 }
 impl ParsedProgram {
+    /// Describe one original finite Meaning as an untrusted mathematical target.
+    /// This selects no provider, verifies no artifact and grants no execution.
+    /// Exact Bits tags are unsupported by the legacy finite signature; they
+    /// are never replaced by a same-width Unit, Bit or product.
+    pub fn finite_meaning_target(
+        &self,
+        path: &str,
+    ) -> Result<crate::contract::meaning::FiniteMeaning> {
+        let id = self.checked.resolution.qualified(path).map_err(|kind| {
+            Self::resolution_error(Failure {
+                module: String::new(),
+                span: Span::default(),
+                kind,
+            })
+        })?;
+        let declaration = self.checked.resolution.declaration(id);
+        let original = &self
+            .sources
+            .get(&declaration.name.0)
+            .expect("retained source")
+            .syntax()
+            .decls[declaration.ast_index];
+        let target = self.meaning_targets.get(&id).ok_or_else(|| {
+            Error::new(
+                "meaning",
+                original.span,
+                "requested definition is not a finite Meaning",
+            )
+            .in_module(&declaration.name.0)
+        })?;
+        target
+            .finite(original.span)
+            .map_err(|e| e.in_module(&declaration.name.0))
+    }
+
     /// Render only this preparation's immutable retained bytes and body facts.
     /// Generic facts remain conditional on checked source premises, not IR evidence.
     pub fn documentation(

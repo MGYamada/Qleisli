@@ -367,6 +367,15 @@ provider equality, enable Meaning-refined selected operations or authorize
 execution. Existing projection refusals remain until artifact-bound native
 comparison is connected.
 
+The Rust preparation API `ParsedProgram::finite_meaning_target` resolves one
+original Meaning into an untrusted `FiniteMeaning` request. It selects no
+provider and issues no accepted handle. The legacy finite signature can describe
+exact Unit, Bit and ordered product trees; it cannot describe the distinct Bits
+tag, so this conversion rejects Bits instead of replacing it by a same-width
+type. The existing native finite-leaf gate can compare this request with actual
+provider bytes. Callers must still bind that result to the source instance and
+dependencies; requesting a target alone does not enable a refined operation.
+
 ### Opaque Basis specialization in the selected profile
 
 The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity

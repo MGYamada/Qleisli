@@ -120,7 +120,8 @@ PATHS = {
         ('src/bin/qleisli/sized.rs', ['super::source_plan::run(args, true)']),
         ('src/bin/qleisli/source_plan.rs', ['fn prepare(', 'fn execute(', 'prepared.payload()', 'untrusted-proposal', 'source_meaning_verified']),
         ('src/frontend/sized.rs', ['pub fn parse(', 'pub fn instantiate(',
-         'pub struct BasisBinding', 'pub fn instantiate_with_types(', 'pub fn with_types(']),
+         'pub struct BasisBinding', 'pub fn instantiate_with_types(', 'pub fn with_types(',
+         'pub fn finite_meaning_target(']),
         ('src/bin/qleisli/source_plan/options.rs', ['"type" =>', '"operation-type" =>',
          'never ordinary input']),
         ('src/frontend/sized/raw.rs', ['pub struct RawSourceProposal', 'pub fn validate_source_steps(', 'native::Proposal::from_raw']),
@@ -135,6 +136,8 @@ PATHS = {
         ('tests/mixed_booleans.rs', 'representable_phases_match_independent_exact_targets_and_interference'),
         ('src/frontend/sized/raw.rs', 'raw_source_replay_rejects_native_valid_semantic_and_structural_mutations'),
         ('tests/basis_polymorphism.rs', 'all_first_opaque_rejections_reach_their_actual_rules_before_binding'),
+        ('tests/classical_functions.rs', 'original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase'),
+        ('tests/classical_functions.rs', 'finite_source_targets_preserve_product_tree_and_refuse_width_substitution'),
         ('tests/basis_polymorphism.rs', 'selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis'),
         ('tests/basis_polymorphism.rs', 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase')]),
     'checked-views': path_rule('checked-view', 'contract function named-qpe-components', '', [
