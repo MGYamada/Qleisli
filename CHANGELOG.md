@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prepare actual closed operation-provider leaves while retaining the original
+  caller instance and shared immutable source graph. Replay the selected body
+  and dependencies; keep generic Meaning enforcement unfinished (#44).
+
 - Align retained Raw-profile regressions with supported Q<Unit> owners and
   the still-unsupported finish primitive. Check actual native owner/type
   retention and source-step replay instead of expecting obsolete refusals.

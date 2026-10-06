@@ -28,6 +28,7 @@ const MAX_LIVE_QUBITS: usize = 16;
 #[derive(Clone, Debug)]
 pub struct RawSourceProposal {
     source: ElaboratedProgram,
+    subject: usize,
     proposal: native::Proposal,
     finite_boundary: Option<UnitaryBoundary>,
 }
@@ -63,7 +64,7 @@ impl RawSourceProposal {
         required: &'a FiniteMeaning,
         budget: &mut Budget,
     ) -> Result<SourceMeaningCheck<'a>> {
-        let root = &self.source.definitions()[self.source.root()];
+        let root = self.definition();
         let error = |code, message: String| {
             let path = root.path();
             Error::new(code, root.span(), message)
@@ -99,7 +100,7 @@ impl RawSourceProposal {
                 "checked leaf differs from actual source artifact".into(),
             ));
         }
-        preservation::validate(&self.source, leaf.program().raw())?;
+        preservation::validate_definition(&self.source, self.subject, leaf.program().raw())?;
         Ok(SourceMeaningCheck {
             source: self,
             required,
@@ -115,6 +116,14 @@ impl RawSourceProposal {
     pub fn payload(&self) -> &[u8] {
         self.proposal.artifact()
     }
+    /// Selected original definition within the retained caller's source graph.
+    /// The caller's instantiation metadata is never rewritten as leaf metadata.
+    pub fn definition(&self) -> &super::SourceDefinition {
+        &self.source.definitions()[self.subject]
+    }
+    pub fn definition_index(&self) -> usize {
+        self.subject
+    }
     /// Compare the actual native-accepted artifact with retained ordered source
     /// steps. This issues no execution handle and proves no AST-to-step theorem.
     /// No independent general source meaning is requested by Raw validity.
@@ -126,7 +135,7 @@ impl RawSourceProposal {
                 "native accepted artifact differs from the source-bound Raw proposal",
             ));
         }
-        preservation::validate(&self.source, accepted.raw())
+        preservation::validate_definition(&self.source, self.subject, accepted.raw())
     }
 }
 
@@ -151,8 +160,8 @@ fn atom_count(ty: &SourceType) -> usize {
         Kind::Bits(_) | Kind::Parameter(_) => unreachable!("preflighted closed finite source type"),
     }
 }
-fn effect(source: &ElaboratedProgram) -> Effect {
-    match source.definitions()[source.root()].effect() {
+fn effect(source: &ElaboratedProgram, subject: usize) -> Effect {
+    match source.definitions()[subject].effect() {
         "unitary" => Effect::Unitary,
         "iso" => Effect::Iso,
         "observe" => Effect::Observe,
@@ -176,8 +185,11 @@ fn eighths(ns: &[u32]) -> Option<usize> {
     Some((j * 8 / denominator) as usize)
 }
 // Capability selection precedes every emission and native decision.
-fn check_profile(source: &ElaboratedProgram) -> Result<()> {
+fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>) -> Result<()> {
     for (id, definition) in source.definitions().iter().enumerate() {
+        if selected.is_some_and(|selected| !selected.contains(&id)) {
+            continue;
+        }
         if !definition.operations().is_empty() {
             return Err(located(
                 source,
@@ -539,12 +551,64 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
         .path()
         .rsplit_once("::")
         .map_or(root.path(), |(module, _)| module);
-    lower_inner(source).map_err(|error| error.in_module(module))
+    lower_inner(source, source.root(), None).map_err(|error| error.in_module(module))
 }
 
-fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
-    check_profile(source)?;
-    let root = &source.definitions()[source.root()];
+pub(super) fn lower_operation(source: &ElaboratedProgram, name: &str) -> Result<RawSourceProposal> {
+    let caller = &source.definitions()[source.root()];
+    let op = caller.operations().get(name).ok_or_else(|| {
+        located(
+            source,
+            source.root(),
+            caller.span(),
+            "unknown entry operation binding",
+        )
+    })?;
+    let subject = op.definition().ok_or_else(|| {
+        located(source, source.root(), caller.span(), "Raw operation leaves require a closed definition; repeated providers need separate support")
+    })?;
+    let mut selected = BTreeSet::new();
+    let mut pending = vec![subject];
+    let mut cells = 1usize;
+    while let Some(id) = pending.pop() {
+        if !selected.insert(id) {
+            continue;
+        }
+        let definition = source.definitions().get(id).ok_or_else(|| {
+            invalid(
+                caller.span(),
+                "operation subject is absent from its original source graph",
+            )
+        })?;
+        cells = cells.saturating_add(1 + definition.steps().len());
+        if cells > MAX_CELLS || selected.len() > MAX_CALLS {
+            return Err(Error::new(
+                "limit",
+                caller.span(),
+                "Raw operation dependency selection exceeds existing source budgets",
+            ));
+        }
+        for step in definition.steps() {
+            if let Some(child) = step.called_definition() {
+                pending.push(child);
+            }
+        }
+    }
+    let definition = &source.definitions()[subject];
+    let module = definition
+        .path()
+        .rsplit_once("::")
+        .map_or(definition.path(), |(module, _)| module);
+    lower_inner(source, subject, Some(&selected)).map_err(|error| error.in_module(module))
+}
+
+fn lower_inner(
+    source: &ElaboratedProgram,
+    subject: usize,
+    selected: Option<&BTreeSet<usize>>,
+) -> Result<RawSourceProposal> {
+    check_profile(source, selected)?;
+    let root = &source.definitions()[subject];
     let mut emitter = Emitter {
         source,
         raw: RawState::new(),
@@ -575,7 +639,7 @@ fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
             }
         }
     }
-    let outputs = emitter.invoke(source.root(), arguments, 0, root.span())?;
+    let outputs = emitter.invoke(subject, arguments, 0, root.span())?;
     let mut quantum_outputs = Vec::new();
     let mut classical_outputs = Vec::new();
     let mut retained = BTreeSet::new();
@@ -611,9 +675,9 @@ fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
         operations: emitter.raw.operations,
         quantum_outputs,
         classical_outputs,
-        declared_effect: effect(source),
+        declared_effect: effect(source, subject),
     };
-    preservation::validate(source, &raw)?;
+    preservation::validate_definition(source, subject, &raw)?;
     // A finite request binds the actual artifact's declared type as well as
     // its ports. Retain a unary quantum boundary only for an exact matching
     // source tree; zero width alone never establishes a Unit signature.
@@ -676,6 +740,7 @@ fn lower_inner(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
         };
     Ok(RawSourceProposal {
         source: source.clone(),
+        subject,
         proposal,
         finite_boundary,
     })

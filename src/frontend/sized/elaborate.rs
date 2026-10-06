@@ -327,7 +327,7 @@ impl SourceDefinition {
 #[derive(Clone, Debug)]
 pub struct ElaboratedProgram {
     instance: Instantiation,
-    definitions: Vec<SourceDefinition>,
+    definitions: Arc<[SourceDefinition]>,
     root: usize,
     calls: usize,
     folds: usize,
@@ -367,6 +367,13 @@ impl ElaboratedProgram {
     /// This performs no native acceptance or source-preservation proof.
     pub fn lower_raw(&self) -> Result<super::RawSourceProposal> {
         super::raw::lower(self)
+    }
+    /// Propose the actual closed definition bound to an entry operation.
+    /// Keep the original caller instance and an explicit leaf subject. This
+    /// neither accepts the caller nor automatically checks every binding.
+    /// Repeated providers require separate support and are rejected here.
+    pub fn lower_raw_operation(&self, name: &str) -> Result<super::RawSourceProposal> {
+        super::raw::lower_operation(self, name)
     }
     pub fn instantiation(&self) -> &Instantiation {
         &self.instance
@@ -492,7 +499,7 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
     )?;
     Ok(ElaboratedProgram {
         instance: instance.clone(),
-        definitions: builder.definitions,
+        definitions: builder.definitions.into(),
         root,
         calls: builder.calls,
         folds: builder.folds,

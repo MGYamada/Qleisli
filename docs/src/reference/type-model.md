@@ -388,6 +388,17 @@ automatic checking of a declared `Op<A,M>` annotation. Generic admission still
 requires mandatory checks of every applicable original binding, including
 unused providers, and remains unsupported until that route is connected.
 
+`ElaboratedProgram::lower_raw_operation(name)` selects the actual closed
+definition of one original entry operation binding and its called dependencies.
+The returned proposal retains the complete immutable caller graph and original
+instantiation; `definition()` identifies the separate provider subject.
+Its interface, emitted bytes and ordered replay derive from that subject,
+rather than the caller or a rewritten caller identity. Repeated providers and
+providers with further operation bindings remain unsupported by this Raw leaf
+profile. This explicit preparation API neither admits the caller nor performs
+mandatory checking of all unused bindings. Such enforcement remains required
+before generic Meaning-refined execution can be enabled.
+
 ### Opaque Basis specialization in the selected profile
 
 The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity

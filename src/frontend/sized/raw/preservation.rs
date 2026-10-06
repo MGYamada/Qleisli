@@ -659,11 +659,20 @@ impl Replay<'_> {
     }
 }
 
+#[cfg(test)]
 pub(super) fn validate(source: &ElaboratedProgram, raw: &RawProgram) -> Result<()> {
+    validate_definition(source, source.root(), raw)
+}
+
+pub(super) fn validate_definition(
+    source: &ElaboratedProgram,
+    subject: usize,
+    raw: &RawProgram,
+) -> Result<()> {
     let definition = source
         .definitions()
-        .get(source.root())
-        .ok_or_else(|| Error::new("preservation", Span::default(), "source root is absent"))?;
+        .get(subject)
+        .ok_or_else(|| Error::new("preservation", Span::default(), "source subject is absent"))?;
     let site = Site::definition(definition);
     if raw.declared_effect != effect(definition.effect(), site)? {
         return Err(site.invalid("Raw declared effect differs from the source root"));
@@ -742,7 +751,7 @@ pub(super) fn validate(source: &ElaboratedProgram, raw: &RawProgram) -> Result<(
     if classical != raw.classical_inputs.len() || quantum != raw.quantum_inputs.len() {
         return Err(site.invalid("Raw program has extra source inputs"));
     }
-    let outputs = replay.function(source.root(), &arguments, 0, site)?;
+    let outputs = replay.function(subject, &arguments, 0, site)?;
     if replay.cursor != raw.operations.len() {
         return Err(site.invalid("Raw program contains extra instructions after source replay"));
     }

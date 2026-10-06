@@ -29,6 +29,67 @@ fn kernel() -> Kernel {
 }
 
 #[test]
+fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::frontend::sized::OperationBinding;
+    let bit = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\nunitary fn helper(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{helper(q)}\npub unitary fn host[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}";
+    let unit = "use std::quantum::phase_eighth;\nclassical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}\nmeaning Minus:Unit=phase_by(scalar);\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\npub unitary fn host[static U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U){q}";
+    let wrong_bit = bit.replace("{helper(q)}", "{q}");
+    let wrong_unit = unit.replace(
+        "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
+        "phase_eighth(phase_eighth(phase_eighth(q)))",
+    );
+    for (text, meaning, correct) in [
+        (bit, "Flip", true),
+        (wrong_bit.as_str(), "Flip", false),
+        (unit, "Minus", true),
+        (wrong_unit.as_str(), "Minus", false),
+    ] {
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+        let target = parsed
+            .finite_meaning_target(&format!("main::{meaning}"))
+            .unwrap();
+        let source = parsed
+            .instantiate(
+                "main::host",
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new("main::implementation", BTreeMap::new()),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        // This opt-in leaf check does not enable the caller's operation profile
+        // or automatically discharge every unused binding.
+        assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+        assert_eq!(
+            source.lower_raw_operation("missing").unwrap_err().code(),
+            "unsupported"
+        );
+        let leaf = source.lower_raw_operation("U").unwrap();
+        assert_eq!(leaf.source().instantiation().entry(), "main::host");
+        assert_eq!(
+            leaf.source().definitions()[leaf.source().root()].path(),
+            "main::host"
+        );
+        assert_eq!(leaf.definition().path(), "main::implementation");
+        assert_ne!(leaf.definition_index(), leaf.source().root());
+        let accepted = kernel().accept(leaf.proposal()).unwrap();
+        leaf.validate_source_steps(&accepted).unwrap();
+        let checker = kernel();
+        let checked =
+            leaf.check_finite_meaning(&checker, &target, &mut Budget::new(DEFAULT_EXACT_WORK));
+        if correct {
+            checked.unwrap();
+        } else {
+            assert_eq!(checked.unwrap_err().code(), "contract");
+        }
+    }
+}
+
+#[test]
 fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
     use qleisli::contract::exact::{Budget, Exact};
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};

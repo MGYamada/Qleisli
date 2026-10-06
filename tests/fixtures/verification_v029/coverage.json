@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "f96bf3216577f8c8b8be8f2e5072274a1be17ff0c1ed6d9d3fea6feebf712b27",
+  "surface_sha256": "6b9c5f27cb2c1a6cd37ff8c95ae91a717a1a3890c4ca90ea6c04d4a45889c515",
   "groups": [
     {
       "id": "raw-core",
@@ -2193,6 +2193,13 @@
           ]
         },
         {
+          "path": "src/frontend/sized/elaborate.rs",
+          "markers": [
+            "pub fn lower_raw_operation(",
+            "definitions: Arc<[SourceDefinition]>"
+          ]
+        },
+        {
           "path": "src/frontend/raw_state.rs",
           "markers": [
             "pub(crate) struct RawState",
@@ -2203,7 +2210,7 @@
         {
           "path": "src/frontend/sized/raw/preservation.rs",
           "markers": [
-            "pub(super) fn validate(",
+            "pub(super) fn validate_definition(",
             "RawOp::ClassicalAnd",
             "RawOp::ClassicalXor"
           ]
@@ -2257,6 +2264,10 @@
         {
           "path": "tests/classical_functions.rs",
           "test": "source_meaning_signature_effect_and_budget_guards_precede_native_io"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
         },
         {
           "path": "src/frontend/sized/raw.rs",
@@ -2716,7 +2727,7 @@
             "pub struct SourceMeaningCheck",
             "pub fn check_finite_meaning",
             "finite_leaf::check_with_kernel",
-            "preservation::validate(&self.source, leaf.program().raw())"
+            "preservation::validate_definition(&self.source, self.subject, leaf.program().raw())"
           ]
         },
         {
@@ -2731,6 +2742,10 @@
         {
           "path": "tests/classical_functions.rs",
           "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
         },
         {
           "path": "tests/classical_functions.rs",
