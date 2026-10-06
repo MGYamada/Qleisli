@@ -29,6 +29,254 @@ fn kernel() -> Kernel {
 }
 
 #[test]
+fn original_annotations_check_every_nested_and_unused_provider_before_lowering() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::interchange::hierarchical;
+    let bit =
+        include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli");
+    let unit =
+        include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli");
+    for (text, nested) in [(bit, 2), (unit, 1)] {
+        for (entry, count) in [("outer", nested), ("unused", 1)] {
+            let parsed =
+                ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+            let source = parsed
+                .instantiate(
+                    &format!("main::{entry}"),
+                    BTreeMap::new(),
+                    BTreeMap::from([(
+                        "U".into(),
+                        OperationBinding::new("main::implementation", BTreeMap::new()),
+                    )]),
+                )
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            assert!(source.has_operation_meanings());
+            assert_eq!(source.lower().unwrap_err().code(), "meaning");
+            assert_eq!(source.lower_raw().unwrap_err().code(), "meaning");
+            let leaf = source.lower_raw_operation("U").unwrap();
+            let target = parsed
+                .finite_meaning_target(if nested == 2 {
+                    "main::Flip"
+                } else {
+                    "main::Minus"
+                })
+                .unwrap();
+            let mut one_budget = Budget::new(DEFAULT_EXACT_WORK);
+            one_budget.charge(leaf.payload().len()).unwrap();
+            let one = leaf
+                .check_finite_meaning(&kernel(), &target, &mut one_budget)
+                .unwrap();
+            assert_eq!(one.lower_hierarchy().unwrap_err().code(), "meaning");
+            if count == 2 {
+                let first_cost = DEFAULT_EXACT_WORK - one_budget.remaining();
+                assert_eq!(
+                    source
+                        .check_operation_meanings(&kernel(), &mut Budget::new(first_cost))
+                        .unwrap_err()
+                        .code(),
+                    "limit",
+                    "all bindings must share one budget"
+                );
+            }
+            let all = source
+                .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap();
+            assert_eq!(all.checked_bindings(), count);
+            let graph = all.lower_hierarchy().unwrap();
+            let actual = hierarchical::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap())
+                .check_against_native(graph.payload(), graph.comparison_request())
+                .unwrap();
+            let input = if nested == 2 {
+                vec![[0.1, -0.2], [0.3, 0.4], [-0.5, 0.6], [0.7, -0.8]]
+            } else {
+                vec![[0.1, -0.2], [0.3, 0.4]]
+            };
+            let expected = if entry == "unused" {
+                input.clone()
+            } else if nested == 2 {
+                (0..4).map(|i| input[i ^ 1]).collect()
+            } else {
+                input.iter().map(|[a, b]| [-a, -b]).collect()
+            };
+            let output = actual
+                .execute_pure(
+                    &input,
+                    2,
+                    hierarchical::execution::ExecutionLimits {
+                        max_amplitudes: 16,
+                        max_steps: 1000,
+                    },
+                )
+                .unwrap()
+                .amplitudes;
+            assert_eq!(output, expected, "{entry}, {nested}");
+            assert_eq!(
+                source
+                    .check_operation_meanings(&kernel(), &mut Budget::new(1))
+                    .unwrap_err()
+                    .code(),
+                "limit"
+            );
+            let missing = Kernel::new("/nonexistent/qleisli-native-checker");
+            assert!(
+                source
+                    .check_operation_meanings(&missing, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .is_err()
+            );
+        }
+        let wrong = if nested == 2 {
+            text.replace("{x(q)}", "{q}")
+        } else {
+            text.replace(
+                "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
+                "q",
+            )
+        };
+        for entry in ["outer", "unused"] {
+            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), wrong.clone())]))
+                .unwrap()
+                .instantiate(
+                    &format!("main::{entry}"),
+                    BTreeMap::new(),
+                    BTreeMap::from([(
+                        "U".into(),
+                        OperationBinding::new("main::implementation", BTreeMap::new()),
+                    )]),
+                )
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            let error = source
+                .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap_err();
+            assert_eq!(error.code(), "contract", "{error}");
+            assert!(error.message().contains("original Meaning"), "{error}");
+        }
+    }
+}
+
+#[test]
+fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::frontend::sized::OperationBinding;
+    let text = include_str!(
+        "fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli"
+    );
+    let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+        .unwrap()
+        .instantiate(
+            "main::outer",
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("main::implementation", BTreeMap::new()),
+            )]),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let error = source
+        .check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap_err();
+    assert_eq!(error.code(), "contract", "{error}");
+    assert!(error.message().contains("main::inner::U"), "{error}");
+    assert!(error.message().contains("main::Flip"), "{error}");
+}
+
+#[test]
+fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    use qleisli::frontend::sized::OperationBinding;
+    let common = "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
+    let declaration = "meaning M:Bit=permutation_by(f); pub unitary fn host[static U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}";
+    let parsed = ParsedProgram::parse(BTreeMap::from([
+        (
+            "flip".into(),
+            format!("{common} classical fn f(b:Bit)->Bit{{not b}} {declaration}"),
+        ),
+        (
+            "identity".into(),
+            format!("{common} classical fn f(b:Bit)->Bit{{b}} {declaration}"),
+        ),
+    ]))
+    .unwrap();
+    for module in ["flip", "identity"] {
+        let source = parsed
+            .instantiate(
+                &format!("{module}::host"),
+                BTreeMap::new(),
+                BTreeMap::from([(
+                    "U".into(),
+                    OperationBinding::new(format!("{module}::implementation"), BTreeMap::new()),
+                )]),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let actual =
+            source.check_operation_meanings(&kernel(), &mut Budget::new(DEFAULT_EXACT_WORK));
+        if module == "flip" {
+            assert_eq!(actual.unwrap().checked_bindings(), 1);
+        } else {
+            let e = actual.unwrap_err();
+            assert_eq!(e.code(), "contract");
+            assert!(e.message().contains("identity::M"), "{e}");
+        }
+    }
+}
+
+#[test]
+fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
+    let text =
+        include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli");
+    for honest in [true, false] {
+        let root = SourceRoot::new(&if honest {
+            text.into()
+        } else {
+            text.replace("{x(q)}", "{q}")
+        });
+        for legacy in [false, true] {
+            for profile in ["auto", "raw", "hierarchy"] {
+                let mut cmd = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                if legacy {
+                    cmd.arg("sized");
+                }
+                let output = cmd
+                    .args([
+                        "check",
+                        "--entry=main::unused",
+                        "--operation=U=main::implementation",
+                    ])
+                    .arg(format!(
+                        "--module=main={}",
+                        root.0.join("main.qli").display()
+                    ))
+                    .arg(format!("--ir-profile={profile}"))
+                    .env(
+                        "QLEISLI_KERNEL",
+                        std::env::var_os("QLEISLI_KERNEL").unwrap(),
+                    )
+                    .output()
+                    .unwrap();
+                assert_eq!(
+                    output.status.success(),
+                    honest && profile != "raw",
+                    "{honest}, {legacy}, {profile}: {} {}",
+                    String::from_utf8_lossy(&output.stdout),
+                    String::from_utf8_lossy(&output.stderr)
+                );
+                if !honest && profile != "raw" {
+                    assert!(String::from_utf8_lossy(&output.stderr).contains("original Meaning"));
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::sized::OperationBinding;

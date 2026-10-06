@@ -389,8 +389,8 @@ pub(super) fn instantiate(
                             "provider and Meaning have different exact basis trees",
                         ));
                     }
-                    // This checks the requested interface only. The located
-                    // backend restriction still rejects an unproved provider.
+                    // This checks the requested interface only. All original
+                    // bindings need native comparison before hierarchy lowering.
                 }
                 charge(span, formal.key.name.len() + 1)?;
                 providers.insert(formal.key.name.clone(), provider_id);

@@ -3022,7 +3022,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "99003d69faab808ce6be69216c39329aa3210ef41f7a6bcd0561db2a419556e1",
+      "sha256": "c03191eebebfeda386e397aa503a13edcd046c3c1c268b6b3bd86985088353b5",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3834,7 +3834,7 @@
     },
     {
       "path": "src/frontend/sized.rs",
-      "sha256": "fcdee89c9d9218cac4218b6ab1aa3d13d45dffb9ec30d4cb14ed0ef441cfb2b0",
+      "sha256": "17516ec07ac2b43e3e471469e3d0fd5e98239bcedc0747e7dc9f6cf52fefef95",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3896,7 +3896,7 @@
     },
     {
       "path": "src/frontend/sized/check.rs",
-      "sha256": "e6251faaf7031ba5ca96fbcdc89a529fd5ea9729c04e786ad22392ee8e9782b5",
+      "sha256": "ca9db1ba05166ff53fb7257894ffa2edbd34623104a1c18a85d0124253b92b5f",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3906,7 +3906,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "5db53b90b21977eb8983155f4b409b643fc0d1c0ff024d1c25bad33ef18fbcdc",
+      "sha256": "aec83ec0d34eedfdbfc1262cecd04c2c35b32f62b098bda4c6bf55bd06cffc86",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -3924,6 +3924,7 @@
           "pub fn call_instances(&self) -> usize",
           "pub fn called_definition(&self) -> Option<usize>",
           "pub fn check_lowering_profile(&self) -> Result<()>",
+          "pub fn check_operation_meanings<'a>( &'a self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<super::CheckedSourceMeanings<'a>>",
           "pub fn child(&self) -> Option<&Self>",
           "pub fn definition(&self) -> Option<usize>",
           "pub fn definitions(&self) -> &[SourceDefinition]",
@@ -3932,6 +3933,7 @@
           "pub fn fields(&self) -> &[SourceType]",
           "pub fn fields(&self) -> &[SourceValue]",
           "pub fn fold_iterations(&self) -> usize",
+          "pub fn has_operation_meanings(&self) -> bool",
           "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
           "pub fn identity(&self) -> Option<u32>",
           "pub fn inputs(&self) -> &[SourceValue]",
@@ -4013,7 +4015,7 @@
     },
     {
       "path": "src/frontend/sized/lower.rs",
-      "sha256": "b2c5a4203ebb3f27fa61b16107d2c7da4a438c78694ec407fdd0bcce2d1d6e17",
+      "sha256": "554894787bf6783faa0c861189952556388b678c382b2158924607ad219f85dc",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4080,7 +4082,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "03d566cc0bc198f9612020a54185693f73c1ecfae8562ebdc152356938a69132",
+      "sha256": "c10ce3ab63738faf9ee5279bca6f084441c29d94d14fa13286a1f54af43b829d",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4121,24 +4123,28 @@
     },
     {
       "path": "src/frontend/sized/raw.rs",
-      "sha256": "b2b7db71ac3834d8a4b6ab1fbd8c1d05465b46a1bf2fe832ca79b724b49544cb",
+      "sha256": "7278cff3f3b56afa7704f598b4373ff75be013903ba5b94c034e8b60490734a3",
       "group": "sized-source",
       "surface": {
         "declarations": [
+          "CheckedSourceMeanings",
           "RawSourceProposal",
           "SourceMeaningCheck"
         ],
         "functions": [
           "pub fn check_finite_meaning<'a>( &'a self, kernel: &native::Kernel, required: &'a FiniteMeaning, budget: &mut Budget, ) -> Result<SourceMeaningCheck<'a>>",
+          "pub fn checked_bindings(&self) -> usize",
           "pub fn definition(&self) -> &super::SourceDefinition",
           "pub fn definition_index(&self) -> usize",
           "pub fn leaf(&self) -> &CheckedUnitaryLeaf",
+          "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
           "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
           "pub fn operation(&self) -> Option<&super::SourceOperation>",
           "pub fn operation_binding(&self) -> Option<(usize, &str)>",
           "pub fn payload(&self) -> &[u8]",
           "pub fn proposal(&self) -> &native::Proposal",
           "pub fn required(&self) -> &FiniteMeaning",
+          "pub fn source(&self) -> &ElaboratedProgram",
           "pub fn source(&self) -> &ElaboratedProgram",
           "pub fn source(&self) -> &RawSourceProposal",
           "pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()>"
@@ -4822,7 +4828,7 @@
     },
     {
       "path": "src/frontend/sized/meaning.rs",
-      "sha256": "b8bebb30d4ae62447bb8c01bfe1161bab5d7ed3c861ad3a9880d8cab561a143b",
+      "sha256": "59fa763151abfa105172d9b63d25a6cea675164d168c7203a29a1581bd89e19f",
       "group": "sized-source",
       "surface": {
         "declarations": [],

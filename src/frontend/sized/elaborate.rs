@@ -276,6 +276,7 @@ impl SourceStep {
 /// One specialized source function, with a sequential body and local identities.
 #[derive(Clone, Debug)]
 pub struct SourceDefinition {
+    pub(super) original: DefId,
     path: String,
     types: BTreeMap<String, BasisBinding>,
     naturals: BTreeMap<String, u32>,
@@ -343,6 +344,46 @@ pub enum HierarchyEligibility {
 }
 
 impl ElaboratedProgram {
+    /// Whether any retained actual specialization has an original Meaning
+    /// obligation, including unused operation bindings.
+    pub fn has_operation_meanings(&self) -> bool {
+        self.definitions.iter().any(|definition| {
+            self.instance
+                .program
+                .checked
+                .interface(definition.original)
+                .statics
+                .iter()
+                .any(|formal| {
+                    matches!(
+                        formal.kind,
+                        crate::frontend::check::StaticKind::Operation {
+                            meaning: Some(_),
+                            ..
+                        }
+                    )
+                })
+        })
+    }
+    pub(super) fn require_unrefined(&self) -> Result<()> {
+        if self.has_operation_meanings() {
+            return Err(error(
+                "meaning",
+                self.definitions[self.root].span,
+                "original operation Meanings require checking every binding before hierarchy lowering; Raw lowering is unsupported",
+            ));
+        }
+        Ok(())
+    }
+    /// Check every original Meaning against its actual closed provider, using
+    /// fresh native finite equations and one aggregate exact-work budget.
+    pub fn check_operation_meanings<'a>(
+        &'a self,
+        kernel: &crate::interchange::native::Kernel,
+        budget: &mut crate::contract::exact::Budget,
+    ) -> Result<super::CheckedSourceMeanings<'a>> {
+        super::raw::check_operation_meanings(self, kernel, budget)
+    }
     /// Classify explicit hierarchical profile mismatches without treating other
     /// failures as a reason to select another target. Any checking error is
     /// returned separately; eligible bodies still require full lowering checks.
@@ -929,6 +970,26 @@ impl Builder<'_> {
                         "concrete provider width/type mismatch",
                     ));
                 }
+                self.charge_cells(interface.statics.len(), function.span)?;
+                let formal = interface
+                    .statics
+                    .iter()
+                    .find(|formal| formal.key == *key)
+                    .expect("closed operation retains original formal");
+                if let crate::frontend::check::StaticKind::Operation {
+                    meaning: Some(id), ..
+                } = &formal.kind
+                {
+                    let target = &program.meaning_targets[id];
+                    self.charge_cells(target.cells(), function.span)?;
+                    if target_type.quantum_basis() != Some(&target.basis) {
+                        return Err(error(
+                            "type",
+                            function.span,
+                            "provider and original Meaning have different exact basis trees",
+                        ));
+                    }
+                }
             }
             let mut frame = Frame {
                 module: module.clone(),
@@ -990,6 +1051,7 @@ impl Builder<'_> {
             }
             self.charge_cells(output.cells(), function.span)?;
             let definition = SourceDefinition {
+                original: definition,
                 path,
                 types,
                 naturals,

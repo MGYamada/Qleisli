@@ -345,7 +345,16 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             "named QPE and sampling require an observing entry",
         ));
     }
-    let proposal = source.lower()?;
+    let proposal = if source.has_operation_meanings() {
+        source
+            .check_operation_meanings(
+                &native::Kernel::new(kernel_path(options)?),
+                &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+            )?
+            .lower_hierarchy()?
+    } else {
+        source.lower()?
+    };
     let request = if let Some(path) = &options.provider {
         PreparedRequest::NamedQpe(proposal.qpe_binding(&read(path)?)?)
     } else {

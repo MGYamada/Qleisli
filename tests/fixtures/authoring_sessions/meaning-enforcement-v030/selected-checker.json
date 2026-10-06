@@ -1,0 +1,67 @@
+{
+  "format": "qleisli.meaning-enforcement-selected-checker",
+  "version": 1,
+  "repair": "Four initial observations lacked explicit checker selection and all rejected. Same source bytes; add --lean-kernel only. This is invocation repair, not source repair or a before-implementation baseline.",
+  "observations": [
+    {
+      "case": "bit-outer",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::outer",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
+        "--operation=U=main::implementation",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/bit-outer.stdout.txt",
+      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/bit-outer.stderr.txt"
+    },
+    {
+      "case": "bit-unused",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::unused",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
+        "--operation=U=main::implementation",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/bit-unused.stdout.txt",
+      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/bit-unused.stderr.txt"
+    },
+    {
+      "case": "unit-outer",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::outer",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli",
+        "--operation=U=main::implementation",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/unit-outer.stdout.txt",
+      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/unit-outer.stderr.txt"
+    },
+    {
+      "case": "lying-bit-unused",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::unused",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/lying-bit.qli",
+        "--operation=U=main::implementation",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/lying-bit-unused.stdout.txt",
+      "stderr": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/observed-selected/lying-bit-unused.stderr.txt"
+    }
+  ]
+}

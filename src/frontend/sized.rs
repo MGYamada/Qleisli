@@ -30,7 +30,7 @@ pub use elaborate::{
 pub use lower::{
     FramePort, HierarchyProposal, InitializationMove, PreparationValidation, SourceEvent,
 };
-pub use raw::{RawSourceProposal, SourceMeaningCheck};
+pub use raw::{CheckedSourceMeanings, RawSourceProposal, SourceMeaningCheck};
 
 pub(in crate::frontend) type Result<T> = std::result::Result<T, Error>;
 pub use qpe::QpeBindingProposal;

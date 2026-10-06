@@ -103,7 +103,7 @@ mod tests {
                 .into(),
         )]))
         .unwrap();
-        let error = program
+        let source = program
             .instantiate(
                 "main::unused",
                 BTreeMap::new(),
@@ -112,9 +112,21 @@ mod tests {
                     OperationBinding::new("main::identity", BTreeMap::new()),
                 )]),
             )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        assert_eq!(source.lower().unwrap_err().code(), "meaning");
+        assert_eq!(source.lower_raw().unwrap_err().code(), "meaning");
+        let kernel = crate::interchange::native::Kernel::new(
+            std::env::var_os("QLEISLI_KERNEL").expect("matching native checker"),
+        );
+        let error = source
+            .check_operation_meanings(
+                &kernel,
+                &mut crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+            )
             .unwrap_err();
-        assert_eq!(error.code(), "unsupported", "{error}");
-        assert!(error.message().contains("meaning-refined"), "{error}");
+        assert_eq!(error.code(), "contract", "{error}");
     }
 }
 #[derive(Debug)]

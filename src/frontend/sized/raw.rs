@@ -18,6 +18,94 @@ const MAX_DEPTH: usize = 16;
 const MAX_CELLS: usize = 100_000;
 const MAX_LIVE_QUBITS: usize = 16;
 
+/// Native finite equations for every original Meaning binding in this immutable
+/// concrete source graph. No constructor or mutable evidence view is public.
+#[derive(Debug)]
+pub struct CheckedSourceMeanings<'a> {
+    source: &'a ElaboratedProgram,
+    pub(super) leaves: Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>,
+}
+impl CheckedSourceMeanings<'_> {
+    pub fn checked_bindings(&self) -> usize {
+        self.leaves.len()
+    }
+    pub fn source(&self) -> &ElaboratedProgram {
+        self.source
+    }
+    /// Emit actual checked finite nodes. The final hierarchy still needs a
+    /// fresh native decision; this is not an AST preservation theorem.
+    pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal> {
+        super::lower::lower_with_checked_meanings(self)
+    }
+}
+
+pub(super) fn check_operation_meanings<'a>(
+    source: &'a ElaboratedProgram,
+    kernel: &native::Kernel,
+    budget: &mut Budget,
+) -> Result<CheckedSourceMeanings<'a>> {
+    if budget.remaining() > DEFAULT_EXACT_WORK {
+        return Err(Error::new(
+            "limit",
+            Span::default(),
+            "source Meaning budget exceeds the shared exact-work ceiling",
+        ));
+    }
+    let program = &source.instantiation().program;
+    let mut leaves = Vec::new();
+    let mut bytes = 0usize;
+    for (caller, definition) in source.definitions().iter().enumerate() {
+        for formal in &program.checked.interface(definition.original).statics {
+            let crate::frontend::check::StaticKind::Operation {
+                meaning: Some(id), ..
+            } = &formal.kind
+            else {
+                continue;
+            };
+            let name = &formal.key.name;
+            let span = definition.span();
+            let operation = &definition.operations()[name];
+            if leaves.len() >= MAX_CALLS {
+                return Err(Error::new(
+                    "limit",
+                    span,
+                    "source Meaning checking exceeds 1024 bindings",
+                ));
+            }
+            // Resolve the original request before generating/comparing a leaf;
+            // no width or basename matching and no producer-chosen equation.
+            let required = program.meaning_targets[id].finite(span)?;
+            let proposal = source.lower_raw_operation_at(caller, name)?;
+            bytes = bytes
+                .checked_add(proposal.payload().len())
+                .ok_or_else(|| Error::new("limit", span, "provider byte accounting overflow"))?;
+            if bytes > MAX_CELLS {
+                return Err(Error::new(
+                    "limit",
+                    span,
+                    "source Meaning checking exceeds 100000 aggregate provider bytes",
+                ));
+            }
+            budget
+                .charge(proposal.payload().len())
+                .map_err(|e| Error::new("limit", span, e.to_string()))?;
+            let check = proposal
+                .check_finite_meaning(kernel, &required, budget)
+                .map_err(|mut e| {
+                    e.message = format!(
+                        "operation binding {}::{name} must satisfy original Meaning {}: {}",
+                        definition.path(),
+                        program.checked.resolution.path(*id),
+                        e.message()
+                    );
+                    e
+                })?;
+            leaves.push((operation.key(), check.leaf));
+        }
+    }
+    Ok(CheckedSourceMeanings { source, leaves })
+}
+
 /// An immutable finite transport proposal alongside its exact source instance.
 ///
 /// The current adapter supports Unit/Bit/`Q<Unit>`/`Q<Bit>`/products, specialized ordinary
@@ -608,6 +696,7 @@ impl Emitter<'_> {
 }
 
 pub(super) fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
+    source.require_unrefined()?;
     let root = &source.definitions()[source.root()];
     let module = root
         .path()

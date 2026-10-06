@@ -350,8 +350,8 @@ source span. Meaning/provider identity binding is not matrix equality,
 injectivity, all-input clean return, provider correspondence or source
 preservation. Those properties remain pending until the existing independent
 concrete evidence gates discharge them. A selected projection of a declared
-Meaning or meaning-refined Op remains explicitly unsupported when requested;
-checking the original source never substitutes another specification or route.
+Meaning as a runtime function remains explicitly unsupported; checking the
+original source never substitutes another specification or route.
 
 Selected preparation additionally evaluates every declared finite Meaning from
 its original classical body and resolved dependencies, including unused targets.
@@ -363,9 +363,8 @@ original resolved Meaning definition IDs, with the complete basis tree and
 permutation or phase rows. Closed operation binding checks that same requested
 basis, rather than substituting another same-width target. Tables remain
 untrusted requested data: they do not establish
-provider equality, enable Meaning-refined selected operations or authorize
-execution. Existing projection refusals remain until artifact-bound native
-comparison is connected.
+provider equality or authorize execution. Actual providers must separately
+satisfy those original requested tables through the native comparison below.
 
 The Rust preparation API `ParsedProgram::finite_meaning_target` resolves one
 original Meaning into an untrusted `FiniteMeaning` request. It selects no
@@ -384,9 +383,9 @@ retains the native leaf; it cannot substitute another source or request.
 The current profile requires a unary Unitary endomorphism on exact `Q<Unit>`
 or `Q<Bit>`. Unsupported interfaces, same-width type substitutions and invalid
 work budgets reject before native IO. This is not an AST-to-step theorem or
-automatic checking of a declared `Op<A,M>` annotation. Generic admission still
-requires mandatory checks of every applicable original binding, including
-unused providers, and remains unsupported until that route is connected.
+automatic checking of a declared `Op<A,M>` annotation by this single-leaf API.
+Generic admission requires the all-binding collection below, including unused
+providers.
 
 `ElaboratedProgram::lower_raw_operation(name)` selects one original entry
 operation binding and its called dependencies. `lower_raw_operation_at(caller,
@@ -415,6 +414,32 @@ checking rechecks the embedded bytes against their matrix description. A
 separate native-valid provider cannot replace those bytes while retaining a
 different requested operator. This bridge does not automatically collect or
 check other original Meaning annotations, nor prove source elaboration sound.
+
+`ElaboratedProgram::check_operation_meanings(kernel, budget)` locates every
+original `Op<A,M>` formal by its resolved definition ID in each retained actual
+specialization. This includes unused bindings and nested callers. It checks the
+closed exact basis against the original Meaning, compares the complete provider
+operation (including repetition) with that fixed target through fresh native
+finite checking, and replays its actual source steps. One shared exact-work
+budget covers all bindings; at most 1024 bindings and 100000 aggregate provider
+bytes may be retained. Exhaustion and unsupported interfaces reject.
+
+Only the private `CheckedSourceMeanings` collection can lower a refined caller
+hierarchy. Its finite nodes embed the checked provider bytes and matrices;
+the complete output graph still requires fresh native hierarchy acceptance.
+Plain hierarchy lowering, single-leaf hierarchy lowering and Raw root lowering
+refuse refined callers. Raw refined emission is unsupported. The selected CLI
+uses the same all-binding gate for its hierarchy route, including its `sized`
+alias; native failure cannot select another profile. `emit-proposal` for a
+refined source needs the checker selected by `QLEISLI_KERNEL` to perform these
+binding checks, while its output remains an untrusted proposal.
+
+This connects exact Unit/Bit provider bindings to actual emitted finite nodes.
+Distinct Bits/product quantum interfaces and unsupported provider capabilities
+continue to reject explicitly in this leaf profile. Original source-to-table,
+AST-to-step, execution and general hierarchy preservation remain separate proof
+obligations; a successful collection is not a full source-preservation theorem
+or a new constitutional guarantee.
 
 ### Opaque Basis specialization in the selected profile
 

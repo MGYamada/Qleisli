@@ -6,11 +6,16 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check original Meaning annotations for every retained concrete operation
+  binding, including unused and nested callers, before selected hierarchy
+  emission. Require the private all-binding collection, shared exact-work and
+  provider-storage limits, and fresh native checking of the actual graph;
+  refuse unchecked single-leaf and Raw routes. This adds no source proof (#44).
+
 - Embed a source-bound checked provider's exact bytes and requested matrix
   in the actual emitted hierarchy node, keyed by its complete operation.
   Preserve typed ports and repeats; fresh native checking rejects substituted
-  bodies with a different meaning. Automatic all-binding Meaning admission
-  remains open (#44).
+  bodies with a different meaning. The all-binding route uses this bridge (#44).
 
 - Prepare and replay complete bounded repeated provider leaves, including
   bindings in nested instantiated callers. Preserve zero-count owners and

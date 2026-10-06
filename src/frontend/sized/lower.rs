@@ -1527,6 +1527,7 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
 }
 
 pub(super) fn lower(source: &ElaboratedProgram) -> Result<HierarchyProposal> {
+    source.require_unrefined()?;
     lower_inner(source, &[])
 }
 
@@ -1534,6 +1535,7 @@ pub(super) fn lower_with_checked_operation(
     check: &super::SourceMeaningCheck<'_>,
 ) -> Result<HierarchyProposal> {
     let proposal = check.source();
+    proposal.source().require_unrefined()?;
     let op = proposal
         .operation()
         .ok_or_else(|| fail("hierarchy binding requires an original source operation binding"))?;
@@ -1542,6 +1544,20 @@ pub(super) fn lower_with_checked_operation(
         leaf: check.leaf(),
     }];
     lower_inner(proposal.source(), &operations)
+}
+
+pub(super) fn lower_with_checked_meanings(
+    check: &super::CheckedSourceMeanings<'_>,
+) -> Result<HierarchyProposal> {
+    let operations = check
+        .leaves
+        .iter()
+        .map(|(key, leaf)| NativeOperation {
+            key: key.clone(),
+            leaf,
+        })
+        .collect::<Vec<_>>();
+    lower_inner(check.source(), &operations)
 }
 
 fn lower_inner<'a>(

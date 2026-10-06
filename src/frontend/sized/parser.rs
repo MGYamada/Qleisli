@@ -147,23 +147,6 @@ impl Projection<'_, '_> {
                 ));
             }
         };
-        if let Some(meaning) =
-            declaration
-                .static_params
-                .iter()
-                .find_map(|parameter| match &parameter.kind {
-                    source::StaticParamKind::Operation {
-                        meaning: Some(meaning),
-                        ..
-                    } => Some(meaning),
-                    _ => None,
-                })
-        {
-            return Err(unsupported(
-                meaning.span,
-                "meaning-refined operation parameters are not supported",
-            ));
-        }
         self.charge(declaration.span, declaration.params.len())?;
         let arguments = declaration
             .params

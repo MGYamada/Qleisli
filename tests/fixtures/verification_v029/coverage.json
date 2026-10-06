@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "cfa0afe4ed11b56e7781d9f89db6c3fc1b18b1c79009989dfbc1903666fc2c9a",
+  "surface_sha256": "058f18105ad2d40a987c0bbf221fd9ca1d35f42fa6d8c3a085e1ecc8955e0c79",
   "groups": [
     {
       "id": "raw-core",
@@ -2749,6 +2749,10 @@
           "markers": [
             "pub struct SourceMeaningCheck",
             "pub fn check_finite_meaning",
+            "pub struct CheckedSourceMeanings",
+            "program.checked.interface(definition.original).statics",
+            "program.meaning_targets[id].finite(span)?",
+            "budget",
             "finite_leaf::check_with_kernel",
             "self.replay(leaf.program().raw())?",
             "original operation binding is absent during replay",
@@ -2761,12 +2765,42 @@
             "pub(crate) fn check_with_kernel(",
             "kernel.check_leaf(payload, boundary, meaning)"
           ]
+        },
+        {
+          "path": "src/frontend/sized/elaborate.rs",
+          "markers": [
+            "pub fn check_operation_meanings",
+            "pub(super) fn require_unrefined"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan.rs",
+          "markers": [
+            "source.has_operation_meanings()",
+            ".check_operation_meanings("
+          ]
         }
       ],
       "tests": [
         {
           "path": "tests/classical_functions.rs",
           "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_annotations_check_every_nested_and_unused_provider_before_lowering"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "nested_repeated_binding_is_compared_with_its_own_original_annotation"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "selected_cli_checks_original_annotations_and_rejects_raw_bypass"
         },
         {
           "path": "tests/classical_functions.rs",
