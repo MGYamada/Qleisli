@@ -499,7 +499,13 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
     })
 }
 
-fn natural(n: &Natural, values: &BTreeMap<BinderKey, u32>) -> Result<u32> {
+fn natural(
+    n: &Natural,
+    values: &BTreeMap<BinderKey, u32>,
+    cells: &mut usize,
+    calls: &mut usize,
+) -> Result<u32> {
+    charge_retained_cells(cells, 1, n.span)?;
     let fail = || {
         error(
             "limit",
@@ -508,25 +514,64 @@ fn natural(n: &Natural, values: &BTreeMap<BinderKey, u32>) -> Result<u32> {
         )
     };
     match &n.kind {
+        NatKind::Helper {
+            template,
+            arguments,
+        } => {
+            *calls = calls
+                .checked_add(1)
+                .ok_or_else(|| error("limit", n.span, "static helper call accounting overflow"))?;
+            if *calls > MAX_CALLS {
+                return Err(error(
+                    "limit",
+                    n.span,
+                    "concrete source exceeds 1024 combined runtime and Nat helper calls",
+                ));
+            }
+            let mut actual = BTreeMap::new();
+            for (key, argument) in template.parameters.iter().zip(arguments) {
+                let value = natural(argument, values, cells, calls)?;
+                charge_retained_cells(cells, 2 + key.name.len(), n.span)?;
+                actual.insert(key, value);
+            }
+            let mut result = template.result.constant;
+            for (key, coefficient) in &template.result.terms {
+                charge_retained_cells(cells, 1, n.span)?;
+                let value = actual.get(key).ok_or_else(|| {
+                    error("static", n.span, "missing original Nat helper binding")
+                })?;
+                let scaled = coefficient
+                    .checked_mul(i128::from(*value))
+                    .ok_or_else(fail)?;
+                result = result.checked_add(scaled).ok_or_else(fail)?;
+            }
+            u32::try_from(result).map_err(|_| fail())
+        }
         NatKind::Number(n) => u32::try_from(*n).map_err(|_| fail()),
         NatKind::Name(name) => name
             .get(values)
             .copied()
             .ok_or_else(|| error("static", n.span, format!("missing concrete natural {name}"))),
-        NatKind::Add(a, b) => natural(a, values)?
-            .checked_add(natural(b, values)?)
+        NatKind::Add(a, b) => natural(a, values, cells, calls)?
+            .checked_add(natural(b, values, cells, calls)?)
             .ok_or_else(fail),
-        NatKind::Sub(a, b) => natural(a, values)?
-            .checked_sub(natural(b, values)?)
+        NatKind::Sub(a, b) => natural(a, values, cells, calls)?
+            .checked_sub(natural(b, values, cells, calls)?)
             .ok_or_else(fail),
-        NatKind::Mul(a, b) => natural(a, values)?
-            .checked_mul(natural(b, values)?)
+        NatKind::Mul(a, b) => natural(a, values, cells, calls)?
+            .checked_mul(natural(b, values, cells, calls)?)
             .ok_or_else(fail),
     }
 }
-fn predicate(p: &Predicate, values: &BTreeMap<BinderKey, u32>) -> Result<bool> {
-    let a = natural(&p.left, values)?;
-    let b = natural(&p.right, values)?;
+
+fn predicate(
+    p: &Predicate,
+    values: &BTreeMap<BinderKey, u32>,
+    cells: &mut usize,
+    calls: &mut usize,
+) -> Result<bool> {
+    let a = natural(&p.left, values, cells, calls)?;
+    let b = natural(&p.right, values, cells, calls)?;
     Ok(match p.comparison {
         Compare::Eq => a == b,
         Compare::Ne => a != b,
@@ -541,6 +586,8 @@ fn concrete_type(
     values: &BTreeMap<BinderKey, u32>,
     bases: &BTreeMap<BinderKey, SourceType>,
     span: Span,
+    cells: &mut usize,
+    calls: &mut usize,
 ) -> Result<SourceType> {
     t.storage_size(4096, 64).ok_or_else(|| {
         error(
@@ -592,7 +639,7 @@ fn concrete_type(
     while let Some(node) = pending.pop() {
         match &node.kind {
             TypeKind::Bits(n) => {
-                let value = natural(n, values)?;
+                let value = natural(n, values, cells, calls)?;
                 if value > 8 {
                     return Err(error(
                         "limit",
@@ -1083,9 +1130,14 @@ impl Builder<'_> {
             match &formal.kind {
                 crate::frontend::check::StaticKind::Basis => {
                     let ty = match a {
-                        Argument::Basis(basis, at) => {
-                            concrete_type(basis, &scope.naturals, &scope.bases, *at)?
-                        }
+                        Argument::Basis(basis, at) => concrete_type(
+                            basis,
+                            &scope.naturals,
+                            &scope.bases,
+                            *at,
+                            &mut self.cells,
+                            &mut self.calls,
+                        )?,
                         Argument::Natural(Natural {
                             kind: NatKind::Name(reference),
                             ..
@@ -1106,7 +1158,10 @@ impl Builder<'_> {
                     let Argument::Natural(n) = a else {
                         return Err(error("static", span, "expected concrete natural"));
                     };
-                    naturals.insert(name.clone(), natural(n, &scope.naturals)?);
+                    naturals.insert(
+                        name.clone(),
+                        natural(n, &scope.naturals, &mut self.cells, &mut self.calls)?,
+                    );
                 }
                 crate::frontend::check::StaticKind::Operation { .. } => {
                     operations.insert(name.clone(), self.operation(a, scope, frame, depth, span)?);
@@ -1154,9 +1209,11 @@ impl Builder<'_> {
             Argument::Repeat(count, child, span) => {
                 let child = self.operation(child, scope, frame, depth, *span)?;
                 let count = match count {
-                    Count::Natural(n) => natural(n, &scope.naturals)?,
+                    Count::Natural(n) => {
+                        natural(n, &scope.naturals, &mut self.cells, &mut self.calls)?
+                    }
                     Count::Power(n) => {
-                        let e = natural(n, &scope.naturals)?;
+                        let e = natural(n, &scope.naturals, &mut self.cells, &mut self.calls)?;
                         if e > 8 {
                             return Err(error("limit", *span, "repeat exponent exceeds eight"));
                         }
@@ -1250,7 +1307,7 @@ impl Builder<'_> {
             match statement {
                 Statement::StaticLet(name, value) => {
                     self.charge_cells(4 + 2 * name.name.len(), value.span)?;
-                    let value = natural(value, &scope.naturals)?;
+                    let value = natural(value, &scope.naturals, &mut self.cells, &mut self.calls)?;
                     let key = name.key.as_ref().expect("checked static binder").clone();
                     scope.naturals.insert(key.clone(), value);
                     local_naturals.push(key);
@@ -1431,7 +1488,7 @@ impl Builder<'_> {
                                     "primitive requires natural arguments",
                                 ));
                             };
-                            natural(n, &scope.naturals)
+                            natural(n, &scope.naturals, &mut self.cells, &mut self.calls)
                         })
                         .collect::<Result<Vec<_>>>()?;
                     let values: Vec<SourceValue> = inputs
@@ -1500,11 +1557,12 @@ impl Builder<'_> {
                 self.operation_step(StepKind::Controlled(op), values, frame, span)
             }
             ExprKind::If(condition, yes, no) => {
-                let branch = if predicate(condition, &scope.naturals)? {
-                    yes
-                } else {
-                    no
-                };
+                let branch =
+                    if predicate(condition, &scope.naturals, &mut self.cells, &mut self.calls)? {
+                        yes
+                    } else {
+                        no
+                    };
                 self.block(branch, scope, frame, depth)
             }
             ExprKind::Fold {
@@ -1515,8 +1573,8 @@ impl Builder<'_> {
                 initial,
                 body,
             } => {
-                let start = natural(start, &scope.naturals)?;
-                let end = natural(end, &scope.naturals)?;
+                let start = natural(start, &scope.naturals, &mut self.cells, &mut self.calls)?;
+                let end = natural(end, &scope.naturals, &mut self.cells, &mut self.calls)?;
                 let count = end
                     .checked_sub(start)
                     .ok_or_else(|| error("size", span, "negative concrete fold range"))?;
@@ -1910,4 +1968,35 @@ fn primitive(
         shape(output, ns, span)?,
         signature.effect,
     ))
+}
+
+#[cfg(test)]
+mod natural_budget_tests {
+    use super::*;
+    #[test]
+    fn helper_calls_and_natural_visits_share_existing_aggregate_budgets() {
+        let span = Span::new(31, 42);
+        let helper = Natural {
+            span,
+            kind: NatKind::Helper {
+                template: Arc::new(crate::frontend::check::StaticHelper {
+                    parameters: vec![],
+                    result: crate::frontend::check::Linear::constant(1),
+                    requirements: vec![],
+                }),
+                arguments: vec![],
+            },
+        };
+        let mut cells = 0;
+        let mut calls = MAX_CALLS;
+        let error = natural(&helper, &BTreeMap::new(), &mut cells, &mut calls).unwrap_err();
+        assert_eq!(error.code(), "limit");
+        assert_eq!(error.span(), span);
+        let mut cells = MAX_CELLS;
+        let mut calls = 0;
+        let error = natural(&helper, &BTreeMap::new(), &mut cells, &mut calls).unwrap_err();
+        assert_eq!(error.code(), "limit");
+        assert_eq!(error.span(), span);
+        assert_eq!(calls, 0, "work must stop before calling the helper");
+    }
 }

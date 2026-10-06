@@ -40,7 +40,7 @@ pub(super) fn assertion(kind: FnKind) -> Option<Effect> {
         FnKind::Unitary => Some(Effect::Unitary),
         FnKind::Iso => Some(Effect::Iso),
         FnKind::Observe => Some(Effect::Observe),
-        FnKind::Inferred | FnKind::Classical | FnKind::Meaning => None,
+        FnKind::Static | FnKind::Inferred | FnKind::Classical | FnKind::Meaning => None,
     }
 }
 

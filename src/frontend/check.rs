@@ -8,6 +8,7 @@ mod body;
 mod declarations;
 mod normalize;
 pub(super) mod primitive;
+mod static_helpers;
 
 use super::ast::{self, FnKind, Span};
 use super::effects::{BodyEffects, FunctionEffect};
@@ -21,6 +22,13 @@ use std::rc::Rc;
 use std::sync::Arc;
 
 pub(super) type Ty = Type<Linear>;
+pub(super) type StaticHelpers = Rc<BTreeMap<DefId, Arc<StaticHelper>>>;
+#[derive(Debug)]
+pub(super) struct StaticHelper {
+    pub parameters: Vec<BinderKey>,
+    pub result: Linear,
+    pub requirements: Vec<(Linear, ast::Compare, Linear)>,
+}
 pub(super) type Result<T> = std::result::Result<T, SourceError>;
 
 fn runtime_quantum_group(ty: &Ty, span: Span, budget: &Budget) -> Result<bool> {
@@ -366,6 +374,7 @@ struct Binding {
     ty: Ty,
 }
 struct Scope {
+    helpers: StaticHelpers,
     naturals: BTreeMap<BinderKey, Linear>,
     bases: BTreeMap<BinderKey, Ty>,
     operations: BTreeMap<BinderKey, Operation>,
@@ -409,6 +418,7 @@ impl Scope {
         }
         budget.charge(span, 1)?;
         Ok(Self {
+            helpers: Rc::clone(&self.helpers),
             naturals,
             bases,
             operations,
@@ -421,6 +431,7 @@ impl Scope {
 }
 
 struct Program<'a> {
+    helpers: StaticHelpers,
     modules: BTreeMap<&'a str, &'a ast::Module>,
     resolution: Resolution,
     indices: BTreeMap<DefId, Index<'a>>,
@@ -623,6 +634,7 @@ pub(super) fn program_with<'a, R>(
     finish: impl FnOnce(
         &Resolution,
         &BTreeMap<DefId, Interface>,
+        &StaticHelpers,
         &BTreeMap<DefId, FunctionEffect>,
         &mut BTreeMap<DefId, Index<'a>>,
         &Budget,
@@ -637,6 +649,7 @@ pub(super) fn program_with<'a, R>(
         |span, cells| budget.charge(span, cells),
     )?;
     let mut program = Program {
+        helpers: Rc::new(BTreeMap::new()),
         modules,
         resolution,
         indices: BTreeMap::new(),
@@ -657,6 +670,9 @@ pub(super) fn program_with<'a, R>(
             .expect("registered original module");
         program.budget.charge(module.span, module.decls.len())?;
         for decl in &module.decls {
+            if decl.kind == FnKind::Static {
+                continue;
+            }
             order.push(
                 program
                     .resolution
@@ -755,6 +771,7 @@ pub(super) fn program_with<'a, R>(
     let output = finish(
         &program.resolution,
         &program.interfaces,
+        &program.helpers,
         &effects,
         &mut program.indices,
         &program.budget,

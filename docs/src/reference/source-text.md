@@ -102,6 +102,10 @@ shape mismatch remains a type error; it is not external effect justification.
 
 ## Total classical declarations
 
+Provisional `static fn` declarations instead return static Nat values through
+the [bounded helper rules](static-language.md#provisional-bounded-nat-helpers).
+They have no runtime interface, effect or accepted-handle authority.
+
 `classical fn f(pattern: T, ...) -> U { expression }` declares a total, pure
 finite function on ordinary values. Its body is one restricted label expression:
 names, `()`, `0`/`1`, ordered products, eager `not`/`and`/`xor`, and acyclic calls

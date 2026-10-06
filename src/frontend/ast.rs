@@ -42,6 +42,8 @@ pub struct UseDecl {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FnKind {
+    /// A provisional bounded Nat helper; never an ordinary runtime function.
+    Static,
     /// A finite mathematical target, never a callable runtime function.
     Meaning,
     /// A total finite classical expression, reusable ordinarily and in basis maps.
@@ -93,6 +95,7 @@ pub enum TypeKind {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum FnBody {
+    Natural(Natural),
     Meaning { permutation: bool, function: Ident },
     Basis(BasisExpr),
     Quantum(Block),
@@ -305,6 +308,10 @@ pub struct Natural {
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum NatKind {
+    Call {
+        callee: Ident,
+        arguments: Vec<Natural>,
+    },
     Number(i128),
     Name(String),
     Add(Box<Natural>, Box<Natural>),

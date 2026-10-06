@@ -332,7 +332,8 @@ impl Task<'_> {
                 TypeKind::Tuple(f) => f.len(),
                 _ => 0,
             },
-            Self::Natural(n) => match n.kind {
+            Self::Natural(n) => match &n.kind {
+                NatKind::Call { arguments, .. } => arguments.len() + 1,
                 NatKind::Add(..) | NatKind::Sub(..) | NatKind::Mul(..) => 2,
                 _ => 0,
             },
@@ -542,14 +543,15 @@ where
             )?;
         }
         (self.charge)(declaration.span, 2)?;
-        let mut tasks = vec![
-            match &declaration.body {
-                FnBody::Meaning { function, .. } => Task::Reference(function),
-                FnBody::Basis(expression) => Task::Basis(expression),
-                FnBody::Quantum(block) => Task::Block(block),
-            },
-            Task::Type(&declaration.return_type),
-        ];
+        let mut tasks = vec![match &declaration.body {
+            FnBody::Natural(n) => Task::Natural(n),
+            FnBody::Meaning { function, .. } => Task::Reference(function),
+            FnBody::Basis(expression) => Task::Basis(expression),
+            FnBody::Quantum(block) => Task::Block(block),
+        }];
+        if declaration.kind != FnKind::Static {
+            tasks.push(Task::Type(&declaration.return_type));
+        }
         let kind = if declaration.kind == FnKind::Classical {
             BindingKind::Basis
         } else {
@@ -612,6 +614,10 @@ where
                     TypeKind::Unit | TypeKind::Bit => {}
                 },
                 Task::Natural(natural) => match &natural.kind {
+                    NatKind::Call { callee, arguments } => {
+                        tasks.extend(arguments.iter().rev().map(Task::Natural));
+                        tasks.push(Task::Reference(callee));
+                    }
                     NatKind::Name(name) => {
                         let id = self.record_use(name, natural.span)?;
                         (self.charge)(natural.span, 1)?;

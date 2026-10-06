@@ -55,6 +55,10 @@ pub(super) struct Natural {
 }
 #[derive(Clone, Debug)]
 pub(super) enum NatKind {
+    Helper {
+        template: std::sync::Arc<crate::frontend::check::StaticHelper>,
+        arguments: Vec<Natural>,
+    },
     Number(i128),
     Name(Reference),
     Add(Box<Natural>, Box<Natural>),

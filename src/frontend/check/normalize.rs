@@ -54,6 +54,54 @@ fn natural_inner(
     }
     let mut charge = |span, cells| budget.sized_charge(span, cells);
     let result = match &n.kind {
+        NatKind::Call { callee, arguments } => {
+            let id = static_helpers::target(index, callee)?;
+            let helper = scope.helpers.get(&id).ok_or_else(|| {
+                SourceError::new(
+                    "static",
+                    callee.span,
+                    "natural expressions require a checked static Nat helper",
+                )
+            })?;
+            if arguments.len() != helper.parameters.len() {
+                return Err(SourceError::new(
+                    "static-arity",
+                    n.span,
+                    "static Nat helper argument arity mismatch",
+                ));
+            }
+            let mut values = BTreeMap::new();
+            for (key, argument) in helper.parameters.iter().zip(arguments) {
+                let value = natural_inner(argument, index, scope, prefix, budget, depth + 1)?;
+                values.insert(budget.key(argument.span, key)?, value);
+            }
+            for (left, comparison, right) in &helper.requirements {
+                let a = left.substitute_budgeted(&values, n.span, &mut charge)?;
+                let b = right.substitute_budgeted(&values, n.span, &mut charge)?;
+                let counterexample = scope.context.compare_budgeted(
+                    a,
+                    *comparison,
+                    b,
+                    false,
+                    n.span,
+                    &mut charge,
+                )?;
+                if counterexample.feasible_budgeted(
+                    n.span,
+                    "while checking static helper premise",
+                    &mut charge,
+                )? {
+                    return Err(SourceError::new(
+                        "size",
+                        n.span,
+                        "static helper premise is not implied by caller guards",
+                    ));
+                }
+            }
+            helper
+                .result
+                .substitute_budgeted(&values, n.span, &mut charge)?
+        }
         NatKind::Number(value) => {
             if *value < 0 {
                 return Err(SourceError::new(

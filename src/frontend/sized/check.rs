@@ -69,7 +69,14 @@ fn visible_definition<'a>(
         error.module = None;
         error
     })?;
-    let interface = program.checked.interface(id);
+    let interface = program.checked.interfaces.get(&id).ok_or_else(|| {
+        Error::new(
+            "static",
+            span,
+            "a static Nat helper cannot be a runtime entry or operation provider",
+        )
+        .in_module(&resolution.declaration(id).name.0)
+    })?;
     if !resolution.visible(id, requester.and_then(|name| resolution.module(name))) {
         return Err(
             Error::new("visibility", span, format!("dependency {path} is private"))

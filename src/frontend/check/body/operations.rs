@@ -199,6 +199,13 @@ impl Checker<'_, '_> {
         span: Span,
         runtime_recursion: bool,
     ) -> Result<(Vec<Ty>, Ty, [bool; 3])> {
+        if self.program.decl(id).kind == FnKind::Static {
+            return Err(SourceError::new(
+                "static",
+                span,
+                "a Nat helper cannot be a runtime callee or operation provider",
+            ));
+        }
         let interface = &self.program.interfaces[&id];
         if args.len() != interface.statics.len() {
             let ordered = interface
@@ -225,6 +232,7 @@ impl Checker<'_, '_> {
             ));
         }
         let mut target = Scope {
+            helpers: Rc::clone(&scope.helpers),
             naturals: BTreeMap::new(),
             bases: BTreeMap::new(),
             operations: BTreeMap::new(),

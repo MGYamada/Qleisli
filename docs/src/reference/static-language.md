@@ -6,8 +6,8 @@ It records the existing rules tracked by
 [#28](https://github.com/MGYamada/Qleisli/issues/28),
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#63](https://github.com/MGYamada/Qleisli/issues/63). It does not introduce a
-general compile-time programming language. Static helpers and the final loop
-surface remain separate work; describing this fragment does not complete those
+general compile-time programming language. General builders, static collections
+and the final loop surface remain separate work; describing this fragment does not complete those
 Issues or discharge quantitative Resource Safety.
 
 ## Static categories and binding
@@ -52,9 +52,9 @@ for the independent access and specialization rules.
 The current natural expression grammar contains nonnegative decimal literals,
 static Nat names, parentheses, `+`, `-` and `*`. Multiplication binds more
 tightly than addition/subtraction; operators at either level associate to the
-left. These forms are not runtime arithmetic. Division, remainder, arbitrary
-exponentiation and user-defined natural-expression calls are not admitted by
-this fragment.
+left. These forms are not runtime arithmetic. Calls to the checked acyclic Nat
+helpers below are supported. Division, remainder and arbitrary exponentiation
+are not admitted by this fragment.
 
 Symbolic normalization produces exact affine expressions over original static
 binder identities. Constant folding and multiplication by an expression that
@@ -131,8 +131,56 @@ the existing work/storage budgets. Finite lowering erases checked unused
 aliases; using a sized operation still requires a supported output profile.
 
 This binding produces no runtime instruction, new owner, operation access or
-trusted evidence. It does not introduce public `static fn`/`const fn` builders
-or complete static helper or phase-table evaluation.
+trusted evidence.
+
+## Provisional bounded Nat helpers
+
+The provisional first-order helper spelling is:
+
+```qli
+static fn twice[static n: Nat]() -> Nat { n+n }
+static fn previous[static n: Nat]() -> Nat requires n >= 1 { n-1 }
+```
+
+A helper has only explicit static Nat parameters, no runtime parameters, a
+literal `Nat` result category and one natural-expression body. `Nat` here does
+not become an ordinary finite type. Helpers may call other helpers with a
+complete positional static argument list and an empty runtime argument list,
+for example `twice[n]()`. Acyclic forward references and ordinary public/private
+module visibility are supported. Duplicate formals, self-recursion and mutual
+cycles reject. Unused and private helper bodies are checked too.
+
+The common original-source judgment normalizes helpers to exact affine
+templates over their original binder identities. Substitution is simultaneous:
+caller expressions are not recursively rewritten as callee parameters. The
+caller must establish every callee premise before using its result, including
+within a size, another helper, a static condition or a fold. Unproved
+nonnegativity, nonlinear arithmetic and symbolic overflow retain their existing
+refusals. Runtime values, quantum owners, operations and Meaning declarations
+cannot supply helper inputs or be called from a natural expression. A Nat helper
+is not a runtime entry, ordinary function or operation provider.
+
+Computed helper results use the existing exact size normalization and
+specialization rules. The selected-source projection retains shared immutable
+checked templates; it does not expand a call graph into duplicate runtime code.
+The concrete Nat evaluator used for sizes, aliases and fold bounds evaluates the
+arguments and the normalized affine result. Template arithmetic uses checked
+signed 128-bit intermediate values, then requires a nonnegative unsigned 32-bit
+result. Ordinary concrete natural arithmetic retains its checked unsigned
+32-bit operations. Capacity failures do not introduce modular arithmetic.
+Every concrete natural visit and helper argument/term allocation is charged to
+the existing 100,000-cell accounting allowance. Each evaluated helper call also
+counts toward the existing aggregate 1,024-call allowance, shared with runtime
+function specialization. Template preparation consumes the common source budget.
+
+For an indexed exact phase schedule, a helper such as
+`static fn exponent[static stage: Nat]() -> Nat { stage+1 }` supplies
+`phase[1, exponent[i]()]` inside a bounded fold. Its result is an exact denominator
+exponent, not a floating-point angle or runtime table. Small Z/S/T schedules and
+computed generic sizes have independent checks; these do not complete a general
+static collection API, all phase-table work, source-preservation theorem or
+generic QFT implementation. The helper spelling remains provisional under the
+#40 category decision; future #60/#61 builders are separate work.
 
 `if static comparison { ... } else { ... }` checks both original source arms
 under their respective premises. After all closed bindings are supplied, the
@@ -219,7 +267,7 @@ does not prove that specialization preserves the original source meaning.
 The two admitted QLV1 ownership/scope guarantees retain their original-root
 scope; QS, PR, quantitative RS and EXACT remain pending at their broader scopes.
 
-General static helper evaluation, computed phase-table construction and the
+General static builder/collection evaluation, remaining phase-table work and the
 remaining public static-language work belong to #63/#28. This chapter supplies
 no arbitrary code execution, I/O, randomness, raw IR injection, trusted evidence
 constructor or floating-point substitute for an exact obligation. Generic QFT

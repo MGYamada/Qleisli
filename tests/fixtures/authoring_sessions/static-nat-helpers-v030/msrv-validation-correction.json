@@ -1,0 +1,30 @@
+{
+  "format": "qleisli.local-msrv-validation-correction",
+  "version": 1,
+  "supersedes_claims": [
+    "substitution-preparation.json verification.msrv_all_targets_clippy",
+    "earlier implicit local rustup-run MSRV compiler/Clippy claims"
+  ],
+  "reason": "rustup run 1.85.0 cargo clippy selected the ambient cargo-clippy 0.1.98, despite cargo itself being 1.85.0. Previous local claim did not establish Clippy 0.1.85 validation. Compiler identity of prior implicit commands was not independently established.",
+  "preservation": "Historical records remain unchanged; this correction explicitly qualifies those claims. Hosted MSRV used its actual pinned toolchain and exposed format_collect.",
+  "repair": "tests/project.rs appends namespace imports with fmt::Write instead of format!/collect; no lint suppression.",
+  "failed_local_rechecks": [
+    "Explicit older compiler encountered E0514 incompatible old scratch artifacts.",
+    "Default Cargo clean rejected scratch target without CACHEDIR.TAG.",
+    "Pinned Cargo 1.85 clean of verified dedicated scratch target succeeded, removing 2149 files / 1.3 GiB; no sources or fixtures removed."
+  ],
+  "genuine_revalidation": {
+    "cargo_version": "1.85.0",
+    "rustc_version": "1.85.0",
+    "clippy_version": "0.1.85 (4d91de4e48 2025-02-17)",
+    "explicit_paths_and_results": "implementation-validation.json tests.explicit_rust_1_85_integration_observed_this_turn and tests.explicit_rust_1_85_all_targets_clippy"
+  },
+  "hosted_failure": {
+    "run_id": 37443178912,
+    "job_id": 112201713367,
+    "source_head": "38baae7d19535602b21270e11e97617d45205b37",
+    "excerpt": "tests/fixtures/review_v030alpha/hosted-ci-classical-test-repair/run-201-msrv-excerpt.txt",
+    "conclusion": "failure; all-target tests passed, Clippy failed, research MSRV steps skipped"
+  },
+  "release_ready": false
+}

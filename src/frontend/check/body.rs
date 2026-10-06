@@ -223,7 +223,7 @@ fn bind_name(
 pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<(DefId, Span)>)> {
     let declaration = p.decl(id);
     let interface = &p.interfaces[&id];
-    let mut scope = declarations::scope(interface, &p.budget, declaration.span)?;
+    let mut scope = declarations::scope(interface, &p.helpers, &p.budget, declaration.span)?;
     let index = &p.indices[&id];
     for (parameter, ty) in declaration.params.iter().zip(&interface.params) {
         bind(
@@ -255,6 +255,9 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
         }
     }
     match &declaration.body {
+        FnBody::Natural(_) => {
+            unreachable!("static helpers were checked before runtime declarations")
+        }
         FnBody::Basis(body) => {
             let found = checker.basis_expr(body, &mut scope)?;
             normalize::expect(
@@ -333,6 +336,15 @@ impl Checker<'_, '_> {
     }
     fn resolve(&self, name: &Ident) -> Result<Target> {
         match self.index().table.usage(self.index().usage(name)).target {
+            ResolvedUse::Global(Target::Declaration(id))
+                if self.program.decl(id).kind == FnKind::Static =>
+            {
+                Err(SourceError::new(
+                    "static",
+                    name.span,
+                    "a Nat helper is available only in static natural expressions",
+                ))
+            }
             ResolvedUse::Global(target) => Ok(target),
             ResolvedUse::Local(_) => Err(SourceError::new(
                 "type",

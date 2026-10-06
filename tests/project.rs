@@ -299,10 +299,11 @@ fn semantic_stdlib_public_paths_resolve_without_retired_namespace_aliases() {
         ("reflection", &["reflect_uniform2"][..]),
         ("measurement", &["measure_x", "measure_z2", "parity_zz"][..]),
     ] {
-        let source = names
-            .iter()
-            .map(|name| format!("use std::{module}::{name};"))
-            .collect::<String>();
+        use std::fmt::Write;
+        let mut source = String::new();
+        for name in names {
+            write!(&mut source, "use std::{module}::{name};").unwrap();
+        }
         root.write("main.qli", &source);
         let project = Project::load(root.path()).unwrap();
         for name in names {

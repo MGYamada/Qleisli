@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add provisional acyclic `static fn` Nat helpers through original-source
+  checking, exact affine normalization and the shared concrete Nat evaluator.
+  Check callee premises and all unused bodies; reject runtime dependencies and
+  cycles. Preserve existing native gates and aggregate capacities (#28/#63).
+- Repair hosted MSRV Clippy's namespace-test string construction and explicitly
+  select the local MSRV compiler/Clippy binaries; retain failed-run evidence.
 - Share bounded exact affine Nat substitution with common type specialization;
   preserve original binder identities, simultaneous replacement, capacity
   refusals and source locations. Static helper syntax remains separate work (#63).

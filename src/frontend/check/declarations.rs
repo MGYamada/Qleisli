@@ -63,6 +63,7 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
             p.indices.insert(id, index);
         }
     }
+    static_helpers::prepare(p)?;
     for (name, module) in &p.modules {
         let owner = p.resolution.module(name).expect("registered source module");
         for declaration in &module.decls {
@@ -70,6 +71,9 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
                 .resolution
                 .local(owner, &declaration.name.text)
                 .expect("registered declaration");
+            if declaration.kind == FnKind::Static {
+                continue;
+            }
             let interface = interface(p, id).map_err(|e| e.in_module(name))?;
             p.budget.charge(declaration.span, 1)?;
             p.interfaces.insert(id, interface);
@@ -84,6 +88,9 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
                 .resolution
                 .local(owner, &declaration.name.text)
                 .expect("registered source declaration");
+            if declaration.kind == FnKind::Static {
+                continue;
+            }
             let interface = &p.interfaces[&id];
             for formal in &interface.statics {
                 if let StaticKind::Operation {
@@ -157,6 +164,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             budget.sized_charge(span, cells)
         })?;
     let mut scope = Scope {
+        helpers: Rc::clone(&p.helpers),
         naturals,
         bases: BTreeMap::new(),
         operations: BTreeMap::new(),
@@ -325,8 +333,14 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
     })
 }
 
-pub(super) fn scope(interface: &Interface, budget: &Budget, span: Span) -> Result<Scope> {
+pub(super) fn scope(
+    interface: &Interface,
+    helpers: &StaticHelpers,
+    budget: &Budget,
+    span: Span,
+) -> Result<Scope> {
     let mut scope = Scope {
+        helpers: Rc::clone(helpers),
         naturals: BTreeMap::new(),
         bases: BTreeMap::new(),
         operations: BTreeMap::new(),

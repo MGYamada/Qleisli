@@ -36,7 +36,23 @@
         "observations-before/unused-invalid-finite.json",
         "observations-before/unused-invalid-selected.json",
         "observations-before/wrong-arity-finite.json",
-        "observations-before/wrong-arity-selected.json"
+        "observations-before/wrong-arity-selected.json",
+        "observations-after/computed-size-finite.json",
+        "observations-after/computed-size-selected.json",
+        "observations-after/phase-schedule-finite.json",
+        "observations-after/phase-schedule-selected.json",
+        "observations-after/helper-chain-finite.json",
+        "observations-after/helper-chain-selected.json",
+        "observations-after/runtime-call-finite.json",
+        "observations-after/runtime-call-selected.json",
+        "observations-after/runtime-capture-finite.json",
+        "observations-after/runtime-capture-selected.json",
+        "observations-after/cycle-finite.json",
+        "observations-after/cycle-selected.json",
+        "observations-after/unused-invalid-finite.json",
+        "observations-after/unused-invalid-selected.json",
+        "observations-after/wrong-arity-finite.json",
+        "observations-after/wrong-arity-selected.json"
       ]
     }
   ],

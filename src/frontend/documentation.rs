@@ -55,6 +55,13 @@ pub(crate) fn attach(
         .enumerate()
         .filter_map(|(index, decl)| {
             let start = match &decl.body {
+                super::ast::FnBody::Natural(body) => {
+                    let opening = tokens
+                        .partition_point(|token| token.span.start < body.span.start)
+                        .saturating_sub(1);
+                    debug_assert!(matches!(tokens[opening].kind, TokenKind::LBrace));
+                    return Some((opening, index));
+                }
                 super::ast::FnBody::Meaning { .. } => return None,
                 super::ast::FnBody::Quantum(body) => body.span.start,
                 super::ast::FnBody::Basis(_) => decl.return_type.span.end,

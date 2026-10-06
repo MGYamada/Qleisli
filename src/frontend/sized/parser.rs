@@ -5,7 +5,8 @@
 use super::ast::*;
 use super::{Error, Result, Span};
 use crate::frontend::ast as source;
-use crate::frontend::check::Budget;
+use crate::frontend::check::{Budget, StaticHelpers};
+use crate::frontend::resolve::Target;
 use crate::frontend::resolve::locals::{Index, UseSiteId};
 
 fn unsupported(span: Span, message: &str) -> Error {
@@ -19,12 +20,19 @@ fn unsupported(span: Span, message: &str) -> Error {
 pub(super) fn project_declaration(
     declaration: &source::Decl,
     index: &Index<'_>,
+    helpers: &StaticHelpers,
     budget: &Budget,
 ) -> Result<Function> {
-    Projection { index, budget }.function(declaration)
+    Projection {
+        index,
+        helpers,
+        budget,
+    }
+    .function(declaration)
 }
 
 struct Projection<'a, 'ast> {
+    helpers: &'a StaticHelpers,
     index: &'a Index<'ast>,
     budget: &'a Budget,
 }
@@ -71,6 +79,27 @@ impl Projection<'_, '_> {
         Ok(Natural {
             span: natural.span,
             kind: match &natural.kind {
+                source::NatKind::Call { callee, arguments } => {
+                    let ResolvedUse::Global(Target::Declaration(id)) =
+                        self.index.table.usage(self.index.usage(callee)).target
+                    else {
+                        return Err(unsupported(
+                            callee.span,
+                            "requires a checked static Nat helper",
+                        ));
+                    };
+                    let helper = self.helpers.get(&id).ok_or_else(|| {
+                        unsupported(callee.span, "requires a checked static Nat helper")
+                    })?;
+                    self.charge(natural.span, 1 + arguments.len())?;
+                    NatKind::Helper {
+                        template: std::sync::Arc::clone(helper),
+                        arguments: arguments
+                            .iter()
+                            .map(|n| self.natural(n))
+                            .collect::<Result<_>>()?,
+                    }
+                }
                 source::NatKind::Number(n) => NatKind::Number(*n),
                 source::NatKind::Name(name) => {
                     NatKind::Name(self.reference(name, self.index.natural_usage(natural))?)
@@ -253,6 +282,7 @@ impl Projection<'_, '_> {
             stage,
             &mut Projection {
                 index: self.index,
+                helpers: self.helpers,
                 budget: self.budget,
             },
         )

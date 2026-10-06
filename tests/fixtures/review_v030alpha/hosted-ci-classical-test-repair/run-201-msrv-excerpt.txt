@@ -1,0 +1,30 @@
+2026-10-06T09:54:56.1471051Z     Checking serde_spanned v0.6.9
+2026-10-06T09:54:56.2191035Z     Checking toml_edit v0.22.27
+2026-10-06T09:54:56.9356750Z     Checking toml v0.8.23
+2026-10-06T09:54:57.0585447Z     Checking qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-06T09:55:03.8605607Z error: use of `format!` to build up a string from an iterator
+2026-10-06T09:55:03.8606228Z    --> tests/project.rs:302:22
+2026-10-06T09:55:03.8606611Z     |
+2026-10-06T09:55:03.8606908Z 302 |           let source = names
+2026-10-06T09:55:03.8607280Z     |  ______________________^
+2026-10-06T09:55:03.8607620Z 303 | |             .iter()
+2026-10-06T09:55:03.8608072Z 304 | |             .map(|name| format!("use std::{module}::{name};"))
+2026-10-06T09:55:03.8608558Z 305 | |             .collect::<String>();
+2026-10-06T09:55:03.8608939Z     | |________________________________^
+2026-10-06T09:55:03.8609332Z     |
+2026-10-06T09:55:03.8624725Z help: call `fold` instead
+2026-10-06T09:55:03.8625145Z    --> tests/project.rs:304:14
+2026-10-06T09:55:03.8625471Z     |
+2026-10-06T09:55:03.8625807Z 304 |             .map(|name| format!("use std::{module}::{name};"))
+2026-10-06T09:55:03.8626198Z     |              ^^^
+2026-10-06T09:55:03.8626468Z help: ... and use the `write!` macro here
+2026-10-06T09:55:03.8626845Z    --> tests/project.rs:304:25
+2026-10-06T09:55:03.8627192Z     |
+2026-10-06T09:55:03.8627481Z 304 |             .map(|name| format!("use std::{module}::{name};"))
+2026-10-06T09:55:03.8627887Z     |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T09:55:03.8628436Z     = note: this can be written more efficiently by appending to a `String` directly
+2026-10-06T09:55:03.8629266Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#format_collect
+2026-10-06T09:55:03.8630017Z     = note: `-D clippy::format-collect` implied by `-D warnings`
+2026-10-06T09:55:03.8630603Z     = help: to override `-D warnings` add `#[allow(clippy::format_collect)]`
+2026-10-06T09:55:03.8630983Z 
+2026-10-06T09:55:03.8691759Z error: could not compile `qleisli` (test "project") due to 1 previous error

@@ -131,6 +131,7 @@ impl Parser {
                 uses.extend(self.use_decl()?);
             } else if self.at(&TokenKind::Pub)
                 || self.at(&TokenKind::Classical)
+                || self.at(&TokenKind::Static)
                 || self.at(&TokenKind::Basis)
                 || self.at(&TokenKind::Iso)
                 || self.at(&TokenKind::Unitary)
@@ -277,7 +278,9 @@ impl Parser {
         if self.at(&TokenKind::Basis) {
             return Err(self.error("`basis fn` was replaced by `classical fn` in Qleisli 0.3.0; `basis q as pattern { expression }` remains the coherent basis construct"));
         }
-        let kind = if self.consume(&TokenKind::Classical).is_some() {
+        let kind = if self.consume(&TokenKind::Static).is_some() {
+            FnKind::Static
+        } else if self.consume(&TokenKind::Classical).is_some() {
             FnKind::Classical
         } else if self.consume(&TokenKind::Iso).is_some() {
             FnKind::Iso
@@ -360,7 +363,16 @@ impl Parser {
         }
         self.expect(&TokenKind::RParen)?;
         self.expect(&TokenKind::Arrow)?;
-        let return_type = if kind == FnKind::Classical {
+        let return_type = if kind == FnKind::Static {
+            let name = self.ident()?;
+            if name.text != "Nat" {
+                return Err(self.error("a bounded static helper must return Nat"));
+            }
+            Type {
+                span: name.span,
+                kind: TypeKind::Named(name),
+            }
+        } else if kind == FnKind::Classical {
             self.basis_type()?
         } else {
             self.ty()?
@@ -400,7 +412,12 @@ impl Parser {
                 }
             }
         }
-        let (body, end) = if kind == FnKind::Classical {
+        let (body, end) = if kind == FnKind::Static {
+            self.expect(&TokenKind::LBrace)?;
+            let value = self.natural()?;
+            let end = self.expect(&TokenKind::RBrace)?.span.end;
+            (FnBody::Natural(value), end)
+        } else if kind == FnKind::Classical {
             let (basis, block_span) = self.basis_block()?;
             (FnBody::Basis(basis), block_span.end)
         } else {
@@ -572,6 +589,9 @@ impl Parser {
 
     fn natural_node(kind: NatKind, span: Span) -> Result<Natural, ParseError> {
         let depth = match &kind {
+            NatKind::Call { arguments, .. } => {
+                1 + arguments.iter().map(|n| n.depth).max().unwrap_or(0)
+            }
             NatKind::Number(_) | NatKind::Name(_) => 1,
             NatKind::Add(a, b) | NatKind::Sub(a, b) | NatKind::Mul(a, b) => {
                 1 + a.depth.max(b.depth)
@@ -642,6 +662,58 @@ impl Parser {
                     },
                 };
                 parser.bump();
+                if let NatKind::Name(ref name) = kind {
+                    // f[n] without () remains an operation specialization.
+                    let call = if parser.at(&TokenKind::LBracket) {
+                        let mut nesting = 0usize;
+                        let mut close = None;
+                        for (i, t) in parser.tokens.iter().enumerate().skip(parser.pos) {
+                            match t.kind {
+                                TokenKind::LBracket => nesting += 1,
+                                TokenKind::RBracket => {
+                                    nesting -= 1;
+                                    if nesting == 0 {
+                                        close = Some(i);
+                                        break;
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        close.is_some_and(|i| {
+                            parser
+                                .tokens
+                                .get(i + 1)
+                                .is_some_and(|t| t.kind == TokenKind::LParen)
+                        })
+                    } else {
+                        parser.at(&TokenKind::LParen)
+                    };
+                    if call {
+                        let callee = Ident {
+                            text: name.clone(),
+                            span: token.span,
+                        };
+                        let mut arguments = Vec::new();
+                        if parser.consume(&TokenKind::LBracket).is_some() {
+                            if !parser.at(&TokenKind::RBracket) {
+                                loop {
+                                    arguments.push(parser.natural()?);
+                                    if parser.consume(&TokenKind::Comma).is_none() {
+                                        break;
+                                    }
+                                }
+                            }
+                            parser.expect(&TokenKind::RBracket)?;
+                        }
+                        parser.expect(&TokenKind::LParen)?;
+                        let end = parser.expect(&TokenKind::RParen)?.span;
+                        return Self::natural_node(
+                            NatKind::Call { callee, arguments },
+                            token.span.cover(end),
+                        );
+                    }
+                }
                 Self::natural_node(kind, token.span)
             }
         })

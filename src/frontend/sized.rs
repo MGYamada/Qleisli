@@ -248,7 +248,7 @@ impl ParsedProgram {
         let (checked, mut projections) = super::check::program_with(
             originals,
             super::check::SourceLimits::selected(),
-            |resolution, _, effects, indices, budget| {
+            |resolution, _, helpers, effects, indices, budget| {
                 let mut projections = BTreeMap::new();
                 for (id, declaration) in resolution.declarations() {
                     let original = &sources
@@ -257,12 +257,16 @@ impl ParsedProgram {
                         .syntax()
                         .decls[declaration.ast_index];
                     budget.charge(original.span, 1)?;
-                    let result = parser::project_declaration(original, &indices[&id], budget)
-                        .map(|mut function| {
-                            function.effect = effects[&id].inferred();
-                            Arc::new(function)
-                        })
-                        .map_err(|e| e.in_module(&declaration.name.0));
+                    if original.kind == super::ast::FnKind::Static {
+                        continue;
+                    }
+                    let result =
+                        parser::project_declaration(original, &indices[&id], helpers, budget)
+                            .map(|mut function| {
+                                function.effect = effects[&id].inferred();
+                                Arc::new(function)
+                            })
+                            .map_err(|e| e.in_module(&declaration.name.0));
                     if let Err(error) = &result {
                         if error.code == "limit" {
                             return Err(super::check::SourceError::from(error.clone()));
@@ -462,7 +466,7 @@ impl BasisBinding {
                 };
                 match &n.kind {
                     NatKind::Number(n) => u32::try_from(*n).map_err(|_| bad()),
-                    NatKind::Name(_) => Err(bad()),
+                    NatKind::Name(_) | NatKind::Call { .. } => Err(bad()),
                     NatKind::Add(a, b) => self
                         .resolve_size(a)?
                         .checked_add(self.resolve_size(b)?)

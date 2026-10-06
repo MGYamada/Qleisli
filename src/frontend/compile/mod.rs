@@ -682,7 +682,7 @@ fn process_loaded_project_details(
             .map(|(name, module)| (name.as_str(), &module.ast))
             .collect(),
         SourceLimits::finite(),
-        |resolution, _, _, indices, budget| {
+        |resolution, _, _, _, indices, budget| {
             let mut occurrences = OccurrencesForest::default();
             for (id, index) in indices {
                 let declaration = resolution.declaration(*id);
@@ -713,6 +713,9 @@ fn process_loaded_project_details(
     // Concrete lowering/evidence gates remain responsible when instantiated.
     let _obligations = source.obligations;
     for (id, declaration) in &declarations {
+        if declaration.kind == FnKind::Static {
+            continue;
+        }
         if let Err((span, message)) = profile::check(declaration) {
             return Err(source_error(
                 project,
@@ -759,6 +762,14 @@ fn process_loaded_project_details(
     if let Some((entry, decl)) =
         entry.and_then(|id| compiler.declarations.get(&id).map(|decl| (id, *decl)))
     {
+        if decl.kind == FnKind::Static {
+            return Err(compiler.error(
+                "main",
+                decl.span,
+                ErrorCode::InvalidEntry,
+                "a static Nat helper cannot be a runtime entry",
+            ));
+        }
         let (_, result) = compiler.signature(&entry)?;
         if matches!(decl.kind, FnKind::Classical | FnKind::Meaning)
             || !decl.params.is_empty()
