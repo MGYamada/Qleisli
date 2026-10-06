@@ -77,6 +77,7 @@ def finiteBasis (b : Semantics.Finite.Basis) : Json :=
   js (b.map fun a => match a with
     | .unit => tag "unit"
     | .bit => tag "bit"
+    | .bits n => tag "bits" [("width",toJson n)]
     | .pair => tag "tuple" [("arity",toJson (2 : Nat))]
     | .tuple n => tag "tuple" [("arity",toJson n)])
 def qirf (a : Qirf.Artifact) : Json :=

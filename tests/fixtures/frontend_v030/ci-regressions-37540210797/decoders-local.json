@@ -1,0 +1,148 @@
+{
+  "format": "qleisli.vm27-decoder-correspondence",
+  "version": 1,
+  "status": "passed",
+  "cases": 368,
+  "raw_constructors": [
+    "apply_unitary",
+    "certified_compute",
+    "classical_and",
+    "classical_branch",
+    "classical_const",
+    "classical_not",
+    "classical_xor",
+    "cnot",
+    "compute_use_uncompute",
+    "discard",
+    "gate",
+    "init0",
+    "join",
+    "lift_basis",
+    "measure_z",
+    "quantum_if",
+    "reset",
+    "split",
+    "toffoli"
+  ],
+  "hierarchy_definitions": 22,
+  "hierarchy_meanings": 21,
+  "encodings": 4,
+  "structural_constructors": 10,
+  "enabled_rules": 12,
+  "atomic_basis_cases": [
+    "atomic-bits-0-v1",
+    "atomic-bits-0-v2",
+    "atomic-bits-1-v1",
+    "atomic-bits-1-v2",
+    "atomic-bits-2-v1",
+    "atomic-bits-2-v2"
+  ],
+  "scope": "lossless actual-reader field comparison; not a universal parser/compiler proof",
+  "production_authority": "Lean",
+  "max_semantic_qubits": 3,
+  "wire_range_regressions": [
+    {
+      "name": "wire-bound-target",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 1, \"profile\": \"finite-v0\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"apply_unitary\", \"input\": 0, \"output\": 1, \"steps\": [{\"controls\": [], \"action\": {\"tag\": \"hadamard\", \"target\": 4294967296}}]}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-control",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 1, \"profile\": \"finite-v0\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"apply_unitary\", \"input\": 0, \"output\": 1, \"steps\": [{\"controls\": [{\"index\": 4294967296, \"when_one\": false}], \"action\": {\"tag\": \"monomial\", \"indices\": [0], \"permutation\": [0], \"phases\": [0]}}]}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-permutation",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 1, \"profile\": \"finite-v0\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"apply_unitary\", \"input\": 0, \"output\": 1, \"steps\": [{\"controls\": [], \"action\": {\"tag\": \"monomial\", \"indices\": [0], \"permutation\": [65536], \"phases\": [0]}}]}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-phase",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 1, \"profile\": \"finite-v0\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"apply_unitary\", \"input\": 0, \"output\": 1, \"steps\": [{\"controls\": [], \"action\": {\"tag\": \"monomial\", \"indices\": [0], \"permutation\": [0], \"phases\": [256]}}]}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-evidence",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 1, \"profile\": \"finite-v0\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"apply_unitary\", \"input\": 0, \"output\": 1, \"steps\": [{\"controls\": [], \"action\": {\"tag\": \"contract\", \"indices\": [0], \"evidence\": 4294967296, \"adjoint\": false}}]}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-computed-function",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 1, \"profile\": \"finite-v0\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"certified_compute\", \"source\": 0, \"source_out\": 1, \"ancilla_wires\": [1], \"function\": [65536], \"use_steps\": [], \"logical_steps\": []}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-meaning-permutation",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 2, \"profile\": \"finite-meaning-v1\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"gate\", \"gate\": \"h\", \"input\": 0, \"output\": 1}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [{\"tag\": \"meaning\", \"signature\": {\"tag\": \"bit\"}, \"implementation\": 0, \"meaning\": {\"tag\": \"permutation\", \"table\": [65536]}, \"identity\": {\"implementation\": \"x\", \"specification\": \"y\", \"sources\": []}}], \"root\": 0, \"root_interface\": null}"
+      }
+    },
+    {
+      "name": "wire-bound-meaning-phase8",
+      "input": {
+        "kind": "qirf",
+        "text": "{\"format\": \"qleisli.finite-ir\", \"version\": 2, \"profile\": \"finite-meaning-v1\", \"sources\": [], \"programs\": [{\"quantum_inputs\": [{\"token\": 0, \"wires\": [0], \"shape\": {\"bits\": 1}}], \"classical_inputs\": [], \"operations\": [{\"tag\": \"gate\", \"gate\": \"h\", \"input\": 0, \"output\": 1}], \"quantum_outputs\": [1], \"classical_outputs\": [], \"declared_effect\": \"unitary\"}], \"evidence\": [{\"tag\": \"meaning\", \"signature\": {\"tag\": \"bit\"}, \"implementation\": 0, \"meaning\": {\"tag\": \"phase8\", \"table\": [256]}, \"identity\": {\"implementation\": \"x\", \"specification\": \"y\", \"sources\": []}}], \"root\": 0, \"root_interface\": null}"
+      }
+    }
+  ],
+  "source_sha256": {
+    "tests/fixtures/verification_v027/DecoderView.lean": "bc7b3584b9c96f77b06391183c518f70bdb185d90cacdc9aa9a60befd47bf0a5",
+    "scripts/test_verification_decoders.py": "a91912eae6274b366babf06a73009dc1c631929479f575c678416dcef442caf3",
+    "src/interchange/hierarchical/bridge.rs": "6954024b7a02d65a1dc803b953552b7e07e6dbcfac8d2e4474fae9c41e0f1b0a",
+    "lean-kernel/Protocol/Hierarchical.lean": "f7ca54548897f8eeaaa5191a6091eb42dbebb1cab075a9b6910bfc7a5f1f691a",
+    "lean-kernel/Protocol/Qirf.lean": "6d033e538ba1d13d54c75757e47fbb17251b54f6037b327f6476c13fe66781cb",
+    "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
+    "lean-kernel/Protocol/Raw.lean": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417"
+  },
+  "binary_sha256": "99675d1e043084ef32bb39c61f55c88942479e62e207645d188646c85bf8cbb9",
+  "input_sha256": "10ad7abaa8b846585d6037aa831c79b12a9edd462e71d41aad787d89996f740e",
+  "output_sha256": "217f10e5b6976714d047d0af9bd73307ba0c03c4c5ebe9952952ad2611afb71c",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "original_json_fields_survive_the_actual_rust_bridge",
+        "--",
+        "--ignored"
+      ],
+      "exit_code": 0,
+      "stdout": "\nrunning 1 test\ntest interchange::hierarchical::bridge::decoder_audit::original_json_fields_survive_the_actual_rust_bridge ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 136 filtered out; finished in 0.00s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized] target(s) in 0.06s\n     Running unittests src/lib.rs (/private/tmp/qleisli-bits-meaning-target/debug/deps/qleisli-f3146c8dfbb32aea)\n"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--lib",
+        "every_frozen_raw_operation_and_action_preserves_its_fields"
+      ],
+      "exit_code": 0,
+      "stdout": "\nrunning 1 test\ntest interchange::codec::tests::every_frozen_raw_operation_and_action_preserves_its_fields ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 136 filtered out; finished in 0.03s\n\n",
+      "stderr": "    Finished `test` profile [unoptimized] target(s) in 0.06s\n     Running unittests src/lib.rs (/private/tmp/qleisli-bits-meaning-target/debug/deps/qleisli-f3146c8dfbb32aea)\n"
+    },
+    {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "stdout": "\u2714 [161/163] Built Main (1.0s)\n\u2714 [162/163] Built Main:c.o (377ms)\n\u2714 [163/163] Built \u00abdecoder-audit\u00bb:exe (770ms)\nBuild completed successfully (163 jobs).\n",
+      "stderr": "info: decoder_audit: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\n"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+2026-10-06T22:36:25.5415421Z passed: sized-source-native (44.4s)
+2026-10-06T22:36:33.2605529Z passed: hierarchical-qpe-instrument (54.0s)
+2026-10-06T22:36:45.4975423Z passed: hierarchical-calls (12.2s)
+2026-10-06T22:36:51.7325152Z failed: hierarchical-finite (6.2s)
+2026-10-06T22:36:51.7328436Z {"command": ["python3", "scripts/test_hierarchical_finite.py"], "executed_command": ["python3", "scripts/test_hierarchical_finite.py"]}
+2026-10-06T22:36:51.7329669Z Traceback (most recent call last):
+2026-10-06T22:36:51.7330616Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_hierarchical_finite.py", line 221, in <module>
+2026-10-06T22:36:51.7331577Z     main()
+2026-10-06T22:36:51.7332354Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_hierarchical_finite.py", line 192, in main
+2026-10-06T22:36:51.7333343Z     assert fields[0] == row['status'], (row['name'], fields, row['status'])
+2026-10-06T22:36:51.7334212Z            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T22:36:51.7336097Z AssertionError: ('bits-not-legacy', ['pending', '6771', '0', '0', '0', '0', '1', '7', '19', '[20, 21]', '[70, 71]', '[102]', '[102]', '[111, 112, 97, 113, 117, 101, 45, 112, 114, 111, 103, 114, 97, 109, 45, 50, 45, 48]', '[105, 110, 100, 101, 112, 101, 110, 100, 101, 110, 116, 45, 109, 97, 116, 114, 105, 120, 45, 50, 45, 48]', 'contract'], 'contract')
+2026-10-06T22:36:51.7337540Z 
+2026-10-06T22:38:25.2864386Z {"format": "qleisli.hierarchy-host-validation", "version": 1, "status": "passed", "binary_sha256": "3d86012add5c17503a60bd4fd5ed7aadf7a25667dd053f6676c86d80f1586a0d", "binary_cases": 362, "seconds": 65.302, "host_command": ["cargo", "test", "--test", "hierarchical_host", "--", "--ignored", "--nocapture"], "exit_code": 0}
+2026-10-06T22:38:25.2885669Z {"command": ["python3", "scripts/test_hierarchical_finite_binding.py"], "executed_command": ["python3", "scripts/test_hierarchical_finite_binding.py"]}
+2026-10-06T22:38:25.2894889Z Passed 60 native QIRF/request cases; Rust checker not invoked.
+2026-10-06T22:38:25.2935937Z {"command": ["python3", "scripts/test_verification_decoders.py", "--record", "/home/runner/work/_temp/native-comparisons/hierarchical-host/record.json"], "executed_command": ["python3", "scripts/test_verification_decoders.py", "--record", "/home/runner/work/_temp/native-comparisons/hierarchical-host/record.json"]}
+2026-10-06T22:38:25.2944910Z Traceback (most recent call last):
+2026-10-06T22:38:25.2975222Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_decoders.py", line 252, in <module>
+2026-10-06T22:38:25.3005052Z     main()
+2026-10-06T22:38:25.3035117Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_decoders.py", line 206, in main
+2026-10-06T22:38:25.3066633Z     run_command(['lake', 'build'], project, log)
+2026-10-06T22:38:25.3075032Z   File "/home/runner/work/Qleisli/Qleisli/scripts/test_verification_decoders.py", line 140, in run_command
+2026-10-06T22:38:25.3094875Z     assert result.returncode == 0, log[-1]
+2026-10-06T22:38:25.3126711Z            ^^^^^^^^^^^^^^^^^^^^^^
+2026-10-06T22:38:25.3170678Z AssertionError: {'command': ['lake', 'build'], 'exit_code': 1, 'stdout': '✖ [161/163] Building Main (2.1s)\ntrace: .> LEAN_PATH=/home/runner/work/Qleisli/Qleisli/lean-kernel/.lake/build/lib/lean:/tmp/qleisli-decoder-audit-_uqfrs92/.lake/build/lib/lean /home/runner/.elan/toolchains/leanprover--lean4---v4.30.0/bin/lean /tmp/qleisli-decoder-audit-_uqfrs92/Main.lean -o /tmp/qleisli-decoder-audit-_uqfrs92/.lake/build/lib/lean/Main.olean -i /tmp/qleisli-decoder-audit-_uqfrs92/.lake/build/lib/lean/Main.ilean -c /tmp/qleisli-decoder-audit-_uqfrs92/.lake/build/ir/Main.c --setup /tmp/qleisli-decoder-audit-_uqfrs92/.lake/build/ir/Main.setup.json --json\nerror: Main.lean:77:21: Missing cases:\n(Semantics.Finite.Atom.bits _)\nerror: Lean exited with code 1\nSome required targets logged failures:\n- Main\n', 'stderr': 'info: decoder_audit: no previous manifest, creating one from scratch\ninfo: toolchain not updated; already up-to-date\nerror: build failed\n'}
+2026-10-06T22:38:25.3184421Z 

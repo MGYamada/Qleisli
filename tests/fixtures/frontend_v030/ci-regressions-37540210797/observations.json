@@ -1,0 +1,28 @@
+{
+  "format": "qleisli.native-ci-repair",
+  "version": 1,
+  "hosted_run": 37540210797,
+  "hosted_job": 112531208312,
+  "branch_head": "8b5e68c027b0f12f416ae0d40d8165cd1c0a9acb",
+  "pr_merge": "e9a7ee7599f13887395dc48525aacd7140b8c54d",
+  "full_hosted_log_sha256": "a9e0c68c2f3706b52bc839c6a5162c821b7aada4eee9c349161dad1767d4e3c0",
+  "local_base": "2454e1636df1e802eeb233c665335b939d93f7b0",
+  "repair_sources": {
+    "scripts/test_hierarchical_finite.py": "8d634f2c75580b6468c2191e6bbc5c9fcb4205382a1b44a9132262e90289adcc",
+    "scripts/test_verification_decoders.py": "a91912eae6274b366babf06a73009dc1c631929479f575c678416dcef442caf3",
+    "tests/fixtures/verification_v027/DecoderView.lean": "bc7b3584b9c96f77b06391183c518f70bdb185d90cacdc9aa9a60befd47bf0a5"
+  },
+  "results": {
+    "finite_cases": 73,
+    "finite_pending": 33,
+    "finite_semantic_acceptances": 0,
+    "decoder_cases": 368
+  },
+  "failed_local_attempt": {
+    "script": "scripts/test_verification_decoders.py",
+    "cause": "QLEISLI_KERNEL was not selected; frozen Raw constructor test rejected before Lean driver execution",
+    "exit_code": 1,
+    "rerun": "Matching current native checker explicitly selected; full decoder script passed"
+  },
+  "scope": "Local actual-reader comparisons and finite request projection/binding. No production acceptance change, new guarantee, source correspondence proof, full hosted CI success or release approval."
+}

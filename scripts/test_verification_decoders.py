@@ -23,7 +23,7 @@ def digest(path):
 
 
 def atoms(tree):
-    if tree['tag'] in ('unit', 'bit'):
+    if tree['tag'] in ('unit', 'bit', 'bits'):
         return [tree]
     children = [tree['left'], tree['right']] if tree['tag'] == 'pair' else tree['fields']
     return [dict(tag='tuple', arity=len(children))] + [a for child in children for a in atoms(child)]
@@ -77,6 +77,16 @@ def qirf_cases():
         sample['evidence'] = [dict(tag='meaning', signature=dict(tag='bit'), implementation=0,
                                   meaning=dict(tag=tag, table=[1, 0]), identity=identity)]
         cases.append((f'meaning-{tag}', copy.deepcopy(sample)))
+    # Observe atomic tags through the actual reader without conflating empty
+    # registers with Unit, single-bit registers with Bit, or registers with tuples.
+    for width in (0, 1, 2):
+        for version in (1, 2):
+            atomic = copy.deepcopy(sample)
+            atomic.update(version=version,
+                profile='finite-v0' if version == 1 else 'finite-meaning-v1', evidence=[])
+            atomic['root_interface'] = dict(input=dict(tag='bits', width=width),
+                output=dict(tag='pair', left=dict(tag='unit'), right=dict(tag='bits', width=width)))
+            cases.append((f'atomic-bits-{width}-v{version}', atomic))
     return cases, seen
 
 
@@ -233,10 +243,13 @@ def main():
                     assert sorted(order) == list(range(sum(len(wanted[key]) for key in ('definitions','meanings','encodings','proofs'))))
                 assert actual == wanted, (name, actual, wanted)
         report = dict(format='qleisli.vm27-decoder-correspondence', version=1, status='passed',
-            cases=len(expected), raw_constructors=sorted(constructors), hierarchy_definitions=13,
-            hierarchy_meanings=12, encodings=4, structural_constructors=10, enabled_rules=12,
+            cases=len(expected), raw_constructors=sorted(constructors),
+            hierarchy_definitions=len(hierarchy_cases()[0][1]['definitions']),
+            hierarchy_meanings=len(hierarchy_cases()[0][1]['meanings']),
+            encodings=4, structural_constructors=10, enabled_rules=12,
+            atomic_basis_cases=[name for name in names if name.startswith('atomic-bits-')],
             scope='lossless actual-reader field comparison; not a universal parser/compiler proof',
-            production_authority='Rust', max_semantic_qubits=3,
+            production_authority='Lean', max_semantic_qubits=3,
             wire_range_regressions=[dict(name=name,input=request) for name,request in zip(names,requests)
                 if name.startswith('wire-bound-')],
             source_sha256={str(path.relative_to(ROOT)):digest(path) for path in [VIEW, Path(__file__),
