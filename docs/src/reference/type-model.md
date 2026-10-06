@@ -177,8 +177,8 @@ argument still makes its caller observing.
 
 These maps can form explicit left/right maps on separate-owner products, such
 as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. Both names belong to the common source catalog, but finite concrete lowering
-does not materialize them and the shared Raw profile rejects their quantum Unit
-intermediates; no observing discard or retry after native failure supplies a
+does not materialize them and the shared Raw profile rejects these structural
+map operations; it supports retained Unit owners and scalar phases. No observing discard or retry after native failure supplies a
 substitute.
 
 The selected hierarchy also admits packaged quantum bases built recursively
