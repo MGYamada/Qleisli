@@ -1,0 +1,98 @@
+{
+  "format": "qleisli.local-review",
+  "version": 1,
+  "issues": [
+    43,
+    44,
+    142
+  ],
+  "status": "bounded-regression-repair-checked",
+  "hosted_failure": {
+    "run": 37474896654,
+    "head": "b4de1252733f248411fec62442c91116cc41aaa4",
+    "conclusion": "failure",
+    "native_comparison": "ordinary_types::existing_execution_profile_limits_remain_explicit expected rejection of already-supported Raw Q<Unit>",
+    "rust_msrv_distribution": "isometry_source::isometry_cli_explicit_raw_retains_its_actual_support_boundary expected the retired type diagnostic; actual refusal is unsupported finish(q)",
+    "passing_producers": [
+      "check-macos-source",
+      "check-lean",
+      "check-interop",
+      "check-docs"
+    ],
+    "release_readiness": "skipped"
+  },
+  "repairs": [
+    "Native-check the actual Q<Unit> Raw source proposal, replay its retained source steps, and assert the zero-wire logical owner and exact Unit root interface",
+    "Keep Raw finish(q) unsupported; assert its actual primitive diagnostic in text and JSON without a GitHub link"
+  ],
+  "source_sha256": {
+    "tests/ordinary_types.rs": "0d02f73d2634552312616e0644ca7f627e811cb87d86df56fdc19e4c8376f99a",
+    "tests/isometry_source.rs": "553f562824d3a1fd4adf158eceea256eb9726e4417084d3b611d59677b406165"
+  },
+  "validation": {
+    "latest": {
+      "ordinary_types": 14,
+      "quantum_unit_source": 16,
+      "isometry_source": 7,
+      "failed": 0,
+      "ignored": 0,
+      "all_target_clippy": "passed",
+      "toolchain": "1.98.1"
+    },
+    "msrv": {
+      "toolchain": "1.85.0",
+      "selection": "scripts/run_msrv.py and separate target directory",
+      "ordinary_types": 14,
+      "quantum_unit_source": 16,
+      "isometry_source": 7,
+      "failed": 0,
+      "ignored": 0,
+      "all_target_clippy": "passed"
+    },
+    "fmt": "passed",
+    "worktree_whitespace": "passed",
+    "constitution": {
+      "base": "38baae7d19535602b21270e11e97617d45205b37",
+      "result": "passed; identity and continuity only"
+    },
+    "process_cleanup_recheck": {
+      "result": "passed",
+      "tests": 1,
+      "sandbox_permissions": "require_escalated",
+      "reason": "ps is prohibited in the sandbox"
+    },
+    "latest_all_targets": {
+      "status": "running at record creation; not a success claim",
+      "command": [
+        "cargo",
+        "test",
+        "--all-targets"
+      ],
+      "log": "/private/tmp/qleisli-raw-regression-all-targets.log",
+      "session_id": 33008,
+      "sandbox_permissions": "require_escalated",
+      "notes": "Fresh rerun after sandbox denied ps; existing 4000-case differential is live. Observe the actual session, not this status field, before acting."
+    },
+    "docs": "passed: 2186 links, 30 anchors, 206 Lean roots",
+    "production_coverage": "passed: 22 production paths, 9 existing native modes",
+    "verification_inventory": "passed: 275 constructors, 265 snapshots, 20 boundaries"
+  },
+  "intermediate_results": [
+    "Original stale ordinary-type regression reproduced locally (unwrap_err on a valid Raw source proposal)",
+    "First repair used bits() instead of the bits field; compilation rejected it, then fixed and rerun",
+    "Original stale isometry diagnostic reproduced locally; both text and JSON expectations repaired and rerun",
+    "Sandbox all-target run: 126 library tests passed, 3 retained ignores, one process cleanup test failed with PermissionDenied at process.rs:229; that test passed outside the sandbox. Remaining all-target checks are still running."
+  ],
+  "scope": {
+    "no_production_behavior_change": true,
+    "max_new_qubits": 0,
+    "generic_meaning_binding": "unsupported; mandatory checks including unused providers remain open",
+    "new_constitutional_discharge": false,
+    "fresh_lean_replay": false,
+    "package_install_release_validation": false
+  },
+  "completion": {
+    "closed": 22,
+    "selected": 111
+  }
+}

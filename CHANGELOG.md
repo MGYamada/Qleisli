@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Align retained Raw-profile regressions with supported Q<Unit> owners and
+  the still-unsupported finish primitive. Check actual native owner/type
+  retention and source-step replay instead of expecting obsolete refusals.
+
 - Bind fresh finite native checks to actual Raw source proposals and replay
   their ordered source steps. Retain immutable source/request references;
   reject native-valid substituted providers and preflight exact type, effect

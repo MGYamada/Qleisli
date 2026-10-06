@@ -384,7 +384,26 @@ fn existing_execution_profile_limits_remain_explicit() {
     );
     let program = elaborate(source!("quantum-unit"));
     program.lower().unwrap();
-    assert_eq!(program.lower_raw().unwrap_err().code(), "unsupported");
+    // Raw lowering now supports this exact zero-width quantum interface.
+    // Physical width zero must still retain the source's logical Unit owner.
+    let proposal = program.lower_raw().unwrap();
+    let native = qleisli::interchange::native::Kernel::new(
+        std::env::var_os("QLEISLI_KERNEL").expect("select the built native kernel"),
+    );
+    let checked = native.accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&checked).unwrap();
+    let raw = checked.raw();
+    assert_eq!(raw.quantum_inputs.len(), 1);
+    assert!(raw.quantum_inputs[0].wires.is_empty());
+    assert_eq!(raw.quantum_inputs[0].shape.bits, 0);
+    assert_eq!(raw.quantum_outputs, vec![raw.quantum_inputs[0].token]);
+    assert_eq!(
+        checked.root_interface(),
+        Some(&qleisli::interchange::RootInterface {
+            input: qleisli::contract::BasisType::Unit,
+            output: qleisli::contract::BasisType::Unit,
+        })
+    );
     let error = elaborate(source!("unit-forget-readout"))
         .lower()
         .unwrap_err();

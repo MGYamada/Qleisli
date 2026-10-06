@@ -251,7 +251,15 @@ fn isometry_cli_explicit_raw_retains_its_actual_support_boundary() {
             .output()
             .unwrap();
         let text = result(output, "check", json, false);
-        assert!(text.contains("finite source lowering requires"), "{text}");
+        // The Unit owner is supported now; this source still needs the
+        // unsupported finish primitive. Do not expect a type rejection.
+        assert!(
+            text.contains(
+                "finite source lowering does not yet support this primitive or operation capability"
+            ),
+            "{text}"
+        );
+        assert!(!text.contains("github.com"), "{text}");
         if json {
             assert!(text.contains("\"code\":\"unsupported\""), "{text}");
         }
