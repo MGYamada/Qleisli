@@ -38,3 +38,18 @@ leaves advance to the classical stage. The original guard is immutable at
 The repair retains all 87 logical roots, validated unique selection, complete
 compilation/execution and probability checks. The exact local failure is retained
 in `corpus-local-excerpt.txt`; it is not a semantic corpus counterexample.
+
+Run 37428954630 passed the latest and MSRV all-target tests, package/source
+distribution checks, Mathlib verifier replay and relocated macOS native bundle.
+Its subsequent failures are preserved in the three `run200-*-excerpt.txt` files:
+VM-22 and both observing runners selected old corpus declarations, while MSRV
+Clippy rejected needless closure borrowing and explicit lifetimes. The repair
+uses the existing corpus migration selector, which checks snapshot hashes, and
+records both historical and executed roots. Frozen sources, matrices and IR
+bytes remain unchanged. The streamed runner shares the repaired source adapter.
+
+`run200-repair-validation.json` records the actual bounded local checks and
+their limits. Both Clippy toolchains pass; VM-22 reproduces frozen IR bytes
+without capture, and all five observing source cases emit successfully. Full
+native comparison replay remains a separate hosted check. Source identity,
+these tests and successful package checks do not constitute release approval.

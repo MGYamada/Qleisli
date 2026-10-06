@@ -36,7 +36,7 @@ impl From<Failure> for SourceError {
     }
 }
 
-pub(super) fn prepare<'a>(p: &mut Program<'a>) -> Result<()> {
+pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
     for (name, module) in &p.modules {
         let owner = p.resolution.module(name).expect("registered source module");
         let imports = p

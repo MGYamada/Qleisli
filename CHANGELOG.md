@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Select hash-checked current corpus derivatives in VM-22 and observing native
+  comparisons, keeping frozen historical sources and oracle artifacts intact.
+  Repair MSRV Clippy findings in classical predicate checking and local indexing.
 - Migrate the remaining positive parser test to `classical fn` and require the
   pure runtime effect of classical stdlib helpers in the effect-report test.
 - Specify the implemented static fragment, guarded exact arithmetic, incomplete

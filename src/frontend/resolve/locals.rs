@@ -815,11 +815,11 @@ mod tests {
     use super::*;
     use crate::frontend::parser::parse_module;
 
-    fn index<'ast>(
+    fn index(
         definition: DefId,
-        declaration: &'ast Decl,
+        declaration: &Decl,
         global: impl Fn(&str) -> Option<Target>,
-    ) -> Index<'ast> {
+    ) -> Index<'_> {
         Index::new_budgeted(definition, declaration, global, |_, _| {
             Ok::<_, std::convert::Infallible>(())
         })

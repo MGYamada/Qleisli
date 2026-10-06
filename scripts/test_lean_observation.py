@@ -19,6 +19,7 @@ import tempfile
 import test_lean_exact as exact
 import test_lean_finite as finite
 import test_lean_raw as raw
+from check_input_corpus import current_project as current_corpus_project
 
 ROOT = Path(__file__).resolve().parents[1]
 ZERO, ONE = finite.ZERO, finite.ONE
@@ -357,28 +358,31 @@ def rust_program(program):
     return text.replace('classical_outputs:vec![]','classical_outputs:vec!['+','.join(cid(v) for v in program['classical_outputs'])+']')
 
 
-def source_cases(log, record):
+def source_cases(log, record, compiler=None):
     cases=[]
-    compiler=ROOT/'target/debug/qleisli'
+    compiler=ROOT/'target/debug/qleisli' if compiler is None else Path(compiler)
     paths=['tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first','examples/bell',
            'corpus/quantum_katas/graph_state2','corpus/qualtran/control_zero_reflection2',
            'corpus/pennylane_demos/ising_zz_negative2']
     with tempfile.TemporaryDirectory(prefix='qleisli-observation-source-') as directory:
         for index,path in enumerate(paths):
+            project = (current_corpus_project({'project': path.removeprefix('corpus/')})
+                       if path.startswith('corpus/') else ROOT/path)
             output=Path(directory)/f'{index}.json'
-            exact.command([str(compiler),'emit-ir',str(ROOT/path),'--output='+str(output),'--format=json'],ROOT,log)
+            exact.command([str(compiler),'emit-ir',str(project),'--output='+str(output),'--format=json'],ROOT,log)
             original=output.read_bytes();artifact=json.loads(original)
             assert not artifact['evidence']
             program=artifact['programs'][artifact['root']]
             assert sum(port['shape']['bits'] for port in program['quantum_inputs'])<=3
             source_hashes={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest()
-                           for s in sorted((ROOT/path).rglob('*.qli'))}
+                           for s in sorted(project.rglob('*.qli'))}
             if record:
                 dest=record.parent/'source-ir'/f'{index}.qirf.json'
                 dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(original)
             cases.append(dict(name='source_'+str(index),expected=True,mode='instrument',classical=[],budget=10000000,
                 artifact=dict(format='qleisli.raw-observing-component',version=1,dependencies=[],bindings=[],program=program),
-                provenance=dict(source_root=path,qirf_sha256=hashlib.sha256(original).hexdigest(),sources=source_hashes,
+                provenance=dict(source_root=str(project.relative_to(ROOT)),historical_source_root=path,
+                    qirf_sha256=hashlib.sha256(original).hexdigest(),sources=source_hashes,
                     compiler_sha256=hashlib.sha256(compiler.read_bytes()).hexdigest(),
                     adapter='original complete observing root, no terminal-measurement truncation')))
     return cases

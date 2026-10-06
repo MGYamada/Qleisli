@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 
 from check_verification_inventory import ROOT, check
+from check_input_corpus import current_project as current_corpus_project
 
 FIXTURES = ROOT/'tests/fixtures/verification_v022'
 NAMES = ['h','t','unit_phase','toffoli','raw_qif_unit','raw_computed_target']
@@ -180,9 +181,11 @@ def source_comparisons(binary, capture):
     ]
     records=[]
     for project,required in sources:
+        current_project = (current_corpus_project({'project': project.removeprefix('corpus/')})
+                           if project.startswith('corpus/') else ROOT/project)
         decisions={}
         for command in ['check','run']:
-            stdout,_=invoke([binary,command,project,'--format=json'])
+            stdout,_=invoke([binary,command,current_project,'--format=json'])
             data=json.loads(stdout,object_pairs_hook=unique)
             if data['outcome']!='ok' or data['diagnostics']: raise ValueError('source check failed')
             decisions[command]=data
@@ -190,18 +193,19 @@ def source_comparisons(binary, capture):
         if any(abs(actual.get(k,0)-required.get(k,0))>2e-12 for k in actual.keys()|required.keys()): raise ValueError('source probability disagreement: '+project)
         with tempfile.TemporaryDirectory(prefix='qleisli-vm22-source-') as directory:
             emitted=Path(directory)/'program.qirf'
-            invoke([binary,'emit-ir',project,'--output='+str(emitted),'--format=json'])
+            invoke([binary,'emit-ir',current_project,'--output='+str(emitted),'--format=json'])
             path=frozen('source/'+project.replace('/','_')+'.qirf',emitted.read_bytes(),capture)
             stdout,_=invoke([binary,'verify-ir',path,'--format=json'])
             verified=json.loads(stdout,object_pairs_hook=unique)
             if verified['result']!={'verified':True,'request_checked':False}: raise ValueError('unexpected ordinary IR guarantee')
-        records.append(dict(project=project,artifact=str(path.relative_to(ROOT)),decisions=decisions,raw_verification=verified,reference_distribution=[dict(bits=list(k),probability=v) for k,v in required.items()],lean_observing='not implemented; VM-26'))
+        records.append(dict(project=project,current_project=str(current_project.relative_to(ROOT)),artifact=str(path.relative_to(ROOT)),decisions=decisions,raw_verification=verified,reference_distribution=[dict(bits=list(k),probability=v) for k,v in required.items()],lean_observing='not implemented; VM-26'))
     for name in ['duplicate_owner','measured_owner','measurement_adjoint','dirty_auxiliary']:
         project='corpus/negative/'+name
-        stdout,_=invoke([binary,'check',project,'--format=json'],1)
+        current_project = current_corpus_project({'project': project.removeprefix('corpus/')})
+        stdout,_=invoke([binary,'check',current_project,'--format=json'],1)
         data=json.loads(stdout,object_pairs_hook=unique)
         if data['outcome']!='error' or not data['diagnostics']: raise ValueError('missing negative source diagnostic')
-        records.append(dict(project=project,decision=data))
+        records.append(dict(project=project,current_project=str(current_project.relative_to(ROOT)),decision=data))
     return records
 
 

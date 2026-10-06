@@ -519,7 +519,7 @@ impl Checker<'_, '_> {
             function.span,
             &self.program.budget,
         )
-        .map_err(&predicate_mismatch)?;
+        .map_err(predicate_mismatch)?;
         normalize::expect(
             &result,
             &Ty::bit(),
@@ -527,7 +527,7 @@ impl Checker<'_, '_> {
             function.span,
             &self.program.budget,
         )
-        .map_err(&predicate_mismatch)?;
+        .map_err(predicate_mismatch)?;
         let mut inner = scope.copy(&self.program.budget, span)?;
         let ancilla_ty = Ty::quantum(Ty::bit());
         let expected = if let (Some(logical), Some(data)) = (logical, data) {

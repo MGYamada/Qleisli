@@ -2895,7 +2895,7 @@
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "98cef7b584d6d7363956285983d1b1d1606d3893a65572409835801e495c6aaf",
+      "sha256": "072f8b95f02af774418be2f26031f2edd55e6b0d0a7475893b7f670cf2d9775b",
       "group": "raw-core",
       "surface": null
     },
@@ -3254,7 +3254,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "dca128ce783714072ed6a6fb943f0b261eef01f85dc19d909c05066032c30f79",
+      "sha256": "60ff2e3935ec9a5943e560a40ead2b31d9c3d544fd6487351e9e852670da8195",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3264,7 +3264,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "4bfd62aaced4719201f26bdce777fe0a1646849bd68edeca8c83932409c721b3",
+      "sha256": "3ab9fb9f712535285a26c03ff827590831e79f0e1448e825077f6daf9e0017b2",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3752,7 +3752,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "4d6887a0e38965fe267e99f570fadec68182eb4f2085cb43c9c6f85a449d7faa",
+      "sha256": "26f9e4429579fd7729e47db65cc9aad4e618d8b409bbe009fb22ebebd994bd71",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5623,7 +5623,7 @@
       "tests/fixtures/verification_v022/hierarchy/h.wrong-phase.request.json": "2680dc9e5af50c780436fed1d421f124177fbbaa38b7e4729601518af9b9c898",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.request.json": "49e2aaa7d1790a9e7205fcc7fb469f06a2d7726c401ea5100c764866aa7dd753",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
-      "scripts/test_verification_baseline.py": "5a7953e1bcc80977bc0636bd65cd57e5d72c2c3d5908398a0c27bf1114f6a181",
+      "scripts/test_verification_baseline.py": "75a2fb59c171df7dec83981e45aab9cbb69f0d657fceef9efecaccd63e2870de",
       "tests/verification_boundary.rs": "f21dbdd1d1cb095ee873294222b5ff2cb53e95365cc87356a054a5188bb04e5b",
       "tests/hierarchical_host.rs": "43b885b8353c7d9d78bc385b402d2062893113254c2a270bb1cfe2cd9e98c9f1",
       "scripts/test_hierarchical_readout.py": "9ed1e73c607c5960ca5c6901c1b2f94fb6b50225fadbe9e89c9a6f00c55948dd",
