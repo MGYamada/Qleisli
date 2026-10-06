@@ -156,18 +156,17 @@ fn immutable_metadata_and_documentation_use_the_checked_source_bytes() {
 
 #[test]
 fn all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects() {
-    for source in [
-        include_str!(
-            "fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli"
-        ),
-        include_str!(
-            "fixtures/authoring_sessions/body-effects-v030/attempt-01/dead-static-observation/main.qli"
-        ),
-        include_str!(
-            "fixtures/authoring_sessions/body-effects-v030/attempt-01/recursive-observation/main.qli"
-        ),
+    for case in [
+        "zero-fold-observation",
+        "dead-static-observation",
+        "recursive-observation",
     ] {
-        let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+        let original = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
+            "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/{case}/main.qli"
+        ));
+        let source = std::fs::read_to_string(common::current_namespace_fixture(&original)).unwrap();
+        let sized =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
         assert_eq!(
             sized.function_effect("main::f").unwrap().inferred(),
             Effect::Observe
