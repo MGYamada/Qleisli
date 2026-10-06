@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reject future PRs with at least one million added/deleted text lines, and
+  bound fixture totals and PR additions before CI scheduling. Preserve the
+  current #307 growth exception and require local agent size preflight.
 - Repair the tuple-unitor integration control to use canonical `basis` syntax;
   retain historical `do/pure` sources and test their migration refusal.
 - Fix the 0.3.0 Default boundary: live quantum-containing types, including

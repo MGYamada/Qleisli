@@ -28,6 +28,56 @@ the final tree. Splitting reviewable work must retain every required check and
 protected source, proof, evidence and history; deleting them to shrink a PR is
 not authorized by this rule.
 
+## Size budgets
+
+The maintainer requested recurrence protection for generated fixtures. The
+configured operational budgets in `size-budgets.json` are **150 MiB
+(157,286,400 bytes)** and **18,000 files** for all fixtures, and **100,000 added
+fixture text lines per PR**. Exact limits are allowed; exceeding any limit
+rejects. Only canonical `MGYamada/Qleisli#307` has the existing PR-growth
+exception. It never waives total bytes or files. The separate whole-PR rule
+still rejects 1,000,000 or more added plus deleted text lines. Raising a budget
+requires explicit human instruction; changing config, adding an ignore rule,
+relocating or compressing required records to evade a budget is unauthorized.
+Keep protected sources, proofs, counterexamples, notices and historical evidence.
+
+`check_fixture_budget.py --hosted` runs in `changes` before suite selection.
+Totals count the exact checkout Git tree, using uncompressed **stored blob
+sizes per path**, including dotfiles and repeated content. Symlinks, gitlinks,
+missing roots and malformed data reject. Canonical Git LFS pointer fixtures
+reject without fetching external payloads. Stored archive bytes are counted;
+expanded archive contents and external payloads are not measured. PR additions
+use the event's exact base/head and unique merge base with no rename detection;
+moves into a fixture path count as additions. Binary changes are reported
+separately, and deletion counts cannot offset additions. Push/manual runs still
+check committed totals. The existing required contexts reject gate failure.
+
+Agents must run `python3 scripts/check_fixture_budget.py` before committing
+fixture generation. This local preflight counts **every** working fixture file,
+including ignored/untracked files, dotfiles, caches and hardlinked paths. It
+never follows symlinks and rejects special, unreadable and missing HEAD/index
+fixture files; staging a deletion cannot hide it before its reviewed deletion
+is committed. Do not delete records automatically to satisfy the budget.
+Local inspection is not an atomic filesystem snapshot: rerun after generation
+and immediately before committing. It cannot prevent writes after inspection;
+the committed CI gate checks the final immutable tree.
+
+For already committed inputs, prefer exact immutable Git commit/path/hash
+references and focused changed-file or command evidence over repeated complete
+inventories or source snapshots. Preserve required first-source, failure and
+counterexample records.
+
+`--base BASE_SHA --head HEAD_SHA` gives a committed local fixture preflight,
+with complete history, exact hashes and no PR-growth exception. Whole-PR
+preflight remains a separate required check. Put new `--report` output outside
+`tests/fixtures`; existing destinations are refused, including hardlinked files.
+An internal report could invalidate its own measured totals.
+Policy fields, ceilings and the single exception are validated; hosted policy
+bytes must match the counted commit. No environment variable or candidate
+record can raise a cap or choose a PR exception. Offline environment/JSON
+can simulate the caller but cannot authenticate GitHub provenance. Reports
+are small external observations, not new fixture snapshots or release approval.
+
 Constitution, governance records, constitutional fixtures and Reference changes
 select the full policy-risk lane. The always-run documentation job also checks
 the adopted constitutional identity, historical candidate evidence, pending

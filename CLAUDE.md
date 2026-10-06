@@ -82,7 +82,7 @@ notices outside retired docs. Regenerate corpus counts with
 
 ## Changes, versions and licensing
 
-PRs with 1,000,000+ added+deleted lines are forbidden; only current #307 is exempt.
+Enforce [size budgets](.github/ci/README.md#size-budgets); never raise them to pass.
 Use GitHub Issues for decisions/friction; no duplicate backlog. Breaking changes
 need an Issue with target, contracts, reason, migration and acceptance criteria
 before implementation. Compatible changes use PATCH, breaks MINOR, except the

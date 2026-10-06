@@ -1,0 +1,16 @@
+{
+  "format": "qleisli.fixture-size-budgets",
+  "version": 1,
+  "fixture_root": "tests/fixtures",
+  "totals": {
+    "max_bytes": 157286400,
+    "max_files": 18000
+  },
+  "pull_request": {
+    "max_added_lines": 100000,
+    "exception": {
+      "repository": "MGYamada/Qleisli",
+      "number": 307
+    }
+  }
+}

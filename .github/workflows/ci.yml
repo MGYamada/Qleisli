@@ -53,9 +53,12 @@ jobs:
           fetch-depth: 0
       - name: Reject oversized PRs before scheduling validation
         run: python3 scripts/check_pr_size.py --report "$RUNNER_TEMP/pr-size.json"
+      - name: Bound fixture totals and PR growth before scheduling validation
+        run: python3 scripts/check_fixture_budget.py --hosted --report "$RUNNER_TEMP/fixture-budget.json"
       - name: Test fail-closed routing and required-check aggregation
         run: |
           python3 scripts/test_check_pr_size.py
+          python3 scripts/test_check_fixture_budget.py
           python3 scripts/test_ci_profiles.py
           python3 scripts/test_measure_ci.py
           python3 scripts/test_run_native_ci.py
@@ -72,6 +75,7 @@ jobs:
           path: |
             ${{ runner.temp }}/ci-selection.json
             ${{ runner.temp }}/pr-size.json
+            ${{ runner.temp }}/fixture-budget.json
           if-no-files-found: error
   check-rust:
     needs: changes
