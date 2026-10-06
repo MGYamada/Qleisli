@@ -69,6 +69,10 @@ A **discharged guarantee** requires the checked proof or evidence and an
 explicit ledger record binding the interpreted property, scope, premises,
 semantic definitions, proof boundary and actual accepted artifacts. An ordinary
 helper lemma is not promoted into the ledger merely because Lean proves it.
+The ledger records only human-admitted guarantees concerning QS, PR or RS,
+not every theorem proved during development. Helper and transport proofs stay
+in their proof sources and validation records; where they preserve an existing
+admission, they support its current evidence without creating a new entry.
 One proof may discharge several obligations when the correspondence is explicit
 and mechanically justified.
 

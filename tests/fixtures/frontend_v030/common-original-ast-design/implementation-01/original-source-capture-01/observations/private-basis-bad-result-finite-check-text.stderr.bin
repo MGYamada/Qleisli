@@ -1,1 +1,0 @@
-/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/private-basis-bad-result/main.qli:2:46: type_mismatch: type or tuple/size shape mismatch: expected Bit, found Tuple([Bit, Bit])

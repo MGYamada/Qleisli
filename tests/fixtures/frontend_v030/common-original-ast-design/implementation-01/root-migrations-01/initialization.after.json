@@ -1,8 +1,0 @@
-{
-  "path": "corpus/sized/measured_qpe/initialization.qli",
-  "before_sha256": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896",
-  "after_sha256": "a15fc01067ad8037ed301b00aae6904bee2ccb84a98674bc76b0ff969be5b6a9",
-  "edit": "Remove only the redundant use initialization::init_zero; from active same-module ordinary source. Preserve body, recursive call, exact Nat decrease and zero-owner branch.",
-  "manifest": "corpus/manifest.json sized_local_compositions local/measured_qpe/initialization hash updated to actual derivative; frozen copies untouched.",
-  "validation": "Not rerun yet."
-}

@@ -1,5 +1,0 @@
-thread 'lexical_binding_identity_prevents_shadowed_owner_escape' (16268979) panicked at tests/sized_source.rs:699:5:
-assertion `left == right` failed
-  left: "static operation requires a function name, not a local value"
- right: "a local value is not callable"
-note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace

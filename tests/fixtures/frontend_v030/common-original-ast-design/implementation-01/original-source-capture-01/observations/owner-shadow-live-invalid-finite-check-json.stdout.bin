@@ -1,1 +1,0 @@
-{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"binding q would drop a live quantum owner","primary":{"path":"main.qli","start":121,"end":122,"line":2,"column":47},"related":[]}],"result":null}

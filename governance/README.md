@@ -77,6 +77,18 @@ the responsible human's explicit judgment on the concrete reviewed proposal;
 admission also requires the applicable checked proof or evidence. AI output,
 silence, general permission to develop and passing CI cannot supply that act.
 
+## Ledger admission scope
+
+The ledger is not a catalogue of Lean declarations or development milestones.
+Record only guarantees concerning the constitutional QS, PR or RS obligations,
+with their defined scope, premises, checked evidence and explicit human admission.
+Ordinary helper lemmas, transport proofs and implementation checks stay in proof
+sources and validation records. Supporting a ledgered guarantee updates its
+current evidence when necessary; it does not automatically create another entry.
+The two already admitted scoped QS guarantees retain their protection.
+This operational clarification follows Article VI; it adopts no interpretation
+or new guarantee.
+
 ## Integrity checks and limits
 
 Run `python3 scripts/check_constitution.py` to validate the adopted identities

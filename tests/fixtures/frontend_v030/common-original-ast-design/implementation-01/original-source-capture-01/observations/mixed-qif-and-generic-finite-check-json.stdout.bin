@@ -1,1 +1,0 @@
-{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unsupported","severity":"error","message":"finite profile does not support static Nat parameters","primary":{"path":"main.qli","start":326,"end":327,"line":11,"column":26},"related":[]}],"result":null}

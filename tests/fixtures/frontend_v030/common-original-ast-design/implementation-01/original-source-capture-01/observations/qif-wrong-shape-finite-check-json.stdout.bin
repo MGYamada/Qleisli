@@ -1,1 +1,0 @@
-{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"operation provider requires Q<A> -> Q<A> with one exact quantum input","primary":{"path":"main.qli","start":310,"end":314,"line":8,"column":42},"related":[]}],"result":null}

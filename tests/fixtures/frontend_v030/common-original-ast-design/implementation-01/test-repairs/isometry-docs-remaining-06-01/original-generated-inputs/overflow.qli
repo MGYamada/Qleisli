@@ -1,2 +1,0 @@
-// The diagnostic must point past this retained prefix.
-pub unitary fn f(q: Q<Bits<170141183460469231731687303715884105727+1>>) -> Q<Bit> { q }

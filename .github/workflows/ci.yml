@@ -643,6 +643,10 @@ jobs:
       - run: python3 scripts/test_check_lean_kernel.py
       - run: python3 scripts/test_check_schema_registry.py
       - run: python3 scripts/check_schema_registry.py --source-only
+      - name: Verify lossless historical fixture archives against Git originals
+        run: |
+          python3 scripts/test_check_fixture_archives.py
+          python3 scripts/check_fixture_archives.py --git-baseline
       - run: python3 scripts/check_docs.py
       - name: Verification inventory coverage and independent oracle calibration
         run: |

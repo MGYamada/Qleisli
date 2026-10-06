@@ -1,1 +1,0 @@
-thread 'ordinary_types_share_the_sized_signature_classifier_without_general_basis_support' (16179516) panicked at tests/frontend_types.rs:82:6:

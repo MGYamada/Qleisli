@@ -1,7 +1,0 @@
-{
-  "target": "stdlib/docs/README.md",
-  "before_sha256": "b2c412a417f77c1f7f7641c067a17158c409a24a29ae6486e43148346719be65",
-  "after_sha256": "a048b7a8d9e1b1a32e0b9c52f119e4646905ec2c460187300f8ee949d8e56f83",
-  "reason": "Correct current product version to authoritative Cargo/std manifest; retain historical qargo0.1.3/Qleisli0.2.1 observed failure unchanged.",
-  "scope": "Presentation/version statement only; no dependency version, source behavior, new validation, guarantee or issue completion."
-}

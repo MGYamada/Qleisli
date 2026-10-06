@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Consolidate the historical common-AST implementation packet into a lossless
+  archive retaining all 946 original files. Verify complete original Git
+  inventory, contents and executable modes in CI; preserve historical sources,
+  diagnostics, failures and notices without executing archived tools.
+
 - Retain atomic `Bits<n>` in finite Meaning signatures and native request
   transport, including distinct zero-width owners, exact phase and ordered
   products. Reject same-width type substitutions and false controlled scalar

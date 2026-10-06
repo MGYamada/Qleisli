@@ -1,8 +1,0 @@
-{
-  "status": "before-authored-inventory-repair",
-  "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/original-source-capture-01/driver.py",
-  "bytes": 12755,
-  "sha256": "7850cd7c8f8a7cebcda46191b89f5b700b8752699fe6607182234714480cda2f",
-  "mode": 420,
-  "no_driver_import_or_execution": true
-}

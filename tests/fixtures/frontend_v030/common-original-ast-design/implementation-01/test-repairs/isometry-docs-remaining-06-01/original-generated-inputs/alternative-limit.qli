@@ -1,2 +1,0 @@
-// The diagnostic must point past this retained prefix.
-pub unitary fn f[static n0: Nat,static n1: Nat,static n2: Nat,static n3: Nat,static n4: Nat,static n5: Nat,static n6: Nat](q: Q<Bit>) -> Q<Bit> requires n0 != 0,n1 != 0,n2 != 0,n3 != 0,n4 != 0,n5 != 0,n6 != 0 { q }

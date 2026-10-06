@@ -1,2 +1,0 @@
-thread 'symbolic_capacity_errors_keep_obligation_spans_and_causes' (16228865) panicked at tests/sized_source.rs:130:9:
-main:56..4043: limit: common source judgment exceeds its 1000000 work capacity

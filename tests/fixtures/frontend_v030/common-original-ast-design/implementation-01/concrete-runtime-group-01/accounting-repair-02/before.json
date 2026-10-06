@@ -1,9 +1,0 @@
-{
-  "status": "independent-review-finding-before-repair",
-  "path": "src/frontend/sized/elaborate.rs",
-  "bytes": 68025,
-  "sha256": "affb8922e3ecf363966506d2b7e313764eccd2a1fe7777a46612060abcc9ff19",
-  "mode": 420,
-  "finding": "Q-transparent retained nodes omitted Q constructor work from comparison/final-copy payments. Independent reviewer isometry_cli_tests; root authorized conservative full-work upper bound from same genuinely charged preflight, without another walk/shared-core change.",
-  "execution": []
-}
