@@ -344,3 +344,10 @@ implicit readout and repeated observation reject at their actual type/owner
 locations. Neither answer invents a separate classical-type spelling. The
 prompts, both source collections, predictions and raw outputs remain intact;
 this is bounded criterion-10 evidence, not a general model benchmark or proof.
+
+The [ordinary Bits transport study](ordinary-bits-v030/README.md) preserves eight
+complete first projects and 36 actual CLI observations. Two source repairs
+separate classical-body/static-Nat/import mistakes from genuine Raw register
+refusals. Intended ordered output and Bell distributions were not produced;
+finite project runs encounter their register/static-Nat boundaries. No transport,
+source proof, type-rejection rule or new guarantee is established by this study.

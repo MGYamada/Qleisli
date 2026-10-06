@@ -1,0 +1,59 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "run",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-bits-v030/attempt-01/generic-one",
+    "--format=json",
+    "--lean-kernel=/Users/masa/.codex/worktrees/bits-meaning/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T22:25:37.905132+00:00",
+  "case": "generic-one",
+  "mode": "finite-run",
+  "phase": "before",
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+      "sha256": "6f743e9f57279231e1bfbab315658b6c2e2b7a88e23105acc55684638d63c7b3"
+    },
+    "kernel": {
+      "path": "/Users/masa/.codex/worktrees/bits-meaning/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+      "sha256": "6f743e9f57279231e1bfbab315658b6c2e2b7a88e23105acc55684638d63c7b3"
+    },
+    "kernel": {
+      "path": "/Users/masa/.codex/worktrees/bits-meaning/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+    }
+  },
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: classical functions cannot have static operation parameters",
+        "primary": {
+          "path": "main.qli",
+          "start": 143,
+          "end": 144,
+          "line": 2,
+          "column": 69
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "scope": "Actual bounded pre-implementation observation; no source-preservation proof or child-start attestation."
+}

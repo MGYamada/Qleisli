@@ -1,0 +1,20 @@
+{
+  "scope": "Pre-implementation diagnosis, not semantic validation or completed transport.",
+  "actual_observations": 36,
+  "source_snapshots": 3,
+  "first_source_projects": 8,
+  "observer_repairs": [
+    "Classical bodies are restricted pure expressions; packing uses existing unitary functions and classical copy helpers remain pure.",
+    "Generic Nat declarations require static keyword.",
+    "measure_z is imported from std::observe."
+  ],
+  "observed_boundary": "All eight current repaired projects reach ordinary Bits rejection on selected Raw checking. Finite project runs reject register types; the generic case reaches the separate finite static-Nat profile boundary. No closed expected distribution was produced.",
+  "next_contract": {
+    "representation": "One ordinary register value with explicit ordered classical SSA IDs and retained exact SourceType; Bits<0> remains one source value despite no SSA bits. Bit, Bits<1>, Unit and tuple shapes remain distinct.",
+    "emission": "Preserve empty_bits/prepend_bit construction, helpers, copy/drop and eager effects; append head before ordered tail. Flatten registers only at classical transport ports.",
+    "independent_replay": "Independently reconstruct original register shape, width, source identities, issuer IDs, element order and original-step primitive signatures, before comparing actual accepted output ports.",
+    "capacity": "Charge register element storage before allocation against existing 100000-cell cap and existing native limits. Do not raise limits or add acceptance primitive.",
+    "coverage": "N=0,1,2, four ordered rows, nested products, generic Nat specialization, ordinary copying, measured Bell correlations; add quantum copying/refusal and native-valid ordering/SSA/computation fault negatives.",
+    "remaining": "These experiments do not implement transport or cover every #342 condition. Drop must be exercised in an ordinary function body rather than an invalid classical statement block; type/source/artifact mutation tests remain required."
+  }
+}
