@@ -63,6 +63,13 @@ For the next session:
    backlog. A GitHub Issue needs no duplicate
    backlog entry, update or A020 ID.
 
+The [static Nat helper first study](static-nat-helpers-v030/session.json)
+preserves eight complete desired programs and sixteen actual parser refusals
+before implementation. They cover computed sizes, acyclic helper composition,
+an indexed exact phase schedule and intended staging/guard/cycle refusals.
+These first parser failures do not establish the downstream negative rules.
+The helper spelling is provisional; no generic QFT implementation is included.
+
 The [functional-boundary study](functional-boundary-v030/README.md) retains ten
 complete first projects, two explicit wrapper repairs and 44 actual CLI calls.
 Arity, local-callable/provider category, tuple-contained `Q<Unit>`, quantum

@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+static fn twice[static n:Nat]()->Nat{n+n}
+static fn next[static n:Nat]()->Nat{twice[n]()+1}
+pub observe fn main()->Bit{static let n=next[1]();if static n==3{1}else{0}}
