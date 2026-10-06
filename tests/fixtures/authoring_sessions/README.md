@@ -63,6 +63,15 @@ For the next session:
    backlog. A GitHub Issue needs no duplicate
    backlog entry, update or A020 ID.
 
+The [finite static Nat table study](static-nat-tables-v030/session.json)
+preserves fifteen informed first projects and four complete source repairs,
+with 38 actual pre-implementation CLI observations. Arrays/generators encounter
+the current parser boundary; these failures do not validate index bounds,
+staging or cycles. The repaired scalar control passes both source paths.
+Original invented preparation names and the finite static-if profile refusal
+remain recorded. This is a static-collection requirement study under #63,
+not generic QFT delivery, a Reference-only authoring experiment or a proof.
+
 The [static Nat helper first study](static-nat-helpers-v030/session.json)
 preserves eight complete desired programs and sixteen actual baseline refusals
 before implementation, including missing-checker observer errors. They cover computed sizes, acyclic helper composition,

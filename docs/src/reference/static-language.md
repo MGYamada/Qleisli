@@ -7,8 +7,8 @@ It records the existing rules tracked by
 [#44](https://github.com/MGYamada/Qleisli/issues/44) and
 [#63](https://github.com/MGYamada/Qleisli/issues/63). It does not introduce a
 general compile-time programming language. General builders and static collections
-remain separate work; describing this fragment does not complete those
-Issues or discharge quantitative Resource Safety.
+remain separate work under #60/#61 and #63; the bounded static contract does
+not discharge quantitative Resource Safety.
 
 ## Static categories and binding
 
@@ -295,8 +295,8 @@ does not prove that specialization preserves the original source meaning.
 The two admitted QLV1 ownership/scope guarantees retain their original-root
 scope; QS, PR, quantitative RS and EXACT remain pending at their broader scopes.
 
-General static builder/collection evaluation, remaining phase-table work and the
-remaining public static-language work belong to #63/#28. This chapter supplies
+General static builder evaluation belongs to #60/#61; finite static collections
+and remaining phase-table work belong to #63. This chapter supplies
 no arbitrary code execution, I/O, randomness, raw IR injection, trusted evidence
 constructor or floating-point substitute for an exact obligation. Generic QFT
 implementation remains outside the current human-selected goal.

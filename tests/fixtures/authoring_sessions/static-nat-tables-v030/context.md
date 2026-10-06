@@ -1,0 +1,7 @@
+# Finite static Nat table first study
+
+Informed Codex authoring after repository specification, parser, common resolver/checker, affine helper and selected evaluator access. The contract was recorded in #63 comment 6015308541 before this study. The available context includes earlier static-helper and qfor repairs; this is not an independent Reference-only author, model benchmark or zero-prior attempt. Exact deployed model/sampling settings are unavailable.
+
+The desired provisional result category is [Nat; length], with immutable literal arrays and finite generators in static helper bodies and static let aliases only. Original complete definitions, including unused and zero-length bodies, must be checked before specialization. Indices require original-premise bounds; no runtime or quantum dependency is allowed. Existing bounded Nat arithmetic and aggregate call/iteration/storage accounting remain applicable. No generic QFT circuit, new phase domain, primitive, native gate or constitutional guarantee is introduced.
+
+All first sources and hashes below were written before any source check and before implementation edits. Positive expectations describe the proposed contract, not current support. Parser/category refusals of negative programs do not establish downstream index, staging or cycle enforcement. Independent small Z/S/T complex/reference tests will be separate from diagnostics. Source changes require a new complete attempt; retain raw before observations unchanged.
