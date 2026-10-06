@@ -213,3 +213,7 @@ tests/fixtures/authoring_sessions/default-construction-v030/observations-after/*
 tests/fixtures/review_v030alpha/hosted-ci-basis-failure-01/*-failure-01.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/*.stderr.txt -text -whitespace
+# Preserve hashed classical-function command streams, including libtest EOFs.
+tests/fixtures/frontend_v030/classical-functions/validation/*.stdout.txt -text -whitespace
+corpus/migrations/classical-functions-v030/python-tests-first.txt -text -whitespace
+corpus/migrations/classical-functions-v030/semantic-replay-first.stdout.txt -text -whitespace
