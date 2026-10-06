@@ -72,3 +72,12 @@ Both currently reach the actual finite-adapter unsupported-capability refusal.
 They are desired executable contracts, not implemented support or proofs.
 Future validation must retain the original forward requests, inverse ordering,
 zero-width owners and conditional relative phase against actual native artifacts.
+
+Two independently authored native-IR feasibility tests in
+`tests/classical_functions.rs` check the exact requested matrices before any
+adapter implementation. Native-valid forward/identity substitutes fail the
+inverse request; missing, unconditional or reversed scalar phases fail the
+controlled request. The latter retains a separate zero-width owner through
+split/control/join. Both actual Rust toolchains pass these tests. This shows
+representability in the existing native profile, not source translation support.
+The first sources and their actual unsupported outputs remain unchanged.

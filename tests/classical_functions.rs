@@ -1700,3 +1700,186 @@ fn meaning_is_still_a_static_target_and_not_an_ordinary_runtime_function() {
     let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
     assert!(error.to_string().contains("Meaning"), "{error}");
 }
+
+// Pre-implementation feasibility checks use independently authored native IR,
+// never the unsupported source adapter as their oracle. Source acceptance and
+// transformed source replay remain separate work under the recorded contract.
+#[test]
+fn inverse_access_target_has_an_exact_native_realization_and_refuses_forward_phase() {
+    use qleisli::contract::{
+        BasisType, DEFAULT_EXACT_WORK,
+        exact::{Budget, Exact, Matrix},
+    };
+    use qleisli::interchange::{
+        self, RootInterface, Version,
+        finite_leaf::{UnitaryBoundary, check_unitary},
+    };
+    use qleisli::ir::*;
+    let parsed = ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        include_str!(
+            "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli"
+        )
+        .into(),
+    )]))
+    .unwrap();
+    let required = parsed.finite_meaning_target("main::Inverse").unwrap();
+    assert_eq!(required.signature(), &BasisType::Bit);
+    let independent = Matrix::new(
+        2,
+        2,
+        vec![Exact::one(), Exact::zero(), Exact::zero(), Exact::phase(7)],
+    )
+    .unwrap();
+    assert_eq!(
+        required
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap(),
+        independent
+    );
+    for phase in [7, 1, 0] {
+        let input = QuantumPort {
+            token: TokenId(0),
+            shape: BasisShape::BIT,
+            wires: vec![WireId(9)],
+        };
+        let output = QuantumPort {
+            token: TokenId(1),
+            ..input.clone()
+        };
+        let raw = RawProgram {
+            quantum_inputs: vec![input.clone()],
+            classical_inputs: vec![],
+            operations: vec![RawOp::ApplyUnitary {
+                input: input.token,
+                output: output.token,
+                steps: vec![CircuitStep {
+                    controls: vec![],
+                    action: CircuitAction::Monomial {
+                        indices: vec![0],
+                        permutation: vec![0, 1],
+                        phases: vec![0, phase],
+                    },
+                }],
+            }],
+            quantum_outputs: vec![output.token],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let accepted = kernel().accept_raw(raw).unwrap();
+        let bytes = interchange::export(
+            &accepted,
+            Some(&RootInterface {
+                input: BasisType::Bit,
+                output: BasisType::Bit,
+            }),
+            Version::V2,
+        )
+        .unwrap();
+        let boundary = UnitaryBoundary::new(BasisType::Bit, input, output).unwrap();
+        let checked = check_unitary(
+            &bytes,
+            &boundary,
+            &independent,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        );
+        if phase == 7 {
+            checked.unwrap();
+        } else {
+            assert_eq!(checked.unwrap_err().code, "contract");
+        }
+    }
+}
+
+#[test]
+fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phase() {
+    use qleisli::contract::{
+        BasisType, DEFAULT_EXACT_WORK,
+        exact::{Budget, Exact, Matrix},
+    };
+    use qleisli::interchange::{
+        self, RootInterface, Version,
+        finite_leaf::{UnitaryBoundary, check_unitary},
+    };
+    use qleisli::ir::*;
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), include_str!(
+        "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli"
+    ).into())])).unwrap();
+    let required = parsed.finite_meaning_target("main::Conditional").unwrap();
+    let signature = BasisType::pair(BasisType::Bit, BasisType::Unit);
+    assert_eq!(required.signature(), &signature);
+    let independent = Matrix::new(
+        2,
+        2,
+        vec![Exact::one(), Exact::zero(), Exact::zero(), Exact::phase(1)],
+    )
+    .unwrap();
+    assert_eq!(
+        required
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap(),
+        independent
+    );
+    for (zero_phase, one_phase) in [(false, true), (true, true), (false, false), (true, false)] {
+        let input = QuantumPort {
+            token: TokenId(0),
+            shape: BasisShape::BIT,
+            wires: vec![WireId(9)],
+        };
+        let output = QuantumPort {
+            token: TokenId(5),
+            ..input.clone()
+        };
+        let phase = || vec![UnitaryStep::ScalarPhase(ScalarPhase::EighthTurn)];
+        let raw = RawProgram {
+            quantum_inputs: vec![input.clone()],
+            classical_inputs: vec![],
+            operations: vec![
+                RawOp::Split {
+                    input: TokenId(0),
+                    left: TokenId(1),
+                    right: TokenId(2),
+                    left_bits: 1,
+                },
+                RawOp::QuantumIf {
+                    control: TokenId(1),
+                    target: TokenId(2),
+                    control_out: TokenId(3),
+                    target_out: TokenId(4),
+                    zero_ops: if zero_phase { phase() } else { vec![] },
+                    one_ops: if one_phase { phase() } else { vec![] },
+                },
+                RawOp::Join {
+                    left: TokenId(3),
+                    right: TokenId(4),
+                    output: TokenId(5),
+                },
+            ],
+            quantum_outputs: vec![output.token],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let accepted = kernel().accept_raw(raw).unwrap();
+        let bytes = interchange::export(
+            &accepted,
+            Some(&RootInterface {
+                input: signature.clone(),
+                output: signature.clone(),
+            }),
+            Version::V2,
+        )
+        .unwrap();
+        let boundary = UnitaryBoundary::new(signature.clone(), input, output).unwrap();
+        let checked = check_unitary(
+            &bytes,
+            &boundary,
+            &independent,
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        );
+        if !zero_phase && one_phase {
+            checked.unwrap();
+        } else {
+            assert_eq!(checked.unwrap_err().code, "contract");
+        }
+    }
+}
