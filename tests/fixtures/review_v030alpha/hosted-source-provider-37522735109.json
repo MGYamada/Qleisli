@@ -1,0 +1,60 @@
+{
+  "format": "qleisli.hosted-source-provider-regression.v1",
+  "ci_run": 37522735109,
+  "ci_head": "7c27ab50e5726aeaa2985d49beac7763171e5f2d",
+  "ci_url": "https://github.com/MGYamada/Qleisli/actions/runs/37522735109",
+  "conclusion": "failure",
+  "failed_producers": [
+    "check-rust",
+    "check-rust-msrv",
+    "check-lean-kernel",
+    "check-distribution"
+  ],
+  "successful_producers": [
+    "check-lean",
+    "check-macos-source",
+    "check-interop",
+    "check-docs"
+  ],
+  "failure": "The mixed_booleans retained closed provider source now lowers successfully; the old rejection-only test called unwrap_err and panicked. All four failed producers report this same test. No producer failure or aggregate failure is relabeled success.",
+  "selected_actual_failure_lines": [
+    "check-lean-kernel\tRun all retained native comparisons with bounded parallelism\t2026-10-06T20:18:31.5444079Z failed: native-acceptance (213.0s)",
+    "check-lean-kernel\tRun all retained native comparisons with bounded parallelism\t2026-10-06T20:18:31.6611178Z thread 'unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target' (84489) panicked at tests/mixed_booleans.rs:379:39:",
+    "check-rust-msrv\tRun cargo +1.85.0 test --all-targets\t2026-10-06T20:19:06.2744055Z thread 'unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target' panicked at tests/mixed_booleans.rs:379:39:",
+    "check-rust\tRun cargo +1.98.1 test --all-targets\t2026-10-06T20:12:38.0678270Z thread 'unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target' (117183) panicked at tests/mixed_booleans.rs:379:39:",
+    "check-distribution\tVerify clean package and complete source archive\t2026-10-06T20:19:56.1361857Z     unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target"
+  ],
+  "full_log_sha256": "4b10352cb85984c57359334a535d27a919074a6b258231a1b7c4bcff0d5ced67",
+  "full_log_policy": "Full log retained in /private/tmp, not copied into fixtures because successful RawSourceProposal debug output expands immutable source graphs. Selected actual failure lines are retained here.",
+  "source": {
+    "path": "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider/main.qli",
+    "sha256": "a3cb251a195520e6843ce5b58a29f29c3efbc0dbfec5d46cd5a2d03df0fac83f",
+    "change": "none; source and historical observations unchanged"
+  },
+  "repair": {
+    "path": "tests/mixed_booleans.rs",
+    "sha256": "2e86bed658b52152dad07746cc8ed7a2123a2168973a8488db727e2903d5fa18",
+    "behavior": "Retain fine-phase, packed-bits and runtime-if refusals. Require actual native acceptance, independent source-step comparison and deterministic measured 1 from the original closed X provider. The finite endpoint still checks the same source independently.",
+    "latest_targeted": {
+      "session": 54662,
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0
+    },
+    "msrv_targeted": {
+      "session": 92710,
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0
+    },
+    "format_exit_code": 0,
+    "broadened_validation": "Fresh all-target runs are live under sessions 21702 and 8478. Their terminal results must be inspected before claiming completion; this historical first repair packet does not claim success."
+  },
+  "limits": [
+    "No production code, acceptance rule, native definition or proof changed in the repair.",
+    "Targeted testing cannot supply full CI, full constitutional certification or release approval.",
+    "No skipped original criterion, new guarantee or completed Issue is claimed."
+  ]
+}

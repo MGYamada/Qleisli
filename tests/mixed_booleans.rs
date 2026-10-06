@@ -373,7 +373,7 @@ fn representable_phases_match_independent_exact_targets_and_interference() {
 
 #[test]
 fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_target() {
-    for name in ["fine-phase", "provider", "packed-bits"] {
+    for name in ["fine-phase", "packed-bits"] {
         let text = source("counterexamples", name);
         let graph = elaborate(&text, "main::f", BTreeMap::new());
         let error = graph.lower_raw().unwrap_err();
@@ -381,6 +381,15 @@ fn unsupported_capabilities_remain_explicit_instead_of_weakening_the_selected_ta
         assert_eq!(error.module(), Some("main"), "{name}: {error}");
         assert!(error.span().end > error.span().start, "{name}: {error}");
     }
+    // The retained provider source is now supported by the closed-operation
+    // adapter. Require native acceptance, independent source replay and its
+    // intended observed result instead of the historical target refusal.
+    let provider = elaborate(
+        &source("counterexamples", "provider"),
+        "main::f",
+        BTreeMap::new(),
+    );
+    distribution(&accept(&provider), &[(&[true], 1.0)]);
     let text = source("counterexamples", "runtime-if");
     let program = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
     assert_eq!(program.source("main"), Some(text.as_str()));
