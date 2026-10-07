@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reclaim the Python host's POSIX process session after completion or timeout,
+  including native checkers which use separate process groups. Keep cleanup
+  bounded, preserve timeout rejection, and leave unrelated jobs untouched.
 - Reject malformed Python host responses with boolean/floating version fields,
   duplicate JSON keys, non-finite numbers or excessive JSON nesting; retain
   fresh native verification for every public operation.

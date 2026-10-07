@@ -7,8 +7,10 @@ import json
 import math
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
+import time
 
 __version__ = "0.3.0-alpha"
 __all__ = ["Client", "Program", "QleisliError"]
@@ -60,6 +62,60 @@ def _bytes(value, limit):
     return data
 
 
+def _finish_process(process):
+    """Stop the owned POSIX session, including the checker's separate group.
+
+    This contains ordinary descendants, not a program deliberately escaping
+    its session. Windows retains direct-child cleanup pending a job-object API.
+    """
+    stopped = set()
+    try:
+        if os.name == "posix":
+            deadline = time.monotonic() + 2
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise OSError("connection descendants did not stop")
+                listing = subprocess.run(["ps", "-e", "-o", "pid=,stat="],
+                    capture_output=True, text=True, check=True, timeout=remaining)
+                members = []
+                for line in listing.stdout.splitlines():
+                    pid, state = line.split()
+                    pid = int(pid)
+                    try:
+                        if os.getsid(pid) == process.pid:
+                            members.append((pid, state))
+                    except ProcessLookupError:
+                        pass
+                    except PermissionError:
+                        # A process belonging to another user is not ours.
+                        pass
+                # communicate() may have reaped the leader. If that PID now
+                # exists again, its session is new and must not be signalled.
+                if process.returncode is not None and any(pid == process.pid for pid, _ in members):
+                    break
+                for pid, _ in members:
+                    try:
+                        if os.getsid(pid) == process.pid:
+                            os.kill(pid, signal.SIGSTOP)
+                            stopped.add(pid)
+                    except ProcessLookupError:
+                        pass
+                # Re-scan after stopping every member. A child can start its
+                # own group or fork before receiving STOP, but not after it.
+                if all(state.startswith(("T", "Z")) for _, state in members):
+                    break
+    finally:
+        for pid in stopped:
+            try:
+                if os.getsid(pid) == process.pid:
+                    os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        process.kill()
+        process.wait()
+
+
 class Client:
     def __init__(self, executable=None, *, timeout=60, lean_kernel=None):
         self.executable = os.fspath(executable or os.environ.get("QLEISLI_BIN", "qleisli"))
@@ -72,11 +128,16 @@ class Client:
 
     def _process(self, args, data=None):
         try:
-            return subprocess.run(args, input=data, capture_output=True, timeout=self.timeout,
-                                  check=False)
+            with subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, start_new_session=os.name == "posix") as process:
+                try:
+                    stdout, stderr = process.communicate(data, timeout=self.timeout)
+                    return subprocess.CompletedProcess(args, process.returncode, stdout, stderr)
+                finally:
+                    _finish_process(process)
         except subprocess.TimeoutExpired as e:
             raise _error("limit", "connection process timed out") from e
-        except OSError as e:
+        except (OSError, subprocess.SubprocessError) as e:
             raise _error("connection", str(e)) from e
 
     def _call(self, action, format, *, data=None, path="-", shots=None, seed=None):

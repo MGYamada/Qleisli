@@ -34,6 +34,15 @@ then pass the native Lean verifier. `QleisliError.diagnostics` retains structure
 diagnostics. Result bit lists keep declared output order; probabilities are
 numerical diagnostics and samples are local simulations, not device results.
 
+On POSIX systems the host uses the system `ps` command to reclaim its private
+process session, including native checkers in separate process groups. The
+per-process `timeout` is followed by a cleanup window of at most two seconds
+for descendant discovery and stopping. Successful and failed calls also reclaim
+descendants; unavailable process inspection is an explicit connection failure.
+This contains ordinary descendants, not programs deliberately escaping their
+session. Non-POSIX systems currently reclaim the direct child only; complete
+process-tree containment there requires a platform job API.
+
 `python -m qleisli INPUT --input=qasm|qir|qirf|qli --action=check|run|sample|emit-qasm|emit-qir|emit-ir`
 provides a JSON command-line host. Sampling requires `--shots` and `--seed`.
 Each operation rechecks the actual artifact. Mutating a Python object or its

@@ -8,6 +8,7 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from unittest.mock import patch
 
@@ -17,6 +18,56 @@ from qleisli import Client, QleisliError
 
 
 class HostBoundary(unittest.TestCase):
+    @unittest.skipUnless(os.name == 'posix', 'POSIX session containment')
+    def test_process_completion_reclaims_descendants_in_separate_groups(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            child = ('import os,pathlib,sys,time; '
+                     'pathlib.Path(sys.argv[1]).write_text(str(os.getpid())); time.sleep(10)')
+            parent = ('import pathlib,subprocess,sys,time; '
+                      'subprocess.Popen([sys.executable,"-c",sys.argv[1],sys.argv[2]], '
+                      'process_group=0,stdin=subprocess.DEVNULL,stdout=None if sys.argv[3]=="pipes" else subprocess.DEVNULL,stderr=subprocess.DEVNULL); '
+                      '\nwhile not pathlib.Path(sys.argv[2]).exists(): time.sleep(.005)\n'
+                      'time.sleep(10) if sys.argv[3]=="wait" else None\n'
+                      'sys.exit(7 if sys.argv[3]=="fail" else 0)')
+            # An unrelated job must remain alive through every cleanup.
+            with subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(10)']) as unrelated:
+                try:
+                    for case in ['ok', 'fail', 'wait', 'pipes']:
+                        with self.subTest(case=case):
+                            pidfile = root / case
+                            started = time.monotonic()
+                            try:
+                                args = [sys.executable, '-c', parent, child, str(pidfile), case]
+                                if case in ['wait', 'pipes']:
+                                    with self.assertRaises(QleisliError) as failure:
+                                        Client(timeout=1)._process(args, b'x' * 131072)
+                                    self.assertEqual(failure.exception.diagnostics[0]['code'], 'limit')
+                                else:
+                                    result = Client(timeout=1)._process(args)
+                                    self.assertEqual(result.returncode, 7 if case == 'fail' else 0)
+                                self.assertLess(time.monotonic() - started, 4)
+                                pid = int(pidfile.read_text())
+                                deadline = time.monotonic() + 1
+                                while True:
+                                    state = subprocess.run(['ps', '-p', str(pid), '-o', 'stat='],
+                                        capture_output=True, text=True, timeout=1)
+                                    self.assertFalse(state.stderr, state.stderr)
+                                    if not state.stdout.strip() or state.stdout.lstrip().startswith('Z'):
+                                        break
+                                    self.assertLess(time.monotonic(), deadline, state.stdout)
+                                    time.sleep(.005)
+                                self.assertIsNone(unrelated.poll())
+                            finally:
+                                if pidfile.exists():
+                                    try:
+                                        os.kill(int(pidfile.read_text()), 9)
+                                    except ProcessLookupError:
+                                        pass
+                finally:
+                    unrelated.kill()
+                    unrelated.wait()
+
     def test_malformed_json_response_cannot_become_host_success(self):
         client = Client('unused')
         valid = dict(format='qleisli.result', version=1, command='interop check',

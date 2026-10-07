@@ -10,6 +10,7 @@ from current_source_fixtures import current_source_fixture
 import subprocess
 import sys
 import tempfile
+import time
 import unittest
 from dataclasses import replace
 
@@ -25,6 +26,39 @@ class Connections(unittest.TestCase):
     def setUp(self):
         self.client = Client(EXE)
         self.qir = (FIXTURES / "independent.ll").read_text()
+
+    @unittest.skipUnless(os.name == 'posix', 'POSIX session containment')
+    def test_timeout_reclaims_the_actual_rust_native_process_group(self):
+        artifact = self.client.from_openqasm('OPENQASM 3.0;').artifact
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            pidfile = root / 'pid'
+            checker = root / 'waiting-checker'
+            checker.write_text(f'#!{sys.executable}\nimport os,pathlib,time\n'
+                f'pathlib.Path({str(pidfile)!r}).write_text(str(os.getpid()))\n'
+                'time.sleep(10)\n')
+            checker.chmod(0o700)
+            try:
+                with self.assertRaises(QleisliError) as failure:
+                    Client(EXE, lean_kernel=checker, timeout=1).from_ir(artifact)
+                self.assertEqual(failure.exception.diagnostics[0]['code'], 'limit')
+                self.assertTrue(pidfile.exists(), 'timeout must reach the actual native checker')
+                pid = int(pidfile.read_text())
+                deadline = time.monotonic() + 1
+                while True:
+                    state = subprocess.run(['ps', '-p', str(pid), '-o', 'stat='],
+                        capture_output=True, text=True, timeout=1)
+                    self.assertFalse(state.stderr, state.stderr)
+                    if not state.stdout.strip() or state.stdout.lstrip().startswith('Z'):
+                        break
+                    self.assertLess(time.monotonic(), deadline, state.stdout)
+                    time.sleep(.005)
+            finally:
+                if pidfile.exists():
+                    try:
+                        os.kill(int(pidfile.read_text()), 9)
+                    except ProcessLookupError:
+                        pass
 
     def test_qir_reader_cannot_be_replaced_by_current_directory_package(self):
         with tempfile.TemporaryDirectory() as directory:
