@@ -78,7 +78,10 @@ fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
         .unwrap();
     assert_eq!(output.status.code(), Some(1), "{output:?}");
     let text = String::from_utf8(output.stderr).unwrap();
-    assert!(text.contains("could not write selected source result"), "{text}");
+    assert!(
+        text.contains("could not write selected source result"),
+        "{text}"
+    );
     assert!(!text.contains("panicked"), "{text}");
 }
 
