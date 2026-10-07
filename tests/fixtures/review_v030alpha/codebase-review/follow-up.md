@@ -64,4 +64,17 @@ The regression evidence and source hashes are in `process-lifetime.json`.
 Earlier local full Rust/MSRV, native, distribution, Lean and book results retain
 their original revisions in `validation.json`; they are not final-commit passes.
 
+## First hosted integration observation
+
+Run [37611436412](https://github.com/MGYamada/Qleisli/actions/runs/37611436412)
+for `6bd9d62ec3dbde1c01e62b0a55a975ae1611118d` failed in the `changes`
+preflight. The runner unit test mocked HEAD as `a` but inherited the real
+`GITHUB_SHA`, so it stopped before the deliberately failing child command.
+The tool-mismatch test also failed for the wrong reason without detecting it.
+Both tests now set their event identity explicitly; a separate regression
+requires a mismatching identity to reject before tool probes or commands.
+The production identity check is unchanged. All eight preflight scripts pass
+locally with `GITHUB_ACTIONS=true` and an unrelated `GITHUB_SHA` supplied.
+The failed hosted run remains failed; it was not retried or counted as success.
+
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0

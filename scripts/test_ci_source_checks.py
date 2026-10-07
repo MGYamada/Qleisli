@@ -30,12 +30,28 @@ class SourceChecksTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / 'out'
             with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
+                  patch.dict(checks.os.environ, {'GITHUB_SHA': 'a'}),
                   patch.object(checks, 'toolchain', side_effect=ValueError('toolchain mismatch')),
                   patch.object(checks.run_native_ci, 'run_task') as run):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
                 run.assert_not_called()
             report = json.loads((output / 'results.json').read_text())
             self.assertEqual(report['status'], 'failed')
+            self.assertEqual(report['error'], 'toolchain mismatch')
+            self.assertTrue(all(row['status'] == 'not-run' for row in report['commands']))
+
+    def test_event_commit_mismatch_refuses_tool_probes_and_commands(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'out'
+            with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
+                  patch.dict(checks.os.environ, {'GITHUB_SHA': 'b'}),
+                  patch.object(checks, 'toolchain') as probe,
+                  patch.object(checks.run_native_ci, 'run_task') as run):
+                self.assertEqual(checks.execute('source-integrity', None, output), 1)
+                probe.assert_not_called()
+                run.assert_not_called()
+            report = json.loads((output / 'results.json').read_text())
+            self.assertEqual(report['error'], 'source checks differ from the exact event commit')
             self.assertTrue(all(row['status'] == 'not-run' for row in report['commands']))
 
     def test_tool_versions_are_checked_without_installing(self):
@@ -99,7 +115,9 @@ class SourceChecksTests(unittest.TestCase):
             log = root / 'failed.log'; log.write_text('actual failure')
             failed = dict(status='failed', log=str(log), error='exit 2', commands=[])
             with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
+                    patch.dict(checks.os.environ, {'GITHUB_SHA': 'a'}),
                     patch.object(checks, 'plan', return_value=commands),
+                    patch.object(checks, 'toolchain', return_value={}),
                     patch.object(checks.run_native_ci, 'run_task', return_value=failed)):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
             report = json.loads((output / 'results.json').read_text())
