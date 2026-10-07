@@ -26,6 +26,27 @@
       "reports": [
         "validation-control-unit.json"
       ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Migrate the remaining active local interference/amplification derivatives to the implemented canonical spellings; preserve complete original and first canonical sources. Prepared before checking.",
+      "sha256": {
+        "amplification.qli": "37afc386f26d13f7ba79359afaadce32d5dc480b2770c7ee543c82f65788248f",
+        "estimation.qli": "4489c14c5911fb258a83c846e19561bbaf0c8f0e13ec4d84b03710af8f935b93",
+        "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+        "interference.qli": "e1dc2ea3a9c451d18f7317ed7e9a007f96e551b02bf60a493f3be7addc11b123",
+        "main.qli": "39857de37cfade8388651e3b4d1328ea3cbf681ae8301c11c469d38f23c257b5",
+        "oracles.qli": "ff8228c32ea52db92e3df47ee56510d3508d64c896424fde6e742634c12d276f"
+      },
+      "observations": [
+        "observation-attempt-02-snapshot-check.json",
+        "observation-attempt-02-snapshot-run.json",
+        "observation-attempt-02-active-check.json",
+        "observation-attempt-02-active-run.json"
+      ],
+      "reports": [
+        "validation-active-examples.json"
+      ]
     }
   ]
 }

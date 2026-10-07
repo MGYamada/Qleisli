@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "run",
+    "examples/operation_algorithms"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "started_utc": "2026-10-07T04:25:13.429419+00:00",
+  "recorded_utc": "2026-10-07T04:25:14.105883+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "distribution": [
+        {
+          "bits": [
+            true,
+            false,
+            false,
+            true
+          ],
+          "probability": 1
+        }
+      ]
+    }
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,false,false,true],\"probability\":1}]}}\n",
+  "stderr": "",
+  "scope": "Actual current-CLI source acceptance/execution for the complete saved second snapshot or its active derivative. Native acceptance and small distributions are not a general source or algorithm theorem."
+}

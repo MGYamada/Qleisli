@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Migrate fixed operation-algorithm examples to canonical control, power and
+  inverse applications; retain independent phase/reference regressions and
+  correct the README's obsolete Bit spelling and tuple-tree equivalence.
+
 - Connect canonical `controlled(U)(c, q)` to finite lowering through existing
   checked circuits and native evidence, retaining eager order, exact types,
   access, both owners and phase on zero-width targets.

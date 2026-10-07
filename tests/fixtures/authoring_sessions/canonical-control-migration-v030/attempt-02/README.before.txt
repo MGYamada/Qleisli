@@ -13,16 +13,10 @@ These are ordinary experimental example APIs; no stdlib or core rule is added.
 | [oracles](oracles.qli): `Mark11` | Independent phase meaning from a unary pair-pattern basis function; `checked_op(mark11, Mark11)` checks the circuit against it with the existing exact function checker. |
 | [oracles](oracles.qli): `zero_reflection` | Same interface; R0 = 2 projector onto 00 − I. Its sign is the opposite of `mark00`, and matters under coherent control. |
 | [amplification](amplification.qli): `uniform`, `amplify_once`, `amplify_twice` | `uniform` is a whole-space H⊗H `Unitary`. The two `Iso` clients allocate A applied to zero, then apply G = (A R0 A†) O once/twice. Require `Apply(A)`, `Adjoint(A)`, `Apply(O)` on pair operations; return all data ownership. Arbitrary supplied operations do not imply a search-success theorem. |
-| [interference](interference.qli): `real_overlap`, `imaginary_overlap` | `Observe`; require `Controlled(U)` on `Op<Bit>`. Return meter `Bit` and remaining target owner. For target density matrix ρ, E[(-1)^meter] is Re Tr(ρU) or Im Tr(ρU), respectively. Measurement can correlate with the returned target. |
+| [interference](interference.qli): `real_overlap`, `imaginary_overlap` | `Observe`; require `Controlled(U)` on `Op<Bit>`. Return meter `CBit` and remaining target owner. For target density matrix ρ, E[(-1)^meter] is Re Tr(ρU) or Im Tr(ρU), respectively. Measurement can correlate with the returned target. |
 
-`phase3` returns `(Bit,Bit,Bit)` in low-weight-first order. Its flat product
-tree is distinct from `((Bit,Bit),Bit)`; equal width does not identify the
-types. The surrounding pair also retains the target's `Q<Bit>` owner.
-
-The shared bodies use `controlled(U)(c,q)`, `controlled(power(U,k))(c,q)` and
-`inverse(U)(q)`. Static specialization remains explicit in `[...]`; runtime
-application uses `(...)`. The fixed `qft2`/`qft3` calls are existing small
-operations, not a generic `qft<N>` implementation.
+`phase3` uses the flat result spelling `(CBit,CBit,CBit)`, which has exactly
+the previous type `((CBit,CBit),CBit)`. It preserves low-weight-first ordering.
 
 For an eigenstate with U eigenvalue exp(2πiθ), m-bit QPE gives integer y with
 probability `|Σ(r=0..2^m−1) exp(2πi r(θ−y/2^m))|² / 2^(2m)`.

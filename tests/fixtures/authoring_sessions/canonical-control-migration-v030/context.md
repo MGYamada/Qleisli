@@ -20,3 +20,9 @@ The existing finite capacities remain; no largest-size case is generated.
 The copied original example README is retained byte-for-byte as
 `attempt-01/README.before.txt`: its relative links belong to its original
 example directory. It is historical prose, not a new rendered chapter.
+
+The subsequent active-example migration is prepared as `attempt-02` before
+checking. It retains the same canonical QPE source and additionally translates
+the two interference clients and the two-iteration amplification description.
+The before-edit contract is Issue #33 comment 6030889219; the first snapshot
+and every original observation remain unchanged.
