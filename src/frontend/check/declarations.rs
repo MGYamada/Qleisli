@@ -154,14 +154,14 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             naturals.insert(
                 budget.key(formal.name.span, key)?,
                 Linear::variable_budgeted(key, formal.name.span, &mut |span, cells| {
-                    budget.sized_charge(span, cells)
+                    budget.preparation_charge(span, cells)
                 })?,
             );
         }
     }
     let context =
         Context::natural_refs_budgeted(naturals.keys(), decl.span, &mut |span, cells| {
-            budget.sized_charge(span, cells)
+            budget.preparation_charge(span, cells)
         })?;
     let mut scope = Scope {
         helpers: Rc::clone(&p.helpers),
@@ -182,7 +182,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
     if !scope.context.feasible_budgeted(
         decl.span,
         "while checking declared natural premises",
-        &mut |span, cells| budget.sized_charge(span, cells),
+        &mut |span, cells| budget.preparation_charge(span, cells),
     )? {
         return Err(SourceError::new(
             "size",
@@ -356,7 +356,7 @@ pub(super) fn scope(
                 scope.naturals.insert(
                     budget.key(span, &formal.key)?,
                     Linear::variable_budgeted(&formal.key, span, &mut |span, cells| {
-                        budget.sized_charge(span, cells)
+                        budget.preparation_charge(span, cells)
                     })?,
                 );
             }

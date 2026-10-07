@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Decouple common source arithmetic and preparation diagnostics from the sized
+  adapter while preserving bounded checking, error details and public error paths.
+
 - Reclaim the Python host's POSIX process session after completion or timeout,
   including native checkers which use separate process groups. Keep cleanup
   bounded, preserve timeout rejection, and leave unrelated jobs untouched.

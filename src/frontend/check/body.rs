@@ -815,7 +815,7 @@ impl Checker<'_, '_> {
             &end,
             span,
             "static fold requires start <= end",
-            &mut |span, cells| self.program.budget.sized_charge(span, cells),
+            &mut |span, cells| self.program.budget.preparation_charge(span, cells),
         )? {
             return Err(SourceError::new(
                 "size",
@@ -838,9 +838,9 @@ impl Checker<'_, '_> {
         let mut inner = scope.copy(&self.program.budget, span)?;
         inner.values.retain(|_, binding| !binding.ty.linear());
         let i = Linear::variable_budgeted(&key, span, &mut |span, cells| {
-            self.program.budget.sized_charge(span, cells)
+            self.program.budget.preparation_charge(span, cells)
         })?;
-        let mut charge = |span, cells| self.program.budget.sized_charge(span, cells);
+        let mut charge = |span, cells| self.program.budget.preparation_charge(span, cells);
         let one = Linear::constant_budgeted(1, span, &mut charge)?;
         let bounds = [
             start.sub_budgeted(&i, span, &mut charge)?,
@@ -851,7 +851,7 @@ impl Checker<'_, '_> {
         inner.context = inner
             .context
             .push_budgeted(&bounds, span, &mut |span, cells| {
-                self.program.budget.sized_charge(span, cells)
+                self.program.budget.preparation_charge(span, cells)
             })?;
         self.program.budget.charge(index.span, 1)?;
         inner.naturals.insert(key, i);

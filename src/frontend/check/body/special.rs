@@ -323,13 +323,13 @@ impl Checker<'_, '_> {
                         &b,
                         span,
                         "coherent lift cannot shrink its domain",
-                        &mut |span, cells| self.program.budget.sized_charge(span, cells),
+                        &mut |span, cells| self.program.budget.preparation_charge(span, cells),
                     )? && scope.context.proves_le_budgeted(
                         &b,
                         &a,
                         span,
                         "while checking coherent lift width",
-                        &mut |span, cells| self.program.budget.sized_charge(span, cells),
+                        &mut |span, cells| self.program.budget.preparation_charge(span, cells),
                     )?
                 }
                 _ => false,
@@ -343,7 +343,7 @@ impl Checker<'_, '_> {
     }
     fn basis_width(&self, ty: &Ty, span: Span) -> Result<Option<Linear>> {
         self.tick(span)?;
-        let mut charge = |span, cells| self.program.budget.sized_charge(span, cells);
+        let mut charge = |span, cells| self.program.budget.preparation_charge(span, cells);
         Ok(match &ty.kind {
             Kind::Unit => Some(Linear::constant_budgeted(0, span, &mut charge)?),
             Kind::Bit => Some(Linear::constant_budgeted(1, span, &mut charge)?),

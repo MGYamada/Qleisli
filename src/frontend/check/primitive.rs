@@ -164,7 +164,7 @@ impl Primitive {
             }
         };
         budget.charge(span, cells)?;
-        let mut charge = |span, cells| budget.sized_charge(span, cells);
+        let mut charge = |span, cells| budget.preparation_charge(span, cells);
         let qbit = || Ty::quantum(Ty::bit());
         let (input, output) = match self {
             Self::H

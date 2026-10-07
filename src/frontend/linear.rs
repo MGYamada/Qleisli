@@ -1,7 +1,8 @@
 //! Bounded exact linear implication by rational relaxation of integer constraints.
 //! Unsatisfiability proves an obligation; incomplete search never supplies evidence.
-use super::ast::{BinderKey, Compare};
-use super::{Error, Result, Span};
+use super::ast::{Compare, Span};
+use super::error::{Error, Result};
+use super::resolve::locals::BinderKey;
 use std::collections::{BTreeMap, BTreeSet};
 
 /// Attach parser provenance at an obligation boundary, keeping the algebraic

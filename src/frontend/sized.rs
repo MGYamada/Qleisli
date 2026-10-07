@@ -7,7 +7,6 @@
 mod ast;
 mod check;
 mod elaborate;
-pub(super) mod linear;
 mod lower;
 mod meaning;
 mod parser;
@@ -18,11 +17,11 @@ mod raw;
 use super::resolve::{DefId, Failure, FailureKind};
 use super::source::{self, ParsePolicy, Source, SourceCollection};
 use std::collections::BTreeMap;
-use std::fmt;
 use std::path::PathBuf;
 use std::sync::Arc;
 
 pub use super::ast::Span;
+pub use super::error::Error;
 pub use elaborate::{
     ElaboratedProgram, HierarchyEligibility, SourceDefinition, SourceOperation, SourceStep,
     SourceType, SourceValue,
@@ -32,66 +31,11 @@ pub use lower::{
 };
 pub use raw::{CheckedSourceMeanings, RawSourceProposal, SourceMeaningCheck};
 
-pub(in crate::frontend) type Result<T> = std::result::Result<T, Error>;
+use super::error::Result;
 pub use qpe::QpeBindingProposal;
 const MAX_MODULES: usize = 64;
 const MAX_SOURCE_BYTES: usize = 65_536;
 const MAX_TOTAL_BYTES: usize = 1_048_576;
-
-/// A preparation failure, with a half-open byte span in the retained module.
-#[derive(Clone, Debug, PartialEq, Eq)]
-pub struct Error {
-    code: &'static str,
-    module: Option<String>,
-    span: Span,
-    message: String,
-}
-impl Error {
-    pub(in crate::frontend) fn new(
-        code: &'static str,
-        span: Span,
-        message: impl Into<String>,
-    ) -> Self {
-        Self {
-            code,
-            module: None,
-            span,
-            message: message.into(),
-        }
-    }
-    fn in_module(mut self, module: &str) -> Self {
-        if self.module.is_none() {
-            self.module = Some(module.into());
-        }
-        self
-    }
-    pub fn code(&self) -> &str {
-        self.code
-    }
-    pub fn module(&self) -> Option<&str> {
-        self.module.as_deref()
-    }
-    pub fn span(&self) -> Span {
-        self.span
-    }
-    pub fn message(&self) -> &str {
-        &self.message
-    }
-}
-impl fmt::Display for Error {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(
-            f,
-            "{}:{}..{}: {}: {}",
-            self.module.as_deref().unwrap_or("<source>"),
-            self.span.start,
-            self.span.end,
-            self.code,
-            self.message
-        )
-    }
-}
-impl std::error::Error for Error {}
 
 impl From<super::check::SourceError> for Error {
     fn from(error: super::check::SourceError) -> Self {

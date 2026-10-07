@@ -181,7 +181,7 @@ impl Checker<'_, '_> {
                     SourceError::new("static", arg.span, "expected natural argument")
                 })?;
                 Ok(value.copy_budgeted(arg.span, &mut |span, cells| {
-                    self.program.budget.sized_charge(span, cells)
+                    self.program.budget.preparation_charge(span, cells)
                 })?)
             }
             _ => Err(SourceError::new(
@@ -352,7 +352,7 @@ impl Checker<'_, '_> {
                 if counterexample.feasible_budgeted(
                     span,
                     "while checking callee natural premise",
-                    &mut |span, cells| self.program.budget.sized_charge(span, cells),
+                    &mut |span, cells| self.program.budget.preparation_charge(span, cells),
                 )? {
                     return Err(SourceError::new(
                         "size",
@@ -373,7 +373,7 @@ impl Checker<'_, '_> {
                         old,
                         span,
                         "self-recursion must not increase any natural parameter",
-                        &mut |span, cells| self.program.budget.sized_charge(span, cells),
+                        &mut |span, cells| self.program.budget.preparation_charge(span, cells),
                     )? {
                         return Err(SourceError::new(
                             "cycle",
@@ -383,14 +383,14 @@ impl Checker<'_, '_> {
                     }
                     let successor =
                         new.add_budgeted(&Linear::constant(1), span, &mut |span, cells| {
-                            self.program.budget.sized_charge(span, cells)
+                            self.program.budget.preparation_charge(span, cells)
                         })?;
                     decreases |= scope.context.proves_le_budgeted(
                         &successor,
                         old,
                         span,
                         "while checking recursive decrease",
-                        &mut |span, cells| self.program.budget.sized_charge(span, cells),
+                        &mut |span, cells| self.program.budget.preparation_charge(span, cells),
                     )?;
                 }
             }

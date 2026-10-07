@@ -12,9 +12,9 @@ mod static_helpers;
 
 use super::ast::{self, FnKind, Span};
 use super::effects::{BodyEffects, FunctionEffect};
+pub(super) use super::linear::{Context, Linear};
 use super::resolve::locals::{BinderKey, Index, Table};
 use super::resolve::{self, DefId, Resolution};
-pub(super) use super::sized::linear::{Context, Linear};
 use super::types::{Kind, Type};
 use std::cell::Cell;
 use std::collections::{BTreeMap, BTreeSet};
@@ -136,8 +136,8 @@ impl SourceError {
         self
     }
 }
-impl From<super::sized::Error> for SourceError {
-    fn from(error: super::sized::Error) -> Self {
+impl From<super::error::Error> for SourceError {
+    fn from(error: super::error::Error) -> Self {
         let code = match error.code() {
             "limit" => "limit",
             "size" => "size",
@@ -202,9 +202,9 @@ impl Budget {
         self.remaining.set(remaining);
         Ok(())
     }
-    pub fn sized_charge(&self, span: Span, cells: usize) -> super::sized::Result<()> {
+    pub fn preparation_charge(&self, span: Span, cells: usize) -> super::error::Result<()> {
         self.charge(span, cells)
-            .map_err(|e| super::sized::Error::new(e.code, e.span, e.message))
+            .map_err(|e| super::error::Error::new(e.code, e.span, e.message))
     }
     fn ty(&self, span: Span, ty: &Ty) -> Result<usize> {
         self.charge(span, 1)?;
@@ -280,7 +280,9 @@ impl Budget {
         Ok(copied)
     }
     fn copy_context(&self, span: Span, context: &Context) -> Result<Context> {
-        Ok(context.copy_budgeted(span, &mut |span, cells| self.sized_charge(span, cells))?)
+        Ok(context.copy_budgeted(span, &mut |span, cells| {
+            self.preparation_charge(span, cells)
+        })?)
     }
 }
 
@@ -398,7 +400,9 @@ impl Scope {
         for (key, value) in &self.naturals {
             naturals.insert(
                 budget.key(span, key)?,
-                value.copy_budgeted(span, &mut |span, cells| budget.sized_charge(span, cells))?,
+                value.copy_budgeted(span, &mut |span, cells| {
+                    budget.preparation_charge(span, cells)
+                })?,
             );
         }
         let mut bases = BTreeMap::new();

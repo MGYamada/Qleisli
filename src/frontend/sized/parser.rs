@@ -38,7 +38,7 @@ struct Projection<'a, 'ast> {
 }
 impl Projection<'_, '_> {
     fn charge(&self, span: Span, cells: usize) -> Result<()> {
-        self.budget.sized_charge(span, cells)
+        self.budget.preparation_charge(span, cells)
     }
     fn binding(&self, name: &source::Ident) -> Result<BindingName> {
         let info = self.index.table.binder(self.index.binder(name));

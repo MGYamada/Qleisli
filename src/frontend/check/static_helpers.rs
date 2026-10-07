@@ -116,13 +116,13 @@ fn check(p: &Program<'_>, id: DefId) -> Result<StaticHelper> {
         naturals.insert(
             budget.key(parameter.name.span, key)?,
             Linear::variable_budgeted(key, parameter.name.span, &mut |s, c| {
-                budget.sized_charge(s, c)
+                budget.preparation_charge(s, c)
             })?,
         );
     }
     let context =
         Context::natural_refs_budgeted(naturals.keys(), declaration.span, &mut |s, c| {
-            budget.sized_charge(s, c)
+            budget.preparation_charge(s, c)
         })?;
     let mut scope = Scope {
         helpers: Rc::clone(&p.helpers),
@@ -148,7 +148,7 @@ fn check(p: &Program<'_>, id: DefId) -> Result<StaticHelper> {
     if !scope.context.feasible_budgeted(
         declaration.span,
         "while checking static helper premises",
-        &mut |s, c| budget.sized_charge(s, c),
+        &mut |s, c| budget.preparation_charge(s, c),
     )? {
         return Err(SourceError::new(
             "size",

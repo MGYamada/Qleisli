@@ -5,14 +5,14 @@ use super::super::resolve::locals::ResolvedUse;
 use super::super::types::{SourceTypeContext, Stage, TypeParameter};
 use super::*;
 
-pub(super) fn located(error: super::super::sized::Error, span: Span) -> SourceError {
+pub(super) fn located(error: super::super::error::Error, span: Span) -> SourceError {
     let mut error = SourceError::from(error);
     if error.span == Span::default() {
         error.span = span;
     }
     error
 }
-fn arithmetic_context(error: super::super::sized::Error, span: Span, context: &str) -> SourceError {
+fn arithmetic_context(error: super::super::error::Error, span: Span, context: &str) -> SourceError {
     let needs_context = error.span() == Span::default();
     let mut error = located(error, span);
     if needs_context {
@@ -52,7 +52,7 @@ fn natural_inner(
             "natural expression exceeds depth 128",
         ));
     }
-    let mut charge = |span, cells| budget.sized_charge(span, cells);
+    let mut charge = |span, cells| budget.preparation_charge(span, cells);
     let result = match &n.kind {
         NatKind::Call { callee, arguments } => {
             let id = static_helpers::target(index, callee)?;
@@ -193,7 +193,7 @@ pub(super) fn predicate(
     Ok(scope
         .context
         .compare_budgeted(a, p.comparison, b, truth, span, &mut |span, cells| {
-            budget.sized_charge(span, cells)
+            budget.preparation_charge(span, cells)
         })?)
 }
 
@@ -375,7 +375,7 @@ pub(super) fn substitute(
     budget.charge(span, cells)?;
     let result = ty.map_parts(
         &mut |n| {
-            let mut charge = |span, cells| budget.sized_charge(span, cells);
+            let mut charge = |span, cells| budget.preparation_charge(span, cells);
             n.substitute_budgeted(naturals, span, &mut charge)
                 .map_err(|error| arithmetic_context(error, span, "substituted callee obligation"))
         },
@@ -441,13 +441,13 @@ pub(super) fn equivalent(
                     b,
                     span,
                     "while checking type size equality",
-                    &mut |span, cells| budget.sized_charge(span, cells),
+                    &mut |span, cells| budget.preparation_charge(span, cells),
                 )? && context.proves_le_budgeted(
                     b,
                     a,
                     span,
                     "while checking type size equality",
-                    &mut |span, cells| budget.sized_charge(span, cells),
+                    &mut |span, cells| budget.preparation_charge(span, cells),
                 )?,
             )
         },
