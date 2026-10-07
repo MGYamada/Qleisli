@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add an isolated experimental Julia environment with pinned Cyclotomics.jl,
+  exact big-rational arithmetic checks and small Clifford/T matrix examples.
+
 - Preserve the refused operation-application authoring attempt as exact hashed
   history while checking the corrected project normally. Use an immutable
   checker fixtures for native framing, deadline and descendant tests, avoiding Linux executable
