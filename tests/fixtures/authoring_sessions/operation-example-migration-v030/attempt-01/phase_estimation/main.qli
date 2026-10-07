@@ -1,0 +1,9 @@
+use estimation::phase3;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+
+observe fn main() -> (((Bit, Bit), Bit), Bit) {
+    let (phase, q) = phase3(x(init0()));
+    (phase, measure_z(q))
+}

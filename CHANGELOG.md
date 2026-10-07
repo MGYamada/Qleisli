@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Migrate iterative/coherent phase-estimation, fixed order-finding and
+  operation-contract examples to canonical `controlled`, `power` and `inverse`
+  applications. Retain complete source/diagnostic snapshots and the existing
+  phase, reference, feedback and fixed-register oracles.
+- Update finite-profile regression expectations after canonical controlled
+  application became supported. Preserve the separate opaque-Basis barrier,
+  missing-access refusals and independent native phase/reference checks.
 - Lower constructed inverse applications such as `inverse(power(U,k))(q)`
   through existing checked Adjoint operation steps, preserving exact phase,
   zero-count input evaluation and the named/sealed inverse path.

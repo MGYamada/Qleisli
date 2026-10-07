@@ -1,0 +1,17 @@
+{
+  "format": "qleisli.active-example-migration-comparison",
+  "version": 1,
+  "baseline_commit": "67d8988efc9005d32d74e8b16297c71f0d8c9e14",
+  "cli": {
+    "path": "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "sha256": "2a2dd77b16005a8ab72477b3934fa1c730081fb47b1a2da5ed306c70c100fff2"
+  },
+  "kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+  },
+  "active_source_snapshot_identity": "All ten QLI sources and four edition manifests match the saved complete desired derivatives byte for byte.",
+  "observed_commands": 8,
+  "outcomes": "Four active checks and four active runs pass; exact decoded JSON agrees with the eight earlier snapshot observations, retaining floating-point residuals.",
+  "limits": "This is finite source/native execution evidence. Independent phase, reference, feedback, full-register and Meanings use existing Rust oracles. No new maximum input, generic QFT, source preservation theorem, constitutional guarantee, Issue closure or release approval."
+}

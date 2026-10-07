@@ -1,0 +1,88 @@
+{
+  "format": "qleisli.controlled-ci-expectation-repair",
+  "version": 1,
+  "recorded_utc": "2026-10-07T05:11:50.373119+00:00",
+  "baseline_commit": "67d8988efc9005d32d74e8b16297c71f0d8c9e14",
+  "hosted_failure": {
+    "run": 37572410484,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37572410484",
+    "reported_pr_head": "67d8988efc9005d32d74e8b16297c71f0d8c9e14",
+    "checked_merge": {
+      "parents": [
+        "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+        "67d8988efc9005d32d74e8b16297c71f0d8c9e14"
+      ],
+      "sha": "c8037699beeeb5750de0cb9e7aadd8e5349a9966",
+      "tree": "096192eddb7710b9beb465f9135426f0b7e20cb5"
+    },
+    "completed_failing_producers": {
+      "check-rust": 112633837638,
+      "check-rust-msrv": 112633837535,
+      "check-distribution": 112633837712
+    },
+    "cause": "Both common_source_provider_access positive controls retained the old finite controlled-expression refusal. Actual checking now correctly reaches the fixtures\u2019 separate opaque-Basis barrier at A.",
+    "logs": [
+      {
+        "external_path": "/private/tmp/qleisli-control-ci-rust-job.log",
+        "bytes": 86251,
+        "sha256": "cf3cbc0f61c9cdae97dce59cf08484a78a8e2239838472d03226c701a4be295d"
+      },
+      {
+        "external_path": "/private/tmp/qleisli-control-ci-msrv-job.log",
+        "bytes": 84339,
+        "sha256": "98229a9e47bda973d607820fec9fe815e5ebe9f9adbb8840600d41966a91d84b"
+      },
+      {
+        "external_path": "/private/tmp/qleisli-control-ci-distribution-job.log",
+        "bytes": 62512,
+        "sha256": "49cc65e7cfd41e507199c3415b017e44fd6b14bbbab1706f18b5f000b40a7e3b"
+      }
+    ],
+    "scope": "These are completed producer failures. They do not assert a final workflow conclusion or a result for the new repair commit."
+  },
+  "local_reproductions": [
+    {
+      "test_target": "common_source_provider_access",
+      "exit_code": 101,
+      "passed": 3,
+      "failed": 2,
+      "log": {
+        "external_path": "/private/tmp/qleisli-control-ci-reproduction.log",
+        "bytes": 2443,
+        "sha256": "7f95a7e4917d0f00a1d7a291dad76d602df688a871aaec05acb306263d72d70f"
+      }
+    },
+    {
+      "test_target": "sized_declarations::direct_formal_adjoint_and_controlled_slots_are_usable",
+      "exit_code": 101,
+      "passed": 0,
+      "failed": 1,
+      "cause": "The canonical formal controlled declaration succeeds; unwrap_err retained an obsolete refusal.",
+      "log": {
+        "external_path": "/private/tmp/qleisli-control-ci-sized-reproduction.log",
+        "bytes": 846,
+        "sha256": "4a1a8e6b04517db90ff13dbf48fefcb898710dc909b6d61bce2b652f567a0fbc"
+      }
+    }
+  ],
+  "repair": "Expect the exact unsupported opaque-Basis message and A span in the two deliberately ineligible fixtures; require successful finite checking of the actual controlled declaration in sized_declarations. Retain missing-kernel/access controls and the independent native phase/reference oracle.",
+  "repaired_targets": {
+    "tests": 16,
+    "failed": 0,
+    "log": {
+      "external_path": "/private/tmp/qleisli-control-ci-repaired-targets.log",
+      "bytes": 1900,
+      "sha256": "ece7e4d1e25e97a3d318a4c5c137e531e679bc34efbaf1b9d3f0ca0493f1de5e"
+    }
+  },
+  "tested_changed_sources": {
+    "tests/common_source_provider_access.rs": "4cb77c20c8d484d2292c10be513566a9d9fa7eb87bb2035c5745ab7be5715cdf",
+    "tests/sized_declarations.rs": "c96c4ed49aa80313f8d99a3ca194e75eadc6c541ff2117bd1e89fb7eb66c1484",
+    "examples/iterative_phase_estimation/iterative.qli": "d26a4202923edc3901c67986cf12f0676abf27870659ad1c4adb7fa5494ddbbf",
+    "examples/operation_contracts/main.qli": "93125e1ed0bc0187a1cbb06a63016c7532ae83d6ebc269fabf1dcb4a1478a1df",
+    "examples/phase_estimation/estimation.qli": "e595c1abd3af2c6735b4dc8cc717a04685ac19f4bb69e13533f51f119a3f5762",
+    "examples/order_finding/estimation.qli": "13028cc8d93923cb5126b39f65907746d927c1a50de22827f308cfb2b134a92b"
+  },
+  "full_local_validation": "tests/fixtures/authoring_sessions/operation-example-migration-v030/validation.json",
+  "scope": "Earlier limited 77-test validation omitted these targets. Both current full Rust target runs, Clippy and the source/native Python tests pass before push. No test was deleted or newly ignored, and no production rule or limit changed. Fresh hosted validation, constitutional proof discharges and release approval remain separate."
+}

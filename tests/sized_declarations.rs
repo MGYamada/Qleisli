@@ -297,21 +297,12 @@ fn direct_formal_adjoint_and_controlled_slots_are_usable() {
     check_project(&SourceRoot::new(inverse).0).unwrap();
     ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
 
-    // The existing finite control spelling reaches the same formal slot.
-    // Direct controlled application remains outside that lowering profile.
+    // Both finite spellings reach the same declared Controlled slot. The
+    // canonical application below also drives the independent native oracle.
     let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(finite_control).0).unwrap();
     let control = "pub fn control[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
-    let error = check_project(&SourceRoot::new(control).0).unwrap_err();
-    assert_eq!(error.code, ErrorCode::Unsupported, "{error}");
-    assert_eq!(
-        error.message,
-        "expression is outside the finite lowering profile"
-    );
-    assert_eq!(
-        &control[error.span.start..error.span.end],
-        "controlled(U)(c,q)"
-    );
+    check_project(&SourceRoot::new(control).0).unwrap();
 
     // This selected-only ordinary provider is T = diag(1, exp(i*pi/4)).
     // Expected coefficients below come from that equation, independently of

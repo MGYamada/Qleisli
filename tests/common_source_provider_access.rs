@@ -115,8 +115,8 @@ fn declared_paths_support_the_inverse_and_control_positive_controls() {
     );
     common_source_valid(
         source!("all-paths-controlled"),
-        "expression is outside the finite lowering profile",
-        "controlled(W)(c,q)",
+        "finite profile does not support opaque Basis parameters",
+        "A",
     );
 }
 
@@ -130,7 +130,7 @@ fn unused_actual_operations_still_constrain_the_conservative_wrapper() {
 fn closed_transparent_provider_keeps_its_conditional_control_path() {
     common_source_valid(
         source!("closed-provider-controlled"),
-        "expression is outside the finite lowering profile",
-        "controlled(W)(c,q)",
+        "finite profile does not support opaque Basis parameters",
+        "A",
     );
 }
