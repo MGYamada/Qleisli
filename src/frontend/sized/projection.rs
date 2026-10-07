@@ -1,4 +1,4 @@
-//! Temporary projection of the single common AST into the sized checker profile.
+//! Body projection for selected-source specialization after the common judgment.
 //!
 //! This module never reads source text or tokens. Its located rejections are
 //! profile restrictions, not a competing grammar or verification authority.
@@ -22,7 +22,7 @@ pub(super) fn project_declaration(
     index: &Index<'_>,
     helpers: &StaticHelpers,
     budget: &Budget,
-) -> Result<Function> {
+) -> Result<ProjectedBody> {
     Projection {
         index,
         helpers,
@@ -52,7 +52,7 @@ impl Projection<'_, '_> {
         )?;
         Ok(BindingName {
             name: name.text.clone(),
-            key: Some(info.key.clone()),
+            key: info.key.clone(),
             shadowed: info.shadowed.map(|id| self.index.table.key(id).clone()),
         })
     }
@@ -67,7 +67,7 @@ impl Projection<'_, '_> {
         )?;
         Ok(Reference {
             name: name.into(),
-            site: Some(site),
+            site,
             local: local.cloned(),
         })
     }
@@ -132,7 +132,7 @@ impl Projection<'_, '_> {
             source::Count::Power(n) => Count::Power(self.natural(n)?),
         })
     }
-    fn function(&self, declaration: &source::Decl) -> Result<Function> {
+    fn function(&self, declaration: &source::Decl) -> Result<ProjectedBody> {
         self.charge(declaration.span, 1)?;
         match declaration.kind {
             source::FnKind::Unitary
@@ -165,9 +165,7 @@ impl Projection<'_, '_> {
             }
             _ => return Err(unsupported(declaration.span, "requires a runtime block")),
         };
-        Ok(Function {
-            lexical: None,           // Attach the one authoritative Arc<Table> after finish.
-            effect: Effect::Unitary, // Private typed-pass placeholder, never published.
+        Ok(ProjectedBody {
             arguments,
             body,
             span: declaration.span,
@@ -442,7 +440,7 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
         let reference = self.ident(name)?;
         {
             let index = self.index;
-            let usage = index.table.usage(reference.site.unwrap());
+            let usage = index.table.usage(reference.site);
             if !matches!(usage.target, ResolvedUse::Local(id) if index.table.binder(id).kind == crate::frontend::resolve::locals::BindingKind::StaticBasis)
             {
                 return Err(Error::new(

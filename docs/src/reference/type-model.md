@@ -13,6 +13,15 @@ Meaning evidence integration and general source preservation remain in progress.
 [foundation packet](../design/type-foundation.md) preserves the original
 experiments; their historical failures are not current acceptance results.
 
+The common frontend is the only source grammar and source judgment. The Rust
+`frontend::sized` namespace and `sized` CLI remain compatibility entry points
+for selected-source specialization and lowering, not an independent frontend.
+Their body projection consumes original resolved identities and the completed
+common lexical/effect facts. A projection restriction is recorded per declaration;
+it does not excuse checking an unused definition, either branch or an empty loop.
+Closed host bindings, concrete capacity, emitted evidence and native acceptance
+still have their own checks after that common judgment.
+
 ## One finite type universe
 
 The initial ordinary finite types are `Unit`, `Bit`, `Bits<n>` and ordered

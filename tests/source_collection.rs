@@ -6,6 +6,48 @@ use qleisli::frontend::sized::ParsedProgram;
 use std::collections::BTreeMap;
 
 #[test]
+fn completed_projections_keep_effects_and_unsupported_sibling_locations() {
+    let unsupported = "pub fn sibling(c:Bit)->Bit{if c {1} else {0}}";
+    for (supported, effect) in [
+        ("pub fn f(q:Q<Bit>)->Q<Bit>{let q=q;q}", "unitary"),
+        ("pub fn f()->Q<Bit>{let q=init0();q}", "iso"),
+        (
+            "pub fn f(q:Q<Bit>)->Bit{let bit=measure_z(q);let bit=not bit;bit}",
+            "observe",
+        ),
+    ] {
+        for declarations in [
+            format!("{unsupported} {supported}"),
+            format!("{supported} {unsupported}"),
+        ] {
+            let source =
+                format!("use std::quantum::init0; use std::observe::measure_z; {declarations}");
+            let program =
+                ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap();
+            let graph = program
+                .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            assert_eq!(graph.definitions()[graph.root()].effect(), effect);
+            let error = program
+                .instantiate("main::sibling", BTreeMap::new(), BTreeMap::new())
+                .unwrap_err();
+            assert_eq!(error.code(), "unsupported");
+            assert_eq!(error.module(), Some("main"));
+            assert_eq!(
+                error.message(),
+                "sized preparation profile: unsupported runtime expression"
+            );
+            assert_eq!(
+                &source[error.span().start..error.span().end],
+                "if c {1} else {0}"
+            );
+        }
+    }
+}
+
+#[test]
 fn explicit_modules_finish_parsing_before_profile_eligibility() {
     let basis = std::fs::read_to_string(common::current_namespace_fixture(
         &std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(

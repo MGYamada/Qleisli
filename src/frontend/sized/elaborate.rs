@@ -979,7 +979,7 @@ impl Builder<'_> {
                 ));
             }
             let program = self.program;
-            let closed = super::check::closed_interface_budgeted(
+            let closed = super::bindings::closed_interface_budgeted(
                 program,
                 definition,
                 &types,
@@ -1023,7 +1023,7 @@ impl Builder<'_> {
             }
             let mut frame = Frame {
                 module: module.clone(),
-                lexical: Arc::clone(function.lexical.as_ref().expect("indexed sized function")),
+                lexical: Arc::clone(&function.lexical),
                 effect: function.effect,
                 steps: Vec::new(),
                 next_value: 0,
@@ -1462,7 +1462,7 @@ impl Builder<'_> {
                 Statement::StaticLet(name, value) => {
                     self.charge_cells(4 + 2 * name.name.len(), value.span)?;
                     let value = natural(value, &scope.naturals, &mut self.cells, &mut self.calls)?;
-                    let key = name.key.as_ref().expect("checked static binder").clone();
+                    let key = name.key.clone();
                     scope.naturals.insert(key.clone(), value);
                     local_naturals.push(key);
                 }

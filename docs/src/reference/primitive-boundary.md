@@ -134,7 +134,7 @@ including a packaged tuple. Ordinary Unit and tuples of separate owners reject.
 Its scalar contract is `ζ I`, not the Bit phase gate. The selected concrete
 `src/frontend/sized/primitive.rs::quantum_endomorphism` retains its atom support;
 a source-valid packaged tuple can therefore encounter a located concrete
-eligibility refusal. `src/frontend/sized/check.rs` checks closed substitutions
+eligibility refusal. `src/frontend/sized/bindings.rs` checks closed substitutions
 and explicit bindings against the common checked interfaces. The selected
 concrete catalog is `src/frontend/sized/primitive.rs`;
 `src/frontend/sized/elaborate.rs::primitive` materializes its concrete

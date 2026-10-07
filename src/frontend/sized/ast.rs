@@ -13,12 +13,12 @@ use std::sync::Arc;
 #[derive(Clone, Debug)]
 pub(super) struct BindingName {
     pub name: String,
-    pub key: Option<BinderKey>,
+    pub key: BinderKey,
     pub shadowed: Option<BinderKey>,
 }
 impl BindingName {
     pub fn key(&self) -> &BinderKey {
-        self.key.as_ref().expect("indexed sized binder")
+        &self.key
     }
 }
 impl std::fmt::Display for BindingName {
@@ -29,12 +29,12 @@ impl std::fmt::Display for BindingName {
 #[derive(Clone, Debug)]
 pub(super) struct Reference {
     pub name: String,
-    pub site: Option<UseSiteId>,
+    pub site: UseSiteId,
     pub local: Option<BinderKey>,
 }
 impl Reference {
     pub fn target(&self, table: &Table) -> ResolvedUse {
-        table.usage(self.site.expect("indexed sized use")).target
+        table.usage(self.site).target
     }
     pub fn get<'a, T>(
         &self,
@@ -148,9 +148,32 @@ pub(super) struct Block {
     pub result: Box<Expr>,
     pub span: Span,
 }
+/// Body projection cannot be used as a completed concrete function. Its table
+/// and principal effect are attached only from the finished common judgment.
+#[derive(Clone, Debug)]
+pub(super) struct ProjectedBody {
+    pub arguments: Vec<(Pattern, Span)>,
+    pub body: Block,
+    pub span: Span,
+}
+impl ProjectedBody {
+    pub fn finish(
+        self,
+        lexical: Arc<Table>,
+        effect: crate::frontend::effects::FunctionEffect,
+    ) -> Function {
+        Function {
+            lexical,
+            effect: effect.inferred(),
+            arguments: self.arguments,
+            body: self.body,
+            span: self.span,
+        }
+    }
+}
 #[derive(Clone, Debug)]
 pub(super) struct Function {
-    pub lexical: Option<Arc<Table>>,
+    pub lexical: Arc<Table>,
     pub effect: Effect,
     /// Patterns belong only to concrete body lowering. Interface types and
     /// static categories come from the common original-source judgment.

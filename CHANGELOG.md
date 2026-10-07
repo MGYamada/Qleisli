@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Keep `sized` as a specialization/lowering compatibility adapter to the common
+  frontend. Separate pending body projections from complete functions; retain
+  required binder/use identities and finalize lexical tables and effects once.
+
 - Reuse only the embedded stdlib manifest's validation, and defer ownership-test
   failure formatting while retaining all 4,000 cases and fresh native checks.
 

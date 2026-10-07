@@ -1,16 +1,17 @@
-//! Additive, untrusted preparation of a bounded sized-source profile.
+//! Compatibility API for bounded selected-source specialization and lowering.
 //!
-//! These values retain source and report generic checking results. They are not
-//! verified IR, execution handles, or evidence of source preservation. The finite
-//! frontend shares its source parser and syntax tree with this profile.
+//! Parsing, resolution, types, ownership and effects belong to the common
+//! frontend. This adapter consumes that judgment, closes supplied bindings and
+//! projects bodies into its concrete lowering representation. Preparation values
+//! are not verified IR, execution handles or evidence of source preservation.
 
 mod ast;
-mod check;
+mod bindings;
 mod elaborate;
 mod lower;
 mod meaning;
-mod parser;
 mod primitive;
+mod projection;
 mod qpe;
 mod raw;
 
@@ -227,10 +228,10 @@ impl ParsedProgram {
             .iter()
             .map(|(name, source)| (name, source.syntax()))
             .collect();
-        let (checked, (mut projections, meaning_targets)) = super::check::program_with(
+        let (checked, (projections, meaning_targets)) = super::check::program_with(
             originals,
             super::check::SourceLimits::selected(),
-            |resolution, interfaces, helpers, effects, indices, budget| {
+            |resolution, interfaces, helpers, _, indices, budget| {
                 let meaning_targets =
                     meaning::validate(&sources, resolution, interfaces, indices, budget)?;
                 let mut projections = BTreeMap::new();
@@ -245,11 +246,7 @@ impl ParsedProgram {
                         continue;
                     }
                     let result =
-                        parser::project_declaration(original, &indices[&id], helpers, budget)
-                            .map(|mut function| {
-                                function.effect = effects[&id].inferred();
-                                Arc::new(function)
-                            })
+                        projection::project_declaration(original, &indices[&id], helpers, budget)
                             .map_err(|e| e.in_module(&declaration.name.0));
                     if let Err(error) = &result {
                         if error.code == "limit" {
@@ -262,13 +259,15 @@ impl ParsedProgram {
             },
         )
         .map_err(Error::from)?;
-        for (id, projected) in &mut projections {
-            if let Ok(function) = projected {
-                Arc::get_mut(function)
-                    .expect("one new concrete projection owner")
-                    .lexical = Some(Arc::clone(&checked.lexical[id]));
-            }
-        }
+        let projections = projections
+            .into_iter()
+            .map(|(id, projected)| {
+                let function = projected.map(|body| {
+                    Arc::new(body.finish(Arc::clone(&checked.lexical[&id]), checked.effects[&id]))
+                });
+                (id, function)
+            })
+            .collect();
         Ok(Self {
             sources: Arc::new(sources),
             checked: Arc::new(checked),
@@ -401,7 +400,7 @@ impl ParsedProgram {
         operations: BTreeMap<String, OperationBinding>,
     ) -> Result<Instantiation> {
         let (entry_id, operation_ids) =
-            check::instantiate(self, entry, &types, &naturals, &operations)?;
+            bindings::instantiate(self, entry, &types, &naturals, &operations)?;
         Ok(Instantiation {
             program: self.clone(),
             entry: entry.into(),
