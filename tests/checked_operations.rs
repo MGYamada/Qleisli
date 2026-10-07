@@ -6,12 +6,12 @@ use common::SourceRoot;
 use qleisli::contract::exact::Exact;
 use qleisli::contract::{BasisType, ContractError, FunctionEvidence};
 use qleisli::frontend::ast::{ExprKind, FnBody, Span, StaticOp, StaticOpKind};
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::{
     ErrorCode, check_project, check_project_diagnostic, compile_project,
 };
 use qleisli::frontend::lexer::{TokenKind, lex};
 use qleisli::frontend::parser::{parse_documented_module, parse_module};
-use qleisli::frontend::sized::ParsedProgram;
 use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;

@@ -829,7 +829,7 @@ impl Graph {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::frontend::sized::ParsedProgram;
+    use crate::frontend::compile::ParsedProgram;
     const SOURCE: &str = include_str!(
         "../../../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
     );

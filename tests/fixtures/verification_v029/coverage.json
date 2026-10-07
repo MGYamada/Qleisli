@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "9eb1325a4b06d4bf28cdb0b78ea98a612d06d5e54beed8d69814fc9d2ba8a533",
+  "surface_sha256": "8b632f9e3ce96ec348d2fd79e54509ca3ab774617bab1b98453ee3f7f7f1a1e8",
   "groups": [
     {
       "id": "raw-core",
@@ -1377,7 +1377,7 @@
         "ElaboratedProgram::lower",
         "HierarchyProposal::validate_initialization_moves",
         "HierarchyProposal::qpe_binding",
-        "qleisli sized check/run/sample/emit-proposal",
+        "qleisli check/run/sample/emit-proposal --entry/--module",
         "HierarchyProposal::validate_initialization_moves_native",
         "sized check/run/sample through native-only reports",
         "ElaboratedProgram::lower_raw",
@@ -1923,7 +1923,7 @@
           "test": "complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit"
         },
         {
-          "path": "src/frontend/sized/raw/preservation.rs",
+          "path": "src/frontend/specialize/raw/preservation.rs",
           "test": "source_z_replay_rejects_native_valid_x_substitution"
         }
       ],
@@ -2233,9 +2233,15 @@
       "native_modes": [],
       "source_bindings": [
         {
-          "path": "src/bin/qleisli/sized.rs",
+          "path": "src/bin/qleisli.rs",
           "markers": [
-            "super::source_plan::run(args, true)"
+            "source_plan::run(&args)"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "markers": [
+            "pub use super::specialize::{"
           ]
         },
         {
@@ -2249,7 +2255,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized.rs",
+          "path": "src/frontend/specialize.rs",
           "markers": [
             "pub fn parse(",
             "pub fn instantiate(",
@@ -2268,7 +2274,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "markers": [
             "pub struct RawSourceProposal",
             "pub fn validate_source_steps(",
@@ -2276,7 +2282,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized/lower.rs",
+          "path": "src/frontend/specialize/lower.rs",
           "markers": [
             "fn native_operation(",
             "leaf.payload()",
@@ -2285,7 +2291,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized/elaborate.rs",
+          "path": "src/frontend/specialize/elaborate.rs",
           "markers": [
             "pub fn lower_raw_operation(",
             "pub fn lower_raw_operation_at(",
@@ -2301,7 +2307,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized/raw/preservation.rs",
+          "path": "src/frontend/specialize/raw/preservation.rs",
           "markers": [
             "pub(super) fn validate_subject(",
             "fn operation(",
@@ -2360,11 +2366,11 @@
           "test": "retained_register_source_rejects_another_native_accepted_artifact"
         },
         {
-          "path": "src/frontend/sized/raw/preservation.rs",
+          "path": "src/frontend/specialize/raw/preservation.rs",
           "test": "ordinary_register_replay_rejects_native_valid_order_and_computation_faults"
         },
         {
-          "path": "src/frontend/sized/raw/preservation.rs",
+          "path": "src/frontend/specialize/raw/preservation.rs",
           "test": "ordinary_register_storage_is_charged_before_emission"
         },
         {
@@ -2376,7 +2382,7 @@
           "test": "representable_phases_match_independent_exact_targets_and_interference"
         },
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "test": "raw_source_replay_rejects_native_valid_semantic_and_structural_mutations"
         },
         {
@@ -2432,11 +2438,11 @@
           "test": "repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight"
         },
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
         },
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "test": "checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy"
         },
         {
@@ -2448,7 +2454,7 @@
           "test": "same_algorithm_retains_small_reference_action_and_unit_scalar_phase"
         }
       ],
-      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli sized emit-proposal; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",
+      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",
       "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata; complete exact type/provider substitutions and original generic module bytes are retained",
       "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
       "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation",
@@ -2888,7 +2894,7 @@
       ],
       "source_bindings": [
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "markers": [
             "pub struct SourceMeaningCheck",
             "pub fn check_finite_meaning",
@@ -2906,7 +2912,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized/raw/preservation.rs",
+          "path": "src/frontend/specialize/raw/preservation.rs",
           "markers": [
             "Quantum(TokenId, Arc<[WireId]>)",
             "Primitive::Split",
@@ -2923,7 +2929,7 @@
           ]
         },
         {
-          "path": "src/frontend/sized/elaborate.rs",
+          "path": "src/frontend/specialize/elaborate.rs",
           "markers": [
             "pub fn check_operation_meanings",
             "pub(super) fn require_unrefined"
@@ -2983,7 +2989,7 @@
           "test": "packaged_zero_and_nary_bases_keep_their_exact_native_signature"
         },
         {
-          "path": "src/frontend/sized/raw/preservation.rs",
+          "path": "src/frontend/specialize/raw/preservation.rs",
           "test": "packaged_product_replay_rejects_native_valid_axis_and_owner_substitutions"
         },
         {
@@ -2991,7 +2997,7 @@
           "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
         },
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "test": "repeated_subject_replay_rejects_its_native_valid_base_artifact"
         },
         {
@@ -2999,7 +3005,7 @@
           "test": "source_meaning_signature_effect_and_budget_guards_precede_native_io"
         },
         {
-          "path": "src/frontend/sized/raw.rs",
+          "path": "src/frontend/specialize/raw.rs",
           "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
         }
       ],

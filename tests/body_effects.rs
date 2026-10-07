@@ -6,8 +6,8 @@ use std::process::Command;
 
 use common::SourceRoot;
 use qleisli::frontend::compile::{ErrorCode, check_project, project_effects_with_kernel};
+use qleisli::frontend::compile::{OperationBinding, ParsedProgram};
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::{OperationBinding, ParsedProgram};
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::Effect;
 

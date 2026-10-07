@@ -4,9 +4,9 @@ mod common;
 
 use common::SourceRoot;
 use qleisli::frontend::ast::Span;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::{check_project, check_project_with_kernel, compile_project};
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::ParsedProgram;
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::Effect;
 use qleisli::sim::{SimulationLimits, run_closed};

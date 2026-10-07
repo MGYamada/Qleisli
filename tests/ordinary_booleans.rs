@@ -3,8 +3,8 @@
 mod common;
 
 use common::SourceRoot;
+use qleisli::frontend::compile::{ElaboratedProgram, ParsedProgram};
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
-use qleisli::frontend::sized::{ElaboratedProgram, ParsedProgram};
 use qleisli::interchange::native::{AcceptedProgram, Kernel};
 use qleisli::ir::{Effect, RawOp};
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
@@ -477,7 +477,7 @@ fn copied_measured_registers_preserve_bell_correlation_and_eager_effects() {
 
 #[test]
 fn ordinary_basis_substitutions_keep_register_and_product_tags() {
-    use qleisli::frontend::sized::BasisBinding;
+    use qleisli::frontend::compile::BasisBinding;
     let parsed = ParsedProgram::parse(BTreeMap::from([(
         "main".into(),
         "pub unitary fn f[static A:Basis](b:A)->A{b}".into(),
@@ -533,7 +533,7 @@ fn ordinary_basis_substitutions_keep_register_and_product_tags() {
 
 #[test]
 fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
-    use qleisli::frontend::sized::{BasisBinding, OperationBinding};
+    use qleisli::frontend::compile::{BasisBinding, OperationBinding};
     let text = "use std::classical::{empty_bits,prepend_bit};
         classical fn copy(b:Bits<2>)->(Bits<2>,Bits<2>){(b,b)}
         unitary fn provider[static B:Basis](q:Q<B>)->Q<B>{

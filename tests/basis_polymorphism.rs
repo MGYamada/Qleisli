@@ -1,7 +1,7 @@
 //! Exact opaque Basis substitutions and independent small-reference actions.
 //! These bounded tests establish no generic/source-preservation theorem.
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
-use qleisli::frontend::sized::{BasisBinding, OperationBinding, ParsedProgram};
+use qleisli::frontend::compile::{BasisBinding, OperationBinding, ParsedProgram};
 use qleisli::frontend::{
     ast::{StaticOpKind, StaticParamKind, TypeKind},
     parser::parse_module,
@@ -250,13 +250,18 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
     );
     let kernel = std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker");
     for (ty, basis) in [("Unit", 0), ("Bit", 1), ("Bits<1>", 1), ("(Unit,Bit)", 1)] {
-        for legacy in [false, true] {
+        for leading_format in [false, true] {
             let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"));
-            if legacy {
-                command.arg("sized");
+            if leading_format {
+                command.arg("--format=json");
+            } else {
+                command.args(["run", "--format=json"]);
+            }
+            if leading_format {
+                command.arg("run");
             }
             let output = command
-                .args(["run", "--format=json", "--entry=main::f"])
+                .arg("--entry=main::f")
                 .arg(format!(
                     "--module=main={}",
                     root.0.join("main.qli").display()
@@ -275,9 +280,7 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
             assert!(output.stderr.is_empty());
             let text = String::from_utf8(output.stdout).unwrap();
             assert!(text.contains("\"outcome\":\"ok\""), "{text}");
-            if !legacy {
-                assert!(text.contains("\"ir_profile\":\"hierarchy\""), "{text}");
-            }
+            assert!(text.contains("\"ir_profile\":\"hierarchy\""), "{text}");
             assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
         }
     }

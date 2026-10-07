@@ -2,8 +2,8 @@
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
 mod common;
 use common::SourceRoot;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::{check_project, compile_project};
-use qleisli::frontend::sized::ParsedProgram;
 use qleisli::interchange::native::Kernel;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;

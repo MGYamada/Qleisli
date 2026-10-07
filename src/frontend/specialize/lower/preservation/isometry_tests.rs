@@ -2,7 +2,7 @@
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
 use super::*;
 use crate::contract::exact::{Exact, Matrix};
-use crate::frontend::sized::ParsedProgram;
+use crate::frontend::compile::ParsedProgram;
 use crate::interchange::{finite_matrix, hierarchical};
 use std::path::Path;
 

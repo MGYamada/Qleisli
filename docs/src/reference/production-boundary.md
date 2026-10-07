@@ -96,8 +96,8 @@ target/runtime or quantitative Resource Safety claims.
 | `sim`, `host`, hierarchy execution and sampling | Execute already checked descriptions numerically. Acceptance and bounded reference tests do not establish runtime or floating-point preservation. |
 
 Explicit module-map source selection parses, instantiates, elaborates and
-lowers **untrusted proposals**. Ordinary commands and the legacy `sized`
-prefix use the same selected-source execution plan. `emit-proposal` writes
+lowers **untrusted proposals**. Ordinary commands with explicit entry/module
+bindings use the shared source execution plan. `emit-proposal` writes
 transport without constructing a kernel and reports `untrusted-proposal`.
 The preselected Raw route uses ordinary native acceptance and then separately
 compares the accepted instructions with the retained source steps. The

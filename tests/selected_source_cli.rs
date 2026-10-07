@@ -4,7 +4,7 @@ mod common;
 
 use common::SourceRoot;
 #[cfg(unix)]
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::compile::ParsedProgram;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
@@ -677,4 +677,48 @@ fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() 
             assert!(text.contains("native checker rejected"), "{text}");
         }
     }
+}
+
+#[test]
+#[cfg(unix)]
+fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
+    let logger = LoggedKernel::new();
+    let files = SourceRoot::new("not valid source syntax");
+    let output_path = files.0.join("must-not-be-emitted.json");
+    for action in ["check", "run", "sample", "emit-proposal"] {
+        for format_position in [None, Some(0), Some(2)] {
+            let mut args = vec!["sized".to_string(), action.to_string()];
+            if let Some(position) = format_position {
+                args.insert(position, "--format=json".into());
+            }
+            args.extend([
+                "--entry=main::main".into(),
+                format!("--module=main={}", files.0.join("main.qli").display()),
+                format!("--output={}", output_path.display()),
+            ]);
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command.args(args);
+            logger.attach(&mut command, false);
+            let output = command.output().unwrap();
+            assert_eq!(output.status.code(), Some(2), "{output:?}");
+            let message = if format_position.is_some() {
+                let text = result(output, "sized", false);
+                assert!(text.contains("\"code\":\"usage\""), "{text}");
+                text
+            } else {
+                assert!(output.stdout.is_empty(), "{output:?}");
+                String::from_utf8(output.stderr).unwrap()
+            };
+            assert!(message.contains("sized command was removed"), "{message}");
+            assert!(message.contains("--entry=MODULE::FUNCTION"), "{message}");
+            assert!(logger.calls().is_empty());
+            assert!(!output_path.exists());
+        }
+    }
+    let help = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("--help")
+        .output()
+        .unwrap();
+    assert!(help.status.success());
+    assert!(!String::from_utf8_lossy(&help.stdout).contains("qleisli sized"));
 }

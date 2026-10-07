@@ -1,8 +1,8 @@
 //! Independent structural validation of stable fresh-initialization extraction.
 //! This validates one preparation pass, not source-to-unitary translation.
 use super::{HierarchyProposal, Instrument, Item, Port, PortKind};
-use crate::frontend::sized::primitive::Primitive;
-use crate::frontend::sized::{Error, Result, SourceStep, SourceType, SourceValue, Span};
+use crate::frontend::specialize::primitive::Primitive;
+use crate::frontend::specialize::{Error, Result, SourceStep, SourceType, SourceValue, Span};
 use crate::interchange::json::{self, Value};
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -1117,7 +1117,7 @@ pub(super) fn validate(proposal: &HierarchyProposal) -> Result<PreparationValida
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::frontend::sized::ParsedProgram;
+    use crate::frontend::compile::ParsedProgram;
     fn proposal() -> HierarchyProposal {
         let source = "use std::quantum::h; use std::quantum::init0; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>, z: Q<Bits<0>>) -> (Bits<1>, Q<Bit>, Q<Bits<0>>) { let q = h(q); let fresh = init0(); let bit = measure_z(fresh); let bits = empty_bits(); (prepend_bit[0](bit,bits),q,z) }";
         ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))

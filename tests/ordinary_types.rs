@@ -4,9 +4,9 @@
 mod common;
 
 use common::SourceRoot;
+use qleisli::frontend::compile::{ElaboratedProgram, ParsedProgram, SourceType};
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::frontend::parser::parse_module;
-use qleisli::frontend::sized::{ElaboratedProgram, ParsedProgram, SourceType};
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use qleisli::ir::{CircuitAction, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};

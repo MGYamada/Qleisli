@@ -21,8 +21,8 @@ pub mod project;
 mod raw_state;
 mod resolve;
 mod scanner;
-pub mod sized;
 mod source;
+mod specialize;
 mod types;
 
 /// Constitutional edition selected by in-memory source APIs and the bundled

@@ -2,8 +2,8 @@
 mod common;
 use qleisli::frontend::{
     compile::{ErrorCode, check_project},
+    compile::{OperationBinding, ParsedProgram},
     project::Project,
-    sized::{OperationBinding, ParsedProgram},
 };
 use std::{collections::BTreeMap, fs, path::PathBuf};
 

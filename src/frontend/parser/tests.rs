@@ -1,7 +1,7 @@
 //! Compatibility of contextual static-natural names with shared type syntax.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 use super::*;
-use crate::frontend::sized::ParsedProgram;
+use crate::frontend::compile::ParsedProgram;
 use std::collections::BTreeMap;
 
 const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"];

@@ -5,7 +5,7 @@
 use qleisli::contract::BasisType;
 use qleisli::contract::DEFAULT_EXACT_WORK;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
-use qleisli::frontend::sized::{ElaboratedProgram, Error, ParsedProgram};
+use qleisli::frontend::compile::{ElaboratedProgram, Error, ParsedProgram};
 use qleisli::interchange::finite_leaf::check_unitary;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use qleisli::interchange::{RootInterface, Version, finite_matrix, native};

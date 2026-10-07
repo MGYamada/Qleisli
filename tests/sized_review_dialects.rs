@@ -3,7 +3,7 @@
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 mod common;
 
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::compile::ParsedProgram;
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::PathBuf;

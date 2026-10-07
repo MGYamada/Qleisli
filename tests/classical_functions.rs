@@ -5,10 +5,10 @@ mod common;
 
 use common::SourceRoot;
 use qleisli::frontend::ast::{FnBody, FnKind};
+use qleisli::frontend::compile::{ElaboratedProgram, ParsedProgram};
 use qleisli::frontend::compile::{check_project_with_kernel, compile_project_with_kernel};
 use qleisli::frontend::parser::parse_module;
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::{ElaboratedProgram, ParsedProgram};
 use qleisli::interchange::native::{AcceptedProgram, Kernel};
 use qleisli::ir::{Effect, RawOp};
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
@@ -259,11 +259,11 @@ fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
         } else {
             original.replace("{x(q)}", "{q}")
         });
-        for legacy in [false, true] {
+        for json in [false, true] {
             for profile in ["auto", "hierarchy", "raw"] {
                 let mut command = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"));
-                if legacy {
-                    command.arg("sized");
+                if json {
+                    command.arg("--format=json");
                 }
                 let result = command
                     .args(["check", "--entry=main::client"])
@@ -281,12 +281,15 @@ fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
                 assert_eq!(
                     result.status.success(),
                     honest && profile != "raw",
-                    "{honest}/{legacy}/{profile}: {} {}",
+                    "{honest}/{json}/{profile}: {} {}",
                     String::from_utf8_lossy(&result.stdout),
                     String::from_utf8_lossy(&result.stderr)
                 );
                 if !honest && profile != "raw" {
-                    assert!(String::from_utf8_lossy(&result.stderr).contains("original Meaning"));
+                    assert!(
+                        String::from_utf8_lossy(if json { &result.stdout } else { &result.stderr })
+                            .contains("original Meaning")
+                    );
                 }
             }
         }
@@ -474,7 +477,7 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
                 BTreeMap::new(),
                 BTreeMap::from([(
                     "U".into(),
-                    qleisli::frontend::sized::OperationBinding::new(
+                    qleisli::frontend::compile::OperationBinding::new(
                         "main::implementation",
                         BTreeMap::new(),
                     ),
@@ -528,7 +531,7 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
 #[test]
 fn original_annotations_check_every_nested_and_unused_provider_before_lowering() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::frontend::compile::OperationBinding;
     use qleisli::interchange::hierarchical;
     let bit =
         include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli");
@@ -658,7 +661,7 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
 #[test]
 fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::frontend::compile::OperationBinding;
     let text = include_str!(
         "fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli"
     );
@@ -686,7 +689,7 @@ fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
 #[test]
 fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::frontend::compile::OperationBinding;
     let common = "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
     let declaration = "meaning M:Bit=permutation_by(f); pub unitary fn host[static U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}";
     let parsed = ParsedProgram::parse(BTreeMap::from([
@@ -735,11 +738,11 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
         } else {
             text.replace("{x(q)}", "{q}")
         });
-        for legacy in [false, true] {
+        for json in [false, true] {
             for profile in ["auto", "raw", "hierarchy"] {
                 let mut cmd = std::process::Command::new(env!("CARGO_BIN_EXE_qleisli"));
-                if legacy {
-                    cmd.arg("sized");
+                if json {
+                    cmd.arg("--format=json");
                 }
                 let output = cmd
                     .args([
@@ -761,12 +764,15 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
                 assert_eq!(
                     output.status.success(),
                     honest && profile != "raw",
-                    "{honest}, {legacy}, {profile}: {} {}",
+                    "{honest}, {json}, {profile}: {} {}",
                     String::from_utf8_lossy(&output.stdout),
                     String::from_utf8_lossy(&output.stderr)
                 );
                 if !honest && profile != "raw" {
-                    assert!(String::from_utf8_lossy(&output.stderr).contains("original Meaning"));
+                    assert!(
+                        String::from_utf8_lossy(if json { &output.stdout } else { &output.stderr })
+                            .contains("original Meaning")
+                    );
                 }
             }
         }
@@ -776,7 +782,7 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
 #[test]
 fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
-    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::frontend::compile::OperationBinding;
     let bit = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\nunitary fn helper(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{helper(q)}\npub unitary fn host[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}";
     let unit = "use std::quantum::phase_eighth;\nclassical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}\nmeaning Minus:Unit=phase_by(scalar);\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\npub unitary fn host[static U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U){q}";
     let wrong_bit = bit.replace("{helper(q)}", "{q}");
@@ -841,7 +847,7 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
 #[test]
 fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::frontend::compile::OperationBinding;
     let source = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}\npub unitary fn outer[static k:Nat,static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U),k<=2 {inner[repeat_op(k,U)](q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
     let flip = parsed.finite_meaning_target("main::Flip").unwrap();
@@ -895,7 +901,7 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
 #[test]
 fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
-    use qleisli::frontend::sized::OperationBinding;
+    use qleisli::frontend::compile::OperationBinding;
     let scalar = "use std::quantum::phase_eighth;\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\nunitary fn inner[static U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U){q}\npub unitary fn outer[static k:Nat,static U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U),k<=2 {inner[repeat_op(k,U)](q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), scalar.into())])).unwrap();
     let minus = FiniteMeaning::phase(BasisType::Unit, vec![4]).unwrap();

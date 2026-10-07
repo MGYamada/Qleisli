@@ -15,8 +15,6 @@ mod json;
 mod options;
 #[path = "qleisli/samples.rs"]
 mod samples;
-#[path = "qleisli/sized.rs"]
-mod sized;
 #[path = "qleisli/source_commands.rs"]
 mod source_commands;
 #[path = "qleisli/source_plan.rs"]
@@ -60,20 +58,38 @@ fn main() -> ExitCode {
             "ecosystem introduction",
         );
     }
-    if let Some(index) = args
+    if args
         .iter()
-        .position(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
-        .filter(|&index| args[index] == "sized")
+        .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
+        .is_some_and(|arg| arg == "sized")
     {
-        let mut selected = args.clone();
-        selected.remove(index);
-        return sized::run(&selected);
+        let message = "the sized command was removed; use qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH instead";
+        if args.iter().any(|arg| arg == "--format=json") {
+            let diagnostic = json::diagnostic_json(
+                std::path::Path::new("."),
+                &Diagnostic {
+                    code: "usage",
+                    message: message.into(),
+                    primary: None,
+                },
+            );
+            if write_stdout(
+                json::envelope("sized", Some(&diagnostic), "null").as_bytes(),
+                "usage diagnostic",
+            ) != ExitCode::SUCCESS
+            {
+                return ExitCode::FAILURE;
+            }
+        } else {
+            eprintln!("usage: {message}");
+        }
+        return ExitCode::from(2);
     }
     if args.first().is_some_and(|arg| arg == "interop") {
         return interop::run(&args[1..]);
     }
     if source_plan::selected(&args) {
-        return source_plan::run(&args, false);
+        return source_plan::run(&args);
     }
     if args.iter().any(|arg| arg == "--format=json") {
         return json::run(&args);

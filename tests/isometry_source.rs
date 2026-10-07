@@ -4,7 +4,7 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::ir::Effect;
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};

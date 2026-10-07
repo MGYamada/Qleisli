@@ -1,4 +1,4 @@
-//! One argument contract for selected-source execution and its legacy adapter.
+//! Argument contract for explicit source specialization.
 
 use std::{collections::BTreeMap, ffi::OsString, path::PathBuf};
 

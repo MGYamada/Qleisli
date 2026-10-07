@@ -10,8 +10,8 @@ mod common;
 use std::collections::BTreeMap;
 
 use common::SourceRoot;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::check_project;
-use qleisli::frontend::sized::ParsedProgram;
 
 const SEED: u64 = 0x514c_4549_534c_4932;
 const CASES: usize = 4_000;

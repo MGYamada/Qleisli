@@ -2,7 +2,7 @@
 //! Bounded independent enumeration of accepted generic size implications.
 //! This regression is not a completeness or soundness proof of the solver.
 
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::compile::ParsedProgram;
 use std::collections::BTreeMap;
 use std::fmt::Write;
 

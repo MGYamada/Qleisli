@@ -1,6 +1,6 @@
 //! Source preparation regressions; none of these tests issues IR evidence.
 mod common;
-use qleisli::frontend::sized::{HierarchyEligibility, OperationBinding, ParsedProgram};
+use qleisli::frontend::compile::{HierarchyEligibility, OperationBinding, ParsedProgram};
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 
@@ -1083,7 +1083,7 @@ fn proposal(
     entry: &str,
     ns: &[(&str, u32)],
     operations: BTreeMap<String, OperationBinding>,
-) -> qleisli::frontend::sized::HierarchyProposal {
+) -> qleisli::frontend::compile::HierarchyProposal {
     let proposal = ParsedProgram::load(measured_sources())
         .unwrap()
         .instantiate(entry, naturals(ns), operations)
@@ -1130,7 +1130,7 @@ fn delayed_fourier_source() -> String {
     .into()
 }
 
-fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::sized::HierarchyProposal {
+fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::compile::HierarchyProposal {
     ParsedProgram::parse(BTreeMap::from([("fourier".into(), source.into())]))
         .unwrap()
         .instantiate("fourier::fourier", naturals(&[("n", n)]), BTreeMap::new())
@@ -1144,7 +1144,7 @@ fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::sized::Hi
 fn inverse_fourier_source_proposal(
     source: &str,
     n: u32,
-) -> qleisli::frontend::sized::HierarchyProposal {
+) -> qleisli::frontend::compile::HierarchyProposal {
     let client = "use fourier::fourier; pub unitary fn inverse[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n],q) }";
     ParsedProgram::parse(BTreeMap::from([
         ("fourier".into(), source.into()),
@@ -2131,7 +2131,7 @@ fn existing_empty_sized_spellings_remain_common_syntax() {
 
 #[test]
 fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
-    use qleisli::frontend::sized::{ElaboratedProgram, Instantiation};
+    use qleisli::frontend::compile::{ElaboratedProgram, Instantiation};
     fn send_sync<T: Send + Sync>() {}
     send_sync::<ParsedProgram>();
     send_sync::<Instantiation>();

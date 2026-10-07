@@ -234,7 +234,7 @@ impl HierarchyProposal {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::frontend::sized::{OperationBinding, ParsedProgram};
+    use crate::frontend::compile::{OperationBinding, ParsedProgram};
     use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
     use std::collections::BTreeMap;
     fn source(n: u32, m: u32, j: u32) -> HierarchyProposal {

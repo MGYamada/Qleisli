@@ -3,9 +3,9 @@ mod common;
 use common::SourceRoot;
 use qleisli::frontend::{
     CURRENT_EDITION,
+    compile::ParsedProgram,
     compile::{check_project, check_project_with_policy, compile_project},
     project::{Project, SourcePolicy, read_source_file},
-    sized::ParsedProgram,
 };
 use std::{collections::BTreeMap, fs, process::Command};
 

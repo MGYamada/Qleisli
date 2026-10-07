@@ -5,9 +5,9 @@ mod common;
 
 use common::SourceRoot;
 use qleisli::frontend::ast::Span;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::{check_project_with_kernel, project_effects_with_kernel};
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::ParsedProgram;
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::Effect;
 use std::collections::BTreeMap;

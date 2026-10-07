@@ -67,7 +67,7 @@ fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
     let (writer, reader) = UnixStream::pair().unwrap();
     drop(reader);
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args(["sized", "emit-proposal", "--entry=main::f"])
+        .args(["emit-proposal", "--entry=main::f"])
         .arg(format!(
             "--module=main={}",
             root.0.join("main.qli").display()
@@ -78,7 +78,7 @@ fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
         .unwrap();
     assert_eq!(output.status.code(), Some(1), "{output:?}");
     let text = String::from_utf8(output.stderr).unwrap();
-    assert!(text.contains("could not write sized result"), "{text}");
+    assert!(text.contains("could not write selected source result"), "{text}");
     assert!(!text.contains("panicked"), "{text}");
 }
 

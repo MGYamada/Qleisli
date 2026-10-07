@@ -45,7 +45,7 @@ native primitive or semantic axiom. Existing concrete catalogs retain
 **17 finite entries and 18 selected entries**, with eight names overlapping:
 `std::quantum::{h,x,cnot,init0,phase_eighth,split,join}` and
 `std::observe::measure_z`. These subsets are recorded in
-`src/frontend/core.rs::PRIMITIVES` and `src/frontend/sized/primitive.rs`.
+`src/frontend/core.rs::PRIMITIVES` and `src/frontend/specialize/primitive.rs`.
 A known common name unavailable to a requested emitter yields a located
 unsupported concrete-profile error, not another source grammar or fallback.
 
@@ -93,7 +93,7 @@ mathematical meaning.
 
 ## Selected lowering subset of sealed names
 
-`src/frontend/sized/primitive.rs` records the selected concrete subset used by
+`src/frontend/specialize/primitive.rs` records the selected concrete subset used by
 its projection/concrete elaborator after common source checking. Its internal `TypeShape::Bit` and
 `Bits` labels still denote quantum source values, while internal `CBit` and
 `CBits` labels denote ordinary values. These private catalog labels are not
@@ -132,12 +132,12 @@ Common source signatures and input-dependent results are checked in
 exactly one `Q<A>` owner, evaluated once, preserving any complete Basis tree A,
 including a packaged tuple. Ordinary Unit and tuples of separate owners reject.
 Its scalar contract is `ζ I`, not the Bit phase gate. The selected concrete
-`src/frontend/sized/primitive.rs::quantum_endomorphism` retains its atom support;
+`src/frontend/specialize/primitive.rs::quantum_endomorphism` retains its atom support;
 a source-valid packaged tuple can therefore encounter a located concrete
-eligibility refusal. `src/frontend/sized/bindings.rs` checks closed substitutions
+eligibility refusal. `src/frontend/specialize/bindings.rs` checks closed substitutions
 and explicit bindings against the common checked interfaces. The selected
-concrete catalog is `src/frontend/sized/primitive.rs`;
-`src/frontend/sized/elaborate.rs::primitive` materializes its concrete
+concrete catalog is `src/frontend/specialize/primitive.rs`;
+`src/frontend/specialize/elaborate.rs::primitive` materializes its concrete
 signatures and guards. Concrete phase arguments require
 `k <= 8` and `j < 2^k`; concrete register operations require `k < n <= 8`;
 classical prepend requires `n < 8`. These are current preparation capacities,
@@ -158,7 +158,7 @@ implicit reassociation or owner conversion is inserted. Their independent
 source-step check binds the actual structural constructor, complete basis tree,
 ordered axes and full caller frame; matching endpoints alone is insufficient.
 
-`src/frontend/sized/lower.rs` emits hierarchy/finite-leaf, structural and
+`src/frontend/specialize/lower.rs` emits hierarchy/finite-leaf, structural and
 instrument proposals. Source signature acceptance does not imply that every
 root/interface is supported by every lowering profile. The dedicated native
 hierarchy checks remain necessary. The

@@ -5,19 +5,17 @@ mod common;
 
 use common::SourceRoot;
 #[cfg(unix)]
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::compile::ParsedProgram;
 #[cfg(unix)]
 use std::collections::BTreeMap;
 use std::process::Command;
 
 fn cli(root: &SourceRoot) -> Command {
     let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
-    command
-        .args(["sized", "check", "--entry=main::f"])
-        .arg(format!(
-            "--module=main={}",
-            root.0.join("main.qli").display()
-        ));
+    command.args(["check", "--entry=main::f"]).arg(format!(
+        "--module=main={}",
+        root.0.join("main.qli").display()
+    ));
     command
 }
 

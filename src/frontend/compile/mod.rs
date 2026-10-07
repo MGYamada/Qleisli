@@ -1,10 +1,27 @@
-//! Checked lowering of the finite source subset to independently verified IR.
+//! Source checking, explicit specialization, and lowering to independently verified IR.
+//!
+//! Project inputs and explicit module collections share the common frontend.
+//! `ParsedProgram` retains checked source preparation; instantiation and proposal
+//! generation do not by themselves confer independent native acceptance.
+//!
+//! The former `frontend::sized` namespace was removed in 0.3.0. Import its
+//! preparation and binding types from this module instead.
+//! ```compile_fail,E0432
+//! use qleisli::frontend::sized::ParsedProgram;
+//! ```
 
 mod basis;
 mod circuit;
 mod lower;
 mod operations;
 mod profile;
+
+pub use super::specialize::{
+    BasisBinding, CheckedSourceMeanings, ElaboratedProgram, Error, FramePort, HierarchyEligibility,
+    HierarchyProposal, InitializationMove, Instantiation, OperationBinding, ParsedProgram,
+    PreparationValidation, QpeBindingProposal, RawSourceProposal, SourceDefinition, SourceEvent,
+    SourceMeaningCheck, SourceOperation, SourceStep, SourceType, SourceValue, Span,
+};
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;

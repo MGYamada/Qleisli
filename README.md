@@ -32,7 +32,7 @@ verifier and dual API have been removed under the approved
 Missing, incompatible or failing checkers reject without fallback or download.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
-The experimental sized-source pipeline uses an explicitly selected Lean kernel;
+Explicit source specialization uses an explicitly selected Lean kernel;
 [executable clients and validation records](corpus/sized/README.md) describe
 the supported experiments.
 The three theorem pillars below are project goals. The

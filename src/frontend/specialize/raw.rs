@@ -1427,12 +1427,12 @@ fn lower_inner(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::frontend::sized::ParsedProgram;
+    use crate::frontend::compile::ParsedProgram;
     use crate::ir::RawOp;
 
     #[test]
     fn checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy() {
-        use crate::frontend::sized::{BasisBinding, OperationBinding};
+        use crate::frontend::compile::{BasisBinding, OperationBinding};
         use crate::interchange::{hierarchical, json};
         use hierarchical::execution::ExecutionLimits;
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(),
@@ -1587,7 +1587,7 @@ mod tests {
 
     #[test]
     fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {
-        use crate::frontend::sized::OperationBinding;
+        use crate::frontend::compile::OperationBinding;
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(),
             "use std::quantum::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q} pub unitary fn outer[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[repeat_op(2,U)](q)}".into())]))
             .unwrap().instantiate("main::outer", BTreeMap::new(), BTreeMap::from([("U".into(), OperationBinding::new("main::flip", BTreeMap::new()))])).unwrap().elaborate().unwrap();

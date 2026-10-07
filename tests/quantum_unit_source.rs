@@ -7,7 +7,7 @@ use common::SourceRoot;
 use qleisli::contract::exact::{Budget, Exact, Matrix};
 use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
 use qleisli::frontend::compile::compile_project;
-use qleisli::frontend::sized::{
+use qleisli::frontend::compile::{
     ElaboratedProgram, HierarchyEligibility, OperationBinding, ParsedProgram,
 };
 use qleisli::interchange::finite_leaf::check_unitary;

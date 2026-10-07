@@ -1,14 +1,14 @@
-//! Selected source preparation and execution shared by both CLI spellings.
+//! Source specialization, proposal preparation, and native-checked execution.
 //! A plan/proposal carries no native acceptance authority.
 
 use qleisli::{
     frontend::{
         ast::Span,
-        diagnostic::Diagnostic,
-        sized::{
+        compile::{
             self, BasisBinding, ElaboratedProgram, HierarchyEligibility, HierarchyProposal,
             OperationBinding, ParsedProgram, QpeBindingProposal, RawSourceProposal, SourceType,
         },
+        diagnostic::Diagnostic,
     },
     interchange::{self, hierarchical, native},
     sim::{SimulationLimits, SplitMix64, run_closed},
@@ -34,7 +34,7 @@ struct SourceSite {
 struct Failure {
     code: String,
     message: String,
-    legacy: String,
+    text: String,
     site: Option<Box<SourceSite>>,
     pointer: Option<String>,
 }
@@ -43,7 +43,7 @@ impl Failure {
         let message = message.into();
         Self {
             code: code.into(),
-            legacy: message.clone(),
+            text: message.clone(),
             message,
             site: None,
             pointer: None,
@@ -64,13 +64,13 @@ impl Failure {
     }
     fn hierarchy(error: interchange::Error, profile: &str, scope: RequestScope) -> Self {
         let mut failure = Self::from(error);
-        failure.legacy = format!(
+        failure.text = format!(
             "{}; sized {} profile, {} contract",
-            failure.legacy,
+            failure.text,
             profile,
             scope.name()
         );
-        failure.message = failure.legacy.clone();
+        failure.message = failure.text.clone();
         failure
     }
     fn diagnostic(&self, options: Option<&Options>) -> String {
@@ -103,12 +103,12 @@ impl Failure {
         )
     }
 }
-impl From<sized::Error> for Failure {
-    fn from(error: sized::Error) -> Self {
+impl From<compile::Error> for Failure {
+    fn from(error: compile::Error) -> Self {
         Self {
             code: error.code().into(),
             message: error.message().into(),
-            legacy: error.to_string(),
+            text: error.to_string(),
             site: error.module().map(|module| {
                 Box::new(SourceSite {
                     module: module.into(),
@@ -121,11 +121,11 @@ impl From<sized::Error> for Failure {
 }
 impl From<interchange::Error> for Failure {
     fn from(error: interchange::Error) -> Self {
-        let legacy = error.to_string();
+        let text = error.to_string();
         Self {
             code: error.code.into(),
             message: error.message,
-            legacy,
+            text,
             site: None,
             pointer: (!error.json_pointer.is_empty()).then_some(error.json_pointer),
         }
@@ -529,7 +529,7 @@ fn fields(mut object: String, extra: &str) -> String {
     object.push('}');
     object
 }
-fn execute(options: &Options, legacy: bool) -> Result<String> {
+fn execute(options: &Options) -> Result<String> {
     let prepared = prepare(options)?;
     let emitted = options.command == "emit-proposal";
     let result = if emitted {
@@ -553,9 +553,6 @@ fn execute(options: &Options, legacy: bool) -> Result<String> {
             } => hierarchy_execute(options, proposal, request, input.as_deref(), kernel)?,
         }
     };
-    if legacy && prepared.name() == "hierarchy" {
-        return Ok(result);
-    }
     Ok(fields(
         result,
         &format!(
@@ -575,7 +572,7 @@ pub(super) fn selected(args: &[OsString]) -> bool {
     options::selected(args)
 }
 
-pub(super) fn run(args: &[OsString], legacy: bool) -> ExitCode {
+pub(super) fn run(args: &[OsString]) -> ExitCode {
     let options = options::parse(args);
     let command = args
         .iter()
@@ -584,7 +581,7 @@ pub(super) fn run(args: &[OsString], legacy: bool) -> ExitCode {
         .unwrap_or("");
     let json = args.iter().any(|arg| arg == "--format=json");
     let result = match &options {
-        Some(options) => execute(options, legacy),
+        Some(options) => execute(options),
         None => Err(Failure::new("usage", options::USAGE)),
     };
     match result {
@@ -594,14 +591,7 @@ pub(super) fn run(args: &[OsString], legacy: bool) -> ExitCode {
             } else {
                 format!("{result}\n")
             };
-            super::write_stdout(
-                document.as_bytes(),
-                if legacy {
-                    "sized result"
-                } else {
-                    "selected source result"
-                },
-            )
+            super::write_stdout(document.as_bytes(), "selected source result")
         }
         Err(error) => {
             let status = ExitCode::from(if error.code == "usage" { 2 } else { 1 });
@@ -617,7 +607,7 @@ pub(super) fn run(args: &[OsString], legacy: bool) -> ExitCode {
                     return ExitCode::FAILURE;
                 }
             } else {
-                eprintln!("{}", error.legacy);
+                eprintln!("{}", error.text);
             }
             status
         }

@@ -3,9 +3,9 @@
 mod common;
 
 use common::SourceRoot;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::check_project_with_kernel;
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::ParsedProgram;
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::Effect;
 use std::collections::BTreeMap;
@@ -20,7 +20,7 @@ macro_rules! source {
     };
 }
 
-fn selected(source: &str) -> Result<ParsedProgram, qleisli::frontend::sized::Error> {
+fn selected(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
 }
 

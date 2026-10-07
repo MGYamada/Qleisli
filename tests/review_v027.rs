@@ -68,7 +68,7 @@ fn unused_manifest_warnings_are_host_independent_and_located() {
 
 fn emit(root: &SourceRoot, destination: &Path) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args(["sized", "emit-proposal", "--entry=main::f"])
+        .args(["emit-proposal", "--entry=main::f"])
         .arg(format!(
             "--module=main={}",
             root.0.join("main.qli").display()

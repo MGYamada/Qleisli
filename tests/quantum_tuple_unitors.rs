@@ -5,8 +5,8 @@
 mod common;
 use common::SourceRoot;
 use qleisli::contract::exact::{Exact, Matrix};
+use qleisli::frontend::compile::{ElaboratedProgram, OperationBinding, ParsedProgram, SourceType};
 use qleisli::frontend::compile::{ErrorCode, check_project};
-use qleisli::frontend::sized::{ElaboratedProgram, OperationBinding, ParsedProgram, SourceType};
 use qleisli::interchange::finite_matrix;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;

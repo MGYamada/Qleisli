@@ -1,4 +1,4 @@
-//! Compatibility API for bounded selected-source specialization and lowering.
+//! Internal preparation for bounded source specialization and lowering.
 //!
 //! Parsing, resolution, types, ownership and effects belong to the common
 //! frontend. This adapter consumes that judgment, closes supplied bindings and

@@ -1,8 +1,8 @@
 //! First-failure ordering survives shared retained-source storage.
 mod common;
 
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::project::{Project, SourcePolicy};
-use qleisli::frontend::sized::ParsedProgram;
 use std::collections::BTreeMap;
 
 #[test]

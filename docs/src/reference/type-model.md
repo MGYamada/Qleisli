@@ -13,10 +13,10 @@ Meaning evidence integration and general source preservation remain in progress.
 [foundation packet](../design/type-foundation.md) preserves the original
 experiments; their historical failures are not current acceptance results.
 
-The common frontend is the only source grammar and source judgment. The Rust
-`frontend::sized` namespace and `sized` CLI remain compatibility entry points
-for selected-source specialization and lowering, not an independent frontend.
-Their body projection consumes original resolved identities and the completed
+The common frontend is the only source grammar and source judgment. Rust
+preparation, binding and specialization types are exposed by `frontend::compile`.
+The ordinary CLI commands accept explicit entry/module bindings for specialization.
+Internal body projection consumes original resolved identities and the completed
 common lexical/effect facts. A projection restriction is recorded per declaration;
 it does not excuse checking an unused definition, either branch or an empty loop.
 Closed host bindings, concrete capacity, emitted evidence and native acceptance
@@ -482,8 +482,8 @@ hierarchy. Its finite nodes embed the checked provider bytes and matrices;
 the complete output graph still requires fresh native hierarchy acceptance.
 Plain hierarchy lowering, single-leaf hierarchy lowering and Raw root lowering
 refuse refined callers. Raw refined emission is unsupported. The selected CLI
-uses the same all-binding gate for its hierarchy route, including its `sized`
-alias; native failure cannot select another profile. `emit-proposal` for a
+uses the same all-binding gate for its hierarchy route; native failure cannot
+select another profile. `emit-proposal` for a
 refined source needs the checker selected by `QLEISLI_KERNEL` to perform these
 binding checks, while its output remains an untrusted proposal.
 
@@ -673,9 +673,11 @@ These limits do not establish separate type universes or close the remaining
 The ordinary `check`, `run`, `sample` and `emit-proposal` commands accept an
 explicit `--entry=module::function` and repeated `--module=name=PATH` bindings,
 with explicit `--type`, `--nat`, `--operation`, `--operation-type` and
-`--operation-nat` forms. The legacy
-`sized` prefix delegates to the same selected-source execution plan. This is
-an adapter transition; it does not complete the final grammar/CLI migration.
+`--operation-nat` forms. The `sized` prefix has been removed in 0.3.0-alpha; it is a usage
+error with exit status 2 and a migration hint, before any source or native work.
+Replace `qleisli sized ACTION ...` with `qleisli ACTION ...`. Both text and JSON
+errors identify the removed prefix. This namespace retirement does not complete
+the remaining grammar/CLI migration.
 Directory/qrate and explicit-module inputs retain their loader/provenance and
 concrete consumer differences, but both first check every complete original
 and the four bundled ordinary sources through the same judgment. Finite then
@@ -748,5 +750,22 @@ same-width different-tree substitution, tuple arity, zero-owner loss/duplication
 controlled scalar phase and runtime-to-static leakage. These requirements
 remain open until their implementations and actual results are recorded in the
 linked Issues; this chapter does not discharge QS, PR or quantitative RS.
+
+### Rust API migration from the sized namespace
+
+In 0.3.0-alpha, import `ParsedProgram`, `BasisBinding`, `OperationBinding`,
+`Instantiation`, elaborated source types and proposal types from
+`qleisli::frontend::compile` instead of `qleisli::frontend::sized`. The latter
+module is removed, with no compatibility alias. Existing methods, preparation
+limits, exact provider/Meaning checks and native acceptance requirements remain.
+The internal `specialize` module is private. A prepared source or emitted
+proposal still grants no native acceptance authority.
+
+Canonical selected commands retain their entry, IR profile and source/native
+scope fields. Migrating from the removed hierarchy-command wrapper adds that
+existing canonical metadata; consumers must not require the wrapper's narrower
+JSON object. Existing protocol/schema and machine profile identifiers remain
+unchanged. Historical validation commands describe their original revisions;
+they are not current CLI instructions.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

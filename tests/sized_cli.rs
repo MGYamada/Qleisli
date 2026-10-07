@@ -29,9 +29,8 @@ fn modules() -> Vec<String> {
 #[test]
 fn sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading() {
     for args in [
-        vec!["sized"],
+        vec!["check", "--entry=foo::f"],
         vec![
-            "sized",
             "check",
             "--entry=foo::f",
             "--module=foo=x",
@@ -39,7 +38,6 @@ fn sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading() {
             "--kernel=y",
         ],
         vec![
-            "sized",
             "run",
             "--entry=foo::f",
             "--module=foo=x",
@@ -48,7 +46,6 @@ fn sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading() {
             "--qpe-provider=b",
         ],
         vec![
-            "sized",
             "sample",
             "--entry=foo::f",
             "--module=foo=x",
@@ -57,7 +54,6 @@ fn sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading() {
             "--seed=0",
         ],
         vec![
-            "sized",
             "check",
             "--entry=foo::f",
             "--module=foo=x",
@@ -76,7 +72,6 @@ fn sized_check_rejects_execution_basis_before_loading() {
     for basis in ["0", "1", "999"] {
         let output = command()
             .args([
-                "sized",
                 "check",
                 "--entry=foo::f",
                 "--module=foo=missing.qli",
@@ -96,17 +91,11 @@ fn sized_execution_basis_still_checks_input_width() {
     let files = common::SourceRoot::new("pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
     for action in ["run", "sample"] {
         let mut cmd = command();
-        cmd.args([
-            "sized",
-            action,
-            "--entry=main::f",
-            "--basis=2",
-            "--kernel=missing",
-        ])
-        .arg(format!(
-            "--module=main={}",
-            files.0.join("main.qli").display()
-        ));
+        cmd.args([action, "--entry=main::f", "--basis=2", "--kernel=missing"])
+            .arg(format!(
+                "--module=main={}",
+                files.0.join("main.qli").display()
+            ));
         if action == "sample" {
             cmd.args(["--shots=1", "--seed=0"]);
         }
@@ -123,7 +112,7 @@ fn sized_execution_basis_still_checks_input_width() {
 #[test]
 fn sized_cli_cannot_select_private_entries_or_providers() {
     let files = common::SourceRoot::new("unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
-    let args = ["sized", "emit-proposal", "--entry=main::f"];
+    let args = ["emit-proposal", "--entry=main::f"];
     let run = |provider: bool| {
         let mut cmd = command();
         cmd.args(args)
@@ -169,12 +158,7 @@ fn sized_cli_cannot_select_private_entries_or_providers() {
 fn sized_cli_emits_only_an_untrusted_proposal_without_a_kernel() {
     let file = std::env::temp_dir().join(format!("qleisli-sized-cli-{}.json", std::process::id()));
     let output = command()
-        .args([
-            "sized",
-            "emit-proposal",
-            "--entry=fourier::fourier",
-            "--nat=n=1",
-        ])
+        .args(["emit-proposal", "--entry=fourier::fourier", "--nat=n=1"])
         .args(modules())
         .arg(format!("--output={}", file.display()))
         .output()
@@ -204,7 +188,7 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
     ];
     for action in ["check", "run", "sample"] {
         let mut cmd = command();
-        cmd.args(["sized", action])
+        cmd.args([action])
             .args(args)
             .args(modules())
             .arg(format!("--kernel={}", kernel.display()));
@@ -248,7 +232,7 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
 #[test]
 #[ignore = "requires freshly built Lean kernel; CI runs explicitly"]
 fn sized_cli_separates_producer_consistency_from_independent_requests() {
-    use qleisli::frontend::sized::ParsedProgram;
+    use qleisli::frontend::compile::ParsedProgram;
     use std::collections::BTreeMap;
     let kernel = PathBuf::from(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
     let h = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
@@ -276,7 +260,7 @@ fn sized_cli_separates_producer_consistency_from_independent_requests() {
         files.write("main.qli", source);
         for action in ["check", "run"] {
             let mut cmd = command();
-            cmd.args(["sized", action, "--entry=main::f"])
+            cmd.args([action, "--entry=main::f"])
                 .arg(format!(
                     "--module=main={}",
                     files.0.join("main.qli").display()

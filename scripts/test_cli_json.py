@@ -197,14 +197,14 @@ class JsonCliTests(unittest.TestCase):
                     result = self.invoke(*args, status=2)
                     self.assertEqual(result["diagnostics"][0]["code"], "usage")
                 sized = subprocess.run(
-                    [BINARY, "sized", "sample", "--entry=main::f", "--module=main=missing.qli",
+                    [BINARY, "sample", "--entry=main::f", "--module=main=missing.qli",
                      "--kernel=missing", "--shots=1", f"--seed={seed}"], capture_output=True,
                 )
                 self.assertEqual(sized.returncode, 2, sized)
                 self.assertEqual(sized.stdout, b"")
         # Sized naturals keep their u32 bound even though seeds use u64.
         sized = subprocess.run(
-            [BINARY, "sized", "check", "--entry=main::f", "--module=main=missing.qli",
+            [BINARY, "check", "--entry=main::f", "--module=main=missing.qli",
              "--kernel=missing", "--nat=n=4294967296"], capture_output=True,
         )
         self.assertEqual(sized.returncode, 2, sized)

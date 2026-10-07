@@ -262,7 +262,7 @@ fn every_bundled_module_and_public_or_private_definition_has_documentation() {
 
 #[test]
 fn common_parser_shares_documentation_attachment_with_sized_source() {
-    use qleisli::frontend::sized::ParsedProgram;
+    use qleisli::frontend::compile::ParsedProgram;
     use std::collections::BTreeMap;
     let source = "//! 日本語\r\n/** outer /* nested */ */ pub unitary fn f(q: Q<Bit>) -> Q<Bit> { /*! α\r\nβ */ q }";
     let documented = parse_documented_module(source).unwrap();

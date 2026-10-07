@@ -3,8 +3,8 @@
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
 use crate::frontend::ordinary::Boolean;
-use crate::frontend::sized::primitive::Primitive;
-use crate::frontend::sized::{
+use crate::frontend::specialize::primitive::Primitive;
+use crate::frontend::specialize::{
     ElaboratedProgram, Error, Result, SourceDefinition, SourceOperation, SourceStep, SourceType,
     SourceValue, Span,
 };
@@ -1379,7 +1379,7 @@ mod tests {
         }
     }
     use super::*;
-    use crate::frontend::sized::ParsedProgram;
+    use crate::frontend::compile::ParsedProgram;
     use crate::interchange::native::{AcceptedProgram, Kernel};
     use crate::ir::QuantumPort;
 

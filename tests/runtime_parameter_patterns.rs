@@ -5,8 +5,8 @@ mod common;
 use common::SourceRoot;
 use qleisli::frontend::ast::PatternKind;
 use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
+use qleisli::frontend::compile::{OperationBinding, ParsedProgram};
 use qleisli::frontend::parser::parse_module;
-use qleisli::frontend::sized::{OperationBinding, ParsedProgram};
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use qleisli::ir::{Effect, RawOp};
 use qleisli::sim::{SimulationLimits, run_closed};
@@ -93,7 +93,7 @@ fn sized_reject(input: &str, code: &str) {
 }
 
 fn execute(
-    program: &qleisli::frontend::sized::ElaboratedProgram,
+    program: &qleisli::frontend::compile::ElaboratedProgram,
     input: &[[f64; 2]],
 ) -> Vec<[f64; 2]> {
     let proposal = program.lower().unwrap();

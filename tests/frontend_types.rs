@@ -1,6 +1,6 @@
 //! Public profile and accessor regressions for the internal shared type migration.
+use qleisli::frontend::compile::{ParsedProgram, SourceType};
 use qleisli::frontend::parser::parse_module;
-use qleisli::frontend::sized::{ParsedProgram, SourceType};
 use std::collections::BTreeMap;
 
 fn parsed(text: &str) -> ParsedProgram {

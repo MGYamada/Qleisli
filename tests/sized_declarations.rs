@@ -3,7 +3,7 @@
 mod common;
 use common::SourceRoot;
 use qleisli::frontend::compile::{ErrorCode, check_project};
-use qleisli::frontend::sized::{HierarchyProposal, OperationBinding, ParsedProgram};
+use qleisli::frontend::compile::{HierarchyProposal, OperationBinding, ParsedProgram};
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
 use std::path::Path;

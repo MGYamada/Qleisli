@@ -6,11 +6,11 @@ use std::{collections::BTreeMap, fs};
 
 use common::SourceRoot;
 
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::{
     ErrorCode, check_project, check_project_with_kernel, compile_project,
 };
 use qleisli::frontend::project::SourcePolicy;
-use qleisli::frontend::sized::ParsedProgram;
 use qleisli::interchange::native::Kernel;
 use qleisli::ir::{Effect, ProtectedUse, RawOp, SingleGate};
 use qleisli::sim::{SimulationLimits, run_closed};

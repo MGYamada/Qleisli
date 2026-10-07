@@ -23,7 +23,7 @@ pub(super) struct TargetTable {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::frontend::sized::{OperationBinding, ParsedProgram};
+    use crate::frontend::compile::{OperationBinding, ParsedProgram};
 
     fn target<'a>(program: &'a ParsedProgram, name: &str) -> &'a TargetTable {
         let id = program.checked.resolution.qualified(name).unwrap();

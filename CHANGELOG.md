@@ -6,8 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
-- Keep `sized` as a specialization/lowering compatibility adapter to the common
-  frontend. Separate pending body projections from complete functions; retain
+- Remove the public `sized` command namespace and `frontend::sized` Rust module.
+  Use ordinary commands with `--entry`/`--module` and preparation/binding types
+  in `frontend::compile`; the former command now reports a migration usage error.
+  Preserve source checking, specialization limits and independent native gates.
+
+- Separate pending specialization body projections from complete functions; retain
   required binder/use identities and finalize lexical tables and effects once.
 
 - Reuse only the embedded stdlib manifest's validation, and defer ownership-test
