@@ -11,9 +11,11 @@ development milestones from the scope of their evidence.
   identities in native comparisons, and compare current and historical source
   artifacts through exact instruments while retaining frozen input bytes.
 - Share source validation commands between local runs and both Rust CI jobs.
+  Share the repository and constitutional-record check list with the docs job.
   Check source identities before scheduling builds, build native-test hosts
   before parallel workers, and retain failed preflights and unexecuted checks.
   Keep complete hosted coverage and distinguish producer failures in summaries.
+  Reclaim child scratch directories on failures and timeouts as well as success.
 
 - Select canonical `inverse`/`power` derivatives for 25 finite corpus clients,
   retaining frozen originals, scalar phase and ordinary checked gate wrappers.

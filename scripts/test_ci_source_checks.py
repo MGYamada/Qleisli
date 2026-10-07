@@ -13,6 +13,17 @@ import ci_source_checks as checks
 
 
 class SourceChecksTests(unittest.TestCase):
+    def test_repository_checks_keep_prior_coverage_and_separate_continuity(self):
+        commands = checks.plan('repository-integrity')
+        # Bind the exact prior command coverage, independent of the manifest.
+        import hashlib
+        self.assertEqual(len(commands), 34)
+        self.assertEqual(hashlib.sha256(json.dumps(commands).encode()).hexdigest(),
+                         'ad1d29d1bdf9374234a3357e304041b4aaeae64a08a9138b326103079768e254')
+        workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
+        self.assertIn('--checks repository-integrity --output', workflow)
+        self.assertIn('scripts/check_constitution.py "${base_args[@]}"', workflow)
+
     def test_shared_contract_commands_preserve_both_existing_consumers(self):
         commands = checks.plan('source-contracts', Path('/selected/qleisli'))
         self.assertEqual(sum(argv[0] == '/selected/qleisli' for argv in commands), 3)

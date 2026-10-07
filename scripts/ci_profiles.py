@@ -203,7 +203,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gate", action="store_true")
     parser.add_argument("--report", type=Path)
-    parser.add_argument("--checks", choices=("source-integrity", "source-contracts"))
+    parser.add_argument("--checks", help="execute a group from the shared check manifest")
     parser.add_argument("--plan", action="store_true")
     parser.add_argument("--compiler", type=Path)
     parser.add_argument("--output", type=Path)

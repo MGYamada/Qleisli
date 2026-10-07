@@ -264,10 +264,17 @@ python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/pa
 python3 scripts/run_native_ci.py --plan --task lean-observation --task lean-streamed-instrument
 qleisli_validation_dir=$(mktemp -d)
 python3 scripts/ci_profiles.py --checks source-integrity --output "$qleisli_validation_dir/integrity"
+python3 scripts/ci_profiles.py --checks repository-integrity --output "$qleisli_validation_dir/repository"
 python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --output "$qleisli_validation_dir/contracts"
 ```
 
-The source groups live in `source-checks.json`. Both Rust jobs execute the
+The groups live in `source-checks.json`. The repository-integrity group retains
+all 34 static checks formerly written in the documentation job. Its tools are
+Python 3.11+ and Git, with full history for the historical archive check; no
+Rust or Lean build is required. Constitutional continuity against the reviewed
+base is a separate `check_constitution.py --base-ref COMMIT` invocation because
+the base is supplied by the review or event, not chosen by a command manifest.
+Both Rust jobs execute the
 same source-contract group; source identity checks run before hosted builds.
 Results bind tracked and untracked working inputs, the chosen compiler/kernel
 bytes and commands, including explicit unexecuted commands after a failure.
@@ -286,6 +293,9 @@ timeouts retain the terminated command and remaining unexecuted commands.
 The recorded native-runner environment fixes Cargo debug information to zero
 and disables incremental output. Assertions and test coverage are unchanged;
 temporary comparison crates no longer retain unnecessary build products.
+Each task owns its default temporary directory. The runner closes the command's
+process group and removes this scratch area after success, failure or timeout;
+explicit logs and comparison records remain available outside that area.
 
 `native-comparisons.json` retains all 65 comparison groups (66 commands) from
 the v0.2.6 workflow, including small independent complex/rational/source oracles

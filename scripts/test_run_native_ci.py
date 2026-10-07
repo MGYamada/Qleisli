@@ -220,6 +220,23 @@ class NativeCI(unittest.TestCase):
         with self.assertRaises(ValueError):
             verify_coverage(report, tasks, {"head": "a"}, "hash")
 
+    def test_runner_reclaims_child_scratch_after_success_failure_and_timeout(self):
+        for ending, expected in [("pass", "passed"), ("raise SystemExit(2)", "failed"),
+                                 ("time.sleep(30)", "timed-out")]:
+            with self.subTest(ending=ending), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                marker = root / "created-path"
+                script = ("import pathlib,tempfile,time,sys; "
+                          "p=pathlib.Path(tempfile.mkdtemp(prefix='child-')); "
+                          "(p/'generated').write_text('bounded regression'); "
+                          "pathlib.Path(sys.argv[1]).write_text(str(p)); " + ending)
+                result = run_native_ci.run_task(dict(id='scratch', commands=[
+                    [sys.executable, '-c', script, str(marker)]]), root, root / 'report',
+                    2, execution_environment())
+                self.assertEqual(result['commands'][0]['status'], expected)
+                self.assertFalse(Path(marker.read_text()).exists())
+                self.assertEqual(list((root / 'report').iterdir()), [root / 'report/command.log'])
+
     def test_invalid_worker_count_and_existing_task_directory_fail(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)

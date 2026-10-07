@@ -15,6 +15,7 @@ import re
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 import native_harness
 
@@ -132,7 +133,12 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
                     reason="earlier command did not complete") for template in task["commands"]]
     log_path = directory / "command.log"
     try:
-        with log_path.open("w") as log:
+        # Children may be killed before their own TemporaryDirectory cleanup.
+        # Own their default scratch area here; retain logs/records separately.
+        with tempfile.TemporaryDirectory(prefix=".work-", dir=directory) as work, log_path.open("w") as log:
+            task_environment = environment | task.get("env", {}) | {
+                "TMPDIR": work, "TMP": work, "TEMP": work,
+            }
             for number, template in enumerate(task["commands"]):
                 command = record_command(template, directory)
                 executed = launch_command(command)
@@ -140,7 +146,7 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
                 log.flush()
                 before = time.monotonic()
                 result = results[number] = dict(command=command, executed_command=executed, status="failed")
-                with subprocess.Popen(executed, cwd=root, env=environment | task.get("env", {}),
+                with subprocess.Popen(executed, cwd=root, env=task_environment,
                                       stdout=log, stderr=subprocess.STDOUT, start_new_session=True) as process:
                     try:
                         code = process.wait(timeout=timeout)
@@ -151,6 +157,14 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
                         result.update(status="timed-out", exit_code=process.returncode,
                                       seconds=time.monotonic() - before)
                         raise TimeoutError(f"command exceeded {timeout} seconds")
+                    finally:
+                        # Also close descendants left behind by a successful
+                        # command before reclaiming their scratch directory.
+                        try:
+                            os.killpg(process.pid, signal.SIGKILL)
+                        except ProcessLookupError:
+                            pass
+                        process.wait()
                 result.update(exit_code=code, seconds=time.monotonic() - before,
                               status="passed" if code == 0 else "failed")
                 if code != 0:

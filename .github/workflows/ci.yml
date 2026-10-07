@@ -620,58 +620,25 @@ jobs:
           name: qleisli-book-${{ github.sha }}-${{ github.run_attempt }}
           path: target/mdbook/
           if-no-files-found: error
-      - name: Check edition 2026 coverage of every Qleisli source and QLT draft
-        run: |
-          python3 scripts/test_check_editions.py
-          python3 scripts/check_editions.py
-      - run: python3 scripts/test_check_docs.py
-      - run: python3 scripts/test_current_source_fixtures.py
-      - run: python3 scripts/test_observation_sources.py
-      - name: Check constitutional identity and the historical candidate packet
+      - name: Run shared repository and constitutional-record checks
+        id: repository-integrity
+        run: python3 scripts/ci_profiles.py --checks repository-integrity --output "$RUNNER_TEMP/repository-integrity"
+      - name: Retain repository checks and explicit unexecuted commands
+        if: always() && (steps.repository-integrity.outcome == 'success' || steps.repository-integrity.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: repository-integrity-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/repository-integrity/
+          if-no-files-found: error
+      - name: Verify constitutional continuity against the event base
         env:
           CONSTITUTION_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
         run: |
-          python3 scripts/test_check_ratification_packet.py
-          python3 scripts/check_ratification_packet.py
-          python3 scripts/test_check_constitution.py
-          python3 scripts/test_check_release_ready.py
           base_args=()
           if [[ -n "$CONSTITUTION_BASE" && "$CONSTITUTION_BASE" != '0000000000000000000000000000000000000000' ]]; then
             base_args=(--base-ref "$CONSTITUTION_BASE")
           fi
           python3 scripts/check_constitution.py "${base_args[@]}"
-      - name: Check recorded scoped QS admission and current evidence identities
-        run: |
-          python3 scripts/test_check_initial_guarantees.py
-          python3 scripts/check_initial_guarantees.py
-      - run: python3 scripts/test_maintain_release.py
-      - run: python3 scripts/test_native_harness.py
-      - run: |
-          python3 scripts/test_check_production_coverage.py
-          python3 scripts/test_test_native_acceptance_replay.py
-      - run: python3 scripts/check_production_coverage.py
-      - run: python3 scripts/test_check_lean_kernel.py
-      - run: python3 scripts/test_check_schema_registry.py
-      - run: python3 scripts/check_schema_registry.py --source-only
-      - name: Verify lossless historical fixture archives against Git originals
-        run: |
-          python3 scripts/test_check_fixture_archives.py
-          python3 scripts/check_fixture_archives.py --git-baseline
-      - run: python3 scripts/check_docs.py
-      - name: Verification inventory coverage and independent oracle calibration
-        run: |
-          python3 scripts/test_check_verification_inventory.py
-          python3 scripts/check_verification_inventory.py
-          python3 scripts/test_test_verification_baseline.py
-      - run: python3 scripts/test_check_authoring_sessions.py
-      - run: python3 scripts/check_authoring_sessions.py
-      - run: python3 scripts/test_check_input_corpus.py
-      - run: python3 scripts/check_input_corpus.py
-      - run: python3 scripts/test_check_distribution.py
-      - run: python3 scripts/test_check_imaginary_v1_examples.py
-      - run: python3 scripts/check_imaginary_v1_examples.py
-      - run: python3 scripts/test_check_semantic_contract_examples.py
-      - run: python3 scripts/check_semantic_contract_examples.py
       - name: Check whitespace throughout the committed tree
         run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
       - name: Bind successful producer evidence for scoped release readiness
