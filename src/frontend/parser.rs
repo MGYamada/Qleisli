@@ -1287,15 +1287,7 @@ impl Parser {
             return self.static_fold(quantum_fold);
         }
         if self.transformed_application("power") {
-            let operation = self.static_op()?;
-            self.expect(&TokenKind::LParen)?;
-            let input = Box::new(self.expr()?);
-            let end = self.expect(&TokenKind::RParen)?;
-            let span = operation.span.cover(end.span);
-            return Ok(Expr {
-                kind: ExprKind::ApplyStatic { operation, input },
-                span,
-            });
+            return self.power_application();
         }
         if self.transformed_application("inverse") {
             let start = self.bump();
@@ -1386,6 +1378,21 @@ impl Parser {
             return self.with_computed(with_token);
         }
         self.expr_atom()
+    }
+
+    // Keep operation-construction temporaries out of every recursive dispatch
+    // frame, including ordinary parentheses that never use this syntax.
+    #[inline(never)]
+    fn power_application(&mut self) -> Result<Expr, ParseError> {
+        let operation = self.static_op()?;
+        self.expect(&TokenKind::LParen)?;
+        let input = Box::new(self.expr()?);
+        let end = self.expect(&TokenKind::RParen)?;
+        let span = operation.span.cover(end.span);
+        Ok(Expr {
+            kind: ExprKind::ApplyStatic { operation, input },
+            span,
+        })
     }
 
     // Keep fold temporaries out of every recursive expression dispatch frame.

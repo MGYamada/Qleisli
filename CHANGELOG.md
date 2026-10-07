@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Keep contextual power parsing out of recursive expression dispatch frames;
+  check deep syntax on a bounded 2 MiB stack without changing nesting limits.
+
 - Add contextual `power(U, count)(q)` application and nested static descriptions,
   retaining provider identities, counts, source spans and access checks.
 

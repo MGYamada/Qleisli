@@ -240,6 +240,16 @@ fn malformed_syntax_has_precise_error_spans() {
 
 #[test]
 fn deep_syntax_is_rejected_without_exhausting_the_stack() {
+    // macOS otherwise gives test threads more stack than the Linux CI lane.
+    std::thread::Builder::new()
+        .stack_size(2 * 1024 * 1024)
+        .spawn(check_deep_syntax_on_bounded_stack)
+        .unwrap()
+        .join()
+        .unwrap();
+}
+
+fn check_deep_syntax_on_bounded_stack() {
     let parentheses = format!(
         "iso fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
         "(".repeat(10_000),
@@ -271,6 +281,38 @@ fn deep_syntax_is_rejected_without_exhausting_the_stack() {
         ")".repeat(62)
     );
     parse_module(&below_limit).unwrap();
+
+    // Exercise the contextual branch as well as the ordinary parentheses
+    // that exposed the dispatch-frame regression. The operation argument
+    // itself must still share the original nesting limit.
+    let input = format!("{}q{}", "(".repeat(60), ")".repeat(60));
+    for expression in [
+        format!("power(u, 2)({input})"),
+        format!("inverse(u)({input})"),
+        format!("controlled(u)(c, {input})"),
+    ] {
+        parse_module(&format!(
+            "unitary fn f(c: Q<Bit>, q: Q<Bit>) -> Q<Bit> {{ {expression} }}"
+        ))
+        .unwrap();
+    }
+    let expression = format!("{}q{}", "power(u, 1)(".repeat(60), ")".repeat(60));
+    parse_module(&format!(
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {expression} }}"
+    ))
+    .unwrap();
+    let expression = format!("{}q{}", "power(u, 1)(".repeat(10_000), ")".repeat(10_000));
+    let error = parse_module(&format!(
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> {{ {expression} }}"
+    ))
+    .unwrap_err();
+    assert!(error.message.contains("limit"), "{error}");
+    let operation = format!("{}u{}", "power(".repeat(10_000), ", 1)".repeat(10_000));
+    let error = parse_module(&format!(
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> {{ power({operation}, 1)(q) }}"
+    ))
+    .unwrap_err();
+    assert!(error.message.contains("limit"), "{error}");
 }
 
 #[test]
