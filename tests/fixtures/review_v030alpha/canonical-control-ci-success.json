@@ -1,0 +1,181 @@
+{
+  "format": "qleisli.hosted-ci-observation",
+  "version": 1,
+  "observed_utc": "2026-10-07T05:57:19.158409+00:00",
+  "repository": "MGYamada/Qleisli",
+  "pull_request": 307,
+  "run_id": 37575271437,
+  "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437",
+  "event": "pull_request",
+  "status": "completed",
+  "conclusion": "success",
+  "reported_head_sha": "cc070079449d4d166b767b09afaa8737fa1613a5",
+  "checked_merge_commit": {
+    "parents": [
+      "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+      "cc070079449d4d166b767b09afaa8737fa1613a5"
+    ],
+    "sha": "ec73171a40e51daabf4144687590f2a6270ca72f",
+    "tree": "db0a3dff4725349c12868f368b469822818b6e49"
+  },
+  "created_at": "2026-10-07T05:13:42Z",
+  "updated_at": "2026-10-07T05:52:02Z",
+  "producer_jobs": [
+    {
+      "name": "check-macos-source",
+      "job_id": 112642725008,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725008",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:10Z",
+      "completed_at": "2026-10-07T05:31:28Z",
+      "checkout_commit_output": "check-macos-source\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:21.3608920Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-macos-source.log",
+        "bytes": 126565,
+        "sha256": "d00bdcbd2473cadeb057c95fc9007ed83b7b917609fae7e02082bc232aaf53fb"
+      }
+    },
+    {
+      "name": "check-lean",
+      "job_id": 112642725028,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725028",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:05Z",
+      "completed_at": "2026-10-07T05:24:09Z",
+      "checkout_commit_output": "check-lean\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:12.1502243Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-lean.log",
+        "bytes": 63234,
+        "sha256": "3ad86fa0499cbe3a3522d0ca00e6ef5e47c9fd66f90c347d9d9b2bfc71158223"
+      }
+    },
+    {
+      "name": "check-interop",
+      "job_id": 112642725050,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725050",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:05Z",
+      "completed_at": "2026-10-07T05:17:51Z",
+      "checkout_commit_output": "check-interop\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:11.1081567Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-interop.log",
+        "bytes": 91346,
+        "sha256": "bea137959241b934256a1f0512add38c4b6dbc319cb26dc15e52ecf021894c97"
+      }
+    },
+    {
+      "name": "check-rust-msrv",
+      "job_id": 112642725070,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725070",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:05Z",
+      "completed_at": "2026-10-07T05:43:32Z",
+      "checkout_commit_output": "check-rust-msrv\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:12.9148760Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-rust-msrv.log",
+        "bytes": 349168,
+        "sha256": "d3b9d50d54078b68df2bbf7a4173d2d0840ea75910b1da1887ff296ce7e27cc6"
+      }
+    },
+    {
+      "name": "check-lean-kernel",
+      "job_id": 112642725079,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725079",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:05Z",
+      "completed_at": "2026-10-07T05:35:52Z",
+      "checkout_commit_output": "check-lean-kernel\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:12.9877973Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-lean-kernel.log",
+        "bytes": 120935,
+        "sha256": "9cac3b6f93a491deb89d8e61ac7903ab3b102fba7ce1e01c2c46671846480c99"
+      }
+    },
+    {
+      "name": "check-distribution",
+      "job_id": 112642725127,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725127",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:05Z",
+      "completed_at": "2026-10-07T05:51:49Z",
+      "checkout_commit_output": "check-distribution\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:12.4540702Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-distribution.log",
+        "bytes": 83715,
+        "sha256": "e22f3c754a5e208ae98d8ba644d54c4a854b94e31897409aacd014ac238a7deb"
+      }
+    },
+    {
+      "name": "check-docs",
+      "job_id": 112642725160,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725160",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:05Z",
+      "completed_at": "2026-10-07T05:17:10Z",
+      "checkout_commit_output": "check-docs\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:09.8468538Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-docs.log",
+        "bytes": 126076,
+        "sha256": "0b1b8fa25fadf2477d0b9bc65053c02c8240aeaea0ce4fb299e3a0f05ae72855"
+      }
+    },
+    {
+      "name": "check-rust",
+      "job_id": 112642725336,
+      "url": "https://github.com/MGYamada/Qleisli/actions/runs/37575271437/job/112642725336",
+      "conclusion": "success",
+      "checked_commit": "ec73171a40e51daabf4144687590f2a6270ca72f",
+      "started_at": "2026-10-07T05:14:06Z",
+      "completed_at": "2026-10-07T05:43:19Z",
+      "checkout_commit_output": "check-rust\tRun actions/checkout@11d5960a326750d5838078e36cf38b85af677262\t2026-10-07T05:14:11.3013393Z ec73171a40e51daabf4144687590f2a6270ca72f",
+      "log": {
+        "external_path": "/private/tmp/qleisli-canonical-ci-check-rust.log",
+        "bytes": 402331,
+        "sha256": "4bb5a3ecf5fb593eec867a48bc799214bf87c8a7e37f00ef6cc47b16ebd9a6ae"
+      }
+    }
+  ],
+  "required_contexts": [
+    {
+      "name": "macos-source",
+      "conclusion": "success"
+    },
+    {
+      "name": "interop",
+      "conclusion": "success"
+    },
+    {
+      "name": "lean-kernel",
+      "conclusion": "success"
+    },
+    {
+      "name": "docs",
+      "conclusion": "success"
+    },
+    {
+      "name": "distribution",
+      "conclusion": "success"
+    },
+    {
+      "name": "lean",
+      "conclusion": "success"
+    },
+    {
+      "name": "rust-msrv",
+      "conclusion": "success"
+    },
+    {
+      "name": "rust",
+      "conclusion": "success"
+    }
+  ],
+  "release_readiness": "skipped on ordinary PR, as designed",
+  "limits": "All eight real producers completed successfully and their actual checkout-log commit outputs independently match the same PR merge commit. This run covers reported head cc070079 only. It does not cover subsequent protocol/corpus migration commits, prove general source preservation, discharge pending constitutional obligations, complete the 111 selected Issues, approve a release, authenticate a published artifact or authorize publication. Candidate native distribution artifacts retain this checked merge identity and must not be relabelled as another commit."
+}
