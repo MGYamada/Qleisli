@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Select canonical `inverse`/`power` derivatives for 25 finite corpus clients,
+  retaining frozen originals, scalar phase and ordinary checked gate wrappers.
+  Compare all shipped outputs with predecessors and independent expectations,
+  plus one X/Y complex-entry probe per migrated unitary (125 CLI calls total).
 - Migrate the remaining protocol-example adjoints to named `inverse`
   application. Preserve seven-state and entangled-reference protocol checks,
   and compare the full `y_minus` operator with a literal exact phase contract

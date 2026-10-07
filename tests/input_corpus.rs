@@ -32,9 +32,9 @@ fn all_reviewed_corpus_projects_compile_verify_and_execute() {
             .zip(&current)
             .filter(|(before, after)| before != after)
             .count(),
-        // Four namespace leaves plus ten classical leaves, including the two
-        // coherent and two namespace projects advanced by the later migration.
-        14,
+        // Twenty-five canonical operation clients plus eight other maintained
+        // namespace/classical leaves; all original projects remain frozen.
+        33,
         "current corpus snapshots not selected"
     );
     for project in current {

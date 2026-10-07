@@ -1900,7 +1900,8 @@
     "migrations/ordinary-type-v030/migration.json",
     "migrations/semantic-namespace-v030/migration.json",
     "migrations/coherent-basis-v030/migration.json",
-    "migrations/classical-functions-v030/migration.json"
+    "migrations/classical-functions-v030/migration.json",
+    "migrations/operation-application-v030/migration.json"
   ],
   "negative_expectations": {
     "path": "negative/current-manifest.json",
