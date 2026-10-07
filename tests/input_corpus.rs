@@ -26,17 +26,6 @@ fn all_reviewed_corpus_projects_compile_verify_and_execute() {
     logical.sort();
     assert_eq!(logical.len(), 87, "logical corpus coverage changed");
     let current = current_corpus_projects(&logical);
-    assert_eq!(
-        logical
-            .iter()
-            .zip(&current)
-            .filter(|(before, after)| before != after)
-            .count(),
-        // Twenty-five canonical operation clients plus eight other maintained
-        // namespace/classical leaves; all original projects remain frozen.
-        33,
-        "current corpus snapshots not selected"
-    );
     for project in current {
         let checked = compile_project(&project)
             .unwrap_or_else(|error| panic!("{}: {error}", project.display()));

@@ -168,7 +168,9 @@ def finite_comparisons():
     return records
 
 
-def source_comparisons(binary, capture):
+def source_comparisons(binary):
+    from observation_sources import component
+    from test_lean_observation import component_oracle
     sources=[
         ('corpus/quantum_katas/swap2',{(True,False):1}),
         ('corpus/quantum_katas/fredkin3',{(True,True,False):1}),
@@ -194,11 +196,25 @@ def source_comparisons(binary, capture):
         with tempfile.TemporaryDirectory(prefix='qleisli-vm22-source-') as directory:
             emitted=Path(directory)/'program.qirf'
             invoke([binary,'emit-ir',current_project,'--output='+str(emitted),'--format=json'])
-            path=frozen('source/'+project.replace('/','_')+'.qirf',emitted.read_bytes(),capture)
-            stdout,_=invoke([binary,'verify-ir',path,'--format=json'])
-            verified=json.loads(stdout,object_pairs_hook=unique)
-            if verified['result']!={'verified':True,'request_checked':False}: raise ValueError('unexpected ordinary IR guarantee')
-        records.append(dict(project=project,current_project=str(current_project.relative_to(ROOT)),artifact=str(path.relative_to(ROOT)),decisions=decisions,raw_verification=verified,reference_distribution=[dict(bits=list(k),probability=v) for k,v in required.items()],lean_observing='not implemented; VM-26'))
+            path=FIXTURES/'source'/str(project.replace('/','_')+'.qirf')
+            original, current = path.read_bytes(), emitted.read_bytes()
+            verifications = {}
+            for label, artifact_path in [('historical', path), ('current', emitted)]:
+                stdout,_=invoke([binary,'verify-ir',artifact_path,'--format=json'])
+                verified=json.loads(stdout,object_pairs_hook=unique)
+                if verified['result']!={'verified':True,'request_checked':False}: raise ValueError('unexpected ordinary IR guarantee')
+                verifications[label] = verified
+            # Encoding and dependency graphs may evolve. The frozen artifact
+            # remains immutable; compare full exact unnormalized operators,
+            # including phase and ordered hidden/classical outcomes.
+            before=component_oracle(component(json.loads(original,object_pairs_hook=unique)))
+            after=component_oracle(component(json.loads(current,object_pairs_hook=unique)))
+            if before != after: raise ValueError('source instrument drift: '+project)
+        records.append(dict(project=project,current_project=str(current_project.relative_to(ROOT)),
+            artifact=str(path.relative_to(ROOT)),decisions=decisions,raw_verification=verifications,
+            historical_sha256=hashlib.sha256(original).hexdigest(),current_sha256=hashlib.sha256(current).hexdigest(),
+            exact_instrument_comparison=True,
+            reference_distribution=[dict(bits=list(k),probability=v) for k,v in required.items()]))
     for name in ['duplicate_owner','measured_owner','measurement_adjoint','dirty_auxiliary']:
         project='corpus/negative/'+name
         current_project = current_corpus_project({'project': project.removeprefix('corpus/')})
@@ -236,14 +252,14 @@ def main():
     parser.add_argument('binary',type=Path)
     parser.add_argument('--kernel',type=Path)
     parser.add_argument('--report',type=Path)
-    parser.add_argument('--capture',action='store_true',help='explicitly replace source/native input snapshots; review changes')
+    parser.add_argument('--capture',action='store_true',help='explicitly replace native/hierarchy snapshots; historical source IR stays immutable')
     args=parser.parse_args()
     errors=check()
     if errors: raise ValueError('; '.join(errors))
     environment=dict(os.environ)
     for key in ['QLEISLI_VM22_CAPTURE','QLEISLI_VM22_HIERARCHY_CAPTURE']: environment.pop(key,None)
     stdout,stderr=invoke(['cargo','test','--test','verification_boundary'],env=environment)
-    report=dict(format='qleisli.verification-baseline',version=1,packet='VM-22',authority='Rust production; Lean experimental',rust_test=dict(stdout=stdout,stderr=stderr),finite=finite_comparisons(),source=source_comparisons(args.binary.resolve(),args.capture))
+    report=dict(format='qleisli.verification-baseline',version=1,packet='VM-22',authority='Lean production acceptance; independent bounded historical/current comparisons',rust_test=dict(stdout=stdout,stderr=stderr),finite=finite_comparisons(),source=source_comparisons(args.binary.resolve()))
     report['native']=native_comparisons(args.kernel.resolve(),args.capture) if args.kernel else 'not run; optional source-built kernel'
     if args.kernel:
         environment['QLEISLI_HIERARCHY_KERNEL']=str(args.kernel.resolve())

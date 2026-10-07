@@ -2947,7 +2947,7 @@
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "072f8b95f02af774418be2f26031f2edd55e6b0d0a7475893b7f670cf2d9775b",
+      "sha256": "1c6a96366396a01321c38e1732367b069a9a001cf6b7399042e194e7c8651e88",
       "group": "raw-core",
       "surface": null
     },
@@ -2965,7 +2965,7 @@
     },
     {
       "path": "scripts/test_lean_streamed_instrument.py",
-      "sha256": "fdba1047f30a2dcde8699c3762b75dfa1f31868bc24088e3e368b8cf35b8bc10",
+      "sha256": "5f6e8ab733b8becac8008458a4170126845a7c99c73db7d510d3fa8fe7c61f7d",
       "group": "raw-core",
       "surface": null
     },
@@ -4889,6 +4889,12 @@
       "sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
       "group": "source",
       "surface": null
+    },
+    {
+      "path": "scripts/observation_sources.py",
+      "sha256": "c8c250773926a88ab7ed16431bb3968f4c749bed5ae7bda7fe036fbdf41b999a",
+      "group": "raw-core",
+      "surface": null
     }
   ],
   "boundaries": [
@@ -5747,7 +5753,7 @@
       "tests/fixtures/verification_v022/hierarchy/h.wrong-phase.request.json": "2680dc9e5af50c780436fed1d421f124177fbbaa38b7e4729601518af9b9c898",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.request.json": "49e2aaa7d1790a9e7205fcc7fb469f06a2d7726c401ea5100c764866aa7dd753",
       "tests/fixtures/verification_v022/hierarchy/zero-repeat.wrong-leaf.qirh": "fdd6cdce3e2f023ac862056966c6708fdf404c22d9aa3b78090751ec6f664090",
-      "scripts/test_verification_baseline.py": "75a2fb59c171df7dec83981e45aab9cbb69f0d657fceef9efecaccd63e2870de",
+      "scripts/test_verification_baseline.py": "c9c75441c60f13b14f91c26fa5a24e446745e0ebd11ac031282340e2a247d579",
       "tests/verification_boundary.rs": "f21dbdd1d1cb095ee873294222b5ff2cb53e95365cc87356a054a5188bb04e5b",
       "tests/hierarchical_host.rs": "43b885b8353c7d9d78bc385b402d2062893113254c2a270bb1cfe2cd9e98c9f1",
       "scripts/test_hierarchical_readout.py": "9ed1e73c607c5960ca5c6901c1b2f94fb6b50225fadbe9e89c9a6f00c55948dd",

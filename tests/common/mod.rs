@@ -56,6 +56,7 @@ known = {local(corpus, case['project']): case for case in manifest['cases']}
 require(len(known) == len(manifest['cases']), 'duplicate logical corpus project')
 requested = [Path(path).resolve() for path in sys.argv[2:]]
 require(len(set(requested)) == len(requested), 'duplicate requested corpus project')
+require(set(requested) == set(known), 'logical corpus inventory differs from registered projects')
 selected = []
 for project in requested:
     require(project in known, 'unregistered logical corpus project: ' + str(project))
