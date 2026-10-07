@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reuse only the embedded stdlib manifest's validation, and defer ownership-test
+  failure formatting while retaining all 4,000 cases and fresh native checks.
+
 - Decouple common source arithmetic and preparation diagnostics from the sized
   adapter while preserving bounded checking, error details and public error paths.
 

@@ -245,16 +245,21 @@ fn finite_and_sized_checkers_agree_on_common_linear_ownership() {
     let mut rejected = 0;
     for (index, case) in cases.iter().enumerate() {
         root.write("main.qli", &case.source);
-        let finite = check_project(&root.0).map_err(|error| error.to_string());
+        let finite = check_project(&root.0);
         let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), case.source.clone())]))
-            .map(|_| ())
-            .map_err(|error| error.to_string());
-        let context = format!(
-            "seed={SEED:#x}, case={index}, fault={:?}\n{}\nfinite={finite:?}\nsized={sized:?}",
-            case.fault, case.source
-        );
-        assert_eq!(finite.is_ok(), sized.is_ok(), "{context}");
-        assert_eq!(finite.is_ok(), case.fault.accepted(), "{context}");
+            .map(|_| ());
+        // Preserve the complete reproduction context, but format it only when
+        // an assertion fails. Both public paths still run for every case.
+        let context = || {
+            let finite = finite.as_ref().map_err(ToString::to_string);
+            let sized = sized.as_ref().map_err(ToString::to_string);
+            format!(
+                "seed={SEED:#x}, case={index}, fault={:?}\n{}\nfinite={finite:?}\nsized={sized:?}",
+                case.fault, case.source
+            )
+        };
+        assert_eq!(finite.is_ok(), sized.is_ok(), "{}", context());
+        assert_eq!(finite.is_ok(), case.fault.accepted(), "{}", context());
         if finite.is_ok() {
             accepted += 1;
         } else {

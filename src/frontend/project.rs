@@ -21,11 +21,7 @@ mod source_file;
 pub use manifest::{QrateSource, manifest_warnings, qrate_source_root};
 
 pub(super) fn check_bundled_manifest() -> Result<(), Diagnostic> {
-    edition::check_manifest(
-        Path::new(BundledRegistry::manifest_path()),
-        BundledRegistry::manifest(),
-    )
-    .map_err(LoadFailure::into_diagnostic)
+    edition::check_bundled().map_err(LoadFailure::into_diagnostic)
 }
 
 /// Byte policy before UTF-8 decoding. Bounded project loading also permits at
@@ -230,6 +226,7 @@ impl fmt::Display for ProjectError {
 
 impl std::error::Error for ProjectError {}
 
+#[derive(Clone)]
 pub(crate) struct LoadFailure {
     pub error: ProjectError,
     pub coordinates: Option<(usize, usize)>,
@@ -379,10 +376,7 @@ impl Project {
             }
         }
         let root = root.to_path_buf();
-        edition::check_manifest(
-            Path::new(BundledRegistry::manifest_path()),
-            BundledRegistry::manifest(),
-        )?;
+        edition::check_bundled()?;
         let mut files = Vec::new();
         collect_qli_files(&root, directory, &mut budget, &mut files)?;
         files.sort_by(|a, b| a.0.cmp(&b.0));
