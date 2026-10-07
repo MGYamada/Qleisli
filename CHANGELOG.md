@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect canonical `controlled(U)(c, q)` to finite lowering through existing
+  checked circuits and native evidence, retaining eager order, exact types,
+  access, both owners and phase on zero-width targets.
+
 - Keep contextual power parsing out of recursive expression dispatch frames;
   check deep syntax on a bounded 2 MiB stack without changing nesting limits.
 

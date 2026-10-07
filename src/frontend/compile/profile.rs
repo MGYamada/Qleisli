@@ -124,11 +124,20 @@ fn block(block: &Block) -> Result<(), Failure> {
 }
 fn expr(expr: &Expr) -> Result<(), Failure> {
     match &expr.kind {
-        ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } | ExprKind::Controlled { .. } => {
+        ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => {
             return Err((
                 expr.span,
                 "expression is outside the finite lowering profile",
             ));
+        }
+        ExprKind::Controlled {
+            operation: op,
+            args,
+        } => {
+            operation(op)?;
+            for arg in args {
+                self::expr(arg)?;
+            }
         }
         ExprKind::ApplyStatic {
             operation: op,

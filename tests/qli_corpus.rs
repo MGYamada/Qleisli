@@ -162,6 +162,32 @@ fn phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates() {
 }
 
 #[test]
+fn canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes() {
+    let root = project("operation_algorithms");
+    root.write(
+        "estimation.qli",
+        &fs::read_to_string(
+            Path::new(env!("CARGO_MANIFEST_DIR")).join(
+                "tests/fixtures/authoring_sessions/canonical-control-migration-v030/attempt-01/estimation.qli",
+            ),
+        )
+        .unwrap(),
+    );
+    distribution(&execute(&root), &[(vec![true, false, false, true], 1.0)]);
+    distribution(
+        &run(&root, "algorithms/phase3_identity_reference"),
+        &[(vec![false; 5], 1.0)],
+    );
+    distribution(
+        &run(&root, "algorithms/phase3_correlated"),
+        &[
+            (vec![false; 5], 0.5),
+            (vec![true, false, false, true, true], 0.5),
+        ],
+    );
+}
+
+#[test]
 fn phase_estimation_matches_off_grid_probabilities_and_reference_instruments() {
     let root = project("operation_algorithms");
     let expected: Vec<_> = (0..4)

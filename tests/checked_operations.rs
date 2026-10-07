@@ -30,6 +30,219 @@ unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 ";
 
 #[test]
+fn canonical_control_finite_keeps_ordered_axes_and_ordinary_names() {
+    use qleisli::contract::exact::{Budget, Matrix};
+    use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
+    for count in [0, 1, 2] {
+        let text = format!(
+            "use std::quantum::{{x,init0}};use std::observe::measure_z;
+            unitary fn controlled(q:Q<Bit>)->Q<Bit>{{q}}
+            unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}
+            observe fn main()->(Bit,Bit){{
+                let(c,q)=controlled(power(oracle,{count}))(controlled(x(init0())),init0());
+                (measure_z(c),measure_z(q))
+            }}"
+        );
+        let accepted = compile_project(&SourceRoot::new(&text).0).unwrap();
+        let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+        assert!((distribution[&vec![true, count % 2 == 1]] - 1.0).abs() < 1e-12);
+        if count != 0 {
+            let steps = accepted
+                .raw()
+                .operations
+                .iter()
+                .find_map(|op| match op {
+                    RawOp::ApplyUnitary { steps, .. }
+                        if steps.iter().any(|s| !s.controls.is_empty()) =>
+                    {
+                        Some(steps.clone())
+                    }
+                    _ => None,
+                })
+                .expect("actual controlled circuit");
+            let actual = Circuit::new(BasisType::pair(BasisType::Bit, BasisType::Bit), steps)
+                .unwrap()
+                .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap();
+            // Control is the low axis. This differs from reversing the two
+            // input owners; probabilities for one chosen input alone are insufficient.
+            let permutation = if count == 1 {
+                [0, 3, 2, 1]
+            } else {
+                [0, 1, 2, 3]
+            };
+            let mut entries = vec![Exact::zero(); 16];
+            for (column, row) in permutation.into_iter().enumerate() {
+                entries[row * 4 + column] = Exact::one();
+            }
+            assert_eq!(actual, Matrix::new(4, 4, entries).unwrap());
+        }
+    }
+}
+
+#[test]
+fn canonical_control_finite_preserves_zero_width_phase_and_owner() {
+    use qleisli::contract::exact::{Budget, Matrix};
+    use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
+    for count in [1, 4] {
+        let text = format!(
+            "use std::quantum::{{init0,h,split,phase_eighth}};
+             use std::observe::{{discard,measure_z}};
+             unitary fn scalar(q:Q<Unit>)->Q<Unit>{{phase_eighth(q)}}
+             observe fn main()->Bit{{
+                 let pair=basis(init0()) as bit {{((),bit)}};
+                 let(unit,bit)=split(pair);
+                 let(c,unit)=controlled(power(scalar,{count}))(h(init0()),unit);
+                 discard(unit);discard(bit);measure_z(h(c))
+             }}"
+        );
+        let accepted = compile_project(&SourceRoot::new(&text).0).unwrap();
+        let steps = accepted
+            .raw()
+            .operations
+            .iter()
+            .find_map(|op| match op {
+                RawOp::ApplyUnitary { steps, .. }
+                    if steps.iter().any(|s| !s.controls.is_empty()) =>
+                {
+                    Some(steps.clone())
+                }
+                _ => None,
+            })
+            .unwrap();
+        let actual = Circuit::new(BasisType::pair(BasisType::Bit, BasisType::Unit), steps)
+            .unwrap()
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let phase = if count == 1 {
+            Exact::new([0, 1, 0, 1], 1).unwrap()
+        } else {
+            Exact::integer(-1)
+        };
+        assert_eq!(
+            actual,
+            Matrix::new(
+                2,
+                2,
+                vec![Exact::one(), Exact::zero(), Exact::zero(), phase]
+            )
+            .unwrap()
+        );
+        let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+        let expected = if count == 1 {
+            (2.0 - 2.0_f64.sqrt()) / 4.0
+        } else {
+            1.0
+        };
+        assert!((distribution[&vec![true]] - expected).abs() < 1e-12);
+        // The empty target remains an owner and is explicitly consumed.
+        assert!(
+            accepted
+                .raw()
+                .operations
+                .iter()
+                .any(|op| matches!(op, RawOp::Discard { .. }))
+        );
+    }
+}
+
+#[test]
+fn canonical_control_rejects_alias_arity_type_and_missing_access() {
+    for (signature, body) in [
+        ("(q:Q<Bit>)->(Q<Bit>,Q<Bit>)", "controlled(oracle)(q,q)"),
+        ("(q:Q<Bit>)->Q<Bit>", "controlled(oracle)(q)"),
+        (
+            "(c:Bit,q:Q<Bit>)->(Q<Bit>,Q<Bit>)",
+            "controlled(oracle)(c,q)",
+        ),
+        (
+            "(c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)",
+            "controlled(oracle)(c,q)",
+        ),
+    ] {
+        let text = format!(
+            "use std::quantum::x;unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}unitary fn unused{signature}{{{body}}}"
+        );
+        assert!(check_project(&SourceRoot::new(&text).0).is_err(), "{text}");
+        assert!(ParsedProgram::parse(sources(&text)).is_err(), "{text}");
+    }
+    let text = "unitary fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(power(U,0))(c,q)}";
+    let error = check_project(&SourceRoot::new(text).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Capability);
+    assert!(error.message.contains("Controlled"));
+    let text = "use std::quantum::{x,init0};use std::observe::measure_z;
+        classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+        meaning ZMeaning:Bit=phase_by(z_phase);
+        unitary fn liar(q:Q<Bit>)->Q<Bit>{x(q)}
+        observe fn main()->(Bit,Bit){
+            let(c,q)=controlled(power(checked_op(liar,ZMeaning),0))(init0(),init0());
+            (measure_z(c),measure_z(q))
+        }";
+    let error = compile_project(&SourceRoot::new(text).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Contract);
+}
+
+#[test]
+fn canonical_control_zero_power_evaluates_effectful_arguments_in_source_order() {
+    let text = "use std::quantum::{init0,h,x,cnot};use std::observe::measure_z;
+        unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)}
+        observe fn recreate(q:Q<Bit>)->Q<Bit>{
+            let b=measure_z(q);if b{x(init0())}else{init0()}
+        }
+        observe fn main()->(Bit,Bit){
+            let(a,r)=cnot(h(init0()),init0());
+            let(c,q)=controlled(power(oracle,0))(recreate(a),recreate(r));
+            (measure_z(c),measure_z(q))
+        }";
+    let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
+    let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert!((distribution[&vec![false, false]] - 0.5).abs() < 1e-12);
+    assert!((distribution[&vec![true, true]] - 0.5).abs() < 1e-12);
+    let (a, r) = accepted
+        .raw()
+        .operations
+        .iter()
+        .find_map(|op| match op {
+            RawOp::Cnot {
+                control_out,
+                target_out,
+                ..
+            } => Some((*control_out, *target_out)),
+            _ => None,
+        })
+        .unwrap();
+    let measured = accepted
+        .raw()
+        .operations
+        .iter()
+        .filter_map(|op| match op {
+            RawOp::MeasureZ { input, .. } => Some(*input),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    assert_eq!(measured.len(), 4);
+    assert_eq!(measured[0], a);
+    // The first argument's branch carries the untouched reference through
+    // fresh phi owners before the second argument consumes it.
+    let mut carried_r = r;
+    for op in &accepted.raw().operations {
+        match op {
+            RawOp::ClassicalBranch { quantum_phis, .. } => {
+                if let Some(phi) = quantum_phis
+                    .iter()
+                    .find(|phi| phi.then_token == carried_r && phi.else_token == carried_r)
+                {
+                    carried_r = phi.output;
+                }
+            }
+            RawOp::MeasureZ { input, .. } if *input != a => break,
+            _ => {}
+        }
+    }
+    assert_eq!(measured[1], carried_r);
+}
+
+#[test]
 fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
     let text = "use std::quantum::{h,init0}; use std::observe::measure_z;
         unitary fn inverse(q:Q<Bit>)->Q<Bit>{q}

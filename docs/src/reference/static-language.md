@@ -231,6 +231,17 @@ No general recursion or runtime unbounded loop is introduced.
 
 ## Operation repetition and access
 
+The canonical controlled application is `controlled(U)(c, q)`. The runtime
+arguments are evaluated once in control-then-target order. The control has
+exact type `Q<Bit>`; the target has the operation's exact `Q<A>` type. The result
+is `(Q<Bit>, Q<A>)`, retaining both logical owners even when `A` has zero width.
+It requires Controlled access, including for unused bodies and zero powers;
+an ordinary classical Bit, aliases and incorrect argument counts reject.
+The finite profile uses existing checked controlled circuit construction and
+native evidence, with the same six-bit/1024-step operation and shared work
+limits. Control is the first, low axis; the complete phase is retained.
+Single-stage ordinary `controlled(q)` calls retain normal name resolution.
+
 The canonical unary inverse application is `inverse(U)(q)`. The first stage
 contains the existing static operation description; the second evaluates one
 runtime input. It requires the actual operation's Adjoint access and an exact

@@ -3,6 +3,42 @@ use super::super::operations::{Bindings, Operation};
 use super::*;
 
 impl Lowerer<'_, '_> {
+    pub(super) fn controlled_application(
+        &mut self,
+        module: &str,
+        span: Span,
+        operation: &StaticOp,
+        args: &[Expr],
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let [control, target] = args else {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "controlled application requires a control and a target",
+            ));
+        };
+        let c = self.expr(module, control, env)?;
+        self.quantum(module, control.span, &c, true)?;
+        let q = self.expr(module, target, env)?;
+        let slot = self.quantum(module, target.span, &q, false)?;
+        let op = self.operation(module, operation, env)?;
+        if op.basis != self.raw.registers[&slot].basis {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "controlled operation and target have different exact basis trees",
+            ));
+        }
+        let steps = op.steps(module, span, Access::Controlled, self.compiler)?;
+        let joined = self.sealed(module, span, "std::quantum", "join", vec![c, q])?;
+        let slot = self.quantum(module, span, &joined, false)?;
+        self.apply_circuit(slot, steps);
+        self.sealed(module, span, "std::quantum", "split", vec![joined])
+    }
+
     pub(super) fn bound_operation(&self, name: &Ident) -> Option<&Operation> {
         let id = self.compiler.locals.usage(name).static_parameter?;
         self.bindings.get(self.compiler.locals.key(id))

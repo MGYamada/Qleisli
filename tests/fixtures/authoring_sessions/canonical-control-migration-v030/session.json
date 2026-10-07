@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "#33 canonical control in the existing bounded QPE migration client",
+  "baseline_commit": "93aff07ee58fb64ea72d48009fbec98a6238028a",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/Reference access, model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Canonical translation of an existing complete supported project, prepared before the finite lowering change.",
+      "sha256": {
+        "amplification.qli": "ded22a7d9f37b3b4014841ef41f5cbe8e9f45e35f51717ef3832bb6bb46ef5c5",
+        "estimation.qli": "4489c14c5911fb258a83c846e19561bbaf0c8f0e13ec4d84b03710af8f935b93",
+        "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+        "interference.qli": "a1b714bee3ee74fab552449d8302ac0e4df9cbc9f20da6523032a3893d34bc90",
+        "main.qli": "39857de37cfade8388651e3b4d1328ea3cbf681ae8301c11c469d38f23c257b5",
+        "oracles.qli": "ff8228c32ea52db92e3df47ee56510d3508d64c896424fde6e742634c12d276f"
+      },
+      "observations": [
+        "observation-before.json",
+        "observation-after-check.json",
+        "observation-after-run.json"
+      ],
+      "reports": [
+        "validation-control-unit.json"
+      ]
+    }
+  ]
+}

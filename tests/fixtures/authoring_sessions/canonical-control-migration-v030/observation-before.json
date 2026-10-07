@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "/private/tmp/qleisli-canonical-operation-example-probe"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-07T03:55:29.018205+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "expression is outside the finite lowering profile",
+        "primary": {
+          "path": "estimation.qli",
+          "start": 510,
+          "end": 538,
+          "line": 14,
+          "column": 18
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"expression is outside the finite lowering profile\",\"primary\":{\"path\":\"estimation.qli\",\"start\":510,\"end\":538,\"line\":14,\"column\":18},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "scope": "Actual canonical migration probe before finite controlled application. Source was prepared before checking; this metadata timestamp is a later transcription, not the command start time."
+}

@@ -594,14 +594,15 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
-            ExprKind::StaticIf { .. }
-            | ExprKind::StaticFold { .. }
-            | ExprKind::Controlled { .. } => Err(self.error(
+            ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => Err(self.error(
                 module,
                 expr.span,
                 ErrorCode::Unsupported,
                 "expression is outside the finite lowering profile",
             )),
+            ExprKind::Controlled { operation, args } => {
+                self.controlled_application(module, expr.span, operation, args, env)
+            }
             ExprKind::ApplyContract {
                 implementation,
                 specification,
