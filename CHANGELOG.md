@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Lower constructed inverse applications such as `inverse(power(U,k))(q)`
+  through existing checked Adjoint operation steps, preserving exact phase,
+  zero-count input evaluation and the named/sealed inverse path.
+
 - Migrate fixed operation-algorithm examples to canonical control, power and
   inverse applications; retain independent phase/reference regressions and
   correct the README's obsolete Bit spelling and tuple-tree equivalence.

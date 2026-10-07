@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "6ba5d7717fb59c1f251c33633debdb5368aebf9ca7ea7251865caefb1e17b319",
+  "surface_sha256": "5d946bd3180dca1997690116fe2ee36f0a41642f172dce4a1b45c73d51793985",
   "groups": [
     {
       "id": "raw-core",
@@ -1885,6 +1885,14 @@
         {
           "path": "tests/checked_operations.rs",
           "test": "canonical_control_finite_preserves_zero_width_phase_and_owner"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meaning"
         },
         {
           "path": "tests/qli_corpus.rs",

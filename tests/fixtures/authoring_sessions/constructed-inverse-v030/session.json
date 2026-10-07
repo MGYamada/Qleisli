@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#33 finite constructed inverse application",
+  "baseline_commit": "cee41436ebdae5d79a3b3ac40f757391b9c33deb",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/Reference access; exact model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Small desired HZ-squared inverse source before checking and before finite adapter implementation.",
+      "sha256": {
+        "main.qli": "1ad94ffffa3764664ff6c006f40c76a389fb39498208deea57e4a87ea4d4aed2"
+      },
+      "observations": [
+        "observation-before.json",
+        "observation-after-check.json",
+        "observation-after-run.json"
+      ],
+      "reports": [
+        "validation-inverse-unit.json"
+      ]
+    }
+  ]
+}

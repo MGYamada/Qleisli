@@ -3,6 +3,30 @@ use super::super::operations::{Bindings, Operation};
 use super::*;
 
 impl Lowerer<'_, '_> {
+    pub(super) fn constructed_inverse(
+        &mut self,
+        module: &str,
+        span: Span,
+        operation: &StaticOp,
+        input: &Expr,
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let value = self.expr(module, input, env)?;
+        let slot = self.quantum(module, input.span, &value, false)?;
+        let op = self.operation(module, operation, env)?;
+        if op.basis != self.raw.registers[&slot].basis {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "inverse operation and input have different exact basis trees",
+            ));
+        }
+        let steps = op.steps(module, span, Access::Adjoint, self.compiler)?;
+        self.apply_circuit(slot, steps);
+        Ok(value)
+    }
+
     pub(super) fn controlled_application(
         &mut self,
         module: &str,

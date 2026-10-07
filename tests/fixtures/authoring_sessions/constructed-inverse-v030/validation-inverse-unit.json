@@ -1,0 +1,85 @@
+{
+  "format": "qleisli.bounded-implementation-validation",
+  "version": 1,
+  "issue": 33,
+  "edition": "2026",
+  "implementation_base": "cee41436ebdae5d79a3b3ac40f757391b9c33deb",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6030943968",
+  "scope": "Finite constructed inverse application reuses the existing original operation description, exact basis, Adjoint step construction and native evidence. The existing named/sealed inverse path and all profile/capacity/work limits remain.",
+  "unchanged_desired_source": {
+    "path": "attempt-01/main.qli",
+    "sha256": "1ad94ffffa3764664ff6c006f40c76a389fb39498208deea57e4a87ea4d4aed2"
+  },
+  "source_sha256": {
+    "src/frontend/compile/profile.rs": "4e9871a9426a4f71f132c34317306206e5ce04ffbf44ef9a2544f69c9f318bff",
+    "src/frontend/compile/lower/mod.rs": "696cc9aa937a8cdfeed9952f9dcd7b1ff44f2d7364f6efcf7134a0a50d6afa7a",
+    "src/frontend/compile/lower/operations.rs": "6b7deb61bc0f51c0eb28f6fa1a8ba63e2ee838a1a5d9f0c2aba11718ccb92d32",
+    "tests/checked_operations.rs": "8471fed46c4ee50c87dde1e3a82a6be30c0910ceac13482c2764b70aee4461e6"
+  },
+  "actual_cli_observations": [
+    "observation-before.json",
+    "observation-after-check.json",
+    "observation-after-run.json"
+  ],
+  "independent_checks": [
+    "Actual inverse (HZ)^2 circuit equals the fixed exact matrix [[0,1],[-1,0]], including its full sign; the unchanged closed source returns 1.",
+    "Actual zero-width scalar inverse circuit equals omega^-1 = (1-i)/sqrt(2). The logical Unit owner is explicitly discarded, and the live Bit remains.",
+    "Inverse of power zero still evaluates x(init0()) and returns 1; the original checked X provider claiming Z Meaning still rejects Contract.",
+    "Existing named inverse and sealed gates, unused missing Adjoint, ordered/reference actions, exact type mismatches, canonical controls, fixed algorithm faults and independent instrument oracles remain exercised by the 77 related tests."
+  ],
+  "logs": {
+    "qleisli-constructed-inverse-related-latest.log": {
+      "external_path": "/private/tmp/qleisli-constructed-inverse-related-latest.log",
+      "sha256": "7336e809a0848a64a3c055b583a295b3a63f0f5ec1c004a8fdcb932660b3f098",
+      "passed": 77,
+      "failed": 0,
+      "ignored": 0,
+      "targets": [
+        "checked_operations",
+        "iterative_qpe",
+        "operation_parameters",
+        "qli_corpus",
+        "quantum_unit_source"
+      ]
+    },
+    "qleisli-constructed-inverse-related-msrv.log": {
+      "external_path": "/private/tmp/qleisli-constructed-inverse-related-msrv.log",
+      "sha256": "40a1224767042be53e4f67e99314ddb6fd03b00484bfc18b89a0e74795d49e38",
+      "passed": 77,
+      "failed": 0,
+      "ignored": 0,
+      "targets": [
+        "checked_operations",
+        "iterative_qpe",
+        "operation_parameters",
+        "qli_corpus",
+        "quantum_unit_source"
+      ]
+    },
+    "qleisli-constructed-inverse-clippy-latest.log": {
+      "external_path": "/private/tmp/qleisli-constructed-inverse-clippy-latest.log",
+      "sha256": "27803389262bb39e988283ea5a77f98ae286bcdc8d76b5a552570de37d3cd06d",
+      "status": "passed; all targets with -D warnings"
+    },
+    "qleisli-constructed-inverse-clippy-msrv.log": {
+      "external_path": "/private/tmp/qleisli-constructed-inverse-clippy-msrv.log",
+      "sha256": "87fdb98dcc07ad8f53f204a8d20a3a9dbb8734dcdaf4223d716a3d2a5f9f2788",
+      "status": "passed; all targets with -D warnings"
+    }
+  },
+  "policy_checks": {
+    "public_surface": "Explicit unchanged public declaration/signature/capacity review; three private-body source hashes rebound and two route regressions added. No constructor or schema change.",
+    "production_coverage": "passed, including 14 checker regressions",
+    "constitution": "passed against trusted 38baae7d19535602b21270e11e97617d45205b37; identity/continuity only",
+    "docs": "2205 links and 31 Markdown anchors passed",
+    "book": "mdBook0.5.4 build and correct --root checker passed; 29 HTML files, 1228 links, 474 anchors",
+    "format": "passed"
+  },
+  "harness_correction": "The first session metadata used unsupported kind informed_authoring. Authoring identity validation rejected it. It was corrected to existing informed_first_attempt without changing first source, commands, diagnostics, exits or timestamps; no checker exemption was added.",
+  "limitations": [
+    "No new native constructor, acceptance rule, trusted assumption, interpretation or guarantee.",
+    "These bounded exact checks do not discharge general source/runtime preservation, QS, PR or quantitative RS. No fresh Lean build/audit/replay, full all-target Rust test run, hosted CI, package or clean-install gate is claimed for this inverse unit.",
+    "Broader pending interpretations and both admitted scoped guarantees remain unchanged. Legacy operation spelling retirement and wider active migration remain unfinished; #33/#250 remain open.",
+    "Generic QFT delivery/integration/equivalence remains entirely outside the goal."
+  ]
+}

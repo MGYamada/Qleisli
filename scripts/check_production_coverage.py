@@ -78,6 +78,8 @@ PATHS = {
         ('tests/checked_operations.rs', 'canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers'),
         ('tests/checked_operations.rs', 'canonical_control_finite_keeps_ordered_axes_and_ordinary_names'),
         ('tests/checked_operations.rs', 'canonical_control_finite_preserves_zero_width_phase_and_owner'),
+        ('tests/checked_operations.rs', 'canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects'),
+        ('tests/checked_operations.rs', 'canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meaning'),
         ('tests/qli_corpus.rs', 'canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes'),
         ('tests/quantum_unit_source.rs', 'canonical_power_original_program_and_symbolic_counts_preserve_z_phase'),
         ('tests/quantum_unit_source.rs', 'canonical_power_noncommuting_order_and_nested_inverse_have_independent_action'),

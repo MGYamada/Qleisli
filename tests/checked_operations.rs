@@ -30,6 +30,102 @@ unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 ";
 
 #[test]
+fn canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects() {
+    use qleisli::contract::exact::{Budget, Matrix};
+    use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
+    let text = "use std::quantum::{h,z,init0};use std::observe::measure_z;
+        unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}
+        observe fn main()->Bit{measure_z(inverse(power(oracle,2))(init0()))}";
+    let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
+    let steps = accepted
+        .raw()
+        .operations
+        .iter()
+        .find_map(|op| match op {
+            RawOp::ApplyUnitary { steps, .. } => Some(steps.clone()),
+            _ => None,
+        })
+        .unwrap();
+    let actual = Circuit::new(BasisType::Bit, steps)
+        .unwrap()
+        .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
+    // (HZ)^2 inverse is [[0,1],[-1,0]], including its complete sign.
+    assert_eq!(
+        actual,
+        Matrix::new(
+            2,
+            2,
+            vec![
+                Exact::zero(),
+                Exact::one(),
+                Exact::integer(-1),
+                Exact::zero()
+            ]
+        )
+        .unwrap()
+    );
+    assert!(
+        (run_closed(&accepted, SimulationLimits::default()).unwrap()[&vec![true]] - 1.0).abs()
+            < 1e-12
+    );
+    let text = "use std::quantum::{h,z,x,init0};use std::observe::measure_z;
+        unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}
+        observe fn main()->Bit{measure_z(inverse(power(oracle,0))(x(init0())))}";
+    let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
+    assert!(
+        (run_closed(&accepted, SimulationLimits::default()).unwrap()[&vec![true]] - 1.0).abs()
+            < 1e-12
+    );
+}
+
+#[test]
+fn canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meaning() {
+    use qleisli::contract::exact::{Budget, Matrix};
+    use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};
+    let text = "use std::quantum::{init0,split,phase_eighth};use std::observe::{discard,measure_z};
+        unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+        observe fn main()->Bit{
+            let(unit,bit)=split(basis(init0()) as b{((),b)});
+            let unit=inverse(power(scalar,1))(unit);
+            discard(unit);measure_z(bit)
+        }";
+    let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
+    let steps = accepted
+        .raw()
+        .operations
+        .iter()
+        .find_map(|op| match op {
+            RawOp::ApplyUnitary { steps, .. } => Some(steps.clone()),
+            _ => None,
+        })
+        .unwrap();
+    let actual = Circuit::new(BasisType::Unit, steps)
+        .unwrap()
+        .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
+    assert_eq!(
+        actual,
+        Matrix::new(1, 1, vec![Exact::new([0, 1, 0, -1], 1).unwrap()]).unwrap()
+    );
+    assert!(
+        (run_closed(&accepted, SimulationLimits::default()).unwrap()[&vec![false]] - 1.0).abs()
+            < 1e-12
+    );
+    let text = "use std::quantum::{x,init0};use std::observe::measure_z;
+        classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+        meaning ZMeaning:Bit=phase_by(z_phase);
+        unitary fn liar(q:Q<Bit>)->Q<Bit>{x(q)}
+        observe fn main()->Bit{measure_z(inverse(power(checked_op(liar,ZMeaning),0))(init0()))}";
+    assert_eq!(
+        compile_project(&SourceRoot::new(text).0).unwrap_err().code,
+        ErrorCode::Contract
+    );
+    let text = "unitary fn unused[static U:Op<Bit>](q:Q<Unit>)->Q<Unit> requires Apply(U),Adjoint(U){inverse(power(U,0))(q)}";
+    assert!(check_project(&SourceRoot::new(text).0).is_err());
+}
+
+#[test]
 fn canonical_control_finite_keeps_ordered_axes_and_ordinary_names() {
     use qleisli::contract::exact::{Budget, Matrix};
     use qleisli::contract::{Circuit, DEFAULT_EXACT_WORK};

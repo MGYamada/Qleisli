@@ -250,6 +250,11 @@ access. The same checks apply to unused bodies and zero-count descriptions.
 The word is contextual: an ordinary `inverse(q)` and functions or locals named
 `inverse` retain normal resolution. No runtime callable is constructed.
 Concrete profile restrictions and independent native evidence gates still apply.
+Finite constructed inverses such as `inverse(power(U, k))(q)` use the existing
+closed operation-provider profile, exact basis and Adjoint evidence. Literal
+count, six-bit operation, step and shared work limits remain; named inverses
+retain their existing sealed-gate path. A zero power still checks the original
+provider/Meaning and requested access, and evaluates its runtime input once.
 During this unreleased migration, `adjoint(U,q)` remains temporary input with
 the same rule. Its retirement and the remaining operation-builder spellings
 are unfinished [#33](https://github.com/MGYamada/Qleisli/issues/33) work.

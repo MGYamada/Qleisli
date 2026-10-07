@@ -3425,7 +3425,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "209e34d0c1e96a69fdc6b3fab09cd660233e6ddf7bfec2659ef548758deaddc7",
+      "sha256": "696cc9aa937a8cdfeed9952f9dcd7b1ff44f2d7364f6efcf7134a0a50d6afa7a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3435,7 +3435,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "7347ae9b311d3f245a89889456923c425fb2011a50d76d54e740eda57438e254",
+      "sha256": "6b7deb61bc0f51c0eb28f6fa1a8ba63e2ee838a1a5d9f0c2aba11718ccb92d32",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3531,7 +3531,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "00aaad5a27936691fdb58081ca6afa75fb28323eb9fdfe368f9332015d2b858c",
+      "sha256": "4e9871a9426a4f71f132c34317306206e5ce04ffbf44ef9a2544f69c9f318bff",
       "group": "source",
       "surface": {
         "declarations": [],

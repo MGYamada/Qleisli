@@ -150,9 +150,7 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
             operation: op,
             input,
         } => {
-            if !matches!(op.kind, StaticOpKind::Name(_)) {
-                return Err((op.span, "finite adjoint requires a function name"));
-            }
+            operation(op)?;
             self::expr(input)?;
         }
         ExprKind::CoherentLift { input, .. } => self::expr(input)?,

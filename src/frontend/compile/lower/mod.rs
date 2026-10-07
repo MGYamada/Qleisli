@@ -636,6 +636,11 @@ impl Lowerer<'_, '_> {
                 self.apply_circuit(slot, steps);
                 Ok(value)
             }
+            ExprKind::Adjoint { operation, input }
+                if !matches!(operation.kind, StaticOpKind::Name(_)) =>
+            {
+                self.constructed_inverse(module, expr.span, operation, input, env)
+            }
             ExprKind::Adjoint { input, .. } | ExprKind::RepeatStatic { input, .. } => {
                 let function = match &expr.kind {
                     ExprKind::Adjoint {
