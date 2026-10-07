@@ -2,7 +2,9 @@
 
 This standalone Julia environment uses **Julia 1.13.1** and
 **Cyclotomics.jl 0.3.2**. `Project.toml` fixes these compatibility requirements;
-`Manifest.toml` locks the complete resolved dependency graph and package trees.
+The local, untracked `Manifest.toml` locks the resolved dependency graph and
+package trees. A fresh clone resolves indirect dependencies anew; it does not
+carry the exact dependency graph used for the recorded experiment.
 Use the recorded Julia version when reproducing the experiments.
 
 The dependency is [Cyclotomics.jl](https://github.com/kalmarek/Cyclotomics.jl),
@@ -57,7 +59,8 @@ global phase distinction and a two-qubit Bell vector. Matrix basis order is
 computational experiments and do not assert a general theorem or source
 preservation for the Qleisli compiler.
 
-The manifest is an intentional source artifact. Do not commit package caches,
+The maintainer excludes `/julia/Manifest.toml` from Git; retain the local file
+when repeating an experiment. Do not commit package caches,
 compiled images or generated output; the local ignore file covers optional
 `.julia/` and `output/` directories. Julia normally stores its dependency
 cache in the user's existing depot outside the repository.
