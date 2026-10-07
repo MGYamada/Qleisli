@@ -94,23 +94,18 @@ fn main() -> ExitCode {
     if args.iter().any(|arg| arg == "--format=json") {
         return json::run(&args);
     }
-    let Some(mut options) = options::Options::parse(&args, false) else {
+    let Some(options) = options::Options::parse(&args, false) else {
         eprintln!("{}", options::USAGE);
         return ExitCode::from(2);
     };
-    if options.qrate {
-        match qleisli::frontend::project::QrateSource::select(&options.path) {
-            Ok(root) => {
-                options.path = root.path().to_owned();
-                options.selected_root = Some(root);
-            }
-            Err(error) => {
-                report(&options.path, error);
-                return ExitCode::FAILURE;
-            }
+    let input = match source_commands::Input::select(&options) {
+        Ok(input) => input,
+        Err(error) => {
+            report(&options.path, error);
+            return ExitCode::FAILURE;
         }
-    }
-    let source_root = &options.path;
+    };
+    let source_root = input.path();
     if options.command != "verify-ir" && options.command != "doc" {
         for warning in
             qleisli::frontend::project::manifest_warnings(source_root).unwrap_or_default()
@@ -119,7 +114,7 @@ fn main() -> ExitCode {
         }
     }
     if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
-        return match artifacts::execute(&options) {
+        return match artifacts::execute(&options, &input) {
             Ok(artifacts::Success::Emitted(path)) => write_stdout(
                 format!("emitted independently verified IR: {path}\n").as_bytes(),
                 "emission result",
@@ -154,7 +149,7 @@ fn main() -> ExitCode {
             }
         };
     }
-    match source_commands::execute(&options, source_root) {
+    match source_commands::execute(&options, &input) {
         Ok(source_commands::Success::Checked) => write_stdout(
             format!(
                 "checked source and verified IR: {}\n",

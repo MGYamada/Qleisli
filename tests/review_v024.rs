@@ -94,6 +94,75 @@ fn tuple_misuse_locates_its_binding_without_rejecting_valid_named_tuples() {
 const QRATE: &str = "schema-version=2\n[qrate]\nname='demo'\nversion='0.1.0'\nedition='2026'\n[source]\nroot='src'\n[tests]\nroot='tests'\n[docs]\nroot='docs'\n";
 
 #[test]
+fn selected_source_identity_reaches_every_cli_consumer_and_rechecks_unused_source() {
+    let root = SourceRoot::new("observe fn main()->Bit{0}");
+    root.write("Qargo.toml", QRATE);
+    fs::create_dir(root.0.join("src")).unwrap();
+    fs::write(root.0.join("src/main.qli"), "observe fn main()->Bit{1}").unwrap();
+    for invalid in [false, true] {
+        if invalid {
+            fs::write(root.0.join("src/unused.qli"), "not a program").unwrap();
+        }
+        for action in ["check", "run", "sample", "emit-ir"] {
+            for json in [false, true] {
+                let artifact = root.0.join(format!("selected-{json}-{invalid}.qirf"));
+                let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                command.arg(action).arg(&root.0).arg("--qrate");
+                if json {
+                    command.arg("--format=json");
+                }
+                if action == "sample" {
+                    command.args(["--shots=3", "--seed=0"]);
+                }
+                if action == "emit-ir" {
+                    command.arg(format!("--output={}", artifact.display()));
+                }
+                let output = command.output().unwrap();
+                assert_eq!(output.status.code(), Some(i32::from(invalid)), "{output:?}");
+                let text = String::from_utf8(output.stdout).unwrap();
+                if invalid {
+                    let error = if json {
+                        text
+                    } else {
+                        String::from_utf8(output.stderr).unwrap()
+                    };
+                    assert!(error.contains("parse"), "{action}: {error}");
+                    assert!(error.contains("unused.qli"), "{action}: {error}");
+                    assert!(!artifact.exists());
+                } else {
+                    assert!(output.stderr.is_empty());
+                    match action {
+                        "run" if json => {
+                            assert!(text.contains("\"bits\":[true],\"probability\":1"))
+                        }
+                        "run" => assert_eq!(text, "1: 1.000000000000e0\n"),
+                        "sample" if json => assert_eq!(text.matches("\"bits\":[true]").count(), 3),
+                        "sample" => assert_eq!(text, "1\n1\n1\n"),
+                        "emit-ir" => {
+                            let checked = qleisli::interchange::native::Kernel::selected()
+                                .unwrap()
+                                .check(&fs::read(&artifact).unwrap(), None)
+                                .unwrap()
+                                .into_program();
+                            let distribution = qleisli::sim::run_closed(
+                                &checked,
+                                qleisli::sim::SimulationLimits::default(),
+                            )
+                            .unwrap();
+                            assert_eq!(
+                                distribution.into_iter().collect::<Vec<_>>(),
+                                [(vec![true], 1.0)]
+                            );
+                        }
+                        _ => {}
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
 fn declared_source_selection_excludes_build_outputs_and_preserves_legacy_loading() {
     let root = SourceRoot::new("this is an unrelated scratch source");
     root.write("Qargo.toml", QRATE);

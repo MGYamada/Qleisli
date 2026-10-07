@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Keep ordinary CLI source selection and loading policy in one private input
+  value shared by text/JSON execution and IR emission. Preserve held qrate
+  directory identity, diagnostic paths and fresh checks for every invocation.
+
 - Remove the public `sized` command namespace and `frontend::sized` Rust module.
   Use ordinary commands with `--entry`/`--module` and preparation/binding types
   in `frontend::compile`; the former command now reports a migration usage error.

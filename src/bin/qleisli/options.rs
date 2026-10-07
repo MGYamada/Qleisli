@@ -49,7 +49,6 @@ pub(super) struct Options {
     pub output: Option<PathBuf>,
     pub against: Option<PathBuf>,
     pub qrate: bool,
-    pub selected_root: Option<qleisli::frontend::project::QrateSource>,
     pub lean_kernel: Option<PathBuf>,
 }
 
@@ -147,7 +146,6 @@ impl Options {
             output,
             against,
             qrate,
-            selected_root: None,
             lean_kernel,
         })
     }

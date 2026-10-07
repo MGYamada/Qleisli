@@ -193,8 +193,11 @@ pub(super) fn samples_json(
     result
 }
 
-fn execute(options: &super::options::Options, root: &Path) -> Result<String, Diagnostic> {
-    match super::source_commands::execute(options, root).map_err(|error| match error {
+fn execute(
+    options: &super::options::Options,
+    input: &super::source_commands::Input,
+) -> Result<String, Diagnostic> {
+    match super::source_commands::execute(options, input).map_err(|error| match error {
         Failure::Source(error) => error,
         Failure::Simulation(error) => simulation_failure(error),
     })? {
@@ -225,24 +228,15 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
     let mut warnings = vec![];
     let result = if let Some(options) = options {
         root = options.path.clone();
-        let selected = if options.qrate {
-            qleisli::frontend::project::QrateSource::select(&root).map(Some)
-        } else {
-            Ok(None)
-        };
+        let selected = super::source_commands::Input::select(&options);
         if let Err(error) = selected {
             root = std::fs::canonicalize(&root).unwrap_or(root);
             Err(error)
         } else if root.to_str().is_none() {
             Err(failure("project", "source root is not valid UTF-8"))
         } else {
-            let mut options = options;
-            options.selected_root = selected.expect("checked root selection");
-            root = match &options.selected_root {
-                Some(selected) => selected.path().to_owned(),
-                None => std::fs::canonicalize(&root).unwrap_or(root),
-            };
-            options.path = root.clone();
+            let input = selected.expect("checked root selection").canonicalize();
+            root = input.path().to_owned();
             if root.to_str().is_none() {
                 Err(failure("project", "source root is not valid UTF-8"))
             } else {
@@ -252,7 +246,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                 }
                 if matches!(options.command.as_str(), "emit-ir" | "verify-ir") {
                     // Keep source spans from emission separate from artifact pointers.
-                    match super::artifacts::execute(&options) {
+                    match super::artifacts::execute(&options, &input) {
                         Ok(super::artifacts::Success::Emitted(path)) => {
                             Ok(format!("{{\"path\":{}}}", quoted(&path)))
                         }
@@ -268,7 +262,7 @@ pub(super) fn run(args: &[OsString]) -> ExitCode {
                 } else {
                     // The final canonical root also supplies relative identities.
                     // Failed canonicalization remains a handled project-load error.
-                    execute(&options, &root)
+                    execute(&options, &input)
                 }
             }
         }
