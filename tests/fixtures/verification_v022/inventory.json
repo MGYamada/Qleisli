@@ -4634,7 +4634,7 @@
     },
     {
       "path": "src/interchange/native/runtime.rs",
-      "sha256": "7086d68481c758ae0e6854aab5da165364601719d806a9ce3008e9a03a750b19",
+      "sha256": "b38489cbdc7930a027b20a394dd57533c795f27a4573c74496176b99be1461ac",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -4654,7 +4654,7 @@
     },
     {
       "path": "src/interchange/process.rs",
-      "sha256": "f9661d21e3b163c12aea0ad780995bd99737126d04493f606f0cef4a455c4a5a",
+      "sha256": "8511f65cb91098ee3090e0b87bcffe59c10bf30e71340b848ad501a1ebead2ce",
       "group": "transport",
       "surface": {
         "declarations": [],

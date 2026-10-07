@@ -113,7 +113,7 @@ mod tests {
     #[test]
     #[cfg(unix)]
     fn process_failures_never_fall_back_or_wait_beyond_the_deadline() {
-        use std::os::unix::fs::PermissionsExt;
+        use std::os::unix::fs::symlink;
         use std::time::{SystemTime, UNIX_EPOCH};
         let directory = std::env::temp_dir().join(format!(
             "qleisli-native-{}-{}",
@@ -131,30 +131,24 @@ mod tests {
             }
         }
         let _cleanup = Cleanup(directory.clone());
-        let executable = directory.join("kernel");
-        for (script, code) in [
-            (
-                "cat >/dev/null\nprintf 'qleisli.qirf-native 1\\naccepted\\n0\\n0\\n'\nexit 1",
-                "io",
-            ),
-            (
-                "cat >/dev/null\nprintf 'qleisli.qirf-native 1\\nerror\\ncontract\\n'",
-                "contract",
-            ),
-            (
-                "while :; do printf 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; done",
-                "limit",
-            ),
-            ("exec sleep 4", "limit"),
-            ("sleep 4 &\nexit 0", "limit"),
-            ("exit 0", "format"),
+        let fixture = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/verification_v029/process-failure.sh");
+        // Immutable code avoids ETXTBSY from concurrent forked children that
+        // temporarily inherit a fixture writer. Each link selects one case.
+        for (case, code) in [
+            ("failed-acceptance", "io"),
+            ("contract", "contract"),
+            ("large-output", "limit"),
+            ("sleep", "limit"),
+            ("inherited-pipe", "limit"),
+            ("empty", "format"),
         ] {
-            std::fs::write(&executable, format!("#!/bin/sh\n{script}\n")).unwrap();
-            std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o700)).unwrap();
+            let executable = directory.join(case);
+            symlink(&fixture, &executable).unwrap();
             let start = Instant::now();
             let error =
                 invoke(&executable, vec![0; 4096], false, Duration::from_secs(1)).unwrap_err();
-            assert_eq!(error.code, code, "{script}: {error}");
+            assert_eq!(error.code, code, "{case}: {error}");
             assert!(start.elapsed() < Duration::from_secs(2));
         }
         assert_eq!(

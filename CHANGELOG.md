@@ -8,7 +8,7 @@ development milestones from the scope of their evidence.
 
 - Preserve the refused operation-application authoring attempt as exact hashed
   history while checking the corrected project normally. Use an immutable
-  failed-checker fixture for runtime framing tests, avoiding Linux executable
+  checker fixtures for native framing, deadline and descendant tests, avoiding Linux executable
   write/spawn races without transport retries or reduced assertions.
 
 - Add contextual `inverse(U)(q)` source application through the existing

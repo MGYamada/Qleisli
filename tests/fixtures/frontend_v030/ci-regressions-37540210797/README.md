@@ -3,8 +3,10 @@
 [Run 37540210797](https://github.com/MGYamada/Qleisli/actions/runs/37540210797)
 failed two Native comparisons after the explicit atomic Bits extension.
 [Observations](observations.json) identify the original head, synthetic PR merge,
-job and complete retrieved log digest. [Failure excerpts](native-failure-excerpts.txt)
-preserve selected original timestamped lines; they are not the whole log.
+job and complete retrieved log digest. [Failure excerpts](native-failure-excerpts.json)
+preserve selected original timestamped lines through lossless JSON encoding,
+including timestamp-only lines with trailing spaces. The original byte digest
+and filename are retained; they are not the whole log.
 The original test sources remain in Git at the recorded head.
 
 The finite projection test still expected all atomic Bits to be rejected.
