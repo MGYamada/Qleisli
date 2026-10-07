@@ -128,6 +128,64 @@ fn teleportation_recovers_seven_states_and_an_entangled_reference() {
 }
 
 #[test]
+fn protocol_y_minus_has_the_full_independent_operator_phase() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, Circuit, DEFAULT_EXACT_WORK};
+    use qleisli::ir::RawOp;
+
+    let root = project("protocols");
+    // This whole-space equation is independent of preparing a state and then
+    // undoing it with the same provider: S†H = [[s,s],[-i*s,i*s]]. It fixes
+    // both columns and the complete phase, including under external reference.
+    let s = Exact::inv_sqrt2();
+    let expected = Matrix::new(
+        2,
+        2,
+        vec![
+            s,
+            s,
+            Exact::new([0, 0, 0, -1], 1).unwrap(),
+            Exact::new([0, 0, 0, 1], 1).unwrap(),
+        ],
+    )
+    .unwrap();
+    root.write(
+        "phase_fault.qli",
+        "use states::y_minus; use std::quantum::phase_eighth;\n\
+         pub unitary fn shifted(q:Q<Bit>)->Q<Bit>{phase_eighth(y_minus(q))}\n",
+    );
+    for provider in ["y_minus", "y_plus", "shifted"] {
+        root.write(
+            "main.qli",
+            &format!(
+                "use states::{{y_minus,y_plus}}; use phase_fault::shifted;\n\
+                 use std::quantum::init0; use std::observe::measure_z;\n\
+                 unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}\n\
+                 observe fn main()->Bit{{measure_z(use_op[{provider}](init0()))}}\n"
+            ),
+        );
+        let accepted = compile_project(&root.0).unwrap();
+        let applications: Vec<_> = accepted
+            .raw()
+            .operations
+            .iter()
+            .filter_map(|op| match op {
+                RawOp::ApplyUnitary { steps, .. } => Some(steps.clone()),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(applications.len(), 1, "{provider}");
+        let actual = Circuit::new(BasisType::Bit, applications[0].clone())
+            .unwrap()
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        // Both fault controls are native-valid unitaries. Admission alone
+        // supplies no claim that either matches the intended y_minus meaning.
+        assert_eq!(actual == expected, provider == "y_minus", "{provider}");
+    }
+}
+
+#[test]
 fn bell_components_support_dense_coding_and_entanglement_swapping() {
     let root = project("protocols");
     distribution(

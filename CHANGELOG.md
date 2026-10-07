@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Migrate the remaining protocol-example adjoints to named `inverse`
+  application. Preserve seven-state and entangled-reference protocol checks,
+  and compare the full `y_minus` operator with a literal exact phase contract
+  and accepted relative/global-phase fault controls.
 - Migrate iterative/coherent phase-estimation, fixed order-finding and
   operation-contract examples to canonical `controlled`, `power` and `inverse`
   applications. Retain complete source/diagnostic snapshots and the existing

@@ -1,0 +1,14 @@
+//! Create a Bell pair between two outer owners by measuring the inner pair.
+use bell::prepare;
+use bell::measure;
+use corrections::pauli;
+
+/// Return the inner measurement message and both corrected outer owners.
+/// The ideal outer state is Bell for each of the four equiprobable messages.
+pub observe fn connect() -> ((Bit, Bit), (Q<Bit>, Q<Bit>)) {
+    let (left, middle_left) = prepare();
+    let (middle_right, right) = prepare();
+    let (phase_bit, parity_bit) = measure(middle_left, middle_right);
+    let right = pauli(phase_bit, parity_bit, right);
+    ((phase_bit, parity_bit), (left, right))
+}
