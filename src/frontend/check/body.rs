@@ -531,6 +531,19 @@ impl Checker<'_, '_> {
                 static_args,
                 args,
             } => self.call(callee, static_args, args, scope, span)?,
+            ExprKind::ApplyStatic { operation, input } => {
+                let target = self.expr(input, scope, None)?;
+                self.transformed_operation(
+                    operation,
+                    &target,
+                    scope,
+                    Access::Apply,
+                    input.span,
+                    span,
+                )?;
+                self.obligation(span, ObligationKind::TransformedMeaning)?;
+                target
+            }
             ExprKind::Adjoint { operation, input } => {
                 let target = self.expr(input, scope, None)?;
                 self.transformed_operation(

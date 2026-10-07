@@ -1206,6 +1206,10 @@
         "CertifiedComputed": {
           "declaration": "CertifiedComputed { source: Box<Expr>, function: Ident, logical: Box<Ident>, data_binder: Box<Ident>, ancilla_binder: Box<Ident>, body: Block, }",
           "group": "source"
+        },
+        "ApplyStatic": {
+          "declaration": "ApplyStatic { operation: StaticOp, input: Box<Expr>, }",
+          "group": "source"
         }
       }
     },
@@ -3219,7 +3223,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "5cd24a228babe6f076433713be0d274cd1d39c9da1ccd5bcd73e3aa8bdae981d",
+      "sha256": "3b7dc9a0da1b4431169a5919ec9f6e480df3dbb3c020d495835d6a8e55e0c3aa",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3282,7 +3286,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "a78a248323f3fd72e55ee83eeb2d547e6adbb4ecf5bef86cd93871108eb82777",
+      "sha256": "1943110cd293930c3de17205755060271c10eaadf1d793730a99f55635bf9f26",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3421,7 +3425,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "d68f89e1d095beb1c79efdda5d10350fe9187235d7cc645ea43191e575654262",
+      "sha256": "e108a1ee65ceb5000da898863cc2fee1c192dfe68793c8276be7073f254933de",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3431,7 +3435,7 @@
     },
     {
       "path": "src/frontend/compile/lower/operations.rs",
-      "sha256": "c71bd144ebedab0ef1b27c0d0f28385816a341a6c94597c31f4023fa576468d1",
+      "sha256": "f26712056b917f360c490096e13848eb928ef637bdd45278ee334bf4e288d81c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3527,7 +3531,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "e4b3fccedf9d11c387015abafd5a9ca9c97ba331ee72eff592e79774ae9353b1",
+      "sha256": "65170444d500ac223b724ac1effa8c35722e410d79fa4b3336e3d22426b6d249",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3679,7 +3683,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "f1b37c949f7e591ed9e087f0b4aed2c41026897174d0f6d6fa94b33c09ed1cde",
+      "sha256": "6380cd65523ee85b930d8367f029346ac8e6c28d5645b0963f658647ae895c16",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3820,7 +3824,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "1e9feac634f376de5eb35a97fbdb1031d42c811ed2a323ae125353dc11eb5d19",
+      "sha256": "5124b5179231cd9393d1b175c9434f5ec048fe05953a8340d209ff23cd247036",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3910,7 +3914,7 @@
     },
     {
       "path": "src/frontend/sized/ast.rs",
-      "sha256": "59f6f9ebb86036327d2a724ad917d971c78573277e2cff213ce11c0da523e65f",
+      "sha256": "8524a69bc993be6cad55e4b4d9e9f00651bc669e0c60db56fc481217b6351275",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -3934,7 +3938,7 @@
     },
     {
       "path": "src/frontend/sized/elaborate.rs",
-      "sha256": "9602a0066fb3a9b52420f733acb175c3e14f5af9e2ffcc0623b7c0b243641718",
+      "sha256": "164d0dd534ad5ad9276785bab6646232d1c3fbd03fe72ed91f26d17f31addfeb",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4120,7 +4124,7 @@
     },
     {
       "path": "src/frontend/sized/parser.rs",
-      "sha256": "dbe792be18afb96f4299fc808c3dfae87b4e20c9a39d6e84daf3f5c1f97ff742",
+      "sha256": "b1f34b6e19e6f85c8b9a81f1918cb9258f0ef8455fd2805b3fba1894d983f25b",
       "group": "sized-source",
       "surface": {
         "declarations": [],

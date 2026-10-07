@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add contextual `power(U, count)(q)` application and nested static descriptions,
+  retaining provider identities, counts, source spans and access checks.
+
 - Connect the existing Z intrinsic to selected concrete preparation, Raw and
   hierarchy proposals, with independent phase and source-step checks.
 

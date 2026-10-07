@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "8c71ade48ee670785bad6e4f7aa08274fac79b3ed7ccac62b79705bad4d16569",
+  "surface_sha256": "989506af8873a54e030075ca1c0386776a82f791693a056b7cfeb2f2ffa1df33",
   "groups": [
     {
       "id": "raw-core",
@@ -1875,6 +1875,22 @@
           "test": "canonical_inverse_application_preserves_ordinary_names_and_both_consumers"
         },
         {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_power_original_program_and_symbolic_counts_preserve_z_phase"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_power_noncommuting_order_and_nested_inverse_have_independent_action"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_power_zero_width_scalar_and_control_keep_exact_phase"
+        },
+        {
           "path": "tests/quantum_unit_source.rs",
           "test": "selected_z_direct_inverse_and_control_preserve_reference_phase"
         },
@@ -2350,6 +2366,14 @@
         {
           "path": "tests/checked_operations.rs",
           "test": "canonical_inverse_checks_unused_zero_count_generic_access"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_power_zero_and_unused_still_require_apply_and_a_valid_count"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject"
         },
         {
           "path": "tests/quantum_unit_source.rs",

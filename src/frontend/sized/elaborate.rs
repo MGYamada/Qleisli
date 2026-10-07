@@ -1697,6 +1697,11 @@ impl Builder<'_> {
                     )
                 }
             }
+            ExprKind::Apply(argument, input) => {
+                let op = self.operation(argument, scope, frame, depth, span)?;
+                let value = self.expr(input, scope, frame, depth)?;
+                self.operation_step(StepKind::Apply(op), vec![value], frame, span)
+            }
             ExprKind::Adjoint(argument, input) => {
                 let op = self.operation(argument, scope, frame, depth, span)?;
                 let value = self.expr(input, scope, frame, depth)?;

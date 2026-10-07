@@ -383,6 +383,7 @@ impl Task<'_> {
                 ExprKind::Tuple(f) => f.len(),
                 ExprKind::And(..)
                 | ExprKind::Xor(..)
+                | ExprKind::ApplyStatic { .. }
                 | ExprKind::Adjoint { .. }
                 | ExprKind::RepeatStatic { .. } => 2,
                 ExprKind::If { .. }
@@ -795,7 +796,8 @@ where
                         Task::Reference(specification),
                         Task::Reference(implementation),
                     ]),
-                    ExprKind::Adjoint { operation, input } => {
+                    ExprKind::ApplyStatic { operation, input }
+                    | ExprKind::Adjoint { operation, input } => {
                         tasks.extend([Task::Expression(input), Task::Operation(operation)])
                     }
                     ExprKind::Controlled { operation, args } => {

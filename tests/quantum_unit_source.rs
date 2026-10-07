@@ -1279,3 +1279,184 @@ fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit
     assert_eq!(error.code(), "unsupported");
     assert!(error.message().contains("exactly one Bits value"));
 }
+
+#[test]
+fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/operation-application-v030/attempt-02/main.qli");
+    let original = std::fs::read_to_string(path).unwrap();
+    let complete = elaborate(&original, "main::main", BTreeMap::new())
+        .lower_raw()
+        .unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(complete.proposal())
+        .unwrap();
+    complete.validate_source_steps(&accepted).unwrap();
+    let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert_eq!(distribution.len(), 4);
+    assert!(distribution.values().all(|p| (p - 0.25).abs() < 1e-12));
+    // Keep the original generic amplify provider and all its actual arguments.
+    // A separate unitary entry exposes its full reference-bearing phase.
+    let text = format!(
+        "{original}\npub unitary fn inspect(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){{amplify[type(Bit),1,oracle](c,q)}}"
+    );
+    let proposal = elaborate(&text, "main::inspect", BTreeMap::new())
+        .lower()
+        .unwrap();
+    let checked = kernel().inspect_native(proposal.payload()).unwrap();
+    let coefficients = input(2);
+    let expected = coefficients
+        .iter()
+        .enumerate()
+        .map(|(i, z)| if i % 4 == 2 { [-z[0], -z[1]] } else { *z })
+        .collect::<Vec<_>>();
+    close(
+        &checked
+            .execute_pure(&coefficients, 2, limits())
+            .unwrap()
+            .amplitudes,
+        &expected,
+    );
+    for count in ["k", "2^k"] {
+        let text = format!(
+            "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{{z(q)}} pub unitary fn f[static k:Nat](q:Q<Bit>)->Q<Bit> requires k<=2 {{power(oracle,{count})(q)}}"
+        );
+        for k in 0..=2 {
+            let source = elaborate(&text, "main::f", BTreeMap::from([("k".into(), k)]));
+            let proposal = source.lower().unwrap();
+            let checked = kernel().inspect_native(proposal.payload()).unwrap();
+            let n = if count == "k" { k } else { 1 << k };
+            let expected = input(1)
+                .iter()
+                .enumerate()
+                .map(|(i, z)| {
+                    if i % 2 == 1 && n % 2 == 1 {
+                        [-z[0], -z[1]]
+                    } else {
+                        *z
+                    }
+                })
+                .collect::<Vec<_>>();
+            close(
+                &checked
+                    .execute_pure(&input(1), 2, limits())
+                    .unwrap()
+                    .amplitudes,
+                &expected,
+            );
+            let raw = source.lower_raw().unwrap();
+            let accepted = native::Kernel::selected()
+                .unwrap()
+                .accept(raw.proposal())
+                .unwrap();
+            raw.validate_source_steps(&accepted).unwrap();
+        }
+    }
+}
+
+#[test]
+fn canonical_power_noncommuting_order_and_nested_inverse_have_independent_action() {
+    let prelude = "use std::quantum::{h,z}; unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}";
+    for (expression, inverse) in [
+        ("power(oracle,2)(q)", false),
+        ("inverse(power(oracle,2))(q)", true),
+    ] {
+        let text = format!("{prelude} pub unitary fn f(q:Q<Bit>)->Q<Bit>{{{expression}}}");
+        let source = elaborate(&text, "main::f", BTreeMap::new());
+        let graph = source.lower().unwrap();
+        let checked = kernel().inspect_native(graph.payload()).unwrap();
+        // (HZ)^2 = [[0,-1],[1,0]]. Its inverse reverses both signs.
+        let coefficients = input(1);
+        let expected = coefficients
+            .chunks_exact(2)
+            .flat_map(|v| {
+                if inverse {
+                    [v[1], [-v[0][0], -v[0][1]]]
+                } else {
+                    [[-v[1][0], -v[1][1]], v[0]]
+                }
+            })
+            .collect::<Vec<_>>();
+        close(
+            &checked
+                .execute_pure(&coefficients, 2, limits())
+                .unwrap()
+                .amplitudes,
+            &expected,
+        );
+        let raw = source.lower_raw().unwrap();
+        let accepted = native::Kernel::selected()
+            .unwrap()
+            .accept(raw.proposal())
+            .unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+    }
+}
+
+#[test]
+fn canonical_power_zero_width_scalar_and_control_keep_exact_phase() {
+    for (expression, width, count) in [
+        ("power(scalar,0)(q)", 0, 0),
+        ("power(scalar,1)(q)", 0, 1),
+        ("power(scalar,8)(q)", 0, 8),
+        ("inverse(power(scalar,1))(q)", 0, 7),
+        ("controlled(power(scalar,4))(c,q)", 1, 4),
+    ] {
+        let signature = if width == 0 {
+            "(q:Q<Unit>)->Q<Unit>"
+        } else {
+            "(c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)"
+        };
+        let text = format!(
+            "use std::quantum::phase_eighth;unitary fn scalar(q:Q<Unit>)->Q<Unit>{{phase_eighth(q)}}pub unitary fn f{signature}{{{expression}}}"
+        );
+        let graph = elaborate(&text, "main::f", BTreeMap::new())
+            .lower()
+            .unwrap();
+        let checked = kernel().inspect_native(graph.payload()).unwrap();
+        let factor = match count {
+            0 | 8 => [1.0, 0.0],
+            1 => omega(),
+            7 => [omega()[0], -omega()[1]],
+            4 => [-1.0, 0.0],
+            _ => unreachable!(),
+        };
+        let expected = input(width)
+            .iter()
+            .enumerate()
+            .map(|(i, z)| {
+                if width == 0 || i % 2 == 1 {
+                    multiply(factor, *z)
+                } else {
+                    *z
+                }
+            })
+            .collect::<Vec<_>>();
+        close(
+            &checked
+                .execute_pure(&input(width), 2, limits())
+                .unwrap()
+                .amplitudes,
+            &expected,
+        );
+    }
+    let text = source("operations").replace("repeat_op(4,U)", "power(U,4)");
+    let graph = parsed(&text)
+        .instantiate(
+            "main::controlled_four",
+            BTreeMap::new(),
+            BTreeMap::from([(
+                "U".into(),
+                OperationBinding::new("main::scalar", BTreeMap::new()),
+            )]),
+        )
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower()
+        .unwrap();
+    kernel()
+        .check_against_native(graph.payload(), &operation_request("controlled_four"))
+        .unwrap();
+}

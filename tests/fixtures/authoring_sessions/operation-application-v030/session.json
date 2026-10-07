@@ -28,7 +28,8 @@
       ],
       "reports": [
         "expectations.json",
-        "validation-inverse-unit.json"
+        "validation-inverse-unit.json",
+        "validation-power-unit.json"
       ]
     },
     {

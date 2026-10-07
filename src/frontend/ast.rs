@@ -144,6 +144,10 @@ pub struct Expr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    ApplyStatic {
+        operation: StaticOp,
+        input: Box<Expr>,
+    },
     ApplyContract {
         implementation: Ident,
         specification: Ident,

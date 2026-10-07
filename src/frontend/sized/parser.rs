@@ -361,6 +361,9 @@ impl Projection<'_, '_> {
                     .map(|value| self.expr(value))
                     .collect::<Result<_>>()?,
             ),
+            source::ExprKind::ApplyStatic { operation, input } => {
+                ExprKind::Apply(self.argument(operation)?, Box::new(self.expr(input)?))
+            }
             source::ExprKind::Adjoint { operation, input } => {
                 ExprKind::Adjoint(self.argument(operation)?, Box::new(self.expr(input)?))
             }

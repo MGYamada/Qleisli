@@ -130,6 +130,13 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
                 "expression is outside the finite lowering profile",
             ));
         }
+        ExprKind::ApplyStatic {
+            operation: op,
+            input,
+        } => {
+            operation(op)?;
+            self::expr(input)?;
+        }
         ExprKind::Adjoint {
             operation: op,
             input,

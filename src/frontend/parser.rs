@@ -448,8 +448,40 @@ impl Parser {
         self.nested(Self::static_op_inner)
     }
 
+    fn repetition_count(&mut self) -> Result<Count, ParseError> {
+        let natural = self.natural()?;
+        if self.consume(&TokenKind::Caret).is_some() {
+            if !matches!(natural.kind, NatKind::Number(2)) {
+                return Err(ParseError {
+                    message: "only 2^e repetition counts are supported".into(),
+                    span: natural.span,
+                });
+            }
+            Ok(Count::Power(self.natural_atom()?))
+        } else {
+            Ok(Count::Natural(natural))
+        }
+    }
+
     fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
         let start = self.current().span;
+        if self.word("power")
+            && self
+                .tokens
+                .get(self.pos + 1)
+                .is_some_and(|t| t.kind == TokenKind::LParen)
+        {
+            self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let operation = self.static_op()?;
+            self.expect(&TokenKind::Comma)?;
+            let count = self.repetition_count()?;
+            let end = self.expect(&TokenKind::RParen)?.span;
+            return Ok(StaticOp {
+                kind: StaticOpKind::Repeat(count, Box::new(operation)),
+                span: start.cover(end),
+            });
+        }
         // Type descriptions are contextual static arguments. An ordinary call
         // named `type` remains an ordinary call; no expression becomes a type.
         if self.word("type")
@@ -523,18 +555,7 @@ impl Parser {
                 }
             }
             TokenKind::RepeatOp => {
-                let natural = self.natural()?;
-                let count = if self.consume(&TokenKind::Caret).is_some() {
-                    if !matches!(natural.kind, NatKind::Number(2)) {
-                        return Err(ParseError {
-                            message: "only 2^e repetition counts are supported".into(),
-                            span: natural.span,
-                        });
-                    }
-                    Count::Power(self.natural_atom()?)
-                } else {
-                    Count::Natural(natural)
-                };
+                let count = self.repetition_count()?;
                 self.expect(&TokenKind::Comma)?;
                 StaticOpKind::Repeat(count, Box::new(self.static_op()?))
             }
@@ -1177,6 +1198,7 @@ impl Parser {
             match &node.kind {
                 ExprKind::Not(inner)
                 | ExprKind::ApplyContract { input: inner, .. }
+                | ExprKind::ApplyStatic { input: inner, .. }
                 | ExprKind::Adjoint { input: inner, .. }
                 | ExprKind::RepeatStatic { input: inner, .. }
                 | ExprKind::CoherentLift { input: inner, .. } => {
@@ -1263,6 +1285,17 @@ impl Parser {
                     .is_some_and(|t| t.kind == TokenKind::Static))
         {
             return self.static_fold(quantum_fold);
+        }
+        if self.transformed_application("power") {
+            let operation = self.static_op()?;
+            self.expect(&TokenKind::LParen)?;
+            let input = Box::new(self.expr()?);
+            let end = self.expect(&TokenKind::RParen)?;
+            let span = operation.span.cover(end.span);
+            return Ok(Expr {
+                kind: ExprKind::ApplyStatic { operation, input },
+                span,
+            });
         }
         if self.transformed_application("inverse") {
             let start = self.bump();

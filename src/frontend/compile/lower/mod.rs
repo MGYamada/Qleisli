@@ -617,6 +617,24 @@ impl Lowerer<'_, '_> {
                     env,
                 )
             }
+            ExprKind::ApplyStatic { operation, input } => {
+                let value = self.expr(module, input, env)?;
+                let slot = self.quantum(module, input.span, &value, false)?;
+                let basis = self.raw.registers[&slot].basis.clone();
+                let op = self.operation(module, operation, env)?;
+                if op.basis != basis {
+                    return Err(self.error(
+                        module,
+                        expr.span,
+                        ErrorCode::TypeMismatch,
+                        "operation and input have different exact basis trees",
+                    ));
+                }
+                let steps = op.steps(module, expr.span, Access::Apply, self.compiler)?;
+                self.check_transformed(module, expr.span, &basis, &steps, op.meaning.as_ref())?;
+                self.apply_circuit(slot, steps);
+                Ok(value)
+            }
             ExprKind::Adjoint { input, .. } | ExprKind::RepeatStatic { input, .. } => {
                 let function = match &expr.kind {
                     ExprKind::Adjoint {

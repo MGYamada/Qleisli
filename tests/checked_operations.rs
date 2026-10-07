@@ -531,3 +531,155 @@ fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
         }
     }
 }
+
+#[test]
+fn canonical_power_retains_operation_count_and_original_source_spans() {
+    let text = "// 日本語\r\npub unitary fn f(q:Q<Bit>)->Q<Bit>{power(inverse_op(U),2^e)(q)}";
+    let module = parse_module(text).unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("quantum body")
+    };
+    let ExprKind::ApplyStatic { operation, input } = &body.result.kind else {
+        panic!("explicit constructed application")
+    };
+    assert_eq!(
+        &text[body.result.span.start..body.result.span.end],
+        "power(inverse_op(U),2^e)(q)"
+    );
+    assert_eq!(
+        &text[operation.span.start..operation.span.end],
+        "power(inverse_op(U),2^e)"
+    );
+    assert_eq!(&text[input.span.start..input.span.end], "q");
+    let StaticOpKind::Repeat(qleisli::frontend::ast::Count::Power(exponent), child) =
+        &operation.kind
+    else {
+        panic!("retained repeat description")
+    };
+    assert_eq!(&text[exponent.span.start..exponent.span.end], "e");
+    assert!(matches!(child.kind, StaticOpKind::Inverse(_)));
+}
+
+#[test]
+fn canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers() {
+    for (count, expected) in [(0, false), (1, true), (2, false)] {
+        let text = format!(
+            "use std::quantum::{{x,init0}}; use std::observe::measure_z;
+            unitary fn power(q:Q<Bit>,b:Bit)->Q<Bit>{{q}}
+            unitary fn oracle(q:Q<Bit>)->Q<Bit>{{x(q)}}
+            pub observe fn main()->Bit{{measure_z(power(oracle,{count})(power(init0(),0)))}}"
+        );
+        let finite = compile_project(&SourceRoot::new(&text).0).unwrap();
+        let selected = ParsedProgram::parse(sources(&text))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower_raw()
+            .unwrap();
+        let accepted = qleisli::interchange::native::Kernel::selected()
+            .unwrap()
+            .accept(selected.proposal())
+            .unwrap();
+        selected.validate_source_steps(&accepted).unwrap();
+        for program in [&finite, &accepted] {
+            let distribution = run_closed(program, SimulationLimits::default()).unwrap();
+            assert!((distribution[&vec![expected]] - 1.0).abs() < 1e-12);
+        }
+    }
+}
+
+#[test]
+fn canonical_power_zero_and_unused_still_require_apply_and_a_valid_count() {
+    for body in [
+        "power(U,0)(q)",
+        "inverse(power(U,0))(q)",
+        "controlled(power(U,0))(c,q)",
+    ] {
+        let (signature, access) = if body.starts_with("controlled") {
+            ("(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)", "Apply(U)")
+        } else if body.starts_with("inverse") {
+            ("(q:Q<Bit>)->Q<Bit>", "Apply(U)")
+        } else {
+            ("(q:Q<Bit>)->Q<Bit>", "Adjoint(U)")
+        };
+        let text = format!(
+            "// 日本語\r\nunitary fn unused[static U:Op<Bit>]{signature} requires {access} {{{body}}}"
+        );
+        let error = ParsedProgram::parse(sources(&text)).unwrap_err();
+        let wanted = if body.starts_with("controlled") {
+            "Controlled"
+        } else if body.starts_with("inverse") {
+            "Adjoint"
+        } else {
+            "Apply"
+        };
+        assert!(error.message().contains(wanted), "{error}");
+        let start = text.find(body).unwrap();
+        assert_eq!(error.span(), Span::new(start, start + body.len()));
+        assert!(check_project(&SourceRoot::new(&text).0).is_err());
+    }
+    for expression in [
+        "power(U,3^2)(q)",
+        "power(U,0,1)(q)",
+        "power(U)(q)",
+        "power(U,-1)(q)",
+    ] {
+        assert!(
+            parse_module(&format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{expression}}}")).is_err(),
+            "{expression}"
+        );
+    }
+}
+
+#[test]
+fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
+    let text = "use std::quantum::{x,init0}; use std::observe::measure_z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub observe fn main()->Bit{measure_z(power(oracle,0)(x(init0())))}";
+    let finite = compile_project(&SourceRoot::new(text).0).unwrap();
+    let raw = ParsedProgram::parse(sources(text))
+        .unwrap()
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower_raw()
+        .unwrap();
+    let accepted = qleisli::interchange::native::Kernel::selected()
+        .unwrap()
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    for program in [&finite, &accepted] {
+        assert!(
+            (run_closed(program, SimulationLimits::default()).unwrap()[&vec![true]] - 1.0).abs()
+                < 1e-12
+        );
+    }
+    let text = "use std::quantum::x; unitary fn oracle(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(oracle,4097)(q)}";
+    assert!(compile_project(&SourceRoot::new(text).0).is_err());
+    assert!(
+        ParsedProgram::parse(sources(text))
+            .unwrap()
+            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .is_err()
+    );
+    let text = "use helper::power; pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(q)}";
+    let helper = "pub unitary fn power(q:Q<Bit>)->Q<Bit>{q}";
+    let root = SourceRoot::new(text);
+    root.write("helper.qli", helper);
+    check_project(&root.0).unwrap();
+    ParsedProgram::parse(BTreeMap::from([
+        ("main".into(), text.into()),
+        ("helper".into(), helper.into()),
+    ]))
+    .unwrap()
+    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+    .unwrap()
+    .elaborate()
+    .unwrap();
+    // Direct qualified runtime calls remain outside the existing grammar.
+    assert!(parse_module("unitary fn power(q:Q<Bit>)->Q<Bit>{q} pub unitary fn f(q:Q<Bit>)->Q<Bit>{main::power(q)}").is_err());
+}

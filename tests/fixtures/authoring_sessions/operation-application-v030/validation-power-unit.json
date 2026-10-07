@@ -1,0 +1,188 @@
+{
+  "format": "qleisli.canonical-power-unit-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-07T02:31:31.433971+00:00",
+  "status": "local-checkpoint",
+  "base_commit": "cd3351e9ba83628b8dc8675ba65452603e2e16b7",
+  "original_source_sha256": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6",
+  "native_binary_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "sources_sha256": {
+    "src/frontend/ast.rs": "3b7dc9a0da1b4431169a5919ec9f6e480df3dbb3c020d495835d6a8e55e0c3aa",
+    "src/frontend/parser.rs": "6380cd65523ee85b930d8367f029346ac8e6c28d5645b0963f658647ae895c16",
+    "src/frontend/check/body.rs": "1943110cd293930c3de17205755060271c10eaadf1d793730a99f55635bf9f26",
+    "src/frontend/compile/lower/mod.rs": "e108a1ee65ceb5000da898863cc2fee1c192dfe68793c8276be7073f254933de",
+    "src/frontend/compile/lower/operations.rs": "f26712056b917f360c490096e13848eb928ef637bdd45278ee334bf4e288d81c",
+    "src/frontend/compile/profile.rs": "65170444d500ac223b724ac1effa8c35722e410d79fa4b3336e3d22426b6d249",
+    "src/frontend/resolve/locals.rs": "5124b5179231cd9393d1b175c9434f5ec048fe05953a8340d209ff23cd247036",
+    "src/frontend/sized/ast.rs": "8524a69bc993be6cad55e4b4d9e9f00651bc669e0c60db56fc481217b6351275",
+    "src/frontend/sized/parser.rs": "b1f34b6e19e6f85c8b9a81f1918cb9258f0ef8455fd2805b3fba1894d983f25b",
+    "src/frontend/sized/elaborate.rs": "164d0dd534ad5ad9276785bab6646232d1c3fbd03fe72ed91f26d17f31addfeb",
+    "tests/checked_operations.rs": "acc386c6d5a9de9bc0ba3218d12ce3cda04b58f0b9cf8eebaaf4a482d0373bf0",
+    "tests/quantum_unit_source.rs": "dfecac6180b4c18db28312dfac2c31c8089b02e9c96e97193f274606828d6d7a"
+  },
+  "rust_checks": [
+    {
+      "toolchain": "1.98.1",
+      "integration_targets": [
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 37,
+      "failed": 0,
+      "ignored": 0,
+      "additional_zero_width_test_passed": 1,
+      "parser_unit_tests_passed": 7,
+      "note": "Full two integration targets passed 37 tests before the final added zero-width regression; that additional test subsequently passed on unchanged production source."
+    },
+    {
+      "toolchain": "1.85.0",
+      "integration_targets": [
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 37,
+      "failed": 0,
+      "ignored": 0,
+      "additional_zero_width_test_passed": 1,
+      "parser_unit_tests_passed": 7,
+      "note": "Full two integration targets passed 37 tests before the final added zero-width regression; that additional test subsequently passed on unchanged production source."
+    }
+  ],
+  "scope": [
+    "Explicit original-source ApplyStatic node retains operation/count/input spans",
+    "Finite literal 0/1/2 execution and ordinary/imported power names",
+    "Zero count evaluates argument once and requires requested Apply/Adjoint/Controlled in unused bodies",
+    "Selected guarded symbolic Nat and bounded 2^e counts",
+    "Unmodified original desired two-qubit source passes actual native CLI check/run through Raw plus independent source-step replay",
+    "Same original generic amplify plus inspection entry matches independent arbitrary reference-bearing amplitudes",
+    "Noncommuting HZ squared and inverse match fixed independent ordered actions",
+    "Wrong arity, unsupported power base and finite/selected count limits reject",
+    "Zero-width scalar 0/1/8, nested inverse and controlled phase; same independent exact controlled-four request"
+  ],
+  "cli": [
+    {
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::main",
+        "--ir-profile=raw",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-02/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::main",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "--format=json",
+        "run",
+        "--entry=main::main",
+        "--ir-profile=raw",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-02/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                false,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                false
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                true
+              ],
+              "probability": 0.2500000000000001
+            }
+          ],
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::main",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "stderr": ""
+    }
+  ],
+  "failed_probes": [
+    {
+      "kind": "test-source-profile",
+      "error": "parse error: expected }, found ::",
+      "repair": "Keep existing rejection of direct qualified runtime calls; use existing module import to test ordinary power resolution"
+    },
+    {
+      "kind": "test-entry-contract",
+      "error": "expected ordinary fn main() with a closed classical result",
+      "repair": "Use check_project for the open imported-function checking control, keeping compile_project closed-entry contract unchanged"
+    }
+  ],
+  "pending": [
+    "Legacy spellings still admitted temporarily; active-client migration and retirement not complete",
+    "Other operation builder spellings and full #33/#250 completion remain separate",
+    "Finite profile still refuses symbolic/2^e counts and constructed inverse; selected concrete profile handles these under existing limits",
+    "Original tuple observation remains outside hierarchy single-Bits-return profile; Raw is the actual public acceptance route",
+    "No new native rule, general preservation theorem, guarantee admission or release approval",
+    "Fresh hosted CI and broader exact-commit validation not performed for this checkpoint"
+  ],
+  "checks": [
+    "Both toolchains all-target Clippy passed",
+    "Verification inventory and production coverage plus 31 checker regressions passed",
+    "Constitution continuity against reviewed 38baae7d passed",
+    "Docs and authoring record checks passed",
+    "mdBook 0.5.4 built; generated 29 HTML pages, 1228 local links and 474 anchors checked"
+  ]
+}

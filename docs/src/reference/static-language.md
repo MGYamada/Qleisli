@@ -243,7 +243,27 @@ During this unreleased migration, `adjoint(U,q)` remains temporary input with
 the same rule. Its retirement and the remaining operation-builder spellings
 are unfinished [#33](https://github.com/MGYamada/Qleisli/issues/33) work.
 
-`repeat_op(count, U)` is a static operation description, not execution of a
+The canonical repetition description is `power(U, count)`; its forward runtime
+application is `power(U, count)(q)`. Operation comes first, count second. The
+original-source AST retains the complete description, count and byte spans;
+no generated function name or anonymous source loop replaces the application.
+The runtime argument is evaluated once, including for count zero, and the
+operation requires Apply access even in zero-count and unused bodies.
+`controlled(power(U, count))(c, q)` and `inverse(power(U, count))(q)` retain the
+complete repeated provider and require their actual additional access.
+
+Only an unqualified two-stage `power(...)(...)` denotes this runtime form.
+Ordinary single-stage `power(a, b)`, declarations and module imports retain
+normal resolution. Direct qualified runtime calls remain outside the existing
+grammar. Static-operation argument positions interpret `power`
+explicitly as the constructor. The finite profile supports literal counts in
+`0..=4096` subject to its existing step/work limits; symbolic counts and `2^e`
+require the selected concrete profile and complete natural bindings.
+
+`repeat_op(count, U)` remains a temporary migration spelling for the same
+static description; `repeat_static(count, U, q)` migrates to
+`power(U, count)(q)`. Active-client migration and rejection of those old
+spellings remain separate, unfinished #33/#250 work. This is not execution of a
 host loop. An ordinary count is a natural expression. The special count form
 `2^e` is admitted here with a natural atom exponent; use parentheses for a
 compound exponent, for example `2^(n+1)`. It is not a general natural-expression

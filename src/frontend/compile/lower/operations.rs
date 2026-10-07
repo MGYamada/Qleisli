@@ -8,7 +8,7 @@ impl Lowerer<'_, '_> {
         self.bindings.get(self.compiler.locals.key(id))
     }
 
-    fn operation(
+    pub(super) fn operation(
         &mut self,
         module: &str,
         expr: &StaticOp,
