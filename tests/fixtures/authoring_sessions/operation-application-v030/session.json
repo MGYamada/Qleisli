@@ -30,6 +30,16 @@
         "expectations.json",
         "validation-inverse-unit.json"
       ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Separate legacy-spelling translation for before-code semantic-adapter probe; preserves original desired source and both first refusals.",
+      "sha256": {
+        "main.qli": "4a7e7b3907c10456d1b02c7c379306cc7fbb3ad6a26b3a2d83af32c070335968"
+      },
+      "observations": [
+        "observation-legacy-probe.json"
+      ]
     }
   ]
 }

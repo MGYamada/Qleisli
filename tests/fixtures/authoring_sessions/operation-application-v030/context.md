@@ -27,3 +27,12 @@ Coordinate clarification before execution: the earlier amplitude list uses
 control as the low bit, ordered labels 00,10,01,11. In lexicographic
 (control,target) order 00,01,10,11 the independent values are [1,-1,1,1]/2.
 Use the explicit label mapping in expectations.json to avoid an axis assumption.
+
+Attempt 03 is a separate legacy-spelling translation, observed before any
+canonical power or Z-adapter implementation. Its actual refusal exposes the
+selected preparation's unsupported `std::quantum::z` adapter. The initial
+observation was made under `attempt-03-legacy-probe`; the identical source and
+manifest are stored under consecutive `attempt-03` to satisfy the session
+format. The command and diagnostic paths in the observation remain unchanged.
+On 2026-10-07 the maintainer prioritized local CI repairs; this study remains
+unimplemented and earns no feature or guarantee completion credit.
