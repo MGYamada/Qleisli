@@ -164,7 +164,12 @@ fn json_command_identity_is_independent_of_leading_options() {
 
 #[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
-    let usage = include_str!("fixtures/frontend_v030/basis-polymorphism/current-usage.txt")
+    // Preserve the historical golden; only the retired command leaves current help.
+    let historical = include_str!("fixtures/frontend_v030/basis-polymorphism/current-usage.txt");
+    let retired = "  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n";
+    assert_eq!(historical.matches(retired).count(), 1);
+    let usage = historical
+        .replace(retired, "")
         .trim_end()
         .replace('\n', "\\u000a");
     for args in [
