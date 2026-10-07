@@ -122,8 +122,9 @@ checked programs become `AcceptedProgram` values.
 - The separate Python host requires Python 3.11+ and the Rust executable.
   QIR text/bitcode **input** additionally requires optional PyQIR 0.12.5.
   Cargo installs neither the Python host nor the Lean checker.
-- The additive experimental `qleisli sized` CLI checks and executes bounded
-  `Q<Bits<n>>` / ordinary `Bits<m>` source and shared measured QPE. It requires a separately
+- The ordinary `check`, `run`, `sample` and `emit-proposal` commands accept
+  explicit `--entry`/`--module` bindings for bounded `Q<Bits<n>>` / ordinary
+  `Bits<m>` source and shared measured QPE. This requires a separately
   built Lean kernel; Cargo does not install that kernel. General source/runtime
   correspondence and full-profile migration remain pending.
 - Lean is the sole production acceptance implementation. General **Soundness**, **Physical Realizability** and

@@ -4,8 +4,9 @@ The [shared sized experiments](sized/README.md) now compile and independently
 inspect Xor, GHZ and QFT source at all selected widths. QFT includes an imported
 adjoint client and shared calls. They reuse existing pinned
 inputs and have a separate development execution path. The finite CLI cases
-below use the production frontend. The bounded `qleisli sized` source/CLI slice
-and measured QPE are recorded in the
+below use the production frontend. Bounded source specialization uses the
+ordinary commands with explicit `--entry`/`--module` bindings. Its earlier
+source/CLI slice and measured QPE are recorded in the
 [current checkpoint](../tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md);
 general correspondence and full-profile migration remain open.
 The [coherent QPE continuation](sized/qualtran_qpe/README.md) now passes its

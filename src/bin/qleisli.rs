@@ -63,7 +63,7 @@ fn main() -> ExitCode {
         .find(|arg| !arg.as_encoded_bytes().starts_with(b"-"))
         .is_some_and(|arg| arg == "sized")
     {
-        let message = "the sized command was removed; use qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH instead";
+        let message = "the sized command was removed; use qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH instead; see qleisli help ecosystem for tool discovery";
         if args.iter().any(|arg| arg == "--format=json") {
             let diagnostic = json::diagnostic_json(
                 std::path::Path::new("."),

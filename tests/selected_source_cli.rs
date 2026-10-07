@@ -711,6 +711,7 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
             };
             assert!(message.contains("sized command was removed"), "{message}");
             assert!(message.contains("--entry=MODULE::FUNCTION"), "{message}");
+            assert!(message.contains("qleisli help ecosystem"), "{message}");
             assert!(logger.calls().is_empty());
             assert!(!output_path.exists());
         }
