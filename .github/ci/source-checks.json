@@ -560,7 +560,7 @@
           "env",
           "lean",
           "-DwarningAsError=true",
-          "Audit.lean"
+          "lean-kernel/Audit.lean"
         ]
       ]
     }
