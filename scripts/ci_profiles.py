@@ -249,7 +249,13 @@ def main() -> int:
         if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
             with Path(summary).open("a", encoding="utf-8") as output:
                 output.write(f"CI profile: **{result['profile']}**. Commit `{result['head']}`.\n\n")
-                output.write("```json\n" + encoded + "```\n")
+                # Long-lived PRs can exceed GitHub's 1 MiB step-summary limit.
+                # Keep every path in the report/log, never in this display view.
+                display = {key: value for key, value in result.items() if key != "paths"}
+                display["changed_path_count"] = len(result["paths"])
+                output.write("```json\n" + json.dumps(display, indent=2) + "\n```\n")
+                output.write("\nThe complete selection, including every changed path, is retained "
+                             "in the ci-selection artifact and this step's log.\n")
         print(encoded, end="")
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as failure:

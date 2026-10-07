@@ -1,7 +1,9 @@
 """Adversarial routing and required-check regressions, with real Git diffs."""
 
 import copy
+import io
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -10,7 +12,7 @@ import unittest
 from unittest.mock import patch
 
 sys.dont_write_bytecode = True
-from ci_profiles import ROOT, SUITES, check_needs, classify, load_policy, plan, proof_lane, registry_binding_only
+from ci_profiles import ROOT, SUITES, check_needs, classify, load_policy, main, plan, proof_lane, registry_binding_only
 
 
 class CIProfiles(unittest.TestCase):
@@ -78,6 +80,39 @@ class CIProfiles(unittest.TestCase):
         skipped["check-lean-kernel"]["result"] = "skipped"
         with self.assertRaises(ValueError):
             check_needs(skipped, "a" * 40)
+
+    def test_summary_is_bounded_without_truncating_selection_evidence(self):
+        long_diff = ["corpus/" + "nested/" * 8 + f"source-{i}.qli" for i in range(20000)]
+        self.assertGreater(len(json.dumps(long_diff).encode()), 1024 * 1024)
+        for paths, profile, lane, reason in [
+            (long_diff, "full", "full", "protected executable/policy input: scripts/ci_profiles.py"),
+            (["CHANGELOG.md"], "docs", "tests", "only explicitly listed descriptive documents/result records"),
+            ([], "full", "full", "missing comparison base; full validation required"),
+        ]:
+            with self.subTest(profile=profile, paths=len(paths)), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                event, report, summary, outputs = [root / name for name in ("event", "report", "summary", "outputs")]
+                event.write_text("{}", encoding="utf-8")
+                result = dict(format=1, head="a" * 40, base=None, profile=profile,
+                              proof_lane=lane, reason=reason, paths=paths)
+                stdout = io.StringIO()
+                with patch.dict(os.environ, {
+                    "GITHUB_EVENT_PATH": str(event), "GITHUB_EVENT_NAME": "pull_request",
+                    "GITHUB_SHA": result["head"], "GITHUB_REF": "refs/pull/1/merge",
+                    "GITHUB_STEP_SUMMARY": str(summary), "GITHUB_OUTPUT": str(outputs),
+                }), patch("ci_profiles.plan", return_value=result), \
+                     patch.object(sys, "argv", ["ci_profiles.py", "--report", str(report)]), \
+                     patch.object(sys, "stdout", stdout):
+                    self.assertEqual(main(), 0)
+                self.assertEqual(json.loads(report.read_text()), result)
+                self.assertEqual(json.loads(stdout.getvalue()), result)
+                self.assertEqual(outputs.read_text(), f"profile={profile}\nproof_lane={lane}\nhead={result['head']}\n")
+                rendered = summary.read_text()
+                self.assertLess(len(rendered.encode()), 16 * 1024)
+                displayed = json.loads(rendered.split("```json\n")[1].split("\n```")[0])
+                self.assertEqual(displayed, {**{k: v for k, v in result.items() if k != "paths"},
+                                             "changed_path_count": len(paths)})
+                self.assertIn("ci-selection artifact", rendered)
 
     def test_test_default_proof_maintenance_and_full_risk_lanes(self):
         for paths, expected in [

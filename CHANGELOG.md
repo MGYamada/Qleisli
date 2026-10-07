@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Keep full CI selection records while summarizing the changed-path count in
+  GitHub's bounded step summary, so cumulative PR diffs remain inspectable.
+
 - Keep ordinary CLI source selection and loading policy in one private input
   value shared by text/JSON execution and IR emission. Preserve held qrate
   directory identity, diagnostic paths and fresh checks for every invocation.
