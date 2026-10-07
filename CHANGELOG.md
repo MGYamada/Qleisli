@@ -6,6 +6,15 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Validate current corpus discovery against registered logical projects rather
+  than migration-stage counts. Preserve observing dependency bodies and source
+  identities in native comparisons, and compare current and historical source
+  artifacts through exact instruments while retaining frozen input bytes.
+- Share source validation commands between local runs and both Rust CI jobs.
+  Check source identities before scheduling builds, build native-test hosts
+  before parallel workers, and retain failed preflights and unexecuted checks.
+  Keep complete hosted coverage and distinguish producer failures in summaries.
+
 - Select canonical `inverse`/`power` derivatives for 25 finite corpus clients,
   retaining frozen originals, scalar phase and ordinary checked gate wrappers.
   Compare all shipped outputs with predecessors and independent expectations,

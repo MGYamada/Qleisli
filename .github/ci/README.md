@@ -257,6 +257,36 @@ remains separately requested; no corpus sharding is enabled.
 
 ## Native comparisons (#206)
 
+Local reproduction uses the same command manifests as hosted checks:
+
+```sh
+python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --plan
+python3 scripts/run_native_ci.py --plan --task lean-observation --task lean-streamed-instrument
+qleisli_validation_dir=$(mktemp -d)
+python3 scripts/ci_profiles.py --checks source-integrity --output "$qleisli_validation_dir/integrity"
+python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --output "$qleisli_validation_dir/contracts"
+```
+
+The source groups live in `source-checks.json`. Both Rust jobs execute the
+same source-contract group; source identity checks run before hosted builds.
+Results bind tracked and untracked working inputs, the chosen compiler/kernel
+bytes and commands, including explicit unexecuted commands after a failure.
+Source checks accept a development working tree and reject changes during the
+run. Their reports are diagnostic evidence, not release receipts.
+
+Native comparisons require a clean checkout and the pinned tools. Without
+`--plan`, supply a new `--output` directory; `--task` selects named groups only
+for local reproduction and reports every omitted group. Hosted runs reject
+partial selection. A common Rust all-target build precedes parallel execution,
+so no source test depends on another worker having built the CLI first. Fresh
+native decisions and independent oracles still execute for every selected test.
+Preflight failures retain a failed report without overwriting earlier runs.
+Every selected group is explicitly unexecuted until preparation succeeds;
+timeouts retain the terminated command and remaining unexecuted commands.
+The recorded native-runner environment fixes Cargo debug information to zero
+and disables incremental output. Assertions and test coverage are unchanged;
+temporary comparison crates no longer retain unnecessary build products.
+
 `native-comparisons.json` retains all 65 comparison groups (66 commands) from
 the v0.2.6 workflow, including small independent complex/rational/source oracles
 and existing capacity cases. No new maximum-size corpus benchmark is added.

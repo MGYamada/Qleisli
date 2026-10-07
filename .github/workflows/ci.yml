@@ -60,6 +60,7 @@ jobs:
           python3 scripts/test_check_pr_size.py
           python3 scripts/test_check_fixture_budget.py
           python3 scripts/test_ci_profiles.py
+          python3 scripts/test_ci_source_checks.py
           python3 scripts/test_measure_ci.py
           python3 scripts/test_run_native_ci.py
           python3 scripts/test_package_lean_kernel.py
@@ -67,6 +68,9 @@ jobs:
       - name: Select validation from the exact commit and both sides of its diff
         id: select
         run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
+      - name: Validate source identities before scheduling builds
+        if: steps.select.outputs.profile == 'full'
+        run: python3 scripts/ci_profiles.py --checks source-integrity --output "$RUNNER_TEMP/source-integrity"
       - name: Retain selection inputs and exact commit binding
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -76,6 +80,7 @@ jobs:
             ${{ runner.temp }}/ci-selection.json
             ${{ runner.temp }}/pr-size.json
             ${{ runner.temp }}/fixture-budget.json
+            ${{ runner.temp }}/source-integrity/
           if-no-files-found: error
   check-rust:
     needs: changes
@@ -121,15 +126,16 @@ jobs:
         run: cargo +1.98.1 doc --no-deps
       - name: Execute public API documentation examples
         run: cargo +1.98.1 test --doc
-      - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
-      - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
-      - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
-      - run: python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_interference.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_qft.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_cli_json.py target/debug/qleisli
+      - name: Run shared source contracts from the local/hosted command manifest
+        id: source-contracts
+        run: python3 scripts/ci_profiles.py --checks source-contracts --compiler target/debug/qleisli --output "$RUNNER_TEMP/source-contracts"
+      - name: Retain source contract results and explicit unexecuted commands
+        if: always() && (steps.source-contracts.outcome == 'success' || steps.source-contracts.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-contracts/
+          if-no-files-found: error
       - name: Seeded source differential checks with an independent complex oracle
         run: |
           python3 scripts/test_test_qli_differential.py
@@ -137,6 +143,7 @@ jobs:
       - name: Frozen VM-22 finite/source comparison inputs
         run: python3 scripts/test_verification_baseline.py target/debug/qleisli
       - name: Bounded corpus checks (exhaustive for release and manual full validation)
+        id: corpus
         env:
           CORPUS_FULL: ${{ startsWith(github.ref, 'refs/tags/') || startsWith(github.head_ref, 'codex/release-') || startsWith(github.head_ref, 'release/') || (github.event_name == 'workflow_dispatch' && (inputs.validation == 'full' || inputs.release_readiness)) }}
         run: |
@@ -146,7 +153,7 @@ jobs:
           fi
           python3 scripts/check_input_corpus.py target/debug/qleisli "$mode" --report "$RUNNER_TEMP/corpus.json"
       - name: Retain actual corpus mode, selected probes and partial failures
-        if: always()
+        if: always() && (steps.corpus.outcome == 'success' || steps.corpus.outcome == 'failure')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: corpus-${{ github.sha }}-${{ github.run_attempt }}
@@ -203,15 +210,16 @@ jobs:
       - name: Install the minimum supported Rust toolchain
         run: rustup toolchain install 1.85.0 --profile minimal --component clippy
       - run: cargo +1.85.0 test --all-targets
-      - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
-      - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
-      - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
-      - run: python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_interference.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_qft.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
-      - run: python3 scripts/test_cli_json.py target/debug/qleisli
+      - name: Run shared source contracts from the local/hosted command manifest
+        id: source-contracts
+        run: python3 scripts/ci_profiles.py --checks source-contracts --compiler target/debug/qleisli --output "$RUNNER_TEMP/source-contracts"
+      - name: Retain source contract results and explicit unexecuted commands
+        if: always() && (steps.source-contracts.outcome == 'success' || steps.source-contracts.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-contracts/
+          if-no-files-found: error
       - run: cargo +1.85.0 clippy --all-targets -- -D warnings
       - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
       - run: cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
@@ -470,6 +478,7 @@ jobs:
       - name: Reject backend unsafe, implemented_by, extern and partial counterexamples
         run: python3 scripts/test_check_lean_kernel.py --compiled
       - name: Run all retained native comparisons with bounded parallelism
+        id: native-comparisons
         run: python3 scripts/run_native_ci.py --workers "${{ inputs.native_workers || '4' }}" --output "$RUNNER_TEMP/native-comparisons"
       - name: Build and audit a clean relocated Linux native bundle
         run: |
@@ -492,7 +501,7 @@ jobs:
           path: ${{ runner.temp }}/native-distribution/
           if-no-files-found: error
       - name: Retain complete coverage, per-command timings and independent logs
-        if: always()
+        if: always() && (steps.native-comparisons.outcome == 'success' || steps.native-comparisons.outcome == 'failure')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: native-comparisons-${{ github.sha }}-${{ github.run_attempt }}
@@ -617,6 +626,7 @@ jobs:
           python3 scripts/check_editions.py
       - run: python3 scripts/test_check_docs.py
       - run: python3 scripts/test_current_source_fixtures.py
+      - run: python3 scripts/test_observation_sources.py
       - name: Check constitutional identity and the historical candidate packet
         env:
           CONSTITUTION_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}

@@ -32,6 +32,11 @@ def execution_environment() -> dict[str, str]:
     return {key: value for key, value in os.environ.items() if key in names} | {
         "RUSTUP_TOOLCHAIN": RUST_TOOLCHAIN, "ELAN_TOOLCHAIN": LEAN_TOOLCHAIN,
         "PYTHONNOUSERSITE": "1", "PYTHONDONTWRITEBYTECODE": "1",
+        # CI executes the same assertions without retaining debug/incremental
+        # products in every temporary comparison crate. These fixed settings
+        # are included in the source/toolchain binding, never taken from callers.
+        "CARGO_PROFILE_DEV_DEBUG": "0", "CARGO_PROFILE_TEST_DEBUG": "0",
+        "CARGO_INCREMENTAL": "0",
         "LC_ALL": "C", "LANG": "C",
     }
 
@@ -65,6 +70,18 @@ def load_tasks(path: Path) -> list[dict]:
         if env.keys() - TASK_ENVIRONMENT:
             raise ValueError("comparison environment is not in the reviewed allowlist")
     return tasks
+
+
+def select_tasks(tasks: list[dict], requested: list[str], hosted: bool = False) -> list[dict]:
+    """Named local reproduction never changes the hosted coverage requirement."""
+    if not requested:
+        return tasks
+    if hosted:
+        raise ValueError("hosted native comparisons require every group")
+    known = {task["id"] for task in tasks}
+    if len(set(requested)) != len(requested) or not set(requested) <= known:
+        raise ValueError("unknown or duplicate comparison selection")
+    return [task for task in tasks if task["id"] in requested]
 
 
 def source_binding(root: Path, expected_head: str | None, environment: dict | None = None) -> dict:
@@ -111,16 +128,18 @@ def record_command(template: list[str], directory: Path) -> list[str]:
 def run_task(task: dict, root: Path, directory: Path, timeout: float, environment: dict) -> dict:
     directory.mkdir()
     started = time.monotonic()
-    results = []
+    results = [dict(command=record_command(template, directory), status="not-run",
+                    reason="earlier command did not complete") for template in task["commands"]]
     log_path = directory / "command.log"
     try:
         with log_path.open("w") as log:
-            for template in task["commands"]:
+            for number, template in enumerate(task["commands"]):
                 command = record_command(template, directory)
                 executed = launch_command(command)
                 log.write(json.dumps(dict(command=command, executed_command=executed)) + "\n")
                 log.flush()
                 before = time.monotonic()
+                result = results[number] = dict(command=command, executed_command=executed, status="failed")
                 with subprocess.Popen(executed, cwd=root, env=environment | task.get("env", {}),
                                       stdout=log, stderr=subprocess.STDOUT, start_new_session=True) as process:
                     try:
@@ -129,8 +148,11 @@ def run_task(task: dict, root: Path, directory: Path, timeout: float, environmen
                         # Kill the whole native compiler/test tree, not just Python.
                         os.killpg(process.pid, signal.SIGKILL)
                         process.wait()
+                        result.update(status="timed-out", exit_code=process.returncode,
+                                      seconds=time.monotonic() - before)
                         raise TimeoutError(f"command exceeded {timeout} seconds")
-                results.append(dict(command=command, executed_command=executed, exit_code=code, seconds=time.monotonic() - before))
+                result.update(exit_code=code, seconds=time.monotonic() - before,
+                              status="passed" if code == 0 else "failed")
                 if code != 0:
                     raise ValueError(f"command exited {code}")
         return dict(id=task["id"], status="passed", commands=results,
@@ -180,16 +202,33 @@ def execute(tasks: list[dict], root: Path, directory: Path, workers: int, timeou
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workers", type=int, choices=(1, 2, 4), default=4)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--plan", action="store_true", help="print exact commands without building or running them")
+    parser.add_argument("--task", action="append", default=[], help="local reproduction of a named manifest group")
     args = parser.parse_args()
+    if not args.plan and args.output is None:
+        parser.error("--output is required when executing comparisons")
     report = dict(format=1, status="failed", workers=args.workers,
                   run_id=os.environ.get("GITHUB_RUN_ID"), attempt=os.environ.get("GITHUB_RUN_ATTEMPT"))
     started = time.monotonic()
+    created_output = False
     try:
+        if not args.plan:
+            args.output = args.output.resolve()
+            args.output.mkdir(parents=True, exist_ok=False)
+            created_output = True
+        all_tasks = load_tasks(MANIFEST)
+        tasks = select_tasks(all_tasks, args.task, os.environ.get("GITHUB_ACTIONS") == "true")
+        report.update(coverage="selected-local-groups" if args.task else "complete-native-manifest",
+                      expected_ids=[task["id"] for task in tasks],
+                      omitted_ids=[task["id"] for task in all_tasks if task not in tasks])
+        if args.plan:
+            print(json.dumps(dict(report, status="not-run", tasks=tasks,
+                                  prerequisites=["clean source and pinned tools", "native library", "Rust all-target build"]), indent=2))
+            return 0
         # Refuse stale output directories; every invocation must actually execute.
-        args.output = args.output.resolve()
-        args.output.mkdir(parents=True, exist_ok=False)
-        tasks = load_tasks(MANIFEST)
+        report["tasks"] = [dict(id=task["id"], status="not-run", reason="preparation did not complete",
+                                commands=task["commands"]) for task in tasks]
         manifest_hash = hashlib.sha256(MANIFEST.read_bytes()).hexdigest()
         environment = execution_environment()
         binding = source_binding(ROOT, os.environ.get("GITHUB_SHA"), environment)
@@ -197,6 +236,13 @@ def main() -> int:
         build_path = args.output / "native-build.json"
         report["native_build_commands"] = []
         native_harness.prepare(build_path, report["native_build_commands"])
+        # Every source driver sees the same compiler before workers start. This
+        # removes an implicit dependency on whichever comparison first happens
+        # to run `cargo build`, while retaining fresh decisions in every test.
+        host_build = dict(id="host-build", commands=[["cargo", "build", "--locked", "--all-targets"]])
+        report["host_build"] = run_task(host_build, ROOT, args.output / "host-build", 900, environment)
+        if report["host_build"]["status"] != "passed":
+            raise ValueError("native comparison host build failed: " + report["host_build"]["log"])
         report["tasks"] = execute(tasks, ROOT, args.output, args.workers, 900,
                                   environment | {native_harness.BUILD_ENV: str(build_path),
                                   "QLEISLI_KERNEL": str(ROOT / "lean-kernel/.lake/build/bin/qleisli-kernel")})
@@ -210,7 +256,7 @@ def main() -> int:
         print(f"Native CI: {failure}", file=sys.stderr)
     report["elapsed_seconds"] = time.monotonic() - started
     # Never overwrite a prior run when the fresh-directory check failed.
-    if args.output.is_dir() and "binding" in report:
+    if created_output:
         (args.output / "results.json").write_text(json.dumps(report, indent=2) + "\n")
     return 0 if report["status"] == "passed" else 1
 

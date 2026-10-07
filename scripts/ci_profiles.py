@@ -203,12 +203,37 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gate", action="store_true")
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--checks", choices=("source-integrity", "source-contracts"))
+    parser.add_argument("--plan", action="store_true")
+    parser.add_argument("--compiler", type=Path)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
+        if args.checks:
+            import ci_source_checks
+            if args.gate:
+                raise ValueError("--checks and --gate are separate operations")
+            if args.plan:
+                print(json.dumps(dict(status="not-run", group=args.checks,
+                                      commands=ci_source_checks.plan(args.checks, args.compiler)), indent=2))
+                return 0
+            if args.output is None:
+                raise ValueError("executing --checks requires --output")
+            return ci_source_checks.execute(args.checks, args.compiler, args.output)
+        if args.plan or args.compiler is not None or args.output is not None:
+            raise ValueError("source-check options require --checks")
         if args.gate:
             needs = json.loads(os.environ["NEEDS_JSON"])
             if args.report:
                 args.report.write_text(json.dumps(dict(format=1, head=os.environ["GITHUB_SHA"], needs=needs), indent=2) + "\n", encoding="utf-8")
+            if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
+                with Path(summary).open("a", encoding="utf-8") as output:
+                    output.write("Producer results for commit `" + os.environ["GITHUB_SHA"] + "`.\n\n")
+                    output.write("| Producer | Result |\n| --- | --- |\n")
+                    for name in ("changes", *SUITES):
+                        result = needs.get(name, {}).get("result", "missing")
+                        output.write(f"| {name} | {result} |\n")
+                    output.write("\nEach required context reports this complete gate; a failed context is not an additional producer failure.\n")
             profile = check_needs(needs, os.environ["GITHUB_SHA"])
             lane = needs["changes"]["outputs"]["proof_lane"]
             print(f"Required checks passed for exact commit {os.environ['GITHUB_SHA']} (suites: {profile}; proof lane: {lane}).")

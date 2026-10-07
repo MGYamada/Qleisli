@@ -1,0 +1,21 @@
+{
+  "format": 1,
+  "groups": {
+    "source-integrity": [
+      ["python3", "scripts/check_input_corpus.py"],
+      ["python3", "scripts/test_current_source_fixtures.py"],
+      ["python3", "scripts/test_observation_sources.py"]
+    ],
+    "source-contracts": [
+      ["{compiler}", "check", "tests/fixtures/lean_layout/first_source"],
+      ["{compiler}", "check", "tests/fixtures/lean_layout_dag/first_source"],
+      ["{compiler}", "check", "tests/fixtures/lean_phase_layout/first_source"],
+      ["python3", "scripts/test_lean_phase_layout.py", "--source-only", "{compiler}"],
+      ["python3", "scripts/test_lean_interference.py", "--source-only", "{compiler}"],
+      ["python3", "scripts/test_lean_qft.py", "--source-only", "{compiler}"],
+      ["python3", "scripts/test_lean_qpe.py", "--source-only", "{compiler}"],
+      ["python3", "scripts/test_lean_controlled_power.py", "--source-only", "{compiler}"],
+      ["python3", "scripts/test_cli_json.py", "{compiler}"]
+    ]
+  }
+}

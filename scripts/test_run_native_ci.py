@@ -10,12 +10,37 @@ import sys
 import tempfile
 import unittest
 from unittest.mock import patch
+import run_native_ci
 
 sys.dont_write_bytecode = True
-from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch_command, load_tasks, source_binding, verify_coverage
+from run_native_ci import MANIFEST, ROOT, execute, execution_environment, launch_command, load_tasks, select_tasks, source_binding, verify_coverage
 
 
 class NativeCI(unittest.TestCase):
+    def test_preflight_failure_records_failure_without_building_or_overwriting(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'run'
+            with (patch.object(sys, 'argv', ['run_native_ci.py', '--output', str(output)]),
+                  patch.object(run_native_ci, 'source_binding', side_effect=ValueError('dirty source')),
+                  patch.object(run_native_ci.native_harness, 'prepare') as build):
+                self.assertEqual(run_native_ci.main(), 1)
+                build.assert_not_called()
+                report = (output / 'results.json').read_bytes()
+                self.assertEqual(json.loads(report)['status'], 'failed')
+                self.assertIn('dirty source', json.loads(report)['error'])
+                self.assertTrue(all(row['status'] == 'not-run' for row in json.loads(report)['tasks']))
+                self.assertEqual(run_native_ci.main(), 1)
+                self.assertEqual((output / 'results.json').read_bytes(), report)
+
+    def test_local_reproduction_uses_the_hosted_manifest_without_relaxing_hosted_coverage(self):
+        tasks = load_tasks(MANIFEST)
+        ids = ["lean-observation", "lean-streamed-instrument", "verification-baseline", "native-acceptance"]
+        self.assertEqual({task['id'] for task in select_tasks(tasks, ids)}, set(ids))
+        self.assertEqual(select_tasks(tasks, [], True), tasks)
+        for requested, hosted in [(["missing"], False), ([ids[0], ids[0]], False), (ids, True)]:
+            with self.assertRaises(ValueError):
+                select_tasks(tasks, requested, hosted)
+
     def test_native_cargo_uses_only_the_already_checked_toolchain_pin(self):
         self.assertEqual(launch_command(["cargo", "+1.98.1", "test"]), ["cargo", "test"])
         for version in ["+1.85.0", "+stable", "+nightly"]:
@@ -189,7 +214,9 @@ class NativeCI(unittest.TestCase):
         passed = [sys.executable, "-c", "print('still checked')"]
         tasks, report = self.run_tasks([[fail, passed], [timeout], [passed]], timeout=0.2)
         self.assertEqual([row["status"] for row in report["tasks"]], ["failed", "failed", "passed"])
-        self.assertEqual(len(report["tasks"][0]["commands"]), 1)
+        self.assertEqual([row['status'] for row in report['tasks'][0]['commands']], ['failed', 'not-run'])
+        self.assertEqual(report['tasks'][1]['commands'][0]['status'], 'timed-out')
+        self.assertLess(report['tasks'][1]['commands'][0]['exit_code'], 0)
         with self.assertRaises(ValueError):
             verify_coverage(report, tasks, {"head": "a"}, "hash")
 
@@ -238,6 +265,9 @@ class NativeCI(unittest.TestCase):
         with patch.dict(os.environ, poison):
             env = execution_environment()
             self.assertEqual(env["RUSTUP_TOOLCHAIN"], "1.98.1")
+            self.assertEqual(env["CARGO_PROFILE_DEV_DEBUG"], "0")
+            self.assertEqual(env["CARGO_PROFILE_TEST_DEBUG"], "0")
+            self.assertEqual(env["CARGO_INCREMENTAL"], "0")
             for name in poison.keys() - {"RUSTUP_TOOLCHAIN"}:
                 self.assertNotIn(name, env)
             code = ("import os,subprocess,sys; "
