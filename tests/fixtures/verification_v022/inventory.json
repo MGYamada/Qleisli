@@ -2917,7 +2917,7 @@
     },
     {
       "path": "python/qleisli/__init__.py",
-      "sha256": "570e58e3949783f64481a4d2097e3133be3f1deb3c199297062c4c0c39f254d0",
+      "sha256": "fcff77129c80296a9cda0d359704691ae8ca15aa8df99d9b566998955d579549",
       "group": "foreign",
       "surface": null
     },

@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reject malformed Python host responses with boolean/floating version fields,
+  duplicate JSON keys, non-finite numbers or excessive JSON nesting; retain
+  fresh native verification for every public operation.
 - Validate current corpus discovery against registered logical projects rather
   than migration-stage counts. Preserve observing dependency bodies and source
   identities in native comparisons, and compare current and historical source

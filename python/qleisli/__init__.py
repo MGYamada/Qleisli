@@ -1,4 +1,4 @@
-"""Untrusted host adapters to the Rust verifier; no Python proof authority.
+"""Untrusted host adapters to the Rust CLI and native Lean acceptance gate.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
@@ -24,6 +24,28 @@ class QleisliError(RuntimeError):
 def _error(code, message):
     return QleisliError([{"code": code, "severity": "error", "message": message,
                           "primary": None, "related": []}])
+
+
+def _document(data):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate response field")
+            result[key] = value
+        return result
+
+    def invalid_constant(value):
+        raise ValueError("non-JSON response constant: " + value)
+
+    def finite_number(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("response number exceeds finite host range")
+        return number
+
+    return json.loads(data, object_pairs_hook=unique, parse_constant=invalid_constant,
+                      parse_float=finite_number)
 
 
 def _bytes(value, limit):
@@ -69,8 +91,9 @@ class Client:
             args.extend([f"--shots={shots}", f"--seed={seed}"])
         result = self._process(args, data)
         try:
-            document = json.loads(result.stdout)
-            if (document["format"] != "qleisli.result" or document["version"] != 1
+            document = _document(result.stdout)
+            if (document["format"] != "qleisli.result" or type(document["version"]) is not int
+                    or document["version"] != 1
                     or document["command"] != f"interop {action}"
                     or document["outcome"] != ("ok" if result.returncode == 0 else "error")
                     or not isinstance(document["diagnostics"], list)):
@@ -82,7 +105,7 @@ class Client:
             if document["diagnostics"] or not isinstance(document["result"], dict):
                 raise ValueError("inconsistent success envelope")
             return document["result"]
-        except (ValueError, KeyError, TypeError, UnicodeError) as e:
+        except (ValueError, KeyError, TypeError, UnicodeError, RecursionError) as e:
             raise _error("connection", "invalid Rust connection response") from e
 
     def from_openqasm(self, source):
@@ -104,13 +127,13 @@ class Client:
         # the child's import path. Keep the environment's optional PyQIR extra.
         result = self._process([sys.executable, "-P", str(Path(__file__).with_name("_qir.py").resolve())], data)
         try:
-            document = json.loads(result.stdout)
+            document = _document(result.stdout)
             if result.returncode:
                 raise _error(document["code"], document["message"])
             qasm = document["qasm"]
             if not isinstance(qasm, str):
                 raise ValueError("invalid reader output")
-        except (ValueError, KeyError, TypeError, UnicodeError) as e:
+        except (ValueError, KeyError, TypeError, UnicodeError, RecursionError) as e:
             raise _error("qir", "QIR reader failed or returned an invalid response") from e
         return self.from_openqasm(qasm)
 
