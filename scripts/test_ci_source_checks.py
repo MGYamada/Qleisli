@@ -13,6 +13,41 @@ import ci_source_checks as checks
 
 
 class SourceChecksTests(unittest.TestCase):
+    def test_preparation_precedes_consumers_and_binds_toolchains(self):
+        for group in ('rust-latest', 'rust-msrv'):
+            spec = checks.describe(group)
+            commands = checks.plan(group)
+            self.assertEqual(commands[:3], checks.plan('native-runtime'))
+            self.assertEqual(spec['preparation_commands'], 3)
+            self.assertIn('lean', spec['tools'])
+            self.assertIn('QLEISLI_KERNEL', spec['environment'])
+            self.assertIn('--all-targets', commands[spec['preparation_commands'] + (group == 'rust-latest')])
+        with patch.object(checks, 'definition', return_value={'prepare': ['loop']}):
+            with self.assertRaisesRegex(ValueError, 'cyclic'):
+                checks.describe('loop')
+
+    def test_tool_mismatch_refuses_commands_and_retains_unexecuted_plan(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / 'out'
+            with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
+                  patch.object(checks, 'toolchain', side_effect=ValueError('toolchain mismatch')),
+                  patch.object(checks.run_native_ci, 'run_task') as run):
+                self.assertEqual(checks.execute('source-integrity', None, output), 1)
+                run.assert_not_called()
+            report = json.loads((output / 'results.json').read_text())
+            self.assertEqual(report['status'], 'failed')
+            self.assertTrue(all(row['status'] == 'not-run' for row in report['commands']))
+
+    def test_tool_versions_are_checked_without_installing(self):
+        spec = dict(tools={'python': dict(command=['python3', '--version'], pattern=r'Python 3\.11\.[0-9]+')})
+        for version, code, accepted in [('Python 3.11.15', 0, True), ('Python 3.10.2', 0, False), ('Python 3.11.15', 1, False)]:
+            with patch.object(checks.subprocess, 'run', return_value=subprocess.CompletedProcess([], code, version, '')):
+                if accepted:
+                    self.assertEqual(checks.toolchain(spec, {})['python']['version'], version)
+                else:
+                    with self.assertRaisesRegex(ValueError, 'toolchain mismatch'):
+                        checks.toolchain(spec, {})
+
     def test_repository_checks_keep_prior_coverage_and_separate_continuity(self):
         commands = checks.plan('repository-integrity')
         # Bind the exact prior command coverage, independent of the manifest.

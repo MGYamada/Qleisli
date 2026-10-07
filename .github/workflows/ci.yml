@@ -97,12 +97,10 @@ jobs:
           lake-package-directory: lean-kernel
           auto-config: 'false'
           use-github-cache: 'false'
-          build: 'true'
+          build: 'false'
           use-mathlib-cache: 'false'
-      - name: Audit and select the matching native checker
-        run: |
-          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
-          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Select the checker built and audited by the shared plan
+        run: echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -114,18 +112,16 @@ jobs:
           key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install the tested Rust toolchain
         run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
-      - run: cargo +1.98.1 fmt --check
-      - run: cargo +1.98.1 test --all-targets
-      - name: Sized Rust and Python source dialect comparisons on small inputs
-        run: cargo +1.98.1 test --test sized_review_dialects -- --ignored --skip native
-      - name: Sized primitive omissions must fail compilation
-        run: python3 scripts/test_sized_primitive_catalog.py
-      - name: Build public API documentation without warnings
-        env:
-          RUSTDOCFLAGS: -D warnings
-        run: cargo +1.98.1 doc --no-deps
-      - name: Execute public API documentation examples
-        run: cargo +1.98.1 test --doc
+      - name: Run shared rust-latest checks
+        id: rust-latest
+        run: python3 scripts/ci_profiles.py --checks rust-latest --output "$RUNNER_TEMP/rust-latest"
+      - name: Retain rust-latest command results
+        if: always() && (steps.rust-latest.outcome == 'success' || steps.rust-latest.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rust-latest-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-latest/
+          if-no-files-found: error
       - name: Run shared source contracts from the local/hosted command manifest
         id: source-contracts
         run: python3 scripts/ci_profiles.py --checks source-contracts --compiler target/debug/qleisli --output "$RUNNER_TEMP/source-contracts"
@@ -136,12 +132,16 @@ jobs:
           name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/source-contracts/
           if-no-files-found: error
-      - name: Seeded source differential checks with an independent complex oracle
-        run: |
-          python3 scripts/test_test_qli_differential.py
-          python3 scripts/test_qli_differential.py target/debug/qleisli --cases=96
-      - name: Frozen VM-22 finite/source comparison inputs
-        run: python3 scripts/test_verification_baseline.py target/debug/qleisli
+      - name: Run shared source-semantics checks
+        id: source-semantics
+        run: python3 scripts/ci_profiles.py --checks source-semantics --compiler target/debug/qleisli --output "$RUNNER_TEMP/source-semantics"
+      - name: Retain source-semantics command results
+        if: always() && (steps.source-semantics.outcome == 'success' || steps.source-semantics.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: source-semantics-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/source-semantics/
+          if-no-files-found: error
       - name: Bounded corpus checks (exhaustive for release and manual full validation)
         id: corpus
         env:
@@ -159,10 +159,16 @@ jobs:
           name: corpus-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/corpus.json
           if-no-files-found: error
-      - run: cargo +1.98.1 clippy --all-targets -- -D warnings
-      - run: cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check
-      - run: cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
-      - run: cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
+      - name: Run shared rust-latest-lint-research checks
+        id: rust-latest-lint-research
+        run: python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$RUNNER_TEMP/rust-latest-lint-research"
+      - name: Retain rust-latest-lint-research command results
+        if: always() && (steps.rust-latest-lint-research.outcome == 'success' || steps.rust-latest-lint-research.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rust-latest-lint-research-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-latest-lint-research/
+          if-no-files-found: error
       - name: Bind successful producer evidence for scoped release readiness
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
@@ -192,12 +198,10 @@ jobs:
           lake-package-directory: lean-kernel
           auto-config: 'false'
           use-github-cache: 'false'
-          build: 'true'
+          build: 'false'
           use-mathlib-cache: 'false'
-      - name: Audit and select the matching native checker
-        run: |
-          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
-          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Select the checker built and audited by the shared plan
+        run: echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
       - name: Restore dependency archives (never source, target or Lean project outputs)
         id: cargo-cache
         if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
@@ -209,7 +213,16 @@ jobs:
           key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.85.0-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
       - name: Install the minimum supported Rust toolchain
         run: rustup toolchain install 1.85.0 --profile minimal --component clippy
-      - run: cargo +1.85.0 test --all-targets
+      - name: Run shared rust-msrv checks
+        id: rust-msrv
+        run: python3 scripts/ci_profiles.py --checks rust-msrv --output "$RUNNER_TEMP/rust-msrv"
+      - name: Retain rust-msrv command results
+        if: always() && (steps.rust-msrv.outcome == 'success' || steps.rust-msrv.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rust-msrv-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-msrv/
+          if-no-files-found: error
       - name: Run shared source contracts from the local/hosted command manifest
         id: source-contracts
         run: python3 scripts/ci_profiles.py --checks source-contracts --compiler target/debug/qleisli --output "$RUNNER_TEMP/source-contracts"
@@ -220,9 +233,16 @@ jobs:
           name: source-contracts-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/source-contracts/
           if-no-files-found: error
-      - run: cargo +1.85.0 clippy --all-targets -- -D warnings
-      - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
-      - run: cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
+      - name: Run shared rust-msrv-lint-research checks
+        id: rust-msrv-lint-research
+        run: python3 scripts/ci_profiles.py --checks rust-msrv-lint-research --output "$RUNNER_TEMP/rust-msrv-lint-research"
+      - name: Retain rust-msrv-lint-research command results
+        if: always() && (steps.rust-msrv-lint-research.outcome == 'success' || steps.rust-msrv-lint-research.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rust-msrv-lint-research-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/rust-msrv-lint-research/
+          if-no-files-found: error
       - name: Bind successful producer evidence for scoped release readiness
         if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
         id: release-receipt
@@ -558,9 +578,10 @@ jobs:
       - name: Fetch package dependencies before offline distribution checks
         run: cargo +1.98.1 fetch
       - name: Verify clean package and complete source archive
+        id: distribution
         run: python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
       - name: Retain candidate hashes, archives and command logs
-        if: always()
+        if: always() && (steps.distribution.outcome == 'success' || steps.distribution.outcome == 'failure')
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: distribution-${{ github.sha }}
@@ -608,12 +629,16 @@ jobs:
           mkdir -p "$tool_dir"
           tar -xzf "$archive" -C "$tool_dir" mdbook
           echo "$tool_dir" >> "$GITHUB_PATH"
-      - name: Build the book with the selected mdBook version
-        run: |
-          test "$(mdbook --version)" = "mdbook v${MDBOOK_VERSION}"
-          mdbook build docs
-          python3 scripts/test_check_book.py
-          python3 scripts/check_book.py
+      - name: Run shared book checks
+        id: book
+        run: python3 scripts/ci_profiles.py --checks book --output "$RUNNER_TEMP/book"
+      - name: Retain book command results
+        if: always() && (steps.book.outcome == 'success' || steps.book.outcome == 'failure')
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: book-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/book/
+          if-no-files-found: error
       - name: Retain the rendered book for review
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

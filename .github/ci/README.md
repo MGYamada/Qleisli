@@ -261,14 +261,27 @@ Local reproduction uses the same command manifests as hosted checks:
 
 ```sh
 python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --plan
+python3 scripts/ci_profiles.py --checks rust-msrv --plan
 python3 scripts/run_native_ci.py --plan --task lean-observation --task lean-streamed-instrument
 qleisli_validation_dir=$(mktemp -d)
 python3 scripts/ci_profiles.py --checks source-integrity --output "$qleisli_validation_dir/integrity"
 python3 scripts/ci_profiles.py --checks repository-integrity --output "$qleisli_validation_dir/repository"
 python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --output "$qleisli_validation_dir/contracts"
+python3 scripts/ci_profiles.py --checks rust-latest --output "$qleisli_validation_dir/rust"
+python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$qleisli_validation_dir/lint"
 ```
 
-The groups live in `source-checks.json`. The repository-integrity group retains
+The groups live in `source-checks.json`, with applicable producer lanes, required
+tool versions, prerequisites, preparation groups and per-command timeouts.
+`--plan` displays these without executing or installing anything. The Rust and
+MSRV groups build/audit the native checker before running tests; their separate
+lint/research groups retain the original Clippy and research checks. Both use
+the same commands locally and in Actions. The MSRV wrapper also selects matching
+compiler, rustdoc and Clippy binaries. `source-semantics` preserves the seeded
+differential and frozen-artifact comparisons, and `book` checks mdBook's exact
+version before building and checking rendered links.
+
+The repository-integrity group retains
 all 34 static checks formerly written in the documentation job. Its tools are
 Python 3.11+ and Git, with full history for the historical archive check; no
 Rust or Lean build is required. Constitutional continuity against the reviewed
@@ -276,8 +289,14 @@ base is a separate `check_constitution.py --base-ref COMMIT` invocation because
 the base is supplied by the review or event, not chosen by a command manifest.
 Both Rust jobs execute the
 same source-contract group; source identity checks run before hosted builds.
-Results bind tracked and untracked working inputs, the chosen compiler/kernel
-bytes and commands, including explicit unexecuted commands after a failure.
+Results bind tracked and untracked working inputs, observed tool versions, the
+chosen compiler/kernel bytes and commands, including explicit unexecuted
+commands after a failure. Versions are checked before and after execution;
+missing or mismatched tools fail before checks are run. Build preparation can
+replace its declared native checker, whose bytes are bound before its consumers.
+The common runner retains the native runner's bounded Cargo settings, omits
+ambient compiler overrides, and records the selected environment. A local
+`CARGO_TARGET_DIR` may select a separate build directory for each toolchain.
 Source checks accept a development working tree and reject changes during the
 run. Their reports are diagnostic evidence, not release receipts.
 

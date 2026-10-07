@@ -15,6 +15,8 @@ development milestones from the scope of their evidence.
   artifacts through exact instruments while retaining frozen input bytes.
 - Share source validation commands between local runs and both Rust CI jobs.
   Share the repository and constitutional-record check list with the docs job.
+  Declare tool versions, native preparation and commands for both Rust lanes,
+  research checks, independent source comparisons and the pinned book build.
   Check source identities before scheduling builds, build native-test hosts
   before parallel workers, and retain failed preflights and unexecuted checks.
   Keep complete hosted coverage and distinguish producer failures in summaries.

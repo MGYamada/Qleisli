@@ -215,6 +215,7 @@ def main() -> int:
                 raise ValueError("--checks and --gate are separate operations")
             if args.plan:
                 print(json.dumps(dict(status="not-run", group=args.checks,
+                                      **{k: v for k, v in ci_source_checks.describe(args.checks).items() if k != 'commands'},
                                       commands=ci_source_checks.plan(args.checks, args.compiler)), indent=2))
                 return 0
             if args.output is None:
