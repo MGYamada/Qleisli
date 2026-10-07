@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Select canonical `inverse`/`power` snapshots for fourteen semantic faults
+  and the measurement-inverse rejection client. Preserve previous sources,
+  require exact migration bytes, and test both historical and current refusals.
+
 - Keep full CI selection records while summarizing the changed-path count in
   GitHub's bounded step summary, so cumulative PR diffs remain inspectable.
 

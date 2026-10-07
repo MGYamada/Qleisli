@@ -1,0 +1,1149 @@
+{
+  "format": 1,
+  "status": "passed",
+  "created_utc": "2026-10-07T21:28:09.782856+00:00",
+  "baseline_commit": "5da07b4c01e24a0274247e37ba2650802627a9bc",
+  "compiler_sha256": "692ee588cd58d029d00b5e48e35fb9d2012782448c851eee167296bc1d3d03f4",
+  "native_kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "oracle_sha256": "b0f2400ae6c06feecd66c4eee75a3e257ef60c085313984613c5d339b9d735a3",
+  "source_selection": {
+    "oracle_script_sha256": "b0f2400ae6c06feecd66c4eee75a3e257ef60c085313984613c5d339b9d735a3",
+    "manifest_sha256": "ae47b1f5fddbce167c9609ff1925e380f852140dc4e2525c5fc3e7c1a813de90",
+    "source_sha256": {
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/kernel.qli": "cc78a2d4d4b71d5c180a3b5044a368d44025f4e0b7e28ebb3ed17eaf8435ca74",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar/kernel.qli": "620a424a32e5dbf1dd9d947815e7056b4abe9f5160098891e91e35cd9bcd225a",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar/kernel.qli": "af916eff0b4a2845d6e10017e5c3306fb58f61bde80e3fbd1ab97957e175729f",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar/main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/kernel.qli": "5a4a7a94266c172b4170fa241a8771e70a3fb62ea0f399622545edc28d7d84bf",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed/kernel.qli": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed/main.qli": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed/kernel.qli": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar/kernel.qli": "26a8c14af01fb90c8d2c2603f6ea27eb30e371d38a44804fbcf13a544ca44a66",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar/main.qli": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order/kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order/main.qli": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault/kernel.qli": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault/main.qli": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault/kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault/main.qli": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault/kernel.qli": "396114554558774f9b4b9c6fb1978af476d6a28ad14293325f318a9f844f19ac",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault/main.qli": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed/kernel.qli": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed/main.qli": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase/kernel.qli": "57f23c21c0eb31c9cc9f6419a0397770802e79ba6a1836f1d494d27a4c028b4a",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase/main.qli": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign/kernel.qli": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign/main.qli": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+      "migrations/operation-counterexamples-v030/counterexample-sources/negative/measurement_adjoint/main.qli": "52ff441097d94ed0e41d925b6e009af6cf0d405775a04f67d4491d19b09bf7df"
+    },
+    "source_migration_sha256": {
+      "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+      "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+      "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+      "migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb",
+      "migrations/classical-functions-v030/migration.json": "b7715a54a7d6c19183b0a05cc5e440d30811701b03e30f0f8e940779a301a0a2",
+      "migrations/operation-application-v030/migration.json": "4de13d10337afcc219c2faab7a2de12bbcc906c70190962a47ac120e8cb8b520"
+    },
+    "counterexample_source_migration_sha256": {
+      "migrations/classical-functions-v030/counterexamples.json": "594dd565b7dff61d6a874e886e58a4765d0d340ecb3d2b055bf83057c90babac",
+      "migrations/operation-counterexamples-v030/counterexamples.json": "3c87964b123da954eb8ed13d56498acd29a9a2927bc1f0bfa327bdb92841c1c2"
+    },
+    "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+    "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+    "current_negative_manifest_sha256": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4",
+    "semantic_fault_source_sha256": {
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/kernel.qli": "cc78a2d4d4b71d5c180a3b5044a368d44025f4e0b7e28ebb3ed17eaf8435ca74",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar/main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar/kernel.qli": "620a424a32e5dbf1dd9d947815e7056b4abe9f5160098891e91e35cd9bcd225a",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar/kernel.qli": "af916eff0b4a2845d6e10017e5c3306fb58f61bde80e3fbd1ab97957e175729f",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar/main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/kernel.qli": "5a4a7a94266c172b4170fa241a8771e70a3fb62ea0f399622545edc28d7d84bf",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed/kernel.qli": "38aa6c2ccead55590cf7255d582970fb7d7c4d359111aeb17cb44dc784b4c699",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed/main.qli": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed/kernel.qli": "974ab7f4bb1be1a7f4fd93e02377d377dde25c9422b106264c6cbd7ec517c7ea",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar/kernel.qli": "26a8c14af01fb90c8d2c2603f6ea27eb30e371d38a44804fbcf13a544ca44a66",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar/main.qli": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order/kernel.qli": "d38653b697d8065d4fa41691cb76f6b4d7b115f4ab0a5c1028e6c5012ab85bcb",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order/main.qli": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault/kernel.qli": "665381472277708901836d2e9fe78813713a5877083473ea87a9f299ecf01d72",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault/main.qli": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault/kernel.qli": "f70aab9d0bffa9f351c42da02f8a12f5cf8dd16f668f8a8a7a89b8fa070736a2",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault/main.qli": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault/kernel.qli": "396114554558774f9b4b9c6fb1978af476d6a28ad14293325f318a9f844f19ac",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault/main.qli": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed/kernel.qli": "1e15a27fafc3588c0be3de54fb59dd9871da3d16d3de225c9e7993b5705c2390",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed/main.qli": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase/kernel.qli": "57f23c21c0eb31c9cc9f6419a0397770802e79ba6a1836f1d494d27a4c028b4a",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase/main.qli": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign/kernel.qli": "b9957790842619d1c290cae961999f7aece6373505ddb5543bc9c89e38243b32",
+      "migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign/main.qli": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef"
+    }
+  },
+  "results": [
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "id": "erased_rotation_scalar",
+      "reference": "pennylane_demos/kernel_overlap2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/kernel_overlap2 entry 0,0 x: (False, False, False): 0.3125000000000001 != 0.5624999999999997"
+    },
+    {
+      "project": "semantic_faults/rx_missing_scalar",
+      "id": "rx_missing_scalar",
+      "reference": "pennylane_demos/rx_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "project": "semantic_faults/zz_erased_scalar",
+      "id": "zz_erased_scalar",
+      "reference": "pennylane_demos/ising_zz_quarter2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_quarter2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "id": "negative_rx_missing_scalar",
+      "reference": "pennylane_demos/rx_negative_quarter",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rx_negative_quarter entry 0,0 x: (True, False): 0.12500000000000003 != 0.02144660940672623"
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "id": "mixed_rotation_order_reversed",
+      "reference": "pennylane_demos/rotation_mixed_sign",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_mixed_sign entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "id": "half_rotation_order_reversed",
+      "reference": "pennylane_demos/rotation_half_y",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_half_y entry 0,0 y: (True, False): 0.7285533905932741 != 0.02144660940672623"
+    },
+    {
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "id": "negative_zz_missing_scalar",
+      "reference": "pennylane_demos/ising_zz_negative2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/ising_zz_negative2 entry 0,0 x: (False, False, False): 1 != 0.8535533905932733"
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "id": "edge_layer_reversed_order",
+      "reference": "pennylane_demos/qaoa_edge_layer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_edge_layer2 entry 0,1 x: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "id": "rotation_negative_x_positive_y_fault",
+      "reference": "pennylane_demos/rotation_negative_x_positive_y",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_negative_x_positive_y entry 0,0 y: (True, False): 0.12500000000000003 != 0.6249999999999998"
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "id": "qaoa_negative_mixer2_fault",
+      "reference": "pennylane_demos/qaoa_negative_mixer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_negative_mixer2 entry 0,1 y: (False, False, False): 0.0625 != 0.5624999999999997"
+    },
+    {
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "id": "qaoa_path_layer3_fault",
+      "reference": "pennylane_demos/qaoa_path_layer3",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_path_layer3 entry 0,0 x: (True, False, False, False): 0.15625000000000006 != 0.28124999999999983"
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "id": "negative_rotations_reversed",
+      "reference": "pennylane_demos/rotation_both_negative",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/rotation_both_negative entry 0,0 y: (True, False): 0.6250000000000002 != 0.12499999999999994"
+    },
+    {
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "id": "path_cost_lost_second_phase",
+      "reference": "pennylane_demos/qaoa_path_cost3",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_path_cost3 entry 0,0 x: (False, False, False, False): 0.8535533905932742 != 0.4999999999999999"
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "id": "negative_edge_cost_sign",
+      "reference": "pennylane_demos/qaoa_negative_edge_layer2",
+      "typecheck": "passed",
+      "semantic_mismatch": "pennylane_demos/qaoa_negative_edge_layer2 entry 0,0 y: (False, False, False): 0.13572330470336313 != 0.4892766952966367"
+    },
+    {
+      "project": "negative/measurement_adjoint",
+      "id": "measurement_adjoint",
+      "code": "type_mismatch",
+      "exit_code": 1
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 1.0021265830146149
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/erased_rotation_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.6152329590404406
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-1vz6mrcq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.6070564578985795
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-1vz6mrcq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.3125000000000001},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.3125000000000001},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6757942500989884
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.48907066707033664
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rx_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.47439237497746944
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-dnv1ww8u",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.4825847080210224
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-dnv1ww8u",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.5534023330546916
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4574144579237327
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/zz_erased_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.4500577920116484
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-u0b5h56k",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.4531402080319822
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-u0b5h56k",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.5079374579945579
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5306338330265135
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.5194090830627829
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-g2_uflzk",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.5146021250402555
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-g2_uflzk",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.5678595419740304
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.44879229192156345
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/mixed_rotation_order_reversed",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.4580590419936925
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-oer3vgdm",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.44780387496575713
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-oer3vgdm",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.5030177499866113
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-oer3vgdm",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.5260152500122786
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.4499235840048641
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/half_rotation_order_reversed",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.492333541973494
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-l3tmi58z",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.4655702089658007
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-l3tmi58z",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.37500000000000017},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.37500000000000017},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.5457079579355195
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-l3tmi58z",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.02144660940672623},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.7285533905932741},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.5120595830958337
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.41833520808722824
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_zz_missing_scalar",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.433454625075683
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-_7k1mu0g",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.47202783392276615
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-_7k1mu0g",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.5463454159907997
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5978892920538783
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/edge_layer_reversed_order",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5936835830798373
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5734098750399426
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.48927669529663714},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.13572330470336313},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.651681000017561
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.13572330470336313},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.48927669529663714},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6386257080594078
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.13572330470336313},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.48927669529663714}]}}\n",
+      "stderr": "",
+      "seconds": 0.6569046248914674
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.48927669529663714},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.13572330470336313}]}}\n",
+      "stderr": "",
+      "seconds": 0.6837757909670472
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5863834579940885
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ap33ekzq",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.13572330470336313},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.48927669529663714},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6459199169185013
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5377395830582827
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/rotation_negative_x_positive_y_fault",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.5369259580038488
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-1pyvn_pk",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.5854455840308219
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-1pyvn_pk",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.6171126670669764
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-1pyvn_pk",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.6094541249331087
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5554992499528453
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_negative_mixer2_fault",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5429480830207467
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5799089169595391
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.5625000000000002},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.0625},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6088081250200048
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.3125000000000001},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.3125000000000001},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6295141249429435
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.0625},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.5625000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.6281622920650989
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.06250000000000003},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.3125000000000001},{\"bits\":[true,false,false],\"probability\":0.06250000000000003},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.3125000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.6028300829930231
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.6573276659473777
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.3125000000000001},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.3125000000000001},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6275834999978542
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-ymn95yby",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.0625},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.5625000000000002},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6316133750369772
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.6676527090603486
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/qaoa_path_layer3_fault",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.12500000000000006},{\"bits\":[false,false,true],\"probability\":0.12500000000000006},{\"bits\":[false,true,false],\"probability\":0.12500000000000006},{\"bits\":[false,true,true],\"probability\":0.12500000000000006},{\"bits\":[true,false,false],\"probability\":0.12500000000000006},{\"bits\":[true,false,true],\"probability\":0.12500000000000006},{\"bits\":[true,true,false],\"probability\":0.12500000000000006},{\"bits\":[true,true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.6457235839916393
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-os8yv0o2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.12500000000000006},{\"bits\":[false,false,true],\"probability\":0.12500000000000006},{\"bits\":[false,true,false],\"probability\":0.12500000000000006},{\"bits\":[false,true,true],\"probability\":0.12500000000000006},{\"bits\":[true,false,false],\"probability\":0.12500000000000006},{\"bits\":[true,false,true],\"probability\":0.12500000000000006},{\"bits\":[true,true,false],\"probability\":0.12500000000000006},{\"bits\":[true,true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.6409070839872584
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-os8yv0o2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.40625000000000017},{\"bits\":[false,false,false,true],\"probability\":0.031250000000000014},{\"bits\":[false,false,true,false],\"probability\":0.031250000000000014},{\"bits\":[false,false,true,true],\"probability\":0.031250000000000014},{\"bits\":[false,true,false,false],\"probability\":0.031250000000000014},{\"bits\":[false,true,false,true],\"probability\":0.031250000000000014},{\"bits\":[false,true,true,false],\"probability\":0.031250000000000014},{\"bits\":[false,true,true,true],\"probability\":0.031250000000000014},{\"bits\":[true,false,false,false],\"probability\":0.15625000000000006},{\"bits\":[true,false,false,true],\"probability\":0.031250000000000014},{\"bits\":[true,false,true,false],\"probability\":0.031250000000000014},{\"bits\":[true,false,true,true],\"probability\":0.031250000000000014},{\"bits\":[true,true,false,false],\"probability\":0.031250000000000014},{\"bits\":[true,true,false,true],\"probability\":0.031250000000000014},{\"bits\":[true,true,true,false],\"probability\":0.031250000000000014},{\"bits\":[true,true,true,true],\"probability\":0.031250000000000014}]}}\n",
+      "stderr": "",
+      "seconds": 0.7220611250959337
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5817308339755982
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_rotations_reversed",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.5536299159284681
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-bw0xq_i3",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000002},{\"bits\":[true],\"probability\":0.5000000000000002}]}}\n",
+      "stderr": "",
+      "seconds": 0.5536172919673845
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-bw0xq_i3",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.6250000000000002},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.12500000000000003},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.6181773749412969
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-bw0xq_i3",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.12500000000000003},{\"bits\":[false,true],\"probability\":0.12500000000000006},{\"bits\":[true,false],\"probability\":0.6250000000000002},{\"bits\":[true,true],\"probability\":0.12500000000000006}]}}\n",
+      "stderr": "",
+      "seconds": 0.6124494168907404
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.465776166995056
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/path_cost_lost_second_phase",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.47142758301924914
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-9yf7vh8y",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "seconds": 0.4870814160676673
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-9yf7vh8y",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.8535533905932742},{\"bits\":[true,false,false,false],\"probability\":0.1464466094067263}]}}\n",
+      "stderr": "",
+      "seconds": 0.5318402079865336
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "seconds": 0.5904345000162721
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/semantic_faults/negative_edge_cost_sign",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5935081660281867
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-bq61ityd",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.2500000000000001},{\"bits\":[false,true],\"probability\":0.2500000000000001},{\"bits\":[true,false],\"probability\":0.2500000000000001},{\"bits\":[true,true],\"probability\":0.2500000000000001}]}}\n",
+      "stderr": "",
+      "seconds": 0.5880008329404518
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-bq61ityd",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.48927669529663714},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.13572330470336313},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6534654999850318
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "run",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-corpus-bq61ityd",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false],\"probability\":0.13572330470336313},{\"bits\":[false,false,true],\"probability\":0.06250000000000003},{\"bits\":[false,true,false],\"probability\":0.06250000000000003},{\"bits\":[false,true,true],\"probability\":0.06250000000000003},{\"bits\":[true,false,false],\"probability\":0.48927669529663714},{\"bits\":[true,false,true],\"probability\":0.06250000000000003},{\"bits\":[true,true,false],\"probability\":0.06250000000000003},{\"bits\":[true,true,true],\"probability\":0.06250000000000003}]}}\n",
+      "stderr": "",
+      "seconds": 0.6520111249992624
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/operation-counterexamples-v030/counterexample-sources/negative/measurement_adjoint",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`\",\"primary\":{\"path\":\"main.qli\",\"start\":282,\"end\":286,\"line\":7,\"column\":36},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "seconds": 0.005114833009429276
+    }
+  ],
+  "failures": [],
+  "scope": "Current registered derivatives, bounded existing independent oracle. Historical preparation/results unchanged; numerical mismatch detection is not a source-preservation proof or new guarantee.",
+  "cli_calls": 73
+}

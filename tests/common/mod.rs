@@ -41,6 +41,15 @@ print(current_source_file(Path(sys.argv[2])))
 
 /// Select current corpus snapshots only for registered logical project roots.
 pub(super) fn current_corpus_projects(paths: &[PathBuf]) -> Vec<PathBuf> {
+    select_corpus_projects(paths, "positive")
+}
+
+/// Keep the complete rejection inventory separate from the positive corpus.
+pub(super) fn current_corpus_counterexamples(paths: &[PathBuf]) -> Vec<PathBuf> {
+    select_corpus_projects(paths, "negative")
+}
+
+fn select_corpus_projects(paths: &[PathBuf], kind: &str) -> Vec<PathBuf> {
     let output = Command::new("python3")
         .args([
             "-B",
@@ -49,12 +58,15 @@ pub(super) fn current_corpus_projects(paths: &[PathBuf]) -> Vec<PathBuf> {
 from pathlib import Path
 root = Path(sys.argv[1])
 sys.path.insert(0, str(root / 'scripts'))
-from check_input_corpus import check_manifest, current_project, local, require
+from check_input_corpus import check_manifest, current_negatives, current_project, local, require
 corpus = root / 'corpus'
 manifest = check_manifest(corpus)
-known = {local(corpus, case['project']): case for case in manifest['cases']}
-require(len(known) == len(manifest['cases']), 'duplicate logical corpus project')
-requested = [Path(path).resolve() for path in sys.argv[2:]]
+kind = sys.argv[2]
+require(kind in ('positive', 'negative'), 'unknown corpus inventory')
+cases = manifest['cases'] if kind == 'positive' else current_negatives(corpus)
+known = {local(corpus, case['project']): case for case in cases}
+require(len(known) == len(cases), 'duplicate logical corpus project')
+requested = [Path(path).resolve() for path in sys.argv[3:]]
 require(len(set(requested)) == len(requested), 'duplicate requested corpus project')
 require(set(requested) == set(known), 'logical corpus inventory differs from registered projects')
 selected = []
@@ -67,6 +79,7 @@ for project in selected:
 "#,
         ])
         .arg(env!("CARGO_MANIFEST_DIR"))
+        .arg(kind)
         .args(paths)
         .output()
         .expect("Python 3 is required for recorded corpus identity checks");

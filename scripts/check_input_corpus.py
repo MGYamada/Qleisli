@@ -954,6 +954,24 @@ def current_negatives(corpus=None):
     return current["cases"]
 
 
+def canonical_counterexample_application(source):
+    """Fixed textual migration for the retained named-operation clients only.
+
+    This is provenance checking, not a parser, semantic oracle or acceptance
+    rule. Unmatched forms remain byte-identical; arbitrary edits cannot be
+    legalized by changing their recorded hashes.
+    """
+    source = re.sub(rb"\badjoint\(([A-Za-z_][A-Za-z_0-9]*),\s*",
+                    rb"inverse(\1)(", source)
+    needs_t_wrapper = bool(re.search(rb"\brepeat_static\([0-9]+, t, ", source))
+    source = re.sub(rb"\brepeat_static\(([0-9]+), ([A-Za-z_][A-Za-z_0-9]*), ",
+                    lambda match: b"power(" + (b"migration_t" if match[2] == b"t" else match[2])
+                    + b", " + match[1] + b")(", source)
+    if needs_t_wrapper:
+        source += b"\nunitary fn migration_t(q: Q<Bit>) -> Q<Bit> { t(q) }\n"
+    return source
+
+
 def current_counterexample_sources(corpus=None):
     """Validate explicit source snapshots while retaining logical fault identities."""
     corpus = CORPUS if corpus is None else corpus
@@ -989,7 +1007,7 @@ def current_counterexample_sources(corpus=None):
         require(type(data["format"]) is int and data["format"] == 1 and
                 data["kind"] == "explicit-counterexample-source-migration" and
                 data["source_selection"] == "snapshot" and
-                data["transformation"] == "basis-to-classical-function",
+                data["transformation"] in ("basis-to-classical-function", "canonical-operation-application"),
                 "unknown counterexample migration format")
         require(type(data["issue"]) is int and data["issue"] > 0 and
                 all(isinstance(data[key], str) and data[key].strip()
@@ -1030,11 +1048,16 @@ def current_counterexample_sources(corpus=None):
                         "counterexample snapshot changed: " + source)
                 before = local(predecessor, str(PurePosixPath(source).relative_to(project)))
                 after = local(base, source)
-                translated = re.sub(rb"(?m)^(pub )?basis fn\b",
-                                    lambda match: (match.group(1) or b"") + b"classical fn",
-                                    before.read_bytes())
+                if data["transformation"] == "basis-to-classical-function":
+                    translated = re.sub(rb"(?m)^(pub )?basis fn\b",
+                                        lambda match: (match.group(1) or b"") + b"classical fn",
+                                        before.read_bytes())
+                    failure = "counterexample migration changed more than the declaration keyword"
+                else:
+                    translated = canonical_counterexample_application(before.read_bytes())
+                    failure = "counterexample migration changed more than the canonical application"
                 require(after.read_bytes() == translated,
-                        "counterexample migration changed more than the declaration keyword")
+                        failure)
             selected[project] = local(base, project)
         require(set(files) == required, "incomplete counterexample migration projects")
         observations = data["observations"]

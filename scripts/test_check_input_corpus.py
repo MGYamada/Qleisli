@@ -466,7 +466,8 @@ class CounterexampleMigrationTests(unittest.TestCase):
                 after = self.stage / "counterexample-sources" / relative
                 before.parent.mkdir(parents=True, exist_ok=True)
                 after.parent.mkdir(parents=True, exist_ok=True)
-                before.write_text("// Synthetic fixture, not compiler evidence.\nbasis fn one(b: Bit) -> Bit { 1 }\n")
+                before.write_text("// Synthetic fixture, not compiler evidence.\nbasis fn one(b: Bit) -> Bit { 1 }\n"
+                                  "unitary fn rotate(q: Q<Bit>) -> Q<Bit> { adjoint(h, repeat_static(2, t, q)) }\n")
                 after.write_text(before.read_text().replace("basis fn", "classical fn"))
                 files[relative] = {"before": corpus.sha256(before), "after": corpus.sha256(after)}
         self.write(self.record, {
@@ -505,6 +506,58 @@ class CounterexampleMigrationTests(unittest.TestCase):
     def observation(self, project, exit_code, output):
         return {"project": project, "argv": ["synthetic-check"], "cwd": str(self.root),
                 "exit_code": exit_code, "stdout": json.dumps(output), "stderr": ""}
+
+    def canonical_stage(self):
+        data = json.loads(self.record.read_text())
+        stage = self.root / "migrations/canonical"
+        for source, record in data["files"].items():
+            before = self.stage / "counterexample-sources" / source
+            after = stage / "counterexample-sources" / source
+            after.parent.mkdir(parents=True, exist_ok=True)
+            after.write_bytes(corpus.canonical_counterexample_application(before.read_bytes()))
+            record.update(before=corpus.sha256(before), after=corpus.sha256(after))
+        data.update(issue=33, transformation="canonical-operation-application")
+        self.write(stage / "counterexamples.json", data)
+        observation = json.loads((self.stage / "checks.json").read_text())
+        observation["sources"] = {source: record["after"] for source, record in data["files"].items()}
+        self.write(stage / "checks.json", observation)
+        self.mutate(self.root / "manifest.json", lambda manifest:
+                    manifest["counterexample_source_migrations"].append("migrations/canonical/counterexamples.json"))
+        return stage
+
+    def test_canonical_stage_preserves_previous_keyword_translation_and_current_selection(self):
+        stage = self.canonical_stage()
+        selected = corpus.current_project(self.fault, self.root)
+        self.assertEqual(selected, (stage / "counterexample-sources" / self.fault["project"]).resolve())
+        self.assertIn("classical fn", (selected / "main.qli").read_text())
+        self.assertIn("inverse(h)(power(migration_t, 2)(q))", (selected / "main.qli").read_text())
+        self.assertEqual(corpus.current_project(self.negative, self.root),
+                         (stage / "counterexample-sources" / self.negative["project"]).resolve())
+        self.mutate(self.root / "manifest.json", lambda manifest:
+                    manifest["counterexample_source_migrations"].reverse())
+        with self.assertRaisesRegex(ValueError, "stale counterexample migration predecessor"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_rehashed_canonical_semantic_and_wrapper_edits_reject(self):
+        stage = self.canonical_stage()
+        source = self.fault["project"] + "/kernel.qli"
+        path = stage / "counterexample-sources" / source
+        original = path.read_text()
+        for replacement in (original.replace("power(migration_t, 2)", "power(migration_t, 3)"),
+                            original.replace("{ t(q) }", "{ h(q) }")):
+            with self.subTest(replacement=replacement):
+                path.write_text(replacement)
+                self.mutate(stage / "counterexamples.json", lambda data:
+                            data["files"][source].update(after=corpus.sha256(path)))
+                with self.assertRaisesRegex(ValueError, "more than the canonical application"):
+                    corpus.current_project(self.fault, self.root)
+
+    def test_canonical_translation_retains_nested_payload_and_unmatched_forms(self):
+        source = b"inverse(h)(q); adjoint(foo,adjoint(bar, f(q))); repeat_static(3, foo, join(a, b));\n"
+        expected = b"inverse(h)(q); inverse(foo)(inverse(bar)(f(q))); power(foo, 3)(join(a, b));\n"
+        self.assertEqual(corpus.canonical_counterexample_application(source), expected)
+        for unchanged in (b"repeat_static(n, foo, q)", b"adjoint(foo[n], q)", b"classical fn one(b: Bit) -> Bit { 1 }"):
+            self.assertEqual(corpus.canonical_counterexample_application(unchanged), unchanged)
 
     def test_execution_and_report_binding_share_the_explicit_current_sources(self):
         expected = self.stage / "counterexample-sources"

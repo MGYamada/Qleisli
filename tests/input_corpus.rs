@@ -2,7 +2,7 @@
 //! complex-entry/instrument oracles live in scripts/check_input_corpus.py.
 mod common;
 
-use common::current_corpus_projects;
+use common::{current_corpus_counterexamples, current_corpus_projects};
 use qleisli::frontend::compile::compile_project;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::{fs, path::Path};
@@ -38,12 +38,19 @@ fn all_reviewed_corpus_projects_compile_verify_and_execute() {
 #[test]
 fn local_corpus_counterexamples_reject() {
     let corpus = Path::new(env!("CARGO_MANIFEST_DIR")).join("corpus/negative");
-    for name in [
+    let logical: Vec<_> = [
         "duplicate_owner",
         "measured_owner",
         "measurement_adjoint",
         "dirty_auxiliary",
-    ] {
-        assert!(compile_project(&corpus.join(name)).is_err(), "{name}");
+    ]
+    .into_iter()
+    .map(|name| corpus.join(name))
+    .collect();
+    for project in logical
+        .iter()
+        .chain(current_corpus_counterexamples(&logical).iter())
+    {
+        assert!(compile_project(project).is_err(), "{}", project.display());
     }
 }
