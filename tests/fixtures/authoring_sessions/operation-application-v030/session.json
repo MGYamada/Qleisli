@@ -39,6 +39,9 @@
       },
       "observations": [
         "observation-legacy-probe.json"
+      ],
+      "reports": [
+        "validation-z-adapter.json"
       ]
     }
   ]

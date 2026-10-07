@@ -74,7 +74,11 @@ PATHS = {
         ('scripts/test_source_kernel.py', 'test_unused_body_native_rejection_blocks_every_source_action'),
         ('scripts/test_interop_native.py', 'test_all_actions_formats_use_real_native_checker'),
         ('tests/selected_source_cli.rs', 'selected_mixed_sources_keep_independent_distributions_and_scope'),
-        ('tests/checked_operations.rs', 'canonical_inverse_application_preserves_ordinary_names_and_both_consumers')]),
+        ('tests/checked_operations.rs', 'canonical_inverse_application_preserves_ordinary_names_and_both_consumers'),
+        ('tests/quantum_unit_source.rs', 'selected_z_direct_inverse_and_control_preserve_reference_phase'),
+        ('tests/quantum_unit_source.rs', 'selected_z_interference_matches_finite_and_rejects_wrong_interfaces'),
+        ('tests/quantum_unit_source.rs', 'complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit'),
+        ('src/frontend/sized/raw/preservation.rs', 'source_z_replay_rejects_native_valid_x_substitution')]),
     'contract-acceptance': path_rule('native-acceptance', 'contract finite-leaf', '--qirf-contract', [
         ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', '"--qirf-contract"']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),

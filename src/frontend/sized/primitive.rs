@@ -145,6 +145,7 @@ use TypeShape::{Bit, Bits, CBit, CBits, QUnit, Tuple, Unit};
 primitives! {
     H => ("std::quantum::h", 0, Fixed(&[Bit], Bit), Unitary, None),
     X => ("std::quantum::x", 0, Fixed(&[Bit], Bit), Unitary, None),
+    Z => ("std::quantum::z", 0, Fixed(&[Bit], Bit), Unitary, None),
     Cnot => ("std::quantum::cnot", 0, Fixed(&[Bit, Bit], Tuple(&[Bit, Bit])), Unitary, None),
     Phase => ("std::quantum::phase", 2, Fixed(&[Bit], Bit), Unitary, None),
     PhaseEighth => ("std::quantum::phase_eighth", 0, QuantumEndomorphism, Unitary, None),

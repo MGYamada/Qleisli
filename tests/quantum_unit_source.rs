@@ -1118,3 +1118,164 @@ fn prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_orac
     assert!((distribution[&vec![true]] - one).abs() < 1e-12);
     assert!((distribution[&vec![false]] - (1.0 - one)).abs() < 1e-12);
 }
+
+#[test]
+fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
+    let prelude = "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}";
+    for (body, width) in [
+        ("z(q)", 1),
+        ("inverse(oracle)(q)", 1),
+        ("controlled(oracle)(c,q)", 2),
+        (
+            "let(c,q)=controlled(repeat_op(1,oracle))(c,q);(c,adjoint(oracle,q))",
+            2,
+        ),
+    ] {
+        let signature = if width == 1 {
+            "(q:Q<Bit>)->Q<Bit>"
+        } else {
+            "(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)"
+        };
+        let text = format!("{prelude} pub unitary fn f{signature}{{{body}}}");
+        let source = elaborate(&text, "main::f", BTreeMap::new());
+        let proposal = source.lower().unwrap();
+        let checked = kernel().inspect_native(proposal.payload()).unwrap();
+        let coefficients = input(width);
+        let expected = coefficients
+            .iter()
+            .enumerate()
+            .map(|(i, z)| {
+                let negative = if width == 1 {
+                    i % 2 == 1
+                } else if body.starts_with("let") {
+                    // Execution coefficients index axis 0 (control) as the
+                    // low bit, axis 1 (target) as the high bit. In lexical
+                    // control/target order this is the sole negative |01>.
+                    i % 4 == 2
+                } else {
+                    i % 4 == 3
+                };
+                if negative { [-z[0], -z[1]] } else { *z }
+            })
+            .collect::<Vec<_>>();
+        close(
+            &checked
+                .execute_pure(&coefficients, 2, limits())
+                .unwrap()
+                .amplitudes,
+            &expected,
+        );
+        let raw = source.lower_raw().unwrap();
+        let accepted = native::Kernel::selected()
+            .unwrap()
+            .accept(raw.proposal())
+            .unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+    }
+    // This request's signature and exact matrix are fixed independently of
+    // the emitter: it must check Z, and must refuse the native-valid X source.
+    let a = side(101, r#"{"tag":"bit"}"#, 1);
+    let b = side(102, r#"{"tag":"bit"}"#, 1);
+    let matrix = Matrix::new(
+        2,
+        2,
+        [1, 0, 0, -1]
+            .into_iter()
+            .map(|n| Exact::new([n, 0, 0, 0], 0).unwrap())
+            .collect(),
+    )
+    .unwrap();
+    let description = String::from_utf8(finite_matrix::encode(&matrix).unwrap()).unwrap();
+    let required = request(
+        &a,
+        &b,
+        &[
+            meaning(
+                &a,
+                &b,
+                &format!(
+                    r#"{{"tag":"finite","description":{}}}"#,
+                    quote(&description)
+                ),
+            ),
+            meaning(&a, &b, r#"{"tag":"sequence","children":[0]}"#),
+        ],
+        1,
+    );
+    let direct = "use std::quantum::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}";
+    let z = elaborate(direct, "main::f", BTreeMap::new())
+        .lower()
+        .unwrap();
+    kernel()
+        .check_against_native(z.payload(), &required)
+        .unwrap();
+    let x = elaborate(
+        &direct.replace("::z", "::x").replace("{z(q)}", "{x(q)}"),
+        "main::f",
+        BTreeMap::new(),
+    )
+    .lower()
+    .unwrap();
+    kernel().inspect_native(x.payload()).unwrap();
+    assert!(
+        kernel()
+            .check_against_native(x.payload(), &required)
+            .is_err()
+    );
+}
+
+#[test]
+fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
+    let text = "use std::quantum::{h,z,init0}; use std::observe::measure_z; pub observe fn main()->Bit{measure_z(h(z(h(init0()))))}";
+    let finite = compile_project(&SourceRoot::new(text).0).unwrap();
+    let raw = elaborate(text, "main::main", BTreeMap::new())
+        .lower_raw()
+        .unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    for program in [&finite, &accepted] {
+        let distribution = run_closed(program, SimulationLimits::default()).unwrap();
+        assert!((distribution[&vec![true]] - 1.0).abs() < 1e-12);
+    }
+    for signature in [
+        "(q:Q<Unit>)->Q<Unit>{z(q)}",
+        "(q:Q<Bits<1>>)->Q<Bits<1>>{z(q)}",
+        "(q:Bit)->Bit{z(q)}",
+        "(q:Q<Bit>)->Q<Bit>{z(q,q)}",
+    ] {
+        let text = format!("// 日本語\r\nuse std::quantum::z; pub unitary fn f{signature}");
+        assert!(
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).is_err(),
+            "{text}"
+        );
+        assert!(
+            compile_project(&SourceRoot::new(&text).0).is_err(),
+            "{text}"
+        );
+    }
+}
+
+#[test]
+fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli");
+    let text = std::fs::read_to_string(path).unwrap();
+    let source = elaborate(&text, "main::main", BTreeMap::new());
+    let raw = source.lower_raw().unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    assert_eq!(distribution.len(), 4);
+    assert!(distribution.values().all(|p| (p - 0.25).abs() < 1e-12));
+    // Keep the independent hierarchy root restriction visible. The exact
+    // first source returns (Bit,Bit), not this profile's single Bits register.
+    let error = source.lower().unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.message().contains("exactly one Bits value"));
+}

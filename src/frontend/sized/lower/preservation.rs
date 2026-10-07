@@ -286,6 +286,7 @@ fn trace_kind(primitive: Primitive) -> &'static str {
         | Primitive::Finish
         | Primitive::H
         | Primitive::X
+        | Primitive::Z
         | Primitive::Cnot
         | Primitive::Phase
         | Primitive::PhaseEighth
@@ -308,6 +309,7 @@ fn structural(primitive: Primitive) -> bool {
         | Primitive::ConsumeEmpty => true,
         Primitive::H
         | Primitive::X
+        | Primitive::Z
         | Primitive::Cnot
         | Primitive::Phase
         | Primitive::PhaseEighth

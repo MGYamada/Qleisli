@@ -622,6 +622,7 @@ impl Replay<'_> {
         let required = match kind {
             Primitive::H
             | Primitive::X
+            | Primitive::Z
             | Primitive::Cnot
             | Primitive::Phase
             | Primitive::PhaseEighth
@@ -797,12 +798,15 @@ impl Replay<'_> {
                 self.cursor += 1;
                 Ok(vec![output])
             }
-            (Primitive::H | Primitive::X, [input]) if quantum_bit(step.output().ty()) => {
+            (Primitive::H | Primitive::X | Primitive::Z, [input])
+                if quantum_bit(step.output().ty()) =>
+            {
                 let input = Self::quantum(input, site)?;
-                let gate = if kind == Primitive::H {
-                    SingleGate::H
-                } else {
-                    SingleGate::X
+                let gate = match kind {
+                    Primitive::H => SingleGate::H,
+                    Primitive::X => SingleGate::X,
+                    Primitive::Z => SingleGate::Z,
+                    _ => unreachable!("matched single gate"),
                 };
                 Ok(vec![self.gate(input, gate, site)?])
             }
@@ -1981,5 +1985,24 @@ mod tests {
             validate(&unsupported, accepted.raw()).unwrap_err().code(),
             "unsupported"
         );
+    }
+    #[test]
+    fn source_z_replay_rejects_native_valid_x_substitution() {
+        let source = elaborate(
+            "use std::quantum::z; pub unitary fn f(q:Q<Bit>)->Q<Bit>{z(q)}",
+            "main::f",
+        );
+        let proposal = source.lower_raw().unwrap();
+        let accepted = kernel().accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+        let mut fault = accepted.raw().clone();
+        let [RawOp::Gate { gate, .. }] = fault.operations.as_mut_slice() else {
+            panic!("one Z gate")
+        };
+        assert_eq!(*gate, SingleGate::Z);
+        *gate = SingleGate::X;
+        let valid_fault = kernel().accept_raw(fault).unwrap();
+        assert!(validate(&source, valid_fault.raw()).is_err());
+        assert!(proposal.validate_source_steps(&valid_fault).is_err());
     }
 }

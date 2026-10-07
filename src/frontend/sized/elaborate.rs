@@ -2068,6 +2068,7 @@ fn primitive(
         | Primitive::Finish
         | Primitive::H
         | Primitive::X
+        | Primitive::Z
         | Primitive::PhaseEighth
         | Primitive::Cnot
         | Primitive::Init0

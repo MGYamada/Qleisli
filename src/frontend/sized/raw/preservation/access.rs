@@ -332,15 +332,17 @@ impl Trace<'_, '_, '_> {
                     .primitive_kind()
                     .ok_or_else(|| self.site.invalid("source access has no primitive"))?
                 {
-                    Primitive::H | Primitive::X => {
+                    Primitive::H | Primitive::X | Primitive::Z => {
                         let a = self.single(&inputs[0])?;
                         if step.primitive_kind() == Some(Primitive::H) {
                             self.push(CircuitStep {
                                 controls: vec![],
                                 action: CircuitAction::Hadamard { target: a },
                             })?;
-                        } else {
+                        } else if step.primitive_kind() == Some(Primitive::X) {
                             self.monomial(vec![a], vec![1, 0], vec![0, 0])?;
+                        } else {
+                            self.monomial(vec![a], vec![0, 1], vec![0, 4])?;
                         }
                         inputs[0].clone()
                     }

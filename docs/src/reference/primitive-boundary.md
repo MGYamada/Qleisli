@@ -104,6 +104,7 @@ parameters below are static natural arguments.
 | --- | --- | --- |
 | `std::quantum::h` | `Q<Bit> -> Q<Bit>`; Unitary | The same exact Hadamard meaning; a finite leaf is bound to actual source ports. |
 | `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | The same exact bit flip; a finite leaf is bound to actual source ports. |
+| `std::quantum::z` | `Q<Bit> -> Q<Bit>`; Unitary | Exact `diag(1,-1)` on the same axis, through existing finite leaf and Raw `Gate(Z)` proposals. Independent source-step replay retains this action under inverse and control; there is no scalar or same-width type coercion. |
 | `std::quantum::cnot` | `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled X over the ordered control/target owners, followed by explicit owner routing. |
 | `std::quantum::phase` | Static `[j,k]`; `Q<Bit> -> Q<Bit>`; Unitary | `diag(1, exp(2πij/2^k))`; emits a dyadic-phase hierarchy proposal. |
 | `std::quantum::phase_eighth` | Source: one `Q<A> -> Q<A>` for any Basis tree; selected concrete support: atoms `A = Unit, Bit, Bits<n>`; Unitary | Exact scalar `ζ I`, preserving the input's full type. A checked Unit introduction, finite scalar leaf and Unit elimination form a closed scalar, tensored with the original owner's identity. No physical wire is added; this is not the Bit phase gate. |

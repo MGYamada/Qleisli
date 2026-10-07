@@ -767,6 +767,7 @@ impl Lower<'_> {
                 match name {
                     Primitive::H
                     | Primitive::X
+                    | Primitive::Z
                     | Primitive::Phase
                     | Primitive::PhaseEighth
                     | Primitive::Cnot
@@ -850,7 +851,12 @@ impl Lower<'_> {
             .collect()
     }
     fn gate(&mut self, gate: SingleGate, input: &Port, output: &Port) -> Result<usize> {
-        let key = u8::from(gate == SingleGate::X);
+        let key = match gate {
+            SingleGate::H => 0,
+            SingleGate::X => 1,
+            SingleGate::Z => 2,
+            _ => return Err(fail("unsupported shared finite gate")),
+        };
         let child = *self
             .finite_gates
             .get(&key)
@@ -896,10 +902,14 @@ impl Lower<'_> {
                 .map(|n| Exact::new([0, n, 0, 0], 1))
                 .collect::<std::result::Result<Vec<_>, _>>()
         } else {
-            [0, 1, 1, 0]
-                .into_iter()
-                .map(|n| Exact::new([n, 0, 0, 0], 0))
-                .collect()
+            match gate {
+                SingleGate::X => [0, 1, 1, 0],
+                SingleGate::Z => [1, 0, 0, -1],
+                _ => return Err(fail("unsupported finite gate matrix")),
+            }
+            .into_iter()
+            .map(|n| Exact::new([n, 0, 0, 0], 0))
+            .collect()
         }
         .map_err(|e| fail(e.to_string()))?;
         let matrix = Matrix::new(2, 2, entries).map_err(|e| fail(e.to_string()))?;
@@ -1211,16 +1221,17 @@ impl Lower<'_> {
                 let node = self.graph.structural(before, vec![], operation, &[])?;
                 Ok((node, vec![]))
             }
-            Primitive::H | Primitive::X => {
+            Primitive::H | Primitive::X | Primitive::Z => {
                 let after = self.output_ports(step.output(), vec![before[0].axes.clone()])?;
                 // Bind the exact finite program to these actual source ports.
                 // Canonical leaf adapters add owner routes and an extra
                 // composition without changing the primitive's meaning.
                 let node = self.finite_gate(
-                    if name == Primitive::H {
-                        SingleGate::H
-                    } else {
-                        SingleGate::X
+                    match name {
+                        Primitive::H => SingleGate::H,
+                        Primitive::X => SingleGate::X,
+                        Primitive::Z => SingleGate::Z,
+                        _ => unreachable!("matched single gate"),
                     },
                     &before[0],
                     &after[0],
@@ -1384,6 +1395,7 @@ impl Lower<'_> {
                         | Primitive::Finish
                         | Primitive::H
                         | Primitive::X
+                        | Primitive::Z
                         | Primitive::Cnot
                         | Primitive::Phase
                         | Primitive::PhaseEighth
@@ -1433,6 +1445,7 @@ impl Lower<'_> {
             | Primitive::ConsumeEmpty => true,
             Primitive::H
             | Primitive::X
+            | Primitive::Z
             | Primitive::Cnot
             | Primitive::Phase
             | Primitive::PhaseEighth
@@ -1592,6 +1605,7 @@ fn lower_inner<'a>(
     for (name, gate, key) in [
         (Primitive::H, SingleGate::H, 0),
         (Primitive::X, SingleGate::X, 1),
+        (Primitive::Z, SingleGate::Z, 2),
     ] {
         let needed = source
             .definitions()

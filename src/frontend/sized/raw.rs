@@ -486,6 +486,7 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
                 Some(
                     Primitive::H
                     | Primitive::X
+                    | Primitive::Z
                     | Primitive::Cnot
                     | Primitive::Init0
                     | Primitive::MeasureZ
@@ -982,13 +983,14 @@ impl Emitter<'_> {
                                 self.reserve_qubit(span)?;
                                 vec![Atom::Quantum(self.raw.init0())]
                             }
-                            H | X => {
+                            H | X | Z => {
                                 let slot = quantum(&inputs[0], span)?;
                                 self.reserve_operations(1, span)?;
-                                let gate = if step.primitive_kind() == Some(H) {
-                                    SingleGate::H
-                                } else {
-                                    SingleGate::X
+                                let gate = match step.primitive_kind() {
+                                    Some(H) => SingleGate::H,
+                                    Some(X) => SingleGate::X,
+                                    Some(Z) => SingleGate::Z,
+                                    _ => unreachable!("matched single gate"),
                                 };
                                 self.raw.gate_bit(gate, slot).map_err(state_error)?;
                                 vec![Atom::Quantum(slot)]

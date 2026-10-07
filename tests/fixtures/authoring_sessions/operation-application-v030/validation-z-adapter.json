@@ -1,0 +1,187 @@
+{
+  "format": "qleisli.selected-z-adapter-validation",
+  "version": 1,
+  "recorded_utc": "2026-10-07T02:25:03.112801+00:00",
+  "status": "local-checkpoint",
+  "base_commit": "744e0d6342b42adfe3a7660b7e294adb3dac9f72",
+  "native_binary_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "source_sha256": {
+    "src/frontend/sized/primitive.rs": "a5e596594cb80504bb0d732fb779ef57cfaa0be7b94131fc253a3c65599b52a4",
+    "src/frontend/sized/elaborate.rs": "9602a0066fb3a9b52420f733acb175c3e14f5af9e2ffcc0623b7c0b243641718",
+    "src/frontend/sized/lower.rs": "464c6e76dd97b4ece5742a2f8756e3ab2f222aaf0f6f625d4f4e4660c32907d2",
+    "src/frontend/sized/lower/preservation.rs": "c4bd042a58489608d844e279854619082599fce6b853c31641bbd6740e37fc5b",
+    "src/frontend/sized/raw.rs": "fedc37e0654f752edcb72d001f1ca262c5070356d909b83f7a314a76df07fa12",
+    "src/frontend/sized/raw/preservation.rs": "0c063fea37026ee9263d0e4f9edc521bf401ffe22bfb277f57b03b220830b78f",
+    "src/frontend/sized/raw/preservation/access.rs": "c3211d1e1d06102dcbf8533326df48a79264db3fc839b6657394d993c399f66c",
+    "tests/quantum_unit_source.rs": "e9b66374d8c0118018e3b1e8ab89e0c5619d18ba80793fbc9702ec87bf434019"
+  },
+  "integration_checks": [
+    {
+      "toolchain": "1.98.1",
+      "targets": [
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 31,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "toolchain": "1.85.0",
+      "targets": [
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 31,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "checks": [
+    "Both toolchains: all-target Clippy passed",
+    "Both toolchains: new native-valid X substitution library test passed",
+    "Verification inventory and production coverage passed",
+    "Constitution continuity against 38baae7d19535602b21270e11e97617d45205b37 passed",
+    "Docs and fixture working-size budgets passed"
+  ],
+  "scope": [
+    "Fixed independent exact Z matrix request; native-valid X fails that same request",
+    "Direct, inverse, control and repeated-control/inverse actions retain two reference slices",
+    "Execution axis 0 is control low bit; axis 1 is target high bit; lexical |01> has negative amplitude in combined operation",
+    "H-Z-H interference agrees with finite path",
+    "Original legacy-spelling probe now executes through Raw with independent source-step replay",
+    "Wrong ordinary, Unit, same-width Bits and arity interfaces reject"
+  ],
+  "cli": [
+    {
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "--format=json",
+        "check",
+        "--entry=main::main",
+        "--ir-profile=raw",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "status": "checked",
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::main",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "--format=json",
+        "run",
+        "--entry=main::main",
+        "--ir-profile=raw",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 0,
+      "stdout": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "run",
+        "outcome": "ok",
+        "diagnostics": [],
+        "result": {
+          "distribution": [
+            {
+              "bits": [
+                false,
+                false
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                false,
+                true
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                false
+              ],
+              "probability": 0.2500000000000001
+            },
+            {
+              "bits": [
+                true,
+                true
+              ],
+              "probability": 0.2500000000000001
+            }
+          ],
+          "verification": {
+            "scope": "native-validity",
+            "request_origin": "none",
+            "source_steps_checked": true,
+            "source_meaning_verified": false
+          },
+          "execution_authority": "checked-produced-ir",
+          "entry": "main::main",
+          "ir_profile": "raw",
+          "source_check_scope": "all-supplied-module-declarations",
+          "native_check_scope": "selected-specialization"
+        }
+      },
+      "stderr": ""
+    }
+  ],
+  "failed_probes": [
+    {
+      "kind": "test-request-structure",
+      "error": "requested meaning has different child arity",
+      "repair": "Fixed literal request retains the required one-child sequence around its independent Z matrix"
+    },
+    {
+      "kind": "test-source-grammar",
+      "error": "expected (, found {",
+      "repair": "Removed unsupported extra nested result block from test source"
+    },
+    {
+      "kind": "profile-limit",
+      "error": "selected sized lowering profile requires an observe root returning exactly one Bits value",
+      "status": "retained; original (Bit,Bit) source passes Raw, hierarchy observe limit remains explicit"
+    },
+    {
+      "kind": "test-oracle-axis-order",
+      "error": "Combined operation expected lexical index 1 instead of execution-axis index 2",
+      "repair": "Oracle explicitly maps control to low bit and target to high bit; production unchanged"
+    },
+    {
+      "kind": "sandbox",
+      "error": "Full library runs: each 134 passed, 1 ps permission failure, 3 existing ignored",
+      "status": "Targeted retry with ordinary permissions separately verified; no full-library pass is claimed"
+    }
+  ],
+  "pending": [
+    "Canonical power syntax and original desired attempt-02 remain incomplete",
+    "Legacy retirement and migration remain incomplete",
+    "No fresh full Lean replay or hosted CI for this adapter",
+    "No new interpretation, guarantee or general source-preservation proof"
+  ]
+}

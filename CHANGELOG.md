@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect the existing Z intrinsic to selected concrete preparation, Raw and
+  hierarchy proposals, with independent phase and source-step checks.
+
 - Add an isolated experimental Julia environment with pinned Cyclotomics.jl,
   exact big-rational arithmetic checks and small Clifford/T matrix examples.
 
