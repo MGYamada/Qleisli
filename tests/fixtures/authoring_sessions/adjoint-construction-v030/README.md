@@ -18,3 +18,9 @@ groups and their exact working inputs, including latest/MSRV full Rust tests,
 all 4,000 ownership cases and Clippy/research. Wall times are observations from
 concurrent local checks, not a controlled performance comparison. Clean-commit
 native comparisons and final exact-head CI remain separate requirements.
+
+The [clean native validation](clean-native-validation.json) records seven
+selected shared groups on `6348e61a3f3c0493f978ad6ed75494ea57909883`:
+raw, observation, corpus, QPE, arithmetic, QPE clients and the corrected complete
+instrument driver. All passed in 51.08 seconds including preparation. The other
+60 groups were omitted locally; final exact-head hosted CI remains required.

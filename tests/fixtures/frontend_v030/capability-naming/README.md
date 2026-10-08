@@ -35,3 +35,6 @@ the first-attempt hosted failure on `e2ad4dc5`: 66 native groups passed, while
 substring. The corrected caller removes `Controllable(U)` and retains all
 15 rejected source cases. This isolated producer check does not replace the
 complete instrument comparison or a new exact-head hosted CI result.
+The subsequent [clean native check](../../authoring_sessions/adjoint-construction-v030/clean-native-validation.json)
+passes the complete instrument driver and six related groups on `6348e61a`.
+It retains the failed hosted attempt and does not replace final hosted CI.
