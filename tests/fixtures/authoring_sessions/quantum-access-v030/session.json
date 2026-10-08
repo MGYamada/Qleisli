@@ -1,0 +1,124 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "status": "actual-first-observations-retained",
+  "task": "Issues #29/#69 coherent quantum access first sources and explicit-owner controls",
+  "baseline_commit": "db526c9b2f863e120ddaa87f06573271c7d57288",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository study; exact deployed model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Four desired access programs and four explicit consume/return controls preserved before implementation; detailed grammar remains a candidate.",
+      "sha256": {
+        "exclusive/main.qli": "1bdad8f187b534d2eed1d4382c07a05942b0eef50b024e5ec5bc1dab8eb5f406",
+        "exclusive-explicit/main.qli": "ca4b20b8e53c970dc6f1b81825a2d97b12b004b4e93ee5686c35f18313ed9c2a",
+        "entangled/main.qli": "c9c30c264557daf839410fa892e1dd4d9bfa33dd8cad8e9f12e3d74cd2b3cab1",
+        "entangled-explicit/main.qli": "528bcf55250662f85520ef31b4c0b6f64a05d7dd82ab8a1ae43f2eea809dd431",
+        "kickback/main.qli": "b5ce959e635c81861ac08affd2d72263b7c0f8e4a956567f2ddb6708a4910fa6",
+        "kickback-explicit/main.qli": "ac3474dc9aff929b1656f4e111b5df585d68e841ba259deea12df6cb57eda1f7",
+        "overlap/main.qli": "77ab13a3b5d23fd799827edbdc68178d63a7403d12d9b7a6fcbe7c8a6c4c1d5e",
+        "overlap-explicit/main.qli": "3563fd07fa3d8c47886b4634e47c74737907634140dd4b90e6604b936726e6f7"
+      },
+      "manifest_sha256": {
+        "exclusive/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "exclusive-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "entangled/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "entangled-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kickback/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kickback-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "overlap/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "overlap-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/entangled-finite.json",
+        "before/entangled-selected.json",
+        "before/entangled-explicit-finite.json",
+        "before/entangled-explicit-selected.json",
+        "before/entangled-explicit-run.json",
+        "before/exclusive-finite.json",
+        "before/exclusive-selected.json",
+        "before/exclusive-explicit-finite.json",
+        "before/exclusive-explicit-selected.json",
+        "before/exclusive-explicit-run.json",
+        "before/kickback-finite.json",
+        "before/kickback-selected.json",
+        "before/kickback-explicit-finite.json",
+        "before/kickback-explicit-selected.json",
+        "before/kickback-explicit-run.json",
+        "before/overlap-finite.json",
+        "before/overlap-selected.json",
+        "before/overlap-explicit-finite.json",
+        "before/overlap-explicit-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Replace the nonexistent std::quantum::init1 import with existing x; prepare one with x(init0()). Every first source/refusal remains unchanged. Even unused nonexistent imports blocked explicit controls; these first refusals are not semantic/owner evidence. No access expression or intended distribution changes.",
+      "sha256": {
+        "entangled/main.qli": "5aacc8f33cb473ef673c6c519dbc93b6a77e956339561e0d1dcc77a83a6170f9",
+        "entangled-explicit/main.qli": "e06fda353213ae4c126657c07fe398deeeeed248238b94b1ecaebb9166613d84",
+        "exclusive/main.qli": "00025e4fed6bbb8bb0609a6731adaeece7dfb3f92136f8d80730365cfd475c26",
+        "exclusive-explicit/main.qli": "706930368055d82eb3bb62fabba57fb3a9c9ef37d8f64e0f76d8c36b16f33406",
+        "kickback/main.qli": "5014bfc3863274adc199421a935dbb551889af9e95d3b1cc2a1c16e78ee862ef",
+        "kickback-explicit/main.qli": "63856463d7fb66ac6d9a708c92c98cb7833b2b1356717e4061e902d73a2de2ed",
+        "overlap/main.qli": "c0f72b6b02915e2735210c47c285a9084d5cc482e7fcd7dfb4f8d40f0a7c2e81",
+        "overlap-explicit/main.qli": "4ae4f5f30199f6beaffa3f269b21287e4a310060e7517fc9f4b84c862e261607"
+      },
+      "manifest_sha256": {
+        "entangled/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "entangled-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "exclusive/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "exclusive-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kickback/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kickback-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "overlap/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "overlap-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "repaired-before/entangled-finite.json",
+        "repaired-before/entangled-selected.json",
+        "repaired-before/entangled-explicit-finite.json",
+        "repaired-before/entangled-explicit-selected.json",
+        "repaired-before/entangled-explicit-run.json",
+        "repaired-before/exclusive-finite.json",
+        "repaired-before/exclusive-selected.json",
+        "repaired-before/exclusive-explicit-finite.json",
+        "repaired-before/exclusive-explicit-selected.json",
+        "repaired-before/exclusive-explicit-run.json",
+        "repaired-before/kickback-finite.json",
+        "repaired-before/kickback-selected.json",
+        "repaired-before/kickback-explicit-finite.json",
+        "repaired-before/kickback-explicit-selected.json",
+        "repaired-before/kickback-explicit-run.json",
+        "repaired-before/overlap-finite.json",
+        "repaired-before/overlap-selected.json",
+        "repaired-before/overlap-explicit-finite.json",
+        "repaired-before/overlap-explicit-selected.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Expose only the four explicit-owner main controls publicly for selected-source admission. The previous private-entry visibility refusals are not semantic failures. Desired syntax probes remain untouched in attempts 01/02.",
+      "sha256": {
+        "entangled-explicit/main.qli": "1ae9547adbfded753ad5d1418f292f406fc80247d2a7f4b8cceb06c5a80f5223",
+        "exclusive-explicit/main.qli": "a57f3b9405c3dadff5c6107e44579fa5d29484446b45ffb72f280dea750b922a",
+        "kickback-explicit/main.qli": "9f3ac7942be311789e950b1d01205a5405bf328534b35b15125973a9229043a1",
+        "overlap-explicit/main.qli": "bd98e1f89afd6317bc65f9ce7217c4d06290e3bd04f76ae25629665a81ef6a55"
+      },
+      "manifest_sha256": {
+        "entangled-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "exclusive-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kickback-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "overlap-explicit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "public-before/entangled-explicit-selected.json",
+        "public-before/exclusive-explicit-selected.json",
+        "public-before/kickback-explicit-selected.json",
+        "public-before/overlap-explicit-selected.json"
+      ]
+    }
+  ]
+}

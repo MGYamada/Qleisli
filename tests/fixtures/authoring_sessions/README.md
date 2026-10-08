@@ -1,3 +1,8 @@
+The [quantum-access first study](quantum-access-v030/README.md) preserves
+four desired ctrl/excl calls, explicit-owner controls, two honest source repairs
+and 42 actual observations. Parser refusals are separate from ownership
+refusal and the three bounded phase/entanglement distributions.
+
 # Authoring and repair observations
 
 The [structured-exit probes](structured-exit-v030/README.md) preserve five
