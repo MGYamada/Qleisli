@@ -13,6 +13,10 @@ come from the same original-source checker in `src/frontend/check.rs` and
 unused siblings, both arms and zero-iteration bodies. Parsing alone confers
 neither source approval nor native verification evidence.
 
+The [elaboration whitelist](elaboration.md) specifies permitted surface-to-core
+expansion, evaluation order, owners, phase, original locations and remaining
+independent checking obligations. It does not grant an unsupported projection.
+
 Runtime wildcard, duplicate-name and exact tuple/Unit rules use the common
 pattern traversal. Ordered static kinds and runtime parameter names retain
 original declaration ordinals and binder identities. A static kind may refer

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Specify the surface-to-core elaboration whitelist, including evaluation
+  order, exact owner trees and phase, original locations, profile refusals and
+  independent checking duties. Link preserved old/new migration evidence;
+  keep implicit coherence, views and omitted quantum arms unsupported.
+
 - Check `Adjointable(U)` when constructing a static `adjoint(U)` description,
   including nested, unused, zero-count and zero-width cases. Preserve derived
   adjoints of controlled circuits and report missing access at the constructor.
