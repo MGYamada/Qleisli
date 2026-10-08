@@ -493,9 +493,22 @@ class SyntheticRelease(unittest.TestCase):
         final=text.split('  release-readiness:\n')[1]
         for job in checker.SUITES:
             self.assertIn(job,final.split('    steps:')[0])
-            self.assertIn(f'--record-job {job}',text)
             block=re.split(r'(?m)^  [a-z][a-z-]*:\n', text.split(f'  {job}:\n')[1])[0]
             self.assertIn('steps.release-receipt.outputs.release_receipt_sha256',block)
+            self.assertEqual(block.count('uses: ./.github/actions/release-receipt'),1)
+            receipt=block.split('      - name: Bind and retain successful producer evidence')[1]
+            self.assertIn("if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)",receipt)
+            self.assertIn("readiness: ${{ inputs.release_readiness && 'true' || 'false' }}",receipt)
+            if job in {'check-macos-source','check-lean-kernel'}:
+                self.assertIn('native: ${{ runner.temp }}/native-distribution',receipt)
+            if job=='check-distribution':
+                self.assertIn('distribution: ${{ runner.temp }}/qleisli-distribution.json',receipt)
+            if job=='check-lean':
+                self.assertIn('constitution: ${{ runner.temp }}/release-constitution.json',receipt)
+        action=(ROOT/'.github/actions/release-receipt/action.yml').read_text()
+        self.assertIn('--record-job "$GITHUB_JOB"',action)
+        self.assertIn('value: ${{ steps.record.outputs.release_receipt_sha256 }}',action)
+        self.assertIn('release-receipt-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}',action)
         self.assertIn('RELEASE_NEEDS_JSON: ${{ toJSON(needs) }}',final)
         self.assertIn('inputs.release_base || vars.QLEISLI_RELEASE_BASE',final)
         self.assertIn('release-receipt-*-${{ github.sha }}-${{ github.run_attempt }}',final)

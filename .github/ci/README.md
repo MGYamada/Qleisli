@@ -320,6 +320,23 @@ scratch cleanup. Each caller retains its own source binding, toolchain checks,
 selection and coverage requirements. Moving this shared mechanism does not
 cache acceptance decisions or remove any native comparison.
 
+Hosted steps use four small local composite actions under `.github/actions/`:
+`source-check` executes a manifest group and retains its report even on failure;
+`native-runtime` installs Lean and delegates build/audit to that same manifest;
+`cargo-archives` retains only the registry index/download cache and reports its
+actual status; `release-receipt` binds and uploads the successful calling job's
+evidence. Rust groups own their native preparation, so their setup action uses
+`prepare: 'false'`; the four other native consumers use the default preparation.
+The mathematical Lean job retains its separate model/full proof work.
+
+The workflow keeps scheduling, platform/tool installation, corpus/release
+conditions and the eight stable required contexts visible. Shared actions keep
+the previous report paths, artifact names, action pins, tool versions and trusted
+receipt outputs. Receipt calls remain conditional on tags or explicit readiness;
+ordinary PR tests do not create release evidence. Infrastructure regressions
+execute the actual shell adapters with literal paths and failed commands and
+check every caller's preparation, coverage, cache and receipt wiring.
+
 Native comparisons require a clean checkout and the pinned tools. Without
 `--plan`, supply a new `--output` directory; `--task` selects named groups only
 for local reproduction and reports every omitted group. Hosted runs reject

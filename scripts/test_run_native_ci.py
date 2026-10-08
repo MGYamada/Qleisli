@@ -125,7 +125,7 @@ class NativeCI(unittest.TestCase):
     def test_workflow_separates_full_proofs_from_native_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
         kernel = workflow.split("  check-lean-kernel:\n")[1].split("  check-distribution:\n")[0]
-        for command in ("check_lean_kernel.py", "Audit.lean", "Tests.lean", "kernel-refactoring-equivalence.lean",
+        for command in ("uses: ./.github/actions/native-runtime", "Tests.lean", "kernel-refactoring-equivalence.lean",
                         "leanchecker --fresh QleisliKernel", "leanchecker --fresh Main", "test_check_lean_kernel.py --compiled"):
             self.assertLess(kernel.index(command), kernel.index("run_native_ci.py"))
         model = workflow.split("  check-lean:\n")[1].split("  check-lean-kernel:\n")[0]
@@ -139,7 +139,7 @@ class NativeCI(unittest.TestCase):
         for name in ["Replay retained proof reductions", "Replay the compiled project definitions"]:
             step = kernel.split(f"- name: {name}")[1].split("      - ")[0]
             self.assertIn("if: needs.changes.outputs.proof_lane == 'full'", step)
-        audit = kernel.split("- name: Audit axioms")[1].split("      - ")[0]
+        audit = kernel.split("- name: Prepare the required native acceptance runtime")[1].split("      - ")[0]
         native = kernel.split("- name: Run all retained native comparisons")[1].split("      - ")[0]
         self.assertNotIn("if:", audit)
         self.assertNotIn("if:", native)

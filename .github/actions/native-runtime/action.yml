@@ -1,0 +1,33 @@
+name: Prepare native runtime
+description: Install the pinned Lean toolchain and run the shared native build/audit plan
+inputs:
+  prepare:
+    description: Set false only when the consuming Rust plan owns native preparation
+    default: 'true'
+runs:
+  using: composite
+  steps:
+    - name: Install the pinned Lean toolchain
+      uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+      with:
+        lake-package-directory: lean-kernel
+        auto-config: 'false'
+        use-github-cache: 'false'
+        build: 'false'
+        use-mathlib-cache: 'false'
+    - name: Build and audit the matching native checker
+      if: inputs.prepare == 'true'
+      uses: ./.github/actions/source-check
+      with:
+        group: native-runtime
+        artifact-name: native-runtime-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
+    - name: Select the checker for subsequent consumers
+      shell: bash
+      env:
+        PREPARE_NATIVE: ${{ inputs.prepare }}
+      run: |
+        case "$PREPARE_NATIVE" in
+          true|false) ;;
+          *) echo 'Unknown native preparation setting' >&2; exit 1 ;;
+        esac
+        echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"

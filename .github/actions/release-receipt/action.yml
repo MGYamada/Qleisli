@@ -1,0 +1,48 @@
+name: Retain release producer receipt
+description: Bind the successful calling job to its same-run evidence and preserve the receipt
+inputs:
+  readiness:
+    description: Explicit manual release-readiness selection
+    default: 'false'
+  native:
+    description: Native distribution evidence directory
+    default: ''
+  distribution:
+    description: Distribution validation report
+    default: ''
+  constitution:
+    description: Live constitutional verification report
+    default: ''
+outputs:
+  release_receipt_sha256:
+    description: Digest emitted by the checked producer
+    value: ${{ steps.record.outputs.release_receipt_sha256 }}
+runs:
+  using: composite
+  steps:
+    - name: Bind successful producer evidence
+      id: record
+      shell: bash
+      env:
+        RELEASE_READINESS: ${{ inputs.readiness }}
+        NATIVE_EVIDENCE: ${{ inputs.native }}
+        DISTRIBUTION_EVIDENCE: ${{ inputs.distribution }}
+        CONSTITUTION_EVIDENCE: ${{ inputs.constitution }}
+      run: |
+        evidence_args=()
+        if [[ -n "$NATIVE_EVIDENCE" ]]; then
+          evidence_args+=(--native "$NATIVE_EVIDENCE")
+        fi
+        if [[ -n "$DISTRIBUTION_EVIDENCE" ]]; then
+          evidence_args+=(--distribution "$DISTRIBUTION_EVIDENCE")
+        fi
+        if [[ -n "$CONSTITUTION_EVIDENCE" ]]; then
+          evidence_args+=(--constitution "$CONSTITUTION_EVIDENCE")
+        fi
+        python3 scripts/check_release_ready.py --record-job "$GITHUB_JOB" --output "$RUNNER_TEMP/release-receipt" "${evidence_args[@]}"
+    - name: Retain exact receipt and planned artifact bytes
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: release-receipt-${{ github.job }}-${{ github.sha }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/release-receipt/
+        if-no-files-found: error

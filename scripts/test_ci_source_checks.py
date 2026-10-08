@@ -17,7 +17,7 @@ class SourceChecksTests(unittest.TestCase):
         commands = checks.plan('ci-preflight')
         self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
             'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
-            'test_check_fixture_budget', 'test_ci_profiles', 'test_ci_source_checks',
+            'test_check_fixture_budget', 'test_ci_profiles', 'test_ci_source_checks', 'test_ci_actions',
             'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
             'test_archive_lean_kernel')])
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
@@ -102,7 +102,8 @@ class SourceChecksTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(json.dumps(commands).encode()).hexdigest(),
                          'ad1d29d1bdf9374234a3357e304041b4aaeae64a08a9138b326103079768e254')
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
-        self.assertIn('--checks repository-integrity --output', workflow)
+        self.assertIn('group: repository-integrity', workflow)
+        self.assertIn('uses: ./.github/actions/source-check', workflow)
         self.assertIn('scripts/check_constitution.py "${base_args[@]}"', workflow)
 
     def test_shared_contract_commands_preserve_both_existing_consumers(self):
@@ -113,7 +114,7 @@ class SourceChecksTests(unittest.TestCase):
             'scripts/test_lean_qft.py', 'scripts/test_lean_qpe.py',
             'scripts/test_lean_controlled_power.py', 'scripts/test_cli_json.py'})
         workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
-        self.assertEqual(workflow.count('--checks source-contracts --compiler target/debug/qleisli'), 2)
+        self.assertEqual(workflow.count('group: source-contracts\n          compiler: target/debug/qleisli'), 2)
         for group, compiler in [('absent', None), ('source-contracts', None)]:
             with self.assertRaises(ValueError): checks.plan(group, compiler)
 

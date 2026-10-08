@@ -10,6 +10,8 @@ development milestones from the scope of their evidence.
   local/hosted preflight before scheduling builds. Preserve inherited EOF
   bytes in seven hash-bound Basis migrations with narrowly scoped attributes.
   Share process execution and scratch cleanup between source/native runners.
+  Centralize hosted check reports, native setup, dependency archive caches and
+  release receipts across all producer jobs, retaining their validation gates.
 
 - Check linked VM-22/VM-29 source identities before scheduling heavy CI lanes;
   retain later rejection tests and refresh the reviewed test-only identity.
