@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Select current corpus projects in the pure raw native comparison, retaining
+  dependency bodies for independent exact evaluation and separately checking
+  the complete original QIRF through native acceptance.
+
 - Reject retired `adjoint(U,q)`, `repeat_op(k,U)` and `repeat_static(k,U,q)`
   at their original constructor tokens, with migration to `inverse(U)(q)`,
   `power(U,k)` and `power(U,k)(q)`. Select hash-bound current client copies,

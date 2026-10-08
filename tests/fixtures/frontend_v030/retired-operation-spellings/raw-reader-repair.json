@@ -1,0 +1,98 @@
+{
+  "issue": 33,
+  "baseline_commit": "2aada2a1f2bb4c852708c176c41964d257b720d7",
+  "scope": "Repair the VM-25 current-source reader and retain all original dependency bodies and separately native-check complete QIRF bytes. Independent rational maps, existing synthetic cases, public interfaces, capacities, native rules and proof gates are unchanged.",
+  "failed_ci": {
+    "run_id": 37771955859,
+    "attempt": 1,
+    "url": "https://github.com/MGYamada/Qleisli/actions/runs/37771955859",
+    "failed_task": "lean-raw",
+    "other_native_tasks_passed": 65,
+    "cause": "The source reader opened historical corpus paths directly after operation-spelling retirement."
+  },
+  "source_reviews": [
+    {
+      "path": "scripts/test_lean_raw.py",
+      "before_sha256": "ecac7a86f35a062265eef48bd045f8904ffc8e0667aea2e945d7416219cc71b2",
+      "current_sha256": "a1b358ab00091b9ad8196d6f2e2323a0c80bd916bfdc49cf2ecb5e00ea1dfa45",
+      "surface_and_capacity": "unchanged",
+      "review": "The six logical projects use current_project; source hashes cover selected bytes; lossless topological circuit dependencies enter pure transport and the rational oracle; original complete QIRF enters a separate fresh production native check. No source-preservation assertion is added."
+    }
+  ],
+  "coverage_review": {
+    "before_surface_sha256": "2d57987b42b5ec291374457f08a65c6c1d83d07a9afb30eac28a034025ba16cc",
+    "current_surface_sha256": "e93358d6a0648407e74ac76039a8a70f015e31e0f0ed38997add6ae37aea3c0d",
+    "groups_boundaries_capacities_proof_gates": "unchanged"
+  },
+  "local_reproduction": {
+    "output": "/private/tmp/qleisli-retirement-lean-raw-before-repair",
+    "status": "failed",
+    "task": "lean-raw"
+  },
+  "standalone_after_repair": {
+    "native_cases": 121,
+    "rust_comparisons": 104,
+    "independent_matrices": 85,
+    "independent_raw_trace_programs": 180,
+    "rust_source_prefixes": 6,
+    "original_qirf_checks": 6,
+    "max_semantic_qubits": 3,
+    "native_bindings": {
+      "lean_binary_sha256": "133affcb282e47fce7c6325ced2196b784a0f085c0226955310a199968b8730f",
+      "lean_input_sha256": "4e71125f148531510439672f9831971b1f3ca14b65536a92bb17c48c538ff733",
+      "lean_stdout_sha256": "1acae5be41b22931d1664fc9f21f3d1d0ce746adbb38480b2f0dfe52e6207288",
+      "lean_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "lean_exit": 0,
+      "rust_binary_sha256": "c75bd9cec033abf34ba95396b95c1671e5236dbbbfaf4485bf544237452b2d04",
+      "rust_stdout_sha256": "41e5e5f5ca0d3ea023038b18021db036134dc137b9c8f8cf523f57489f5a923b"
+    },
+    "scope": "Dirty-checkout focused reproduction, before the explicit-missing-compiler guard; not exact-commit/full-CI evidence."
+  },
+  "remaining": [
+    "Exact-commit native runner and whole hosted CI",
+    "Resolve the #45 canonical adjoint/capability spelling decision before #33 closure",
+    "General source/runtime correspondence and production-wide QS/PR/RS duties"
+  ],
+  "adapter_regressions": {
+    "command": [
+      "python3",
+      "scripts/test_observation_sources.py"
+    ],
+    "tests": 10,
+    "status": "passed",
+    "new_cases": 5
+  },
+  "shared_precommit_checks": [
+    {
+      "group": "ci-preflight",
+      "status": "passed",
+      "commands": 11,
+      "binding": {
+        "head": "2aada2a1f2bb4c852708c176c41964d257b720d7",
+        "working_inputs_sha256": "f338ccff6d47326e4a2aa7d93bdba7e2219718d95c50b9aee0652e7ae04792c4"
+      },
+      "result": "/private/tmp/qleisli-raw-reader-preflight-precommit/results.json"
+    },
+    {
+      "group": "source-integrity",
+      "status": "passed",
+      "commands": 5,
+      "binding": {
+        "head": "2aada2a1f2bb4c852708c176c41964d257b720d7",
+        "working_inputs_sha256": "64fd8fd898584a514040b359360fd7e805f449279f5e95fef984cae0fd8833f8"
+      },
+      "result": "/private/tmp/qleisli-raw-reader-source-integrity-reviewed-precommit/results.json"
+    },
+    {
+      "group": "repository-integrity",
+      "status": "passed",
+      "commands": 34,
+      "binding": {
+        "head": "2aada2a1f2bb4c852708c176c41964d257b720d7",
+        "working_inputs_sha256": "64fd8fd898584a514040b359360fd7e805f449279f5e95fef984cae0fd8833f8"
+      },
+      "result": "/private/tmp/qleisli-raw-reader-repository-integrity-precommit/results.json"
+    }
+  ],
+  "shared_precommit_note": "Working-input bindings are retained as observed. The inventory JSON was subsequently restored to its original UTF-8 formatting with only the one reviewed hash changed; no parsed field changed. The compact result record is written after these checks."
+}

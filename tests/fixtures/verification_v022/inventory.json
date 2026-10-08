@@ -2953,7 +2953,7 @@
     },
     {
       "path": "scripts/test_lean_raw.py",
-      "sha256": "ecac7a86f35a062265eef48bd045f8904ffc8e0667aea2e945d7416219cc71b2",
+      "sha256": "a1b358ab00091b9ad8196d6f2e2323a0c80bd916bfdc49cf2ecb5e00ea1dfa45",
       "group": "raw-core",
       "surface": null
     },

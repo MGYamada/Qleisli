@@ -3,7 +3,7 @@
 
 Expected decisions and oracle annotations stay outside native inputs. The
 independent required operator is supplied explicitly; neither executable
-receives the other's decision. Production acceptance remains Rust.
+receives the other's decision. Production acceptance belongs to native Lean.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
@@ -18,6 +18,8 @@ import tempfile
 
 import test_lean_exact as exact
 import test_lean_finite as finite
+import observation_sources
+from check_input_corpus import current_project as current_corpus_project
 
 ROOT = Path(__file__).resolve().parents[1]
 ZERO, ONE = finite.ZERO, finite.ONE
@@ -277,45 +279,80 @@ def cases():
     return result
 
 
-def source_cases(log, record=None):
+def pure_source_prefix(artifact):
+    """Retain the selected root and complete circuit dependencies before readout.
+
+    The common lossless projection validates and topologically renames calls.
+    Pure transport has no identity fields; the original QIRF bytes retain those
+    identities and are separately checked by the production native boundary.
+    """
+    component = observation_sources.component(artifact)
+    p = component['program']
+    ops = p['operations']
+    first = next((j for j, operation in enumerate(ops)
+                  if operation['tag'] == 'measure_z'), None)
+    if first is None or not all(operation['tag'] == 'measure_z' for operation in ops[first:]):
+        raise ValueError('source prefix requires terminal destructive measurements')
+    p.update(operations=ops[:first], quantum_outputs=[operation['input'] for operation in ops[first:]],
+             classical_outputs=[], declared_effect='iso')
+    evidence = [{key: entry[key] for key in ('signature', 'implementation', 'specification')}
+                for entry in component['dependencies']]
+    return dict(format='qleisli.raw-pure-component', version=1, evidence=evidence, program=p)
+
+
+def pure_component_oracle(artifact):
+    """Independently evaluate every retained implementation and specification."""
+    dependencies = []
+    for entry in artifact['evidence']:
+        actual = raw_oracle(entry['implementation'], dependencies)
+        required = raw_oracle(entry['specification'], dependencies)
+        assert actual == required, 'source dependency implementation/specification disagreement'
+        dependencies.append(actual)
+    return raw_oracle(artifact['program'], dependencies)
+
+
+def source_cases(log, record=None, compiler=None):
     """Curated bridge from actual Rust source output to the pure prefix.
 
     Complete observing roots stay outside VM-25. This untrusted adapter ends
     immediately before terminal measurement and lists those residual owners;
     Lean rechecks the resulting actual prefix. No source-preservation claim.
     """
-    compiler=ROOT/'target/debug/qleisli'
-    if not compiler.is_file():exact.command(['cargo','build','--offline','--bin','qleisli'],ROOT,log)
+    compiler=ROOT/'target/debug/qleisli' if compiler is None else Path(compiler)
+    if not compiler.is_file():
+        if compiler != ROOT/'target/debug/qleisli':raise FileNotFoundError(compiler)
+        exact.command(['cargo','build','--offline','--bin','qleisli'],ROOT,log)
     paths=['quantum_katas/controlled_z2','quantum_katas/toffoli3','qualtran/less_equal1',
            'qualtran/greater_than1','pennylane_demos/rotation_mixed_sign','pennylane_demos/qaoa_mixer2']
     result=[]
     with tempfile.TemporaryDirectory(prefix='qleisli-raw-source-') as directory:
         for i,path in enumerate(paths):
+            project=current_corpus_project({'project':path})
             output=Path(directory)/f'{i}.qirf.json'
-            source_paths=sorted((ROOT/'corpus'/path).rglob('*.qli'))+sorted((ROOT/'stdlib/src').rglob('*.qli'))
+            source_paths=sorted(project.rglob('*.qli'))+sorted((ROOT/'stdlib/src').rglob('*.qli'))
             source_paths += [ROOT/'corpus/Qargo.toml',ROOT/'stdlib/Qargo.toml']
+            if (project/'Qargo.toml').is_file():source_paths.append(project/'Qargo.toml')
             source_hashes={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest() for s in source_paths}
-            exact.command([str(compiler),'emit-ir',str(ROOT/'corpus'/path),'--output='+str(output),'--format=json'],ROOT,log)
+            exact.command([str(compiler),'emit-ir',str(project),'--output='+str(output),'--format=json'],ROOT,log)
             assert source_hashes=={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest() for s in source_paths}
             original=output.read_bytes();artifact=json.loads(original)
             if record:
                 saved=record.parent/'source-ir'/f'{i}.qirf.json'
                 saved.parent.mkdir(parents=True,exist_ok=True);saved.write_bytes(original)
-            assert not artifact['evidence'],'these selected prefixes have no retained call graph'
-            p=copy.deepcopy(artifact['programs'][artifact['root']]);ops=p['operations']
-            first=next(j for j,o in enumerate(ops) if o['tag']=='measure_z')
-            terminal=ops[first:];assert all(o['tag']=='measure_z' for o in terminal)
-            p.update(operations=ops[:first],quantum_outputs=[o['input'] for o in terminal],
-                     classical_outputs=[],declared_effect='iso')
-            meaning=raw_oracle(p)
+            component=pure_source_prefix(artifact)
+            assert sum(port['shape']['bits'] for port in component['program']['quantum_inputs'])<=3
+            meaning=pure_component_oracle(component)
             result.append(dict(name='source_prefix_'+path.replace('/','_'),
-                artifact=dict(format='qleisli.raw-pure-component',version=1,evidence=[],program=p),
+                artifact=component,original_qirf=original.decode('utf-8'),
                 expected=True,budget=10000000,oracle=meaning,required=finite.description(meaning),
-                provenance=dict(source_root='corpus/'+path,qirf_sha256=hashlib.sha256(original).hexdigest(),
+                provenance=dict(source_root=str(project.relative_to(ROOT)),historical_source_root='corpus/'+path,
+                    qirf_sha256=hashlib.sha256(original).hexdigest(),
                     compiler_sha256=hashlib.sha256(compiler.read_bytes()).hexdigest(),
                     sources=source_hashes,
                     embedded_sources={s['path']:hashlib.sha256(s['text'].encode()).hexdigest() for s in artifact['sources']},
-                    adapter='original straight-line prefix before terminal destructive measurement')))
+                    adapter='original straight-line prefix before terminal destructive measurement; '
+                            'all circuit dependencies retained with topological index renaming; '
+                            'complete original QIRF separately checked')))
     return result
 
 
@@ -409,6 +446,11 @@ def native(all_cases, log):
         for c in all_cases:
             if c['name'].startswith(('request_fault','exhausted_work','producer_','unknown_')) or c['name'] in {'classical_interface','observing_constructor','self_referenced_raw_evidence','forward_raw_evidence'}:continue
             a=c['artifact'];p=a['program'];statements=[]
+            if 'original_qirf' in c:
+                filename=f'source-{len(actions)}.qirf'
+                (project/filename).write_bytes(c['original_qirf'].encode('utf-8'))
+                statements.append('qleisli::interchange::native::Kernel::selected().expect("explicit native checker")'
+                    '.check(include_bytes!('+json.dumps(filename)+'),None).ok()?;')
             if c['name']=='missing_dependency':continue
             for e in a['evidence']:
                 statements.append('receipts.push(std::sync::Arc::new(qleisli::contract::FunctionEvidence::check('+finite.rust_basis(e['signature'])+','+rust_program(e['implementation'])+','+rust_program(e['specification'])+',identity(),&mut b).ok()?));')
@@ -443,11 +485,12 @@ fn main(){
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path)
+    parser.add_argument('--compiler',type=Path,default=ROOT/'target/debug/qleisli');args=parser.parse_args()
     log=[]
     for argv,cwd in [(['lake','env','lean','--version'],ROOT/'lean-kernel'),(['rustc','-vV'],ROOT)]:
         exact.command(argv,cwd,log)
-    all_cases=cases()+source_cases(log,args.record);lean,rust,bindings=native(all_cases,log)
+    all_cases=cases()+source_cases(log,args.record,args.compiler.resolve());lean,rust,bindings=native(all_cases,log)
     assert len(lean)==len(all_cases)
     matrices=0
     for case,result in zip(all_cases,lean):
@@ -466,12 +509,14 @@ def main():
         matrices+=1
     report=dict(native_cases=len(all_cases),rust_comparisons=len(rust),independent_matrices=matrices,
         independent_raw_trace_programs=sum(r['reference_programs'] for r in lean),
-        pure_constructors=11,max_semantic_qubits=3,rust_source_prefixes=6,commands=log,native_bindings=bindings,
+        pure_constructors=11,max_semantic_qubits=3,rust_source_prefixes=6,original_qirf_checks=6,
+        commands=log,native_bindings=bindings,
         remaining=['VM-26 classical control/observation',
                    'VM-27 hierarchy closure','native packaging and byte/decoder refinement'],
         source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
             ROOT/'lean-kernel/QleisliKernel/Semantics/Raw.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Structure.lean',
-            ROOT/'lean-kernel/QleisliKernel/Raw/Finite.lean',ROOT/'lean-kernel/Protocol/Raw.lean',ROOT/'lean/Qleisli/Raw.lean',Path(__file__).resolve()]})
+            ROOT/'lean-kernel/QleisliKernel/Raw/Finite.lean',ROOT/'lean-kernel/Protocol/Raw.lean',ROOT/'lean/Qleisli/Raw.lean',
+            Path(observation_sources.__file__),ROOT/'scripts/check_input_corpus.py',Path(__file__).resolve()]})
     report['source_sha256'].update({str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
         ROOT/'lean-kernel/QleisliKernel/Semantics/RawTrace.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Trace.lean']})
     if args.record:

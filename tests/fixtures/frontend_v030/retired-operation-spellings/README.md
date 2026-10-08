@@ -83,3 +83,18 @@ comparisons. Final declared Rust runs, native client checks and exact-commit
 hosted CI remain pending at this recording point. Concurrent ownership timings
 are observations, not a controlled speedup claim. Completion is 24/111
 (21.62%); no Issue or constitutional obligation is completed by this record.
+
+Hosted run [37771955859](https://github.com/MGYamada/Qleisli/actions/runs/37771955859),
+attempt 1 at `2aada2a1`, failed only the `lean-raw` native comparison; the other
+65 native tasks and seven other real producer jobs succeeded. Its source
+reader bypassed current-project selection and parsed a historical `adjoint`
+input. The [repair review](raw-reader-repair.json) retains that failure and the
+local reproduction. The repaired reader keeps all original circuit dependency
+bodies, independently compares their meanings, and separately native-checks
+the complete original QIRF. Ten small adapter regressions cover selection,
+dependency substitution, root, phase, axis order and nonterminal readout.
+The focused dirty-checkout native comparison passed 121 cases, 104 Rust
+comparisons, 85 rational matrices and 180 raw traces. Exact-commit native and
+hosted validation remain pending; the failed run has not been rerun or replaced.
+Issue #45's newer `adjoint`/capability naming decision also remains to be
+integrated before #33 can close. Completion remains 24/111 (21.62%).
