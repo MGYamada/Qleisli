@@ -4,6 +4,23 @@ mod common;
 fn command() -> Command {
     Command::new(env!("CARGO_BIN_EXE_qleisli"))
 }
+
+#[test]
+fn historical_const_manifest_classification_does_not_admit_filesystem_source() {
+    let project = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/const-parameters-v030/attempt-01/natural");
+    let output = command()
+        .arg("check")
+        .arg(project)
+        .args(["--format=json", "--lean-kernel=missing"])
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1), "{output:?}");
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains("\"code\":\"project\""), "{text}");
+    assert!(text.contains("requires schema-version = 2"), "{text}");
+}
+
 fn modules() -> Vec<String> {
     [
         ("measurement", "corpus/sized/measured_qpe/measurement.qli"),

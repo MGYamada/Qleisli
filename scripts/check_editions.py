@@ -13,9 +13,10 @@ import tomllib
 ROOT = Path(__file__).resolve().parents[1]
 SKIP = {".git", ".lake", "target", "__pycache__", ".venv"}
 HISTORY = "scripts/edition_history.json"
-HISTORY_SHA256 = "df6d69be76429feaff67dc1ec22c382c92126040305bc8f4ece6a868849ba6eb"
+HISTORY_SHA256 = "06404656d4c2ce49dd67df1efeff8fb28fd4b284300bc4e2b6411054d36ac871"
 HISTORICAL_ROOT = "tests/fixtures/constitution_v030/routed-control-commutation"
 REJECTED_AUTHORING_ROOT = "tests/fixtures/authoring_sessions/operation-application-v030"
+REJECTED_CONST_ROOT = "tests/fixtures/authoring_sessions/const-parameters-v030"
 
 
 def historical_inputs(root):
@@ -39,7 +40,8 @@ def historical_inputs(root):
         return data
 
     if not (root / HISTORY).exists():
-        if any((root / name).exists() for name in (HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT)):
+        if any((root / name).exists() for name in
+               (HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, REJECTED_CONST_ROOT)):
             raise ValueError(f"missing {HISTORY} for preserved historical inputs")
         return set(), set()
     records = json.loads(frozen(HISTORY, HISTORY_SHA256))["records"]

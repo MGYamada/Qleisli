@@ -100,6 +100,58 @@
         "attempt-01"
       ],
       "root": "tests/fixtures/authoring_sessions/operation-application-v030"
+    },
+    {
+      "anchors": {
+        "before/basis-project.json": "4c07a20e9aed5c28f770a990d09cac5d8c19ebec403a531d75045439f44ac65f",
+        "before/basis-selected.json": "3b84b5e6e12aad626a9defcd59c0cf4dd48324e4805705295f174bc5e3bf2ad7",
+        "before/duplicate-project.json": "e1fef0eb53f39a48391617d7838d8fac743629ca15c96fd6208e9cc95259151b",
+        "before/duplicate-selected.json": "cd4dadd5a43e915dfd99036b26b5389452d161fe4573859fcd57c0c15b4770d2",
+        "before/legacy-control-project.json": "9392b23daf5ad9c0090a8e82a75a61364bb62175d8b7d30eea50177f044d672c",
+        "before/legacy-control-selected.json": "63e7467d8e9be472aef3307493aaf5c7795d2119614c701c9fdd4088ae833409",
+        "before/natural-project.json": "209123e7c368a84a0db772bf7f90182c84b20013b16c3ace353a919c8ee6cbe2",
+        "before/natural-selected.json": "69cd9f3e752dde93a76247938df8f15d2f8e5539ad4cbdc68612b774ac3841cf",
+        "before/no-marker-project.json": "e2d9eca2cfa19d71dfbf5ab44f42e04695c5ff268862cb371d313bff93f131a5",
+        "before/no-marker-selected.json": "897175684f091c395b24872a847c6da562c484e9b2e3897e7bcda40c70a5886a",
+        "before/operation-project.json": "d2c4114095925ae848667f4f08dc744a07add2f280061f7f011fd06a4a4f98e7",
+        "before/operation-selected.json": "9995c6bc982b5c8a6d4852bc0ad564bb5790a016887a18bb7bf67b0737277683",
+        "before/ordinary-name-project.json": "71472414fdb83a05a5ed8d8c63ef07ddd70109ea48ad80268c9aaf4a1b9642f7",
+        "before/ordinary-name-selected.json": "53e4e78ef82f11434b1675356fd29061ac2c6c58896b5cd19190a3f381b4baf6",
+        "before/unused-invalid-project.json": "a1cbe69f5a2f2be9967daead9a42b189f131bafaabc9343f076dd1c49664e986",
+        "before/unused-invalid-selected.json": "f24cf4167ea23f5082ad2121c9bd68b15218509448e8fc7b5b862d6bdf83ea94"
+      },
+      "explanation": "Eight first filesystem CLI projects were actually refused for the wrong schema key. Preserve exact source/manifest bytes and all sixteen original project refusals. This is historical classification only, not filesystem source admission; attempt-02 and post-implementation clients remain subject to ordinary schema-2 checks.",
+      "files": {
+        "attempt-01/basis/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/basis/main.qli": "5b1170639d02ebf0aaa5615a20537d35412d8b23e38039835b1fbd6157235dfc",
+        "attempt-01/duplicate/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/duplicate/main.qli": "5108cdbb3bf905817de95d403ffe098dc75bca467dd45df0a82b2fcc3094a467",
+        "attempt-01/legacy-control/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/legacy-control/main.qli": "6ed170872fb72bac041904723415dc8c2840fcf138cc33470d27d459599b0eed",
+        "attempt-01/natural/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/natural/main.qli": "9a20ea85c7b0dd12338dad53dba6f4fd1cebc104aa90ca5d7bd6c2c7a0551f97",
+        "attempt-01/no-marker/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/no-marker/main.qli": "dbded415e96eba2c209027a5f228caf329e22d89894e0603bba8e61191ca4179",
+        "attempt-01/operation/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/operation/main.qli": "04c680d190c076aa53c43ea3dba73abd0a22ddb1a62a9f01dea348632ff03f4a",
+        "attempt-01/ordinary-name/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/ordinary-name/main.qli": "3b023e80429d008dc05922258eac1eb181d8dd476cae38b26989b12fd3cb8112",
+        "attempt-01/unused-invalid/Qargo.toml": "e3a288e1057336bfde28301ce70ea931f5f9d68bea59a1e53e5ff7affed48d99",
+        "attempt-01/unused-invalid/main.qli": "7c50c43197dfc6c7be5a443209c826f79786fa6ab4340b756420397442080e96"
+      },
+      "filesystem_admission": false,
+      "kind": "rejected-filesystem-authoring-attempt",
+      "projects": [
+        "attempt-01/basis",
+        "attempt-01/duplicate",
+        "attempt-01/legacy-control",
+        "attempt-01/natural",
+        "attempt-01/no-marker",
+        "attempt-01/operation",
+        "attempt-01/ordinary-name",
+        "attempt-01/unused-invalid"
+      ],
+      "root": "tests/fixtures/authoring_sessions/const-parameters-v030"
     }
   ],
   "version": 1

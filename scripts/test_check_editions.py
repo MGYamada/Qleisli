@@ -6,7 +6,7 @@ import json
 import tempfile
 import unittest
 
-from check_editions import HISTORY, HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, ROOT, check_editions
+from check_editions import HISTORY, HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, REJECTED_CONST_ROOT, ROOT, check_editions
 
 MANIFEST = 'schema-version = 2\n[qrate]\nedition = "2026"\n'
 
@@ -57,7 +57,7 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts, {"manifests": 2, "qli": 2, "qlt": 1,
-                                  "historical_manifests": 15, "historical_sources": 43})
+                                  "historical_manifests": 23, "historical_sources": 51})
 
     def test_historical_source_manifest_generator_and_record_are_immutable(self):
         base = self.copy_history()
@@ -101,7 +101,30 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts["qli"], 3)  # The new project has ordinary coverage.
-        self.assertEqual(counts["historical_sources"], 43)
+        self.assertEqual(counts["historical_sources"], 51)
+
+    def test_const_first_refusals_are_exact_history_and_repaired_sources_are_ordinary(self):
+        self.copy_history()
+        base = self.root / REJECTED_CONST_ROOT
+        for name in ("attempt-01/natural/main.qli", "attempt-01/natural/Qargo.toml",
+                     "before/natural-selected.json"):
+            with self.subTest(name=name):
+                path = base / name
+                original = path.read_bytes()
+                path.write_bytes(original + b"\n")
+                self.assertTrue(any("historical input identity changed" in e
+                                    for e in check_editions(self.root)[0]))
+                path.write_bytes(original)
+        self.write(f"{REJECTED_CONST_ROOT}/attempt-01/natural/new.qli", "new source")
+        self.assertTrue(any("historical source inventory changed" in e
+                            for e in check_editions(self.root)[0]))
+        (base / "attempt-01/natural/new.qli").unlink()
+        self.write(f"{REJECTED_CONST_ROOT}/attempt-02/natural/main.qli", "repaired source")
+        self.write(f"{REJECTED_CONST_ROOT}/attempt-02/natural/Qargo.toml", MANIFEST)
+        self.assertEqual(check_editions(self.root)[0], [])
+        self.write(f"{REJECTED_CONST_ROOT}/attempt-02/natural/Qargo.toml", "schema = 2")
+        self.assertTrue(any("requires schema-version = 2" in e
+                            for e in check_editions(self.root)[0]))
 
     def test_exception_metadata_and_symlinks_cannot_redirect_history(self):
         base = self.copy_history()
