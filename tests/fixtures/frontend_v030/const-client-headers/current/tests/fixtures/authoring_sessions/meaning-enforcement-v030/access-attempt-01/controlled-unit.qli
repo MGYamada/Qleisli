@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{phase_eighth,split,join};
+classical fn scalar_angle(u:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
+classical fn controlled_angle((c,u):(Bit,Unit))->(Bit,(Bit,Bit)){(c,(0,0))}
+meaning Scalar:Unit=phase_by(scalar_angle);
+meaning Conditional:(Bit,Unit)=phase_by(controlled_angle);
+unitary fn leaf(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+unitary fn control[const A:Basis,const U:Op<A>](c:Q<Bit>,q:Q<A>)->(Q<Bit>,Q<A>) requires Controlled(U){controlled(U)(c,q)}
+pub unitary fn implementation(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{let (c,u)=split(q);let (c,u)=control[type(Unit),checked_op(leaf,Scalar)](c,u);join(c,u)}
+unitary fn apply[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}
+pub unitary fn client(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{apply[type((Bit,Unit)),checked_op(implementation,Conditional)](q)}

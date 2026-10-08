@@ -301,6 +301,72 @@
       "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
       "before_sha256": "6b8348e775ec09227ee76156e45405383e03a19f0df6b17360c94019fd6edb89",
       "current_sha256": "4af214363d38054745e4766e12186b2cd97a3fa522a5eedebc30a7ce9d15f280"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "before_sha256": "ef23bd0d9cd0d018492e56773cb366ce4af34cb28b773fe66d7c0fc71c725737",
+      "current_sha256": "75de423df462574a27dec950e221f00f001fb01fbb2feb0c7d02eae851fef666"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+      "before_sha256": "0f8cf52a31f0e1c05f2a3e11cf41ed7203cd59e093424dd1b85a0d7168e04aba",
+      "current_sha256": "ba28697a5d1e5be8897b44e4683bc3347cbf96467d810b25f9e2eb5f4ffbc4cd"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
+      "before_sha256": "d2aed93147e4c8905108cc80a7a85ca25ce879649831833324237e1189fa4798",
+      "current_sha256": "db5a6e2866a3e42bf926708a93ad2446675b6df4142a3c833cb130488795067d"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
+      "before_sha256": "4a9bccd2e5782e5775fa7ef4b02da36643ed26aa83ae68e8fcfa407c40574cba",
+      "current_sha256": "e6216a67a20365e71ece9a79911a85f3ba19aeaf9f64858c91e67fa0cf7cd3ad"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli",
+      "before_sha256": "3ab95569d883199d9bc7937780b5be41e4c4c9226bd1f825d82c29c9b1428d4f",
+      "current_sha256": "8aed4ff572a9c4360b9caa1c055f14ab2de199ac11f36464dd4747e2699186bc"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/main.qli",
+      "before_sha256": "41be12984d28f7159a36c8380adf33be094e5c3aebf52b19289960eeb45723a6",
+      "current_sha256": "cf0d09573cf68b22f5996012b252e7b0bb892ca15e160a0aa0048a8909ee98d6"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli",
+      "before_sha256": "e781ed3eff2dbfd4780b5cf6d14641b3d9634058cc44211316e7db179e533907",
+      "current_sha256": "95ac864ade6b4dbdd86f5371e298af42936134a8f04ebe0b96843f1d4aee5885"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/tuple-attempt-01/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/tuple-attempt-01/main.qli",
+      "before_sha256": "5809535c8f13d17e9591ada96ab2ae2796318c8ce6645cfe6eee3072b13f0bea",
+      "current_sha256": "e5daa4a8d1699e3f7116c9f6cdb130586f2737df41553bd847fba28471f0c6e5"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli",
+      "before_sha256": "20378b980bb390b3256fd9bc5e4e6047e83fa95847d1945f24cfd59cf1255442",
+      "current_sha256": "1263fb5c60f846460e48241a809a8ad474d9b7e23e38c5c15642827eed362e0f"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli",
+      "before_sha256": "9bdb25570daf83ad34d71253b4c59cdc10f87d0621af386bfa85589a914de2e7",
+      "current_sha256": "d89f449008f3b5fa2ebff99472f7e8c4a82e3d7266d06a09e48be9a973b87b9d"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli",
+      "before_sha256": "a7ce6402c38d155db44f044af82ca26fc7064ec98b0994191d8fa7940612255a",
+      "current_sha256": "b05be112e39c06930a57f317ac127b767cfd0dbb51ffc1ce2ef9e1d3c119ceed"
     }
   ]
 }

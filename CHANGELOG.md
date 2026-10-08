@@ -35,6 +35,8 @@ development milestones from the scope of their evidence.
   reader, retaining precise diagnostics and existing limit assertions.
   Migrate direct effect and Meaning clients through the same selection stage,
   preserving semantic refusals, false-annotation checks and fresh CLI calls.
+  Select classical/Meaning regression headers while retaining original requests,
+  exact phase/axis oracles and guarded negative-source transformations.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

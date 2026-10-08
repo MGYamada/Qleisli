@@ -32,15 +32,16 @@ fn kernel() -> Kernel {
 fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::interchange::hierarchical;
-    let first = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli"
+    let first = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli",
     );
     for count in 0..=2 {
         for outer in 0..=1 {
             for honest in [true, false] {
+                assert!(first.contains("helper[const U:Op<Bit>]"));
                 let text = first
                     .replace("use std::quantum::x;", "use std::quantum::{x,h};classical fn ident(b:Bit)->Bit{b} meaning Identity:Bit=permutation_by(ident);")
-                    .replace("helper[static U:Op<Bit>]", "helper[const n:Nat,const U:Op<Bit,Flip>]")
+                    .replace("helper[const U:Op<Bit>]", "helper[const n:Nat,const U:Op<Bit,Flip>]")
                                         .replace("requires Apply(U){U(q)}\npub unitary fn implementation", "requires Apply(U),n<=2{qfor static i in 0..n carry a=q{yield U(a)}}\npub unitary fn implementation")
                     .replace("helper[leaf]", &format!("helper[{count},leaf]"))
                     .replace("use_op[checked_op(implementation,Flip)]", &format!("use_op[repeat_op({outer},checked_op(implementation,{}))]", if count%2==0 {"Identity"} else {"Flip"}));
@@ -147,8 +148,8 @@ fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase
 fn explicit_checked_op_checks_unused_and_zero_repeat_children() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::interchange::hierarchical;
-    let original = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/main.qli"
+    let original = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/main.qli",
     );
     for zero_repeat in [false, true] {
         for honest in [false, true] {
@@ -250,12 +251,12 @@ fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() 
 
 #[test]
 fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
-    let original = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/main.qli"
+    let original = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/main.qli",
     );
     for honest in [true, false] {
         let root = SourceRoot::new(&if honest {
-            original.into()
+            original.clone()
         } else {
             original.replace("{x(q)}", "{q}")
         });
@@ -342,8 +343,8 @@ fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
 fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::interchange::hierarchical;
-    let original = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/tuple-attempt-01/main.qli"
+    let original = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/tuple-attempt-01/main.qli",
     );
     let phase = original
         .replace(
@@ -362,7 +363,7 @@ fn packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase()
     );
     assert_ne!(direct_phase, phase);
     for (template, scalar) in [
-        (original, false),
+        (original.as_str(), false),
         (phase.as_str(), true),
         (direct_phase.as_str(), true),
     ] {
@@ -533,11 +534,13 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::compile::OperationBinding;
     use qleisli::interchange::hierarchical;
-    let bit =
-        include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli");
-    let unit =
-        include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli");
-    for (text, nested) in [(bit, 2), (unit, 1)] {
+    let bit = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
+    );
+    let unit = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/unit.qli",
+    );
+    for (text, nested) in [(bit.as_str(), 2), (unit.as_str(), 1)] {
         for (entry, count) in [("outer", nested), ("unused", 1)] {
             let parsed =
                 ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
@@ -662,10 +665,10 @@ fn original_annotations_check_every_nested_and_unused_provider_before_lowering()
 fn nested_repeated_binding_is_compared_with_its_own_original_annotation() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::compile::OperationBinding;
-    let text = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli"
+    let text = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
     );
-    let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+    let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
         .unwrap()
         .instantiate(
             "main::outer",
@@ -730,11 +733,12 @@ fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
 
 #[test]
 fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
-    let text =
-        include_str!("fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli");
+    let text = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/bit.qli",
+    );
     for honest in [true, false] {
         let root = SourceRoot::new(&if honest {
-            text.into()
+            text.clone()
         } else {
             text.replace("{x(q)}", "{q}")
         });
@@ -995,14 +999,14 @@ fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK};
     use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
     use qleisli::ir::QuantumPort;
-    let correct = include_str!(
-        "fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli"
+    let correct = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/correct-x/main.qli",
     );
-    let wrong = include_str!(
-        "fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli"
+    let wrong = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli",
     );
-    let scalar = include_str!(
-        "fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli"
+    let scalar = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli",
     );
     let wrong_scalar = scalar.replace(
         "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
@@ -1010,9 +1014,9 @@ fn original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase() {
     );
     assert_ne!(wrong_scalar, scalar);
     for (source, name, correct, signature) in [
-        (correct, "Flip", true, BasisType::Bit),
-        (wrong, "Flip", false, BasisType::Bit),
-        (scalar, "Minus", true, BasisType::Unit),
+        (correct.as_str(), "Flip", true, BasisType::Bit),
+        (wrong.as_str(), "Flip", false, BasisType::Bit),
+        (scalar.as_str(), "Minus", true, BasisType::Unit),
         (wrong_scalar.as_str(), "Minus", false, BasisType::Unit),
     ] {
         let parsed =
@@ -1745,10 +1749,9 @@ fn inverse_access_target_has_an_exact_native_realization_and_refuses_forward_pha
     use qleisli::ir::*;
     let parsed = ParsedProgram::parse(BTreeMap::from([(
         "main".into(),
-        include_str!(
-            "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli"
-        )
-        .into(),
+        common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+    ),
     )]))
     .unwrap();
     let required = parsed.finite_meaning_target("main::Inverse").unwrap();
@@ -1830,9 +1833,9 @@ fn controlled_unit_access_target_retains_a_zero_width_owner_and_conditional_phas
         finite_leaf::{UnitaryBoundary, check_unitary},
     };
     use qleisli::ir::*;
-    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli"
-    ).into())])).unwrap();
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+    ))])).unwrap();
     let required = parsed.finite_meaning_target("main::Conditional").unwrap();
     let signature = BasisType::pair(BasisType::Bit, BasisType::Unit);
     assert_eq!(required.signature(), &signature);
@@ -1918,16 +1921,16 @@ fn generic_access_providers_check_original_requests_and_preserve_reference_phase
     use qleisli::interchange::hierarchical;
     for (original, phase, leaf, lie) in [
         (
-            include_str!(
-                "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
             ),
             7.0,
             "phase[1,3](q)",
             "phase[0,3](q)",
         ),
         (
-            include_str!(
-                "fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
             ),
             1.0,
             "phase_eighth(q)",

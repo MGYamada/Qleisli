@@ -84,3 +84,22 @@ this extension remains pending. No production Rust/Lean definition or oracle
 was changed, and no guarantee is newly admitted.
 
 After removing those conversions, all-target Clippy passed on both toolchains.
+
+The extension following `36521961` selects eleven direct classical/Meaning
+regression sources. Only parameter-header markers change; first sources,
+original requests, body mutations, exact phase/axis expectations and native
+acceptance calls are retained. The forward-helper mutation now matches the
+selected const header and asserts that its needle exists before transformation.
+This prevents a stale historical needle from silently omitting the intended
+constraint/effect experiment. Unrelated classical-runtime source macros remain
+unchanged because those sources contain no parameter-header markers.
+
+All 37 classical_functions tests passed before and after on latest Rust and
+MSRV, with no ignored cases. Latest times were 4.24 seconds before and 3.99
+after; MSRV times were 3.46 before and 3.49 after. These concurrent local runs
+are not a controlled benchmark. First builds identified two move-after-use
+errors from replacing borrowed literals with owned selected text. Callers now
+borrow reusable text or explicitly clone each CLI input, preserving independent
+compilations and acceptance checks. Final all-target Clippy passed on both
+Rust toolchains; fixture selection passed 55 tests. Hosted CI for this extension
+is pending. No oracle, production checker, Lean proof or guarantee was changed.
