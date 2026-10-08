@@ -37,6 +37,15 @@ a static operation description over that tree. None is a live `Q<A>` owner.
 Runtime values, measurement results and quantum owners cannot determine a
 static size, operation provider, static condition or loop bound.
 
+Compile-time parameters use an explicit contextual `const` marker, for example
+`const n: Nat` followed by `const U: Op<Bits<n>>` in a function header. Brackets supply
+specialization arguments; parentheses supply runtime arguments. `const` in
+this position is not a runtime value, a storage declaration or a general
+compile-time function API. Ordinary functions and locals named `const` retain
+ordinary name resolution. The old `[static name: Kind]` marker remains only
+temporary migration input under [#33](https://github.com/MGYamada/Qleisli/issues/33);
+its active clients and retirement remain unfinished work.
+
 Static parameters are explicit, positional and ordered. A parameter's kind may
 refer only to earlier parameters. For example, declare `n: Nat` before
 `U: Op<Bits<n>>`. Duplicate names and forward kind dependencies reject. Source

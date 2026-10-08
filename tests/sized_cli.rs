@@ -177,6 +177,27 @@ fn sized_cli_emits_only_an_untrusted_proposal_without_a_kernel() {
 #[ignore = "requires freshly built Lean kernel; CI runs explicitly"]
 fn sized_cli_native_source_check_run_and_fresh_sampling() {
     let kernel = PathBuf::from(std::env::var_os("QLEISLI_HIERARCHY_KERNEL").expect("kernel path"));
+    let const_client = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/const-parameters-v030/closed-public/main.qli");
+    for action in ["check", "run"] {
+        let output = command()
+            .args([action, "--entry=study::main", "--format=json"])
+            .arg(format!("--module=study={}", const_client.display()))
+            .arg(format!("--kernel={}", kernel.display()))
+            .output()
+            .unwrap();
+        assert!(output.status.success(), "{output:?}");
+        assert!(output.stderr.is_empty(), "{output:?}");
+        let text = String::from_utf8(output.stdout).unwrap();
+        assert!(text.contains("\"scope\":\"native-validity\""), "{text}");
+        assert!(text.contains("\"source_meaning_verified\":false"), "{text}");
+        if action == "run" {
+            assert!(
+                text.contains("\"distribution\":[{\"bits\":[false],\"probability\":1}]"),
+                "const identity must return the independent zero expectation: {text}"
+            );
+        }
+    }
     let args = [
         "--entry=measurement::qpe",
         "--nat=n=1",

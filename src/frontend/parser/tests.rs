@@ -7,6 +7,53 @@ use std::collections::BTreeMap;
 const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"];
 
 #[test]
+fn const_parameter_headers_preserve_order_kinds_and_original_name_spans() {
+    let source = "// λ\npub fn f[const n: Nat, const B: Basis, const U: Op<B>](q: Q<B>) -> Q<B> requires Apply(U) { U(q) }";
+    let syntax = parse_module(source).unwrap();
+    let parameters = &syntax.decls[0].static_params;
+    assert_eq!(parameters.len(), 3);
+    assert_eq!(parameters[0].kind, StaticParamKind::Natural);
+    assert_eq!(parameters[1].kind, StaticParamKind::Basis);
+    assert!(matches!(
+        parameters[2].kind,
+        StaticParamKind::Operation { .. }
+    ));
+    for (parameter, name) in parameters.iter().zip(["n", "B", "U"]) {
+        assert_eq!(parameter.name.text, name);
+        assert_eq!(
+            &source[parameter.name.span.start..parameter.name.span.end],
+            name
+        );
+    }
+    assert_eq!(parse_bounded_module(source).unwrap(), syntax);
+}
+
+#[test]
+fn const_naturals_retain_contextual_names_and_existing_small_preparation() {
+    for name in TYPE_WORDS.into_iter().chain(["const"]) {
+        let source = format!(
+            "pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires {name} >= 0 {{ if static {name} < 2 {{ q }} else {{ q }} }}"
+        );
+        for value in [0, 1, 3] {
+            prepare(&source, BTreeMap::from([(name.into(), value)]));
+        }
+    }
+}
+
+#[test]
+fn missing_compile_time_marker_teaches_const_without_reserving_ordinary_names() {
+    let source = "fn f[n: Nat](q: Q<Bit>) -> Q<Bit> { q }";
+    let error = parse_module(source).unwrap_err();
+    assert_eq!(
+        error.message,
+        "expected `const` before compile-time parameter"
+    );
+    assert_eq!(&source[error.span.start..error.span.end], "n");
+    parse_module("fn const(const: Q<Bit>) -> Q<Bit> { const }").unwrap();
+    parse_module("fn f(q: Q<Bit>) -> Q<Bit> { let const = q; const }").unwrap();
+}
+
+#[test]
 fn runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans() {
     for kind in ["classical", "iso", "unitary", "observe"] {
         let source = format!(

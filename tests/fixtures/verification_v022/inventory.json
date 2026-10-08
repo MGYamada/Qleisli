@@ -3694,7 +3694,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "02a955a50771572bac6382fe608f1ee4b21f0d64614a65cca17ec03f4cd956a1",
+      "sha256": "a6a0de99c3ce34ba40c9e1d383e4ff50d1271567887e8671bd00290b18f857fb",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3714,7 +3714,7 @@
     },
     {
       "path": "src/frontend/parser/tests.rs",
-      "sha256": "633581843ea4749818644a2c0b410e601ca0fa14189835350f234df407f40952",
+      "sha256": "be525df5091885440476904a8471cb4020c20d1563ab648353600c7af1fd1373",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -5787,7 +5787,7 @@
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "700bcee204c34aef5d64be12fd01312006ad81ebd11a0489de2a8937b22840e7",
-      "tests/sized_cli.rs": "d5ac2d574ce3137a5bae5f00ebd387a7adb318c6aab24254ed1040c46149cb69",
+      "tests/sized_cli.rs": "677d2b8c7c6826dc4bf18920370b36f85c20ec03cf44f2950e0ada4b47f19a4d",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
       "scripts/test_qpe_instrument_host.py": "37a5abb8c795fa17d7a12f2e4ada917c62e839154b14ad39bb9060bb436b3cb6",
       "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",

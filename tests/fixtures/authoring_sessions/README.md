@@ -1,5 +1,11 @@
 # Authoring and repair observations
 
+The [const-parameter study](const-parameters-v030/README.md) retains eight
+first projects, a manifest-only repair and actual before/after observations.
+Canonical headers preserve kind/order/name rules. A separate closed client
+retains its type-argument and visibility mistakes before returning zero.
+Legacy-header retirement and broader migration remain unfinished.
+
 The [operation-application study](operation-application-v030/session.json)
 preserves one bounded Grover-style desired source before #33 implementation.
 Its first observation rejects a missing manifest schema; the manifest-only
