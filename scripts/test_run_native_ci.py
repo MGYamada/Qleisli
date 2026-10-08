@@ -132,7 +132,9 @@ class NativeCI(unittest.TestCase):
         self.assertIn("python3 scripts/check_schema_registry.py", model)
         self.assertIn("use-github-cache: 'false'", model)
         self.assertIn("options: ['4', '2', '1']", workflow)
-        self.assertIn("python3 scripts/test_run_native_ci.py", workflow)
+        from ci_source_checks import plan
+        self.assertIn(['python3', 'scripts/test_run_native_ci.py'], plan('ci-preflight'))
+        self.assertIn('--checks ci-preflight --output', workflow)
         self.assertIn("options: [full, tests]", workflow)
         for name in ["Replay retained proof reductions", "Replay the compiled project definitions"]:
             step = kernel.split(f"- name: {name}")[1].split("      - ")[0]

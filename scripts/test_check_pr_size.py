@@ -267,9 +267,10 @@ class WorkflowBinding(unittest.TestCase):
         changes = workflow.split("  changes:\n", 1)[1].split("  check-rust:\n", 1)[0]
         self.assertIn("fetch-depth: 0", changes)
         gate = changes.index('python3 scripts/check_pr_size.py --report "$RUNNER_TEMP/pr-size.json"')
-        self.assertLess(gate, changes.index("python3 scripts/test_ci_profiles.py"))
+        self.assertLess(gate, changes.index('--checks ci-preflight --output'))
         self.assertLess(gate, changes.index("python3 scripts/ci_profiles.py --report"))
-        self.assertIn("python3 scripts/test_check_pr_size.py", changes)
+        from ci_source_checks import plan
+        self.assertIn(['python3', 'scripts/test_check_pr_size.py'], plan('ci-preflight'))
         self.assertNotIn("continue-on-error", changes)
         self.assertIn("${{ runner.temp }}/pr-size.json", changes)
         needs = {"changes": {"result": "failure", "outputs": {"profile": "full", "proof_lane": "full",

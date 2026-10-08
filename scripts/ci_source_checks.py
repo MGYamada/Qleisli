@@ -9,7 +9,7 @@ import re
 import subprocess
 import sys
 
-import run_native_ci
+import ci_runtime
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / '.github/ci/source-checks.json'
@@ -96,7 +96,7 @@ def toolchain(spec, environment):
     for name, tool in spec['tools'].items():
         if set(tool) != {'command', 'pattern'}:
             raise ValueError('invalid tool probe')
-        command = run_native_ci.launch_command(tool['command'])
+        command = ci_runtime.launch_command(tool['command'])
         result = subprocess.run(command, cwd=ROOT, env=environment, text=True,
                                 capture_output=True, timeout=30)
         version = result.stdout.strip()
@@ -127,7 +127,7 @@ def execute(group, compiler, output):
             # Qleisli has no --version command. Bind the selected executable
             # bytes; the producer job separately records its build toolchain.
             report['compiler'] = dict(path=str(compiler.resolve()), sha256=digest(compiler))
-        environment = run_native_ci.execution_environment()
+        environment = ci_runtime.execution_environment()
         for key in ('CARGO_TARGET_DIR', 'QLEISLI_KERNEL'):
             if key in os.environ:
                 environment[key] = os.environ[key]
@@ -143,7 +143,7 @@ def execute(group, compiler, output):
         environment['PYTHONDONTWRITEBYTECODE'] = '1'
         for number, command in enumerate(commands):
             task = dict(id=str(number), commands=[command])
-            result = run_native_ci.run_task(task, ROOT, output / str(number), spec['timeout_seconds'], environment)
+            result = ci_runtime.run_task(task, ROOT, output / str(number), spec['timeout_seconds'], environment)
             report['commands'][number] = dict(argv=command, **result)
             print(f"{group} {number + 1}/{len(commands)}: {result['status']}", flush=True)
             if result['status'] != 'passed':

@@ -387,7 +387,9 @@ class WorkflowBudget(unittest.TestCase):
         changes = workflow.split("  changes:\n", 1)[1].split("  check-rust:\n", 1)[0]
         gate = changes.index('python3 scripts/check_fixture_budget.py --hosted --report "$RUNNER_TEMP/fixture-budget.json"')
         self.assertLess(gate, changes.index("python3 scripts/ci_profiles.py --report"))
-        self.assertIn("python3 scripts/test_check_fixture_budget.py", changes)
+        from ci_source_checks import plan
+        self.assertIn('--checks ci-preflight --output', changes)
+        self.assertIn(['python3', 'scripts/test_check_fixture_budget.py'], plan('ci-preflight'))
         self.assertIn("${{ runner.temp }}/fixture-budget.json", changes)
         self.assertNotIn("continue-on-error", changes)
         needs = {"changes": {"result": "failure", "outputs": {"profile": "full", "proof_lane": "full",

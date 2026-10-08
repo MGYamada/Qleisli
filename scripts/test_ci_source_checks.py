@@ -13,6 +13,21 @@ import ci_source_checks as checks
 
 
 class SourceChecksTests(unittest.TestCase):
+    def test_ci_preflight_keeps_hosted_checks_and_precedes_heavy_builds(self):
+        commands = checks.plan('ci-preflight')
+        self.assertEqual(commands, [['python3', 'scripts/' + name + '.py'] for name in (
+            'check_whitespace', 'test_check_whitespace', 'test_check_pr_size',
+            'test_check_fixture_budget', 'test_ci_profiles', 'test_ci_source_checks',
+            'test_measure_ci', 'test_run_native_ci', 'test_package_lean_kernel',
+            'test_archive_lean_kernel')])
+        workflow = (checks.ROOT / '.github/workflows/ci.yml').read_text()
+        changes = workflow.split('  changes:\n')[1].split('  check-rust:\n')[0]
+        self.assertIn('--checks ci-preflight --output', changes)
+        self.assertIn('${{ runner.temp }}/ci-preflight/', changes)
+        self.assertLess(changes.index('--checks ci-preflight'), changes.index('id: select'))
+        # The complete-tree check is part of local plans, not a late inline job.
+        self.assertNotIn('git diff --check', workflow)
+
     def test_linked_inventory_identities_precede_heavy_lane_scheduling(self):
         commands = checks.plan('source-integrity')
         self.assertEqual(commands[:2], [
@@ -47,7 +62,7 @@ class SourceChecksTests(unittest.TestCase):
             with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
                   patch.dict(checks.os.environ, {'GITHUB_SHA': 'a'}),
                   patch.object(checks, 'toolchain', side_effect=ValueError('toolchain mismatch')),
-                  patch.object(checks.run_native_ci, 'run_task') as run):
+                  patch.object(checks.ci_runtime, 'run_task') as run):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
                 run.assert_not_called()
             report = json.loads((output / 'results.json').read_text())
@@ -61,7 +76,7 @@ class SourceChecksTests(unittest.TestCase):
             with (patch.object(checks, 'snapshot', return_value=dict(head='a')),
                   patch.dict(checks.os.environ, {'GITHUB_SHA': 'b'}),
                   patch.object(checks, 'toolchain') as probe,
-                  patch.object(checks.run_native_ci, 'run_task') as run):
+                  patch.object(checks.ci_runtime, 'run_task') as run):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
                 probe.assert_not_called()
                 run.assert_not_called()
@@ -133,7 +148,7 @@ class SourceChecksTests(unittest.TestCase):
                     patch.dict(checks.os.environ, {'GITHUB_SHA': 'a'}),
                     patch.object(checks, 'plan', return_value=commands),
                     patch.object(checks, 'toolchain', return_value={}),
-                    patch.object(checks.run_native_ci, 'run_task', return_value=failed)):
+                    patch.object(checks.ci_runtime, 'run_task', return_value=failed)):
                 self.assertEqual(checks.execute('source-integrity', None, output), 1)
             report = json.loads((output / 'results.json').read_text())
             self.assertEqual([row['status'] for row in report['commands']], ['failed', 'not-run'])

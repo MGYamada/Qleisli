@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Run whole-tree whitespace and CI infrastructure checks through the shared
+  local/hosted preflight before scheduling builds. Preserve inherited EOF
+  bytes in seven hash-bound Basis migrations with narrowly scoped attributes.
+  Share process execution and scratch cleanup between source/native runners.
+
 - Check linked VM-22/VM-29 source identities before scheduling heavy CI lanes;
   retain later rejection tests and refresh the reviewed test-only identity.
 

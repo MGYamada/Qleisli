@@ -260,10 +260,12 @@ remains separately requested; no corpus sharding is enabled.
 Local reproduction uses the same command manifests as hosted checks:
 
 ```sh
+python3 scripts/ci_profiles.py --checks ci-preflight --plan
 python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --plan
 python3 scripts/ci_profiles.py --checks rust-msrv --plan
 python3 scripts/run_native_ci.py --plan --task lean-observation --task lean-streamed-instrument
 qleisli_validation_dir=$(mktemp -d)
+python3 scripts/ci_profiles.py --checks ci-preflight --output "$qleisli_validation_dir/preflight"
 python3 scripts/ci_profiles.py --checks source-integrity --output "$qleisli_validation_dir/integrity"
 python3 scripts/ci_profiles.py --checks repository-integrity --output "$qleisli_validation_dir/repository"
 python3 scripts/ci_profiles.py --checks source-contracts --compiler /absolute/path/to/qleisli --output "$qleisli_validation_dir/contracts"
@@ -273,6 +275,16 @@ python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$qle
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
+The `ci-preflight` group runs whole-tree Git whitespace checks and the CI
+infrastructure regressions before the changes job can schedule heavy builds.
+It runs for both documentation and full profiles. The same local invocation
+includes unstaged, staged and non-ignored untracked inputs; a clean hosted
+checkout checks the complete committed tree. `check_whitespace.py --committed`
+can separately inspect HEAD. Git attributes preserve frozen evidence bytes;
+the seven exact migrated Basis paths retain only their inherited final blank
+lines, while other whitespace rules and source-map identity checks still apply.
+Preflight command logs and explicit unexecuted checks share the normal result
+report and selection artifact, including on failure.
 The early `source-integrity` group checks linked VM-22/VM-29 source identities
 before corpus selection and before the changes job schedules heavy builds.
 Later repository checks retain their full rejection regressions.
@@ -302,6 +314,11 @@ ambient compiler overrides, and records the selected environment. A local
 `CARGO_TARGET_DIR` may select a separate build directory for each toolchain.
 Source checks accept a development working tree and reject changes during the
 run. Their reports are diagnostic evidence, not release receipts.
+Both source checks and native comparisons use `ci_runtime.py` for their fixed
+execution environment, command records, process-group termination and owned
+scratch cleanup. Each caller retains its own source binding, toolchain checks,
+selection and coverage requirements. Moving this shared mechanism does not
+cache acceptance decisions or remove any native comparison.
 
 Native comparisons require a clean checkout and the pinned tools. Without
 `--plan`, supply a new `--output` directory; `--task` selects named groups only

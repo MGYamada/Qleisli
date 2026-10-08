@@ -1,6 +1,61 @@
 {
   "format": 2,
   "groups": {
+    "ci-preflight": {
+      "lanes": [
+        "changes"
+      ],
+      "tools": [
+        "python",
+        "git"
+      ],
+      "prerequisites": [],
+      "environment": {},
+      "timeout_seconds": 900,
+      "commands": [
+        [
+          "python3",
+          "scripts/check_whitespace.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_whitespace.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_pr_size.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_fixture_budget.py"
+        ],
+        [
+          "python3",
+          "scripts/test_ci_profiles.py"
+        ],
+        [
+          "python3",
+          "scripts/test_ci_source_checks.py"
+        ],
+        [
+          "python3",
+          "scripts/test_measure_ci.py"
+        ],
+        [
+          "python3",
+          "scripts/test_run_native_ci.py"
+        ],
+        [
+          "python3",
+          "scripts/test_package_lean_kernel.py"
+        ],
+        [
+          "python3",
+          "scripts/test_archive_lean_kernel.py"
+        ]
+      ],
+      "prepare": []
+    },
     "source-integrity": {
       "lanes": [
         "changes"

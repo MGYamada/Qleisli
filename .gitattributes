@@ -218,3 +218,13 @@ tests/fixtures/frontend_v030/classical-functions/validation/*.stdout.txt -text -
 corpus/migrations/classical-functions-v030/python-tests-first.txt -text -whitespace
 corpus/migrations/classical-functions-v030/semantic-replay-first.stdout.txt -text -whitespace
 tests/fixtures/review_v030alpha/hosted-ci-classical-test-repair/*-excerpt.txt -text -whitespace
+
+# Preserve only inherited EOF blanks in these hash-bound const-header copies.
+# Their non-header bytes match the frozen Basis sources; other whitespace rules apply.
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/abstract-split/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/assumed-unit/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/duplicate-owner/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/forward-kind/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/missing-access/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-forward/main.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/unknown-basis/main.qli -text whitespace=-blank-at-eof

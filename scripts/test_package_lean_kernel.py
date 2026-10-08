@@ -74,7 +74,9 @@ class NativeBundleLanes(unittest.TestCase):
 
     def test_both_platforms_forward_the_selected_lane_and_keep_relocation_tests(self):
         workflow = (ROOT / ".github/workflows/ci.yml").read_text()
-        self.assertIn("python3 scripts/test_package_lean_kernel.py", workflow)
+        from ci_source_checks import plan
+        self.assertIn('--checks ci-preflight --output', workflow)
+        self.assertIn(['python3', 'scripts/test_package_lean_kernel.py'], plan('ci-preflight'))
         package_lines = [line for line in workflow.splitlines() if "scripts/package_lean_kernel.py " in line]
         self.assertEqual(len(package_lines), 2)
         for line in package_lines:
