@@ -1,0 +1,16 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Local integration client of the retained Qualtran-derived QPE source.
+use rotation::prepare;
+use amplification::grover;
+use estimation::estimate;
+
+/// Prepare the low-bit success amplitude, then reuse the same QPE definition.
+/// Measurement/CBits and certified classical sin-squared evaluation are separate.
+pub unitary fn amplitude_phase[const n: Nat, const m: Nat, const j: Nat, const d: Nat](
+    phase: Q<Bits<m>>, target: Q<Bits<n>>
+) -> (Q<Bits<m>>, Q<Bits<n>>)
+requires n >= 1, m >= 1 {
+    let target = prepare[n,j,d](target);
+    estimate[n,m,grover[n,j,d]](phase,target)
+}

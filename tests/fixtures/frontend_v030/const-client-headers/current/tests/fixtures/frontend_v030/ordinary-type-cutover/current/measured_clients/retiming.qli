@@ -1,0 +1,21 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// A later local gate and fresh preparation commute past the first observation,
+// including when the two input owners are entangled with each other/reference.
+use std::quantum::h;
+use std::quantum::init0;
+use std::observe::measure_z;
+use std::classical::empty_bits;
+use std::classical::prepend_bit;
+
+pub observe fn retimed[const n: Nat](pair: (Q<Bit>, Q<Bit>)) -> (Bits<2>, Q<Bit>)
+requires n == 2 {
+    let (first,target) = pair;
+    let first = measure_z(first);
+    let target = h(target);
+    let fresh = init0();
+    let second = measure_z(fresh);
+    let bits = prepend_bit[0](second,empty_bits());
+    let bits = prepend_bit[1](first,bits);
+    (bits,target)
+}

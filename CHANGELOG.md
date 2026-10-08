@@ -25,6 +25,9 @@ development milestones from the scope of their evidence.
   Select canonical QPE `power` and curried `inverse` applications, preserving
   small proposals and independent native/oracle checks. Reject stale negative
   test mutation needles instead of silently leaving sources unchanged.
+  Migrate selected generic, observing-QPE, ownership/phase and sized/instrument
+  clients to `const`, retaining original source inventories and independent
+  meaning expectations rather than maintaining separate migration counts.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

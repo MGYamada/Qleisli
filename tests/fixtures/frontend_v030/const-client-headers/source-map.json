@@ -1,0 +1,192 @@
+{
+  "format": "qleisli.const-client-source-map",
+  "version": 1,
+  "projects": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-client-integration/current/verification_v029/generic",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-client-integration/current/verification_v029/generic",
+      "files": [
+        {
+          "path": "Qargo.toml",
+          "before_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+          "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "fbef9957f33277fdc9939e953d398070b525e39ac45bce735aedc490d5c313df",
+          "current_sha256": "532c8e1da775f3d397372750e46d450d0f587e3a6ec4565a46650f43139663c5"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/first_source",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/first_source",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "before_sha256": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827",
+          "current_sha256": "8c2bcb3e42bfe5b4d4f4ecd35e0a1a3aa41b4b7548d16d383ddf18c9f07fb1cc"
+        },
+        {
+          "path": "gates.qli",
+          "before_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb",
+          "current_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/dephased",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/dephased",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "before_sha256": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827",
+          "current_sha256": "8c2bcb3e42bfe5b4d4f4ecd35e0a1a3aa41b4b7548d16d383ddf18c9f07fb1cc"
+        },
+        {
+          "path": "gates.qli",
+          "before_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1",
+          "current_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1"
+        }
+      ]
+    }
+  ],
+  "files": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/010-permutation.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/010-permutation.qli",
+      "before_sha256": "bca5d3062615b5f28ea60735ddefc6a4a7dd1c603ed6413e6e6a9a6a519d9b73",
+      "current_sha256": "68dbdf4804103a2d03f5442d55c8a4cccf4508bde4e0f9349d518077dad21fd7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/011-phase_mismatch.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/011-phase_mismatch.qli",
+      "before_sha256": "fea24b083f542cbec6668d102d6cad93f7dda8eb313625453143676932f41fac",
+      "current_sha256": "2972345f8397400744f97511bb6434aa181ed154aece51aec2663245553bb1d2"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/012-phase_mismatch.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/012-phase_mismatch.qli",
+      "before_sha256": "6e8598b28795368b6125a84d51568730b0128b4b67b9293abc23bd202b0c9ca3",
+      "current_sha256": "ab0f0920032bb4bc1ca18abfe2ad9acd27c38a5f3ced63b4a79b1dff763085f1"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/013-basis_tuple_pattern.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/013-basis_tuple_pattern.qli",
+      "before_sha256": "a59c1f4847fe7d1427c4bb50e4aec12a745df08cac7b0ddb938f4e495c6ad99a",
+      "current_sha256": "3c339afdb8365013ea7a306a75e3db458b3793444018280af9554ada6a60871a"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/014-basis_tuple_pattern.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/014-basis_tuple_pattern.qli",
+      "before_sha256": "4fd15dc862b2750bfc1b8b6589fe9e48c626c20a4ad9ec9e2813e629ebdebf3f",
+      "current_sha256": "0036d451633f13826956d5281827c1d361f7f7ce1d1476bed9d7a58a855020ff"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/faults/phase3_forward_qft.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/faults/phase3_forward_qft.qli",
+      "before_sha256": "66e129e5c1b808ff1befb1d93c6184f4276b06454358a214166546ad4fc8c779",
+      "current_sha256": "e7d66681ac69cf6e5b00ee7c28e75a1c33b157fb368e9196f378a65c9f28d37b"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/008-main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/008-main.qli",
+      "before_sha256": "87f171a1bbbfc96012789a370e8f494829a07a6467774bec3cb32384c6fc3aad",
+      "current_sha256": "3ee4270ab9e09b73415b07cbb9c5e2f029245de932a5da395f460101446ad5cb"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/009-main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/classical-functions/current/009-main.qli",
+      "before_sha256": "c0c25c5bae101a5201f2094d17d82d8cace081678e481e1b6c1e4a92128274e6",
+      "current_sha256": "4a92fcdb46b22c6db3ff3253dcb2f85819f075b7353f06c0f617fdcac73e9a21"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli",
+      "before_sha256": "bb6920fafa0efd72bbcc16fe23fd86c9d1e108706d3cf17e49ce4b2d842d3d14",
+      "current_sha256": "c2207ee5c1c29985d80e7343097de0578d2e74af00d300518f70798c16233a6d"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-repeat/main.qli",
+      "before_sha256": "d1007449d5583e172855a13895867350afbfde99536051514bf3f20a46756e97",
+      "current_sha256": "63bb7bbbfb5f48faca4dc5adb2b1f5f999116c7e2c6f574f3010415b8140457d"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/concrete-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/concrete-control/main.qli",
+      "before_sha256": "c1e17733b36198e6473f3d5dcab8d50a7d8f2e22a52f3ab755e784d248093647",
+      "current_sha256": "97b60d583842e5612dd74678e621bb37078132db9c70c854cf2f0d6ee284cdbe"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/qfor/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/zero-fold-observation/main.qli",
+      "before_sha256": "9a5482a2c7a66f5c9b14d173adbf72970e08de93993b1f410774afe870cf5011",
+      "current_sha256": "4133d7df2512f0599f0ce31f3bda5478ebee3b24260bc0814b7ea81b2064f2e3"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplification.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplification.qli",
+      "before_sha256": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+      "current_sha256": "e9d0b4ebdd794c6944386c7e52859283a31ebe7d029a4311b4caaf04f36ed51d"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplitude.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplitude.qli",
+      "before_sha256": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+      "current_sha256": "94b8460a645603d508f2e936869de81cd5b4cbf88725ee84ca59734c23c40494"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/modular.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/modular.qli",
+      "before_sha256": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+      "current_sha256": "5e99d00f955ecc07733e8675ea0fe9800082b779da013832d616e3037198066f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/order.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/order.qli",
+      "before_sha256": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+      "current_sha256": "c62e1173f11ce4286161580955d71177b36a4676a931a27f671a4d113bd4e775"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/reflection.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/reflection.qli",
+      "before_sha256": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+      "current_sha256": "4a6f0150d9a54bc781c63ca8fc02c1da0b11561c9d358a6f26273865a6e5af00"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/rotation.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/rotation.qli",
+      "before_sha256": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+      "current_sha256": "7a91346aa9c66429833368d122834e57960e11e338936d167cff9e9c39fe49b4"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/amplitude.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/amplitude.qli",
+      "before_sha256": "2078afa66fbad8578bff57db4532bbc0ea23250fc5b127507c87f2466080dd27",
+      "current_sha256": "2f202bc0bffba8328572b30590928885d99a0a4729ed42a0d8b56a2431dd8f8f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/order.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/order.qli",
+      "before_sha256": "db335c8a206b0f56bba80934dbdbe00677a7c5a057eaae9e17420733b0d74015",
+      "current_sha256": "e4cdefc72e323a2219a9fba977ea1d7f594fedf5296389b7b42ac6b2526118d0"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/retiming.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/retiming.qli",
+      "before_sha256": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
+      "current_sha256": "f66aad8cdde1bf0841eb46f99537cdaeffc8e6b14a42271e88a58502ff36376e"
+    }
+  ]
+}

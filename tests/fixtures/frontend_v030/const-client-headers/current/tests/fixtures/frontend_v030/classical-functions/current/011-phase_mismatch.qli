@@ -1,0 +1,17 @@
+//! Deliberately wrong phase target: the unchanged AND oracle must fail binding.
+use std::quantum::init0;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::join;
+use std::measurement::measure_z2;
+classical fn phase((a,b): (Bit,Bit)) -> (Bit,(Bit,Bit)) { (0,(0,a xor b)) }
+meaning Mark11: (Bit,Bit) = phase_by(phase);
+classical fn marked(a: Bit,b: Bit) -> Bit { a and b }
+unitary fn oracle(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    with_computed(q,marked) { |flag| z(flag) }
+}
+unitary fn apply[const U: Op<(Bit,Bit),Mark11>](q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)>
+requires Apply(U) { U(q) }
+observe fn main() -> (Bit,Bit) {
+    measure_z2(apply[checked_op(oracle,Mark11)](join(x(init0()),x(init0()))))
+}

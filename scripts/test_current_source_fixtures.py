@@ -28,8 +28,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.checked_manifest = self.root / "checked-source-map.json"
         self.classical_manifest = self.root / "classical-source-map.json"
         self.qfor_manifest = self.root / "qfor-source-map.json"
-        self.application_manifest = self.root / "application-source-map.json"
-        self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
+        self.client_const_manifest = self.root / "const-client-source-map.json"
+        self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
         self.application_manifest = self.root / "application-source-map.json"
         self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
         self.const_manifest = self.root / "const-source-map.json"
@@ -58,7 +58,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("CLASSICAL_MAP", self.classical_manifest.name),
                             ("QFOR_MAP", self.qfor_manifest.name),
                             ("CONST_MAP", self.const_manifest.name),
-                            ("APPLICATION_MAP", self.application_manifest.name)):
+                            ("APPLICATION_MAP", self.application_manifest.name),
+                            ("CLIENT_CONST_MAP", self.client_const_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -403,8 +404,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.checked_manifest = self.root / "checked-map.json"
         self.classical_manifest = self.root / "classical-map.json"
         self.qfor_manifest = self.root / "qfor-map.json"
-        self.application_manifest = self.root / "application-source-map.json"
-        self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
+        self.client_const_manifest = self.root / "const-client-source-map.json"
+        self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
         self.application_manifest = self.root / "application-source-map.json"
         self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
         self.const_manifest = self.root / "const-source-map.json"
@@ -422,7 +423,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("CLASSICAL_MAP", self.classical_manifest.name),
                             ("QFOR_MAP", self.qfor_manifest.name),
                             ("CONST_MAP", self.const_manifest.name),
-                            ("APPLICATION_MAP", self.application_manifest.name)):
+                            ("APPLICATION_MAP", self.application_manifest.name),
+                            ("CLIENT_CONST_MAP", self.client_const_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -454,6 +456,11 @@ class SourceFileIdentity(unittest.TestCase):
         self.assertEqual(fixtures.current_source_file(self.namespace), self.current)
         self.assertEqual(fixtures.current_source_file(self.coherent), self.current)
         self.assertEqual({path: path.read_bytes() for path in originals}, originals)
+
+    def test_missing_const_client_stage_has_no_previous_source_fallback(self):
+        self.client_const_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing const client source map"):
+            fixtures.current_source_file(self.original)
 
     def test_unmapped_file_is_returned_unchanged(self):
         source = self.root / "unmapped.qli"
@@ -675,6 +682,57 @@ class SourceFileIdentity(unittest.TestCase):
 
 
 class RepositoryMigrationTests(unittest.TestCase):
+    def test_const_client_maps_retain_every_project_and_file_byte_except_markers(self):
+        import re
+        data = fixtures._read_map(fixtures.ROOT / fixtures.CLIENT_CONST_MAP)
+        projects = fixtures._projects(data, "before_path", "const client")
+        prior_maps = fixtures._migration_maps()[:-1]
+        marker = re.compile(rb'\bstatic(?= [A-Za-z_]\w*\s*:)')
+        expected_projects = set()
+        for entry in fixtures._read_map(fixtures.MAP)['projects']:
+            selected = entry['current_path']
+            for _, stage in prior_maps:
+                if selected in stage:
+                    selected = stage[selected]['current_path']
+            if any(marker.search(path.read_bytes()) for path in
+                   (fixtures.ROOT / selected).rglob('*.qli')):
+                expected_projects.add(selected)
+        self.assertEqual(set(projects), expected_projects)
+        for entry in projects.values():
+            before = fixtures.ROOT / entry["before_path"]
+            current = fixtures.ROOT / entry["current_path"]
+            fixtures._verify_pair(before, current, entry, "before_sha256")
+            for path in before.rglob('*'):
+                if path.is_file():
+                    transformed = re.sub(rb'\bstatic(?= [A-Za-z_]\w*\s*:)',
+                                         b'const', path.read_bytes()) if path.suffix == '.qli' else path.read_bytes()
+                    self.assertEqual((current / path.relative_to(before)).read_bytes(), transformed)
+        entries = fixtures._file_entries(data, "const client")
+        candidates = {entry['before_path'] for stage, _ in prior_maps
+                      for entry in stage.values()}
+        for folder in ('sized_clients', 'measured_clients'):
+            candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                (fixtures.ROOT / 'tests/fixtures/frontend_v030/ordinary-type-cutover/current' /
+                 folder).glob('*.qli'))
+        expected_files = set()
+        for selected in candidates:
+            for stage, _ in prior_maps:
+                if selected in stage:
+                    selected = stage[selected]['current_path']
+            path = fixtures.ROOT / selected
+            if ('qualtran_qft' not in path.parts and path.name != 'delayed_fourier.qli'
+                    and marker.search(path.read_bytes())):
+                expected_files.add(selected)
+        self.assertEqual(set(entries), expected_files)
+        for entry in entries.values():
+            before = fixtures.ROOT / entry["before_path"]
+            current = fixtures.ROOT / entry["current_path"]
+            transformed, count = re.subn(rb'\bstatic(?= [A-Za-z_]\w*\s*:)',
+                                        b'const', before.read_bytes())
+            self.assertGreater(count, 0)
+            self.assertEqual(current.read_bytes(), transformed)
+            self.assertEqual(fixtures.current_source_file(before), current)
+
     def test_qpe_application_map_changes_only_adopted_operator_forms(self):
         data = json.loads((fixtures.ROOT / fixtures.APPLICATION_MAP).read_text())
         entries = fixtures._file_entries(data, "operation application")
