@@ -7,8 +7,9 @@
     "attempt": 1,
     "url": "https://github.com/MGYamada/Qleisli/actions/runs/37771955859",
     "failed_task": "lean-raw",
-    "other_native_tasks_passed": 65,
-    "cause": "The source reader opened historical corpus paths directly after operation-spelling retirement."
+    "other_native_tasks_passed": 66,
+    "cause": "The source reader opened historical corpus paths directly after operation-spelling retirement.",
+    "native_tasks_total": 67
   },
   "source_reviews": [
     {
@@ -49,7 +50,7 @@
     "scope": "Dirty-checkout focused reproduction, before the explicit-missing-compiler guard; not exact-commit/full-CI evidence."
   },
   "remaining": [
-    "Exact-commit native runner and whole hosted CI",
+    "Whole hosted CI at the final integration commit; local selected tasks do not replace all 67 native groups.",
     "Resolve the #45 canonical adjoint/capability spelling decision before #33 closure",
     "General source/runtime correspondence and production-wide QS/PR/RS duties"
   ],
@@ -94,5 +95,36 @@
       "result": "/private/tmp/qleisli-raw-reader-repository-integrity-precommit/results.json"
     }
   ],
-  "shared_precommit_note": "Working-input bindings are retained as observed. The inventory JSON was subsequently restored to its original UTF-8 formatting with only the one reviewed hash changed; no parsed field changed. The compact result record is written after these checks."
+  "shared_precommit_note": "Working-input bindings are retained as observed. The inventory JSON was subsequently restored to its original UTF-8 formatting with only the one reviewed hash changed; no parsed field changed. The compact result record is written after these checks.",
+  "exact_commit_local_checks": {
+    "commit": "1216af59a420e7b34f67718f762c246952320d7c",
+    "native": {
+      "status": "passed",
+      "coverage": "selected-local-groups",
+      "tasks": [
+        {
+          "id": "lean-observation",
+          "status": "passed",
+          "seconds": 27.3415315420134
+        },
+        {
+          "id": "lean-raw",
+          "status": "passed",
+          "seconds": 35.43850562500302
+        }
+      ],
+      "omitted_tasks": 65,
+      "elapsed_seconds": 67.8669712090632,
+      "result": "/private/tmp/qleisli-raw-reader-native-clean-1216af59/results.json"
+    },
+    "source_integrity": {
+      "status": "passed",
+      "commands": 5,
+      "binding": {
+        "head": "1216af59a420e7b34f67718f762c246952320d7c",
+        "working_inputs_sha256": "29be550e79cc43abf99f257932e8dd08b8ce942107c7cca71387620cd8e0774f"
+      },
+      "result": "/private/tmp/qleisli-raw-reader-source-integrity-clean-1216af59/results.json"
+    }
+  }
 }

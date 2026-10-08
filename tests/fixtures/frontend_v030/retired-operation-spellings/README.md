@@ -86,7 +86,7 @@ are observations, not a controlled speedup claim. Completion is 24/111
 
 Hosted run [37771955859](https://github.com/MGYamada/Qleisli/actions/runs/37771955859),
 attempt 1 at `2aada2a1`, failed only the `lean-raw` native comparison; the other
-65 native tasks and seven other real producer jobs succeeded. Its source
+66 native tasks and seven other real producer jobs succeeded. Its source
 reader bypassed current-project selection and parsed a historical `adjoint`
 input. The [repair review](raw-reader-repair.json) retains that failure and the
 local reproduction. The repaired reader keeps all original circuit dependency
@@ -98,3 +98,12 @@ comparisons, 85 rational matrices and 180 raw traces. Exact-commit native and
 hosted validation remain pending; the failed run has not been rerun or replaced.
 Issue #45's newer `adjoint`/capability naming decision also remains to be
 integrated before #33 can close. Completion remains 24/111 (21.62%).
+
+Clean commit `1216af59a420e7b34f67718f762c246952320d7c` subsequently passed
+the declared `lean-raw` and `lean-observation` native tasks (35.44 / 27.34
+seconds; 67.87 seconds including fresh build preparation) and source-integrity
+5/5 with an exact working-input binding. The remaining 65 native tasks were
+explicitly unexecuted locally; these two checks do not constitute full CI.
+The repair review retains these exact-commit results separately from the earlier
+dirty-checkout observations. The complete failed-run log contains 66 passing
+tasks and one failure, correcting the earlier preliminary count of 65.
