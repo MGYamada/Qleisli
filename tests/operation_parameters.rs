@@ -290,13 +290,19 @@ fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
 
 #[test]
 fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() {
-    // A020-09: preserve M1's transparent constructor rules until a versioned
-    // migration; this does not grant direct Applicable(U) or Adjointable(U).
+    // Reversing a constructed controlled circuit uses its retained exact body.
+    // Constructing the bare operand's adjoint still needs Adjointable(U).
     // T is non-Hermitian, so replacing its derived inverse by T must fail.
-    for body in [
-        "let (c,q) = ctrl[adjoint(U)](c,q); join(c,q)",
-        "adjoint2[controlled(U)](join(c,q))",
-        "adjoint2[controlled(U)](apply2[controlled(U)](adjoint2[controlled(U)](join(c,q))))",
+    for (body, extra) in [
+        (
+            "let (c,q) = ctrl[adjoint(U)](c,q); join(c,q)",
+            ",Adjointable(U)",
+        ),
+        ("adjoint2[controlled(U)](join(c,q))", ""),
+        (
+            "adjoint2[controlled(U)](apply2[controlled(U)](adjoint2[controlled(U)](join(c,q))))",
+            "",
+        ),
     ] {
         deterministic(
             &format!(
@@ -307,7 +313,7 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
                  unitary fn adjoint2[const V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
                  requires Adjointable(V){{adjoint(V)(q)}}
                  unitary fn derived[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->Q<(Bit,Bit)>
-                 requires Controllable(U){{{body}}}
+                 requires Controllable(U){extra}{{{body}}}
                  observe fn main()->(Bit,Bit){{
                      let (c,q) = split(derived[phase](x(init0()),t(h(init0()))));
                      (measure_z(x(c)),measure_z(h(q)))

@@ -743,6 +743,9 @@ impl Checker<'_, '_> {
             }
             StaticOpKind::Inverse(child) => {
                 let mut child = self.operation(child, scope)?;
+                // Description construction itself requires the operand's
+                // verified adjoint path, even when an outer use masks Apply.
+                access(&child, Access::Adjoint, op.span)?;
                 child.access.swap(0, 1);
                 child.meaning = None;
                 Ok(child)

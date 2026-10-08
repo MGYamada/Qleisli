@@ -416,6 +416,90 @@ fn canonical_inverse_checks_unused_zero_count_generic_access() {
     }
 }
 
+#[test]
+fn adjoint_construction_checks_access_before_outer_or_unused_descriptions() {
+    for (basis, runtime_basis, constraint, body, missing) in [
+        (
+            "Bit",
+            "Bit",
+            "Applicable(U)",
+            "ignored[type(Bit),adjoint(U)](q)",
+            "adjoint(U)",
+        ),
+        (
+            "Bit",
+            "(Bit,Bit)",
+            "Controllable(U)",
+            "ignored[type((Bit,Bit)),controlled(adjoint(U))](q)",
+            "adjoint(U)",
+        ),
+        (
+            "Bit",
+            "Bit",
+            "Applicable(U)",
+            "ignored[type(Bit),adjoint(adjoint(U))](q)",
+            "adjoint(U)",
+        ),
+        (
+            "Bit",
+            "Bit",
+            "Applicable(U)",
+            "ignored[type(Bit),power(adjoint(U),0)](q)",
+            "adjoint(U)",
+        ),
+        (
+            "Bit",
+            "Bit",
+            "Applicable(U)",
+            "ignored[type(Bit),adjoint(power(U,0))](q)",
+            "adjoint(power(U,0))",
+        ),
+        (
+            "Bit",
+            "Bit",
+            "Applicable(U)",
+            "if 0 {ignored[type(Bit),adjoint(U)](q)} else {q}",
+            "adjoint(U)",
+        ),
+        (
+            "Unit",
+            "Unit",
+            "Applicable(U)",
+            "ignored[type(Unit),adjoint(U)](q)",
+            "adjoint(U)",
+        ),
+    ] {
+        let text = format!(
+            "// 日本語\r\nunitary fn ignored[const A:Basis,const V:Op<A>](q:Q<A>)->Q<A>{{q}}
+             unitary fn bad[const U:Op<{basis}>](q:Q<{runtime_basis}>)->Q<{runtime_basis}>
+             requires {constraint}{{{body}}}"
+        );
+        let selected = match ParsedProgram::parse(sources(&text)) {
+            Err(error) => error,
+            Ok(_) => panic!("adjoint construction accepted without its path: {text}"),
+        };
+        let finite = check_project_diagnostic(&SourceRoot::new(&text).0).unwrap_err();
+        let start = text.find(missing).unwrap();
+        let expected = Span::new(start, start + missing.len());
+        assert_eq!(selected.code(), "access", "{text}\n{selected}");
+        assert_eq!(selected.message(), "missing Adjointable operation access");
+        assert_eq!(selected.span(), expected);
+        assert_eq!(finite.code, "capability", "{text}\n{finite:?}");
+        assert_eq!(finite.message, selected.message());
+        assert_eq!(finite.primary.unwrap().span, expected);
+
+        // A real declared path makes construction valid; double adjoints keep
+        // their independent original Applicable requirement as well.
+        let supplied = text.replace(
+            &format!("requires {constraint}"),
+            &format!("requires {constraint},Adjointable(U)"),
+        );
+        ParsedProgram::parse(sources(&supplied)).unwrap_or_else(|error| {
+            panic!("{supplied}\n{error}");
+        });
+    }
+}
+
 fn sources(source: &str) -> BTreeMap<String, String> {
     BTreeMap::from([("main".into(), source.into())])
 }

@@ -99,7 +99,7 @@ successful common judgment. The current constructors retain these rules:
 | Resolved provider or explicit specialization | A permitted principal-Unitary `Q<A> -> Q<A>` provider with its checked static bindings and access; no runtime capture. |
 | `then_op(U,V)` | The same exact basis A on both descriptions; sequential application on one owner. |
 | `tensor_op(U,V)` | An ordered packed basis `(A,B)`; no implicit join of separate owners. |
-| `adjoint(U)` | Exchanges the description's Applicable/Adjointable availability; execution requires the transferred access. Mathematical unitarity alone supplies no API. |
+| `adjoint(U)` | Requires Adjointable(U) to construct the description, then exchanges its Applicable/Adjointable availability; execution requires the transferred access. Mathematical unitarity alone supplies no API. |
 | `controlled(U)` | Constructs a packed `(Bit,A)` description whose access derives from U's Controllable availability; use still needs the corresponding path and retains phase. |
 | `power(U,n)` | A checked supported static count and the child's obligations, including when n is zero. |
 | `conjugate_op(C,U)` | Exact common basis; access derives from C's Applicable and Adjointable availability together with the corresponding access to U. |
@@ -131,6 +131,11 @@ For the enabled endomorphic descriptions, write A(U), D(U) and C(U) for
 `Applicable(U)`, `Adjointable(U)` and `Controllable(U)`. The following rules
 derive available paths; constructing a description does not itself execute it.
 An application or forwarded actual argument must establish the requested path.
+An `adjoint(U)` description is well-formed only when D(U) is available. This
+construction premise is checked before deriving the paths below, even inside
+another description, an unused static actual, a dead source arm or a zero
+power. It also applies to zero-width bases. A double adjoint therefore requires
+both the original D(U) path and the A(U) path used as D of the inner adjoint.
 
 | Description | A | D | C | Basis condition |
 | --- | --- | --- | --- | --- |
@@ -148,6 +153,9 @@ alone permits application of the constructed `controlled(U)` description;
 it does not permit the bare `U(q)`. The adjoint of a controlled implementation
 and another control are built from its retained exact circuit, with phase
 preserved. A black-box channel-equality assertion supplies no such circuit.
+The adjoint of `controlled(U)` can use that constructed description's D path;
+constructing `controlled(adjoint(U))` additionally requires the original D(U)
+path. Outer control does not waive the bare adjoint's construction premise.
 Composition currently drops the attached Meaning refinement in the common
 judgment as specified above; the table does not infer a new refinement law.
 

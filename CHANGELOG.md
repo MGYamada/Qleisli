@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check `Adjointable(U)` when constructing a static `adjoint(U)` description,
+  including nested, unused, zero-count and zero-width cases. Preserve derived
+  adjoints of controlled circuits and report missing access at the constructor.
+
 - Name operation capabilities `Applicable`, `Adjointable` and `Controllable`,
   and constructed adjoints `adjoint(U)` / `adjoint(U)(q)`. Reject the retired
   predicates and `inverse_op` / `controlled_op` descriptions with located

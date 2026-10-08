@@ -1,5 +1,11 @@
 # Authoring and repair observations
 
+The [adjoint-construction probes](adjoint-construction-v030/README.md) retain two
+complete first sources and actual baseline acceptances that contradict #45's
+adopted Adjointable construction premise. The context/session transcription
+followed those checks and says so explicitly. These are source-contract probes,
+not invalid native circuits or a general capability proof.
+
 The [const-parameter study](const-parameters-v030/README.md) retains eight
 first projects, a manifest-only repair and actual before/after observations.
 Canonical headers preserve kind/order/name rules. A separate closed client

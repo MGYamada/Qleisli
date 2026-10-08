@@ -1,0 +1,9 @@
+use std::quantum::init0;
+use std::observe::measure_z;
+
+unitary fn ignored[const V: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }
+
+unitary fn client[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Applicable(U) { ignored[adjoint(U)](q) }
+
+observe fn main() -> Bit { measure_z(init0()) }

@@ -3291,7 +3291,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "4c9ccbc45fceebd9c6d44cac3a23c80f8041c092a46dae956132187588283dcd",
+      "sha256": "026bf44cd2935285a108b45e8d8e6291dd72319b2471192509558fd8d22ff196",
       "surface": {
         "declarations": [],
         "functions": [],
