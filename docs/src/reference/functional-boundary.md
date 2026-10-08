@@ -57,7 +57,7 @@ contains no live quantum owner. Reusing a description does not duplicate its
 input. For example, this existing form applies one static operation twice:
 
 ```qli
-unitary fn twice[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+unitary fn twice[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
 requires Apply(U) {
     U(U(q))
 }

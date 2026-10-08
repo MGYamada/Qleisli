@@ -35,7 +35,7 @@ classical fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
 meaning ZMeaning: Bit = phase_by(z_phase);
 unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
 
-unitary fn apply_z[static U: Op<Bit, ZMeaning>](q: Q<Bit>) -> Q<Bit>
+unitary fn apply_z[const U: Op<Bit, ZMeaning>](q: Q<Bit>) -> Q<Bit>
 requires Apply(U) { U(q) }
 
 unitary fn client(q: Q<Bit>) -> Q<Bit> {

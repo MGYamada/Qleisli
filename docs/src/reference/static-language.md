@@ -149,8 +149,8 @@ trusted evidence.
 The provisional first-order helper spelling is:
 
 ```qli
-static fn twice[static n: Nat]() -> Nat { n+n }
-static fn previous[static n: Nat]() -> Nat requires n >= 1 { n-1 }
+static fn twice[const n: Nat]() -> Nat { n+n }
+static fn previous[const n: Nat]() -> Nat requires n >= 1 { n-1 }
 ```
 
 A helper has only explicit static Nat parameters, no runtime parameters, a
@@ -185,7 +185,7 @@ counts toward the existing aggregate 1,024-call allowance, shared with runtime
 function specialization. Template preparation consumes the common source budget.
 
 For an indexed exact phase schedule, a helper such as
-`static fn exponent[static stage: Nat]() -> Nat { stage+1 }` supplies
+`static fn exponent[const stage: Nat]() -> Nat { stage+1 }` supplies
 `phase[1, exponent[i]()]` inside a bounded fold. Its result is an exact denominator
 exponent, not a floating-point angle or runtime table. Small Z/S/T schedules and
 computed generic sizes have independent checks; these do not complete a general

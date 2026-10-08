@@ -15,6 +15,35 @@ IDENTITY = 'pub unitary fn step[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q 
 
 
 class LocalResolution(unittest.TestCase):
+    def test_canonical_inverse_and_controlled_power_preserve_historical_ast(self):
+        source = ('pub unitary fn step[const n: Nat, const U: Op<Bits<n>>]'
+                  '(c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) '
+                  'requires Controlled(U) { controlled(repeat_op(2^n,U))(c,q) }')
+        current = source.replace('repeat_op(2^n,U)', 'power(U,2^n)')
+        inverse = IDENTITY.replace('{ q }', '{ adjoint(step[n],q) }')
+        current_inverse = inverse.replace('adjoint(step[n],q)', 'inverse(step[n])(q)')
+        for parser_class in (Parser, InstrumentParser):
+            with self.subTest(parser=parser_class.__name__):
+                self.assertEqual(parser_class(source, module='tools').parse(),
+                                 parser_class(current, module='tools').parse())
+                self.assertEqual(parser_class(inverse, module='tools').parse(),
+                                 parser_class(current_inverse, module='tools').parse())
+
+    def test_constructor_names_remain_ordinary_when_not_constructed(self):
+        for name in ('inverse', 'power'):
+            source = IDENTITY.replace('step', name).replace('{ q }', '{ '+name+'[n](q) }')
+            declaration = Parser(source, module='tools').parse()
+            self.assertEqual(declaration[4][1][0:2], ('call', 'tools::'+name))
+
+    def test_canonical_power_retains_count_and_unknown_provider_refusals(self):
+        source = ('pub unitary fn step[const n: Nat, const U: Op<Bits<n>>]'
+                  '(c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) '
+                  'requires Controlled(U) { controlled(power(U,2^n))(c,q) }')
+        for invalid, message in [('power(U,3^n)', 'literal base two'),
+                                 ('power(missing,2^n)', 'unknown static operation')]:
+            with self.subTest(invalid=invalid), self.assertRaisesRegex(SourceError, message):
+                Parser(source.replace('power(U,2^n)', invalid), module='tools').parse()
+
     def test_const_headers_preserve_ordered_natural_and_operation_parameters(self):
         source = ('pub unitary fn step[static n: Nat, static U: Op<Bits<n>>]'
                   '(c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) '

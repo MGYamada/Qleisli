@@ -17,6 +17,7 @@ import tempfile
 
 from current_source_fixtures import current_source_file
 from compile_sized_corpus import Operation, SourceError, compile_source, text
+from test_sized_qpe import replace_required
 from test_sized_corpus import circuit_action, difference
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -206,8 +207,8 @@ def main():
       'missing-preparation': (base|{'amplitude':base['amplitude'].replace('prepare[n,j,d](target)','target')},('amplitude',1,3,1,3)),
       'wrong-reflection-sign': (base|{'amplification':negative_sign},('amplitude',1,3,1,3)),
       'wrong-conjugation': (base|{'amplification':base['amplification'].replace('adjoint(prepare[n,j,d],q)','prepare[n,j,d](q)')},('amplitude',1,3,1,3)),
-      'shared-qpe-fault-order': (base|{'estimation':base['estimation'].replace('2^k,U','0,U')},('order',3,2,1,3)),
-      'shared-qpe-fault-amplitude': (base|{'estimation':base['estimation'].replace('2^k,U','0,U')},('amplitude',1,3,1,3)),
+      'shared-qpe-fault-order': (base|{'estimation':replace_required(base['estimation'],'U,2^k','U,0')},('order',3,2,1,3)),
+      'shared-qpe-fault-amplitude': (base|{'estimation':replace_required(base['estimation'],'U,2^k','U,0')},('amplitude',1,3,1,3)),
     }
     for name,(modules,p) in faults.items():
         artifacts[name]=build(modules,*p)

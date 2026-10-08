@@ -28,6 +28,10 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.checked_manifest = self.root / "checked-source-map.json"
         self.classical_manifest = self.root / "classical-source-map.json"
         self.qfor_manifest = self.root / "qfor-source-map.json"
+        self.application_manifest = self.root / "application-source-map.json"
+        self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
+        self.application_manifest = self.root / "application-source-map.json"
+        self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
         self.const_manifest = self.root / "const-source-map.json"
         self.const_manifest.write_text(json.dumps(dict(format="qleisli.const-parameter-source-map", version=1, files=[], projects=[])))
         self.qfor_manifest.write_text(json.dumps(dict(format="qleisli.qfor-source-map", version=1, files=[], projects=[])))
@@ -53,7 +57,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("CHECKED_MAP", self.checked_manifest.name),
                             ("CLASSICAL_MAP", self.classical_manifest.name),
                             ("QFOR_MAP", self.qfor_manifest.name),
-                            ("CONST_MAP", self.const_manifest.name)):
+                            ("CONST_MAP", self.const_manifest.name),
+                            ("APPLICATION_MAP", self.application_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -398,6 +403,10 @@ class SourceFileIdentity(unittest.TestCase):
         self.checked_manifest = self.root / "checked-map.json"
         self.classical_manifest = self.root / "classical-map.json"
         self.qfor_manifest = self.root / "qfor-map.json"
+        self.application_manifest = self.root / "application-source-map.json"
+        self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
+        self.application_manifest = self.root / "application-source-map.json"
+        self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
         self.const_manifest = self.root / "const-source-map.json"
         self.const_manifest.write_text(json.dumps(dict(format="qleisli.const-parameter-source-map", version=1, files=[], projects=[])))
         self.qfor_manifest.write_text(json.dumps(dict(format="qleisli.qfor-source-map", version=1, files=[], projects=[])))
@@ -412,7 +421,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("CHECKED_MAP", self.checked_manifest.name),
                             ("CLASSICAL_MAP", self.classical_manifest.name),
                             ("QFOR_MAP", self.qfor_manifest.name),
-                            ("CONST_MAP", self.const_manifest.name)):
+                            ("CONST_MAP", self.const_manifest.name),
+                            ("APPLICATION_MAP", self.application_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -507,6 +517,24 @@ class SourceFileIdentity(unittest.TestCase):
     def test_missing_const_stage_has_no_previous_source_fallback(self):
         self.const_manifest.unlink()
         with self.assertRaisesRegex(ValueError, "missing const parameter source map"):
+            fixtures.current_source_file(self.original)
+
+    def test_application_stage_rejects_stale_final_source(self):
+        original = self.current.read_bytes()
+        selected = self.root / "application-current.qli"
+        selected.write_text("unitary fn f(q: Q<Bit>) -> Q<Bit> { inverse(f)(q) }")
+        self.application_manifest.write_text(json.dumps(dict(
+            format="qleisli.operation-application-source-map", version=1,
+            files=[self.entry(self.current, selected)], projects=[])))
+        self.assertEqual(fixtures.current_source_file(self.original), selected)
+        self.assertEqual(self.current.read_bytes(), original)
+        selected.write_text("stale application source")
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_file(self.original)
+
+    def test_missing_application_stage_has_no_previous_source_fallback(self):
+        self.application_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing operation application source map"):
             fixtures.current_source_file(self.original)
 
     def test_classical_stage_cannot_hide_stale_checked_predecessor(self):
@@ -647,6 +675,21 @@ class SourceFileIdentity(unittest.TestCase):
 
 
 class RepositoryMigrationTests(unittest.TestCase):
+    def test_qpe_application_map_changes_only_adopted_operator_forms(self):
+        data = json.loads((fixtures.ROOT / fixtures.APPLICATION_MAP).read_text())
+        entries = fixtures._file_entries(data, "operation application")
+        self.assertEqual(len(entries), 1)
+        entry = next(iter(entries.values()))
+        before = fixtures.ROOT / entry["before_path"]
+        current = fixtures.ROOT / entry["current_path"]
+        transformed = before.read_bytes().replace(
+            b'controlled(repeat_op(2^k,U))', b'controlled(power(U,2^k))').replace(
+            b'adjoint(fourier[m],phase)', b'inverse(fourier[m])(phase)')
+        self.assertNotEqual(transformed, before.read_bytes())
+        self.assertEqual(current.read_bytes(), transformed)
+        self.assertEqual(fixtures.current_source_file(
+            "corpus/sized/qualtran_qpe/estimation.qli"), current)
+
     def test_actual_quantum_fold_map_has_canonical_entries_and_matching_sources(self):
         # Synthetic maps alone did not catch explanatory metadata inserted in
         # real strict file records. Exercise the same entry point as Rust tests.
@@ -670,7 +713,8 @@ class RepositoryMigrationTests(unittest.TestCase):
         for entry in entries.values():
             before = fixtures.ROOT / entry["before_path"]
             current = fixtures.ROOT / entry["current_path"]
-            self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertEqual(fixtures.current_source_file(before),
+                             fixtures.current_source_file(current))
             transformed, count = re.subn(rb"\bstatic(?= [A-Za-z_]\w*\s*:)",
                                         b"const", before.read_bytes())
             self.assertGreater(count, 0)

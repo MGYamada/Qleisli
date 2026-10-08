@@ -14,6 +14,8 @@ NAMESPACE_MAP = "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/namespa
 COHERENT_MAP = "tests/fixtures/frontend_v030/coherent-basis/source-map.json"
 CHECKED_MAP = "tests/fixtures/frontend_v030/checked-operation/source-map.json"
 CLASSICAL_MAP = "tests/fixtures/frontend_v030/classical-functions/source-map.json"
+APPLICATION_MAP = "tests/fixtures/frontend_v030/operation-application/source-map.json"
+APPLICATION_MAP = "tests/fixtures/frontend_v030/operation-application/source-map.json"
 CONST_MAP = "tests/fixtures/frontend_v030/const-parameters/source-map.json"
 QFOR_MAP = "tests/fixtures/frontend_v030/qfor/source-map.json"
 
@@ -140,7 +142,8 @@ def _migration_maps():
             (CHECKED_MAP, "qleisli.checked-operation-source-map", "checked operation"),
             (CLASSICAL_MAP, "qleisli.classical-function-source-map", "classical function"),
             (QFOR_MAP, "qleisli.qfor-source-map", "quantum fold"),
-            (CONST_MAP, "qleisli.const-parameter-source-map", "const parameter")):
+            (CONST_MAP, "qleisli.const-parameter-source-map", "const parameter"),
+            (APPLICATION_MAP, "qleisli.operation-application-source-map", "operation application")):
         path = _local(ROOT, relative)
         if not path.is_file():
             raise ValueError(f"missing {label} source map: {path}")

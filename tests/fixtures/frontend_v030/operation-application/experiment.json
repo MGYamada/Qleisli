@@ -1,0 +1,120 @@
+{
+  "before_commit": "5d4c50ac2a0f6da47bbbc990385fa3027e210153",
+  "comparison": {
+    "status": "passed",
+    "proposals": [
+      {
+        "n": 1,
+        "m": 1,
+        "sha256": "535f37be789d7d02266e3f14f0a4a7a09923d0f0e6b102970f76f4eae76bc851"
+      },
+      {
+        "n": 1,
+        "m": 2,
+        "sha256": "99070f9e725975d43dccb684561742e64f1fa367b04f675f7abbb535b1986cf8"
+      },
+      {
+        "n": 2,
+        "m": 2,
+        "sha256": "907bbcc77dcd37d15fecdb43e50b22e60aa755b034eda68dfda8a839bd138e6c"
+      }
+    ]
+  },
+  "native_check": {
+    "command": [
+      "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+      "check",
+      "--entry=estimation::estimate",
+      "--nat=n=1",
+      "--nat=m=2",
+      "--operation=U=evolution::evolve",
+      "--operation-nat=U.n=1",
+      "--operation-nat=U.j=1",
+      "--operation-nat=U.d=3",
+      "--module=estimation=/private/tmp/qleisli-canonical-qpe/desired.qli",
+      "--module=preparation=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/preparation.qli",
+      "--module=evolution=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/evolution.qli",
+      "--module=fourier=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli",
+      "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "exit_code": 0,
+    "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"estimation::estimate\",\"ir_profile\":\"hierarchy\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n",
+    "stderr": "",
+    "maximum_complex_error": 3.803658237888843e-16,
+    "columns": 8
+  },
+  "initial_cli_attempts": [
+    {
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "emit-ir",
+        "--entry=estimation::estimate",
+        "--nat=n=1",
+        "--nat=m=2",
+        "--op=U=evolution::evolve[1,1,3]",
+        "--module=estimation=/private/tmp/qleisli-canonical-qpe/desired.qli",
+        "--module=preparation=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/preparation.qli",
+        "--module=evolution=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/evolution.qli",
+        "--module=fourier=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "usage: qleisli <check|run|sample|emit-proposal> --entry=module::function\n  --module=name=PATH (repeat) --type=name=TYPE --nat=name=N (repeat)\n  [--operation=name=module::function --operation-nat=name.parameter=N] (repeat)\n  [--operation-type=name.parameter=TYPE] (repeat)\n  [--ir-profile=auto|raw|hierarchy] [--lean-kernel=PATH]\n  [--request=PATH | --qpe-provider=PATH] [--format=json]\n  [--basis=N] [--shots=N --seed=N] [--output=PATH]\n  --kernel is an alias for --lean-kernel; otherwise use QLEISLI_KERNEL.\n  Raw run/sample require zero runtime parameters and no quantum result.\n  --basis is hierarchy run/sample-only (default 0); it is never ordinary input.\n  --type binds an exact closed ordinary Basis; it does not select runtime input.\n  Selected-source sample requires shots in 1..1024 and a seed.\n  emit-proposal requires output and no kernel/request/provider; it is untrusted.\n  Module-map checking covers every declaration, native checking the selected instance.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n"
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "emit-proposal",
+        "--entry=estimation::estimate",
+        "--nat=n=1",
+        "--nat=m=2",
+        "--operation=U=evolution::evolve",
+        "--operation-nat=U.n=1",
+        "--operation-nat=U.j=1",
+        "--operation-nat=U.d=3",
+        "--output=/private/tmp/qleisli-canonical-qpe/proposal.json",
+        "--module=estimation=/private/tmp/qleisli-canonical-qpe/desired.qli",
+        "--module=preparation=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/preparation.qli",
+        "--module=evolution=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/evolution.qli",
+        "--module=fourier=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
+      ],
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "estimation:0..0: project: missing Qargo.toml: add schema-version = 2 and [qrate] edition = \"2026\" to the source tree's top-level directory\n"
+    }
+  ],
+  "client_stale_mutation_refusal": "Traceback (most recent call last):\n  File \"/Users/masa/git/Qleisli/scripts/test_sized_qpe_clients.py\", line 266, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/Users/masa/git/Qleisli/scripts/test_sized_qpe_clients.py\", line 247, in main\n    assert all(row['maximum_error'] > 0.1 for row in bad.values()),bad\n           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'wrong-modular-direction': {'basis_columns': 32, 'reference_columns': 2, 'maximum_error': 0.4999999999999999, 'executed_instructions': 7, 'diagnostic_probabilities': [0.3749999999999998, 0.24999999999999983, 0.12499999999999992, 0.24999999999999986], 'diagnostic_branch_error': 0.4999999999999999, 'orbit': [1, 2, 4]}, 'missing-preparation': {'basis_columns': 16, 'reference_columns': 2, 'maximum_error': 0.3826834323650903, 'executed_instructions': 66, 'diagnostic_probabilities': [2.379893917124216e-31, 0.49999999999999883, 1.1237772735286896e-31, 3.1506661061302566e-32, 3.470058349583896e-32, 1.4337502949738163e-32, 1.029629453465959e-31, 0.49999999999999856], 'diagnostic_branch_error': 0.38268343236509, 'target_probability': 0.14644660940672624, 'diagnostic_grid_estimates': [0.0, 0.14644660940672624, 0.4999999999999999, 0.8535533905932737, 1.0, 0.8535533905932737, 0.5000000000000001, 0.14644660940672632]}, 'wrong-reflection-sign': {'basis_columns': 16, 'reference_columns': 2, 'maximum_error': 0.6532814824381884, 'executed_instructions': 97, 'diagnostic_probabilities': [5.947512409510829e-32, 8.782240546405797e-32, 2.066643200949028e-31, 0.49999999999999833, 3.687794731636983e-31, 0.4999999999999981, 2.599162830572098e-31, 3.1970437076828115e-32], 'diagnostic_branch_error': 0.5, 'target_probability': 0.14644660940672624, 'diagnostic_grid_estimates': [0.0, 0.14644660940672624, 0.4999999999999999, 0.8535533905932737, 1.0, 0.8535533905932737, 0.5000000000000001, 0.14644660940672632]}, 'wrong-conjugation': {'basis_columns': 16, 'reference_columns': 2, 'maximum_error': 0.6035533905932735, 'executed_instructions': 69, 'diagnostic_probabilities': [1.5284661521143196e-31, 0.9999999999999972, 1.4533548842832179e-31, 3.7510785868027326e-32, 1.8416705093202937e-32, 3.2548216060144286e-32, 2.2461157976416127e-32, 3.2063433372961547e-32], 'diagnostic_branch_error': 0.49999999999999994, 'target_probability': 0.14644660940672624, 'diagnostic_grid_estimates': [0.0, 0.14644660940672624, 0.4999999999999999, 0.8535533905932737, 1.0, 0.8535533905932737, 0.5000000000000001, 0.14644660940672632]}, 'shared-qpe-fault-order': {'basis_columns': 32, 'reference_columns': 2, 'maximum_error': 3.803658237888843e-16, 'executed_instructions': 7, 'diagnostic_probabilities': [0.3749999999999998, 0.24999999999999983, 0.12499999999999992, 0.24999999999999986], 'diagnostic_branch_error': 1.8619006149354548e-16, 'orbit': [1, 2, 4]}, 'shared-qpe-fault-amplitude': {'basis_columns': 16, 'reference_columns': 2, 'maximum_error': 1.7763568394002505e-15, 'executed_instructions': 69, 'diagnostic_probabilities': [2.497690396627196e-31, 0.4999999999999984, 1.3166138582317241e-31, 4.237045877651919e-32, 4.061304770226583e-32, 6.085938624263665e-32, 1.5910588753069046e-31, 0.4999999999999982], 'diagnostic_branch_error': 1.2002298365256574e-15, 'target_probability': 0.14644660940672624, 'diagnostic_grid_estimates': [0.0, 0.14644660940672624, 0.4999999999999999, 0.8535533905932737, 1.0, 0.8535533905932737, 0.5000000000000001, 0.14644660940672632]}}\n",
+  "native_proposal_sha256": "3eac810194941a4dabd4122bf22f409c10775248d353ac1afecd9b241abfeef1",
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "checks": {
+    "selection": "53 passed",
+    "local_resolution": "22 passed",
+    "rust_latest": "45 passed / five existing ignored",
+    "rust_msrv": "45 passed / five existing ignored",
+    "explicit_native_cli": "two passed on each Rust toolchain",
+    "source_integrity": "5/5 passed",
+    "docs": "2232 links passed"
+  },
+  "python_checks": {
+    "xor_ghz": {
+      "status": "passed",
+      "record_sha256": "53c2c97c96ebddef65289e5be67f87597e0e7561cbbe0eb74804b0adef861a25"
+    },
+    "arithmetic": {
+      "status": "passed",
+      "record_sha256": "75575fc91fe06632629cc12c8215611c31ab4d3d666884569c1740febb0377ea"
+    },
+    "qpe": {
+      "status": "passed",
+      "record_sha256": "bac657da5049f113db18e08d8471078f7bd6aff4d5dc3736a8b98e831c8bc09c"
+    },
+    "qpe_clients": {
+      "status": "passed",
+      "record_sha256": "0cb41296b5bdc73ba96f99ec97881741b1304420262185856c7989c2a20056af"
+    },
+    "instrument": {
+      "status": "passed",
+      "record_sha256": "1bf40b8f1c46044968285f8047fd5e53ae3be5bad3059e0fd7482a1fe3b4eca9"
+    }
+  }
+}

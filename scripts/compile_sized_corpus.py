@@ -173,6 +173,21 @@ class Parser:
         self.need(']')
         return values
 
+    def constructed_application(self, name):
+        """Keep constructor spellings contextual, like ordinary named calls."""
+        if self.peek() != name or self.tokens[self.index+1] != '(':
+            return False
+        depth = 0
+        for index in range(self.index+1, len(self.tokens)):
+            token = self.tokens[index]
+            if token == '(':
+                depth += 1
+            elif token == ')':
+                depth -= 1
+                if depth == 0:
+                    return self.tokens[index+1:index+2] == ['(']
+        return False
+
     def expr(self):
         if self.eat('controlled'):
             self.need('(')
@@ -184,14 +199,20 @@ class Parser:
             target = self.expr()
             self.need(')')
             return ('controlled', operation, [control, target])
-        if self.eat('adjoint'):
+        inverse = self.constructed_application('inverse')
+        if inverse or self.peek() == 'adjoint':
+            self.index += 1
             self.need('(')
             name = self.name()
             definition = self.definition(name)
             if definition is None or '::' not in definition:
                 raise SourceError('adjoint requires an ordinary unitary definition')
             sizes = self.static_arguments()
-            self.need(',')
+            if inverse:
+                self.need(')')
+                self.need('(')
+            else:
+                self.need(',')
             arg = self.expr()
             self.need(')')
             return ('adjoint', definition, sizes, [arg])
@@ -248,16 +269,22 @@ class Parser:
         return ('var', name)
 
     def operation(self):
-        if self.eat('repeat_op'):
+        power = self.peek() == 'power' and self.tokens[self.index+1] == '('
+        if power or self.peek() == 'repeat_op':
+            self.index += 1
             self.need('(')
+            if power:
+                child = self.operation()
+                self.need(',')
             # Exponentiation is a bounded operation count, never a size expression.
             count = self.nat()
             if self.eat('^'):
                 if count != ('number', 2):
                     raise SourceError('power counts require literal base two')
                 count = ('pow2', self.nat(atomic=True))
-            self.need(',')
-            child = self.operation()
+            if not power:
+                self.need(',')
+                child = self.operation()
             self.need(')')
             return ('repeat', count, child)
         name = self.name()

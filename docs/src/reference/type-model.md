@@ -86,7 +86,7 @@ The surface follows three distinct roles. A `q` construct, such as `qif` or
 `qfor`, explicitly supplies coherent control or a quantum-owner fold. `Q<A>`
 marks quantum ownership even in ordinary syntax such as `let`, a function
 argument or an explicit call. Unmarked constructs operate according to their
-ordinary/static rules: an ordinary `if` requires `Bit`, not `Q<Bit>`, and a
+ordinary/const rules: an ordinary `if` requires `Bit`, not `Q<Bit>`, and a
 static fold cannot inspect quantum state. A prefix alone grants no operation
 access, effect or evidence. The conceptual `match`/`qmatch` distinction follows
 the same rule, but does not admit pattern forms before their own specification
@@ -499,7 +499,7 @@ or a new constitutional guarantee.
 
 ### Opaque Basis specialization in the selected profile
 
-The common grammar admits `static A: Basis`, `Q<A>` and `Op<A>`. A's identity
+The common grammar admits `const A: Basis`, `Q<A>` and `Op<A>`. A's identity
 is its resolved declaration binder, not its spelling or an inferred width.
 An abstract ordinary A may be copied; its quantum owner may only be moved and
 returned or passed to operations justified by explicit access constraints.

@@ -91,27 +91,33 @@ def probes(artifact, n, m, j=1, d=3, provider='phase'):
                 maximum_error=maximum, executed_instructions=gates)
 
 
+def replace_required(source, before, after):
+    if before not in source:
+        raise AssertionError('source mutation no longer matches: '+before)
+    return source.replace(before, after)
+
+
 def source_rejections(source):
     cases = [
-        ('missing-controlled-access', source['estimation'].replace(', Controlled(U)', '')),
-        ('apply-is-not-controlled', source['estimation'].replace('Controlled(U)', 'Apply(U)')),
-        ('adjoint-is-not-controlled', source['estimation'].replace('Controlled(U)', 'Adjoint(U)')),
-        ('missing-access-empty-loop', source['estimation'].replace(', Controlled(U)', '').replace('0..m carry', '0..0 carry')),
-        ('missing-access-zero-repeat', source['estimation'].replace(', Controlled(U)', '').replace('2^k,U', '0,U')),
-        ('unknown-access-parameter', source['estimation'].replace('Controlled(U)', 'Controlled(V)')),
-        ('duplicate-access', source['estimation'].replace('Controlled(U)', 'Controlled(U), Controlled(U)')),
-        ('duplicate-operation-parameter', source['estimation'].replace('const U: Op<Bits<n>>', 'const U: Op<Bits<n>>, const U: Op<Bits<n>>')),
-        ('alias-control', source['estimation'].replace('(control,target);', '(control,control);')),
-        ('capture-outside-carry', source['estimation'].replace('carry pair = (phase,target)', 'carry pair = phase')),
-        ('unbound-count', source['estimation'].replace('2^k,U', '2^missing,U')),
-        ('count-exponent-limit', source['estimation'].replace('2^k,U', '2^9,U')),
-        ('count-limit', source['estimation'].replace('2^k,U', '257,U')),
-        ('composed-count-limit', source['estimation'].replace('repeat_op(2^k,U)', 'repeat_op(256,repeat_op(2,U))')),
-        ('non-two-power-base', source['estimation'].replace('2^k,U', '3^k,U')),
-        ('ambiguous-power-suffix', source['estimation'].replace('2^k,U', '2^k+1,U')),
-        ('nonlinear-size', source['estimation'].replace('Q<Bits<m>>', 'Q<Bits<2^m>>')),
-        ('operation-shadow', source['estimation'].replace('let phase = hadamard_bits', 'let U = hadamard_bits')),
-        ('wrong-provider-type', source['estimation'].replace('Op<Bits<n>>', 'Op<Bits<n+1>>')),
+        ('missing-controlled-access', replace_required(source['estimation'], ', Controlled(U)', '')),
+        ('apply-is-not-controlled', replace_required(source['estimation'], 'Controlled(U)', 'Apply(U)')),
+        ('adjoint-is-not-controlled', replace_required(source['estimation'], 'Controlled(U)', 'Adjoint(U)')),
+        ('missing-access-empty-loop', replace_required(replace_required(source['estimation'], ', Controlled(U)', ''), '0..m carry', '0..0 carry')),
+        ('missing-access-zero-repeat', replace_required(replace_required(source['estimation'], ', Controlled(U)', ''), 'U,2^k', 'U,0')),
+        ('unknown-access-parameter', replace_required(source['estimation'], 'Controlled(U)', 'Controlled(V)')),
+        ('duplicate-access', replace_required(source['estimation'], 'Controlled(U)', 'Controlled(U), Controlled(U)')),
+        ('duplicate-operation-parameter', replace_required(source['estimation'], 'const U: Op<Bits<n>>', 'const U: Op<Bits<n>>, const U: Op<Bits<n>>')),
+        ('alias-control', replace_required(source['estimation'], '(control,target);', '(control,control);')),
+        ('capture-outside-carry', replace_required(source['estimation'], 'carry pair = (phase,target)', 'carry pair = phase')),
+        ('unbound-count', replace_required(source['estimation'], 'U,2^k', 'U,2^missing')),
+        ('count-exponent-limit', replace_required(source['estimation'], 'U,2^k', 'U,2^9')),
+        ('count-limit', replace_required(source['estimation'], 'U,2^k', 'U,257')),
+        ('composed-count-limit', replace_required(source['estimation'], 'power(U,2^k)', 'power(power(U,2),256)')),
+        ('non-two-power-base', replace_required(source['estimation'], 'U,2^k', 'U,3^k')),
+        ('ambiguous-power-suffix', replace_required(source['estimation'], 'U,2^k', 'U,2^k+1')),
+        ('nonlinear-size', replace_required(source['estimation'], 'Q<Bits<m>>', 'Q<Bits<2^m>>')),
+        ('operation-shadow', replace_required(source['estimation'], 'let phase = hadamard_bits', 'let U = hadamard_bits')),
+        ('wrong-provider-type', replace_required(source['estimation'], 'Op<Bits<n>>', 'Op<Bits<n+1>>')),
     ]
     result = []
     for name, text_source in cases:
@@ -135,10 +141,10 @@ def source_rejections(source):
         ('wrong-provider-arity', source, {'U': Operation('evolution::evolve', (1,))}),
         ('false-provider-premise-at-zero', source | {
             'evolution': source['evolution'].replace('n >= 1', 'n >= 2'),
-            'estimation': source['estimation'].replace('2^k,U', '0,U')}, {'U': Operation('evolution::evolve', (1, 1, 3))}),
+            'estimation': replace_required(source['estimation'], 'U,2^k', 'U,0')}, {'U': Operation('evolution::evolve', (1, 1, 3))}),
         ('invalid-unused-provider', source | {
             'evolution': source['evolution'].replace('phase[j,d](bit)', 'phase[j,d](rest)'),
-            'estimation': source['estimation'].replace('0..m carry', '0..0 carry')}, {'U': Operation('evolution::evolve', (1, 1, 3))}),
+            'estimation': replace_required(source['estimation'], '0..m carry', '0..0 carry')}, {'U': Operation('evolution::evolve', (1, 1, 3))}),
     ]:
         try:
             compile_source(source_change['estimation'], 'estimate', dict(n=1, m=3), modules=source_change, operations=providers)
@@ -171,16 +177,16 @@ def main():
         artifacts[name] = compile_case(source | {'evolution': swap}, n, m)
         params[name] = (n, m, 1, 3, 'rotate')
     mutations = {
-        'wrong-power-order': source['estimation'].replace('2^k,U', '2^(m-1-k),U'),
-        'missing-high-power': source['estimation'].replace('0..m carry', '0..m-1 carry'),
-        'wrong-fourier-sign': source['estimation'].replace('adjoint(fourier[m],phase)', 'fourier[m](phase)'),
-        'missing-hadamards': source['estimation'].replace('hadamard_bits[m](phase)', 'phase'),
+        'wrong-power-order': replace_required(source['estimation'], 'U,2^k', 'U,2^(m-1-k)'),
+        'missing-high-power': replace_required(source['estimation'], '0..m carry', '0..m-1 carry'),
+        'wrong-fourier-sign': replace_required(source['estimation'], 'inverse(fourier[m])(phase)', 'fourier[m](phase)'),
+        'missing-hadamards': replace_required(source['estimation'], 'hadamard_bits[m](phase)', 'phase'),
     }
     for name, changed in mutations.items():
         artifacts[name] = compile_case(source | {'estimation': changed}, 1, 3)
     artifacts['wrong-provider-phase'] = compile_case(source, 1, 3, 3, 3)
     # Zero repeat retains a checked real provider, but changes the algorithm.
-    artifacts['zero-repeat'] = compile_case(source | {'estimation': source['estimation'].replace('2^k,U', '0,U')}, 1, 3)
+    artifacts['zero-repeat'] = compile_case(source | {'estimation': replace_required(source['estimation'], 'U,2^k', 'U,0')}, 1, 3)
     mutations['wrong-provider-phase'] = ''
     mutations['zero-repeat'] = ''
     malformed = {}

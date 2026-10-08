@@ -22,6 +22,9 @@ development milestones from the scope of their evidence.
   the same 310 outcomes and all existing ignored cases on both Rust toolchains.
   Select thirteen current corpus sources through a hash-bound `const` migration
   stage; retain original corpus bytes and share selection with Python clients.
+  Select canonical QPE `power` and curried `inverse` applications, preserving
+  small proposals and independent native/oracle checks. Reject stale negative
+  test mutation needles instead of silently leaving sources unchanged.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,
