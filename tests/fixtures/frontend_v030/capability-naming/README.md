@@ -28,3 +28,10 @@ including host preparation. The other 61 native groups were omitted from this
 local selection and remain required by hosted CI. The observation comparison
 retains root/dependency evidence and independent exact Kraus semantics. This
 subsequent record does not claim that later commits ran those local groups.
+
+The [instrument mutation record](instrument-mutation-validation.json) preserves
+the first-attempt hosted failure on `e2ad4dc5`: 66 native groups passed, while
+`sized-instrument` refused a mutation targeting the retired `Controlled(U)`
+substring. The corrected caller removes `Controllable(U)` and retains all
+15 rejected source cases. This isolated producer check does not replace the
+complete instrument comparison or a new exact-head hosted CI result.

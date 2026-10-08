@@ -58,7 +58,7 @@ def source_rejections(base):
         ('unitary-wrapper', 'measurement', 'pub observe fn', 'pub unitary fn'),
         ('unitary-initializer', 'initialization', 'pub iso fn', 'pub unitary fn'),
         ('iso-readout', 'readout', 'pub observe fn', 'pub iso fn'),
-        ('missing-access', 'measurement', ', Controlled(U)', ''),
+        ('missing-access', 'measurement', ', Controllable(U)', ''),
         ('wrong-classical-width', 'measurement', 'Bits<m>', 'Bits<m+1>'),
         ('drop-empty-owner', 'readout', 'let () = consume_empty(q);', ''),
         ('consume-nonempty', 'readout', 'let (bit,rest) = take_bit[n,0](q);', 'let () = consume_empty(q); let (bit,rest) = take_bit[n,0](q);'),
@@ -73,7 +73,7 @@ def source_rejections(base):
     ]
     rows = []
     for name, module, before, after in changes:
-        assert before in base[module]
+        assert before in base[module], (name, module, before)
         changed = base | {module:base[module].replace(before,after)}
         try:
             qpe(changed)
