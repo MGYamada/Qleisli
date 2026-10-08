@@ -25,7 +25,7 @@ use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z;
 classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning:Bit=phase_by(z_phase);
-unitary fn provider(q:Q<Bit>)->Q<Bit>{repeat_static(4,t,q)}
+unitary fn provider(q:Q<Bit>)->Q<Bit>{power(t,4)(q)}
 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 ";
 
@@ -370,7 +370,7 @@ fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
 
 #[test]
 fn canonical_inverse_checks_unused_zero_count_generic_access() {
-    for body in ["inverse(U)(q)", "inverse(repeat_op(0,U))(q)"] {
+    for body in ["inverse(U)(q)", "inverse(power(U,0))(q)"] {
         let text = format!(
             "// 日本語\r\npub unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
             requires Apply(U){{{body}}}"
@@ -451,7 +451,7 @@ fn assert_bind(operation: &StaticOp, source: &str, implementation: &str) {
 
 #[test]
 fn checked_constructor_retains_nested_static_trees_and_original_spans() {
-    let source = "// 日本語\r\nunitary fn client(q:Q<Bit>)->Q<Bit>{apply[tensor_op(then_op(inverse_op(checked_op(first,M)),repeat_op(2,checked_op(second,M))),controlled_op(checked_op(third,M)))](q)}";
+    let source = "// 日本語\r\nunitary fn client(q:Q<Bit>)->Q<Bit>{apply[tensor_op(then_op(inverse_op(checked_op(first,M)),power(checked_op(second,M),2)),controlled_op(checked_op(third,M)))](q)}";
     let tokens = lex(source).unwrap();
     let checked: Vec<_> = tokens
         .iter()
@@ -677,7 +677,7 @@ fn checked_operation_keeps_controlled_phase_and_exact_source_binding() {
         unitary fn pair[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
         requires Apply(U){{U(q)}}
         observe fn main()->(Bit,Bit){{
-          let q=pair[controlled_op(inverse_op(repeat_op(3,checked_op(provider,ZMeaning))))](join(h(init0()),x(init0())));
+          let q=pair[controlled_op(inverse_op(power(checked_op(provider,ZMeaning),3)))](join(h(init0()),x(init0())));
           let(c,q)=split(q); (measure_z(h(c)),measure_z(q))
         }}");
     let root = SourceRoot::new(&source);
@@ -812,7 +812,7 @@ fn selected_checked_constructor_retains_requests_and_checks_real_provider() {
     assert_eq!(instance.elaborate().unwrap_err().code(), "unsupported");
     for honest in [true, false] {
         let provider = if honest { "phase[1,1](q)" } else { "q" };
-        let text = source.replace("repeat_static(4,t,q)", provider).replace(
+        let text = source.replace("power(t,4)(q)", provider).replace(
             "use std::quantum::init0;",
             "use std::quantum::init0; use std::quantum::phase;",
         );
@@ -969,10 +969,8 @@ fn canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject() {
     assert!(compile_project(&SourceRoot::new(text).0).is_err());
     assert!(
         ParsedProgram::parse(sources(text))
-            .unwrap()
-            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
-            .unwrap()
-            .elaborate()
+            .and_then(|program| program.instantiate("main::f", BTreeMap::new(), BTreeMap::new()))
+            .and_then(|instance| instance.elaborate())
             .is_err()
     );
     let text = "use helper::power; pub unitary fn f(q:Q<Bit>)->Q<Bit>{power(q)}";

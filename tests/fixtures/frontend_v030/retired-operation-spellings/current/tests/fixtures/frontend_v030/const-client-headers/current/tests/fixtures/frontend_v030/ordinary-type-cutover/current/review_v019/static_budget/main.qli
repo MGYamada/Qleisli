@@ -1,0 +1,4 @@
+unitary fn p(q: Q<(Bit,Bit,Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit,Bit,Bit)> { q }
+unitary fn keep[const U: Op<(Bit,Bit,Bit,Bit,Bit)>](q: Q<(Bit,Bit,Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit,Bit,Bit)> { q }
+unitary fn client(q: Q<(Bit,Bit,Bit,Bit,Bit)>) -> Q<(Bit,Bit,Bit,Bit,Bit)> { keep[power(power(p,150),150)](q) }
+observe fn main() -> Bit { 0 }

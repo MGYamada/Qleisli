@@ -147,14 +147,14 @@ fn local_spent_names_expire_but_entry_spent_names_still_hide_functions() {
     for (call, expected_bit, diagnostic) in [
         ("flip(q)", true, "a local value is not callable"),
         (
-            "adjoint(flip,q)",
+            "inverse(flip)(q)",
             true,
             "static operation requires a function name, not a local value",
         ),
         (
-            "repeat_static(0,flip,q)",
+            "power(flip,0)(q)",
             false,
-            "static operation requires a function name, not a local value",
+            "a local or spent runtime value cannot be a static operation",
         ),
     ] {
         // A new branch-local flip is spent before the branch exits, and its

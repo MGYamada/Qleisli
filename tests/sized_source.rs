@@ -402,7 +402,7 @@ fn unreachable_branch_and_empty_fold_still_check_names_access_and_ownership() {
         "ownership",
     );
     reject(
-        "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { qfor static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(repeat_op(0,U))(c,q); } }",
+        "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { qfor static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(power(U,0))(c,q); } }",
         "access",
     );
     reject(
@@ -542,7 +542,7 @@ fn grouping_semicolons_and_count_precedence_match_the_source_contract() {
         "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let (x) = q; x }",
         "parse",
     );
-    let source = "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(repeat_op(2^(n+1),U))(c,q) }";
+    let source = "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(power(U,2^(n+1)))(c,q) }";
     ParsedProgram::parse(sources(source)).unwrap();
     reject(&source.replace("2^(n+1)", "2^n+1"), "parse");
     reject(&source.replace("2^(n+1)", "3^n"), "parse");
@@ -694,7 +694,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     );
     assert_eq!(error.message(), "a local value is not callable");
     let local_callee =
-        "use dep::g; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let g = q; let q = g; adjoint(g,q) }";
+        "use dep::g; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let g = q; let q = g; inverse(g)(q) }";
     let mut modules = sources(local_callee);
     modules.insert(
         "dep".into(),
@@ -703,7 +703,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     let error = ParsedProgram::parse(modules).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
-    let name_start = local_callee.rfind("adjoint(g,q)").unwrap() + "adjoint(".len();
+    let name_start = local_callee.rfind("inverse(g)(q)").unwrap() + "inverse(".len();
     assert_eq!(
         (error.span().start, error.span().end),
         (name_start, name_start + 1)
@@ -905,14 +905,14 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
         .instantiate("main::f", BTreeMap::new(), operations)
         .unwrap();
     assert_eq!(instance.elaborate().unwrap_err().code(), "limit");
-    for count in ["257", "2^9", "repeat_op(256,repeat_op(2,U))"] {
-        let op = if count.starts_with("repeat") {
+    for count in ["257", "2^9", "power(power(U,2),256)"] {
+        let op = if count.starts_with("power(") {
             count.into()
         } else {
-            format!("repeat_op({count},U)")
+            format!("power(U,{count})")
         };
         let main = format!(
-            "pub unitary fn f[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controlled(U) {{ controlled(repeat_op(0,{op}))(c,q) }}"
+            "pub unitary fn f[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controlled(U) {{ controlled(power({op},0))(c,q) }}"
         );
         let program = ParsedProgram::parse(BTreeMap::from([
             ("main".into(), main),
@@ -1069,7 +1069,7 @@ fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
         "limit"
     );
     let modules = BTreeMap::from([
-        ("main".into(),"use rotate::rotate; pub unitary fn f(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { controlled(repeat_op(0,rotate))(c,q) }".into()),
+        ("main".into(),"use rotate::rotate; pub unitary fn f(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) { controlled(power(rotate,0))(c,q) }".into()),
         ("rotate".into(),"use std::quantum::phase; pub unitary fn rotate(q: Q<Bit>) -> Q<Bit> { phase[1,3](q) }".into()),
     ]);
     let graph = ParsedProgram::parse(modules)
@@ -1162,7 +1162,7 @@ fn inverse_fourier_source_proposal(
     source: &str,
     n: u32,
 ) -> qleisli::frontend::compile::HierarchyProposal {
-    let client = "use fourier::fourier; pub unitary fn inverse[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n],q) }";
+    let client = "use fourier::fourier; pub unitary fn inverse[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { inverse(fourier[n])(q) }";
     ParsedProgram::parse(BTreeMap::from([
         ("fourier".into(), source.into()),
         ("client".into(), client.into()),

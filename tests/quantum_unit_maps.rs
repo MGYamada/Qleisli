@@ -1,6 +1,7 @@
 //! Independent exact Unit introduction/elimination equations and owner regressions.
 //! Native request checks and bounded execution do not prove source preservation.
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+mod common;
 
 use qleisli::contract::BasisType;
 use qleisli::contract::DEFAULT_EXACT_WORK;
@@ -12,10 +13,9 @@ use qleisli::interchange::{RootInterface, Version, finite_matrix, native};
 use qleisli::ir::{CircuitAction, RawOp};
 use std::collections::BTreeMap;
 use std::fmt::Write;
-use std::path::Path;
 
 fn read(path: &str) -> String {
-    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(path)).unwrap()
+    common::current_source_text(path)
 }
 fn study(name: &str) -> String {
     read(&format!(

@@ -293,7 +293,7 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
 
 #[test]
 fn direct_formal_adjoint_and_controlled_slots_are_usable() {
-    let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjoint(U){adjoint(U,q)} pub fn main()->Unit{()}";
+    let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjoint(U){inverse(U)(q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(inverse).0).unwrap();
     ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
 
@@ -374,17 +374,17 @@ fn direct_formal_adjoint_and_controlled_slots_are_usable() {
 
 #[test]
 fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
-    let inverse = "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){adjoint(U,q)} pub fn main()->Unit{()}";
+    let inverse = "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inverse(U)(q)} pub fn main()->Unit{()}";
     let finite_error = check_project(&SourceRoot::new(inverse).0).unwrap_err();
     assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
     assert_eq!(finite_error.message, "missing Adjoint operation access");
-    let target = inverse.rfind("adjoint(U,q)").unwrap();
+    let target = inverse.rfind("inverse(U)(q)").unwrap();
     assert_eq!(
         (finite_error.span.start, finite_error.span.end),
-        (target, target + "adjoint(U,q)".len())
+        (target, target + "inverse(U)(q)".len())
     );
     for (source, access, use_text) in [
-        (inverse, "Adjoint", "adjoint(U,q)"),
+        (inverse, "Adjoint", "inverse(U)(q)"),
         (
             "fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(U)(c,q)} pub fn main()->Unit{()}",
             "Controlled",
@@ -420,16 +420,16 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
         (
             "q:Q<Bit>",
             "Q<Bit>",
-            "if static 0 == 0 {q} else {adjoint(U,q)}",
+            "if static 0 == 0 {q} else {inverse(U)(q)}",
             "Adjoint",
-            "adjoint(U,q)",
+            "inverse(U)(q)",
         ),
         (
             "q:Q<Bit>",
             "Q<Bit>",
-            "qfor static i in 0..0 carry a=q {yield adjoint(U,a)}",
+            "qfor static i in 0..0 carry a=q {yield inverse(U)(a)}",
             "Adjoint",
-            "adjoint(U,a)",
+            "inverse(U)(a)",
         ),
         (
             "c:Q<Bit>,q:Q<Bit>",

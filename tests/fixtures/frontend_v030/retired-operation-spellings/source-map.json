@@ -1,0 +1,384 @@
+{
+  "format": "qleisli.retired-operation-source-map",
+  "version": 1,
+  "files": [
+    {
+      "before_path": "tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/controlled-four/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/controlled-four/main.qli",
+      "before_sha256": "ef2392b3b4cca8c29cc4a2ac196e238d0f3811e96275f81f5d1528e18a84cb97",
+      "current_sha256": "39ff242738b9f50450ce995d798a98a0d8fbea041c724dcbad60e76fcdbb1c10"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/controlled-four/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/authoring_sessions/quantum-unit-maps-v030/attempt-01/controlled-four/main.qli",
+      "before_sha256": "79da4e880e6b450eb47d2cedba2bfb50f288420fadbe6550c5eef409e701df68",
+      "current_sha256": "93f7f2bf30b6305e76c47d76b8c3bae2a97382dab04d0ea318e8a467403ef81d"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/main.qli",
+      "before_sha256": "b87bb77df02964ca8d133731a561ed660794ab0597aa173ea299a87f938eff18",
+      "current_sha256": "cc50b257d67c1869be173cf3bb73acf5020324e6e85b04856967e10afe3930e7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/main.qli",
+      "before_sha256": "3ab94bb97e0ea78d5fc17b22cd2c94522adaa07719a6949599f3c1da86c1612e",
+      "current_sha256": "51532178c27214e66707b06ad8432c14891ed8ba27a3a4ae8b4a8b32eb98469f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-inverse/main.qli",
+      "before_sha256": "fea7c5b7dc2019026c24081ebf4e34f737fc453a3a670b6c5e8e2d484436afe0",
+      "current_sha256": "1b62b38de072c5a09418b32490e041875422ea6e3d3a900d7c8d0eb83f909c16"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-inverse/main.qli",
+      "before_sha256": "4c30764c6f6c33617c0cfcd47f29f6d83171349aef0b4b02d06e578d363da45f",
+      "current_sha256": "c8e55d362e9864be05ee5f3c108d4c3d8f68eadb202476f0f71a136bb95d74ad"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli",
+      "before_sha256": "f554b77f1b2f709ca7064dabf5565f8a213bd599029533ac6d120c9bc0bfd0fb",
+      "current_sha256": "bffd0365b05147ab7a6877fdfeba910c7d192ad55af655730e94e693859827f0"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "before_sha256": "75de423df462574a27dec950e221f00f001fb01fbb2feb0c7d02eae851fef666",
+      "current_sha256": "ba1e88265c0df31c14c34be29edb1b056a4d0513978e6d53b112f5f437e9d784"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/attempt-01/repeated-bit.qli",
+      "before_sha256": "e6216a67a20365e71ece9a79911a85f3ba19aeaf9f64858c91e67fa0cf7cd3ad",
+      "current_sha256": "d0a90f5587264443ee2a4bb2ac3eedd1ae7ef849ad79bfaa78b6368f3bb39ffe"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli",
+      "before_sha256": "0144faa73816c622555756545576a6cac0d41a3b262fa6f3ded539ca507ca4a5",
+      "current_sha256": "a830b747b872e7432f3ef15e7f41402a9b7c558384180fef7cbc116ee4f3a8b4"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01/iterative.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01/iterative.qli",
+      "before_sha256": "3e6f4910be590fc5fa6fece297d4f2769b3ce58a4becce41786b3713aa354c5e",
+      "current_sha256": "b8e72633b3b626de7c878515811f4080b277c4af4625c6a69a79fa4c45b482cc"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
+      "before_sha256": "a10fc96c151e328bef6a8e5c8dc390cfabd9bd23b04f061f4ff3c7cb2d884006",
+      "current_sha256": "9519ed804c1f04bb7bdc7a48649a808b5b133f5ed10a9cd63037cf9a2ec4678f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/missing_feedback.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/missing_feedback.qli",
+      "before_sha256": "07bdbe850f250e127d0b780c3aea7b267c90daeb9887257121022d81c5f1e082",
+      "current_sha256": "48d01d2cb698f41c1758c495b3cb42b7585a747be4d9fadd5a3a0c488b0af6ca"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/swapped_weights.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/swapped_weights.qli",
+      "before_sha256": "608ca5d1030f89ced1075d5211d7551ae638c08e6f0dad06fbef6112b0daeb7b",
+      "current_sha256": "8ac762abcb759898afd91163951ef3f116a28409b22df596e69466edc812c6e8"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/missing_adjoint.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/missing_adjoint.qli",
+      "before_sha256": "dcd14e8d3270ff624e77400c855727a14fcba142d2a17796bdd53e948f4e4da1",
+      "current_sha256": "a51769842494613a1e2d91966246c2c7c105dd71520f4555fa816d2e40670693"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/operation_round_trip.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/operation_round_trip.qli",
+      "before_sha256": "f634247a73603873d261cbbc394eb3405cb3083c9cae6486ef2237dba067a723",
+      "current_sha256": "8e57099c6989a229a84bf9756378bdd39378e7678a7cafaca46ce06ff359db34"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
+      "before_sha256": "74a8dcd924628969dcc4d9278e9a81ed5742302b21931d9ea056b7928c728e12",
+      "current_sha256": "f333d045b4a1f882614096e4ea79434dcbc64af91c42d24cd1845baa0a999551"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplification.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplification.qli",
+      "before_sha256": "e9d0b4ebdd794c6944386c7e52859283a31ebe7d029a4311b4caaf04f36ed51d",
+      "current_sha256": "1a9db390a3a6d939351b06e8a380f48d680cfe5e0ea2cb91da2acd118d3a1463"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/operations.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources/operations.qli",
+      "before_sha256": "78623525dc52d11ca909cf50ef78f0e64de7bb9ff1fcceb64c01e11f25ada631",
+      "current_sha256": "7f25076ade58e5e4ca8d05384811e2a1f6e7fdb1f74ab308321678c77ed2bf05"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/quantum-unit-source/current/operations.qli",
+      "before_sha256": "5f988d5a1c68786ca50a02f674631d6a0471b7fee255e0a320106187ee266511",
+      "current_sha256": "d0a8427ba4740af5e86eec01c13edb84687a13cf049a375a7e6bbe9da7d03e9e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/faults/phase3_forward_qft.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/faults/phase3_forward_qft.qli",
+      "before_sha256": "e7d66681ac69cf6e5b00ee7c28e75a1c33b157fb368e9196f378a65c9f28d37b",
+      "current_sha256": "2def23aedcf5c7dd423a290710471e4f23367f435b71fa1265db8106fe17b8be"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t0.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t0.qli",
+      "before_sha256": "63b6fecf237785e902eefca1e522e87302c0d587defdfaba9cd9ee5a44a296d7",
+      "current_sha256": "e4b74a170e0e420024dec1bffe56cab904127bcb2f0b9c0c602272074d00c6d5"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t1.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t1.qli",
+      "before_sha256": "efbc54753319cdefb04713f4cc2370b1b31a9823f4833aafc12fd4a984e1b066",
+      "current_sha256": "acb74b58b5c9613af8df565bcfd08e6a49b9a6e610b500fd5202a0f804c94dfd"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t2.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t2.qli",
+      "before_sha256": "ce1eafb711cbc69561750eda3738529a1a593a2eb8b123248ac2c686198e83ac",
+      "current_sha256": "60eeb602960702a26487c5e89e6ef3bdf2ae1e100893de02fa785e2a9554321d"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t3.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t3.qli",
+      "before_sha256": "0aedb97914b902ae603d5b34226993eb30df47cd2d35a2f28f0e24507b4d9315",
+      "current_sha256": "2c21fd452c161e500396a3c9debfb4b39bee2bab4bb151ea854aa06599221774"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t4.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t4.qli",
+      "before_sha256": "6bec257eb4651e9a6eeb57639253b55cbde2a3238030edcfae59f29c6e7a68eb",
+      "current_sha256": "fdb53198cd502ca7781c141b66d58e3821cbad264b7c6a3fbaa85524475c71ea"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t5.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t5.qli",
+      "before_sha256": "9c9532fbec98cb14b18684c5fabe82b40d09689199c55a89855f31df01d32c2c",
+      "current_sha256": "de32aa4cd8eff08f80688ac5cdfa8292b13016ef1b32be251512ad86496c1a10"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t6.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t6.qli",
+      "before_sha256": "6be45c038a57dd626e0e1f15d61ada72cfab76bf9e45495087d400c3e0101bb6",
+      "current_sha256": "4b670c67b9529e6e1657c982768034c607b8d4c9463cfc1b599dc7ff31ce6cdd"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t7.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t7.qli",
+      "before_sha256": "8eea5d1fbefa373a38474eb6b2e59875a4d0da518ebaee8c09b790a949889130",
+      "current_sha256": "619ce6345d25ce4d2e3318e663002c104919eb6415b4c1004e2aa264e9628e48"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xx.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xx.qli",
+      "before_sha256": "b7a5ca39c4d344a834ff4106a3cbf1f0bc6b12666f1c166abd9e678e5e4908c7",
+      "current_sha256": "e0266f0c196fb8db4fbfb41caff22244fdbfd72980d1138aff34f81b82c715e6"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xy.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xy.qli",
+      "before_sha256": "88cb1c86e6bff01a7dc1acb971ef868bca5e67218836d0c04d0e4de6e342205e",
+      "current_sha256": "e7887d68b9ec63176f7af63371871600b204454a83e749a3e5dcc924a8cbad49"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xz.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xz.qli",
+      "before_sha256": "50014f4d0731e3cbc33925601be8dcd3c77943657abe19e667c96b7271996e1e",
+      "current_sha256": "f45d82e0c53969b0410f0d6283f8a9000d66da81edaab745206796624938bbec"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yx.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yx.qli",
+      "before_sha256": "67a7d9edc6b9f117544ad76ff99014e61f5361ae0334440619975d9d4c68e56b",
+      "current_sha256": "93f1b74854555c12ac96737f66b6116ab6e85533ef480fe27500da534a3cd2c1"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yy.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yy.qli",
+      "before_sha256": "8980662ed8178aecc583ee349a10254d682e0a1740aff4d9edfe5d8626c795c7",
+      "current_sha256": "3b47b22c0d6b3dd7b20ce2edb731594bb80754cc98c657b4548ccf2f630da3f9"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yz.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yz.qli",
+      "before_sha256": "48c4573ac70e089a4eb8059e59fa1ebe224afad6da05b56f57155f6eae500c9d",
+      "current_sha256": "0fac7b4234fa735283d8e446ce1c6233690a5b4c735673c0f07ca1ab7256392e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zx.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zx.qli",
+      "before_sha256": "3450cf4070b865a033b9799c03b1aff4b093d263e702e5a74456df89603934aa",
+      "current_sha256": "d7ee8a821b090fa0945d0fdbd824067d5eefad3f2bc4ffb1297093a54dd7c228"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zy.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zy.qli",
+      "before_sha256": "7216fe120995ae49bf3f799dcf8de74cc142d5981ad2be6b6c1919df141dd096",
+      "current_sha256": "6ef78442144c51f26df6005bcb2135eb735b8e1b1ec9bf0eae22f828196e0f9a"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zz.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zz.qli",
+      "before_sha256": "e138597517933acf60d05ee0b229bbfa145cbbbaec5ae706580633fb86923d3a",
+      "current_sha256": "70d5c57e01f18f98d1630961aea9d8d952f75d14e84626d199503d8b837db0c6"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t0.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t0.qli",
+      "before_sha256": "005a0ecf91e335f9a4d4dbdec7d216590560d3ff6ddb7c3cdcbc559e33a7d036",
+      "current_sha256": "ed73f5cb05fe28206fb3dd5884307cd1875ef6c6da6870436afccae26597c3aa"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t1.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t1.qli",
+      "before_sha256": "744afadb77db60647360942a2e4fe8606ddcc561828c8f4e181a53b3af53e74e",
+      "current_sha256": "b032c69a1943edb130b779f44a1839730d1e34f5d10b8dd0c94c94a3b1a68ba1"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t2.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t2.qli",
+      "before_sha256": "f2b3ebb8498eadf93f7643f4a3b0546d0065640c227e52f4f88fbedc4d0e26f1",
+      "current_sha256": "41ee925d0edd93825c7c12fe792383c51423071cf1ed3ec742634a8d838ee07c"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t3.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t3.qli",
+      "before_sha256": "c37e0eb111ef4299c917819783cebc8a3b68d9526eed04e44ee8b7db6cd4cc44",
+      "current_sha256": "b803a4d538daffc64232ff5f47c7ff81b3e82b412f87bd4425ac743352177c2e"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t4.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t4.qli",
+      "before_sha256": "c243fe9d009d24356348650ad559c9b2bb7736d37878896c313ee9d680d9a59a",
+      "current_sha256": "8485791f6c7afea7a15bf2259d8a6a6d7f60af4483e4e4986e571af2284b345f"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t5.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t5.qli",
+      "before_sha256": "1475653afdc4209717c5fc1d38fe9dbd0c14f2a558d17b1ae407cdf65ce6172d",
+      "current_sha256": "82e1069673d228c17ed0c22852a09060ba2c7b6f7676945e2020422125746aa7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t6.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t6.qli",
+      "before_sha256": "af05ca94ad89cea311dfaebe3765958d784496d5abcc9c3627af19daf023ac42",
+      "current_sha256": "8b036d9d737c4aaad86f559b1f9eac5b614ca8455004cc8f89ec09a6a92d29f3"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t7.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t7.qli",
+      "before_sha256": "d5200c83bf8c387ecb5d6d9cbfebeb22e08d8173e3255e4f4b1789198751ce5a",
+      "current_sha256": "9b5c69785902ebbd1d6ffa73b2c5eaca749249a94dfc5c2f961de440c55886e4"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/exact_phase.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/exact_phase.qli",
+      "before_sha256": "3393963f149466aebfd0eb6fab732c110f93bda5e381657f5ede7f5f6b30a764",
+      "current_sha256": "6ca107a6f8e72845be098f12fc6550993eb23a8ef1074c21917678fe4e12ceac"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_1000/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_1000/main.qli",
+      "before_sha256": "594f057818998d8b416aa873755d834422e758fe03ff4695da352b066649a35c",
+      "current_sha256": "cbd7b499125d9b083b1ab3327f3799a630c5191713a39a3766c4476ef810f6e4"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_300/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_300/main.qli",
+      "before_sha256": "ac6590da47dffa1b19885cb35b67995ddb30f30ec845bad7f23dc2e8993d5afc",
+      "current_sha256": "3e455c017957558cf4cb4a50a21b97c0527d019403e7fff058a0377a3f3f7ba6"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/repeat_512/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/repeat_512/main.qli",
+      "before_sha256": "af8f1d7be9894ea82b264cf33946c86b239c285d49be0e81398a2e2110f1492f",
+      "current_sha256": "78783ef5e9ff95c1d6e77ee45aeb7ee947b86f7488aadbfda8a1996256860f19"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/quantum-unit-source/current/unused-zero-provider.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/quantum-unit-source/current/unused-zero-provider.qli",
+      "before_sha256": "867f0d27ca60c6d7dd72b4da1793efbd9b838ee2ed262da4c926c2e8ae6a90a3",
+      "current_sha256": "d4bd685500f7f7c912bd1fb5133227b5cc067f726fa393fb0d99bb488348074a"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/product_reassociation.qli",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/ordinary-type-cutover/qli_authoring/accepted/product_reassociation.qli",
+      "before_sha256": "384505919ec3db1c79a2e1a625416737abc20eab8aa50faa175983e02a3fdbac",
+      "current_sha256": "4e6744b101edfaa4d369764e14336e0338f86086fb1758885d38d8417cf09a71"
+    }
+  ],
+  "projects": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/dephased",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/dephased",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "before_sha256": "8c2bcb3e42bfe5b4d4f4ecd35e0a1a3aa41b4b7548d16d383ddf18c9f07fb1cc",
+          "current_sha256": "5b9e3c5bda555fbf9ef1817acadf10e8e65f29bf6ae6ec52d37b1559b0bfd9c8"
+        },
+        {
+          "path": "gates.qli",
+          "before_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1",
+          "current_sha256": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/first_source",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/first_source",
+      "files": [
+        {
+          "path": "estimation.qli",
+          "before_sha256": "8c2bcb3e42bfe5b4d4f4ecd35e0a1a3aa41b4b7548d16d383ddf18c9f07fb1cc",
+          "current_sha256": "5b9e3c5bda555fbf9ef1817acadf10e8e65f29bf6ae6ec52d37b1559b0bfd9c8"
+        },
+        {
+          "path": "gates.qli",
+          "before_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+          "current_sha256": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf"
+        },
+        {
+          "path": "main.qli",
+          "before_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb",
+          "current_sha256": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/first_source",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/first_source",
+      "files": [
+        {
+          "path": "main.qli",
+          "before_sha256": "4487395b5fe640d927bd1b1d743db646ec261cd901051ff181b675e94812c446",
+          "current_sha256": "c799c6732f7478033c7db74e2b9c60c26191de0d9f983a186343b9c7bfb0592c"
+        }
+      ]
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/wrong_reversal",
+      "current_path": "tests/fixtures/frontend_v030/retired-operation-spellings/current/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qft/wrong_reversal",
+      "files": [
+        {
+          "path": "main.qli",
+          "before_sha256": "f97394685df8b3f098853b817716bcba36c9e1b72a80e12ee9b593274cac0069",
+          "current_sha256": "01e6c7c7a1eab252a34f5c8316d1b81f15d5ec45f255b7e589457dd6787d54f5"
+        }
+      ]
+    }
+  ]
+}

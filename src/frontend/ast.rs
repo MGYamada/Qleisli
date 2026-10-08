@@ -344,3 +344,15 @@ pub enum Count {
     Natural(Natural),
     Power(Natural),
 }
+
+/// The direct literal named-function repetition profile. This classification
+/// does not grant static-provider access or validate the count or target.
+pub(crate) fn named_literal_repetition(operation: &StaticOp) -> Option<(&Ident, i128, Span)> {
+    let StaticOpKind::Repeat(Count::Natural(count), target) = &operation.kind else {
+        return None;
+    };
+    let (StaticOpKind::Name(name), NatKind::Number(number)) = (&target.kind, &count.kind) else {
+        return None;
+    };
+    Some((name, *number, count.span))
+}

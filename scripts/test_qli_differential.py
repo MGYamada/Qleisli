@@ -78,7 +78,7 @@ def reference_source(width, sequence):
 
 def rotation_source(name, basis):
     return name if basis == "z" else (f"h({name})" if basis == "x" else
-                                     f"h(adjoint(t,adjoint(t,{name})))")
+                                     f"h(inverse(t)(inverse(t)({name})))")
 
 
 def rotate(state, axis, basis):
@@ -99,7 +99,7 @@ def make_case(rng, index):
     constructors = [
         ("then_op(pa,pb)", [("h", [0]), ("t", [0]), ("x", [0]), ("z", [0])]),
         ("inverse_op(pa)", [("t_inverse", [0]), ("h", [0])]),
-        ("repeat_op(2,pa)", [("h", [0]), ("t", [0])] * 2),
+        ("power(pa,2)", [("h", [0]), ("t", [0])] * 2),
         ("conjugate_op(pa,pb)", [("t_inverse", [0]), ("h", [0]), ("x", [0]), ("z", [0]), ("h", [0]), ("t", [0])]),
     ]
     for step in range(rng.randrange(3, 9)):
@@ -126,7 +126,7 @@ def make_case(rng, index):
         ("t" if name == "t_inverse" else name, axes, inverse ^ (name == "t_inverse"))
         for _ in range(count) for name, axes in (list(reversed(word)) if inverse else word)
     ]
-    expression = "adjoint(w,q)" if inverse else f"repeat_static({count},w,q)"
+    expression = "inverse(w)(q)" if inverse else f"power(w,{count})(q)"
     definitions = f"""unitary fn w(q:Q<{ty}>)->Q<{ty}>{{{split_source(width)}{''.join(lines)}{join_source(width)}}}
 unitary fn u(q:Q<{ty}>)->Q<{ty}>{{{expression}}}
 unitary fn identity(q:Q<{ty}>)->Q<{ty}>{{q}}

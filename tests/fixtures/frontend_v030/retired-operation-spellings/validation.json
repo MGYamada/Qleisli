@@ -1,0 +1,131 @@
+{
+  "format": "qleisli.operation-retirement-validation",
+  "version": 1,
+  "issue": 33,
+  "baseline_commit": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+  "status": "scoped-repair; final-declared-runs-pending",
+  "before_code_contracts": [
+    "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6054024270",
+    "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6057358194",
+    "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6057741977"
+  ],
+  "checks": {
+    "repository-final": {
+      "status": "passed",
+      "commands": 34,
+      "seconds": 352.87338954152074,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "62b5769d10923ce5ba6f28ef473d8d20d93b727aa4413aa2aeeebf6b65b56fb7"
+      },
+      "report_sha256": "ec0e9486f09d145ecb52755fd08a6b6bf2462003ac89eeabc85c40e6cadb1205"
+    },
+    "contracts-final": {
+      "status": "passed",
+      "commands": 9,
+      "seconds": 12.180925501976162,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "62b5769d10923ce5ba6f28ef473d8d20d93b727aa4413aa2aeeebf6b65b56fb7"
+      },
+      "report_sha256": "6199b358c70a478c48a5e09af0ebf497bfa8e4d795019a3dcc79f04775e24e62"
+    },
+    "semantics-final": {
+      "status": "passed",
+      "commands": 3,
+      "seconds": 134.87660708394833,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "62b5769d10923ce5ba6f28ef473d8d20d93b727aa4413aa2aeeebf6b65b56fb7"
+      },
+      "report_sha256": "3a1a3d174d8ddbc7a453f28b283b834bf2f24f03f174c8c89fa4b7652a949660"
+    },
+    "book-final": {
+      "status": "passed",
+      "commands": 3,
+      "seconds": 0.7118588340235874,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "62b5769d10923ce5ba6f28ef473d8d20d93b727aa4413aa2aeeebf6b65b56fb7"
+      },
+      "report_sha256": "8ab82a02e37cc7155fcf697616b323d31504733b89ac0db1272a962ddce85f9e"
+    },
+    "msrv-lint-final": {
+      "status": "passed",
+      "commands": 3,
+      "seconds": 140.540536750108,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "bf6c66ad714097f0ff95b59e0ed6907d11f8c5142f2270b64b144342564ca047"
+      },
+      "report_sha256": "4c0b5763f9e8a36f9b0643e25756704dd6eddcf89da3f99156fc5aa4dadabc14"
+    },
+    "source-integrity-expectations-final": {
+      "status": "passed",
+      "commands": 5,
+      "seconds": 17.983853333978914,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "bc5212aaa5da6ec3e32973503aa1e5f70e7b49a512b702bca3b076fc500ec255"
+      },
+      "report_sha256": "fde8202b8a42673766dbfc19aa535732e1a740f62ff8fa89d18e6c0ff87a532d"
+    },
+    "latest-lint-final": {
+      "status": "passed",
+      "commands": 4,
+      "seconds": 134.64355020818766,
+      "binding": {
+        "head": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+        "working_inputs_sha256": "bc5212aaa5da6ec3e32973503aa1e5f70e7b49a512b702bca3b076fc500ec255"
+      },
+      "report_sha256": "ef0bc7579bd5c60126a8b7f9f5545dd6e3acf101816dd7f7c33c1861c8fdd5a0"
+    }
+  },
+  "failed_full_runs": {
+    "rust-latest-reader-final": {
+      "status": "failed",
+      "report_sha256": "02b21abb11c7da98219848dbc34a4587aa7ed31fbcf790665106c21baf4b6caf",
+      "reason": "review_v027 expected legacy local-name text for canonical power",
+      "ownership_cases": 4000,
+      "ownership_seconds": 365.02,
+      "ownership_status": "passed within failed overall run"
+    },
+    "rust-msrv-reader-final": {
+      "status": "failed",
+      "report_sha256": "868c68d4b8e692a0f5ace24a921c266045a567ca914b99876d38beaac6834cc5",
+      "reason": "review_v027 expected legacy local-name text for canonical power",
+      "ownership_cases": 4000,
+      "ownership_seconds": 366.48,
+      "ownership_status": "passed within failed overall run"
+    }
+  },
+  "remaining_targets_diagnostic": {
+    "targets": 34,
+    "passed_tests": 258,
+    "failed_tests": 1,
+    "ignored_tests": 15,
+    "reason": "source_scope had the same legacy-text expectation; the diagnostic is not full validation"
+  },
+  "repaired_focused_checks": {
+    "latest": "review_v027 7/7 and source_scope 3/3 passed",
+    "actual_msrv": "same 10/10 passed with actual Rust/Cargo 1.85.0",
+    "preserved": "TypeMismatch rejection and original name byte spans; no production diagnostic change"
+  },
+  "native_preflight": {
+    "status": "failed; both tasks not-run",
+    "reason": "runner requires a clean checkout",
+    "seconds": 0.34688816603738815,
+    "scope": "No native preparation or comparison executed; retry after local commit without weakening this gate"
+  },
+  "bounded_comparison": "migration-comparison.json",
+  "pending": [
+    "Final declared full rust-latest and rust-msrv groups after all repairs",
+    "Clean-checkout native sized-arithmetic and sized-qpe-clients",
+    "Current exact-commit hosted full CI, package/install and proof lanes",
+    "Full Issue33 acceptance audit"
+  ],
+  "protected": "No Lean/native/Core/IR/primitive/edition/dependency change, generic QFT work, acceptance cache, capacity increase, new interpretation or guarantee admission. Existing first sources, oracles and artifacts remain unchanged; QS/PR/RS/EXACT broader duties remain pending.",
+  "completion": "24/111 (21.62%); #33 remains open",
+  "chronology": "Repository/contracts/semantics/book precede the final reader and test-diagnostic repairs. MSRV lint/research precedes the last source_scope expected-text edit. Latest lint/research and source-integrity use bc5212aa working inputs after both expected-text repairs. These are accurately bounded local runs; the final declared clean-commit validation and hosted CI are pending.",
+  "local_name_diagnostic": "local-name-diagnostic.json"
+}

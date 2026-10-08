@@ -158,12 +158,12 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;adjoint(f,f)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;inverse(f)(f)}",
             "static operation requires a function name, not a local value",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;repeat_static(0,f,f)}",
-            "static operation requires a function name, not a local value",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;power(f,0)(f)}",
+            "a local or spent runtime value cannot be a static operation",
         ),
         (
             "unitary fn bad(q:Q<Bit>)->Q<Bit>{if 1{let f=q;f(f)}else{q}}",

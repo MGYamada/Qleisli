@@ -475,6 +475,9 @@ impl Parser {
 
     fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
         let start = self.current().span;
+        if self.at(&TokenKind::RepeatOp) {
+            return Err(self.retired_operation_syntax());
+        }
         if self.word("power")
             && self
                 .tokens
@@ -544,7 +547,6 @@ impl Parser {
         if !matches!(
             self.current().kind,
             TokenKind::BindOp
-                | TokenKind::RepeatOp
                 | TokenKind::InverseOp
                 | TokenKind::ControlledOp
                 | TokenKind::ThenOp
@@ -563,11 +565,6 @@ impl Parser {
                     implementation,
                     meaning: self.ident()?,
                 }
-            }
-            TokenKind::RepeatOp => {
-                let count = self.repetition_count()?;
-                self.expect(&TokenKind::Comma)?;
-                StaticOpKind::Repeat(count, Box::new(self.static_op()?))
             }
             TokenKind::InverseOp => StaticOpKind::Inverse(Box::new(self.static_op()?)),
             TokenKind::ControlledOp => StaticOpKind::Controlled(Box::new(self.static_op()?)),
@@ -1330,47 +1327,7 @@ impl Parser {
             return self.apply_contract(start.span);
         }
         if self.at(&TokenKind::Adjoint) || self.at(&TokenKind::RepeatStatic) {
-            let start = self.bump();
-            self.expect(&TokenKind::LParen)?;
-            let count = if start.kind == TokenKind::RepeatStatic {
-                let count = match &self.current().kind {
-                    TokenKind::Zero => 0,
-                    TokenKind::One => 1,
-                    TokenKind::Natural(digits) if !digits.starts_with('0') => digits
-                        .parse::<u16>()
-                        .ok()
-                        .filter(|n| *n <= 4096)
-                        .ok_or_else(|| {
-                            self.error("static repetition exceeds the 4096-count limit")
-                        })?,
-                    _ => return Err(self.error("expected canonical static natural number")),
-                };
-                self.bump();
-                self.expect(&TokenKind::Comma)?;
-                Some(count)
-            } else {
-                None
-            };
-            let operation = self.static_op()?;
-            self.expect(&TokenKind::Comma)?;
-            let input = Box::new(self.expr()?);
-            let end = self.expect(&TokenKind::RParen)?;
-            let kind = if let Some(count) = count {
-                ExprKind::RepeatStatic {
-                    count,
-                    function: match operation.kind {
-                        StaticOpKind::Name(name) => name,
-                        _ => return Err(self.error("repeat_static requires a function name")),
-                    },
-                    input,
-                }
-            } else {
-                ExprKind::Adjoint { operation, input }
-            };
-            return Ok(Expr {
-                kind,
-                span: start.span.cover(end.span),
-            });
+            return Err(self.retired_operation_syntax());
         }
         if let Some(start) = self.consume(&TokenKind::Qif) {
             return self.quantum_if(start);
@@ -1388,6 +1345,16 @@ impl Parser {
             return self.with_computed(with_token);
         }
         self.expr_atom()
+    }
+
+    fn retired_operation_syntax(&self) -> ParseError {
+        let message = match self.current().kind {
+            TokenKind::Adjoint => "`adjoint(U, q)` is retired; use `inverse(U)(q)`",
+            TokenKind::RepeatOp => "`repeat_op(k, U)` is retired; use `power(U, k)`",
+            TokenKind::RepeatStatic => "`repeat_static(k, U, q)` is retired; use `power(U, k)(q)`",
+            _ => unreachable!("only retired operation tokens call this diagnostic"),
+        };
+        self.error(message)
     }
 
     // Keep operation-construction temporaries out of every recursive dispatch

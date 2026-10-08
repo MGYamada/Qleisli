@@ -23,9 +23,8 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
     let imports = "use std::quantum::{init0,h,t}; use std::observe::measure_z;
         unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}";
     for &count in counts {
-        let source = format!(
-            "{imports} observe fn main()->Bit{{measure_z(repeat_static({count},ht,init0()))}}"
-        );
+        let source =
+            format!("{imports} observe fn main()->Bit{{measure_z(power(ht,{count})(init0()))}}");
         root.write("main.qli", &source);
         let program = compile_project(&root.0).unwrap();
         let actual = run_closed(&program, SimulationLimits::default()).unwrap();
@@ -55,7 +54,7 @@ fn th_repetition(counts: &[usize], inline_count: usize) {
             }
         }
     }
-    for body in ["repeat_static(0,missing,q)", "repeat_static(0,bad,q)"] {
+    for body in ["power(missing,0)(q)", "power(bad,0)(q)"] {
         root.write("main.qli", &format!("{imports} observe fn bad(q:Q<Bit>)->Bit{{measure_z(q)}} unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"));
         assert!(check_project(&root.0).is_err());
     }

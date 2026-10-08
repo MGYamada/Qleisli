@@ -101,7 +101,7 @@ successful common judgment. The current constructors retain these rules:
 | `tensor_op(U,V)` | An ordered packed basis `(A,B)`; no implicit join of separate owners. |
 | `inverse_op(U)` | Exchanges the description's Apply/Adjoint availability; execution requires the transferred access. Mathematical unitarity alone supplies no API. |
 | `controlled_op(U)` | Constructs a packed `(Bit,A)` description whose access derives from U's Controlled availability; use still needs the corresponding path and retains phase. |
-| `repeat_op(n,U)` | A checked supported static count and the child's obligations, including when n is zero. |
+| `power(U,n)` | A checked supported static count and the child's obligations, including when n is zero. |
 | `conjugate_op(C,U)` | Exact common basis; access derives from C's Apply and Adjoint availability together with the corresponding access to U. |
 | `checked_op(implementation, Meaning)` | The existing declaration-identifier form and exact Meaning obligation described below. |
 
@@ -111,7 +111,7 @@ Meaning refinements such as `Op<A,M>` keep their current Meaning slot; the
 second slot is not a general codomain. This chapter admits no `Op<A,B>` arrow
 extension or general user-defined static builder.
 
-`then_op`, `tensor_op`, `inverse_op`, `controlled_op`, `repeat_op` and
+`then_op`, `tensor_op`, `inverse_op`, `controlled_op`, `power` and
 `conjugate_op` currently drop an attached Meaning refinement in the common
 description judgment rather than prove automatic refinement transport.
 Constructing a description is distinct from obtaining executable access to it.

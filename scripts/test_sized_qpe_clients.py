@@ -206,7 +206,7 @@ def main():
       'wrong-modular-direction': (base|{'modular':base['modular'].replace('take_bit[n,n-1]','take_bit[n,0]').replace('put_bit[n,0]','put_bit[n,n-1]')},('order',3,2,1,3)),
       'missing-preparation': (base|{'amplitude':base['amplitude'].replace('prepare[n,j,d](target)','target')},('amplitude',1,3,1,3)),
       'wrong-reflection-sign': (base|{'amplification':negative_sign},('amplitude',1,3,1,3)),
-      'wrong-conjugation': (base|{'amplification':base['amplification'].replace('adjoint(prepare[n,j,d],q)','prepare[n,j,d](q)')},('amplitude',1,3,1,3)),
+      'wrong-conjugation': (base|{'amplification':replace_required(base['amplification'],'inverse(prepare[n,j,d])(q)','prepare[n,j,d](q)')},('amplitude',1,3,1,3)),
       'shared-qpe-fault-order': (base|{'estimation':replace_required(base['estimation'],'U,2^k','U,0')},('order',3,2,1,3)),
       'shared-qpe-fault-amplitude': (base|{'estimation':replace_required(base['estimation'],'U,2^k','U,0')},('amplitude',1,3,1,3)),
     }

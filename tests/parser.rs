@@ -27,7 +27,7 @@ fn static_operation_errors_point_to_the_unconsumed_token_or_eof() {
         assert_eq!(error.message, "expected a static operation description");
         assert_eq!(error.span, Span::new(prefix.len(), source.len()));
     }
-    let source = format!("{prefix}repeat_op(0,");
+    let source = format!("{prefix}power(");
     let error = parse_module(&source).unwrap_err();
     assert_eq!(error.message, "expected a static operation description");
     assert_eq!(error.span, Span::new(source.len(), source.len()));
@@ -37,13 +37,13 @@ fn static_operation_errors_point_to_the_unconsumed_token_or_eof() {
 fn all_static_constructor_token_prefixes_parse_without_panicking() {
     for operation in [
         "checked_op(u,m)",
-        "repeat_op(0,u)",
+        "power(u,0)",
         "inverse_op(u)",
         "controlled_op(u)",
         "then_op(u,v)",
         "tensor_op(u,v)",
         "conjugate_op(u,v)",
-        "then_op(checked_op(u,m),controlled_op(inverse_op(repeat_op(2,v))))",
+        "then_op(checked_op(u,m),controlled_op(inverse_op(power(v,2))))",
     ] {
         let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ g[{operation}](q) }}");
         check_token_prefixes(&source, operation);
@@ -828,7 +828,7 @@ fn common_token_stream_includes_sized_punctuation_without_trivia_joining() {
 #[test]
 fn common_natural_and_count_syntax_keeps_precedence_and_source_spans() {
     use qleisli::frontend::ast::{Count, NatKind, StaticOpKind, StaticParamKind};
-    let source = "pub unitary fn f[const n:Nat,const U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { adjoint(repeat_op(2^(n+1),U),q) }";
+    let source = "pub unitary fn f[const n:Nat,const U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { inverse(power(U,2^(n+1)))(q) }";
     let ast = parse_module(source).unwrap();
     assert!(matches!(
         ast.decls[0].static_params[0].kind,
@@ -887,5 +887,64 @@ fn retired_static_parameter_headers_report_the_marker_and_const_migration() {
         let start = source.find("static").unwrap();
         assert_eq!(error.span, Span::new(start, start + "static".len()));
         check_token_prefixes(&source.replace("static", "const"), "migrated header");
+    }
+}
+
+#[test]
+fn retired_operation_spellings_report_the_original_token_and_migration() {
+    for (body, token, message) in [
+        (
+            "adjoint(U,q)",
+            "adjoint",
+            "`adjoint(U, q)` is retired; use `inverse(U)(q)`",
+        ),
+        (
+            "g[repeat_op(2,U)](q)",
+            "repeat_op",
+            "`repeat_op(k, U)` is retired; use `power(U, k)`",
+        ),
+        (
+            "repeat_static(2,U,q)",
+            "repeat_static",
+            "`repeat_static(k, U, q)` is retired; use `power(U, k)(q)`",
+        ),
+        (
+            "inverse(U)(adjoint(U,q))",
+            "adjoint",
+            "`adjoint(U, q)` is retired; use `inverse(U)(q)`",
+        ),
+        (
+            "g[inverse_op(repeat_op(2,U))](q)",
+            "repeat_op",
+            "`repeat_op(k, U)` is retired; use `power(U, k)`",
+        ),
+        (
+            "if 0 {q} else {repeat_static(0,U,q)}",
+            "repeat_static",
+            "`repeat_static(k, U, q)` is retired; use `power(U, k)(q)`",
+        ),
+    ] {
+        // A later declaration, multibyte comment and CRLF must not shift spans.
+        for prefix in ["", "// 位相\r\nunitary fn earlier(q:Q<Bit>)->Q<Bit>{q}\r\n"] {
+            let source = format!("{prefix}unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
+            let error = parse_module(&source).unwrap_err();
+            let start = source.find(token).unwrap();
+            assert_eq!(
+                error.span,
+                Span::new(start, start + token.len()),
+                "{source}"
+            );
+            assert_eq!(error.message, message);
+        }
+    }
+    // Refuse the old keyword even when its argument list is incomplete.
+    for body in ["adjoint(", "repeat_static(", "g[repeat_op("] {
+        let source = format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}");
+        assert!(
+            parse_module(&source)
+                .unwrap_err()
+                .message
+                .contains("is retired")
+        );
     }
 }

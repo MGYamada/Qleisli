@@ -264,7 +264,7 @@ fn operation_request(entry: &str) -> Vec<u8> {
             (before, after, body)
         }
         "eight" => {
-            // The source explicitly calls apply[repeat_op(8,U)], so preserve
+            // The source explicitly calls apply[power(U,8)], so preserve
             // the inner function boundary and the outer ordinary call.
             let inner_before = unit(102);
             let inner_after = unit(107);
@@ -626,7 +626,7 @@ fn unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices
 
 #[test]
 fn canonical_inverse_unit_scalar_retains_independent_reference_request() {
-    let text = source("operations").replace("adjoint(U,q)", "inverse(U)(q)");
+    let text = source("operations");
     assert!(text.contains("inverse(U)(q)"));
     let graph = parsed(&text)
         .instantiate(
@@ -1120,6 +1120,60 @@ fn prior_finite_control_exposes_the_same_unit_scalar_without_using_sized_as_orac
 }
 
 #[test]
+fn literal_power_keeps_complete_runtime_groups_and_reference_phase() {
+    let original = read(
+        "tests/fixtures/frontend_v030/retired-operation-spellings/runtime-group-probe/main.qli",
+    );
+    let coefficients = input(2);
+    for count in [0, 1, 2] {
+        let text = original.replace("power(pair,2)", &format!("power(pair,{count})"));
+        let source = elaborate(&text, "main::entry", BTreeMap::new());
+        let proposal = source.lower().unwrap();
+        let checked = kernel().inspect_native(proposal.payload()).unwrap();
+        // The specified operator is Z on axis 0 and H on axis 1. Compute
+        // its action independently, retaining two external reference values.
+        let expected = if count == 1 {
+            (0..coefficients.len())
+                .map(|i| {
+                    let a = coefficients[i & !2];
+                    let b = coefficients[i | 2];
+                    let h_sign = if i & 2 == 0 { 1.0 } else { -1.0 };
+                    let z_sign = if i & 1 == 0 { 1.0 } else { -1.0 };
+                    std::array::from_fn(|j| {
+                        z_sign * (a[j] + h_sign * b[j]) * std::f64::consts::FRAC_1_SQRT_2
+                    })
+                })
+                .collect::<Vec<_>>()
+        } else {
+            coefficients.clone()
+        };
+        close(
+            &checked
+                .execute_pure(&coefficients, 2, limits())
+                .unwrap()
+                .amplitudes,
+            &expected,
+        );
+    }
+    for text in [
+        original.replace("power(pair,2)((a,b))", "power(pair,0)((a,a))"),
+        original.replace("power(pair,2)((a,b))", "power(pair,0)((a,(b,)))"),
+        "unitary fn pair(a:Q<Bit>,b:Bit)->(Q<Bit>,Bit){(a,b)}
+         pub unitary fn entry(a:Q<Bit>,b:Bit)->(Q<Bit>,Bit){power(pair,0)((a,b))}"
+            .into(),
+        "use std::quantum::init0; use std::observe::discard;
+         observe fn pair(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){discard(a);(init0(),b)}
+         unitary fn unused(a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>){power(pair,0)((a,b))}"
+            .into(),
+    ] {
+        assert!(
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).is_err(),
+            "{text}"
+        );
+    }
+}
+
+#[test]
 fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
     let prelude = "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}";
     for (body, width) in [
@@ -1127,7 +1181,7 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
         ("inverse(oracle)(q)", 1),
         ("controlled(oracle)(c,q)", 2),
         (
-            "let(c,q)=controlled(repeat_op(1,oracle))(c,q);(c,adjoint(oracle,q))",
+            "let(c,q)=controlled(power(oracle,1))(c,q);(c,inverse(oracle)(q))",
             2,
         ),
     ] {
@@ -1441,7 +1495,7 @@ fn canonical_power_zero_width_scalar_and_control_keep_exact_phase() {
             &expected,
         );
     }
-    let text = source("operations").replace("repeat_op(4,U)", "power(U,4)");
+    let text = source("operations");
     let graph = parsed(&text)
         .instantiate(
             "main::controlled_four",

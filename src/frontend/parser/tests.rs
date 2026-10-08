@@ -161,7 +161,7 @@ fn contextual_naturals_pass_through_specialization_and_operation_counts() {
         }
         for count in [name.to_owned(), format!("2^{name}")] {
             let source = format!(
-                "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Apply(U), Adjoint(U) {{ adjoint(repeat_op({count},U),q) }}"
+                "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Apply(U), Adjoint(U) {{ inverse(power(U,{count}))(q) }}"
             );
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())]))
                 .unwrap_or_else(|error| panic!("{source}\n{error}"));

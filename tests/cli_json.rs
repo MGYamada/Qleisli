@@ -78,7 +78,7 @@ fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
 fn truncated_static_arguments_emit_one_located_json_parse_error() {
     for source in [
         "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
-        "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[repeat_op(0,",
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[power(",
     ] {
         let root = SourceRoot::new(source);
         let end = source.len();
@@ -98,6 +98,70 @@ fn truncated_static_arguments_emit_one_located_json_parse_error() {
                 )
             );
         }
+    }
+}
+
+#[test]
+fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup() {
+    for (body, token, replacement) in [
+        ("adjoint(U,q)", "adjoint", "inverse(U)(q)"),
+        ("g[repeat_op(2,U)](q)", "repeat_op", "power(U, k)"),
+        ("repeat_static(2,U,q)", "repeat_static", "power(U, k)(q)"),
+    ] {
+        let source = format!("// 位相\r\nunitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
+        let root = SourceRoot::new(&source);
+        let kernel = root.0.join("absent");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            // If parsing accidentally probes/spawns the checker, record it.
+            root.write(
+                "absent",
+                "#!/bin/sh\nprintf called > \"$0.called\"\nexit 91\n",
+            );
+            std::fs::set_permissions(&kernel, std::fs::Permissions::from_mode(0o700)).unwrap();
+        }
+        let start = source.find(token).unwrap();
+        let end = start + token.len();
+        let column = source[source.find('\n').unwrap() + 1..start]
+            .chars()
+            .count()
+            + 1;
+        for command in ["check", "run"] {
+            for json in [false, true] {
+                let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                process
+                    .arg(command)
+                    .arg(&root.0)
+                    .arg(format!("--lean-kernel={}", kernel.display()));
+                if json {
+                    process.arg("--format=json");
+                }
+                let output = process.output().unwrap();
+                assert_eq!(output.status.code(), Some(1));
+                let text =
+                    String::from_utf8(if json { output.stdout } else { output.stderr }).unwrap();
+                assert!(
+                    text.contains("is retired") && text.contains(replacement),
+                    "{text}"
+                );
+                if json {
+                    assert!(text.contains("\"code\":\"parse\""), "{text}");
+                    assert!(
+                        text.contains(&format!(
+                            "\"start\":{start},\"end\":{end},\"line\":2,\"column\":{column}"
+                        )),
+                        "{text}"
+                    );
+                } else {
+                    assert!(
+                        text.contains(&format!("main.qli:2:{column}: parse:")),
+                        "{text}"
+                    );
+                }
+            }
+        }
+        assert!(!kernel.with_file_name("absent.called").exists());
     }
 }
 

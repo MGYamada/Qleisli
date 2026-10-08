@@ -1250,7 +1250,7 @@ mod tests {
     #[test]
     fn access_replay_rejects_native_valid_inverse_order_phase_and_control_frame_substitutions() {
         let source = elaborate(
-            "use std::quantum::{h,phase};unitary fn turn(q:Q<Bit>)->Q<Bit>{h(phase[1,3](q))} pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(adjoint(turn,q),r)}",
+            "use std::quantum::{h,phase};unitary fn turn(q:Q<Bit>)->Q<Bit>{h(phase[1,3](q))} pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(inverse(turn)(q),r)}",
             "main::caller",
         );
         let phase = crate::ir::CircuitStep {

@@ -286,7 +286,7 @@ fn certified_functions_support_adjoint_and_coherent_control() {
             with_computed(q,predicate,t) {{ |d,a| (d,h(h(t(a)))) }}
         }}
         observe fn main() -> (Bit,Bit) {{
-            let q = adjoint(phase,phase(h(init0())));
+            let q = inverse(phase)(phase(h(init0())));
             let (c,tgt) = qif(h(init0()),x(init0())) {{ 0 => identity, 1 => phase }};
             discard(tgt);
             (measure_z(h(q)),measure_z(h(c)))
@@ -325,7 +325,7 @@ fn certified_source_checks_step_width_and_recursion_limits() {
     rejects(
         &format!(
             "{IMPORTS} unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
-                with_computed(q,predicate,identity) {{ |d,a| (d,repeat_static(1025,h,a)) }}
+                with_computed(q,predicate,identity) {{ |d,a| (d,power(h,1025)(a)) }}
             }}"
         ),
         ErrorCode::Limit,

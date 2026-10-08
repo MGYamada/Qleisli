@@ -29,6 +29,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.classical_manifest = self.root / "classical-source-map.json"
         self.qfor_manifest = self.root / "qfor-source-map.json"
         self.client_const_manifest = self.root / "const-client-source-map.json"
+        self.retired_manifest = self.root / "retired-operation-source-map.json"
+        self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
         self.application_manifest = self.root / "application-source-map.json"
         self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
@@ -59,7 +61,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("QFOR_MAP", self.qfor_manifest.name),
                             ("CONST_MAP", self.const_manifest.name),
                             ("APPLICATION_MAP", self.application_manifest.name),
-                            ("CLIENT_CONST_MAP", self.client_const_manifest.name)):
+                            ("CLIENT_CONST_MAP", self.client_const_manifest.name),
+                            ("RETIRED_OPERATION_MAP", self.retired_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -405,6 +408,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.classical_manifest = self.root / "classical-map.json"
         self.qfor_manifest = self.root / "qfor-map.json"
         self.client_const_manifest = self.root / "const-client-source-map.json"
+        self.retired_manifest = self.root / "retired-operation-source-map.json"
+        self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
         self.application_manifest = self.root / "application-source-map.json"
         self.application_manifest.write_text(json.dumps(dict(format="qleisli.operation-application-source-map", version=1, files=[], projects=[])))
@@ -424,7 +429,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("QFOR_MAP", self.qfor_manifest.name),
                             ("CONST_MAP", self.const_manifest.name),
                             ("APPLICATION_MAP", self.application_manifest.name),
-                            ("CLIENT_CONST_MAP", self.client_const_manifest.name)):
+                            ("CLIENT_CONST_MAP", self.client_const_manifest.name),
+                            ("RETIRED_OPERATION_MAP", self.retired_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -686,7 +692,7 @@ class RepositoryMigrationTests(unittest.TestCase):
         import re
         data = fixtures._read_map(fixtures.ROOT / fixtures.CLIENT_CONST_MAP)
         projects = fixtures._projects(data, "before_path", "const client")
-        prior_maps = fixtures._migration_maps()[:-1]
+        prior_maps = fixtures._migration_maps(stop_before=fixtures.CLIENT_CONST_MAP)
         marker = re.compile(rb'\bstatic(?= [A-Za-z_]\w*\s*:)')
         expected_projects = set()
         for entry in fixtures._read_map(fixtures.MAP)['projects']:
@@ -779,7 +785,57 @@ class RepositoryMigrationTests(unittest.TestCase):
                                         b'const', before.read_bytes())
             self.assertGreater(count, 0)
             self.assertEqual(current.read_bytes(), transformed)
+            self.assertEqual(fixtures.current_source_file(before),
+                             fixtures.current_source_file(current))
+
+    def test_retired_operation_map_preserves_all_other_source_tokens_and_manifests(self):
+        import re
+        # Independent token-level check of the permitted source edits. Hashes
+        # alone cannot tell whether a selected derivative changed the algorithm.
+        def tokens(text):
+            return re.findall(r"//[^\n]*|[A-Za-z_][A-Za-z_0-9]*|[0-9]+|[^\s]", text)
+        def canonical(items):
+            result, index = [], 0
+            while index < len(items):
+                name = items[index]
+                if name not in ("adjoint", "repeat_op", "repeat_static"):
+                    result.append(name); index += 1; continue
+                self.assertEqual(items[index + 1], "(")
+                depth, args, argument = 0, [], []
+                index += 2
+                while True:
+                    token = items[index]; index += 1
+                    if token == ")" and depth == 0:
+                        args.append(canonical(argument)); break
+                    if token == "," and depth == 0:
+                        args.append(canonical(argument)); argument = []; continue
+                    argument.append(token)
+                    if token in ("(", "[", "{"): depth += 1
+                    elif token in (")", "]", "}"): depth -= 1
+                self.assertEqual(len(args), 3 if name == "repeat_static" else 2)
+                if name == "adjoint":
+                    result += ["inverse", "(", *args[0], ")", "(", *args[1], ")"]
+                else:
+                    result += ["power", "(", *args[1], ",", *args[0], ")"]
+                    if name == "repeat_static": result += ["(", *args[2], ")"]
+            return result
+        data = fixtures._read_map(fixtures.ROOT / fixtures.RETIRED_OPERATION_MAP)
+        files = fixtures._file_entries(data, "retired operation")
+        projects = fixtures._projects(data, "before_path", "retired operation")
+        self.assertTrue(files and projects)
+        for entry in files.values():
+            before, current = (fixtures.ROOT / entry[key] for key in ("before_path", "current_path"))
             self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertEqual(tokens(current.read_text()), canonical(tokens(before.read_text())))
+            self.assertNotEqual(before.read_bytes(), current.read_bytes())
+        for entry in projects.values():
+            before, current = (fixtures.ROOT / entry[key] for key in ("before_path", "current_path"))
+            fixtures._verify_pair(before, current, entry, "before_sha256")
+            for item in entry["files"]:
+                old, new = before / item["path"], current / item["path"]
+                if old.suffix == ".qli":
+                    self.assertEqual(tokens(new.read_text()), canonical(tokens(old.read_text())))
+                else: self.assertEqual(old.read_bytes(), new.read_bytes())
 
     def test_qpe_application_map_changes_only_adopted_operator_forms(self):
         data = json.loads((fixtures.ROOT / fixtures.APPLICATION_MAP).read_text())

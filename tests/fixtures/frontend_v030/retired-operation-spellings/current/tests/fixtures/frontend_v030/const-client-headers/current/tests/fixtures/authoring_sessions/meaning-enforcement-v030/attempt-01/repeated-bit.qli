@@ -1,0 +1,7 @@
+use std::quantum::x;
+classical fn flip(b:Bit)->Bit{not b}
+meaning Flip:Bit=permutation_by(flip);
+pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}
+unitary fn inner[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+pub unitary fn outer[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[power(U,2)](q)}
+pub unitary fn unused[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}

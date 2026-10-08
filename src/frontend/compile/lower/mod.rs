@@ -557,6 +557,76 @@ impl Lowerer<'_, '_> {
         )
     }
 
+    // Canonical direct power and inverse share the existing finite transform
+    // path. A zero count still checks the real body before repeating its steps.
+    fn named_transform(
+        &mut self,
+        module: &str,
+        span: Span,
+        function: &Ident,
+        count: Option<u16>,
+        input: &Expr,
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let value = self.expr(module, input, env)?;
+        let slot = self.quantum(module, input.span, &value, false)?;
+        let basis = self.raw.registers[&slot].basis.clone();
+        let access = if count.is_none() {
+            Access::Adjoint
+        } else {
+            Access::Apply
+        };
+        let operation = self.operation_steps(module, function, &basis, env, access)?;
+        let is_operation = operation.is_some();
+        let mut steps = match operation {
+            Some(steps) => steps,
+            None => self.static_steps(module, function, &basis, env)?,
+        };
+        let cost = total_size(steps.iter().map(super::circuit::size));
+        let mut expected = self.target_meaning(module, function, &basis)?;
+        match count {
+            None => {
+                self.compiler.charge(module, span, cost)?;
+                if !is_operation {
+                    super::circuit::invert(&mut steps);
+                }
+                expected = expected
+                    .map(|m| m.adjoint(&mut self.compiler.exact_work))
+                    .transpose()
+                    .map_err(|e| self.compiler.op_error(module, span, e.into()))?;
+            }
+            Some(count) => {
+                self.compiler.charge(
+                    module,
+                    span,
+                    cost.saturating_add(1).saturating_mul(usize::from(count)),
+                )?;
+                if is_operation
+                    && steps.len().saturating_mul(usize::from(count))
+                        > crate::contract::MAX_CONTRACT_STEPS
+                {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Limit,
+                        "operation repetition exceeds 1024 steps",
+                    ));
+                }
+                // Bind one body to its independently extracted meaning.
+                // Validate serial copies structurally, without constructing U^n.
+                self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
+                let body = steps;
+                steps = (0..count).flat_map(|_| body.iter().cloned()).collect();
+                transforms::check_repeated_steps(&body, &steps, count)
+                    .map_err(|e| self.compiler.op_error(module, span, e))?;
+                expected = None;
+            }
+        }
+        self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
+        self.apply_circuit(slot, steps);
+        Ok(value)
+    }
+
     fn expr(&mut self, module: &str, expr: &Expr, env: &mut Env) -> Result<Value, CompileError> {
         self.compiler.tick(module, expr.span)?;
         if self.depth >= MAX_DEPTH {
@@ -619,6 +689,27 @@ impl Lowerer<'_, '_> {
                 )
             }
             ExprKind::ApplyStatic { operation, input } => {
+                if let Some((function, count, count_span)) = named_literal_repetition(operation) {
+                    let count = u16::try_from(count)
+                        .ok()
+                        .filter(|count| *count <= 4096)
+                        .ok_or_else(|| {
+                            self.error(
+                                module,
+                                count_span,
+                                ErrorCode::Limit,
+                                "static repetition exceeds the 4096-count limit",
+                            )
+                        })?;
+                    return self.named_transform(
+                        module,
+                        expr.span,
+                        function,
+                        Some(count),
+                        input,
+                        env,
+                    );
+                }
                 let value = self.expr(module, input, env)?;
                 let slot = self.quantum(module, input.span, &value, false)?;
                 let basis = self.raw.registers[&slot].basis.clone();
@@ -661,70 +752,11 @@ impl Lowerer<'_, '_> {
                         ));
                     }
                 };
-                let value = self.expr(module, input, env)?;
-                let slot = self.quantum(module, input.span, &value, false)?;
-                let basis = self.raw.registers[&slot].basis.clone();
-                let access = if matches!(expr.kind, ExprKind::Adjoint { .. }) {
-                    Access::Adjoint
-                } else {
-                    Access::Apply
+                let count = match expr.kind {
+                    ExprKind::RepeatStatic { count, .. } => Some(count),
+                    _ => None,
                 };
-                let operation = self.operation_steps(module, function, &basis, env, access)?;
-                let is_operation = operation.is_some();
-                let mut steps = match operation {
-                    Some(steps) => steps,
-                    None => self.static_steps(module, function, &basis, env)?,
-                };
-                let cost = total_size(steps.iter().map(super::circuit::size));
-                let mut expected = self.target_meaning(module, function, &basis)?;
-                match &expr.kind {
-                    ExprKind::Adjoint { .. } => {
-                        self.compiler.charge(module, expr.span, cost)?;
-                        if !is_operation {
-                            super::circuit::invert(&mut steps);
-                        }
-                        expected = expected
-                            .map(|m| m.adjoint(&mut self.compiler.exact_work))
-                            .transpose()
-                            .map_err(|e| self.compiler.op_error(module, expr.span, e.into()))?;
-                    }
-                    ExprKind::RepeatStatic { count, .. } => {
-                        self.compiler.charge(
-                            module,
-                            expr.span,
-                            cost.saturating_add(1).saturating_mul(usize::from(*count)),
-                        )?;
-                        if is_operation
-                            && steps.len().saturating_mul(usize::from(*count))
-                                > crate::contract::MAX_CONTRACT_STEPS
-                        {
-                            return Err(self.error(
-                                module,
-                                expr.span,
-                                ErrorCode::Limit,
-                                "operation repetition exceeds 1024 steps",
-                            ));
-                        }
-                        // Bind one body to its independently extracted meaning.
-                        // Validate serial copies structurally, without constructing U^n.
-                        self.check_transformed(
-                            module,
-                            expr.span,
-                            &basis,
-                            &steps,
-                            expected.as_ref(),
-                        )?;
-                        let body = steps;
-                        steps = (0..*count).flat_map(|_| body.iter().cloned()).collect();
-                        transforms::check_repeated_steps(&body, &steps, *count)
-                            .map_err(|e| self.compiler.op_error(module, expr.span, e))?;
-                        expected = None;
-                    }
-                    _ => unreachable!(),
-                }
-                self.check_transformed(module, expr.span, &basis, &steps, expected.as_ref())?;
-                self.apply_circuit(slot, steps);
-                Ok(value)
+                self.named_transform(module, expr.span, function, count, input, env)
             }
             ExprKind::QuantumIf {
                 control,

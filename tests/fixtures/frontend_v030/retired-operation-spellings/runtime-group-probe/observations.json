@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "0f701cf77308fb2f5d1c2f40c749cf2daabc86ba",
+  "before_binary_sha256": "2bf467c7b5541c3f3c8fecd3d8c9e4938db9f81dc249304550f21af968297c77",
+  "unrepaired_binary_sha256": "1c0cab2ffbb6c035a6389d7143404561282ac47e2c99d3628b4630148aec7a84",
+  "source_sha256": "09168026d6807e0a2716eecaa27f1de8aee7e0bb0a76514e1dc13f59d04a3e65",
+  "command": [
+    "qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/private/tmp/qleisli-operator-runtime-group-probe/main.qli",
+    "--format=json"
+  ],
+  "initial_exit_codes": {
+    "before": 1,
+    "unrepaired_after": 1
+  },
+  "manifest_repaired_exit_codes": {
+    "before": 0,
+    "unrepaired_after": 1
+  },
+  "repair_contract": "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6057741977",
+  "scope": "The first observer runs lacked the manifest. Only its addition changed before the real comparison; source bytes remain identical. The later source checker repair preserves the already published runtime-group contract, not a new capability or guarantee.",
+  "checker_repaired_exit_code": 0,
+  "checker_repaired_binary_sha256": "4abf9439216a8724709e18026918dd5a23bfdfcc5c8f86c88d778dfc3784364f"
+}

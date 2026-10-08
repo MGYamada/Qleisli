@@ -268,9 +268,9 @@ closed operation-provider profile, exact basis and Adjoint evidence. Literal
 count, six-bit operation, step and shared work limits remain; named inverses
 retain their existing sealed-gate path. A zero power still checks the original
 provider/Meaning and requested access, and evaluates its runtime input once.
-During this unreleased migration, `adjoint(U,q)` remains temporary input with
-the same rule. Its retirement and the remaining operation-builder spellings
-are unfinished [#33](https://github.com/MGYamada/Qleisli/issues/33) work.
+`adjoint(U,q)` is retired and rejects at its constructor token with a
+suggestion to use `inverse(U)(q)`. The two stages do not infer an inverse
+capability or construct a runtime callable.
 
 The canonical repetition description is `power(U, count)`; its forward runtime
 application is `power(U, count)(q)`. Operation comes first, count second. The
@@ -278,6 +278,26 @@ original-source AST retains the complete description, count and byte spans;
 no generated function name or anonymous source loop replaces the application.
 The runtime argument is evaluated once, including for count zero, and the
 operation requires Apply access even in zero-count and unused bodies.
+Direct runtime `power(name, literal)(q)` retains the existing complete runtime
+group judgment for ordinary functions and the opaque basis/Apply rule for
+operation parameters. For a sealed gate it retains the former named-function
+repetition profile, checking the exact single-owner basis and Unitary effect.
+The literal must be in `0..=4096`, even in unused bodies. The finite adapter
+checks the original body and serial copies through the existing native gates;
+actual operation parameters retain their 1024-step limit and shared work
+accounting. This form preserves the former `repeat_static` contract. The
+following descriptions still require the ordinary checked provider contract;
+wrap a sealed gate in an ordinary function for these uses:
+
+```qli
+f[power(t, 0)](q)
+controlled(power(t, 0))(c, q)
+inverse(power(t, 0))(q)
+```
+
+Symbolic/compound counts retain the general operation-provider and
+closed-binding rules.
+
 `controlled(power(U, count))(c, q)` and `inverse(power(U, count))(q)` retain the
 complete repeated provider and require their actual additional access.
 
@@ -289,10 +309,9 @@ explicitly as the constructor. The finite profile supports literal counts in
 `0..=4096` subject to its existing step/work limits; symbolic counts and `2^e`
 require the selected concrete profile and complete natural bindings.
 
-`repeat_op(count, U)` remains a temporary migration spelling for the same
-static description; `repeat_static(count, U, q)` migrates to
-`power(U, count)(q)`. Active-client migration and rejection of those old
-spellings remain separate, unfinished #33/#250 work. This is not execution of a
+`repeat_op(count, U)` and `repeat_static(count, U, q)` are retired and reject
+at their constructor tokens. Migrate them to `power(U, count)` and
+`power(U, count)(q)`, respectively. This is not execution of a
 host loop. An ordinary count is a natural expression. The special count form
 `2^e` is admitted here with a natural atom exponent; use parentheses for a
 compound exponent, for example `2^(n+1)`. It is not a general natural-expression

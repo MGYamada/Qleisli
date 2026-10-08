@@ -50,7 +50,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     for source in [
         "unitary fn f[const U:Op<Bit>,](q:Q<Bit>)->Q<Bit>{q}",
         "classical fn f[const U:Op<Bit>](b:Bit)->Bit{b}",
-        "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(01,u)](q)}",
+        "unitary fn f(q:Q<Bit>)->Q<Bit>{g[power(u,01)](q)}",
         "unitary fn f(q:Q<Bit>)->Q<Bit>{inverse_op(u)}",
         "unitary fn meaning(q:Q<Bit>)->Q<Bit>{q}",
     ] {
@@ -59,7 +59,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     // These are existing sized spellings now represented by the common AST.
     // Complete source checking resolves the callee before concrete count limits.
     parse_module("unitary fn f(q:Q<Bit>)->Q<Bit>{g[](q)}").unwrap();
-    let source = "unitary fn f(q:Q<Bit>)->Q<Bit>{g[repeat_op(4097,u)](q)}";
+    let source = "unitary fn f(q:Q<Bit>)->Q<Bit>{g[power(u,4097)](q)}";
     parse_module(source).unwrap();
     let root = SourceRoot::new(source);
     assert_eq!(
@@ -129,7 +129,7 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
             (measure_z(h(r)),measure_z(q))
         }}"
     ));
-    for body in ["z(q)", "repeat_static(4,t,q)"] {
+    for body in ["z(q)", "power(t,4)(q)"] {
         root.write(
             "provider.qli",
             &format!(
@@ -176,11 +176,11 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
 #[test]
 fn all_constructors_match_independent_full_operator_specifications() {
     for (description, expected) in [
-        ("inverse_op(phase)", "adjoint(t,q)"),
+        ("inverse_op(phase)", "inverse(t)(q)"),
         ("then_op(had,phase)", "t(h(q))"),
-        ("repeat_op(3,phase)", "t(t(t(q)))"),
-        ("repeat_op(0,phase)", "q"),
-        ("conjugate_op(phase,had)", "t(h(adjoint(t,q)))"),
+        ("power(phase,3)", "t(t(t(q)))"),
+        ("power(phase,0)", "q"),
+        ("conjugate_op(phase,had)", "t(h(inverse(t)(q)))"),
     ] {
         check(&format!(
             "unitary fn actual(q:Q<Bit>)->Q<Bit>{{use_op[{description}](q)}}
@@ -202,7 +202,7 @@ fn all_constructors_match_independent_full_operator_specifications() {
             "let (a,b)=split(q); let (a,b)=qif(a,b){0=>ident,1=>inv}; join(a,b)",
         ),
     ] {
-        check(&format!("unitary fn inv(q:Q<Bit>)->Q<Bit>{{adjoint(t,q)}}
+        check(&format!("unitary fn inv(q:Q<Bit>)->Q<Bit>{{inverse(t)(q)}}
             unitary fn pair_op[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Apply(U){{U(q)}}
             unitary fn actual(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{pair_op[{description}](q)}}
             unitary fn expected(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{{body}}}
@@ -217,7 +217,7 @@ fn control_conjugation_needs_no_controlled_basis_change_and_keeps_phase() {
         unitary fn ctrl[const V:Op<Bit>,const W:Op<Bit>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
         requires Apply(V),Adjoint(V),Controlled(W){pair_apply[controlled_op(conjugate_op(V,W))](q)}
         unitary fn pair_apply[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Apply(U){U(q)}
-        unitary fn full(q:Q<Bit>)->Q<Bit>{t(middle(adjoint(t,q)))}
+        unitary fn full(q:Q<Bit>)->Q<Bit>{t(middle(inverse(t)(q)))}
         unitary fn actual(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{ctrl[phase,middle](q)}
         unitary fn expected(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(c,q)=split(q); let(c,q)=qif(c,q){0=>ident,1=>full};join(c,q)}
         unitary fn compare(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{apply_contract(actual,expected,q)}");
@@ -227,7 +227,7 @@ fn control_conjugation_needs_no_controlled_basis_change_and_keeps_phase() {
 fn parameter_adjoint_repeat_and_both_qif_polarities_are_correct() {
     deterministic(
         "unitary fn transform[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
-        requires Apply(U),Adjoint(U){adjoint(U,repeat_static(5,U,q))}
+        requires Apply(U),Adjoint(U){inverse(U)(power(U,5)(q))}
         unitary fn coherent[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
         requires Controlled(U){qif(c,q){0=>U,1=>ident}}
         observe fn main()->(Bit,Bit){
@@ -262,12 +262,12 @@ fn scalar_phase_and_zero_width_ownership_survive_control() {
 #[test]
 fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
     for (constraints, body) in [
-        ("Apply(U)", "adjoint(U,q)"),
+        ("Apply(U)", "inverse(U)(q)"),
         ("Controlled(U)", "U(q)"),
-        ("Adjoint(U)", "repeat_static(0,U,q)"),
-        ("Apply(U)", "if 0 {adjoint(U,q)} else {q}"),
+        ("Adjoint(U)", "power(U,0)(q)"),
+        ("Apply(U)", "if 0 {inverse(U)(q)} else {q}"),
         ("Apply(U)", "use_op[inverse_op(U)](q)"),
-        ("Adjoint(U)", "use_op[repeat_op(0,U)](q)"),
+        ("Adjoint(U)", "use_op[power(U,0)](q)"),
         ("Apply(U)", "use_op[conjugate_op(U,U)](q)"),
     ] {
         rejects(
@@ -305,7 +305,7 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
                  unitary fn apply2[const V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
                  requires Apply(V){{V(q)}}
                  unitary fn adjoint2[const V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
-                 requires Adjoint(V){{adjoint(V,q)}}
+                 requires Adjoint(V){{inverse(V)(q)}}
                  unitary fn derived[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->Q<(Bit,Bit)>
                  requires Controlled(U){{{body}}}
                  observe fn main()->(Bit,Bit){{
@@ -316,7 +316,7 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
             &[false, false],
         );
     }
-    for body in ["U(q)", "adjoint(U,q)", "use_op[inverse_op(U)](q)"] {
+    for body in ["U(q)", "inverse(U)(q)", "use_op[inverse_op(U)](q)"] {
         rejects(
             &format!(
                 "unitary fn direct[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
@@ -412,7 +412,7 @@ fn unused_generic_declarations_and_static_dependencies_are_checked() {
         ErrorCode::UnknownName,
     );
     rejects(
-        "unitary fn cycle(q:Q<Bit>)->Q<Bit>{use_op[repeat_op(0,cycle)](q)}",
+        "unitary fn cycle(q:Q<Bit>)->Q<Bit>{use_op[power(cycle,0)](q)}",
         ErrorCode::RecursiveCall,
     );
     rejects(
@@ -436,9 +436,9 @@ fn unused_generic_declarations_and_static_dependencies_are_checked() {
 #[test]
 fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics() {
     rejects("unitary fn dual[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>U,1=>U}}
-        unitary fn bad(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){dual[repeat_op(513,phase)](c,q)}", ErrorCode::Limit);
+        unitary fn bad(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){dual[power(phase,513)](c,q)}", ErrorCode::Limit);
     rejects(
-        "unitary fn bad(q:Q<Bit>)->Q<Bit>{use_op[repeat_op(1025,phase)](q)}",
+        "unitary fn bad(q:Q<Bit>)->Q<Bit>{use_op[power(phase,1025)](q)}",
         ErrorCode::Limit,
     );
     let too_wide = "controlled_op(".repeat(6) + "phase" + &")".repeat(6);
@@ -451,7 +451,7 @@ fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics()
     // Structurally different, valid identity descriptions remain distinct instances.
     for n in 0..257 {
         source.push_str(&format!(
-            "unitary fn f{n}(q:Q<Bit>)->Q<Bit>{{use_op[repeat_op({n},ident)](q)}}"
+            "unitary fn f{n}(q:Q<Bit>)->Q<Bit>{{use_op[power(ident,{n})](q)}}"
         ));
     }
     let root = SourceRoot::new(&format!("{PRELUDE}{source}"));
@@ -498,5 +498,46 @@ fn retired_static_headers_reject_at_both_source_entry_points() {
         assert!(project.message.contains(selected.message()));
         assert_eq!(project.span, selected.span());
         assert_eq!(&source[project.span.start..project.span.end], "static");
+    }
+}
+
+#[test]
+fn retired_operation_spellings_reject_at_both_source_entry_points() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+    for (body, token) in [
+        ("adjoint(U,q)", "adjoint"),
+        ("helper[repeat_op(2,U)](q)", "repeat_op"),
+        ("repeat_static(2,U,q)", "repeat_static"),
+    ] {
+        let source = format!("pub unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
+        let root = SourceRoot::new(&source);
+        let project = check_project(&root.0).unwrap_err();
+        let selected =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+        assert_eq!(project.code, ErrorCode::Project);
+        assert_eq!(selected.code(), "parse");
+        assert!(project.message.contains(selected.message()));
+        assert_eq!(project.span, selected.span());
+        assert_eq!(&source[project.span.start..project.span.end], token);
+    }
+}
+
+#[test]
+fn direct_literal_power_keeps_named_function_access_distinct_from_static_providers() {
+    for body in ["power(z,0)(q)", "power(z,2)(q)", "power(z,0)(h(q))"] {
+        check(&format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"));
+    }
+    // Direct repetition does not grant primitive names a general Op provider
+    // contract, even at zero count or through a constructed inverse/control.
+    for body in [
+        "use_op[power(z,0)](q)",
+        "inverse(power(z,0))(q)",
+        "let (c,q)=controlled(power(z,0))(init0(),q);discard(c);q",
+    ] {
+        rejects(
+            &format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}"),
+            ErrorCode::TypeMismatch,
+        );
     }
 }

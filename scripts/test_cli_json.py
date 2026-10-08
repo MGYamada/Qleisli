@@ -87,7 +87,7 @@ class JsonCliTests(unittest.TestCase):
 
     def test_truncated_static_arguments_are_located_parse_failures(self):
         for source in ["unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
-                       "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[repeat_op(0,"]:
+                       "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[power("]:
             self.source(source)
             for command in ["check", "run"]:
                 with self.subTest(source=source, command=command):

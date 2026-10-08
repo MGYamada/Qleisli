@@ -225,7 +225,7 @@ fn capacity_diagnostics_identify_the_declaration_and_exact_arithmetic_limit() {
     let explicit = SourceRoot::new(
         "use std::quantum::{h,t,init0}; use std::observe::measure_z;
          unitary fn ht(q:Q<Bit>)->Q<Bit>{t(h(q))}
-         unitary fn long(q:Q<Bit>)->Q<Bit>{repeat_static(512,ht,q)}
+         unitary fn long(q:Q<Bit>)->Q<Bit>{power(ht,512)(q)}
          observe fn main()->Bit{measure_z(apply_contract(long,long,init0()))}",
     );
     let error = check_project(&explicit.0).unwrap_err();

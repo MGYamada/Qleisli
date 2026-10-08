@@ -339,8 +339,8 @@ generic assumption is not evidence for an arbitrary external provider.
 
 ### Direct runtime transforms and opaque operations
 
-A direct `adjoint`/`controlled` target given by an ordinary function name, its
-explicit static specialization or a transparent `repeat_op` wrapper has a
+A direct `inverse`/`controlled`/`power` target given by an ordinary function name,
+its explicit static specialization or a transparent `power` wrapper has a
 runtime target type T. With one runtime parameter, T is its complete input type;
 with more, T is the exact ordered tuple
 of complete input types. Arity zero rejects. T must be a nonempty tree of quantum
@@ -349,7 +349,7 @@ caller premises. `Q<Unit>` and `Q<Bits<0>>` are valid leaves with their ownershi
 and scalar phase intact. Ordinary Unit/Bit/Bits, empty tuples and mixed
 classical/quantum trees reject; equal width cannot repair a different tree.
 
-Direct `adjoint` evaluates its input once and returns T. Direct `controlled`
+Direct `inverse` and `power` evaluate their input once and return T. Direct `controlled`
 evaluates control then target once and returns `(Q<Bit>,T)`. Each original
 owner is consumed and returned exactly once; no implicit split, join, packing or
 reassociation occurs. The named body must have principal Unitary effect and
@@ -472,7 +472,7 @@ the receiving formal is unrefined or unused. Requests attached to a repeated
 child are checked against that child, including under a zero-count repetition;
 they are not compared against the outer identity. Forwarding an operation and
 requesting another Meaning retains both requirements. Direct operation-valued
-steps, including `adjoint(checked_op(implementation, M), q)`, check the underlying
+steps, including `inverse(checked_op(implementation, M))(q)`, check the underlying
 implementation before applying the requested transformation. The immutable
 proposal locates the original caller binding or step and exact child depth;
 equal names or a native-valid replacement do not substitute another subject.

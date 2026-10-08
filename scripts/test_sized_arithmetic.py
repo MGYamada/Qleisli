@@ -98,7 +98,7 @@ def rejected_sources(modules):
     examples.append(('spent-name-hides-function', modules | {'client': bad}, 'client', 'bad', dict(n=1)))
     bad = 'use growing::grow; pub unitary fn grow[const n: Nat](q: Q<Bit>) -> Q<Bit> { grow[n+1](q) }'
     examples.append(('instantiation-depth', modules | {'growing': bad}, 'growing', 'grow', dict(n=0)))
-    bad = 'use controls::all_ones; pub unitary fn bad[const n: Nat](c: Q<Bit>, q: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bit>,(Q<Bits<n>>,Q<Bit>)) { controlled(repeat_op(0,all_ones[n]))(c,(q,t)) }'
+    bad = 'use controls::all_ones; pub unitary fn bad[const n: Nat](c: Q<Bit>, q: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bit>,(Q<Bits<n>>,Q<Bit>)) { controlled(power(all_ones[n],0))(c,(q,t)) }'
     faulty = modules | {'client': bad, 'controls': base.replace('(controls,x(target))', '(x(controls),target)')}
     examples.append(('invalid-zero-repeat-body', faulty, 'client', 'bad', dict(n=0)))
     results = []
@@ -129,8 +129,8 @@ def main():
             name = f'add-{n}-{amount}'
             artifacts[name] = compile_case(modules, 'addition', 'add_k', n=n, K=amount)
             params[name] = 'add', n, amount
-    inverse_add = 'use addition::add_k; pub unitary fn undo[const n: Nat, const K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { adjoint(add_k[n,K],q) }'
-    inverse_eq = 'use comparison::equals; pub unitary fn undo[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { adjoint(equals[n],(a,b,t)) }'
+    inverse_add = 'use addition::add_k; pub unitary fn undo[const n: Nat, const K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { inverse(add_k[n,K])(q) }'
+    inverse_eq = 'use comparison::equals; pub unitary fn undo[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { inverse(equals[n])((a,b,t)) }'
     control_add = 'use addition::add_k; pub unitary fn use_add[const n: Nat, const K: Nat](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { controlled(add_k[n,K])(c,q) }'
     for n in WIDTHS:
         artifacts[f'inverse-add-{n}'] = compile_case(modules | {'client': inverse_add}, 'client', 'undo', n=n, K=3)

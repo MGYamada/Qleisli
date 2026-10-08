@@ -111,13 +111,13 @@ fn nested_function_evidence_survives_external_inverse_and_control() {
         unitary fn first(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
         unitary fn second(q: Q<Bit>) -> Q<Bit> {{ apply_contract(first,specified,q) }}
         unitary fn top(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,specified,q) }}
-        unitary fn inverse(q: Q<Bit>) -> Q<Bit> {{ adjoint(top,q) }}
+        unitary fn inverse(q: Q<Bit>) -> Q<Bit> {{ inverse(top)(q) }}
         observe fn main() -> (Bit,Bit) {{
-            let q=repeat_static(2,top,h(init0()));
-            let q=adjoint(top,adjoint(top,q));
+            let q=power(top,2)(h(init0()));
+            let q=inverse(top)(inverse(top)(q));
             let (c,target)=qif(h(init0()),x(init0())) {{ 0 => identity, 1 => inverse }};
             discard(target);
-            let c=repeat_static(6,t,c);
+            let c=power(t,6)(c);
             (measure_z(h(q)),measure_z(h(c)))
         }}"
     ));
@@ -229,7 +229,7 @@ fn unrelated_source_comments_do_not_multiply_contract_reuse_work() {
 }
 
 const BUDGETED_FUNCTIONS: &str = "
-unitary fn implementation(q: Q<Bit>) -> Q<Bit> { repeat_static(8,t,q) }
+unitary fn implementation(q: Q<Bit>) -> Q<Bit> { power(t,8)(q) }
 unitary fn inner(q: Q<Bit>) -> Q<Bit> { apply_contract(implementation,identity,q) }
 unitary fn outer(q: Q<Bit>) -> Q<Bit> { apply_contract(inner,identity,q) }
 ";
@@ -239,7 +239,7 @@ fn repeated_nested_contracts_share_one_execution_budget() {
     let root = SourceRoot::new(&format!(
         "{IMPORTS} {BUDGETED_FUNCTIONS}
         observe fn main() -> Bit {{
-            measure_z(h(repeat_static(30,outer,h(init0()))))
+            measure_z(h(power(outer,30)(h(init0()))))
         }}"
     ));
     let program = compile_project(&root.0).unwrap();
@@ -270,8 +270,8 @@ fn classical_branches_and_ensemble_components_share_execution_budget() {
         "{IMPORTS} {BUDGETED_FUNCTIONS}
         observe fn main() -> (Bit,Bit) {{
             let coin=measure_z(h(init0()));
-            let q=if coin {{ repeat_static(8,outer,init0()) }}
-                  else {{ repeat_static(8,outer,init0()) }};
+            let q=if coin {{ power(outer,8)(init0()) }}
+                  else {{ power(outer,8)(init0()) }};
             (coin,measure_z(q))
         }}"
     ));
@@ -303,8 +303,8 @@ fn adjoint_control_and_repetition_keep_evidence_and_relative_phase() {
         unitary fn specified(q: Q<Bit>) -> Q<Bit> {{ t(q) }}
         unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
         observe fn main() -> (Bit,Bit) {{
-            let q=repeat_static(2,phase,h(init0()));
-            let q=adjoint(phase,adjoint(phase,q));
+            let q=power(phase,2)(h(init0()));
+            let q=inverse(phase)(inverse(phase)(q));
             let (c,tgt)=qif(h(init0()),x(init0())) {{ 0 => identity, 1 => phase }};
             discard(tgt);
             (measure_z(h(q)),measure_z(h(c)))

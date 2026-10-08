@@ -532,15 +532,42 @@ impl Checker<'_, '_> {
                 args,
             } => self.call(callee, static_args, args, scope, span)?,
             ExprKind::ApplyStatic { operation, input } => {
+                let repetition = named_literal_repetition(operation);
+                if let Some((_, count, count_span)) = repetition {
+                    if !(0..=4096).contains(&count) {
+                        return Err(SourceError::new(
+                            "limit",
+                            count_span,
+                            "static repetition exceeds the 4096-count limit",
+                        ));
+                    }
+                }
                 let target = self.expr(input, scope, None)?;
-                self.transformed_operation(
-                    operation,
-                    &target,
-                    scope,
-                    Access::Apply,
-                    input.span,
-                    span,
-                )?;
+                let sealed_target = repetition.filter(|(function, _, _)| {
+                    matches!(
+                        self.index()
+                            .table
+                            .usage(self.index().usage(function))
+                            .target,
+                        ResolvedUse::Global(Target::Primitive(_))
+                    )
+                });
+                if let Some((function, _, _)) = sealed_target {
+                    let basis = target.quantum_basis().ok_or_else(|| {
+                        SourceError::new("type", span, "repetition requires one Q<A> owner")
+                    })?;
+                    let op = self.target_operation(function, basis, scope)?;
+                    access(&op, Access::Apply, span)?;
+                } else {
+                    self.transformed_operation(
+                        operation,
+                        &target,
+                        scope,
+                        Access::Apply,
+                        input.span,
+                        span,
+                    )?;
+                }
                 self.obligation(span, ObligationKind::TransformedMeaning)?;
                 target
             }

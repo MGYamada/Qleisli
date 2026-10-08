@@ -150,7 +150,7 @@ fn modular_multiply_powers_and_inverse_cover_the_full_register_space() {
         for power in 0..=4 {
             root.main(&format!(
                 "observe fn main()->((Bit,Bit),(Bit,Bit)){{
-                 let (a,b)=split(repeat_static({power},mul2_mod15,{}));
+                 let (a,b)=split(power(mul2_mod15,{power})({}));
                  (measure_z2(a),measure_z2(b)) }}",
                 prepare4(input)
             ));
@@ -163,7 +163,7 @@ fn modular_multiply_powers_and_inverse_cover_the_full_register_space() {
         }
         root.main(&format!(
             "observe fn main()->((Bit,Bit),(Bit,Bit)){{
-             let (a,b)=split(adjoint(mul2_mod15,{})); (measure_z2(a),measure_z2(b)) }}",
+             let (a,b)=split(inverse(mul2_mod15)({})); (measure_z2(a),measure_z2(b)) }}",
             prepare4(input)
         ));
         probability(
@@ -182,7 +182,7 @@ fn arithmetic_round_trip_preserves_four_entangled_references() {
             "observe fn main()->(((Bit,Bit),(Bit,Bit)),((Bit,Bit),(Bit,Bit))){{
              let (a,ra)=cnot(h(init0()),init0()); let (b,rb)=cnot(h(init0()),init0());
              let (c,rc)=cnot(h(init0()),init0()); let (d,rd)=cnot(h(init0()),init0());
-             let q=adjoint({operation},{operation}(join(join(a,b),join(c,d))));
+             let q=inverse({operation})({operation}(join(join(a,b),join(c,d))));
              let (ab,cd)=split(q); let (a,b)=split(ab); let (c,d)=split(cd);
              let (a,ra)=cnot(a,ra); let (b,rb)=cnot(b,rb);
              let (c,rc)=cnot(c,rc); let (d,rd)=cnot(d,rd);

@@ -602,7 +602,7 @@ fn finite_v0_computed_blocks_require_the_structural_certificate() {
     }
     // H H and Z^2 are identities, but v0 certificates are structural. A static
     // transform emits ApplyUnitary, which this source certificate excludes.
-    for body in ["h(h(a))", "adjoint(t,a)", "repeat_static(2,z,a)"] {
+    for body in ["h(h(a))", "inverse(t)(a)", "power(z,2)(a)"] {
         let source = format!(
             "{prefix} unitary fn oracle(q: Q<Bit>) -> Q<Bit> {{
                  with_computed(q,p) {{ |a| {body} }}
@@ -619,7 +619,7 @@ fn finite_v0_local_names_shadow_static_callees() {
         "classical fn f(x: Bit) -> Bit { x }
          classical fn bad(f: Bit) -> Bit { f(f) }",
         "use std::quantum::h;
-         unitary fn bad(h: Q<Bit>) -> Q<Bit> { let q = h; adjoint(h,q) }",
+         unitary fn bad(h: Q<Bit>) -> Q<Bit> { let q = h; inverse(h)(q) }",
     ] {
         let error = check_project(&SourceRoot::new(source).0).unwrap_err();
         assert_eq!(error.code, ErrorCode::TypeMismatch, "{source}\n{error}");

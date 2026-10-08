@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reject retired `adjoint(U,q)`, `repeat_op(k,U)` and `repeat_static(k,U,q)`
+  at their original constructor tokens, with migration to `inverse(U)(q)`,
+  `power(U,k)` and `power(U,k)(q)`. Select hash-bound current client copies,
+  preserving original sources, independent oracles and native acceptance.
+
 - Run whole-tree whitespace and CI infrastructure checks through the shared
   local/hosted preflight before scheduling builds. Preserve inherited EOF
   bytes in seven hash-bound Basis migrations with narrowly scoped attributes.
