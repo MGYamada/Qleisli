@@ -29,6 +29,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.classical_manifest = self.root / "classical-source-map.json"
         self.qfor_manifest = self.root / "qfor-source-map.json"
         self.client_const_manifest = self.root / "const-client-source-map.json"
+        self.naming_manifest = self.root / "capability-naming-source-map.json"
+        self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
         self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
@@ -62,7 +64,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("CONST_MAP", self.const_manifest.name),
                             ("APPLICATION_MAP", self.application_manifest.name),
                             ("CLIENT_CONST_MAP", self.client_const_manifest.name),
-                            ("RETIRED_OPERATION_MAP", self.retired_manifest.name)):
+                            ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
+                            ("CAPABILITY_NAMING_MAP", self.naming_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -408,6 +411,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.classical_manifest = self.root / "classical-map.json"
         self.qfor_manifest = self.root / "qfor-map.json"
         self.client_const_manifest = self.root / "const-client-source-map.json"
+        self.naming_manifest = self.root / "capability-naming-source-map.json"
+        self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
         self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
@@ -430,7 +435,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("CONST_MAP", self.const_manifest.name),
                             ("APPLICATION_MAP", self.application_manifest.name),
                             ("CLIENT_CONST_MAP", self.client_const_manifest.name),
-                            ("RETIRED_OPERATION_MAP", self.retired_manifest.name)):
+                            ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
+                            ("CAPABILITY_NAMING_MAP", self.naming_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -688,6 +694,88 @@ class SourceFileIdentity(unittest.TestCase):
 
 
 class RepositoryMigrationTests(unittest.TestCase):
+    def test_selected_current_file_inventory_has_no_unmapped_operation_names(self):
+        from operation_naming import canonical_operation_names
+        prior = fixtures._migration_maps(stop_before=fixtures.CAPABILITY_NAMING_MAP)
+        candidates = {name for files, _ in prior for name in files}
+        candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                          (fixtures.ROOT / 'tests/fixtures/frontend_v030/ordinary-type-cutover/current').rglob('*.qli'))
+        current = fixtures._file_entries(fixtures._read_map(
+            fixtures.ROOT / fixtures.CAPABILITY_NAMING_MAP), 'capability naming')
+        expected = set()
+        for candidate in candidates:
+            selected = candidate
+            for files, _ in prior:
+                if selected in files:
+                    selected = files[selected]['current_path']
+            source = (fixtures.ROOT / selected).read_bytes()
+            if canonical_operation_names(source) != source:
+                expected.add(selected)
+        self.assertEqual(set(current), expected)
+
+    def test_capability_naming_preserves_non_name_tokens_comments_and_manifest_bytes(self):
+        import re
+        # Check allowed token changes independently of the migration helper.
+        pattern = re.compile(rb'//[^\n]*|/\*.*?\*/|"(?:\\.|[^"\\])*"|[A-Za-z_][A-Za-z_0-9]*|[^\s]', re.S)
+        renames = {b'Apply': b'Applicable', b'Adjoint': b'Adjointable',
+                   b'Controlled': b'Controllable', b'inverse_op': b'adjoint',
+                   b'controlled_op': b'controlled', b'inverse': b'adjoint'}
+        def compare(before, after):
+            old, new = list(pattern.finditer(before)), list(pattern.finditer(after))
+            self.assertEqual(len(old), len(new))
+            old_end = new_end = 0
+            for index, (a, b) in enumerate(zip(old, new)):
+                self.assertEqual(before[old_end:a.start()], after[new_end:b.start()])
+                old_end, new_end = a.end(), b.end()
+                if a[0] == b[0]:
+                    continue
+                self.assertEqual(renames.get(a[0]), b[0])
+                self.assertEqual(old[index + 1][0], b'(')
+                if a[0] == b'inverse':
+                    depth = 0
+                    for closing in range(index + 1, len(old)):
+                        depth += (old[closing][0] == b'(') - (old[closing][0] == b')')
+                        if depth == 0:
+                            self.assertEqual(old[closing + 1][0], b'(')
+                            break
+                elif a[0] in (b'Apply', b'Adjoint', b'Controlled'):
+                    prefix = [item[0] for item in old[:index]]
+                    self.assertIn(b'requires', prefix)
+                    self.assertNotIn(b'{', prefix[len(prefix) - 1 - prefix[::-1].index(b'requires'):])
+            self.assertEqual(before[old_end:], after[new_end:])
+        data = fixtures._read_map(fixtures.ROOT / fixtures.CAPABILITY_NAMING_MAP)
+        files = fixtures._file_entries(data, 'capability naming')
+        projects = fixtures._projects(data, 'before_path', 'capability naming')
+        self.assertTrue(files and projects)
+        for entry in files.values():
+            before, current = (fixtures.ROOT / entry[key] for key in ('before_path', 'current_path'))
+            self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertNotEqual(before.read_bytes(), current.read_bytes())
+            compare(before.read_bytes(), current.read_bytes())
+        for entry in projects.values():
+            before, current = (fixtures.ROOT / entry[key] for key in ('before_path', 'current_path'))
+            fixtures._verify_pair(before, current, entry, 'before_sha256')
+            for item in entry['files']:
+                old, new = before / item['path'], current / item['path']
+                if old.suffix == '.qli': compare(old.read_bytes(), new.read_bytes())
+                else: self.assertEqual(old.read_bytes(), new.read_bytes())
+
+    def test_naming_migration_preserves_comments_strings_and_ordinary_calls(self):
+        from operation_naming import canonical_operation_names
+        source = (b'// inverse(U)(q), Apply(U)\r\n'
+                  b'/* outer /* inverse_op(U) */ Controlled(U) */\n'
+                  b'"inverse(U)(q) and Adjoint(U)"\n'
+                  b'fn inverse(q:Q<Bit>)->Q<Bit>{inverse(q)}\n'
+                  b'fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> '
+                  b'requires Apply(U),Adjoint(U),Controlled(U){inverse /* note */ (U)(q)}\n'
+                  b'helper[controlled_op(inverse_op(U))](q)')
+        expected = source.replace(b'requires Apply(U),Adjoint(U),Controlled(U)',
+                                  b'requires Applicable(U),Adjointable(U),Controllable(U)').replace(
+                                  b'inverse /* note */ (U)(q)', b'adjoint /* note */ (U)(q)').replace(
+                                  b'helper[controlled_op(inverse_op(U))]', b'helper[controlled(adjoint(U))]')
+        self.assertEqual(canonical_operation_names(source), expected)
+        self.assertEqual(canonical_operation_names(expected), expected)
+
     def test_const_client_maps_retain_every_project_and_file_byte_except_markers(self):
         import re
         data = fixtures._read_map(fixtures.ROOT / fixtures.CLIENT_CONST_MAP)
@@ -825,7 +913,7 @@ class RepositoryMigrationTests(unittest.TestCase):
         self.assertTrue(files and projects)
         for entry in files.values():
             before, current = (fixtures.ROOT / entry[key] for key in ("before_path", "current_path"))
-            self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertEqual(fixtures.current_source_file(before), fixtures.current_source_file(current))
             self.assertEqual(tokens(current.read_text()), canonical(tokens(before.read_text())))
             self.assertNotEqual(before.read_bytes(), current.read_bytes())
         for entry in projects.values():
@@ -850,7 +938,7 @@ class RepositoryMigrationTests(unittest.TestCase):
         self.assertNotEqual(transformed, before.read_bytes())
         self.assertEqual(current.read_bytes(), transformed)
         self.assertEqual(fixtures.current_source_file(
-            "corpus/sized/qualtran_qpe/estimation.qli"), current)
+            "corpus/sized/qualtran_qpe/estimation.qli"), fixtures.current_source_file(current))
 
     def test_actual_quantum_fold_map_has_canonical_entries_and_matching_sources(self):
         # Synthetic maps alone did not catch explanatory metadata inserted in

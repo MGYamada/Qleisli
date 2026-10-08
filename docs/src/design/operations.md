@@ -7,6 +7,8 @@ reported as compiled. It does not ratify text, record a Guardian judgment,
 admit a guarantee, change the adopted QS/PR/RS interpretations, or close an
 Issue. The [authority hierarchy](../reference/authority.md) still applies.
 
+**Naming update (2026-10-08):** [Issue #45](https://github.com/MGYamada/Qleisli/issues/45) selects `Applicable`, `Adjointable` and `Controllable`, with `adjoint(U)` as the general constructor. The older `Apply`/`Adjoint`/`Controlled` and `inverse(U)` candidate notation below is superseded by this naming decision; it is not current executable syntax. The [static-language Reference](../reference/static-language.md#operation-repetition-and-access) specifies the bounded implementation. A future two-sided inverse API requires its own law; this update grants no general isometry adjoint or new provider access.
+
 **Naming decision:** [#82](https://github.com/MGYamada/Qleisli/issues/82)
 selects `checked_op(implementation, Meaning)` for the existing closed-declaration
 constructor. The proposed `bind` spelling below is superseded by that name.

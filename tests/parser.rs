@@ -38,12 +38,12 @@ fn all_static_constructor_token_prefixes_parse_without_panicking() {
     for operation in [
         "checked_op(u,m)",
         "power(u,0)",
-        "inverse_op(u)",
-        "controlled_op(u)",
+        "adjoint(u)",
+        "controlled(u)",
         "then_op(u,v)",
         "tensor_op(u,v)",
         "conjugate_op(u,v)",
-        "then_op(checked_op(u,m),controlled_op(inverse_op(power(v,2))))",
+        "then_op(checked_op(u,m),controlled(adjoint(power(v,2))))",
     ] {
         let source = format!("unitary fn f(q: Q<Bit>) -> Q<Bit> {{ g[{operation}](q) }}");
         check_token_prefixes(&source, operation);
@@ -288,7 +288,7 @@ fn check_deep_syntax_on_bounded_stack() {
     let input = format!("{}q{}", "(".repeat(60), ")".repeat(60));
     for expression in [
         format!("power(u, 2)({input})"),
-        format!("inverse(u)({input})"),
+        format!("adjoint(u)({input})"),
         format!("controlled(u)(c, {input})"),
     ] {
         parse_module(&format!(
@@ -828,7 +828,7 @@ fn common_token_stream_includes_sized_punctuation_without_trivia_joining() {
 #[test]
 fn common_natural_and_count_syntax_keeps_precedence_and_source_spans() {
     use qleisli::frontend::ast::{Count, NatKind, StaticOpKind, StaticParamKind};
-    let source = "pub unitary fn f[const n:Nat,const U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { inverse(power(U,2^(n+1)))(q) }";
+    let source = "pub unitary fn f[const n:Nat,const U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { adjoint(power(U,2^(n+1)))(q) }";
     let ast = parse_module(source).unwrap();
     assert!(matches!(
         ast.decls[0].static_params[0].kind,
@@ -861,7 +861,7 @@ fn common_natural_and_count_syntax_keeps_precedence_and_source_spans() {
 
 #[test]
 fn basis_requires_rejects_before_documentation_attachment() {
-    for clause in ["0 == 0", "Apply(U)"] {
+    for clause in ["0 == 0", "Applicable(U)"] {
         let source = format!("/// title\nclassical fn f(x:Bit)->Bit requires {clause} {{x}}");
         let error = parse_module(&source).unwrap_err();
         assert_eq!(&source[error.span.start..error.span.end], "requires");
@@ -896,7 +896,7 @@ fn retired_operation_spellings_report_the_original_token_and_migration() {
         (
             "adjoint(U,q)",
             "adjoint",
-            "`adjoint(U, q)` is retired; use `inverse(U)(q)`",
+            "`adjoint(U, q)` is retired; use `adjoint(U)(q)`",
         ),
         (
             "g[repeat_op(2,U)](q)",
@@ -909,12 +909,12 @@ fn retired_operation_spellings_report_the_original_token_and_migration() {
             "`repeat_static(k, U, q)` is retired; use `power(U, k)(q)`",
         ),
         (
-            "inverse(U)(adjoint(U,q))",
+            "adjoint(U)(adjoint(V,q))",
             "adjoint",
-            "`adjoint(U, q)` is retired; use `inverse(U)(q)`",
+            "`adjoint(U, q)` is retired; use `adjoint(U)(q)`",
         ),
         (
-            "g[inverse_op(repeat_op(2,U))](q)",
+            "g[adjoint(repeat_op(2,U))](q)",
             "repeat_op",
             "`repeat_op(k, U)` is retired; use `power(U, k)`",
         ),
@@ -928,7 +928,11 @@ fn retired_operation_spellings_report_the_original_token_and_migration() {
         for prefix in ["", "// 位相\r\nunitary fn earlier(q:Q<Bit>)->Q<Bit>{q}\r\n"] {
             let source = format!("{prefix}unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
             let error = parse_module(&source).unwrap_err();
-            let start = source.find(token).unwrap();
+            let start = if body == "adjoint(U)(adjoint(V,q))" {
+                source.rfind(token).unwrap()
+            } else {
+                source.find(token).unwrap()
+            };
             assert_eq!(
                 error.span,
                 Span::new(start, start + token.len()),
@@ -946,5 +950,89 @@ fn retired_operation_spellings_report_the_original_token_and_migration() {
                 .message
                 .contains("is retired")
         );
+    }
+}
+
+#[test]
+fn capability_names_and_static_adjoint_control_share_the_existing_ast() {
+    use qleisli::frontend::ast::{Access, Requirement, StaticOpKind};
+    let source = "// 位相\r\nunitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U), Adjointable(U), Controllable(U) { helper[controlled(adjoint(power(U,2)))](q) }";
+    let module = parse_module(source).unwrap();
+    for (constraint, (expected, spelling)) in module.decls[0].requires.iter().zip([
+        (Access::Apply, "Applicable"),
+        (Access::Adjoint, "Adjointable"),
+        (Access::Controlled, "Controllable"),
+    ]) {
+        let Requirement::Access(constraint) = constraint else {
+            panic!("access")
+        };
+        assert_eq!(constraint.access, expected);
+        assert_eq!(
+            &source[constraint.span.start..constraint.span.end],
+            spelling
+        );
+    }
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("body")
+    };
+    let ExprKind::Call { static_args, .. } = &body.result.kind else {
+        panic!("call")
+    };
+    let operation = &static_args[0];
+    let StaticOpKind::Controlled(inner) = &operation.kind else {
+        panic!("controlled")
+    };
+    assert!(matches!(inner.kind, StaticOpKind::Inverse(_)));
+    assert_eq!(
+        &source[operation.span.start..operation.span.end],
+        "controlled(adjoint(power(U,2)))"
+    );
+}
+
+#[test]
+fn retired_capability_names_and_descriptions_report_precise_replacements() {
+    for (old, new) in [
+        ("Apply", "Applicable"),
+        ("Adjoint", "Adjointable"),
+        ("Controlled", "Controllable"),
+    ] {
+        let source = format!(
+            "// 位相\r\nunitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires {old}(U){{q}}"
+        );
+        let error = parse_module(&source).unwrap_err();
+        assert_eq!(&source[error.span.start..error.span.end], old);
+        assert_eq!(
+            error.message,
+            format!("`{old}(U)` is retired; use `{new}(U)`")
+        );
+    }
+    for (body, token, replacement) in [
+        ("inverse(U)(q)", "inverse", "adjoint(U)(q)"),
+        ("helper[inverse_op(U)](q)", "inverse_op", "adjoint(U)"),
+        (
+            "helper[controlled_op(U)](q)",
+            "controlled_op",
+            "controlled(U)",
+        ),
+    ] {
+        let source = format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
+        let error = parse_module(&source).unwrap_err();
+        assert_eq!(&source[error.span.start..error.span.end], token);
+        assert!(error.message.contains(replacement));
+    }
+}
+
+#[test]
+fn new_capability_words_remain_contextual_identifiers() {
+    for word in ["Applicable", "Adjointable", "Controllable"] {
+        let source = format!(
+            "pub unitary fn {word}[const {word}:Nat](q:Q<Bit>)->Q<Bit> requires {word} >= 0 {{q}}"
+        );
+        let module = parse_module(&source).unwrap();
+        assert_eq!(module.decls[0].name.text, word);
+        assert!(matches!(
+            module.decls[0].requires[0],
+            qleisli::frontend::ast::Requirement::Predicate(_)
+        ));
     }
 }

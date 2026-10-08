@@ -84,10 +84,10 @@ fn apply_only_wrapper_retains_forward_use_without_inverse_or_control() {
         "finite profile does not support opaque Basis parameters",
         "A",
     );
-    missing_path(&source!("apply-only-inverse"), "Adjoint", "forwards[V]");
+    missing_path(&source!("apply-only-inverse"), "Adjointable", "forwards[V]");
     missing_path(
         &source!("apply-only-controlled"),
-        "Controlled",
+        "Controllable",
         "forwards[V]",
     );
 }
@@ -95,7 +95,7 @@ fn apply_only_wrapper_retains_forward_use_without_inverse_or_control() {
 #[test]
 fn reversing_an_adjoint_only_wrapper_needs_the_original_apply_path() {
     // backwards[V] computes V†. Its forward invocation uses the available
-    // Adjoint(V); reversing that whole wrapper would compute V, whose Apply
+    // Adjointable(V); reversing that whole wrapper would compute V, whose Apply
     // is absent. Checking only the argument's Adjoint would miss this case.
     common_source_valid(
         &source!("adjoint-only-backwards-forward"),
@@ -104,7 +104,7 @@ fn reversing_an_adjoint_only_wrapper_needs_the_original_apply_path() {
     );
     missing_path(
         &source!("adjoint-only-backwards-inverse"),
-        "Adjoint",
+        "Adjointable",
         "backwards[V]",
     );
 }
@@ -125,8 +125,12 @@ fn declared_paths_support_the_inverse_and_control_positive_controls() {
 
 #[test]
 fn unused_actual_operations_still_constrain_the_conservative_wrapper() {
-    missing_path(&source!("unused-op-inverse"), "Adjoint", "ignored[V]");
-    missing_path(&source!("unused-op-controlled"), "Controlled", "ignored[V]");
+    missing_path(&source!("unused-op-inverse"), "Adjointable", "ignored[V]");
+    missing_path(
+        &source!("unused-op-controlled"),
+        "Controllable",
+        "ignored[V]",
+    );
 }
 
 #[test]

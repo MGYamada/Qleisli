@@ -132,7 +132,7 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
         );
     }
     for source in [
-        "pub unitary fn f[const U:Op<Bits<n>>,const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Apply(U){U(q)}",
+        "pub unitary fn f[const U:Op<Bits<n>>,const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Applicable(U){U(q)}",
         "pub unitary fn f[const A:Basis](q:Q<A>)->Q<A>{let A=q;A}",
         "pub unitary fn f[const A:Basis,const B:Basis](q:Q<A>)->Q<B>{q}",
     ] {
@@ -142,7 +142,7 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
 
 #[test]
 fn entry_and_provider_bindings_are_explicit_and_deterministic() {
-    let source = "pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
+    let source = "pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)}";
     let p = parsed(source);
     let error = p
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -246,7 +246,7 @@ fn names_forward_the_resolved_type_without_width_coercion() {
 #[test]
 fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
     let root = common::SourceRoot::new(
-        "pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}",
+        "pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)}",
     );
     let kernel = std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker");
     for (ty, basis) in [("Unit", 0), ("Bit", 1), ("Bits<1>", 1), ("(Unit,Bit)", 1)] {
@@ -309,7 +309,7 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
 fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
     let kernel =
         Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker"));
-    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
+    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
     let p = parsed(source);
     for (ty, provider, width) in [("Bit", "main::flip", 1), ("Unit", "main::scalar", 0)] {
         for n in 0..=4 {
@@ -384,11 +384,11 @@ fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
         pub unitary fn bit_provider(q:Q<Bit>)->Q<Bit>{x(q)}
         pub unitary fn unit_provider(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
         unitary fn run[const A:Basis,const n:Nat,const U:Op<A>](q:Q<A>)->Q<A>
-            requires Apply(U),n<=2 {qfor static i in 0..n carry a=q {yield U(a)}}
+            requires Applicable(U),n<=2 {qfor static i in 0..n carry a=q {yield U(a)}}
         pub unitary fn bit[const n:Nat,const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit>
-            requires Apply(U),n<=2 {run[type(Bit),n,U](q)}
+            requires Applicable(U),n<=2 {run[type(Bit),n,U](q)}
         pub unitary fn unit[const n:Nat,const U:Op<Unit,Eighth>](q:Q<Unit>)->Q<Unit>
-            requires Apply(U),n<=2 {run[type(Unit),n,U](q)}";
+            requires Applicable(U),n<=2 {run[type(Unit),n,U](q)}";
     for honest in [false, true] {
         let text = if honest {
             source.into()

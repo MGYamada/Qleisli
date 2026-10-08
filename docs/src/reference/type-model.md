@@ -328,7 +328,7 @@ and source/dependency identity; width alone is not a key. Instance success is
 not a proof about every member of a generic family.
 
 An endomorphic `Op<A>` formal starts with no executable access. Each
-`requires Apply(U)`, `Adjoint(U)` or `Controlled(U)` grants only that named
+`requires Applicable(U)`, `Adjointable(U)` or `Controllable(U)` grants only that named
 generic assumption, and must refer to an operation parameter of the same
 declaration. Repeating the same requirement rejects; granting one access
 does not grant the other two. The body and any forwarded call must satisfy
@@ -339,7 +339,7 @@ generic assumption is not evidence for an arbitrary external provider.
 
 ### Direct runtime transforms and opaque operations
 
-A direct `inverse`/`controlled`/`power` target given by an ordinary function name,
+A direct `adjoint`/`controlled`/`power` target given by an ordinary function name,
 its explicit static specialization or a transparent `power` wrapper has a
 runtime target type T. With one runtime parameter, T is its complete input type;
 with more, T is the exact ordered tuple
@@ -349,7 +349,7 @@ caller premises. `Q<Unit>` and `Q<Bits<0>>` are valid leaves with their ownershi
 and scalar phase intact. Ordinary Unit/Bit/Bits, empty tuples and mixed
 classical/quantum trees reject; equal width cannot repair a different tree.
 
-Direct `inverse` and `power` evaluate their input once and return T. Direct `controlled`
+Direct `adjoint` and `power` evaluate their input once and return T. Direct `controlled`
 evaluates control then target once and returns `(Q<Bit>,T)`. Each original
 owner is consumed and returned exactly once; no implicit split, join, packing or
 reassociation occurs. The named body must have principal Unitary effect and
@@ -369,8 +369,8 @@ checked implementation and any ordinary specification function. A declared
 Meaning remains a semantic object, not a runtime function. `tensor_op` describes
 a packed quantum basis.
 Transparent specialization derives access conservatively from every actual Op
-argument, including unused ones: inverse access requires each argument's Apply
-and Adjoint paths, and controlled access additionally requires Controlled.
+argument, including unused ones: adjoint access requires each argument's Applicable
+and Adjointable paths, and controlled access additionally requires Controllable.
 A body annotation or mathematical Unitary property grants none of those paths.
 The direct-group distinction is recorded in the
 [ordinary #32 clarification](https://github.com/MGYamada/Qleisli/issues/32#issuecomment-6005081767).
@@ -472,7 +472,7 @@ the receiving formal is unrefined or unused. Requests attached to a repeated
 child are checked against that child, including under a zero-count repetition;
 they are not compared against the outer identity. Forwarding an operation and
 requesting another Meaning retains both requirements. Direct operation-valued
-steps, including `inverse(checked_op(implementation, M))(q)`, check the underlying
+steps, including `adjoint(checked_op(implementation, M))(q)`, check the underlying
 implementation before applying the requested transformation. The immutable
 proposal locates the original caller binding or step and exact child depth;
 equal names or a native-valid replacement do not substitute another subject.

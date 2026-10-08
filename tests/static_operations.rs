@@ -155,7 +155,7 @@ fn inverse_reverses_noncommuting_gates_and_output_axis_reordering() {
         }}
         observe fn main() -> (Bit,Bit) {{
             let q = mix(join(init0(), h(init0())));
-            let (a,b) = split(inverse(mix)(q));
+            let (a,b) = split(adjoint(mix)(q));
             (measure_z(a),measure_x(b))
         }}"
         ),
@@ -177,7 +177,7 @@ fn control_preserves_reflection_sign_including_inverse_and_nested_control() {
             unitary fn minus(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(q); join(negbit(a),b)
             }}
-            unitary fn inverse_minus(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{ inverse(minus)(q) }}
+            unitary fn inverse_minus(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{ adjoint(minus)(q) }}
             unitary fn nested(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(q);
                 let (a,b) = qif(a,b) {{ 0 => idbit, 1 => negbit }};
@@ -205,7 +205,7 @@ fn computed_zero_width_phase_survives_inverse_and_control() {
         classical fn yes(x: Unit) -> Bit {{ 1 }}
         unitary fn identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(a) }} }}
-        unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ inverse(phase)(q) }}
+        unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ adjoint(phase)(q) }}
         observe fn main() -> (Bit,Bit) {{
             let pair = basis init0() as b {{ ((),b) }};
             let (u,b) = split(pair);
@@ -262,11 +262,11 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
             ErrorCode::Effect,
         ),
         (
-            "observe fn u(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q} unitary fn f(q:Q<Bit>)->Q<Bit>{inverse(u)(q)}",
+            "observe fn u(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u)(q)}",
             ErrorCode::Effect,
         ),
         (
-            "unitary fn u(q:Q<Bit>,c:Bit)->Q<Bit>{q} unitary fn f(q:Q<Bit>)->Q<Bit>{inverse(u)(q)}",
+            "unitary fn u(q:Q<Bit>,c:Bit)->Q<Bit>{q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u)(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
@@ -274,11 +274,11 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn f(q:Q<Bit>)->Q<Bit>{ let h = (); inverse(h)(q) }",
+            "unitary fn f(q:Q<Bit>)->Q<Bit>{ let h = (); adjoint(h)(q) }",
             ErrorCode::TypeMismatch,
         ),
         (
-            "unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{inverse(t)(q)}",
+            "unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(t)(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
@@ -323,7 +323,7 @@ fn static_syntax_has_bounded_numbers_and_precise_failures() {
         assert_eq!(error.code, code, "{error}");
         assert_eq!(&source[error.span.start..error.span.end], count);
     }
-    let expr = format!("{}q{}", "inverse(h)(".repeat(10_000), ")".repeat(10_000));
+    let expr = format!("{}q{}", "adjoint(h)(".repeat(10_000), ")".repeat(10_000));
     let source = format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{expr}}}");
     assert!(parse_module(&source).unwrap_err().message.contains("limit"));
 }
@@ -346,7 +346,7 @@ fn nested_static_expansion_is_bounded_in_work_and_depth() {
             let mut source = format!("{IMPORTS} unitary fn f0(q:Q<Bit>)->Q<Bit>{{t(q)}}");
             for i in 1..90 {
                 source.push_str(&format!(
-                    " unitary fn f{i}(q:Q<Bit>)->Q<Bit>{{inverse(f{})(q)}}",
+                    " unitary fn f{i}(q:Q<Bit>)->Q<Bit>{{adjoint(f{})(q)}}",
                     i - 1
                 ));
             }

@@ -58,7 +58,7 @@ input. For example, this existing form applies one static operation twice:
 
 ```qli
 unitary fn twice[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
-requires Apply(U) {
+requires Applicable(U) {
     U(U(q))
 }
 ```
@@ -99,10 +99,10 @@ successful common judgment. The current constructors retain these rules:
 | Resolved provider or explicit specialization | A permitted principal-Unitary `Q<A> -> Q<A>` provider with its checked static bindings and access; no runtime capture. |
 | `then_op(U,V)` | The same exact basis A on both descriptions; sequential application on one owner. |
 | `tensor_op(U,V)` | An ordered packed basis `(A,B)`; no implicit join of separate owners. |
-| `inverse_op(U)` | Exchanges the description's Apply/Adjoint availability; execution requires the transferred access. Mathematical unitarity alone supplies no API. |
-| `controlled_op(U)` | Constructs a packed `(Bit,A)` description whose access derives from U's Controlled availability; use still needs the corresponding path and retains phase. |
+| `adjoint(U)` | Exchanges the description's Applicable/Adjointable availability; execution requires the transferred access. Mathematical unitarity alone supplies no API. |
+| `controlled(U)` | Constructs a packed `(Bit,A)` description whose access derives from U's Controllable availability; use still needs the corresponding path and retains phase. |
 | `power(U,n)` | A checked supported static count and the child's obligations, including when n is zero. |
-| `conjugate_op(C,U)` | Exact common basis; access derives from C's Apply and Adjoint availability together with the corresponding access to U. |
+| `conjugate_op(C,U)` | Exact common basis; access derives from C's Applicable and Adjointable availability together with the corresponding access to U. |
 | `checked_op(implementation, Meaning)` | The existing declaration-identifier form and exact Meaning obligation described below. |
 
 Composition compares full basis trees and static premises, not just bit widths.
@@ -111,7 +111,7 @@ Meaning refinements such as `Op<A,M>` keep their current Meaning slot; the
 second slot is not a general codomain. This chapter admits no `Op<A,B>` arrow
 extension or general user-defined static builder.
 
-`then_op`, `tensor_op`, `inverse_op`, `controlled_op`, `power` and
+`then_op`, `tensor_op`, `adjoint`, `controlled`, `power` and
 `conjugate_op` currently drop an attached Meaning refinement in the common
 description judgment rather than prove automatic refinement transport.
 Constructing a description is distinct from obtaining executable access to it.
@@ -119,13 +119,60 @@ Pending semantic obligations and concrete evidence remain separate; the spelling
 of a composition cannot manufacture an exact refinement or its discharge.
 `checked_op` retains its own explicit attachment/checking boundary.
 
-An Op formal starts without executable access. `requires Apply(U)`,
-`Adjoint(U)` and `Controlled(U)` provide separate assumptions for checking that
+An Op formal starts without executable access. `requires Applicable(U)`,
+`Adjointable(U)` and `Controllable(U)` provide separate assumptions for checking that
 generic declaration. One requirement grants neither of the others. Calls and
 forwarded providers must satisfy their actual requirements; concrete bindings
 still need their independently checked implementation paths. A runtime local,
 spent value or quantum owner cannot become a static provider. Ordinary runtime
 data cannot select a static size, provider or Meaning.
+
+For the enabled endomorphic descriptions, write A(U), D(U) and C(U) for
+`Applicable(U)`, `Adjointable(U)` and `Controllable(U)`. The following rules
+derive available paths; constructing a description does not itself execute it.
+An application or forwarded actual argument must establish the requested path.
+
+| Description | A | D | C | Basis condition |
+| --- | --- | --- | --- | --- |
+| Op formal U | Exactly its declared A assumption | Exactly its declared D assumption | Exactly its declared C assumption | Its declared exact basis |
+| `adjoint(U)` | D(U) | A(U) | C(U) | U's basis |
+| `controlled(U)` | C(U) | C(U) | C(U) | Ordered `(Bit,A)` for U over A |
+| `power(U,n)` | A(U) | D(U) | C(U) | U's basis and a checked supported count |
+| `then_op(U,V)` | A(U) and A(V) | D(U) and D(V) | C(U) and C(V) | Identical basis trees |
+| `tensor_op(U,V)` | A(U) and A(V) | D(U) and D(V) | C(U) and C(V) | Ordered product of the two bases |
+| `conjugate_op(U,V)` | A(U), D(U), A(V) | A(U), D(U), D(V) | A(U), D(U), C(V) | Identical basis trees |
+| `checked_op(U,M)` | A(U) | D(U) | C(U) | Exact basis agreement and the separate Meaning obligation |
+
+These rules apply at count zero and on zero-width bases. For example, C(U)
+alone permits application of the constructed `controlled(U)` description;
+it does not permit the bare `U(q)`. The adjoint of a controlled implementation
+and another control are built from its retained exact circuit, with phase
+preserved. A black-box channel-equality assertion supplies no such circuit.
+Composition currently drops the attached Meaning refinement in the common
+judgment as specified above; the table does not infer a new refinement law.
+
+A transparent ordinary provider must have an independently checked body with
+principal Unitary effect and the required exact interface. Its Applicable path is
+available after all declared actual-argument requirements are checked. Its
+Adjointable path additionally requires both A and D for **every** actual Op
+argument, including unused ones; its Controllable path requires all three
+paths for every such argument. With no Op arguments these conjunctions are
+empty, but body/effect/interface/materialization checks still apply. These are
+conservative derivations, not a claim of maximal inference from arbitrary bodies.
+
+Sealed gates retain their existing direct runtime interfaces. For direct
+adjoint/control and `qif` targets, the common sealed profile permits
+`std::quantum::{h,x,z,t,s,sdg,tdg,id,phase_eighth}` with all three paths. The first
+seven require Bit; `id` and `phase_eighth` retain the actual target basis.
+Other sealed primitives reject as direct transformed targets. A gate name
+cannot be passed as a general static/host Op provider. An ordinary checked
+wrapper supplies that provider interface; concrete lowering limits still apply.
+Opaque/certified external providers remain unsupported in this
+profile; a Unitary annotation or a Meaning alone cannot grant their paths.
+Closed source Meaning evidence retains its actual provider, ordered interface,
+source dependencies and independently checked implementation; replacement or
+stale evidence cannot stand in for that binding. QPE controlled powers use
+these same rules and the same phase-sensitive checking boundary.
 
 [Checked operations](checked-operations.md) separates the common judgment's
 pending Meaning-equality obligation from finite materialization. The latter

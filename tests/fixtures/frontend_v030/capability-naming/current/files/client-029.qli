@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{init0,x}; use std::observe::measure_z;
+unitary fn flip(q: Q<Bit>) -> Q<Bit> { x(q) }
+unitary fn invoke[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }
+pub observe fn f() -> Bit { measure_z(invoke[flip](init0())) }
+pub observe fn main() -> Bit { f() }

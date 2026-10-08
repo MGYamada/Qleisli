@@ -8,7 +8,7 @@ const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"
 
 #[test]
 fn const_parameter_headers_preserve_order_kinds_and_original_name_spans() {
-    let source = "// λ\npub fn f[const n: Nat, const B: Basis, const U: Op<B>](q: Q<B>) -> Q<B> requires Apply(U) { U(q) }";
+    let source = "// λ\npub fn f[const n: Nat, const B: Basis, const U: Op<B>](q: Q<B>) -> Q<B> requires Applicable(U) { U(q) }";
     let syntax = parse_module(source).unwrap();
     let parameters = &syntax.decls[0].static_params;
     assert_eq!(parameters.len(), 3);
@@ -161,7 +161,7 @@ fn contextual_naturals_pass_through_specialization_and_operation_counts() {
         }
         for count in [name.to_owned(), format!("2^{name}")] {
             let source = format!(
-                "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Apply(U), Adjoint(U) {{ inverse(power(U,{count}))(q) }}"
+                "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Applicable(U), Adjointable(U) {{ adjoint(power(U,{count}))(q) }}"
             );
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())]))
                 .unwrap_or_else(|error| panic!("{source}\n{error}"));

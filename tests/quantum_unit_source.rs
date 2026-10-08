@@ -627,7 +627,7 @@ fn unit_provider_inverse_repeat_and_control_keep_exact_phase_on_reference_slices
 #[test]
 fn canonical_inverse_unit_scalar_retains_independent_reference_request() {
     let text = source("operations");
-    assert!(text.contains("inverse(U)(q)"));
+    assert!(text.contains("adjoint(U)(q)"));
     let graph = parsed(&text)
         .instantiate(
             "main::inverse",
@@ -1178,10 +1178,10 @@ fn selected_z_direct_inverse_and_control_preserve_reference_phase() {
     let prelude = "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(q)}";
     for (body, width) in [
         ("z(q)", 1),
-        ("inverse(oracle)(q)", 1),
+        ("adjoint(oracle)(q)", 1),
         ("controlled(oracle)(c,q)", 2),
         (
-            "let(c,q)=controlled(power(oracle,1))(c,q);(c,inverse(oracle)(q))",
+            "let(c,q)=controlled(power(oracle,1))(c,q);(c,adjoint(oracle)(q))",
             2,
         ),
     ] {
@@ -1414,7 +1414,7 @@ fn canonical_power_noncommuting_order_and_nested_inverse_have_independent_action
     let prelude = "use std::quantum::{h,z}; unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(z(q))}";
     for (expression, inverse) in [
         ("power(oracle,2)(q)", false),
-        ("inverse(power(oracle,2))(q)", true),
+        ("adjoint(power(oracle,2))(q)", true),
     ] {
         let text = format!("{prelude} pub unitary fn f(q:Q<Bit>)->Q<Bit>{{{expression}}}");
         let source = elaborate(&text, "main::f", BTreeMap::new());
@@ -1454,7 +1454,7 @@ fn canonical_power_zero_width_scalar_and_control_keep_exact_phase() {
         ("power(scalar,0)(q)", 0, 0),
         ("power(scalar,1)(q)", 0, 1),
         ("power(scalar,8)(q)", 0, 8),
-        ("inverse(power(scalar,1))(q)", 0, 7),
+        ("adjoint(power(scalar,1))(q)", 0, 7),
         ("controlled(power(scalar,4))(c,q)", 1, 4),
     ] {
         let signature = if width == 0 {

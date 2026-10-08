@@ -147,7 +147,7 @@ fn local_spent_names_expire_but_entry_spent_names_still_hide_functions() {
     for (call, expected_bit, diagnostic) in [
         ("flip(q)", true, "a local value is not callable"),
         (
-            "inverse(flip)(q)",
+            "adjoint(flip)(q)",
             true,
             "static operation requires a function name, not a local value",
         ),

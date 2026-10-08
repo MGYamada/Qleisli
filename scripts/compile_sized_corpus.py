@@ -199,7 +199,9 @@ class Parser:
             target = self.expr()
             self.need(')')
             return ('controlled', operation, [control, target])
-        inverse = self.constructed_application('inverse')
+        # Historical spellings remain only in this independent proposal reader;
+        # production parsing enforces the current public names.
+        inverse = self.constructed_application('inverse') or self.constructed_application('adjoint')
         if inverse or self.peek() == 'adjoint':
             self.index += 1
             self.need('(')
@@ -385,8 +387,9 @@ class Parser:
         premises, access = [], {name: set() for name in self.operations}
         if self.eat('requires'):
             while True:
-                if self.peek() in ('Apply', 'Adjoint', 'Controlled'):
-                    capability = self.peek()
+                if self.peek() in ('Apply', 'Adjoint', 'Controlled', 'Applicable', 'Adjointable', 'Controllable'):
+                    capability = {'Applicable': 'Apply', 'Adjointable': 'Adjoint',
+                                  'Controllable': 'Controlled'}.get(self.peek(), self.peek())
                     self.index += 1
                     self.need('(')
                     parameter = self.name()

@@ -1,0 +1,6 @@
+use std::quantum::phase_eighth;
+classical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
+meaning Minus:Unit=phase_by(scalar);
+pub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}
+pub unitary fn outer[const U:Op<Unit,Minus>](q:Q<Unit>)->Q<Unit> requires Applicable(U){U(q)}
+pub unitary fn unused[const U:Op<Unit,Minus>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}

@@ -99,13 +99,13 @@ def replace_required(source, before, after):
 
 def source_rejections(source):
     cases = [
-        ('missing-controlled-access', replace_required(source['estimation'], ', Controlled(U)', '')),
-        ('apply-is-not-controlled', replace_required(source['estimation'], 'Controlled(U)', 'Apply(U)')),
-        ('adjoint-is-not-controlled', replace_required(source['estimation'], 'Controlled(U)', 'Adjoint(U)')),
-        ('missing-access-empty-loop', replace_required(replace_required(source['estimation'], ', Controlled(U)', ''), '0..m carry', '0..0 carry')),
-        ('missing-access-zero-repeat', replace_required(replace_required(source['estimation'], ', Controlled(U)', ''), 'U,2^k', 'U,0')),
-        ('unknown-access-parameter', replace_required(source['estimation'], 'Controlled(U)', 'Controlled(V)')),
-        ('duplicate-access', replace_required(source['estimation'], 'Controlled(U)', 'Controlled(U), Controlled(U)')),
+        ('missing-controlled-access', replace_required(source['estimation'], ', Controllable(U)', '')),
+        ('apply-is-not-controlled', replace_required(source['estimation'], 'Controllable(U)', 'Applicable(U)')),
+        ('adjoint-is-not-controlled', replace_required(source['estimation'], 'Controllable(U)', 'Adjointable(U)')),
+        ('missing-access-empty-loop', replace_required(replace_required(source['estimation'], ', Controllable(U)', ''), '0..m carry', '0..0 carry')),
+        ('missing-access-zero-repeat', replace_required(replace_required(source['estimation'], ', Controllable(U)', ''), 'U,2^k', 'U,0')),
+        ('unknown-access-parameter', replace_required(source['estimation'], 'Controllable(U)', 'Controllable(V)')),
+        ('duplicate-access', replace_required(source['estimation'], 'Controllable(U)', 'Controllable(U), Controllable(U)')),
         ('duplicate-operation-parameter', replace_required(source['estimation'], 'const U: Op<Bits<n>>', 'const U: Op<Bits<n>>, const U: Op<Bits<n>>')),
         ('alias-control', replace_required(source['estimation'], '(control,target);', '(control,control);')),
         ('capture-outside-carry', replace_required(source['estimation'], 'carry pair = (phase,target)', 'carry pair = phase')),
@@ -179,7 +179,7 @@ def main():
     mutations = {
         'wrong-power-order': replace_required(source['estimation'], 'U,2^k', 'U,2^(m-1-k)'),
         'missing-high-power': replace_required(source['estimation'], '0..m carry', '0..m-1 carry'),
-        'wrong-fourier-sign': replace_required(source['estimation'], 'inverse(fourier[m])(phase)', 'fourier[m](phase)'),
+        'wrong-fourier-sign': replace_required(source['estimation'], 'adjoint(fourier[m])(phase)', 'fourier[m](phase)'),
         'missing-hadamards': replace_required(source['estimation'], 'hadamard_bits[m](phase)', 'phase'),
     }
     for name, changed in mutations.items():

@@ -319,7 +319,7 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
     let template = "use dep::flip; pub unitary fn f(c: Q<Bit>, a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>,Q<Bit>) { let (c,(a,b)) = controlled(flip)(c,(a,b)); (c,a,b) }";
     for main in [
         template.to_string(),
-        template.replace("controlled(flip)(c,(a,b))", "(c,inverse(flip)((a,b)))"),
+        template.replace("controlled(flip)(c,(a,b))", "(c,adjoint(flip)((a,b)))"),
     ] {
         ParsedProgram::parse(BTreeMap::from([
             ("main".into(), main),

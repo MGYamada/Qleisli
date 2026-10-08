@@ -12,7 +12,7 @@ use std::transform::qft3;
 pub observe fn phase2(q: Q<Bit>) -> ((Bit, Bit), Q<Bit>) {
     let (a, q) = controlled(evolve)(h(init0()), q);
     let (b, q) = controlled(power(evolve,2))(h(init0()), q);
-    let (a, b) = split(inverse(qft2)(join(a, b)));
+    let (a, b) = split(adjoint(qft2)(join(a, b)));
     ((measure_z(a), measure_z(b)), q)
 }
 
@@ -20,7 +20,7 @@ pub observe fn phase3(q: Q<Bit>) -> (((Bit, Bit), Bit), Q<Bit>) {
     let (a, q) = controlled(evolve)(h(init0()), q);
     let (b, q) = controlled(power(evolve,2))(h(init0()), q);
     let (c, q) = controlled(power(evolve,4))(h(init0()), q);
-    let (ab, c) = split(inverse(qft3)(join(join(a, b), c)));
+    let (ab, c) = split(adjoint(qft3)(join(join(a, b), c)));
     let (a, b) = split(ab);
     (((measure_z(a), measure_z(b)), measure_z(c)), q)
 }

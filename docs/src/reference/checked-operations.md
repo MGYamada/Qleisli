@@ -36,7 +36,7 @@ meaning ZMeaning: Bit = phase_by(z_phase);
 unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
 
 unitary fn apply_z[const U: Op<Bit, ZMeaning>](q: Q<Bit>) -> Q<Bit>
-requires Apply(U) { U(q) }
+requires Applicable(U) { U(q) }
 
 unitary fn client(q: Q<Bit>) -> Q<Bit> {
     apply_z[checked_op(direct, ZMeaning)](q)

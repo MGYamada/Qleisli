@@ -244,42 +244,59 @@ No general recursion or runtime unbounded loop is introduced.
 
 ## Operation repetition and access
 
+Capability predicates in a `requires` clause are `Applicable(U)`,
+`Adjointable(U)` and `Controllable(U)`. They describe justified access to the
+actual operation provider, separately from its Meaning and semantic unitarity.
+The former predicates `Apply(U)`, `Adjoint(U)` and `Controlled(U)` reject with
+located migration diagnostics. The adjective names are contextual in this
+clause; they do not construct operators or grant access by annotation alone.
+
 The canonical controlled application is `controlled(U)(c, q)`. The runtime
 arguments are evaluated once in control-then-target order. The control has
 exact type `Q<Bit>`; the target has the operation's exact `Q<A>` type. The result
 is `(Q<Bit>, Q<A>)`, retaining both logical owners even when `A` has zero width.
-It requires Controlled access, including for unused bodies and zero powers;
+It requires Controllable access, including for unused bodies and zero powers;
 an ordinary classical Bit, aliases and incorrect argument counts reject.
 The finite profile uses existing checked controlled circuit construction and
 native evidence, with the same six-bit/1024-step operation and shared work
 limits. Control is the first, low axis; the complete phase is retained.
 Single-stage ordinary `controlled(q)` calls retain normal name resolution.
 
-The canonical unary inverse application is `inverse(U)(q)`. The first stage
+The canonical unary adjoint application is `adjoint(U)(q)`. The first stage
 contains the existing static operation description; the second evaluates one
-runtime input. It requires the actual operation's Adjoint access and an exact
+runtime input. It requires the actual operation's Adjointable access and an exact
 quantum-owner interface. Unitarity or a Meaning annotation alone grants no
 access. The same checks apply to unused bodies and zero-count descriptions.
-The word is contextual: an ordinary `inverse(q)` and functions or locals named
-`inverse` retain normal resolution. No runtime callable is constructed.
-Concrete profile restrictions and independent native evidence gates still apply.
-Finite constructed inverses such as `inverse(power(U, k))(q)` use the existing
-closed operation-provider profile, exact basis and Adjoint evidence. Literal
-count, six-bit operation, step and shared work limits remain; named inverses
+No runtime callable is constructed. The executable profile remains Unitary;
+general isometry adjoints are unsupported. For a unitary, its adjoint equals
+its inverse, but an isometry's adjoint need not be a two-sided inverse. The
+identifier `inverse` is reserved for a future API requiring that law. An
+ordinary `inverse(q)` and functions or locals named `inverse` retain normal
+resolution; the retired two-stage `inverse(U)(q)` rejects with a suggestion to
+use `adjoint(U)(q)`. Independent native evidence gates still apply.
+Finite constructed adjoints such as `adjoint(power(U, k))(q)` use the existing
+closed operation-provider profile, exact basis and Adjointable evidence. Literal
+count, six-bit operation, step and shared work limits remain; named adjoints
 retain their existing sealed-gate path. A zero power still checks the original
 provider/Meaning and requested access, and evaluates its runtime input once.
 `adjoint(U,q)` is retired and rejects at its constructor token with a
-suggestion to use `inverse(U)(q)`. The two stages do not infer an inverse
+suggestion to use `adjoint(U)(q)`. The two stages do not infer an adjoint
 capability or construct a runtime callable.
+
+In static operation arguments, `adjoint(U)` and `controlled(U)` construct the
+corresponding descriptions, including nested descriptions. They retain the
+same provider-bound capability derivations and concrete profile restrictions.
+The legacy descriptions `inverse_op(U)` and `controlled_op(U)` reject at their
+constructor tokens, suggesting `adjoint(U)` and `controlled(U)`.
 
 The canonical repetition description is `power(U, count)`; its forward runtime
 application is `power(U, count)(q)`. Operation comes first, count second. The
 original-source AST retains the complete description, count and byte spans;
 no generated function name or anonymous source loop replaces the application.
 The runtime argument is evaluated once, including for count zero, and the
-operation requires Apply access even in zero-count and unused bodies.
+operation requires Applicable access even in zero-count and unused bodies.
 Direct runtime `power(name, literal)(q)` retains the existing complete runtime
-group judgment for ordinary functions and the opaque basis/Apply rule for
+group judgment for ordinary functions and the opaque basis/Applicable rule for
 operation parameters. For a sealed gate it retains the former named-function
 repetition profile, checking the exact single-owner basis and Unitary effect.
 The literal must be in `0..=4096`, even in unused bodies. The finite adapter
@@ -292,13 +309,13 @@ wrap a sealed gate in an ordinary function for these uses:
 ```qli
 f[power(t, 0)](q)
 controlled(power(t, 0))(c, q)
-inverse(power(t, 0))(q)
+adjoint(power(t, 0))(q)
 ```
 
 Symbolic/compound counts retain the general operation-provider and
 closed-binding rules.
 
-`controlled(power(U, count))(c, q)` and `inverse(power(U, count))(q)` retain the
+`controlled(power(U, count))(c, q)` and `adjoint(power(U, count))(q)` retain the
 complete repeated provider and require their actual additional access.
 
 Only an unqualified two-stage `power(...)(...)` denotes this runtime form.
@@ -320,7 +337,7 @@ power operator and cannot be inserted into `Bits<2^n>` by this rule.
 The selected concrete path limits the exponent to eight and both each count
 and its nested repetition product to 256. Counts and products use checked
 arithmetic. A zero count still resolves and checks its provider and required
-access. Repetition grants no `Adjoint` or `Controlled` access. The same applies
+access. Repetition grants no `Adjointable` or `Controllable` access. The same applies
 when a repeated description is forwarded through another generic call.
 
 ## Definition checking and concrete capacities

@@ -3516,7 +3516,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "bbd44fb36956fbc369b975ce7dd2936bc117ec5c8596bf3da8d3e82b7be28186",
+      "sha256": "102ec28f1b8fb77b1dec869737581442e46b7084672713d69d64c5cc59d016a8",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3622,7 +3622,7 @@
     },
     {
       "path": "src/frontend/formals.rs",
-      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+      "sha256": "ee2cbbfe1472572e22d00a045a921abc6d630d00652a2e4e7ec2ebcf1bb94205",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3694,7 +3694,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "fdb5780ba9630318b07abce108d2390f540953c49d75067694c59913379b034a",
+      "sha256": "8c281f246e50a8b85a211133fc40d972e515c1deb2a0e1851cf5a921fee9d7bc",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3714,7 +3714,7 @@
     },
     {
       "path": "src/frontend/parser/tests.rs",
-      "sha256": "cbb693f73fe3ddcc1c1487c2f2d85bbaa0e75f213b7fd5b1e132113ebb198f20",
+      "sha256": "f84c4d6832410ed8118874ffbb889bde9161d38a197f5551fb122dc97bbf09d2",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3835,7 +3835,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "b1095707b82d0389be8ed51649eb6d38c0e4130f65c303439f5e0432e7dbe463",
+      "sha256": "2cb9b769adbacd5ee276648f38672168d2c24e5489b2de645e44457895655ec2",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4121,7 +4121,7 @@
     },
     {
       "path": "src/frontend/specialize/meaning.rs",
-      "sha256": "c01cfc67e6968e6c734f65ccf850c826af7b07ae19b5d05d7f0806318967040a",
+      "sha256": "de7158d27b969654349c7b3d351d632a40e52806bfbeb1679eac7fff1fb28072",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4172,7 +4172,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "489178ba7524b1c4b133425b1eb5c0ccfd92755940571c44a6888d97cffb6eca",
+      "sha256": "c30c5f6c096d75ecaf81cf99a72e54c059b5a1e93cb098e3921a681082859e8a",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4221,7 +4221,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "1d97656ccf864c7d40495627b80d2812f87f80e978498039e13b27e9c0fd4546",
+      "sha256": "63acc645874c42a15a997cb91d6d865a1ebf49fe3f6ef800623a2599cba3da09",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5787,7 +5787,7 @@
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "d61c7c99f10b0761292bb3bf4aba1f4bb14e6182bebbdff945b880df9f12d470",
-      "tests/sized_cli.rs": "4b44d639dbd3d382af11be3bfbbd77a85bae09e3464c28136077bc35f0df77f7",
+      "tests/sized_cli.rs": "c1998e81b13d9de915325580802bb22814ca492b5e99ffd92eca5be098af3b80",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
       "scripts/test_qpe_instrument_host.py": "37a5abb8c795fa17d7a12f2e4ada917c62e839154b14ad39bb9060bb436b3cb6",
       "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",

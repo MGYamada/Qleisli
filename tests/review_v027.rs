@@ -158,7 +158,7 @@ fn local_only_call_names_reach_the_lowerers_diagnostics() {
             "a local value is not callable",
         ),
         (
-            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;inverse(f)(f)}",
+            "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;adjoint(f)(f)}",
             "static operation requires a function name, not a local value",
         ),
         (
@@ -234,7 +234,7 @@ fn basis_and_coherent_lift_bindings_are_not_global_dependencies() {
 
 #[test]
 fn local_static_argument_reports_its_type_at_the_original_argument() {
-    let source = "unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+    let source = "unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 unitary fn bad(q:Q<Bit>)->Q<Bit>{apply[q](q)}";
     let root = SourceRoot::new(source);
     let error = check_project(&root.0).unwrap_err();

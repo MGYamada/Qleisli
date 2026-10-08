@@ -1007,7 +1007,7 @@ def current_counterexample_sources(corpus=None):
         require(type(data["format"]) is int and data["format"] == 1 and
                 data["kind"] == "explicit-counterexample-source-migration" and
                 data["source_selection"] == "snapshot" and
-                data["transformation"] in ("basis-to-classical-function", "canonical-operation-application"),
+                data["transformation"] in ("basis-to-classical-function", "canonical-operation-application", "capability-operation-naming"),
                 "unknown counterexample migration format")
         require(type(data["issue"]) is int and data["issue"] > 0 and
                 all(isinstance(data[key], str) and data[key].strip()
@@ -1053,6 +1053,10 @@ def current_counterexample_sources(corpus=None):
                                         lambda match: (match.group(1) or b"") + b"classical fn",
                                         before.read_bytes())
                     failure = "counterexample migration changed more than the declaration keyword"
+                elif data["transformation"] == "capability-operation-naming":
+                    from operation_naming import canonical_operation_names
+                    translated = canonical_operation_names(before.read_bytes())
+                    failure = "counterexample migration changed more than the operation names"
                 else:
                     translated = canonical_counterexample_application(before.read_bytes())
                     failure = "counterexample migration changed more than the canonical application"

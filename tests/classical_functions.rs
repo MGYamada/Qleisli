@@ -42,7 +42,7 @@ fn nested_forward_helpers_keep_original_meanings_even_at_zero_counts() {
                 let text = first
                     .replace("use std::quantum::x;", "use std::quantum::{x,h};classical fn ident(b:Bit)->Bit{b} meaning Identity:Bit=permutation_by(ident);")
                     .replace("helper[const U:Op<Bit>]", "helper[const n:Nat,const U:Op<Bit,Flip>]")
-                                        .replace("requires Apply(U){U(q)}\npub unitary fn implementation", "requires Apply(U),n<=2{qfor static i in 0..n carry a=q{yield U(a)}}\npub unitary fn implementation")
+                                        .replace("requires Applicable(U){U(q)}\npub unitary fn implementation", "requires Applicable(U),n<=2{qfor static i in 0..n carry a=q{yield U(a)}}\npub unitary fn implementation")
                     .replace("helper[leaf]", &format!("helper[{count},leaf]"))
                     .replace("use_op[checked_op(implementation,Flip)]", &format!("use_op[power(checked_op(implementation,{}),{outer})]", if count%2==0 {"Identity"} else {"Flip"}));
                 let text = if honest {
@@ -103,9 +103,9 @@ fn nested_repeated_actuals_check_inner_requests_without_erasing_zero_width_phase
                 classical fn target((u,b):(Unit,Bit))->(Bit,(Bit,Bit)){{({},({},0))}}
                 meaning One:(Unit,Bit)=phase_by(angle); meaning M:(Unit,Bit)=phase_by(target);
                 unitary fn leaf(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{{leaf}}}
-                unitary fn helper[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Apply(U){{U(q)}}
+                unitary fn helper[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Applicable(U){{U(q)}}
                 pub unitary fn implementation(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{helper[power(checked_op(leaf,One),{count})](q)}}
-                unitary fn run[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Apply(U){{U(q)}}
+                unitary fn run[const U:Op<(Unit,Bit)>](q:Q<(Unit,Bit)>)->Q<(Unit,Bit)> requires Applicable(U){{U(q)}}
                 pub unitary fn client(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{{run[checked_op(implementation,M)](q)}}",count & 1, count >> 1);
             let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
                 .unwrap()
@@ -218,13 +218,13 @@ fn explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten() 
         meaning Identity:Bit=permutation_by(ident);
         unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
     for (body, honest) in [
-        ("pub unitary fn client(q:Q<Bit>)->Q<Bit>{inverse(checked_op(implementation,Flip))(q)}", true),
-        ("pub unitary fn client(q:Q<Bit>)->Q<Bit>{inverse(checked_op(implementation,Identity))(q)}", false),
-        ("unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}
-          unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[checked_op(U,Identity)](q)}
+        ("pub unitary fn client(q:Q<Bit>)->Q<Bit>{adjoint(checked_op(implementation,Flip))(q)}", true),
+        ("pub unitary fn client(q:Q<Bit>)->Q<Bit>{adjoint(checked_op(implementation,Identity))(q)}", false),
+        ("unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}
+          unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[checked_op(U,Identity)](q)}
           pub unitary fn client(q:Q<Bit>)->Q<Bit>{outer[checked_op(implementation,Flip)](q)}", false),
-        ("unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}
-          unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[checked_op(U,Flip)](q)}
+        ("unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}
+          unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[checked_op(U,Flip)](q)}
           pub unitary fn client(q:Q<Bit>)->Q<Bit>{outer[checked_op(implementation,Identity)](q)}", false),
     ] {
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(),format!("{prelude}{body}"))]))
@@ -305,7 +305,7 @@ fn explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase() {
         classical fn angle(u:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
         meaning Eighth:Unit=phase_by(angle);
         unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
-        pub unitary fn client(q:Q<Unit>)->Q<Unit>{inverse(checked_op(implementation,Eighth))(q)}";
+        pub unitary fn client(q:Q<Unit>)->Q<Unit>{adjoint(checked_op(implementation,Eighth))(q)}";
     let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
         .unwrap()
         .instantiate("main::client", BTreeMap::new(), BTreeMap::new())
@@ -470,7 +470,7 @@ fn packaged_zero_and_nary_bases_keep_their_exact_native_signature() {
         let text=format!("use std::quantum::{{split,join,phase_eighth}};{helper}
             meaning M:{basis}={meaning};
             pub unitary fn implementation(q:Q<{basis}>)->Q<{basis}>{{{body}}}
-            pub unitary fn client[const U:Op<{basis},M>](q:Q<{basis}>)->Q<{basis}> requires Apply(U){{U(q)}}");
+            pub unitary fn client[const U:Op<{basis},M>](q:Q<{basis}>)->Q<{basis}> requires Applicable(U){{U(q)}}");
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text)])).unwrap();
         let source = parsed
             .instantiate(
@@ -694,7 +694,7 @@ fn original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::compile::OperationBinding;
     let common = "use std::quantum::x; pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}";
-    let declaration = "meaning M:Bit=permutation_by(f); pub unitary fn host[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}";
+    let declaration = "meaning M:Bit=permutation_by(f); pub unitary fn host[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}";
     let parsed = ParsedProgram::parse(BTreeMap::from([
         (
             "flip".into(),
@@ -787,8 +787,8 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
 fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     use qleisli::frontend::compile::OperationBinding;
-    let bit = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\nunitary fn helper(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{helper(q)}\npub unitary fn host[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}";
-    let unit = "use std::quantum::phase_eighth;\nclassical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}\nmeaning Minus:Unit=phase_by(scalar);\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\npub unitary fn host[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U){q}";
+    let bit = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\nunitary fn helper(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{helper(q)}\npub unitary fn host[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}";
+    let unit = "use std::quantum::phase_eighth;\nclassical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}\nmeaning Minus:Unit=phase_by(scalar);\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\npub unitary fn host[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}";
     let wrong_bit = bit.replace("{helper(q)}", "{q}");
     let wrong_unit = unit.replace(
         "phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))",
@@ -852,7 +852,7 @@ fn unused_provider_leaf_checks_its_body_without_replacing_caller_identity() {
 fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     use qleisli::frontend::compile::OperationBinding;
-    let source = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U),k<=2 {inner[power(U,k)](q)}";
+    let source = "use std::quantum::x;\nclassical fn flip(b:Bit)->Bit{not b}\nmeaning Flip:Bit=permutation_by(flip);\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
     let flip = parsed.finite_meaning_target("main::Flip").unwrap();
     let identity = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
@@ -906,7 +906,7 @@ fn repeated_unused_binding_checks_composite_action_and_preserves_its_original_ca
 fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight() {
     use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
     use qleisli::frontend::compile::OperationBinding;
-    let scalar = "use std::quantum::phase_eighth;\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\nunitary fn inner[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Apply(U),k<=2 {inner[power(U,k)](q)}";
+    let scalar = "use std::quantum::phase_eighth;\npub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}\nunitary fn inner[const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U){q}\npub unitary fn outer[const k:Nat,const U:Op<Unit>](q:Q<Unit>)->Q<Unit> requires Applicable(U),k<=2 {inner[power(U,k)](q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), scalar.into())])).unwrap();
     let minus = FiniteMeaning::phase(BasisType::Unit, vec![4]).unwrap();
     let identity = FiniteMeaning::phase(BasisType::Unit, vec![0]).unwrap();
@@ -942,7 +942,7 @@ fn repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_prefligh
     }
     // Zero-count wrappers retain preflight of the original body. The now
     // supported inverse-X body passes; a finer phase remains unsupported.
-    let unsupported = "use std::quantum::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{inverse(turn)(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}\npub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[power(U,0)](q)}";
+    let unsupported = "use std::quantum::x;\nunitary fn turn(q:Q<Bit>)->Q<Bit>{x(q)}\npub unitary fn implementation(q:Q<Bit>)->Q<Bit>{adjoint(turn)(q)}\nunitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){q}\npub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){inner[power(U,0)](q)}";
     let parsed =
         ParsedProgram::parse(BTreeMap::from([("main".into(), unsupported.into())])).unwrap();
     let source = parsed
@@ -1662,7 +1662,7 @@ fn quantum_arguments_and_invalid_unused_declarations_are_rejected_before_native(
         "parse",
         "parse",
     );
-    for call in ["inverse(flip)(q)", "controlled(flip)(c,q)"] {
+    for call in ["adjoint(flip)(q)", "controlled(flip)(c,q)"] {
         let signature = if call.starts_with("controlled") {
             "c: Q<Bit>, q: Q<Bit>"
         } else {
@@ -2003,7 +2003,7 @@ fn access_routing_and_nested_controls_match_independent_exact_and_reference_acti
         hierarchical,
     };
     use qleisli::ir::QuantumPort;
-    let inverse = "use std::quantum::{h,phase,split,join};unitary fn turn(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(h(b),phase[1,3](a))}pub unitary fn client(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{inverse(turn)(q)}";
+    let inverse = "use std::quantum::{h,phase,split,join};unitary fn turn(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);join(h(b),phase[1,3](a))}pub unitary fn client(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(turn)(q)}";
     let control = "use std::quantum::{phase_eighth,split,join};unitary fn leaf(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}unitary fn inner(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{let(c,u)=split(q);let(c,u)=controlled(leaf)(c,u);join(c,u)}pub unitary fn client(q:Q<(Bit,(Bit,Unit))>)->Q<(Bit,(Bit,Unit))>{let(c,q)=split(q);let(c,q)=controlled(inner)(c,q);join(c,q)}";
     for (text, controlled, signature) in [
         (

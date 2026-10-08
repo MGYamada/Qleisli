@@ -165,7 +165,7 @@ fn sized_cli_cannot_select_private_entries_or_providers() {
 
     files.write(
         "main.qli",
-        "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) { U(q) }",
+        "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) { U(q) }",
     );
     files.write("dep.qli", "unitary fn g(q: Q<Bit>) -> Q<Bit> { q }");
     let private_provider = run(true);

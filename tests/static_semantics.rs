@@ -243,7 +243,7 @@ fn adjoint_and_nested_axis_remapping_match_all_exact_matrix_entries() {
         }
     });
     // U^dagger|c,d> = sum_a (-1)^(a*d) zeta^(-d)|a,c xor 1 xor d>/sqrt(2).
-    let backward = compiled_steps(MIX, preparation, "inverse(mix)(q)");
+    let backward = compiled_steps(MIX, preparation, "adjoint(mix)(q)");
     assert_operator(2, &backward, |row, column| {
         let (c, d, a, b) = (column & 1, column >> 1, row & 1, row >> 1);
         if b == c ^ 1 ^ d {
@@ -300,7 +300,7 @@ fn finite_repetition_preserves_the_phase_of_a_noncommuting_operator() {
 fn nested_qif_preserves_zero_one_controls_and_branch_phases() {
     let definitions = "
 unitary fn forward(q: Q<Bit>) -> Q<Bit> { t(x(q)) }
-unitary fn backward(q: Q<Bit>) -> Q<Bit> { inverse(forward)(q) }
+unitary fn backward(q: Q<Bit>) -> Q<Bit> { adjoint(forward)(q) }
 unitary fn first(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
     let (b,c) = split(q); let (b,c) = qif(b,c) { 0 => forward, 1 => backward }; join(b,c)
 }
@@ -344,7 +344,7 @@ unitary fn controlled(q: Q<(Bit,Unit)>) -> Q<(Bit,Unit)> {
     let preparation =
         "let pair = basis init0() as b { ((),b) }; let (u,b) = split(pair); discard(b);";
     // C_yes^dagger Z T^3 C_yes contributes zeta^7 on the one-dimensional space.
-    for (operation, phase) in [("power(phase,1)(u)", 7), ("inverse(phase)(u)", 1)] {
+    for (operation, phase) in [("power(phase,1)(u)", 7), ("adjoint(phase)(u)", 1)] {
         let steps = compiled_steps(definitions, preparation, operation);
         assert_operator(0, &steps, |_, _| Exact::phase(phase));
     }
@@ -368,7 +368,7 @@ fn sealed_phase_aliases_match_exact_operators_and_their_static_clients() {
     for (name, exponent) in [("s", 2), ("sdg", 6), ("tdg", 7)] {
         for (operation, power) in [
             (format!("power({name},1)(q)"), exponent),
-            (format!("inverse({name})(q)"), 8 - exponent),
+            (format!("adjoint({name})(q)"), 8 - exponent),
             (format!("power({name},3)(q)"), 3 * exponent),
         ] {
             let steps = compiled_steps(imports, "let q = init0();", &operation);
@@ -427,7 +427,7 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
     for (operation, exponent) in [
         ("power(id,1)(q)", 0),
         ("power(phase_eighth,1)(q)", 1),
-        ("inverse(phase_eighth)(q)", 7),
+        ("adjoint(phase_eighth)(q)", 7),
         ("power(phase_eighth,8)(q)", 0),
     ] {
         let steps = compiled_steps(imports, unit, operation);
@@ -458,7 +458,7 @@ fn sealed_scalar_phase_retains_zero_width_control_and_basis_specific_expectation
     let steps = compiled_steps(
         imports,
         "let q = join(init0(),init0());",
-        "inverse(phase_eighth)(q)",
+        "adjoint(phase_eighth)(q)",
     );
     assert_operator(2, &steps, |row, column| {
         if row == column {
@@ -642,7 +642,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
             Exact::ZERO
         }
     });
-    let inverse = compiled_steps(definitions, preparation, "inverse(choose)(q)");
+    let inverse = compiled_steps(definitions, preparation, "adjoint(choose)(q)");
     assert_operator(2, &inverse, |row, column| {
         let b = column & 1;
         let a = 1 - (column >> 1);
@@ -725,7 +725,7 @@ unitary fn control(q: Q<(Bit,(Bit,Bit))>) -> Q<(Bit,(Bit,Bit))> {
     let inverse = compiled_steps(
         definitions,
         "let q=join(init0(),init0());",
-        "inverse(permute)(q)",
+        "adjoint(permute)(q)",
     );
     assert_operator(2, &inverse, |row, column| {
         let b = column & 1;

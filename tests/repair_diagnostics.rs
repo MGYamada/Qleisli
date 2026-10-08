@@ -141,7 +141,7 @@ fn grouped_import_and_gate_provider_hints_have_checked_rewrites() {
     for gate in ["h", "x", "z", "t"] {
         let source = format!(
             "use std::quantum::{gate};
-            unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}
+            unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
             unitary fn client(q:Q<Bit>)->Q<Bit>{{apply[{gate}](q)}}"
         );
         root.write("main.qli", &source);
@@ -167,7 +167,7 @@ fn snapshot_limit_errors_explain_the_retained_sources() {
     for body in ["apply[p](q)", "apply_contract(p,p,q)"] {
         let root = SourceRoot::new(&format!(
             "unitary fn p(q:Q<Bit>)->Q<Bit>{{q}}
-             unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}
+             unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
              unitary fn client(q:Q<Bit>)->Q<Bit>{{{body}}}"
         ));
         check_project(&root.0).unwrap();

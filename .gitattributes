@@ -228,3 +228,8 @@ tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authori
 tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/missing-access/main.qli -text whitespace=-blank-at-eof
 tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-forward/main.qli -text whitespace=-blank-at-eof
 tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/unknown-basis/main.qli -text whitespace=-blank-at-eof
+
+# These two naming copies retain the same reviewed Basis-source EOF bytes.
+# Token/provenance checks retain their hashes; other whitespace rules apply.
+tests/fixtures/frontend_v030/capability-naming/current/files/client-001.qli -text whitespace=-blank-at-eof
+tests/fixtures/frontend_v030/capability-naming/current/files/client-002.qli -text whitespace=-blank-at-eof

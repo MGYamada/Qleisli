@@ -183,6 +183,14 @@ capacity rejection keeps precedence over that token's migration diagnostic.
 Selected explicit module keys retain their separate existing validation rules;
 this change does not unify them with finite filesystem module names.
 
+`Applicable`, `Adjointable` and `Controllable` are contextual predicates in
+`requires` clauses, followed by an operation parameter in parentheses. They
+remain ordinary identifiers elsewhere. The old `Apply`, `Adjoint` and
+`Controlled` tokens and `inverse_op`/`controlled_op` remain reserved for located
+migration errors. `adjoint(U)` is the current static description and
+`adjoint(U)(q)` its application; the two-argument form is retired.
+`controlled` and `inverse` retain ordinary single-stage name resolution.
+
 `Bits`, `CBits` and `Nat` are contextual type/kind names and remain valid names
 in identifier positions. `as` is contextual: it separates the quantum input
 expression and pattern in `basis input as pattern { expression }`, and remains

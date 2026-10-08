@@ -95,7 +95,7 @@ fn ordinary_calls_are_complete_first_order_calls_in_both_source_paths() {
 fn nested_quantum_environments_cannot_be_reused_as_callables_or_providers() {
     let declarations = "
         unitary fn operator(q:Q<Bit>)->Q<Bit>{q}
-        unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}";
+        unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}";
     // The first environment owns no physical wire, but still contains Q<Unit>.
     // The second hides one physical qubit as well; neither becomes classical
     // merely because an ordinary tuple/Bit surrounds that quantum ownership.
@@ -139,9 +139,9 @@ fn reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner()
         use std::quantum::x; use std::quantum::cnot;
         use std::observe::measure_z;
         unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
-        unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+        unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
         pub unitary fn twice[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
-        requires Apply(U){apply[then_op(U,U)](q)}
+        requires Applicable(U){apply[then_op(U,U)](q)}
         unitary fn actual(q:Q<Bit>)->Q<Bit>{twice[flip](q)}
         unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
         unitary fn exact(q:Q<Bit>)->Q<Bit>{apply_contract(actual,identity,q)}
@@ -208,7 +208,7 @@ fn reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner()
         );
     }
     let duplicate = "pub unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->(Q<Bit>,Q<Bit>)
-        requires Apply(U){(U(q),U(q))}";
+        requires Applicable(U){(U(q),U(q))}";
     shared_rejection(
         duplicate,
         "ownership",

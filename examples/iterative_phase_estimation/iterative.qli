@@ -12,17 +12,17 @@ unitary fn quarter_phase(q: Q<Bit>) -> Q<Bit> { power(eighth_phase,2)(q) }
 /// For output y = low + 2*middle + 4*high, the target branch is K_y rho K_y†,
 /// where K_y = (1/8) sum_{r=0}^7 exp(-2*pi*i*r*y/8) U^r.
 pub observe fn phase3[const U: Op<Bit>](q: Q<Bit>) -> ((Bit,Bit,Bit),Q<Bit>)
-requires Controlled(U) {
+requires Controllable(U) {
     let (meter,q) = controlled(power(U,4))(h(init0()),q);
     let low = measure_z(h(meter));
 
     let (meter,q) = controlled(power(U,2))(h(init0()),q);
-    let meter = if low { inverse(quarter_phase)(meter) } else { meter };
+    let meter = if low { adjoint(quarter_phase)(meter) } else { meter };
     let middle = measure_z(h(meter));
 
     let (meter,q) = controlled(U)(h(init0()),q);
-    let meter = if low { inverse(t)(meter) } else { meter };
-    let meter = if middle { inverse(quarter_phase)(meter) } else { meter };
+    let meter = if low { adjoint(t)(meter) } else { meter };
+    let meter = if middle { adjoint(quarter_phase)(meter) } else { meter };
     let high = measure_z(h(meter));
     ((low,middle,high),q)
 }

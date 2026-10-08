@@ -635,7 +635,10 @@ impl Operation {
                 module,
                 span,
                 ErrorCode::Capability,
-                format!("missing {access:?} access in the generic declaration"),
+                format!(
+                    "missing {} access in the generic declaration",
+                    formals::access_name(access)
+                ),
             ));
         }
         let bits =

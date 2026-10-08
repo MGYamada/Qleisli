@@ -107,24 +107,24 @@ def source_rejections(base):
     cases = []
     order = base['order']
     for name, changed in [
-        ('forward-missing-controlled', order.replace(', Controlled(U)','')),
-        ('forward-apply-is-not-control', order.replace('Controlled(U)','Apply(U)')),
-        ('forward-adjoint-is-not-control', order.replace('Controlled(U)','Adjoint(U)')),
+        ('forward-missing-controlled', order.replace(', Controllable(U)','')),
+        ('forward-apply-is-not-control', order.replace('Controllable(U)','Applicable(U)')),
+        ('forward-adjoint-is-not-control', order.replace('Controllable(U)','Adjointable(U)')),
         ('forward-natural-for-operation', order.replace('estimate[n,m,U]','estimate[n,m,1]')),
         ('forward-operation-for-natural', order.replace('estimate[n,m,U]','estimate[U,m,U]')),
         ('forward-static-arity', order.replace('estimate[n,m,U]','estimate[n,U]')),
         ('forward-target-type', order.replace('Op<Bits<n>>','Op<Bits<n+1>>')),
         ('forward-alias', order.replace('(phase,target)\n}', '(target,target)\n}')),
-        ('forward-access-empty-fold', order.replace(', Controlled(U)','').replace(
+        ('forward-access-empty-fold', order.replace(', Controllable(U)','').replace(
             'estimate[n,m,U](phase,target)',
             'qfor static k in 0..0 carry pair = (phase,target) { let (p,t) = pair; yield estimate[n,m,U](p,t); }')),
-        ('forward-access-unselected-branch', order.replace(', Controlled(U)','').replace(
+        ('forward-access-unselected-branch', order.replace(', Controllable(U)','').replace(
             'estimate[n,m,U](phase,target)',
             'if static n == 2 { (phase,target) } else { estimate[n,m,U](phase,target) }')),
     ]:
         cases.append((name,base|{'order':changed},'order'))
     cases.append(('callee-extra-access',base|{'estimation':base['estimation'].replace(
-        'Controlled(U)','Controlled(U), Adjoint(U)')},'order'))
+        'Controllable(U)','Controllable(U), Adjointable(U)')},'order'))
     for name,changed in [
         ('transparent-static-arity',base['amplitude'].replace('grover[n,j,d]','grover[n]')),
         ('transparent-wrong-target',base['amplitude'].replace('grover[n,j,d]','grover[n+1,j,d]')),
@@ -161,8 +161,8 @@ def cache_case(base):
     # Different nested providers at the same natural sizes must not share a
     # stale instantiation. Their phases add to pi on the all-one three-bit input.
     modules = base | {
-      'box': 'use std::registers::take_bit; use std::registers::put_bit; pub unitary fn box[const n: Nat, const V: Op<Bits<n-1>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 2, Controlled(V) { let (c,t)=take_bit[n,0](q); let (c,t)=controlled(V)(c,t); put_bit[n,0](c,t) }',
-      'route': 'pub unitary fn route[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(U)(c,q) }',
+      'box': 'use std::registers::take_bit; use std::registers::put_bit; pub unitary fn box[const n: Nat, const V: Op<Bits<n-1>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 2, Controllable(V) { let (c,t)=take_bit[n,0](q); let (c,t)=controlled(V)(c,t); put_bit[n,0](c,t) }',
+      'route': 'pub unitary fn route[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controllable(U) { controlled(U)(c,q) }',
       'client': 'use route::route; use box::box; use evolution::evolve; pub unitary fn twice[const n: Nat](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { let (c,q)=route[n,box[n,evolve[n-1,1,3]]](c,q); route[n,box[n,evolve[n-1,3,3]]](c,q) }'}
     artifact = compile_source(modules['client'],'twice',dict(n=2),modules=modules)
     evaluate,_ = circuit_action(artifact)
@@ -206,7 +206,7 @@ def main():
       'wrong-modular-direction': (base|{'modular':base['modular'].replace('take_bit[n,n-1]','take_bit[n,0]').replace('put_bit[n,0]','put_bit[n,n-1]')},('order',3,2,1,3)),
       'missing-preparation': (base|{'amplitude':base['amplitude'].replace('prepare[n,j,d](target)','target')},('amplitude',1,3,1,3)),
       'wrong-reflection-sign': (base|{'amplification':negative_sign},('amplitude',1,3,1,3)),
-      'wrong-conjugation': (base|{'amplification':replace_required(base['amplification'],'inverse(prepare[n,j,d])(q)','prepare[n,j,d](q)')},('amplitude',1,3,1,3)),
+      'wrong-conjugation': (base|{'amplification':replace_required(base['amplification'],'adjoint(prepare[n,j,d])(q)','prepare[n,j,d](q)')},('amplitude',1,3,1,3)),
       'shared-qpe-fault-order': (base|{'estimation':replace_required(base['estimation'],'U,2^k','U,0')},('order',3,2,1,3)),
       'shared-qpe-fault-amplitude': (base|{'estimation':replace_required(base['estimation'],'U,2^k','U,0')},('amplitude',1,3,1,3)),
     }

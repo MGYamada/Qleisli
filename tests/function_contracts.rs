@@ -111,10 +111,10 @@ fn nested_function_evidence_survives_external_inverse_and_control() {
         unitary fn first(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
         unitary fn second(q: Q<Bit>) -> Q<Bit> {{ apply_contract(first,specified,q) }}
         unitary fn top(q: Q<Bit>) -> Q<Bit> {{ apply_contract(second,specified,q) }}
-        unitary fn inverse(q: Q<Bit>) -> Q<Bit> {{ inverse(top)(q) }}
+        unitary fn inverse(q: Q<Bit>) -> Q<Bit> {{ adjoint(top)(q) }}
         observe fn main() -> (Bit,Bit) {{
             let q=power(top,2)(h(init0()));
-            let q=inverse(top)(inverse(top)(q));
+            let q=adjoint(top)(adjoint(top)(q));
             let (c,target)=qif(h(init0()),x(init0())) {{ 0 => identity, 1 => inverse }};
             discard(target);
             let c=power(t,6)(c);
@@ -304,7 +304,7 @@ fn adjoint_control_and_repetition_keep_evidence_and_relative_phase() {
         unitary fn phase(q: Q<Bit>) -> Q<Bit> {{ apply_contract(implementation,specified,q) }}
         observe fn main() -> (Bit,Bit) {{
             let q=power(phase,2)(h(init0()));
-            let q=inverse(phase)(inverse(phase)(q));
+            let q=adjoint(phase)(adjoint(phase)(q));
             let (c,tgt)=qif(h(init0()),x(init0())) {{ 0 => identity, 1 => phase }};
             discard(tgt);
             (measure_z(h(q)),measure_z(h(c)))

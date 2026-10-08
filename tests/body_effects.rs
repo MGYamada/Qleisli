@@ -324,7 +324,7 @@ fn every_derived_stdlib_body_exports_its_effect_without_runtime_annotation() {
 
 #[test]
 fn operation_providers_use_principal_effects_and_cannot_hide_measurement() {
-    let apply = "fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)} pub fn f(q:Q<Bit>)->Q<Bit>{apply[g](q)}";
+    let apply = "fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)} pub fn f(q:Q<Bit>)->Q<Bit>{apply[g](q)}";
     for (provider, accepted) in [
         (
             "use std::quantum::x; observe fn g(q:Q<Bit>)->Q<Bit>{x(q)}",

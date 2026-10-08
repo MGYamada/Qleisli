@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Name operation capabilities `Applicable`, `Adjointable` and `Controllable`,
+  and constructed adjoints `adjoint(U)` / `adjoint(U)(q)`. Reject the retired
+  predicates and `inverse_op` / `controlled_op` descriptions with located
+  migrations. Preserve capability derivation, exact phase and native acceptance;
+  retain historical client bytes and select hash-bound current source copies.
+
 - Select current corpus projects in the pure raw native comparison, retaining
   dependency bodies for independent exact evaluation and separately checking
   the complete original QIRF through native acceptance.

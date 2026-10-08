@@ -35,7 +35,7 @@ fn sized_host_bindings_respect_module_visibility() {
 
     for body in ["q", "U(q)"] {
         let main = format!(
-            "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) {{ {body} }}"
+            "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U) {{ {body} }}"
         );
         for (provider, accepted) in [(public, true), (private, false)] {
             let program = ParsedProgram::parse(BTreeMap::from([
@@ -477,17 +477,17 @@ fn every_import_resolves_and_mutual_cycles_are_rejected() {
 #[test]
 fn forwarding_checks_callee_size_and_access_premises() {
     let ordered = BTreeMap::from([
-        ("dep".into(), "pub unitary fn use_op[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }".into()),
-        ("main".into(), "use dep::use_op; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { use_op[n,U](q) }".into()),
+        ("dep".into(), "pub unitary fn use_op[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { U(q) }".into()),
+        ("main".into(), "use dep::use_op; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { use_op[n,U](q) }".into()),
     ]);
     ParsedProgram::parse(ordered).unwrap();
-    let dep = "pub unitary fn g[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { controlled(U)(c,q) }";
-    let main = "use dep::g; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { g[n,U](c,q) }";
+    let dep = "pub unitary fn g[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controllable(U) { controlled(U)(c,q) }";
+    let main = "use dep::g; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controllable(U) { g[n,U](c,q) }";
     let modules =
         |main: String| BTreeMap::from([("main".into(), main), ("dep".into(), dep.into())]);
     ParsedProgram::parse(modules(main.into())).unwrap();
     assert_eq!(
-        ParsedProgram::parse(modules(main.replace(", Controlled(U)", "")))
+        ParsedProgram::parse(modules(main.replace(", Controllable(U)", "")))
             .unwrap_err()
             .code(),
         "access"
@@ -524,11 +524,11 @@ fn duplicate_declarations_and_inconsistent_premises_reject() {
         "size",
     );
     reject(
-        "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> requires Controlled(n) { q }",
+        "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> requires Controllable(n) { q }",
         "access",
     );
     reject(
-        "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U), Apply(U) { q }",
+        "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Applicable(U), Applicable(U) { q }",
         "access",
     );
 }
@@ -542,7 +542,7 @@ fn grouping_semicolons_and_count_precedence_match_the_source_contract() {
         "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let (x) = q; x }",
         "parse",
     );
-    let source = "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(power(U,2^(n+1)))(c,q) }";
+    let source = "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controllable(U) { controlled(power(U,2^(n+1)))(c,q) }";
     ParsedProgram::parse(sources(source)).unwrap();
     reject(&source.replace("2^(n+1)", "2^n+1"), "parse");
     reject(&source.replace("2^(n+1)", "3^n"), "parse");
@@ -694,7 +694,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     );
     assert_eq!(error.message(), "a local value is not callable");
     let local_callee =
-        "use dep::g; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let g = q; let q = g; inverse(g)(q) }";
+        "use dep::g; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let g = q; let q = g; adjoint(g)(q) }";
     let mut modules = sources(local_callee);
     modules.insert(
         "dep".into(),
@@ -703,7 +703,7 @@ fn lexical_binding_identity_prevents_shadowed_owner_escape() {
     let error = ParsedProgram::parse(modules).unwrap_err();
     assert_eq!(error.code(), "type", "{error}");
     assert_eq!(error.module(), Some("main"));
-    let name_start = local_callee.rfind("inverse(g)(q)").unwrap() + "inverse(".len();
+    let name_start = local_callee.rfind("adjoint(g)(q)").unwrap() + "inverse(".len();
     assert_eq!(
         (error.span().start, error.span().end),
         (name_start, name_start + 1)
@@ -912,7 +912,7 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
             format!("power(U,{count})")
         };
         let main = format!(
-            "pub unitary fn f[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controlled(U) {{ controlled(power({op},0))(c,q) }}"
+            "pub unitary fn f[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controllable(U) {{ controlled(power({op},0))(c,q) }}"
         );
         let program = ParsedProgram::parse(BTreeMap::from([
             ("main".into(), main),
@@ -1162,7 +1162,7 @@ fn inverse_fourier_source_proposal(
     source: &str,
     n: u32,
 ) -> qleisli::frontend::compile::HierarchyProposal {
-    let client = "use fourier::fourier; pub unitary fn inverse[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { inverse(fourier[n])(q) }";
+    let client = "use fourier::fourier; pub unitary fn inverse[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n])(q) }";
     ParsedProgram::parse(BTreeMap::from([
         ("fourier".into(), source.into()),
         ("client".into(), client.into()),
@@ -2182,8 +2182,8 @@ fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
 
 #[test]
 fn common_lexical_static_substitution_uses_callee_binders_and_caller_values() {
-    let main = "use helper::apply; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { apply[n,U](q) }";
-    let helper = "pub unitary fn apply[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }";
+    let main = "use helper::apply; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { apply[n,U](q) }";
+    let helper = "pub unitary fn apply[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Applicable(U) { U(q) }";
     let provider = "pub unitary fn keep[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
     let parsed = ParsedProgram::parse(BTreeMap::from([
         ("main".into(), main.into()),

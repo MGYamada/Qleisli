@@ -538,7 +538,7 @@ fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
         classical fn copy(b:Bits<2>)->(Bits<2>,Bits<2>){(b,b)}
         unitary fn provider[const B:Basis](q:Q<B>)->Q<B>{
         let b=prepend_bit[1](0,prepend_bit[0](1,empty_bits()));let _=copy(b);q}
-        pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
+        pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Applicable(U){U(q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
     for ty in ["Unit", "Bits<0>", "Bits<1>", "Bits<2>"] {
         let binding = BasisBinding::parse(ty).unwrap();

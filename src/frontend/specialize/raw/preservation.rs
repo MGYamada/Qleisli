@@ -1250,7 +1250,7 @@ mod tests {
     #[test]
     fn access_replay_rejects_native_valid_inverse_order_phase_and_control_frame_substitutions() {
         let source = elaborate(
-            "use std::quantum::{h,phase};unitary fn turn(q:Q<Bit>)->Q<Bit>{h(phase[1,3](q))} pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(inverse(turn)(q),r)}",
+            "use std::quantum::{h,phase};unitary fn turn(q:Q<Bit>)->Q<Bit>{h(phase[1,3](q))} pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(adjoint(turn)(q),r)}",
             "main::caller",
         );
         let phase = crate::ir::CircuitStep {
@@ -1467,7 +1467,7 @@ mod tests {
     fn nested_forward_replay_rejects_native_valid_provider_and_caller_frame_substitutions() {
         let source = elaborate(
             "use std::quantum::x;unitary fn leaf(q:Q<Bit>)->Q<Bit>{x(q)}
-            unitary fn helper[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+            unitary fn helper[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
             pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(helper[leaf](q),r)}",
             "main::caller",
         );

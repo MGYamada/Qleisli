@@ -1807,7 +1807,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Coherent conjunction into the target, with scalar +1; controls and target are retained. Local empty conjunction is true.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "bc74ef9fa6e89dc5539efbc63fbc6c03abd4261afda42c4ab7f7758f4ef2e44c"
     },
     {
@@ -1819,7 +1819,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed addition by one modulo 2^n, high carry before low-bit updates, no scratch.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "5eab4961ffabc1ba538af43c440b11c5add3b5fed81ae21f30b97b7b71c17430"
     },
     {
@@ -1831,7 +1831,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed addition by K modulo 2^n through the same shared increment; nK X applications, not efficient general synthesis.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6"
     },
     {
@@ -1843,7 +1843,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed complement of every register bit, preserving the register owner.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3"
     },
     {
@@ -1855,7 +1855,7 @@
       "license": "Apache-2.0",
       "status": "experimental-source-path",
       "contract": "Phase-fixed equality into either initial target value; both arbitrary input registers restored coherently, no scratch.",
-      "limitations": "Small widths 0–3; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
+      "limitations": "Small widths 0\u20133; zero width is a local ownership boundary case. No maximum-size checking or capacity claim. Production source/runtime, independently bound arithmetic contracts, general source preservation and standard adoption remain open.",
       "sha256": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729"
     }
   ],
@@ -1901,7 +1901,8 @@
     "migrations/semantic-namespace-v030/migration.json",
     "migrations/coherent-basis-v030/migration.json",
     "migrations/classical-functions-v030/migration.json",
-    "migrations/operation-application-v030/migration.json"
+    "migrations/operation-application-v030/migration.json",
+    "migrations/capability-naming-v030/migration.json"
   ],
   "negative_expectations": {
     "path": "negative/current-manifest.json",
@@ -1909,6 +1910,7 @@
   },
   "counterexample_source_migrations": [
     "migrations/classical-functions-v030/counterexamples.json",
-    "migrations/operation-counterexamples-v030/counterexamples.json"
+    "migrations/operation-counterexamples-v030/counterexamples.json",
+    "migrations/capability-naming-v030/counterexamples.json"
   ]
 }

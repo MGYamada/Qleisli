@@ -16,6 +16,7 @@ CHECKED_MAP = "tests/fixtures/frontend_v030/checked-operation/source-map.json"
 CLASSICAL_MAP = "tests/fixtures/frontend_v030/classical-functions/source-map.json"
 CLIENT_CONST_MAP = "tests/fixtures/frontend_v030/const-client-headers/source-map.json"
 RETIRED_OPERATION_MAP = "tests/fixtures/frontend_v030/retired-operation-spellings/source-map.json"
+CAPABILITY_NAMING_MAP = "tests/fixtures/frontend_v030/capability-naming/source-map.json"
 APPLICATION_MAP = "tests/fixtures/frontend_v030/operation-application/source-map.json"
 CONST_MAP = "tests/fixtures/frontend_v030/const-parameters/source-map.json"
 QFOR_MAP = "tests/fixtures/frontend_v030/qfor/source-map.json"
@@ -146,7 +147,8 @@ def _migration_maps(stop_before=None):
             (CONST_MAP, "qleisli.const-parameter-source-map", "const parameter"),
             (APPLICATION_MAP, "qleisli.operation-application-source-map", "operation application"),
             (CLIENT_CONST_MAP, "qleisli.const-client-source-map", "const client"),
-            (RETIRED_OPERATION_MAP, "qleisli.retired-operation-source-map", "retired operation")):
+            (RETIRED_OPERATION_MAP, "qleisli.retired-operation-source-map", "retired operation"),
+            (CAPABILITY_NAMING_MAP, "qleisli.capability-naming-source-map", "capability naming")):
         if relative == stop_before:
             break
         path = _local(ROOT, relative)

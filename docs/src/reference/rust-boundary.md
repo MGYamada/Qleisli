@@ -131,7 +131,7 @@ distinct; see the [primitive inventory](primitive-boundary.md).
 | `std::observe::discard(q)` | One `Q<A> -> Unit`; Observe. Explicitly loses that subsystem's quantum information by the specified partial trace. It is not proof of clean return. The finite lowering supports it; the selected concrete catalog currently does not. |
 | `std::observe::reset(q)` | `Q<Bit> -> Q<Bit>`; Observe. Ends the original logical owner and returns a fresh owner prepared in zero. The result remains linear and must itself be returned or explicitly consumed. The finite lowering supports it; the selected concrete catalog currently does not. |
 | `with_computed(...) { ... }` | A checked scoped construction with its own exact cleanup premises. It returns the data owner and discharges its private auxiliary only through the admitted compute/use/uncompute rule. |
-| `inverse(U)(q)` | Reverses the specified operation only with the required checked access. The call consumes its input and returns an owner; uncomputation alone does not discharge that returned owner or prove it clean. |
+| `adjoint(U)(q)` | Reverses the specified operation only with the required checked access. The call consumes its input and returns an owner; uncomputation alone does not discharge that returned owner or prove it clean. |
 | Scope exit | A lexical boundary requiring complete owner accounting. It performs none of the physical operations above. |
 
 There is no supported standalone `release(q)` and no free-standing `Release0`

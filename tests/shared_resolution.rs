@@ -77,7 +77,8 @@ fn same_named_host_providers_keep_distinct_definition_and_instance_identity() {
     let program = ParsedProgram::parse(BTreeMap::from([
         (
             "main".into(),
-            "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}".into(),
+            "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}"
+                .into(),
         ),
         (
             "a".into(),

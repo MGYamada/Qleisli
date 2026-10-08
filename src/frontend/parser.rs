@@ -400,12 +400,30 @@ impl Parser {
                     self.current().kind,
                     TokenKind::ApplyAccess | TokenKind::AdjointAccess | TokenKind::ControlledAccess
                 ) {
-                    let access_span = self.current().span;
-                    let access = match self.bump().kind {
-                        TokenKind::ApplyAccess => Access::Apply,
-                        TokenKind::AdjointAccess => Access::Adjoint,
-                        _ => Access::Controlled,
+                    let (old, current) = match self.current().kind {
+                        TokenKind::ApplyAccess => ("Apply", "Applicable"),
+                        TokenKind::AdjointAccess => ("Adjoint", "Adjointable"),
+                        _ => ("Controlled", "Controllable"),
                     };
+                    return Err(self.error(&format!("`{old}(U)` is retired; use `{current}(U)`")));
+                }
+                if (self.word("Applicable")
+                    || self.word("Adjointable")
+                    || self.word("Controllable"))
+                    && self
+                        .tokens
+                        .get(self.pos + 1)
+                        .is_some_and(|token| token.kind == TokenKind::LParen)
+                {
+                    let access_span = self.current().span;
+                    let access = if self.word("Applicable") {
+                        Access::Apply
+                    } else if self.word("Adjointable") {
+                        Access::Adjoint
+                    } else {
+                        Access::Controlled
+                    };
+                    self.bump();
                     self.expect(&TokenKind::LParen)?;
                     let name = self.ident()?;
                     self.expect(&TokenKind::RParen)?;
@@ -475,8 +493,32 @@ impl Parser {
 
     fn static_op_inner(&mut self) -> Result<StaticOp, ParseError> {
         let start = self.current().span;
-        if self.at(&TokenKind::RepeatOp) {
+        if self.at(&TokenKind::RepeatOp)
+            || self.at(&TokenKind::InverseOp)
+            || self.at(&TokenKind::ControlledOp)
+        {
             return Err(self.retired_operation_syntax());
+        }
+        if self.at(&TokenKind::Adjoint)
+            || (self.word("controlled")
+                && self
+                    .tokens
+                    .get(self.pos + 1)
+                    .is_some_and(|token| token.kind == TokenKind::LParen))
+        {
+            let adjoint = self.at(&TokenKind::Adjoint);
+            self.bump();
+            self.expect(&TokenKind::LParen)?;
+            let child = Box::new(self.static_op()?);
+            let end = self.expect(&TokenKind::RParen)?.span;
+            return Ok(StaticOp {
+                kind: if adjoint {
+                    StaticOpKind::Inverse(child)
+                } else {
+                    StaticOpKind::Controlled(child)
+                },
+                span: start.cover(end),
+            });
         }
         if self.word("power")
             && self
@@ -546,12 +588,7 @@ impl Parser {
         }
         if !matches!(
             self.current().kind,
-            TokenKind::BindOp
-                | TokenKind::InverseOp
-                | TokenKind::ControlledOp
-                | TokenKind::ThenOp
-                | TokenKind::TensorOp
-                | TokenKind::ConjugateOp
+            TokenKind::BindOp | TokenKind::ThenOp | TokenKind::TensorOp | TokenKind::ConjugateOp
         ) {
             return Err(self.error("expected a static operation description"));
         }
@@ -566,8 +603,6 @@ impl Parser {
                     meaning: self.ident()?,
                 }
             }
-            TokenKind::InverseOp => StaticOpKind::Inverse(Box::new(self.static_op()?)),
-            TokenKind::ControlledOp => StaticOpKind::Controlled(Box::new(self.static_op()?)),
             TokenKind::ThenOp | TokenKind::TensorOp | TokenKind::ConjugateOp => {
                 let a = Box::new(self.static_op()?);
                 self.expect(&TokenKind::Comma)?;
@@ -769,7 +804,7 @@ impl Parser {
     // Two-stage operation syntax is contextual. Single-stage ordinary calls
     // and declarations with these names retain normal name resolution.
     fn transformed_application(&self, name: &str) -> bool {
-        if !self.word(name)
+        if !(self.word(name) || name == "adjoint" && self.at(&TokenKind::Adjoint))
             || self
                 .tokens
                 .get(self.pos + 1)
@@ -1297,6 +1332,9 @@ impl Parser {
             return self.power_application();
         }
         if self.transformed_application("inverse") {
+            return Err(self.error("`inverse(U)(q)` is retired; use `adjoint(U)(q)`"));
+        }
+        if self.transformed_application("adjoint") {
             let start = self.bump();
             self.expect(&TokenKind::LParen)?;
             let operation = self.static_op()?;
@@ -1349,7 +1387,9 @@ impl Parser {
 
     fn retired_operation_syntax(&self) -> ParseError {
         let message = match self.current().kind {
-            TokenKind::Adjoint => "`adjoint(U, q)` is retired; use `inverse(U)(q)`",
+            TokenKind::Adjoint => "`adjoint(U, q)` is retired; use `adjoint(U)(q)`",
+            TokenKind::InverseOp => "`inverse_op(U)` is retired; use `adjoint(U)`",
+            TokenKind::ControlledOp => "`controlled_op(U)` is retired; use `controlled(U)`",
             TokenKind::RepeatOp => "`repeat_op(k, U)` is retired; use `power(U, k)`",
             TokenKind::RepeatStatic => "`repeat_static(k, U, q)` is retired; use `power(U, k)(q)`",
             _ => unreachable!("only retired operation tokens call this diagnostic"),

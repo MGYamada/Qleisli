@@ -11,7 +11,7 @@ use std::sync::Arc;
 fn providers(count: usize, calls: impl Fn(usize) -> String) -> String {
     let mut source = String::from(
         "use std::quantum::init0; use std::quantum::x; use std::observe::measure_z;
-         unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+         unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
          unitary fn specified(q:Q<Bit>)->Q<Bit>{x(q)}\n",
     );
     for index in 0..count {
@@ -125,7 +125,7 @@ fn shared_receipts_keep_exact_bindings_and_outlive_source_changes() {
              use std::observe::measure_z;
              classical fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);
              unitary fn specified(q:Q<Bit>)->Q<Bit>{{x(q)}}
-             unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}
+             unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
              observe fn main()->Bit{{let q=init0(); let q={call}; measure_z(q)}}"
         ));
         root.write(

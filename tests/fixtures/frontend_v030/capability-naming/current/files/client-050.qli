@@ -1,0 +1,2 @@
+unitary fn power[const n: Nat, const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Applicable(U) { U(q) }

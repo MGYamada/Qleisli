@@ -1,0 +1,1 @@
+pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){let U=1;U(q)}

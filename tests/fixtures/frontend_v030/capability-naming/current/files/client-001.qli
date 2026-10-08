@@ -1,0 +1,3 @@
+pub unitary fn f[const U:Op<A>,const A:Basis](q:Q<A>)->Q<A>
+requires Applicable(U) {U(q)}
+

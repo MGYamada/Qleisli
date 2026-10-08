@@ -27,7 +27,7 @@ same complete distribution. Deliberately omitted/swapped corrections compile
 but fail these algorithmic expectations. A basis-state-only check misses the
 omitted phase correction.
 
-The preparation client uses `inverse(Prepare)(output)`. `y_minus` uses two
+The preparation client uses `adjoint(Prepare)(output)`. `y_minus` uses two
 named `inverse(t)` applications after H and has the full operator
 `S†H = [[s,s],[-i*s,i*s]]`, where `s = 1/sqrt(2)`. A separate exact matrix
 regression checks both columns and the complete phase. Opposite relative phase

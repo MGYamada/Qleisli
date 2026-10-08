@@ -84,7 +84,7 @@ fn nary_static_meanings_retain_shape_and_order() {
     let prefix = "classical fn id((a,b,c):(Bit,Bit,Bit))->(Bit,Bit,Bit){(a,b,c)}
         meaning Id: (Bit,Bit,Bit) = permutation_by(id);
         unitary fn apply[const U:Op<(Bit,Bit,Bit),Id>](q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>
-        requires Apply(U) { U(q) }
+        requires Applicable(U) { U(q) }
         unitary fn identity(q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>{q}
         unitary fn client(q:Q<(Bit,Bit,Bit)>)->Q<(Bit,Bit,Bit)>{apply[checked_op(identity,Id)](q)}";
     let root = SourceRoot::new(&format!("{prefix} observe fn main()->Unit {{()}}"));

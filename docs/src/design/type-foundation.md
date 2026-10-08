@@ -9,6 +9,8 @@ Guardian ruling, or discharge a guarantee. Examples below are desired
 as compiled. The [authority hierarchy](../reference/authority.md) and
 [production boundary](../reference/production-boundary.md) govern the work.
 
+**Naming update (2026-10-08):** [Issue #45](https://github.com/MGYamada/Qleisli/issues/45) selects `Applicable`, `Adjointable` and `Controllable`, with `adjoint(U)` as the general constructor. The older `Apply`/`Adjoint`/`Controlled` and `inverse(U)` candidate notation below is superseded by this naming decision; it is not current executable syntax. The [static-language Reference](../reference/static-language.md#operation-repetition-and-access) specifies the bounded implementation. A future two-sided inverse API requires its own law; this update grants no general isometry adjoint or new provider access.
+
 The [target type contract](../reference/type-model.md) now selects the ordinary
 Bit literals, exact tree distinctions and explicit generic boundary as ordinary
 implementation choices under the approved plan. It does not record a new human

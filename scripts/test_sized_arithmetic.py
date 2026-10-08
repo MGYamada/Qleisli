@@ -129,8 +129,8 @@ def main():
             name = f'add-{n}-{amount}'
             artifacts[name] = compile_case(modules, 'addition', 'add_k', n=n, K=amount)
             params[name] = 'add', n, amount
-    inverse_add = 'use addition::add_k; pub unitary fn undo[const n: Nat, const K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { inverse(add_k[n,K])(q) }'
-    inverse_eq = 'use comparison::equals; pub unitary fn undo[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { inverse(equals[n])((a,b,t)) }'
+    inverse_add = 'use addition::add_k; pub unitary fn undo[const n: Nat, const K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { adjoint(add_k[n,K])(q) }'
+    inverse_eq = 'use comparison::equals; pub unitary fn undo[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { adjoint(equals[n])((a,b,t)) }'
     control_add = 'use addition::add_k; pub unitary fn use_add[const n: Nat, const K: Nat](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { controlled(add_k[n,K])(c,q) }'
     for n in WIDTHS:
         artifacts[f'inverse-add-{n}'] = compile_case(modules | {'client': inverse_add}, 'client', 'undo', n=n, K=3)

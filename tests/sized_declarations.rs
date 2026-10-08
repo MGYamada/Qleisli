@@ -293,15 +293,15 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
 
 #[test]
 fn direct_formal_adjoint_and_controlled_slots_are_usable() {
-    let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjoint(U){inverse(U)(q)} pub fn main()->Unit{()}";
+    let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjointable(U){adjoint(U)(q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(inverse).0).unwrap();
     ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
 
     // Both finite spellings reach the same declared Controlled slot. The
     // canonical application below also drives the independent native oracle.
-    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(finite_control).0).unwrap();
-    let control = "pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
+    let control = "pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(control).0).unwrap();
 
     // This selected-only ordinary provider is T = diag(1, exp(i*pi/4)).
@@ -374,20 +374,20 @@ fn direct_formal_adjoint_and_controlled_slots_are_usable() {
 
 #[test]
 fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
-    let inverse = "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inverse(U)(q)} pub fn main()->Unit{()}";
+    let inverse = "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){adjoint(U)(q)} pub fn main()->Unit{()}";
     let finite_error = check_project(&SourceRoot::new(inverse).0).unwrap_err();
     assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
-    assert_eq!(finite_error.message, "missing Adjoint operation access");
-    let target = inverse.rfind("inverse(U)(q)").unwrap();
+    assert_eq!(finite_error.message, "missing Adjointable operation access");
+    let target = inverse.rfind("adjoint(U)(q)").unwrap();
     assert_eq!(
         (finite_error.span.start, finite_error.span.end),
-        (target, target + "inverse(U)(q)".len())
+        (target, target + "adjoint(U)(q)".len())
     );
     for (source, access, use_text) in [
-        (inverse, "Adjoint", "inverse(U)(q)"),
+        (inverse, "Adjointable", "adjoint(U)(q)"),
         (
-            "fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(U)(c,q)} pub fn main()->Unit{()}",
-            "Controlled",
+            "fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){controlled(U)(c,q)} pub fn main()->Unit{()}",
+            "Controllable",
             "controlled(U)(c,q)",
         ),
     ] {
@@ -405,10 +405,10 @@ fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
             (start, start + use_text.len())
         );
     }
-    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     let error = check_project(&SourceRoot::new(finite_control).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Capability, "{error}");
-    assert_eq!(error.message, "missing Controlled operation access");
+    assert_eq!(error.message, "missing Controllable operation access");
     let start = finite_control.find("1=>U").unwrap() + "1=>".len();
     assert_eq!((error.span.start, error.span.end), (start, start + 1));
 }
@@ -420,34 +420,34 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
         (
             "q:Q<Bit>",
             "Q<Bit>",
-            "if static 0 == 0 {q} else {inverse(U)(q)}",
-            "Adjoint",
-            "inverse(U)(q)",
+            "if static 0 == 0 {q} else {adjoint(U)(q)}",
+            "Adjointable",
+            "adjoint(U)(q)",
         ),
         (
             "q:Q<Bit>",
             "Q<Bit>",
-            "qfor static i in 0..0 carry a=q {yield inverse(U)(a)}",
-            "Adjoint",
-            "inverse(U)(a)",
+            "qfor static i in 0..0 carry a=q {yield adjoint(U)(a)}",
+            "Adjointable",
+            "adjoint(U)(a)",
         ),
         (
             "c:Q<Bit>,q:Q<Bit>",
             "(Q<Bit>,Q<Bit>)",
             "if static 0 == 0 {(c,q)} else {controlled(U)(c,q)}",
-            "Controlled",
+            "Controllable",
             "controlled(U)(c,q)",
         ),
         (
             "c:Q<Bit>,q:Q<Bit>",
             "(Q<Bit>,Q<Bit>)",
             "qfor static i in 0..0 carry pair=(c,q) {let (c,q)=pair; yield controlled(U)(c,q)}",
-            "Controlled",
+            "Controllable",
             "controlled(U)(c,q)",
         ),
     ] {
         let source = format!(
-            "fn unused[const U:Op<Bit>]({parameters})->{result} requires Apply(U){{{body}}} pub fn main()->Unit{{()}}"
+            "fn unused[const U:Op<Bit>]({parameters})->{result} requires Applicable(U){{{body}}} pub fn main()->Unit{{()}}"
         );
         let finite_error = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
@@ -478,7 +478,7 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
 
 #[test]
 fn duplicate_adjoint_and_controlled_slots_share_the_requirement_location() {
-    for access in ["Adjoint", "Controlled"] {
+    for access in ["Adjointable", "Controllable"] {
         let source = format!(
             "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires {access}(U),{access}(U){{q}} pub fn main()->Unit{{()}}"
         );

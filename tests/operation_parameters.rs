@@ -17,7 +17,7 @@ unitary fn had(q:Q<Bit>)->Q<Bit>{h(q)}
 unitary fn direct_z(q:Q<Bit>)->Q<Bit>{z(q)}
 classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning: Bit = phase_by(z_phase);
-unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 ";
 
 #[test]
@@ -43,15 +43,15 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
     use qleisli::frontend::documentation::render_markdown;
     use qleisli::frontend::parser::parse_module;
     let source = "/// A phase-fixed contract.\nmeaning M:Bit=phase_by(phi);\n\
-        /// Requires explicit access.\nunitary fn helper[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}";
+        /// Requires explicit access.\nunitary fn helper[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}";
     let rendered = render_markdown(source).unwrap();
     assert!(rendered.contains("meaning M:Bit=phase_by(phi);"));
-    assert!(rendered.contains("requires Apply(U)"));
+    assert!(rendered.contains("requires Applicable(U)"));
     for source in [
         "unitary fn f[const U:Op<Bit>,](q:Q<Bit>)->Q<Bit>{q}",
         "classical fn f[const U:Op<Bit>](b:Bit)->Bit{b}",
         "unitary fn f(q:Q<Bit>)->Q<Bit>{g[power(u,01)](q)}",
-        "unitary fn f(q:Q<Bit>)->Q<Bit>{inverse_op(u)}",
+        "unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u)}",
         "unitary fn meaning(q:Q<Bit>)->Q<Bit>{q}",
     ] {
         assert!(parse_module(source).is_err(), "{source}");
@@ -71,7 +71,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
         .spawn(|| {
             let source = format!(
                 "unitary fn f(q:Q<Bit>)->Q<Bit>{{g[{}u{}](q)}}",
-                "inverse_op(".repeat(1000),
+                "adjoint(".repeat(1000),
                 ")".repeat(1000)
             );
             assert!(parse_module(&source).unwrap_err().message.contains("limit"));
@@ -81,7 +81,7 @@ fn new_grammar_imports_documentation_and_depth_limits_are_explicit() {
         .unwrap();
     let root = SourceRoot::new(
         "use meanings::Flip; use meanings::implementation;
-        unitary fn run[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+        unitary fn run[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
         unitary fn client(q:Q<Bit>)->Q<Bit>{run[checked_op(implementation,Flip)](q)}",
     );
     root.write(
@@ -121,7 +121,7 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
         "{PRELUDE}
         use provider::implementation;
         unitary fn client[const U:Op<Bit,ZMeaning>](q:Q<Bit>)->Q<Bit>
-        requires Apply(U), Controlled(U) {{ U(q) }}
+        requires Applicable(U), Controllable(U) {{ U(q) }}
         observe fn main()->(Bit,Bit) {{
             let (r,q)=cnot(h(init0()),init0());
             let q=client[checked_op(implementation,ZMeaning)](q);
@@ -176,11 +176,11 @@ fn unchanged_generic_client_accepts_two_independent_providers_and_retains_receip
 #[test]
 fn all_constructors_match_independent_full_operator_specifications() {
     for (description, expected) in [
-        ("inverse_op(phase)", "inverse(t)(q)"),
+        ("adjoint(phase)", "adjoint(t)(q)"),
         ("then_op(had,phase)", "t(h(q))"),
         ("power(phase,3)", "t(t(t(q)))"),
         ("power(phase,0)", "q"),
-        ("conjugate_op(phase,had)", "t(h(inverse(t)(q)))"),
+        ("conjugate_op(phase,had)", "t(h(adjoint(t)(q)))"),
     ] {
         check(&format!(
             "unitary fn actual(q:Q<Bit>)->Q<Bit>{{use_op[{description}](q)}}
@@ -194,16 +194,16 @@ fn all_constructors_match_independent_full_operator_specifications() {
             "let (a,b)=split(q); join(t(a),h(b))",
         ),
         (
-            "controlled_op(phase)",
+            "controlled(phase)",
             "let (a,b)=split(q); let (a,b)=qif(a,b){0=>ident,1=>phase}; join(a,b)",
         ),
         (
-            "inverse_op(controlled_op(phase))",
+            "adjoint(controlled(phase))",
             "let (a,b)=split(q); let (a,b)=qif(a,b){0=>ident,1=>inv}; join(a,b)",
         ),
     ] {
-        check(&format!("unitary fn inv(q:Q<Bit>)->Q<Bit>{{inverse(t)(q)}}
-            unitary fn pair_op[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Apply(U){{U(q)}}
+        check(&format!("unitary fn inv(q:Q<Bit>)->Q<Bit>{{adjoint(t)(q)}}
+            unitary fn pair_op[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){{U(q)}}
             unitary fn actual(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{pair_op[{description}](q)}}
             unitary fn expected(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{{body}}}
             unitary fn compare(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{apply_contract(actual,expected,q)}}"));
@@ -215,9 +215,9 @@ fn control_conjugation_needs_no_controlled_basis_change_and_keeps_phase() {
     // V=T; W=H followed by T. Both order and non-Hermitian inverse matter.
     check("unitary fn middle(q:Q<Bit>)->Q<Bit>{t(h(q))}
         unitary fn ctrl[const V:Op<Bit>,const W:Op<Bit>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
-        requires Apply(V),Adjoint(V),Controlled(W){pair_apply[controlled_op(conjugate_op(V,W))](q)}
-        unitary fn pair_apply[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Apply(U){U(q)}
-        unitary fn full(q:Q<Bit>)->Q<Bit>{t(middle(inverse(t)(q)))}
+        requires Applicable(V),Adjointable(V),Controllable(W){pair_apply[controlled(conjugate_op(V,W))](q)}
+        unitary fn pair_apply[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){U(q)}
+        unitary fn full(q:Q<Bit>)->Q<Bit>{t(middle(adjoint(t)(q)))}
         unitary fn actual(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{ctrl[phase,middle](q)}
         unitary fn expected(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(c,q)=split(q); let(c,q)=qif(c,q){0=>ident,1=>full};join(c,q)}
         unitary fn compare(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{apply_contract(actual,expected,q)}");
@@ -227,9 +227,9 @@ fn control_conjugation_needs_no_controlled_basis_change_and_keeps_phase() {
 fn parameter_adjoint_repeat_and_both_qif_polarities_are_correct() {
     deterministic(
         "unitary fn transform[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
-        requires Apply(U),Adjoint(U){inverse(U)(power(U,5)(q))}
+        requires Applicable(U),Adjointable(U){adjoint(U)(power(U,5)(q))}
         unitary fn coherent[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
-        requires Controlled(U){qif(c,q){0=>U,1=>ident}}
+        requires Controllable(U){qif(c,q){0=>U,1=>ident}}
         observe fn main()->(Bit,Bit){
             let q=transform[phase](h(init0()));
             let(c,q)=coherent[direct_z](init0(),q);
@@ -248,13 +248,13 @@ fn scalar_phase_and_zero_width_ownership_survive_control() {
         unitary fn minus(q:Q<Unit>)->Q<Unit>{with_computed(q,yes){|a|z(a)}}
         unitary fn zero(q:Q<Unit>)->Q<Unit>{q}
         unitary fn ctrl[const U:Op<Unit,Minus>](c:Q<Bit>,q:Q<Unit>)->(Q<Bit>,Q<Unit>)
-        requires Controlled(U){qif(c,q){0=>U,1=>zero}}
+        requires Controllable(U){qif(c,q){0=>U,1=>zero}}
         observe fn main()->Bit{let q=basis init0() as b { ((),b) };let(e,b)=split(q);discard(b);
             let(c,e)=ctrl[checked_op(minus,Minus)](h(init0()),e);discard(e);measure_z(h(c))}",
         &[true],
     );
     rejects(
-        "unitary fn bad[const U:Op<Unit>](q:Q<Unit>)->(Q<Unit>,Q<Unit>) requires Apply(U){(U(q),q)}",
+        "unitary fn bad[const U:Op<Unit>](q:Q<Unit>)->(Q<Unit>,Q<Unit>) requires Applicable(U){(U(q),q)}",
         ErrorCode::Ownership,
     );
 }
@@ -262,13 +262,13 @@ fn scalar_phase_and_zero_width_ownership_survive_control() {
 #[test]
 fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
     for (constraints, body) in [
-        ("Apply(U)", "inverse(U)(q)"),
-        ("Controlled(U)", "U(q)"),
-        ("Adjoint(U)", "power(U,0)(q)"),
-        ("Apply(U)", "if 0 {inverse(U)(q)} else {q}"),
-        ("Apply(U)", "use_op[inverse_op(U)](q)"),
-        ("Adjoint(U)", "use_op[power(U,0)](q)"),
-        ("Apply(U)", "use_op[conjugate_op(U,U)](q)"),
+        ("Applicable(U)", "adjoint(U)(q)"),
+        ("Controllable(U)", "U(q)"),
+        ("Adjointable(U)", "power(U,0)(q)"),
+        ("Applicable(U)", "if 0 {adjoint(U)(q)} else {q}"),
+        ("Applicable(U)", "use_op[adjoint(U)](q)"),
+        ("Adjointable(U)", "use_op[power(U,0)](q)"),
+        ("Applicable(U)", "use_op[conjugate_op(U,U)](q)"),
     ] {
         rejects(
             &format!(
@@ -279,7 +279,7 @@ fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
         );
     }
     rejects(
-        "unitary fn bad[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){qif(c,q){0=>ident,1=>U}}",
+        "unitary fn bad[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){qif(c,q){0=>ident,1=>U}}",
         ErrorCode::Capability,
     );
     rejects(
@@ -291,23 +291,23 @@ fn generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers() {
 #[test]
 fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() {
     // A020-09: preserve M1's transparent constructor rules until a versioned
-    // migration; this does not grant direct Apply(U) or Adjoint(U).
+    // migration; this does not grant direct Applicable(U) or Adjointable(U).
     // T is non-Hermitian, so replacing its derived inverse by T must fail.
     for body in [
-        "let (c,q) = ctrl[inverse_op(U)](c,q); join(c,q)",
-        "adjoint2[controlled_op(U)](join(c,q))",
-        "adjoint2[controlled_op(U)](apply2[controlled_op(U)](adjoint2[controlled_op(U)](join(c,q))))",
+        "let (c,q) = ctrl[adjoint(U)](c,q); join(c,q)",
+        "adjoint2[controlled(U)](join(c,q))",
+        "adjoint2[controlled(U)](apply2[controlled(U)](adjoint2[controlled(U)](join(c,q))))",
     ] {
         deterministic(
             &format!(
                 "unitary fn ctrl[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>)
-                 requires Controlled(U){{qif(c,q){{0=>ident,1=>U}}}}
+                 requires Controllable(U){{qif(c,q){{0=>ident,1=>U}}}}
                  unitary fn apply2[const V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
-                 requires Apply(V){{V(q)}}
+                 requires Applicable(V){{V(q)}}
                  unitary fn adjoint2[const V:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
-                 requires Adjoint(V){{inverse(V)(q)}}
+                 requires Adjointable(V){{adjoint(V)(q)}}
                  unitary fn derived[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->Q<(Bit,Bit)>
-                 requires Controlled(U){{{body}}}
+                 requires Controllable(U){{{body}}}
                  observe fn main()->(Bit,Bit){{
                      let (c,q) = split(derived[phase](x(init0()),t(h(init0()))));
                      (measure_z(x(c)),measure_z(h(q)))
@@ -316,11 +316,11 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
             &[false, false],
         );
     }
-    for body in ["U(q)", "inverse(U)(q)", "use_op[inverse_op(U)](q)"] {
+    for body in ["U(q)", "adjoint(U)(q)", "use_op[adjoint(U)](q)"] {
         rejects(
             &format!(
                 "unitary fn direct[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
-                 requires Controlled(U){{{body}}}"
+                 requires Controllable(U){{{body}}}"
             ),
             ErrorCode::Capability,
         );
@@ -330,7 +330,7 @@ fn controlled_only_access_derives_transparent_inverse_and_controlled_circuits() 
 #[test]
 fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
     rejects(
-        "unitary fn client[const U:Op<Bit,ZMeaning>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+        "unitary fn client[const U:Op<Bit,ZMeaning>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
         unitary fn bad(q:Q<Bit>)->Q<Bit>{client[flip](q)}",
         ErrorCode::Contract,
     );
@@ -362,33 +362,33 @@ fn meanings_reject_wrong_phase_wrong_tree_and_nonpermutations() {
 #[test]
 fn generic_cleanup_obligations_are_discharged_for_each_actual_instance() {
     let generic = "classical fn pred(b:Bit)->Bit{b}
-        unitary fn clean[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){
+        unitary fn clean[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){
             with_computed(q,pred,direct_z){|d,a|(d,U(a))}}
         unitary fn client(q:Q<Bit>)->Q<Bit>{clean[PROVIDER](q)}";
     check(&generic.replace("PROVIDER", "direct_z"));
     rejects(&generic.replace("PROVIDER", "flip"), ErrorCode::InvalidIr);
     rejects(
-        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){apply_contract(U,direct_z,q)}",
+        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){apply_contract(U,direct_z,q)}",
         ErrorCode::TypeMismatch,
     );
 }
 
 #[test]
 fn pending_call_frames_declared_effects_and_local_shadowing_are_preserved() {
-    deterministic("unitary fn pair[const U:Op<Bit>](a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){(a,U(b))}
+    deterministic("unitary fn pair[const U:Op<Bit>](a:Q<Bit>,b:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Applicable(U){(a,U(b))}
         observe fn main()->(Bit,Bit){let (a,b)=cnot(h(init0()),init0());
             let(a,b)=pair[ident](a,if 1 {b} else {b});(measure_z(a) xor measure_z(b),0)}", &[false,false]);
     rejects(
-        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){let U=q;U(U)}",
+        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){let U=q;U(U)}",
         ErrorCode::TypeMismatch,
     );
     rejects(
-        "observe fn obs[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){let b=measure_z(init0());U(q)}
+        "observe fn obs[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){let b=measure_z(init0());U(q)}
         unitary fn bad(q:Q<Bit>)->Q<Bit>{obs[ident](q)}",
         ErrorCode::Effect,
     );
     rejects(
-        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){use_op[q](q)}",
+        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){use_op[q](q)}",
         ErrorCode::TypeMismatch,
     );
 }
@@ -404,11 +404,11 @@ fn unused_generic_declarations_and_static_dependencies_are_checked() {
         ErrorCode::Ownership,
     );
     rejects(
-        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U),Apply(U){q}",
+        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U),Applicable(U){q}",
         ErrorCode::Capability,
     );
     rejects(
-        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(missing){q}",
+        "unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(missing){q}",
         ErrorCode::UnknownName,
     );
     rejects(
@@ -435,13 +435,13 @@ fn unused_generic_declarations_and_static_dependencies_are_checked() {
 
 #[test]
 fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics() {
-    rejects("unitary fn dual[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>U,1=>U}}
+    rejects("unitary fn dual[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controllable(U){qif(c,q){0=>U,1=>U}}
         unitary fn bad(c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>){dual[power(phase,513)](c,q)}", ErrorCode::Limit);
     rejects(
         "unitary fn bad(q:Q<Bit>)->Q<Bit>{use_op[power(phase,1025)](q)}",
         ErrorCode::Limit,
     );
-    let too_wide = "controlled_op(".repeat(6) + "phase" + &")".repeat(6);
+    let too_wide = "controlled(".repeat(6) + "phase" + &")".repeat(6);
     rejects(
         &format!("unitary fn bad(q:Q<Bit>)->Q<Bit>{{use_op[{too_wide}](q)}}"),
         // This deliberately wrong Op basis fails before a concrete width limit.
@@ -509,6 +509,9 @@ fn retired_operation_spellings_reject_at_both_source_entry_points() {
         ("adjoint(U,q)", "adjoint"),
         ("helper[repeat_op(2,U)](q)", "repeat_op"),
         ("repeat_static(2,U,q)", "repeat_static"),
+        ("inverse(U)(q)", "inverse"),
+        ("helper[inverse_op(U)](q)", "inverse_op"),
+        ("helper[controlled_op(U)](q)", "controlled_op"),
     ] {
         let source = format!("pub unitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
         let root = SourceRoot::new(&source);
@@ -532,7 +535,7 @@ fn direct_literal_power_keeps_named_function_access_distinct_from_static_provide
     // contract, even at zero count or through a constructed inverse/control.
     for body in [
         "use_op[power(z,0)](q)",
-        "inverse(power(z,0))(q)",
+        "adjoint(power(z,0))(q)",
         "let (c,q)=controlled(power(z,0))(init0(),q);discard(c);q",
     ] {
         rejects(

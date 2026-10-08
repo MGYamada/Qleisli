@@ -14,9 +14,9 @@ pub(super) fn access_index(access: Access) -> usize {
 
 pub(super) fn access_name(access: Access) -> &'static str {
     match access {
-        Access::Apply => "Apply",
-        Access::Adjoint => "Adjoint",
-        Access::Controlled => "Controlled",
+        Access::Apply => "Applicable",
+        Access::Adjoint => "Adjointable",
+        Access::Controlled => "Controllable",
     }
 }
 

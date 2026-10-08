@@ -15,6 +15,6 @@ pub unitary fn minus(q: Q<Bit>) -> Q<Bit> { h(x(q)) }
 /// (|0> + i|1>)/sqrt(2) from |0>.
 pub unitary fn y_plus(q: Q<Bit>) -> Q<Bit> { t(t(h(q))) }
 /// (|0> - i|1>)/sqrt(2) from |0>.
-pub unitary fn y_minus(q: Q<Bit>) -> Q<Bit> { inverse(t)(inverse(t)(h(q))) }
+pub unitary fn y_minus(q: Q<Bit>) -> Q<Bit> { adjoint(t)(adjoint(t)(h(q))) }
 /// (|0> + exp(i*pi/4)|1>)/sqrt(2) from |0>.
 pub unitary fn magic(q: Q<Bit>) -> Q<Bit> { t(h(q)) }

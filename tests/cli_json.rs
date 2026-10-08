@@ -104,9 +104,12 @@ fn truncated_static_arguments_emit_one_located_json_parse_error() {
 #[test]
 fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup() {
     for (body, token, replacement) in [
-        ("adjoint(U,q)", "adjoint", "inverse(U)(q)"),
+        ("adjoint(U,q)", "adjoint", "adjoint(U)(q)"),
         ("g[repeat_op(2,U)](q)", "repeat_op", "power(U, k)"),
         ("repeat_static(2,U,q)", "repeat_static", "power(U, k)(q)"),
+        ("inverse(U)(q)", "inverse", "adjoint(U)(q)"),
+        ("g[inverse_op(U)](q)", "inverse_op", "adjoint(U)"),
+        ("g[controlled_op(U)](q)", "controlled_op", "controlled(U)"),
     ] {
         let source = format!("// 位相\r\nunitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
         let root = SourceRoot::new(&source);
