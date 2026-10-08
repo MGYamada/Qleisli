@@ -1959,30 +1959,30 @@ fn common_parser_classifies_reserved_names_and_preserves_numeral_diagnostics() {
 fn explicit_module_loading_retains_the_same_ast_as_project_loading() {
     use qleisli::frontend::{parser::parse_module, project::Project};
     for source in [
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/shared.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/shared.qli",
         ),
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/contextual-type-name.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/contextual-type-name.qli",
         ),
-        include_str!(
-            "fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli",
         ),
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
         ),
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-owner.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-owner.qli",
         ),
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-block.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-block.qli",
         ),
     ] {
-        let ast = parse_module(source).unwrap();
-        let sized = ParsedProgram::parse(sources(source)).unwrap();
+        let ast = parse_module(&source).unwrap();
+        let sized = ParsedProgram::parse(sources(&source)).unwrap();
         assert_eq!(sized.syntax("main"), Some(&ast));
-        assert_eq!(sized.source("main"), Some(source));
-        let root = common::SourceRoot::new(source);
+        assert_eq!(sized.source("main"), Some(source.as_str()));
+        let root = common::SourceRoot::new(&source);
         let project = Project::load(&root.0).unwrap();
         assert_eq!(project.module("main").unwrap().ast, ast);
     }
@@ -2070,20 +2070,20 @@ fn contextual_controlled_and_reserved_words_have_one_classification() {
         ast::{ExprKind, FnBody},
         parser::parse_module,
     };
-    let source = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/runtime-controlled-name.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/runtime-controlled-name.qli",
     );
-    let ast = parse_module(source).unwrap();
+    let ast = parse_module(&source).unwrap();
     let FnBody::Quantum(body) = &ast.decls[1].body else {
         panic!("runtime body")
     };
     assert!(
         matches!(&body.result.kind,ExprKind::Call { callee,.. } if callee.text == "controlled")
     );
-    let source = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
     );
-    let ast = parse_module(source).unwrap();
+    let ast = parse_module(&source).unwrap();
     let FnBody::Quantum(body) = &ast.decls[0].body else {
         panic!("runtime body")
     };

@@ -37,6 +37,8 @@ development milestones from the scope of their evidence.
   preserving semantic refusals, false-annotation checks and fresh CLI calls.
   Select classical/Meaning regression headers while retaining original requests,
   exact phase/axis oracles and guarded negative-source transformations.
+  Route AST-loading and guarded-size comparisons through selected current text,
+  preserving parser/project agreement and the independent Python comparison.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

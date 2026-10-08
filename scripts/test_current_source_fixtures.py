@@ -742,6 +742,10 @@ class RepositoryMigrationTests(unittest.TestCase):
             'tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/scalar-minus/main.qli',
             'tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli',
         ])
+        candidates.update([
+            'tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli',
+            'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli',
+        ])
         expected_files = set()
         for selected in candidates:
             for stage, _ in prior_maps:

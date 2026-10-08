@@ -103,3 +103,33 @@ borrow reusable text or explicitly clone each CLI input, preserving independent
 compilations and acceptance checks. Final all-target Clippy passed on both
 Rust toolchains; fixture selection passed 55 tests. Hosted CI for this extension
 is pending. No oracle, production checker, Lean proof or guarantee was changed.
+
+The extension following `42b54079` adds counted-control and unguarded-take
+header selections and routes the AST-loading tests through the already-selected
+static-fold source. Both shared-parser/project AST comparisons and contextual
+controlled-name classification retain their original assertions. The Python
+comparison preserves all four guarded/unguarded size cases and their expected
+acceptance difference; its existing ignore marker remains unchanged, and this
+specific test was explicitly run before and after on both Rust toolchains.
+
+All three targeted tests passed before and after on latest Rust and MSRV.
+AST-loading times grew from 0.02/0.03 to 0.39/0.40 seconds (latest/MSRV),
+and classification grew from below 0.01 to 0.15 seconds on both. The tests now
+launch the existing hash-bound Python selector for six/two text reads instead
+of embedding unchecked literals. This adds source selection and hash checking,
+without an extra CLI/native acceptance call, cache, new case or changed oracle.
+The four-case Python comparison took 0.12/0.07 seconds before and 0.13/0.15 after.
+One pre-change MSRV launch failed before compilation because a profile variable
+was mistyped; the corrected command passed. No product behavior was implicated.
+Fixture selection passed all 55 tests. Remaining literal old-header includes
+in active Rust tests are historical QFT/Fourier regressions excluded from this
+migration stage. Their algorithm implementation remains outside the goal.
+
+Final scoped checks for this extension passed all-target Clippy on both Rust
+versions, all five shared source-integrity commands, formatting and docs.
+Constitutional continuity passed against reviewed commit
+`3e3128c6153df40eb8c6f8fbffeb6bce35a6085a`; broader obligations remain pending.
+Local fixture preflight counted 17,427 files / 125,932,200 bytes, within the
+unchanged 18,000-file / 150-MiB ceilings. Existing Cargo targets were reused:
+1,714,500 KiB latest and 1,262,920 KiB MSRV, with 64 GiB free on the volume.
+No full 4,000-case replay or fresh Lean replay is claimed for these fixture edits.

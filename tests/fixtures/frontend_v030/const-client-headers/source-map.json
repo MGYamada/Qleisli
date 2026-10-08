@@ -367,6 +367,18 @@
       "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x/main.qli",
       "before_sha256": "a7ce6402c38d155db44f044af82ca26fc7064ec98b0994191d8fa7940612255a",
       "current_sha256": "b05be112e39c06930a57f317ac127b767cfd0dbb51ffc1ce2ef9e1d3c119ceed"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
+      "before_sha256": "a9862c48fad185280c3491375efa6c2cec9bf9cbc214d3c1f441f47fb9683894",
+      "current_sha256": "a10fc96c151e328bef6a8e5c8dc390cfabd9bd23b04f061f4ff3c7cb2d884006"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli",
+      "before_sha256": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
+      "current_sha256": "df8e0c21b40dc6aac6a35bf4a9a03abcfd2ea5250f38957708b4163dc21636bb"
     }
   ]
 }

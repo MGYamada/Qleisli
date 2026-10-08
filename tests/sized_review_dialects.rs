@@ -149,13 +149,13 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
 #[test]
 #[ignore = "requires the development Python 3.11+ oracle"]
 fn python_concrete_execution_does_not_replace_generic_size_obligations() {
-    let first = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli"
+    let first = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli",
     );
     let corrected = first.replace("Q<Bits<n>> {", "Q<Bits<n>> requires n >= 1 {");
     let cases = vec![
-        (first.into(), BTreeMap::from([("n".into(), 1)])),
-        (first.into(), BTreeMap::from([("n".into(), 3)])),
+        (first.clone(), BTreeMap::from([("n".into(), 1)])),
+        (first.clone(), BTreeMap::from([("n".into(), 3)])),
         (corrected.clone(), BTreeMap::from([("n".into(), 1)])),
         (corrected, BTreeMap::from([("n".into(), 3)])),
     ];
