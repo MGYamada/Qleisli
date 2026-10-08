@@ -15,6 +15,7 @@ import re
 import subprocess
 import tempfile
 
+from current_source_fixtures import current_source_file
 from compile_sized_corpus import SourceError, compile_source, text, wires
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -157,7 +158,7 @@ def rejected_sources(sources):
     cases = [
         ('alias', xor.replace('(x,y) {', '(x,x) {'), 'xor_into', 2),
         ('empty-alias', xor.replace('(x,y) {', '(x,x) {'), 'xor_into', 0),
-        ('dropped-zero-owner', '''pub unitary fn drop[static n: Nat]
+        ('dropped-zero-owner', '''pub unitary fn drop[const n: Nat]
             (x: Q<Bits<n>>, y: Q<Bits<n>>) -> Q<Bits<n>> { x }''', 'drop', 0),
         ('empty-body-alias', xor.replace('cnot(a,b)', 'cnot(a,a)'), 'xor_into', 0),
         ('out-of-range', xor.replace('take_bit[n,k](x)', 'take_bit[n,n](x)'), 'xor_into', 2),
@@ -171,7 +172,7 @@ def rejected_sources(sources):
         ('zero-ghz', ghz, 'ghz', 0),
         ('register-capacity', xor, 'xor_into', 9),
         ('implicit-bit-view', '''use std::quantum::h;
-            pub unitary fn bad[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { h(q) }''', 'bad', 1),
+            pub unitary fn bad[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { h(q) }''', 'bad', 1),
     ]
     results = []
     for name, source, entry, width in cases:
@@ -183,7 +184,7 @@ def rejected_sources(sources):
             raise AssertionError(f'accepted invalid source {name}')
     # The 16-wire total is independent of the maximum width of each register.
     # Check a complete owner-preserving three-register return to reach capacity.
-    overflow = '''pub unitary fn wide[static n: Nat](x: Q<Bits<n>>, y: Q<Bits<n>>, z: Q<Bit>)
+    overflow = '''pub unitary fn wide[const n: Nat](x: Q<Bits<n>>, y: Q<Bits<n>>, z: Q<Bit>)
         -> (Q<Bits<n>>, Q<Bits<n>>, Q<Bit>) { (x,y,z) }'''
     try:
         compile_source(overflow, 'wide', {'n': 8})
@@ -202,7 +203,7 @@ def main():
     args = parser.parse_args()
     cases = {name: (path, entry, [w for w in widths if not args.small or w <= 3])
              for name, (path, entry, widths) in CASES.items()}
-    sources = {name: (ROOT/path).read_text() for name, (path, _, _) in CASES.items()}
+    sources = {name: current_source_file(ROOT/path).read_text() for name, (path, _, _) in CASES.items()}
     for name, (_, entry, _) in CASES.items():
         original = compile_source(sources[name], entry, {'n': 2})
         renamed = compile_source(sources[name].replace('fn '+entry, 'fn arbitrary_name'),

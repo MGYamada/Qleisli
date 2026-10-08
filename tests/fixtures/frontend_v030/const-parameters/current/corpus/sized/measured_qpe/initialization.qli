@@ -1,0 +1,16 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Ordinary zero-register construction; the empty owner is explicit.
+use std::quantum::init0;
+use std::registers::empty;
+use std::registers::put_bit;
+
+pub iso fn init_zero[const n: Nat]() -> Q<Bits<n>> {
+    if static n == 0 {
+        empty()
+    } else {
+        let rest = init_zero[n-1]();
+        let bit = init0();
+        put_bit[n,0](bit,rest)
+    }
+}

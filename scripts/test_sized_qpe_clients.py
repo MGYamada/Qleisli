@@ -15,6 +15,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from current_source_fixtures import current_source_file
 from compile_sized_corpus import Operation, SourceError, compile_source, text
 from test_sized_corpus import circuit_action, difference
 
@@ -22,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 def sources():
-    result = {p.stem: p.read_text() for directory in ('tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients',
+    result = {p.stem: current_source_file(p).read_text() for directory in ('tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients',
               'corpus/sized/qualtran_qpe') for p in (ROOT/directory).glob('*.qli')}
     result['fourier'] = (ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
     return result
@@ -159,9 +160,9 @@ def cache_case(base):
     # Different nested providers at the same natural sizes must not share a
     # stale instantiation. Their phases add to pi on the all-one three-bit input.
     modules = base | {
-      'box': 'use std::registers::take_bit; use std::registers::put_bit; pub unitary fn box[static n: Nat, static V: Op<Bits<n-1>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 2, Controlled(V) { let (c,t)=take_bit[n,0](q); let (c,t)=controlled(V)(c,t); put_bit[n,0](c,t) }',
-      'route': 'pub unitary fn route[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(U)(c,q) }',
-      'client': 'use route::route; use box::box; use evolution::evolve; pub unitary fn twice[static n: Nat](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { let (c,q)=route[n,box[n,evolve[n-1,1,3]]](c,q); route[n,box[n,evolve[n-1,3,3]]](c,q) }'}
+      'box': 'use std::registers::take_bit; use std::registers::put_bit; pub unitary fn box[const n: Nat, const V: Op<Bits<n-1>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 2, Controlled(V) { let (c,t)=take_bit[n,0](q); let (c,t)=controlled(V)(c,t); put_bit[n,0](c,t) }',
+      'route': 'pub unitary fn route[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(U)(c,q) }',
+      'client': 'use route::route; use box::box; use evolution::evolve; pub unitary fn twice[const n: Nat](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { let (c,q)=route[n,box[n,evolve[n-1,1,3]]](c,q); route[n,box[n,evolve[n-1,3,3]]](c,q) }'}
     artifact = compile_source(modules['client'],'twice',dict(n=2),modules=modules)
     evaluate,_ = circuit_action(artifact)
     oracle = lambda column: {x:(-a if x == 7 else a) for x,a in column.items()}
@@ -192,8 +193,8 @@ def main():
     artifacts['indirect-forward']=build(indirect,'order',2,2)
     parameters['indirect-forward']=('order',2,2,1,3)
     reordered=base|{'estimation':base['estimation'].replace(
-        'static n: Nat, static m: Nat, static U: Op<Bits<n>>',
-        'static U: Op<Bits<n>>, static n: Nat, static m: Nat'),
+        'const n: Nat, const m: Nat, const U: Op<Bits<n>>',
+        'const U: Op<Bits<n>>, const n: Nat, const m: Nat'),
         'order':base['order'].replace('estimate[n,m,U]','estimate[U,n,m]')}
     artifacts['declaration-order']=build(reordered,'order',2,2)
     parameters['declaration-order']=('order',2,2,1,3)

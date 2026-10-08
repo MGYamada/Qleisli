@@ -28,6 +28,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.checked_manifest = self.root / "checked-source-map.json"
         self.classical_manifest = self.root / "classical-source-map.json"
         self.qfor_manifest = self.root / "qfor-source-map.json"
+        self.const_manifest = self.root / "const-source-map.json"
+        self.const_manifest.write_text(json.dumps(dict(format="qleisli.const-parameter-source-map", version=1, files=[], projects=[])))
         self.qfor_manifest.write_text(json.dumps(dict(format="qleisli.qfor-source-map", version=1, files=[], projects=[])))
         self.classical_manifest.write_text(json.dumps(dict(format="qleisli.classical-function-source-map", version=1, files=[], projects=[])))
         files = []
@@ -50,7 +52,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("COHERENT_MAP", self.coherent_manifest.name),
                             ("CHECKED_MAP", self.checked_manifest.name),
                             ("CLASSICAL_MAP", self.classical_manifest.name),
-                            ("QFOR_MAP", self.qfor_manifest.name)):
+                            ("QFOR_MAP", self.qfor_manifest.name),
+                            ("CONST_MAP", self.const_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -395,6 +398,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.checked_manifest = self.root / "checked-map.json"
         self.classical_manifest = self.root / "classical-map.json"
         self.qfor_manifest = self.root / "qfor-map.json"
+        self.const_manifest = self.root / "const-source-map.json"
+        self.const_manifest.write_text(json.dumps(dict(format="qleisli.const-parameter-source-map", version=1, files=[], projects=[])))
         self.qfor_manifest.write_text(json.dumps(dict(format="qleisli.qfor-source-map", version=1, files=[], projects=[])))
         self.classical_manifest.write_text(json.dumps(dict(format="qleisli.classical-function-source-map", version=1, files=[], projects=[])))
         self.namespace_entry = self.entry(self.original, self.namespace)
@@ -406,7 +411,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("COHERENT_MAP", self.coherent_manifest.name),
                             ("CHECKED_MAP", self.checked_manifest.name),
                             ("CLASSICAL_MAP", self.classical_manifest.name),
-                            ("QFOR_MAP", self.qfor_manifest.name)):
+                            ("QFOR_MAP", self.qfor_manifest.name),
+                            ("CONST_MAP", self.const_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -483,6 +489,24 @@ class SourceFileIdentity(unittest.TestCase):
     def test_missing_quantum_fold_stage_has_no_previous_source_fallback(self):
         self.qfor_manifest.unlink()
         with self.assertRaisesRegex(ValueError, "missing quantum fold source map"):
+            fixtures.current_source_file(self.original)
+
+    def test_const_stage_retains_history_and_rejects_stale_sources(self):
+        before = self.current.read_bytes()
+        selected = self.root / "const-current.qli"
+        selected.write_text("fn identity[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }")
+        self.const_manifest.write_text(json.dumps(dict(
+            format="qleisli.const-parameter-source-map", version=1,
+            files=[self.entry(self.current, selected)], projects=[])))
+        self.assertEqual(fixtures.current_source_file(self.original), selected)
+        self.assertEqual(self.current.read_bytes(), before)
+        selected.write_text("stale const source")
+        with self.assertRaisesRegex(ValueError, "identity changed"):
+            fixtures.current_source_file(self.original)
+
+    def test_missing_const_stage_has_no_previous_source_fallback(self):
+        self.const_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing const parameter source map"):
             fixtures.current_source_file(self.original)
 
     def test_classical_stage_cannot_hide_stale_checked_predecessor(self):
@@ -632,7 +656,28 @@ class RepositoryMigrationTests(unittest.TestCase):
         for entry in entries.values():
             before = fixtures.ROOT / entry["before_path"]
             current = fixtures.ROOT / entry["current_path"]
+            self.assertEqual(fixtures.current_source_file(before),
+                             fixtures.current_source_file(current))
+
+    def test_const_map_changes_only_parameter_markers(self):
+        import re
+        data = json.loads((fixtures.ROOT / fixtures.CONST_MAP).read_text())
+        entries = fixtures._file_entries(data, "const parameter")
+        expected = {p.relative_to(fixtures.ROOT).as_posix() for p in
+                    (fixtures.ROOT / "corpus/sized").rglob("*.qli")
+                    if "qualtran_qft" not in p.parts}
+        destinations = set()
+        for entry in entries.values():
+            before = fixtures.ROOT / entry["before_path"]
+            current = fixtures.ROOT / entry["current_path"]
             self.assertEqual(fixtures.current_source_file(before), current)
+            transformed, count = re.subn(rb"\bstatic(?= [A-Za-z_]\w*\s*:)",
+                                        b"const", before.read_bytes())
+            self.assertGreater(count, 0)
+            self.assertEqual(current.read_bytes(), transformed)
+            destinations.add(current.relative_to(
+                fixtures.ROOT / "tests/fixtures/frontend_v030/const-parameters/current").as_posix())
+        self.assertEqual(destinations, expected)
 
 
 if __name__ == "__main__":

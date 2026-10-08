@@ -1,0 +1,425 @@
+{
+  "baseline_commit": "fff7296c9c8eef270b1ae8914a11d7db0b356979",
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "comparison": {
+    "status": "passed",
+    "declarations": [
+      {
+        "path": "corpus/sized/katas_ghz/prepare.qli",
+        "declaration_sha256": "1f9d472afc89617ba631398f8180467b241008b06584823c7308c5fb2f2f0e13",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/measured_qpe/initialization.qli",
+        "declaration_sha256": "5453a07f27afa35f9c2f29a0e6d8b888dcc49fa7435444751c13ff3cc8094f3c",
+        "effect": "iso"
+      },
+      {
+        "path": "corpus/sized/measured_qpe/measurement.qli",
+        "declaration_sha256": "59a8de391109650444b0bd957cbbc9ced945a8eee6794b238f2c022c7deceece",
+        "effect": "observe"
+      },
+      {
+        "path": "corpus/sized/measured_qpe/readout.qli",
+        "declaration_sha256": "1b9dba34fd485adc25101a697fe65fd86725dca044cfad60da7444ef90d45edf",
+        "effect": "observe"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/addition.qli",
+        "declaration_sha256": "b7715e7f77ea7ee724fbe414790eb86a4e0a9921503ea1b371aea16acbd5c31e",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/comparison.qli",
+        "declaration_sha256": "819b091027fee103a98e1601e200c82781dccb2acf65ffdfd609f8cf0af2921b",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/controls.qli",
+        "declaration_sha256": "16ebc5b1b98fce5ff47659ecf40d604e5dbdc5b0d3455f49aa6981a9cd7c5879",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/increment.qli",
+        "declaration_sha256": "8eba551a546bd159e776df05852c3478ac7c54cacf6131a74a7b224db8c02cf3",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_arithmetic/negation.qli",
+        "declaration_sha256": "5bf04cc19c4a2f1bbb527f41acb930ca5a1d41223c721b67f088f178bcb3678e",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_qpe/estimation.qli",
+        "declaration_sha256": "66da12fb98b29cea7186042b016655facd45eca1fd746df90aa4ac40bb3015bb",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_qpe/evolution.qli",
+        "declaration_sha256": "ecaff602e75a0111d2caeeb50e78650be98be2da3ba05a4b123a76bb499bdb67",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_qpe/preparation.qli",
+        "declaration_sha256": "5c45e67bb7dae9d01f2db66766cb5e84ef3e8dba466e6bd0b9456add662cd9b9",
+        "effect": "unitary"
+      },
+      {
+        "path": "corpus/sized/qualtran_xor/bitwise.qli",
+        "declaration_sha256": "f71c74031549b4cbb5349e592795ca831bfabb3be9af3e95eb8bffe020eb4b2d",
+        "effect": "unitary"
+      }
+    ],
+    "proposals": [
+      {
+        "entry": "bitwise::xor_into",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "pure",
+        "artifact_sha256": "bfa0a918cfc5161809cb95b8478592bd76653f5e6d6f45797a9f479af2ffcf4f"
+      },
+      {
+        "entry": "bitwise::xor_into",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "44ce7c73e55657e80616f141f552c22014258b3e64560e1ec294754d40bb463e"
+      },
+      {
+        "entry": "bitwise::xor_into",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "d3d7d4575d7626be84835c60085ce45921c83a5c451c41d4080d7d9d71ac7a54"
+      },
+      {
+        "entry": "prepare::ghz",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "77c7f2317a2cac3cfeaa146c573cc842bc5fdaf4283a6d1742609dcb964002ce"
+      },
+      {
+        "entry": "prepare::ghz",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "08a214980c0df1ead08a1d9b1601ed8157235c077b587ff8d7d5f627fec60154"
+      },
+      {
+        "entry": "prepare::ghz",
+        "sizes": {
+          "n": 3
+        },
+        "kind": "pure",
+        "artifact_sha256": "25b9a6b41435526c60eb8e5091f2801a7d46e230a6910dcf35162421b995e88f"
+      },
+      {
+        "entry": "controls::all_ones",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "pure",
+        "artifact_sha256": "fadd09a61e8f5c3c9a160439b19ce25cb90728605a12ee305cc136181df067ae"
+      },
+      {
+        "entry": "controls::all_ones",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "daebb0b5b8ae5b5d2631203b5c60dd7e35da1805c5ad2b234e8d1d80efe1bdb1"
+      },
+      {
+        "entry": "controls::all_ones",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "4e2008ba76098f41e21d4f19cd1544367fd919119ad69dedf5c03cae93c8adbd"
+      },
+      {
+        "entry": "increment::increment",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "pure",
+        "artifact_sha256": "67c185f2f7895182c84c93b88c53d1338e092bb420bdbbb54023f7019d1aaca1"
+      },
+      {
+        "entry": "increment::increment",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "0f6bd8c07db6ec1916a64d24b973d2c5f96b1568cd1ee39455d77615c69b4974"
+      },
+      {
+        "entry": "increment::increment",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "34b608f0625e1ad170ba4a56313716e25106934f1dee55438a8453591c6d84f2"
+      },
+      {
+        "entry": "addition::add_k",
+        "sizes": {
+          "n": 0,
+          "K": 3
+        },
+        "kind": "pure",
+        "artifact_sha256": "945a84015a6b3b31cc4f3afa7770f40d743551e90357f3289d6f4f42ede36cc0"
+      },
+      {
+        "entry": "addition::add_k",
+        "sizes": {
+          "n": 1,
+          "K": 3
+        },
+        "kind": "pure",
+        "artifact_sha256": "ee865d3ef288c67a62e73a2510ee2161c43c9a666ff29f4c391214ef360f6b3c"
+      },
+      {
+        "entry": "addition::add_k",
+        "sizes": {
+          "n": 2,
+          "K": 3
+        },
+        "kind": "pure",
+        "artifact_sha256": "54cf47e03c59875f53df70fbc0ca7dfe8cdbccae37cea793c2de1bf070ea3e80"
+      },
+      {
+        "entry": "negation::invert_bits",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "pure",
+        "artifact_sha256": "67c185f2f7895182c84c93b88c53d1338e092bb420bdbbb54023f7019d1aaca1"
+      },
+      {
+        "entry": "negation::invert_bits",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "49871e350e29dfe2f2d16434ef40deb718684ecc32bf72db1754900f9dea113a"
+      },
+      {
+        "entry": "negation::invert_bits",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "4f4b88a645ccea7bba462d799e8be664a40aaa73175a36ac314cc03ab05bfeb1"
+      },
+      {
+        "entry": "comparison::equals",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "pure",
+        "artifact_sha256": "c3650ca12fb88cab2d839ee972e78d47a32ccef5c7ac3066cc0a8e4cd6cc591f"
+      },
+      {
+        "entry": "comparison::equals",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "c47d8b41b78da235316d38694b7253b983aebd837ec099ae7d16c08f3eab23ee"
+      },
+      {
+        "entry": "comparison::equals",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "25af2dc9f7ae4e80efc2aadc4d62b982db5212a8a65dc6dae070cd0e58b7f7fe"
+      },
+      {
+        "entry": "estimation::estimate",
+        "sizes": {
+          "n": 1,
+          "m": 1
+        },
+        "kind": "pure",
+        "artifact_sha256": "57101d8dff118f5a76f96aa6768dec4cb612031c98073a4bd6655c9695a359b4"
+      },
+      {
+        "entry": "estimation::estimate",
+        "sizes": {
+          "n": 1,
+          "m": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "7d05feff8425224d3e59821772c22187048b37be25621eb27ceace57b84b2214"
+      },
+      {
+        "entry": "estimation::estimate",
+        "sizes": {
+          "n": 2,
+          "m": 2
+        },
+        "kind": "pure",
+        "artifact_sha256": "9496aca82dcafc2a1b599f538cd024a1bcf41aa2051d71316edbf176b518a285"
+      },
+      {
+        "entry": "initialization::init_zero",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "d35d4d4897482828510ce4aba75e9377b34102d5b465589beec66ffe1677a623"
+      },
+      {
+        "entry": "initialization::init_zero",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "ad9e248cf7f4cd8de1f6ceb7a7bec1fca121ab9a610e9f810d177b8720736ad3"
+      },
+      {
+        "entry": "initialization::init_zero",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "10ee777608b2d8cacb90e563b570866b39d3083827624f4c693a463403c1b435"
+      },
+      {
+        "entry": "readout::measure_bits",
+        "sizes": {
+          "n": 0
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "8573426b63941e15b9976f054aa4e59efe13aaeb783da46f11866d47665b1ecb"
+      },
+      {
+        "entry": "readout::measure_bits",
+        "sizes": {
+          "n": 1
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "2771e753e061e12a89d5d1632d9f9acaede08b5be762b88d47fb8d89a68423a2"
+      },
+      {
+        "entry": "readout::measure_bits",
+        "sizes": {
+          "n": 2
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "6d12b89844155aaf2e4b600a7449683e12c8a8368a33e24a1b5b43625fd3f85a"
+      },
+      {
+        "entry": "measurement::qpe",
+        "sizes": {
+          "n": 1,
+          "m": 1
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "4b6e070f22da7db244e17d68dc8bff4e78409fb64c5b29256a7f97be72e5d3ab"
+      },
+      {
+        "entry": "measurement::qpe",
+        "sizes": {
+          "n": 1,
+          "m": 2
+        },
+        "kind": "instrument",
+        "artifact_without_source_hashes_sha256": "7a8d61ab60dd054fcb15623e04ecbb6aad57792df31134952996041af99edb72"
+      }
+    ],
+    "comparison": "exact objects; only instrument source_sha256 maps are independently checked and excluded",
+    "scope": "bounded untrusted proposal equality; independent native/meaning checks are separate"
+  },
+  "python_native_checks": [
+    {
+      "command": [
+        "python3",
+        "scripts/test_sized_corpus.py",
+        "--small",
+        "--record",
+        "/private/tmp/qleisli-const-corpus/selected-validation/test_sized_corpus.json"
+      ],
+      "exit_code": 0,
+      "seconds": 1.8603471249807626
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_sized_arithmetic.py",
+        "--record",
+        "/private/tmp/qleisli-const-corpus/selected-validation/test_sized_arithmetic.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.934376541059464
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_sized_qpe.py",
+        "--record",
+        "/private/tmp/qleisli-const-corpus/selected-validation/test_sized_qpe.json"
+      ],
+      "exit_code": 0,
+      "seconds": 3.3947617079829797
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_sized_qpe_clients.py",
+        "--record",
+        "/private/tmp/qleisli-const-corpus/selected-validation/test_sized_qpe_clients.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.834797082934529
+    },
+    {
+      "command": [
+        "python3",
+        "scripts/test_sized_instrument.py",
+        "--record",
+        "/private/tmp/qleisli-const-corpus/selected-validation/test_sized_instrument.json"
+      ],
+      "exit_code": 0,
+      "seconds": 5.915166666964069
+    }
+  ],
+  "limitations": [
+    "Small bounded proposals and independent native/oracle checks; not full soundness or release verification.",
+    "The QFT sources remain unchanged and outside this const migration.",
+    "Ownership 4000-case suite not rerun in this unit."
+  ],
+  "rust_checks": {
+    "toolchains": [
+      "1.98.1",
+      "1.85.0"
+    ],
+    "targets": [
+      "sized_cli",
+      "sized_corpus",
+      "sized_source",
+      "sized_linear_seeded"
+    ],
+    "passed_per_toolchain": 45,
+    "existing_ignored_per_toolchain": 8,
+    "explicit_ignored_native_cli_passed_per_toolchain": 2,
+    "all_target_clippy": "passed"
+  },
+  "integrity": {
+    "source_integrity": "5/5 passed",
+    "fixture_selection": "50 passed",
+    "local_resolution": "19 passed",
+    "corpus": "87 cases / 3 sources passed",
+    "docs": "2232 links passed",
+    "constitutional_continuity_base": "3e3128c6153df40eb8c6f8fbffeb6bce35a6085a",
+    "constitutional_continuity": "passed; not fresh Lean replay"
+  }
+}

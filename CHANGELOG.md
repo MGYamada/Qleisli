@@ -20,6 +20,8 @@ development milestones from the scope of their evidence.
   full named outcomes, fresh native checks and historical source records.
   Migrate current integration-test headers, preserving historical match needles,
   the same 310 outcomes and all existing ignored cases on both Rust toolchains.
+  Select thirteen current corpus sources through a hash-bound `const` migration
+  stage; retain original corpus bytes and share selection with Python clients.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

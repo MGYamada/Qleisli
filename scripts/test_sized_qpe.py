@@ -16,6 +16,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from current_source_fixtures import current_source_file
 from compile_sized_corpus import Operation, SourceError, compile_source, text
 from test_sized_corpus import circuit_action, difference
 
@@ -24,7 +25,7 @@ DIRECTORY = ROOT/'corpus/sized/qualtran_qpe'
 
 
 def modules():
-    result = {p.stem: p.read_text() for p in DIRECTORY.glob('*.qli')}
+    result = {p.stem: current_source_file(p).read_text() for p in DIRECTORY.glob('*.qli')}
     result['fourier'] = (ROOT/'corpus/sized/qualtran_qft/fourier.qli').read_text()
     return result
 
@@ -99,7 +100,7 @@ def source_rejections(source):
         ('missing-access-zero-repeat', source['estimation'].replace(', Controlled(U)', '').replace('2^k,U', '0,U')),
         ('unknown-access-parameter', source['estimation'].replace('Controlled(U)', 'Controlled(V)')),
         ('duplicate-access', source['estimation'].replace('Controlled(U)', 'Controlled(U), Controlled(U)')),
-        ('duplicate-operation-parameter', source['estimation'].replace('static U: Op<Bits<n>>', 'static U: Op<Bits<n>>, static U: Op<Bits<n>>')),
+        ('duplicate-operation-parameter', source['estimation'].replace('const U: Op<Bits<n>>', 'const U: Op<Bits<n>>, const U: Op<Bits<n>>')),
         ('alias-control', source['estimation'].replace('(control,target);', '(control,control);')),
         ('capture-outside-carry', source['estimation'].replace('carry pair = (phase,target)', 'carry pair = phase')),
         ('unbound-count', source['estimation'].replace('2^k,U', '2^missing,U')),

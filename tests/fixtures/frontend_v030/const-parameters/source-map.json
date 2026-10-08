@@ -1,0 +1,85 @@
+{
+  "format": "qleisli.const-parameter-source-map",
+  "version": 1,
+  "projects": [],
+  "files": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/katas_ghz/prepare.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/katas_ghz/prepare.qli",
+      "before_sha256": "263afeebf537a484609d4467705178b9e12d35bda8fd38897fa5e235d561647b",
+      "current_sha256": "7e02bde81a1ac7553879bf3ca001db63dcf6b85e3270c66f54f60f3ce75eafe5"
+    },
+    {
+      "before_path": "corpus/sized/measured_qpe/initialization.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/measured_qpe/initialization.qli",
+      "before_sha256": "a15fc01067ad8037ed301b00aae6904bee2ccb84a98674bc76b0ff969be5b6a9",
+      "current_sha256": "5a72ca447d72a4d5b82e9b68b61bf1226d817a18110acebda89d644109356672"
+    },
+    {
+      "before_path": "corpus/sized/measured_qpe/measurement.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/measured_qpe/measurement.qli",
+      "before_sha256": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e",
+      "current_sha256": "d9f455920f7ccf4cae30dad842ed4c1cd3deff642848d0f04ddf6d09f39fc03d"
+    },
+    {
+      "before_path": "corpus/sized/measured_qpe/readout.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/measured_qpe/readout.qli",
+      "before_sha256": "8084c175d049101af682c4d2f693c094ca36baa060754d992cd69d68db87ea58",
+      "current_sha256": "c62a3dd87ba5b9d2aa0594d4c72c7da0f21c34fd51ede49f0cf166a32b7b9b68"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_arithmetic/addition.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/addition.qli",
+      "before_sha256": "68d2bfa7174fad2311adc54a99d20a76fe7aa7944b1425cbcc3b0658644f2eeb",
+      "current_sha256": "bc4396107cfd3550100da70a31bc88d98ac3d7881464e3b91be5bd2f78f30fbd"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_arithmetic/comparison.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/comparison.qli",
+      "before_sha256": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729",
+      "current_sha256": "9ff7175ac22b691a6ab8fecbfc1a653ee639c1de73e2e6aa842cc21908956686"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_arithmetic/controls.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/controls.qli",
+      "before_sha256": "bc74ef9fa6e89dc5539efbc63fbc6c03abd4261afda42c4ab7f7758f4ef2e44c",
+      "current_sha256": "6786a9399ba8c636e2ac9a5f4d6b900075fe5bbe2cbb650cd7a03c269df188e4"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_arithmetic/increment.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/increment.qli",
+      "before_sha256": "5eab4961ffabc1ba538af43c440b11c5add3b5fed81ae21f30b97b7b71c17430",
+      "current_sha256": "0bafa4c28d22f376ba359f8b8aedbba35562b11405ef9b68ea6c181cb61113b2"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_arithmetic/negation.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_arithmetic/negation.qli",
+      "before_sha256": "c19df135d810397a8e8dc7727de73cf5a8f0269c1f1eca6d9a577cf93d7408c9",
+      "current_sha256": "4b11e41eb99061037322d7eb0767bd3461ec9a3de65cc2b9bb8bf77d6755bcd2"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/estimation.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/estimation.qli",
+      "before_sha256": "8cb3baac74e74f3b78a15124b06775a4d27293b1a6ac044c6f548ccb547492b1",
+      "current_sha256": "be7b7bad9215b68aacb355ca85975e5f9acb3ca8933b4d3517c400a5b0e7ef04"
+    },
+    {
+      "before_path": "corpus/sized/qualtran_qpe/evolution.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/evolution.qli",
+      "before_sha256": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f",
+      "current_sha256": "3c6ff3e06b02a18b108ea11d89cab2c9f4ede69b2404221b01046be91ff2742a"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qpe/preparation.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_qpe/preparation.qli",
+      "before_sha256": "2b0caf37c0d62b73e5154677784867a56798ebd9b7359496c6666b8c5289ba9d",
+      "current_sha256": "03411fa8cfcd57ba8c05608240892001585407c54c86d9b5cdd4149a07e4232c"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_xor/bitwise.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/qualtran_xor/bitwise.qli",
+      "before_sha256": "3eec7d870c64be47f35697811b41fd0ce2574731943373abb1870181135085b7",
+      "current_sha256": "c18d04d844bf108a4b3fc3cbcc3afb57c17b77771e99a2c67456b6626777f74b"
+    }
+  ]
+}

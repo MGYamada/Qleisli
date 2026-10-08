@@ -13,6 +13,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from current_source_fixtures import current_source_file
 from compile_sized_corpus import Operation, SourceError, text, wires
 from compile_sized_instrument import compile_instrument as produce_instrument
 from compact_sized_graph import compact
@@ -23,9 +24,9 @@ from test_sized_qpe_clients import sources as client_sources, expected as client
 
 
 def sources():
-    return client_sources() | {p.stem:p.read_text() for p in
+    return client_sources() | {p.stem:current_source_file(p).read_text() for p in
         (ROOT/'corpus/sized/measured_qpe').glob('*.qli')} | {
-        'measured_'+p.stem:p.read_text() for p in (ROOT/'tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients').glob('*.qli')}
+        'measured_'+p.stem:current_source_file(p).read_text() for p in (ROOT/'tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients').glob('*.qli')}
 
 
 def compile_instrument(*args, **kwargs):

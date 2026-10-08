@@ -13,6 +13,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from current_source_fixtures import current_source_file
 from compile_sized_corpus import SourceError, compile_source, text
 from test_sized_corpus import circuit_action, difference
 
@@ -22,8 +23,8 @@ WIDTHS = range(4)
 
 
 def sources():
-    result = {p.stem: p.read_text() for p in DIRECTORY.glob('*.qli')}
-    result['bitwise'] = (ROOT/'corpus/sized/qualtran_xor/bitwise.qli').read_text()
+    result = {p.stem: current_source_file(p).read_text() for p in DIRECTORY.glob('*.qli')}
+    result['bitwise'] = current_source_file(ROOT/'corpus/sized/qualtran_xor/bitwise.qli').read_text()
     return result
 
 
@@ -91,13 +92,13 @@ def rejected_sources(modules):
         examples.append((name, modules | {'controls': changed}, 'controls', 'all_ones', dict(n=width)))
     examples.append(('empty-loop-call-arity', modules | {'addition': modules['addition'].replace('increment[n](register)', 'increment[n](register,register)')}, 'addition', 'add_k', dict(n=0, K=0)))
     examples.append(('aggregate-fold-limit', modules, 'addition', 'add_k', dict(n=1, K=1025)))
-    bad = 'use increment::increment; pub unitary fn bad[static n: Nat](increment: Q<Bits<n>>) -> Q<Bits<n>> { increment[n](increment) }'
+    bad = 'use increment::increment; pub unitary fn bad[const n: Nat](increment: Q<Bits<n>>) -> Q<Bits<n>> { increment[n](increment) }'
     examples.append(('live-name-hides-function', modules | {'client': bad}, 'client', 'bad', dict(n=1)))
-    bad = 'use increment::increment; pub unitary fn bad[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { let increment = q; let q = increment; increment[n](q) }'
+    bad = 'use increment::increment; pub unitary fn bad[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { let increment = q; let q = increment; increment[n](q) }'
     examples.append(('spent-name-hides-function', modules | {'client': bad}, 'client', 'bad', dict(n=1)))
-    bad = 'use growing::grow; pub unitary fn grow[static n: Nat](q: Q<Bit>) -> Q<Bit> { grow[n+1](q) }'
+    bad = 'use growing::grow; pub unitary fn grow[const n: Nat](q: Q<Bit>) -> Q<Bit> { grow[n+1](q) }'
     examples.append(('instantiation-depth', modules | {'growing': bad}, 'growing', 'grow', dict(n=0)))
-    bad = 'use controls::all_ones; pub unitary fn bad[static n: Nat](c: Q<Bit>, q: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bit>,(Q<Bits<n>>,Q<Bit>)) { controlled(repeat_op(0,all_ones[n]))(c,(q,t)) }'
+    bad = 'use controls::all_ones; pub unitary fn bad[const n: Nat](c: Q<Bit>, q: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bit>,(Q<Bits<n>>,Q<Bit>)) { controlled(repeat_op(0,all_ones[n]))(c,(q,t)) }'
     faulty = modules | {'client': bad, 'controls': base.replace('(controls,x(target))', '(x(controls),target)')}
     examples.append(('invalid-zero-repeat-body', faulty, 'client', 'bad', dict(n=0)))
     results = []
@@ -128,9 +129,9 @@ def main():
             name = f'add-{n}-{amount}'
             artifacts[name] = compile_case(modules, 'addition', 'add_k', n=n, K=amount)
             params[name] = 'add', n, amount
-    inverse_add = 'use addition::add_k; pub unitary fn undo[static n: Nat, static K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { adjoint(add_k[n,K],q) }'
-    inverse_eq = 'use comparison::equals; pub unitary fn undo[static n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { adjoint(equals[n],(a,b,t)) }'
-    control_add = 'use addition::add_k; pub unitary fn use_add[static n: Nat, static K: Nat](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { controlled(add_k[n,K])(c,q) }'
+    inverse_add = 'use addition::add_k; pub unitary fn undo[const n: Nat, const K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { adjoint(add_k[n,K],q) }'
+    inverse_eq = 'use comparison::equals; pub unitary fn undo[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { adjoint(equals[n],(a,b,t)) }'
+    control_add = 'use addition::add_k; pub unitary fn use_add[const n: Nat, const K: Nat](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { controlled(add_k[n,K])(c,q) }'
     for n in WIDTHS:
         artifacts[f'inverse-add-{n}'] = compile_case(modules | {'client': inverse_add}, 'client', 'undo', n=n, K=3)
         params[f'inverse-add-{n}'] = 'add', n, -3
@@ -138,7 +139,7 @@ def main():
         params[f'inverse-equals-{n}'] = 'equals', n, 0
         artifacts[f'controlled-add-{n}'] = compile_case(modules | {'client': control_add}, 'client', 'use_add', n=n, K=3)
         params[f'controlled-add-{n}'] = 'controlled-add', n, 3
-    double_eq = 'use comparison::equals; pub unitary fn twice[static n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { let (a,b,t) = equals[n](a,b,t); equals[n](a,b,t) }'
+    double_eq = 'use comparison::equals; pub unitary fn twice[const n: Nat](a: Q<Bits<n>>, b: Q<Bits<n>>, t: Q<Bit>) -> (Q<Bits<n>>,Q<Bits<n>>,Q<Bit>) { let (a,b,t) = equals[n](a,b,t); equals[n](a,b,t) }'
     artifacts['shared-equals-twice'] = compile_case(modules | {'client': double_eq}, 'client', 'twice', n=2)
     params['shared-equals-twice'] = 'identity', 5, 0
     original = modules['increment']
