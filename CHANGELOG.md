@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add an internal bounded QIRF control-sector check tied to fresh graph/root
+  validation and exact reconstruction, with an exact joint-reference projector
+  commutation proof. Preserve phase-sensitive positive and negative tests;
+  source access, footprint/lifetime rules and resource correspondence remain
+  unimplemented by this component.
+
 - Specify static refusal, explicit owner-preserving alternatives and external
   faults in the verified-core failure model. Test original range/overflow/shape
   refusals, correlated branch owners and separate simulator host limits.

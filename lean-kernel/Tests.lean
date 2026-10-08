@@ -1,4 +1,5 @@
 import QleisliKernel
+import QleisliKernel.Qirf.ControlAccess
 
 /-! Pure kernel regressions. Copyright 2026 Masahiko G. Yamada. Apache-2.0. -/
 
@@ -18,6 +19,57 @@ example : Scalar.phase 4 ≠ Scalar.one := by decide
 example : Matrix.identity 0 = .error .dimension := by cbv
 
 end ExactTests
+
+namespace ControlAccessTests
+open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
+open QleisliKernel.Semantics.Observation QleisliKernel.Qirf
+
+-- These original bodies pass graph, ownership, interface and reconstruction
+-- checks. No proposed matrix or producer acceptance flag is supplied.
+private def body (bits : Nat) (steps : List Step) : Program :=
+  ⟨[⟨0,List.range bits,bits⟩],[],[.pure (.applyUnitary 0 1 steps)],
+    [1],[],.unitary⟩
+
+private def original (signature : Basis) (steps : List Step) : Qirf.Artifact :=
+  ⟨#[body (width signature) steps],#[],#[],0,some (signature,signature)⟩
+
+private def accepts (artifact : Qirf.Artifact) (signature : Basis) (axes : List Nat) : Bool :=
+  ((Qirf.ControlAccess.check artifact #[0] signature axes).run 2000000).1.isOk
+
+private def pair : Basis := [.pair,.bit,.bit]
+private def cnot : List Step := [⟨[],.monomial [0,1] [0,3,2,1] [0,0,0,0]⟩]
+private def phase : List Step := [⟨[],.monomial [0,1] [0,1,2,3] [0,0,0,4]⟩]
+
+example : accepts (original pair cnot) pair [0] = true := by decide +kernel
+-- The target sector changes even though the complete operation is unitary.
+example : accepts (original pair cnot) pair [1] = false := by decide +kernel
+example : accepts (original pair phase) pair [0,1] = true := by decide +kernel
+example : accepts (original [.bit] [⟨[],.hadamard 0⟩]) [.bit] [0] = false := by decide +kernel
+example : accepts (original pair cnot) pair [0,0] = false := by decide +kernel
+example : accepts (original pair cnot) pair [2] = false := by decide +kernel
+example : accepts (original pair cnot) [.bits 2] [0] = false := by decide +kernel
+-- A quantum Unit retains its logical owner and exact nontrivial phase.
+example : accepts (original [.unit] [⟨[],.monomial [] [0] [4]⟩]) [.unit] [] = true := by decide +kernel
+example : accepts {(original pair cnot) with root := 1} pair [0] = false := by decide +kernel
+example : accepts {(original pair cnot) with programs := #[body 2 [⟨[],.hadamard 0⟩]]}
+    pair [0] = false := by decide +kernel
+
+-- A closed dependency is freshly checked against its original specification.
+private def dependency (implementation : List Step) : Qirf.Artifact :=
+  ⟨#[body 2 implementation,body 2 cnot,body 2 [⟨[],.contract [0,1] 0 false⟩]],
+    #[⟨pair,0,.circuit 1,"implementation","specification",[]⟩],#[],2,some (pair,pair)⟩
+example : ((Qirf.ControlAccess.check (dependency cnot) #[0,1,3,2] pair [0]).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : ((Qirf.ControlAccess.check (dependency [⟨[],.hadamard 0⟩]) #[0,1,3,2] pair [0]).run 2000000).1.isOk = false :=
+  by decide +kernel
+example : ((Qirf.ControlAccess.check (original pair cnot) #[0] pair [0]).run 0).1.isOk = false := by cbv
+example : ((Qirf.ControlAccess.check (original pair cnot) #[] pair [0]).run 2000000).1.isOk = false := by decide +kernel
+
+-- Matrix cardinality and coordinate checks precede the sector traversal.
+example : ((Qirf.ControlAccess.checkMatrix 1 ⟨2,2,[]⟩ [0]).run 2000000).1.isOk = false := by cbv
+example : ((Qirf.ControlAccess.checkMatrix 0 ⟨1,1,[Scalar.one]⟩ [0]).run 2000000).1.isOk = false := by cbv
+
+end ControlAccessTests
 
 namespace InterferenceTests
 open QleisliKernel.Interference
