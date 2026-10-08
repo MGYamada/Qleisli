@@ -187,6 +187,66 @@
       "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/retiming.qli",
       "before_sha256": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
       "current_sha256": "f66aad8cdde1bf0841eb46f99537cdaeffc8e6b14a42271e88a58502ff36376e"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-forward/main.qli",
+      "before_sha256": "0c66ea22296897232853037466099d1710915ac2686f2e504e1c728efbff35b0",
+      "current_sha256": "b87bb77df02964ca8d133731a561ed660794ab0597aa173ea299a87f938eff18"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/adjoint-only-backwards-inverse/main.qli",
+      "before_sha256": "7dd08afe9d3399a46cef24e987ab9983e87ad3a1ca5775e1300de40b7ccd9fe3",
+      "current_sha256": "3ab94bb97e0ea78d5fc17b22cd2c94522adaa07719a6949599f3c1da86c1612e"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-controlled/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-controlled/main.qli",
+      "before_sha256": "0d67f20fb69130d0360725372e1e5e786a86c6ce3bc42d6e281d30e93e56fff4",
+      "current_sha256": "271baba94ab6959cd9e42cfba4ea8948d6c29b90822302e38ea635ef3444f50c"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/all-paths-inverse/main.qli",
+      "before_sha256": "082764a2f4f5547b2111b87e6924970fb3e75627462b12a5a3111da3c388bbe2",
+      "current_sha256": "fea7c5b7dc2019026c24081ebf4e34f737fc453a3a670b6c5e8e2d484436afe0"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-controlled/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-controlled/main.qli",
+      "before_sha256": "ff8b832079533e3db8ebea506d223922631654d485aa245beb99b790a56291b9",
+      "current_sha256": "405aad7aae26ccd57d3808c79ed83aadd835db293af5c66d5aa96c7b28e53c13"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-forward/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-forward/main.qli",
+      "before_sha256": "9aca58a24989c79239892935de9e9faff1481095e5cebaa0fb0804183abe751d",
+      "current_sha256": "00fe2289958c9b96e445b2b84c8b9fd0141b43caf5028fd523d608d648ce698f"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/apply-only-inverse/main.qli",
+      "before_sha256": "ccb9ef3535039ee3e727db832ff7825ccc06e11aceecd9feae52b3d2a8818229",
+      "current_sha256": "4c30764c6f6c33617c0cfcd47f29f6d83171349aef0b4b02d06e578d363da45f"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/closed-provider-controlled/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/closed-provider-controlled/main.qli",
+      "before_sha256": "3acd98d34866fffa93d4c710f846997bc73e54ca5b6fc48e80627554e783c3d4",
+      "current_sha256": "8ae613bbf0532d3e7bdf6cb14b37b71b30284f8366c04bf9cf45521cf0fd8340"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-controlled/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-controlled/main.qli",
+      "before_sha256": "5b82b40a5febb1a1d6679fba9ad8df4ba23baade64b8ab4ee0a97032814e40ad",
+      "current_sha256": "0b93eec6b848c2c785faaeecc96304b9fef5e3f862aac882a890b036e37a44f4"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli",
+      "before_sha256": "dbbcc8a792cfd0abe5e4ea6a4c2a3f338b66258d3c4dd4285bf8b5f1dae40ee7",
+      "current_sha256": "f554b77f1b2f709ca7064dabf5565f8a213bd599029533ac6d120c9bc0bfd0fb"
     }
   ]
 }

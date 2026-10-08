@@ -28,6 +28,9 @@ development milestones from the scope of their evidence.
   Migrate selected generic, observing-QPE, ownership/phase and sized/instrument
   clients to `const`, retaining original source inventories and independent
   meaning expectations rather than maintaining separate migration counts.
+  Move direct permission counterexamples through the same hash-bound selector
+  and migrate the independent CLI generator to `const`, preserving all seeded
+  cases, reference oracles and public acceptance calls.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

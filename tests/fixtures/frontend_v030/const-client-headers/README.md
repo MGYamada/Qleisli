@@ -4,7 +4,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 
 Issue [#33](https://github.com/MGYamada/Qleisli/issues/33), following commit
 `9f1c4fbdafe102ef9b68df7e2711023de1d9b560`. This selection stage migrates
-21 individual current source files and three current projects: the generic
+Initially 21 individual current source files and three current projects: the generic
 verification client and both observing QPE source comparisons. All historical
 sources and preceding migration records remain unchanged. Only `static`
 parameter-header markers become contextual `const`; no loop marker, body,
@@ -31,3 +31,12 @@ The previous commit `5d4c50ac2a0f6da47bbbc990385fa3027e210153` passed full CI
 run 37723343703 on attempt 1; that does not establish full CI for these new edits.
 No ownership cases were removed or cached. This unit did not rerun the unchanged
 4,000-case suite or claim a fresh Lean replay or constitutional guarantee.
+
+The extension following `7e0d594346583ed37d2b1d5a7c2bbece1855e92d` adds ten
+permission fixtures from `common-provider-access-v030/attempt-01`. Their original
+bytes remain untouched; the Rust test now selects and hashes the current copies.
+The same five tests passed before and after on both toolchains, retaining actual
+capability errors, source substrings and the finite eligibility barrier. No
+native process is used by those deliberately unsupported fixture tests.
+The extension's results are in
+[const-direct-clients](../../review_v030alpha/const-direct-clients/README.md).

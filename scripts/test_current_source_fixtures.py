@@ -714,6 +714,8 @@ class RepositoryMigrationTests(unittest.TestCase):
             candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
                 (fixtures.ROOT / 'tests/fixtures/frontend_v030/ordinary-type-cutover/current' /
                  folder).glob('*.qli'))
+        candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+            (fixtures.ROOT / 'tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01').glob('*/main.qli'))
         expected_files = set()
         for selected in candidates:
             for stage, _ in prior_maps:

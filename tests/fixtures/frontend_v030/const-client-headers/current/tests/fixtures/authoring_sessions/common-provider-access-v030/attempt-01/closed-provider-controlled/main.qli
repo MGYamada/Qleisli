@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn eligibility_barrier[const A: Basis](q: Q<A>) -> Q<A> { q }
+fn closed(q: Q<Bit>) -> Q<Bit> { q }
+fn control[const W: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>)
+requires Controlled(W) { controlled(W)(c,q) }
+pub fn probe(c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) {
+    control[closed](c,q)
+}

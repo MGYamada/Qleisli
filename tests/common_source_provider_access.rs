@@ -12,11 +12,14 @@ use std::collections::BTreeMap;
 
 macro_rules! source {
     ($case:literal) => {
-        include_str!(concat!(
-            "fixtures/authoring_sessions/common-provider-access-v030/attempt-01/",
-            $case,
-            "/main.qli"
+        std::fs::read_to_string(common::current_namespace_fixture(
+            &std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(concat!(
+                "tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/",
+                $case,
+                "/main.qli"
+            )),
         ))
+        .expect("current permission fixture")
     };
 }
 
@@ -77,13 +80,13 @@ fn missing_path(source: &str, capability: &str, supplied_wrapper: &str) {
 #[test]
 fn apply_only_wrapper_retains_forward_use_without_inverse_or_control() {
     common_source_valid(
-        source!("apply-only-forward"),
+        &source!("apply-only-forward"),
         "finite profile does not support opaque Basis parameters",
         "A",
     );
-    missing_path(source!("apply-only-inverse"), "Adjoint", "forwards[V]");
+    missing_path(&source!("apply-only-inverse"), "Adjoint", "forwards[V]");
     missing_path(
-        source!("apply-only-controlled"),
+        &source!("apply-only-controlled"),
         "Controlled",
         "forwards[V]",
     );
@@ -95,12 +98,12 @@ fn reversing_an_adjoint_only_wrapper_needs_the_original_apply_path() {
     // Adjoint(V); reversing that whole wrapper would compute V, whose Apply
     // is absent. Checking only the argument's Adjoint would miss this case.
     common_source_valid(
-        source!("adjoint-only-backwards-forward"),
+        &source!("adjoint-only-backwards-forward"),
         "finite profile does not support opaque Basis parameters",
         "A",
     );
     missing_path(
-        source!("adjoint-only-backwards-inverse"),
+        &source!("adjoint-only-backwards-inverse"),
         "Adjoint",
         "backwards[V]",
     );
@@ -109,12 +112,12 @@ fn reversing_an_adjoint_only_wrapper_needs_the_original_apply_path() {
 #[test]
 fn declared_paths_support_the_inverse_and_control_positive_controls() {
     common_source_valid(
-        source!("all-paths-inverse"),
+        &source!("all-paths-inverse"),
         "finite profile does not support opaque Basis parameters",
         "A",
     );
     common_source_valid(
-        source!("all-paths-controlled"),
+        &source!("all-paths-controlled"),
         "finite profile does not support opaque Basis parameters",
         "A",
     );
@@ -122,14 +125,14 @@ fn declared_paths_support_the_inverse_and_control_positive_controls() {
 
 #[test]
 fn unused_actual_operations_still_constrain_the_conservative_wrapper() {
-    missing_path(source!("unused-op-inverse"), "Adjoint", "ignored[V]");
-    missing_path(source!("unused-op-controlled"), "Controlled", "ignored[V]");
+    missing_path(&source!("unused-op-inverse"), "Adjoint", "ignored[V]");
+    missing_path(&source!("unused-op-controlled"), "Controlled", "ignored[V]");
 }
 
 #[test]
 fn closed_transparent_provider_keeps_its_conditional_control_path() {
     common_source_valid(
-        source!("closed-provider-controlled"),
+        &source!("closed-provider-controlled"),
         "finite profile does not support opaque Basis parameters",
         "A",
     );

@@ -21,7 +21,7 @@ IMPORTS = """use std::quantum::{init0,h,x,z,t,cnot,toffoli,split,join};
 use std::observe::{measure_z,reset};
 unitary fn pa(q:Q<Bit>)->Q<Bit>{t(h(q))}
 unitary fn pb(q:Q<Bit>)->Q<Bit>{z(x(q))}
-unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 """
 
 
