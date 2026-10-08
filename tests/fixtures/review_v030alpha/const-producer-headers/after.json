@@ -1,0 +1,46 @@
+{
+  "source": "pub unitary fn step[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }",
+  "source_sha256": "dca377e7b04741d04a3ec481eaa8be9d147cc539db4a2bf0220c646f4b2d18d0",
+  "parser_sha256": "10721be7399ae9fb0fbfc51b7cdf232a4adbf1fd7a6e82f273b2146175040419",
+  "result": {
+    "status": "parsed",
+    "declaration": [
+      "step",
+      [
+        "n"
+      ],
+      [
+        [
+          "q",
+          [
+            "bits",
+            [
+              "name",
+              "n"
+            ]
+          ]
+        ]
+      ],
+      [
+        "bits",
+        [
+          "name",
+          "n"
+        ]
+      ],
+      [
+        [],
+        [
+          "var",
+          "q"
+        ]
+      ],
+      [],
+      {},
+      {},
+      [
+        "n"
+      ]
+    ]
+  }
+}

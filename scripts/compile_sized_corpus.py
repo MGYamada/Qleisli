@@ -319,7 +319,10 @@ class Parser:
         static_names = []
         has_static = self.eat('[')
         while has_static and self.peek() != ']':
-            self.need('static')
+            # The marker is contextual: ordinary names may still be `const`.
+            # Retain `static` only for historical migration inputs.
+            if not self.eat('const') and not self.eat('static'):
+                raise SourceError("expected 'const' before compile-time parameter")
             parameter = self.name()
             static_names.append(parameter)
             self.need(':')

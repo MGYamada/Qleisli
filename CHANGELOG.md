@@ -11,6 +11,8 @@ development milestones from the scope of their evidence.
   Keep old `static` headers only as temporary migration input.
   Migrate ten maintained example headers to `const`, retaining independent
   phase, reference and protocol checks and the original source identities.
+  Align the independent Python proposal parser's contextual header markers;
+  preserve small IR proposals and historical comparison inputs.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

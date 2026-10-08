@@ -15,6 +15,41 @@ IDENTITY = 'pub unitary fn step[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q 
 
 
 class LocalResolution(unittest.TestCase):
+    def test_const_headers_preserve_ordered_natural_and_operation_parameters(self):
+        source = ('pub unitary fn step[static n: Nat, static U: Op<Bits<n>>]'
+                  '(c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) '
+                  'requires Controlled(U) { controlled(U)(c,q) }')
+        current = source.replace('static ', 'const ')
+        for parser_class in (Parser, InstrumentParser):
+            with self.subTest(parser=parser_class.__name__):
+                old = parser_class(source, module='register_tools').parse()
+                new = parser_class(current, module='register_tools').parse()
+                self.assertEqual(old, new)
+                self.assertEqual(new[8], ['n', 'U'])
+                self.assertEqual(new[7], {'U': {'Controlled'}})
+
+    def test_const_names_remain_contextual_and_preserve_small_proposals(self):
+        for name in ('n', 'const'):
+            legacy = IDENTITY.replace('n: Nat', name+': Nat').replace('Bits<n>', 'Bits<'+name+'>')
+            current = legacy.replace('static ', 'const ')
+            for width in (0, 1, 2):
+                with self.subTest(name=name, width=width):
+                    self.assertEqual(compile_source(legacy, 'step', {name: width}),
+                                     compile_source(current, 'step', {name: width}))
+        source = 'pub unitary fn const(const: Q<Bit>) -> Q<Bit> { const }'
+        self.assertEqual(Parser(source, module='register_tools').parse()[0], 'const')
+        # Initialization uses the same marker parser without changing its effect.
+        source = 'use std::quantum::init0; pub iso fn fresh[const n: Nat]() -> Q<Bit> { init0() }'
+        parser = InstrumentParser(source, module='initialization')
+        parser.parse()
+        self.assertEqual(parser.effect, 'iso')
+
+    def test_parameter_header_requires_an_explicit_marker(self):
+        source = IDENTITY.replace('static n: Nat', 'n: Nat')
+        for parser_class in (Parser, InstrumentParser):
+            with self.subTest(parser=parser_class.__name__), self.assertRaisesRegex(SourceError, "expected 'const'"):
+                parser_class(source, module='register_tools').parse()
+
     def parse(self, body, *, module='register_tools', imports='', parameters=None):
         source = IDENTITY.replace('{ q }', '{ '+body+' }')
         if parameters is not None:
