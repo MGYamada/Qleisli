@@ -15,6 +15,14 @@
       "commands": [
         [
           "python3",
+          "scripts/check_verification_inventory.py"
+        ],
+        [
+          "python3",
+          "scripts/check_production_coverage.py"
+        ],
+        [
+          "python3",
           "scripts/check_input_corpus.py"
         ],
         [

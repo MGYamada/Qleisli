@@ -273,6 +273,9 @@ python3 scripts/ci_profiles.py --checks rust-latest-lint-research --output "$qle
 
 The groups live in `source-checks.json`, with applicable producer lanes, required
 tool versions, prerequisites, preparation groups and per-command timeouts.
+The early `source-integrity` group checks linked VM-22/VM-29 source identities
+before corpus selection and before the changes job schedules heavy builds.
+Later repository checks retain their full rejection regressions.
 `--plan` displays these without executing or installing anything. The Rust and
 MSRV groups build/audit the native checker before running tests; their separate
 lint/research groups retain the original Clippy and research checks. Both use

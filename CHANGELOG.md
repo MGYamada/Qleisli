@@ -6,6 +6,9 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check linked VM-22/VM-29 source identities before scheduling heavy CI lanes;
+  retain later rejection tests and refresh the reviewed test-only identity.
+
 - Support contextual `const` markers in compile-time parameter headers while
   preserving ordered kinds, explicit bindings and ordinary const-named values.
   Keep old `static` headers only as temporary migration input.

@@ -13,6 +13,21 @@ import ci_source_checks as checks
 
 
 class SourceChecksTests(unittest.TestCase):
+    def test_linked_inventory_identities_precede_heavy_lane_scheduling(self):
+        commands = checks.plan('source-integrity')
+        self.assertEqual(commands[:2], [
+            ['python3', 'scripts/check_verification_inventory.py'],
+            ['python3', 'scripts/check_production_coverage.py'],
+        ])
+        self.assertEqual(commands[2:], [
+            ['python3', 'scripts/check_input_corpus.py'],
+            ['python3', 'scripts/test_current_source_fixtures.py'],
+            ['python3', 'scripts/test_observation_sources.py'],
+        ])
+        later = checks.plan('repository-integrity')
+        self.assertIn(['python3', 'scripts/test_check_production_coverage.py'], later)
+        self.assertIn(['python3', 'scripts/check_production_coverage.py'], later)
+
     def test_preparation_precedes_consumers_and_binds_toolchains(self):
         for group in ('rust-latest', 'rust-msrv'):
             spec = checks.describe(group)
