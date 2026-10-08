@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Explain unsupported early return, residual propagation and runtime abort
+  macros with the structured final-expression/owner rule; preserve ordinary
+  identifiers, original locations and the existing accepted source grammar.
+
 - Specify the surface-to-core elaboration whitelist, including evaluation
   order, exact owner trees and phase, original locations, profile refusals and
   independent checking duties. Link preserved old/new migration evidence;

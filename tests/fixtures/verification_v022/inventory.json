@@ -3637,7 +3637,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "ce0dc7865c3e9a7447dfa0af2e2d758b405cda563e2d721c97775c6b42a66967",
+      "sha256": "14012df9a30c95b48908b0d1c628ab9472ff94f7cfb65d1c35159d502e18e9f2",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3694,7 +3694,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "8c281f246e50a8b85a211133fc40d972e515c1deb2a0e1851cf5a921fee9d7bc",
+      "sha256": "380c036ca49d214b4b1035806c51df05ebe8bb2c2217d219264a7a9a1b9a1ca0",
       "group": "source",
       "surface": {
         "declarations": [

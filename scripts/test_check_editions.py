@@ -57,7 +57,7 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts, {"manifests": 2, "qli": 2, "qlt": 1,
-                                  "historical_manifests": 23, "historical_sources": 51})
+                                  "historical_manifests": 29, "historical_sources": 57})
 
     def test_historical_source_manifest_generator_and_record_are_immutable(self):
         base = self.copy_history()
@@ -101,7 +101,7 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts["qli"], 3)  # The new project has ordinary coverage.
-        self.assertEqual(counts["historical_sources"], 51)
+        self.assertEqual(counts["historical_sources"], 57)
 
     def test_const_first_refusals_are_exact_history_and_repaired_sources_are_ordinary(self):
         self.copy_history()

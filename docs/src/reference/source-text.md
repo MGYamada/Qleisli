@@ -53,6 +53,37 @@ generic std APIs and source-preservation proofs remain separate work in
 [#32](https://github.com/MGYamada/Qleisli/issues/32) and
 [#317](https://github.com/MGYamada/Qleisli/issues/317).
 
+## One structured quantum result boundary
+
+Verified quantum-core functions are expression-oriented. A body has one
+structured result boundary: its final block expression. Every runtime branch
+must retain and merge the complete required owner frame and exact result tree.
+Both arms are checked even when one is statically unreachable. No early exit
+can discard, release, reset or uncompute a live owner implicitly.
+
+Early `return q`, residual propagation `q?`, runtime `panic!`, `assert!` and
+`unreachable!` macro edges, unwinding, hidden abort and partial quantum
+functions are not admitted. This applies to Unitary, Iso and Observe bodies;
+an observing effect does not authorize a hidden exit. Syntax refusals explain
+the final-expression alternative and retain the original token's byte span.
+Use explicit ordinary branches, admitted coherent control and finite folds
+under their own owner/effect rules; this chapter grants no unsupported
+`qmatch`, `qreturn` or `qtry` form.
+
+For example, `unitary fn keep(q:Q<Bit>)->Q<Bit>{q}` has the structured result;
+replacing its body with `{return q}` is invalid. A final `if` whose arm returns
+Unit while the other returns `Q<Bit>` is also invalid; refusal inserts no
+cleanup. Ordinary identifier names retain normal resolution. A variable or
+checked ordinary function named `return`, or a function named `panic`, is not
+a return/abort primitive; an ordinary `return(q)` call keeps normal call rules.
+Comments containing these spellings do not create executable edges.
+
+A future host orchestration language may specify `Result`, residual exits,
+assertions or process failure separately. No such host failure semantics is
+imported into the present core. Ordinary error values, if separately admitted
+as data, would not themselves imply propagation or unwinding. The runtime
+checker/transport's fail-closed refusal is likewise not a source-level exit.
+
 ## Ordinary function effects and assertions
 
 An ordinary body-bearing function may use `fn`, `unitary fn`, `iso fn` or

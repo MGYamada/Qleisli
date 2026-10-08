@@ -152,6 +152,42 @@
         "attempt-01/unused-invalid"
       ],
       "root": "tests/fixtures/authoring_sessions/const-parameters-v030"
+    },
+    {
+      "root": "tests/fixtures/authoring_sessions/structured-exit-v030",
+      "kind": "rejected-filesystem-authoring-attempt",
+      "filesystem_admission": false,
+      "explanation": "Six first filesystem CLI checks were actually rejected for the incorrect schema key before source parsing. Retain their exact source/manifest bytes and observed failures. This classifies only immutable rejected historical inputs, not filesystem admission; the manifest-only attempt-02 and all subsequent clients require ordinary schema-2 checks.",
+      "projects": [
+        "attempt-01/assert",
+        "attempt-01/early-return",
+        "attempt-01/ordinary-identifiers",
+        "attempt-01/panic",
+        "attempt-01/residual",
+        "attempt-01/unreachable"
+      ],
+      "files": {
+        "attempt-01/assert/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/assert/main.qli": "53d3006b1e178aa2a0f2284a140fae3463306a8e77438856d84aa8a99c1ec0ee",
+        "attempt-01/early-return/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/early-return/main.qli": "3c786d7d7a2deb50cfdbc4e4fdebcaa9ba06bc35a008dec21b2129b37e3e3a10",
+        "attempt-01/ordinary-identifiers/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/ordinary-identifiers/main.qli": "e7bcf380d36cfb1aee40e5b650c12ac57c12af37d06a2a7955b7afa729cad780",
+        "attempt-01/panic/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/panic/main.qli": "0a0be91dc14cdd3326478c8dc63306f3c51287b0b68e56a04398cce206737bc8",
+        "attempt-01/residual/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/residual/main.qli": "4ec87c811c0b22d6b4c191b56f7b6722afa4d8e7007e1208374662838aefa0b8",
+        "attempt-01/unreachable/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "attempt-01/unreachable/main.qli": "b46aa2d24e32e4ac04471c1474f49a9030664e4241f554258934c6efa0f1496e"
+      },
+      "anchors": {
+        "before/assert.json": "2b37bbd9349bf9905560b0aaae8944ab8341fdfb3516980ce060cacc7b466bed",
+        "before/early-return.json": "82941393f202ef2bc75973563a1a20c63db55f0e8dafbb13cd84188321da92de",
+        "before/ordinary-identifiers.json": "513888acf8fe195332614f84a2523392e95cfb7fe0e9df124d7084b2db376700",
+        "before/panic.json": "e856395a5ace06480a231e1a643f52a90a5fbcb57bb69f291e3f2923393be13f",
+        "before/residual.json": "d2b750da7dced34f579f457a6d8a299d3aff79866bb1668f6e7452fc3ab87710",
+        "before/unreachable.json": "97b3a466162c1fc07bf21879af157a7d30c85d814511100dda7d4797b33aa232"
+      }
     }
   ],
   "version": 1

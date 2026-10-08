@@ -265,11 +265,12 @@ fn scan(
 ) -> Result<(Vec<Token>, Vec<DocComment>), LexError> {
     use super::scanner::{ErrorKind, Kind, Scanner};
     let mut scanner = Scanner::new(source, max_comment_depth, retain_docs);
-    let mut tokens = Vec::new();
+    let mut tokens: Vec<Token> = Vec::new();
     loop {
         let mut token = scanner.next().map_err(|error| LexError {
             message: match error.kind {
                 ErrorKind::Forbidden(message) => message.into(),
+                ErrorKind::Unexpected('?') => "`?` residual propagation is unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner".into(),
                 ErrorKind::Unexpected(ch) => format!("unexpected character `{ch}`"),
                 ErrorKind::UnterminatedComment => "unterminated block comment".into(),
                 ErrorKind::CommentDepth(limit) => format!("comment nesting exceeds {limit}"),
@@ -313,8 +314,34 @@ fn scan(
                 '<' if scanner.join(&mut token, '-') => TokenKind::LeftArrow,
                 '<' => TokenKind::LAngle,
                 _ => {
+                    let message = if ch == '!' {
+                        match tokens.last().map(|token| &token.kind) {
+                            Some(TokenKind::Ident(name))
+                                if matches!(
+                                    name.as_str(),
+                                    "panic"
+                                        | "assert"
+                                        | "assert_eq"
+                                        | "assert_ne"
+                                        | "debug_assert"
+                                        | "debug_assert_eq"
+                                        | "debug_assert_ne"
+                                        | "unreachable"
+                                        | "todo"
+                                        | "unimplemented"
+                                ) =>
+                            {
+                                format!(
+                                    "`{name}!` runtime exits are unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner"
+                                )
+                            }
+                            _ => format!("unexpected character `{ch}`"),
+                        }
+                    } else {
+                        format!("unexpected character `{ch}`")
+                    };
                     return Err(LexError {
-                        message: format!("unexpected character `{ch}`"),
+                        message,
                         span: token.span,
                     });
                 }

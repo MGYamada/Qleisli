@@ -1,5 +1,9 @@
 # Authoring and repair observations
 
+The [structured-exit probes](structured-exit-v030/README.md) preserve five
+forbidden exit forms, one accepted ordinary-name control, the initial manifest
+refusals and a manifest-only repair before the #37 diagnostic change.
+
 The [adjoint-construction probes](adjoint-construction-v030/README.md) retain two
 complete first sources and actual baseline acceptances that contradict #45's
 adopted Adjointable construction premise. The context/session transcription

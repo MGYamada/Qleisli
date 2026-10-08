@@ -1637,6 +1637,30 @@ impl Parser {
 
     fn named_expr(&mut self) -> Result<Expr, ParseError> {
         let ident = self.ident()?;
+        // Explain already-invalid early-return syntax without reserving the
+        // ordinary identifier or turning an ordinary return(q) call into exit.
+        if ident.text == "return"
+            && matches!(
+                self.current().kind,
+                TokenKind::Ident(_)
+                    | TokenKind::Zero
+                    | TokenKind::One
+                    | TokenKind::True
+                    | TokenKind::False
+                    | TokenKind::Natural(_)
+                    | TokenKind::If
+                    | TokenKind::Qif
+                    | TokenKind::Qfor
+                    | TokenKind::Basis
+                    | TokenKind::WithComputed
+                    | TokenKind::Not
+            )
+        {
+            return Err(ParseError {
+                message: "early `return` is unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner".into(),
+                span: ident.span,
+            });
+        }
         let mut static_args = Vec::new();
         let mut end = ident.span;
         if self.consume(&TokenKind::LBracket).is_some() {
