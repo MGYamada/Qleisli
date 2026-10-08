@@ -20,3 +20,11 @@ source semantics, fixed mdBook and preflight groups passed. These results bind
 the recorded working inputs. Clean-commit native comparisons and the final
 same-commit hosted result remain separate requirements. This naming unit does
 not complete every acceptance condition of #45.
+
+`clean-native-validation.json` records the six selected shared native groups
+on clean commit `2cfe37f29dec2567b6db7d2cb8ad613acd67da34`: pure raw, observation,
+small corpus, QPE, arithmetic and QPE clients. All passed in 96.71 seconds,
+including host preparation. The other 61 native groups were omitted from this
+local selection and remain required by hosted CI. The observation comparison
+retains root/dependency evidence and independent exact Kraus semantics. This
+subsequent record does not claim that later commits ran those local groups.
