@@ -40,3 +40,25 @@ capability errors, source substrings and the finite eligibility barrier. No
 native process is used by those deliberately unsupported fixture tests.
 The extension's results are in
 [const-direct-clients](../../review_v030alpha/const-direct-clients/README.md).
+
+The extension following `6434620d986cbb5a33941002a9c49193d6d80f4c` selects
+three existing shadowing and shared-work-budget sources with const headers.
+Their original bytes and earlier migration stages remain unchanged. A shared
+test reader selects and hashes the current text before each existing test.
+The two shadowing variants retain the same error code, message, source substring
+and actual binder byte position. The work-budget case retains its original
+expression, shared accounting and rejection assertions. No acceptance result
+is cached and no additional large source or system is generated.
+
+Before and after, operation_parameters passed 15 tests and review_v019 passed
+two tests on both Rust toolchains, with no ignored cases. Latest suite times
+were 9.27/18.42 seconds before and 10.01/19.11 after; MSRV times were
+9.06/17.75 before and 10.03/18.42 after. These concurrent local runs are not
+a controlled performance comparison. Shared source integrity passed all five
+commands, fixture selection passed 55 tests and Rust formatting passed.
+Clippy on all targets passed on latest Rust and MSRV. Hosted CI for this
+extension is still pending; local results do not discharge a constitutional
+obligation or establish release readiness. The preceding pushed commit
+`7e0d594346583ed37d2b1d5a7c2bbece1855e92d` passed run 37726985996 on
+attempt 1, including all eight producers and eight required contexts.
+Release readiness was skipped, as appropriate for the draft PR.

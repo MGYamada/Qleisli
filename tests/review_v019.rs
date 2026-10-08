@@ -26,7 +26,7 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
     // The canonical derivative retains the literal CR; its source map preserves
     // the earlier CBit input without compiling obsolete syntax after CR repair.
     let original = include_str!(
-        "fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli"
+        "fixtures/review_v030alpha/hosted-source-clients/current/review_v019/bare_cr/main.qli",
     );
     let root = SourceRoot::new(original);
     let error = check_project(&root.0).unwrap_err();
@@ -51,8 +51,8 @@ fn bare_cr_is_rejected_in_every_lexical_context_at_original_byte_offset() {
 
 #[test]
 fn unused_static_arguments_share_exact_work_across_calls() {
-    let base = include_str!(
-        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli"
+    let base = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
     );
     let expression = format!("{}p{}", "repeat_op(150,".repeat(10), ")".repeat(10));
     let once = base.replace("repeat_op(150,repeat_op(150,p))", &expression);

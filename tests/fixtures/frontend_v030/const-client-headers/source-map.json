@@ -247,6 +247,24 @@
       "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01/unused-op-inverse/main.qli",
       "before_sha256": "dbbcc8a792cfd0abe5e4ea6a4c2a3f338b66258d3c4dd4285bf8b5f1dae40ee7",
       "current_sha256": "f554b77f1b2f709ca7064dabf5565f8a213bd599029533ac6d120c9bc0bfd0fb"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli",
+      "before_sha256": "4dfcc63c7b4a15fe4720082504f2c403c4b7090a8003358f15b4befb8a5795cb",
+      "current_sha256": "ce4e336208e74cf979949ca7ed166d512c133df828f1e96bce00c4ceae41c955"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli",
+      "before_sha256": "ce3ee0f06d18ba223ae94bb5863f742302c2c8c521611ded7ab64eb8ce4b6b46",
+      "current_sha256": "69f7446d08306a111f58ad72f74bc1d49c3c81ff15fa7044bad5991076038bc2"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
+      "before_sha256": "7f9c58cb530107818424ffe417da0afcf4772e886c81f99cb2a7f7531cdad8b8",
+      "current_sha256": "74a8dcd924628969dcc4d9278e9a81ed5742302b21931d9ea056b7928c728e12"
     }
   ]
 }

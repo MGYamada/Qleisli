@@ -31,6 +31,8 @@ development milestones from the scope of their evidence.
   Move direct permission counterexamples through the same hash-bound selector
   and migrate the independent CLI generator to `const`, preserving all seeded
   cases, reference oracles and public acceptance calls.
+  Select current shadowing and shared-work-budget fixtures through the same
+  reader, retaining precise diagnostics and existing limit assertions.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

@@ -39,6 +39,12 @@ print(current_source_file(Path(sys.argv[2])))
     PathBuf::from(selected.trim_end_matches('\n'))
 }
 
+/// Read the current source only after checking every recorded migration link.
+pub(super) fn current_source_text(relative: &str) -> String {
+    let selected = current_namespace_fixture(&Path::new(env!("CARGO_MANIFEST_DIR")).join(relative));
+    fs::read_to_string(selected).expect("current source fixture")
+}
+
 /// Select current corpus snapshots only for registered logical project roots.
 pub(super) fn current_corpus_projects(paths: &[PathBuf]) -> Vec<PathBuf> {
     select_corpus_projects(paths, "positive")

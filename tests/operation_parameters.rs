@@ -462,17 +462,17 @@ fn static_basis_errors_and_concrete_step_instance_limits_reject_without_panics()
 
 #[test]
 fn lexical_runtime_binding_rejects_static_shadow_before_later_calls() {
-    // Both original sources fail at the preceding let; later call arguments
+    // Both selected sources fail at the preceding let; later call arguments
     // cannot make an illegal static-name shadow binding valid.
     for source in [
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli",
         ),
-        include_str!(
-            "fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli"
+        common::current_source_text(
+            "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli",
         ),
     ] {
-        let root = SourceRoot::new(source);
+        let root = SourceRoot::new(&source);
         let error = check_project(&root.0).unwrap_err();
         assert_eq!(error.code, ErrorCode::TypeMismatch);
         assert_eq!(error.message, "binding U shadows a static parameter/index");
