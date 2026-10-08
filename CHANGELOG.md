@@ -33,6 +33,8 @@ development milestones from the scope of their evidence.
   cases, reference oracles and public acceptance calls.
   Select current shadowing and shared-work-budget fixtures through the same
   reader, retaining precise diagnostics and existing limit assertions.
+  Migrate direct effect and Meaning clients through the same selection stage,
+  preserving semantic refusals, false-annotation checks and fresh CLI calls.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

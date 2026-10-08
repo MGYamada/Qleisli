@@ -265,6 +265,42 @@
       "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
       "before_sha256": "7f9c58cb530107818424ffe417da0afcf4772e886c81f99cb2a7f7531cdad8b8",
       "current_sha256": "74a8dcd924628969dcc4d9278e9a81ed5742302b21931d9ea056b7928c728e12"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli",
+      "before_sha256": "92bf6a29548c845886f760976921075cebd2b4ef7ded075deec09c2b47e1f8b6",
+      "current_sha256": "ca2567592c1edb677ee514e5da5d15cb9f3384464f28cdde78afa4466132d5cd"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
+      "before_sha256": "e4c6a83cc0d69c43a94ef671ca0ba4b16ce3ebb2111c38ee0ea514920169e6ea",
+      "current_sha256": "38b6b9e41736dc5500d9356d201ac3d35dd6f766277d6e445fb3a336425043cb"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli",
+      "before_sha256": "71452a057660c3bb9c711db09c6dccc58834e1b09e803612a197120755cc59b9",
+      "current_sha256": "d99deeeb7b872966d8d2b2fd92e2b6697326aa17352a768d701c2d91371b3a16"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
+      "before_sha256": "74e988eec62fb91dae61ddb2135bd8b046e2189d95a69052e2d2311d15e0a426",
+      "current_sha256": "7dd16dd179bba88add86141a25af18a6bcf7100e2adf841c8efffe09194a7881"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
+      "before_sha256": "1c38d89e5b0e4e40109f20e84dad722df6d7038238a8bb8edd29a30b788da065",
+      "current_sha256": "c402ea53e368acb4e5c49abb41f059ddf5c9f652cfafac2b0f69a1212284e005"
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
+      "current_path": "tests/fixtures/frontend_v030/const-client-headers/current/tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
+      "before_sha256": "6b8348e775ec09227ee76156e45405383e03a19f0df6b17360c94019fd6edb89",
+      "current_sha256": "4af214363d38054745e4766e12186b2cd97a3fa522a5eedebc30a7ce9d15f280"
     }
   ]
 }

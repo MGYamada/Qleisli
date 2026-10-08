@@ -717,6 +717,7 @@ class RepositoryMigrationTests(unittest.TestCase):
         candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
             (fixtures.ROOT / 'tests/fixtures/authoring_sessions/common-provider-access-v030/attempt-01').glob('*/main.qli'))
         candidates.update(['tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli'])
+        candidates.update(['tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli', 'tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli', 'tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli', 'tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli', 'tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli', 'tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli'])
         expected_files = set()
         for selected in candidates:
             for stage, _ in prior_maps:

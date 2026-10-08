@@ -236,26 +236,25 @@ fn names_and_module_paths_do_not_grant_body_effects_or_access() {
     assert_eq!(error.code(), "module");
     for (source, code) in [
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/generic-missing-access/main.qli",
             ),
             "access",
         ),
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-v030/attempt-01/duplicate-owner/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/duplicate-owner/main.qli",
             ),
             "ownership",
         ),
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-v030/attempt-01/mutual-cycle/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/mutual-cycle/main.qli",
             ),
             "cycle",
         ),
     ] {
-        let error =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
         assert_eq!(error.code(), code, "{error}");
     }
 }
@@ -360,26 +359,25 @@ fn operation_providers_use_principal_effects_and_cannot_hide_measurement() {
 fn host_selected_providers_distinguish_unsupported_effects_from_shape_errors() {
     for (source, expected) in [
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
             ),
             Some("effect"),
         ),
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wide-pure/main.qli",
             ),
             None,
         ),
         (
-            include_str!(
-                "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli"
+            common::current_source_text(
+                "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-wrong-shape/main.qli",
             ),
             Some("type"),
         ),
     ] {
-        let program =
-            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap();
+        let program = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
         let result = program.instantiate(
             "main::entry",
             BTreeMap::new(),
@@ -409,10 +407,10 @@ fn host_selected_providers_distinguish_unsupported_effects_from_shape_errors() {
 
 #[test]
 fn host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json() {
-    let source = include_str!(
-        "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli"
+    let source = common::current_source_text(
+        "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/host-hidden-observer/main.qli",
     );
-    let root = SourceRoot::new(source);
+    let root = SourceRoot::new(&source);
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
         command
@@ -491,8 +489,8 @@ fn principal_classes_do_not_depend_on_declaration_order_or_call_expansion() {
 fn fn_suggestions_do_not_require_a_redundant_effect_annotation() {
     let parse = qleisli::frontend::parser::parse_module("pub nonsense").unwrap_err();
     assert!(parse.message.contains("expected `fn`"), "{parse}");
-    let root = SourceRoot::new(include_str!(
-        "fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli"
+    let root = SourceRoot::new(&common::current_source_text(
+        "tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli",
     ));
     let error = check_project(&root.0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch);

@@ -8,8 +8,8 @@ fn command() -> Command {
 
 #[test]
 fn shared_basis_nat_provider_checks_zero_and_one_bit_registers() {
-    let original = include_str!(
-        "fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli"
+    let original = common::current_source_text(
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli",
     );
     for (source, expected_success) in [
         (original.to_owned(), true),

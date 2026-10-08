@@ -62,3 +62,25 @@ obligation or establish release readiness. The preceding pushed commit
 `7e0d594346583ed37d2b1d5a7c2bbece1855e92d` passed run 37726985996 on
 attempt 1, including all eight producers and eight required contexts.
 Release readiness was skipped, as appropriate for the draft PR.
+
+The extension following `73d9013d` selects six effect/Meaning client sources.
+It retains all first-source bytes and changes only parameter-header markers.
+The current test readers use the selected copies for missing access, hidden
+observation, broad asserted effects, provider shape mismatch, finite profile
+eligibility and false scalar-phase annotations at zero/one bit widths. The
+existing effect/type/contract refusals, text/JSON messages, absence of tracker
+links and fresh CLI acceptance paths remain unchanged. Two non-header siblings
+use the same reader without acquiring migration entries or modified bytes.
+
+Before and after, bits_cli passed one test and body_effects passed 13 tests on
+latest Rust and MSRV, with no ignored cases. Latest suite times were 1.72/3.10
+seconds before and 0.94/3.14 after; MSRV times were 1.10/3.14 before and
+0.94/2.91 after. Concurrent runs are not controlled performance measurements.
+Fixture selection passed 55 tests and shared source integrity passed all five
+commands. The first Clippy runs rejected redundant String conversions introduced
+by switching from borrowed literals to owned selected text; these conversions
+were removed without suppressing the lint or weakening a test. Hosted CI for
+this extension remains pending. No production Rust/Lean definition or oracle
+was changed, and no guarantee is newly admitted.
+
+After removing those conversions, all-target Clippy passed on both toolchains.
