@@ -158,3 +158,97 @@ fn final_branches_cannot_drop_or_exchange_unaccounted_quantum_owners() {
         assert_ne!(finite.code, "project");
     }
 }
+
+#[test]
+fn static_range_arithmetic_and_shape_refuse_before_native_acceptance() {
+    for (text, selected_code, finite_code) in [
+        (
+            "use std::registers::take_bit; pub unitary fn bad[const n:Nat](q:Q<Bits<n>>)->(Q<Bits<n-1>>,Q<Bit>) requires n>=1 {take_bit[n,n](q)} observe fn main()->Bit{0}",
+            "size",
+            "type_mismatch",
+        ),
+        (
+            "pub observe fn main()->Bit{static let n=170141183460469231731687303715884105727+1;0}",
+            "limit",
+            "limit",
+        ),
+        (
+            "pub unitary fn bad(b:Bit,q:Q<Bit>)->Q<Bit>{if b {q} else {()}} observe fn main()->Bit{0}",
+            "type",
+            "type_mismatch",
+        ),
+    ] {
+        parse_module(text).unwrap();
+        let selected =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap_err();
+        assert_eq!(selected.code(), selected_code);
+        let root = SourceRoot::new(text);
+        let finite = check_project_with_kernel(
+            &root.0,
+            SourcePolicy::default(),
+            &Kernel::new(root.0.join("not-executed-kernel")),
+        )
+        .unwrap_err();
+        assert_eq!(finite.code, finite_code, "{}", finite.message);
+        assert!(finite.primary.is_some());
+    }
+}
+
+#[test]
+fn explicit_alternatives_keep_correlated_owners_and_host_limits_stay_separate() {
+    use qleisli::frontend::compile::compile_project;
+    use qleisli::ir::RawOp;
+    use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
+
+    let text = "use std::quantum::init0;use std::quantum::h;
+        use std::quantum::x;use std::quantum::cnot;use std::observe::measure_z;
+        fn choose(b:Bit,q:Q<Bit>)->(Bit,Q<Bit>){if b {(0,q)}else{(1,x(q))}}
+        pub observe fn main()->(Bit,Bit,Bit,Bit){
+            let (a,r)=cnot(h(init0()),init0());
+            let b=measure_z(h(init0()));
+            let (tag,a)=choose(b,a);
+            (b,tag,measure_z(a),measure_z(r))
+        }";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
+    // The common body judgment succeeds. The selected lowering's existing
+    // runtime-if restriction is a preparation refusal, not an execution edge.
+    let error = parsed
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    let accepted = compile_project(&SourceRoot::new(text).0).unwrap();
+    let branch = accepted
+        .program()
+        .operations
+        .iter()
+        .find_map(|op| match op {
+            RawOp::ClassicalBranch { quantum_phis, .. } => Some(quantum_phis),
+            _ => None,
+        })
+        .unwrap();
+    assert_eq!(branch.len(), 2); // returned a and the inaccessible caller r
+    let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+    let expected = [
+        vec![false, true, true, false],
+        vec![false, true, false, true],
+        vec![true, false, false, false],
+        vec![true, false, true, true],
+    ];
+    assert_eq!(distribution.len(), expected.len());
+    for outcome in expected {
+        assert!((distribution[&outcome] - 0.25).abs() < 1e-12);
+    }
+    assert_eq!(
+        run_closed(
+            &accepted,
+            SimulationLimits {
+                max_execution_steps: 0,
+                ..SimulationLimits::default()
+            }
+        )
+        .unwrap_err(),
+        SimulationError::ExecutionLimit { max: 0 }
+    );
+}

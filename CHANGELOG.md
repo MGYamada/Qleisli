@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Specify static refusal, explicit owner-preserving alternatives and external
+  faults in the verified-core failure model. Test original range/overflow/shape
+  refusals, correlated branch owners and separate simulator host limits.
+
 - Explain unsupported early return, residual propagation and runtime abort
   macros with the structured final-expression/owner rule; preserve ordinary
   identifiers, original locations and the existing accepted source grammar.

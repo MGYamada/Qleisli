@@ -84,6 +84,60 @@ imported into the present core. Ordinary error values, if separately admitted
 as data, would not themselves imply propagation or unwinding. The runtime
 checker/transport's fail-closed refusal is likewise not a source-level exit.
 
+## Checking failures and quantum execution
+
+Within the declared finite model, a supported verified quantum-core operation
+has no implicit exceptional execution edge. This applies to Unitary, Iso and
+Observe: measurement supplies its specified ordinary outcome and instrument,
+not permission to panic, unwind, abort, partially return or abandon an owner.
+This totality requirement is the adopted failure contract; it is not a claim
+that every source form or target has a completed production Soundness proof.
+
+Invalid sizes, type trees, static indices, access/capability requirements and
+required constraints reject during checking or specialization. The current
+`take_bit[n,k]` requires an established `k < n`; it does not compile an unknown
+index into a quantum runtime bounds trap. Checked Nat arithmetic cannot wrap
+or defer overflow to a quantum exception. Bounded elaboration, unsupported
+profiles and unproved obligations also reject before an executable handle is
+issued for that proposal. See [static checking](static-language.md).
+
+An explicit ordinary result such as a Bit may select an ordinary `if`, but
+both arms must satisfy the complete required owner frame, exact type tree and
+effect rules. A recoverable alternative returns its declared data and owners
+through the normal structured boundary. It must not implement a hidden exit,
+implicit cleanup or a success-only path. For example, an operation may return
+`(flag, q)` or `(flag, x(q))` in its two arms when their declared interfaces
+agree; omitting `q` in one arm is invalid. The unchanged caller frame, including
+correlated owners and zero-width quantum owners, still participates in the
+branch merge. An ordinary condition does not establish separability.
+
+The finite project path supports those runtime ordinary branches. The current
+selected specialization projection can reject such a runtime expression as
+unsupported during preparation; it must not turn it into an unchecked body or
+a runtime failure path. This profile restriction is separate from the language
+contract and the shared original-body ownership/effect judgment.
+
+Source failure handling cannot reset/discard workspace, discharge a clean or
+dirty restoration obligation, erase exact phase or owner ordering, or shorten
+an access lifetime to omit required work. The absence of an unwind construct
+does not prove pending access, restoration, target or quantitative resource
+contracts. Their implementations must obey this rule when admitted.
+
+Operating-system failure, verifier/transport failure, backend crash and device
+loss are external faults, outside the quantum-core operational theorem unless
+an explicit future target contract models them. They provide no source escape
+hatch or owner-disposal semantics. Missing, incompatible, timed-out or malformed
+native checking rejects without an accepted handle or fallback. Such a refusal
+is a failed attempt to check an artifact, not an executed quantum branch.
+
+Reference simulation can separately refuse its host execution/component/space
+budgets or report a numerical/internal-consistency error. No result distribution
+is thereby certified as the successful program result. These host limits are
+not static quantum resource certificates, and reporting an error is not proof
+of physical state recovery or clean/dirty restoration after an external fault.
+The current Rust simulator and native IO retain their disclosed correspondence
+assumptions; the core failure contract does not prove host panic freedom.
+
 ## Ordinary function effects and assertions
 
 An ordinary body-bearing function may use `fn`, `unitary fn`, `iso fn` or
