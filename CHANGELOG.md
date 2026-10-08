@@ -9,6 +9,8 @@ development milestones from the scope of their evidence.
 - Support contextual `const` markers in compile-time parameter headers while
   preserving ordered kinds, explicit bindings and ordinary const-named values.
   Keep old `static` headers only as temporary migration input.
+  Migrate ten maintained example headers to `const`, retaining independent
+  phase, reference and protocol checks and the original source identities.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

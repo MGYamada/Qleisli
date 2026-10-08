@@ -13,7 +13,7 @@ unitary fn eighth_phase(q: Q<Bit>) -> Q<Bit> { t(q) }
 unitary fn decomposed(q: Q<Bit>) -> Q<Bit> { power(eighth_phase,4)(q) }
 
 /// The caller supplies evidence for the same exact Z operator.
-unitary fn client[static U: Op<Bit,ZMeaning>](q: Q<Bit>) -> Q<Bit>
+unitary fn client[const U: Op<Bit,ZMeaning>](q: Q<Bit>) -> Q<Bit>
 requires Apply(U) { U(q) }
 
 observe fn main() -> (Bit,Bit) {

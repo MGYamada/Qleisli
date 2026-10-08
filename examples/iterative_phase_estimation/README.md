@@ -8,7 +8,7 @@ target's Z measurement. The floating-point reference `run` also lists
 these are numerical artifacts, not additional ideal outcomes.
 
 [iterative::phase3](iterative.qli) is an ordinary experimental `.qli` definition:
-`Observe`, with `static U: Op<Bit>`, `requires Controlled(U)`, and runtime type
+`Observe`, with `const U: Op<Bit>`, `requires Controlled(U)`, and runtime type
 `Q<Bit> -> ((Bit,Bit,Bit),Q<Bit>)`. It consumes the input binding and returns
 the conditional target owner. The input need not be an eigenstate and may be
 entangled with a reference. No stdlib API, syntax or checker rule is added.

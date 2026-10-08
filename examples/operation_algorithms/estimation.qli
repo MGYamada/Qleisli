@@ -9,7 +9,7 @@ use std::transform::qft2;
 use std::transform::qft3;
 
 /// Two-bit QPE: ((weight-1 bit, weight-2 bit), target).
-pub observe fn phase2[static U: Op<Bit>](q: Q<Bit>) -> ((Bit, Bit), Q<Bit>)
+pub observe fn phase2[const U: Op<Bit>](q: Q<Bit>) -> ((Bit, Bit), Q<Bit>)
 requires Controlled(U) {
     let (a, q) = controlled(U)(h(init0()), q);
     let (b, q) = controlled(power(U,2))(h(init0()), q);
@@ -18,7 +18,7 @@ requires Controlled(U) {
 }
 
 /// Three-bit QPE: ((weight-1 bit, weight-2 bit, weight-4 bit), target).
-pub observe fn phase3[static U: Op<Bit>](q: Q<Bit>) -> ((Bit, Bit, Bit), Q<Bit>)
+pub observe fn phase3[const U: Op<Bit>](q: Q<Bit>) -> ((Bit, Bit, Bit), Q<Bit>)
 requires Controlled(U) {
     let (a, q) = controlled(U)(h(init0()), q);
     let (b, q) = controlled(power(U,2))(h(init0()), q);

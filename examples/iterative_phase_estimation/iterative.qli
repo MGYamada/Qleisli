@@ -11,7 +11,7 @@ unitary fn quarter_phase(q: Q<Bit>) -> Q<Bit> { power(eighth_phase,2)(q) }
 /// Consume each meter before preparing the next; target inputs need not be eigenstates.
 /// For output y = low + 2*middle + 4*high, the target branch is K_y rho K_y†,
 /// where K_y = (1/8) sum_{r=0}^7 exp(-2*pi*i*r*y/8) U^r.
-pub observe fn phase3[static U: Op<Bit>](q: Q<Bit>) -> ((Bit,Bit,Bit),Q<Bit>)
+pub observe fn phase3[const U: Op<Bit>](q: Q<Bit>) -> ((Bit,Bit,Bit),Q<Bit>)
 requires Controlled(U) {
     let (meter,q) = controlled(power(U,4))(h(init0()),q);
     let low = measure_z(h(meter));
