@@ -13,6 +13,8 @@ development milestones from the scope of their evidence.
   phase, reference and protocol checks and the original source identities.
   Align the independent Python proposal parser's contextual header markers;
   preserve small IR proposals and historical comparison inputs.
+  Move current frontend regression builders to `const` while preserving their
+  full named outcomes, fresh native checks and historical source records.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,

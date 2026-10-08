@@ -1436,7 +1436,7 @@ mod tests {
         use crate::interchange::{hierarchical, json};
         use hierarchical::execution::ExecutionLimits;
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(),
-            "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))} unitary fn inner[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)} pub unitary fn outer[static A:Basis,static k:Nat,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=2{inner[A,repeat_op(k,U)](q)}".into())])).unwrap();
+            "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))} unitary fn inner[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)} pub unitary fn outer[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=2{inner[A,repeat_op(k,U)](q)}".into())])).unwrap();
         let executable = std::env::var_os("QLEISLI_KERNEL").expect("matching native checker");
         let checker = native::Kernel::new(executable.clone());
         let hierarchy_checker = hierarchical::Kernel::new(executable);
@@ -1589,7 +1589,7 @@ mod tests {
     fn repeated_subject_replay_rejects_its_native_valid_base_artifact() {
         use crate::frontend::compile::OperationBinding;
         let source = ParsedProgram::parse(BTreeMap::from([("main".into(),
-            "use std::quantum::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q} pub unitary fn outer[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[repeat_op(2,U)](q)}".into())]))
+            "use std::quantum::x; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} unitary fn inner[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q} pub unitary fn outer[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){inner[repeat_op(2,U)](q)}".into())]))
             .unwrap().instantiate("main::outer", BTreeMap::new(), BTreeMap::from([("U".into(), OperationBinding::new("main::flip", BTreeMap::new()))])).unwrap().elaborate().unwrap();
         let caller = source
             .definitions()

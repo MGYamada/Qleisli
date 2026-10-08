@@ -932,7 +932,7 @@ mod tests {
 
     #[test]
     fn later_static_naturals_and_global_candidates_keep_the_same_local_identity() {
-        let module = parse_module("unitary fn f[static U:Op<Bits<n>>,static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Apply(U){U(q)}").unwrap();
+        let module = parse_module("unitary fn f[const U:Op<Bits<n>>,const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Apply(U){U(q)}").unwrap();
         let decl = &module.decls[0];
         let unresolved = index(DefId(0), decl, |_| None);
         let resolved = index(DefId(0), decl, |_| Some(Target::Declaration(DefId(3))));
@@ -959,7 +959,7 @@ mod tests {
     #[test]
     fn static_candidate_does_not_replace_the_runtime_shadow_identity() {
         let module = parse_module(
-            "unitary fn f[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){let U=q;U(q)}",
+            "unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){let U=q;U(q)}",
         )
         .unwrap();
         let declaration = &module.decls[0];

@@ -99,7 +99,7 @@ mod tests {
             "classical fn flip(b:Bit)->Bit{not b}
              meaning Flip:Bit=permutation_by(flip);
              pub unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
-             pub unitary fn unused[static U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}"
+             pub unitary fn unused[const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}"
                 .into(),
         )]))
         .unwrap();

@@ -211,7 +211,7 @@ mod substitution_tests {
 
     fn keys() -> (BinderKey, BinderKey, BinderKey) {
         let module =
-            parse_module("fn f[static n:Nat,static p:Nat]()->Bit{0} fn g[static n:Nat]()->Bit{0}")
+            parse_module("fn f[const n:Nat,const p:Nat]()->Bit{0} fn g[const n:Nat]()->Bit{0}")
                 .unwrap();
         let resolution = Resolution::new([("main", &module)]).unwrap();
         let owner = resolution.module("main").unwrap();

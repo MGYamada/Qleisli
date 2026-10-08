@@ -88,7 +88,7 @@ fn prepare(source: &str, naturals: BTreeMap<String, u32>) {
 fn contextual_naturals_retain_name_span_type_dimensions_and_constraints() {
     for name in TYPE_WORDS {
         let source = format!(
-            "pub unitary fn f[static {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires {name} >= 0 {{ if static {name} < 2 {{ q }} else {{ q }} }}"
+            "pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires {name} >= 0 {{ if static {name} < 2 {{ q }} else {{ q }} }}"
         );
         let syntax = parse_module(&source).unwrap();
         let parameter = &syntax.decls[0].static_params[0];
@@ -116,7 +116,7 @@ fn contextual_naturals_keep_all_comparisons_separate_from_type_angles() {
     for name in TYPE_WORDS {
         for comparison in ["<", ">", "!=", "<=", ">=", "=="] {
             let source = format!(
-                "pub unitary fn f[static {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} {comparison} 2 {{ q }} else {{ q }} }}"
+                "pub unitary fn f[const {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} {comparison} 2 {{ q }} else {{ q }} }}"
             );
             prepare(&source, BTreeMap::from([(name.into(), 1)]));
         }
@@ -131,7 +131,7 @@ fn contextual_naturals_are_retained_in_fold_indices_and_bounds() {
         );
         prepare(&source, BTreeMap::new());
         let bounded = format!(
-            "pub unitary fn f[static {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ qfor static i in 0..{name} carry a = q {{ yield a }} }}"
+            "pub unitary fn f[const {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ qfor static i in 0..{name} carry a = q {{ yield a }} }}"
         );
         prepare(&bounded, BTreeMap::from([(name.into(), 2)]));
     }
@@ -140,10 +140,10 @@ fn contextual_naturals_are_retained_in_fold_indices_and_bounds() {
 #[test]
 fn contextual_naturals_pass_through_specialization_and_operation_counts() {
     for name in TYPE_WORDS {
-        let provider = "pub unitary fn identity[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
+        let provider = "pub unitary fn identity[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
         for argument in [name.to_owned(), format!("({name}+0)")] {
             let client = format!(
-                "use dep::identity; pub unitary fn f[static {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> {{ identity[{argument}](q) }}"
+                "use dep::identity; pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> {{ identity[{argument}](q) }}"
             );
             ParsedProgram::parse(BTreeMap::from([
                 ("dep".into(), provider.into()),
@@ -161,7 +161,7 @@ fn contextual_naturals_pass_through_specialization_and_operation_counts() {
         }
         for count in [name.to_owned(), format!("2^{name}")] {
             let source = format!(
-                "pub unitary fn f[static {name}: Nat, static U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Apply(U), Adjoint(U) {{ adjoint(repeat_op({count},U),q) }}"
+                "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Apply(U), Adjoint(U) {{ adjoint(repeat_op({count},U),q) }}"
             );
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())]))
                 .unwrap_or_else(|error| panic!("{source}\n{error}"));
@@ -191,14 +191,13 @@ fn contextual_naturals_do_not_unreserve_runtime_global_or_operation_names() {
             format!("pub unitary fn {name}(q: Q<Bit>) -> Q<Bit> {{ q }}"),
             format!("pub unitary fn f({name}: Q<Bit>) -> Q<Bit> {{ {name} }}"),
             format!("pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ let {name} = q; {name} }}"),
-            format!("pub unitary fn f[static {name}: Op<Bit>](q: Q<Bit>) -> Q<Bit> {{ q }}"),
+            format!("pub unitary fn f[const {name}: Op<Bit>](q: Q<Bit>) -> Q<Bit> {{ q }}"),
         ] {
             assert!(parse_module(&source).is_err(), "{source}");
         }
     }
     for keyword in ["if", "true", "Apply", "static"] {
-        let source =
-            format!("pub unitary fn f[static {keyword}: Nat](q: Q<Bit>) -> Q<Bit> {{ q }}");
+        let source = format!("pub unitary fn f[const {keyword}: Nat](q: Q<Bit>) -> Q<Bit> {{ q }}");
         assert!(parse_module(&source).is_err(), "{source}");
     }
 }

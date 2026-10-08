@@ -3714,7 +3714,7 @@
     },
     {
       "path": "src/frontend/parser/tests.rs",
-      "sha256": "be525df5091885440476904a8471cb4020c20d1563ab648353600c7af1fd1373",
+      "sha256": "d03d058dee3688017ab6d191cac0bf98ab3317d1a5745b367a0d8becb9086fa3",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3835,7 +3835,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "5124b5179231cd9393d1b175c9434f5ec048fe05953a8340d209ff23cd247036",
+      "sha256": "b1095707b82d0389be8ed51649eb6d38c0e4130f65c303439f5e0432e7dbe463",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4028,7 +4028,7 @@
     },
     {
       "path": "src/frontend/linear.rs",
-      "sha256": "ddc31bd21f3ccb0d4883db3cd61b921ae762023b637c3bc67f05c29381042c52",
+      "sha256": "63af6b8c486eb23d8da07a1e4ac52add16101d1da5c094ada71e54e7f5b28ac0",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4121,7 +4121,7 @@
     },
     {
       "path": "src/frontend/specialize/meaning.rs",
-      "sha256": "94a6f4c84a2da3a623c7cd6b03c906bec12199ba09700254a82835f5bcd729e5",
+      "sha256": "c01cfc67e6968e6c734f65ccf850c826af7b07ae19b5d05d7f0806318967040a",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4172,7 +4172,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "ca991e2631006e1ebd5b91a45af99c69b4114001e42792b97985b2d8fb3bcf17",
+      "sha256": "4d2632ddd2f001aee17a39bf02c01e2974ec283ee0cfee7745973bc209fd76c0",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4221,7 +4221,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "ed41b79597301a370d4d76adc4660db9710d810d37c1467f7a7b486966aae8af",
+      "sha256": "23e64c112dcf43e000487b0b61fd4b119ed41b49781a1b9d795df558db43e555",
       "group": "sized-source",
       "surface": {
         "declarations": [],
