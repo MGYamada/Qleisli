@@ -86,13 +86,13 @@ fn python_static_comparisons_keep_type_angles_separate_in_both_dialects() {
     for comparison in ["<", ">", "!=", "<=", ">=", "=="] {
         for n in [0, 1, 3] {
             cases.push((
-                format!("pub unitary fn f[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {{ if static 1 {comparison} n {{ q }} else {{ q }} }}"),
+                format!("pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {{ if static 1 {comparison} n {{ q }} else {{ q }} }}"),
                 BTreeMap::from([("n".into(), n)]),
             ));
         }
     }
     for name in ["Q", "Bits", "CBits", "Op"] {
-        cases.push((format!("pub unitary fn f[static {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} < 2 {{ q }} else {{ q }} }}"), BTreeMap::from([(name.into(), 1)])));
+        cases.push((format!("pub unitary fn f[const {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} < 2 {{ q }} else {{ q }} }}"), BTreeMap::from([(name.into(), 1)])));
     }
     let oracle = python(&cases);
     for ((source, values), oracle) in cases.iter().zip(oracle) {

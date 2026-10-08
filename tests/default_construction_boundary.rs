@@ -95,7 +95,7 @@ fn unresolved_default_has_one_conditional_hint_without_creating_a_factory() {
         ));
     }
     // All declarations are source checked, including an unused Basis body.
-    let generic = "pub fn unused[static A:Basis]()->Q<A>{default()}\n\
+    let generic = "pub fn unused[const A:Basis]()->Q<A>{default()}\n\
         pub fn client()->Unit{()}";
     messages.push(shared_rejection(
         generic,
@@ -158,7 +158,7 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
          pub fn client()->Q<Bit>{default()}",
         &[("default", Effect::Iso), ("client", Effect::Iso)],
     );
-    let generic = "fn default[static A:Basis](q:Q<A>)->Q<A>{q}\n\
+    let generic = "fn default[const A:Basis](q:Q<A>)->Q<A>{q}\n\
         pub fn client(q:Q<Bit>)->Q<Bit>{default[type(Bit)](q)}";
     let common = ParsedProgram::parse(sources(generic)).unwrap();
     for name in ["default", "client"] {

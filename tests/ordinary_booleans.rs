@@ -189,10 +189,10 @@ fn repeated_shared_calls_keep_each_invocations_classical_values() {
 #[test]
 fn static_zero_one_two_folds_and_selection_produce_runtime_bits() {
     let fold = "unitary fn flip(b: Bit) -> Bit { not b }
-        pub unitary fn f[static n: Nat]() -> Bit {
+        pub unitary fn f[const n: Nat]() -> Bit {
             for static i in 0..n carry bit = 0 { yield flip(bit); }
         }";
-    let selection = "pub unitary fn f[static n: Nat]() -> Bit {
+    let selection = "pub unitary fn f[const n: Nat]() -> Bit {
         if static n == 0 { 0 } else { 1 }
     }";
     for n in 0..=2 {
@@ -235,14 +235,14 @@ fn unused_declarations_static_arms_and_zero_fold_bodies_are_still_checked() {
             "type",
         );
     }
-    sized_reject("pub unitary fn f[static n: Nat]() -> Bit { n }", "type");
+    sized_reject("pub unitary fn f[const n: Nat]() -> Bit { n }", "type");
     sized_reject(
-        "unitary fn keep[static m: Nat](b: Bit) -> Bit { b }
+        "unitary fn keep[const m: Nat](b: Bit) -> Bit { b }
          pub unitary fn f(n: Bit) -> Bit { keep[n](n) }",
         "static",
     );
     sized_reject(
-        "pub unitary fn f[static n: Nat]() -> Bit {
+        "pub unitary fn f[const n: Nat]() -> Bit {
             if static n == 0 { 0 } else { not () }
         }",
         "type",
@@ -430,7 +430,7 @@ fn zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners() {
     );
     for n in 0..=2 {
         let graph = elaborate(
-            "pub unitary fn f[static n:Nat](b:Bits<n>)->Bits<n>{b}",
+            "pub unitary fn f[const n:Nat](b:Bits<n>)->Bits<n>{b}",
             "main::f",
             BTreeMap::from([("n".into(), n)]),
         );
@@ -480,7 +480,7 @@ fn ordinary_basis_substitutions_keep_register_and_product_tags() {
     use qleisli::frontend::compile::BasisBinding;
     let parsed = ParsedProgram::parse(BTreeMap::from([(
         "main".into(),
-        "pub unitary fn f[static A:Basis](b:A)->A{b}".into(),
+        "pub unitary fn f[const A:Basis](b:A)->A{b}".into(),
     )]))
     .unwrap();
     for (ty, width) in [
@@ -536,9 +536,9 @@ fn quantum_provider_calls_retain_unused_ordinary_register_computation() {
     use qleisli::frontend::compile::{BasisBinding, OperationBinding};
     let text = "use std::classical::{empty_bits,prepend_bit};
         classical fn copy(b:Bits<2>)->(Bits<2>,Bits<2>){(b,b)}
-        unitary fn provider[static B:Basis](q:Q<B>)->Q<B>{
+        unitary fn provider[const B:Basis](q:Q<B>)->Q<B>{
         let b=prepend_bit[1](0,prepend_bit[0](1,empty_bits()));let _=copy(b);q}
-        pub unitary fn f[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
+        pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())])).unwrap();
     for ty in ["Unit", "Bits<0>", "Bits<1>", "Bits<2>"] {
         let binding = BasisBinding::parse(ty).unwrap();

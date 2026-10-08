@@ -293,15 +293,15 @@ fn duplicate_and_import_alias_collisions_remain_located_rejections() {
 
 #[test]
 fn direct_formal_adjoint_and_controlled_slots_are_usable() {
-    let inverse = "pub fn inverse[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjoint(U){adjoint(U,q)} pub fn main()->Unit{()}";
+    let inverse = "pub fn inverse[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Adjoint(U){adjoint(U,q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(inverse).0).unwrap();
     ParsedProgram::parse(BTreeMap::from([("main".into(), inverse.into())])).unwrap();
 
     // Both finite spellings reach the same declared Controlled slot. The
     // canonical application below also drives the independent native oracle.
-    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(finite_control).0).unwrap();
-    let control = "pub fn control[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
+    let control = "pub fn control[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Controlled(U){controlled(U)(c,q)} pub fn main()->Unit{()}";
     check_project(&SourceRoot::new(control).0).unwrap();
 
     // This selected-only ordinary provider is T = diag(1, exp(i*pi/4)).
@@ -374,7 +374,7 @@ fn direct_formal_adjoint_and_controlled_slots_are_usable() {
 
 #[test]
 fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
-    let inverse = "fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){adjoint(U,q)} pub fn main()->Unit{()}";
+    let inverse = "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){adjoint(U,q)} pub fn main()->Unit{()}";
     let finite_error = check_project(&SourceRoot::new(inverse).0).unwrap_err();
     assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
     assert_eq!(finite_error.message, "missing Adjoint operation access");
@@ -386,7 +386,7 @@ fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
     for (source, access, use_text) in [
         (inverse, "Adjoint", "adjoint(U,q)"),
         (
-            "fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(U)(c,q)} pub fn main()->Unit{()}",
+            "fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(U)(c,q)} pub fn main()->Unit{()}",
             "Controlled",
             "controlled(U)(c,q)",
         ),
@@ -405,7 +405,7 @@ fn private_unused_formals_cannot_borrow_adjoint_or_controlled_access() {
             (start, start + use_text.len())
         );
     }
-    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
+    let finite_control = "fn identity(q:Q<Bit>)->Q<Bit>{q} fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){qif(c,q){0=>identity,1=>U}} pub fn main()->Unit{()}";
     let error = check_project(&SourceRoot::new(finite_control).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Capability, "{error}");
     assert_eq!(error.message, "missing Controlled operation access");
@@ -447,7 +447,7 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
         ),
     ] {
         let source = format!(
-            "fn unused[static U:Op<Bit>]({parameters})->{result} requires Apply(U){{{body}}} pub fn main()->Unit{{()}}"
+            "fn unused[const U:Op<Bit>]({parameters})->{result} requires Apply(U){{{body}}} pub fn main()->Unit{{()}}"
         );
         let finite_error = check_project(&SourceRoot::new(&source).0).unwrap_err();
         assert_eq!(finite_error.code, ErrorCode::Capability, "{finite_error}");
@@ -480,7 +480,7 @@ fn both_source_consumers_check_dead_arms_and_zero_folds_for_missing_access() {
 fn duplicate_adjoint_and_controlled_slots_share_the_requirement_location() {
     for access in ["Adjoint", "Controlled"] {
         let source = format!(
-            "fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires {access}(U),{access}(U){{q}} pub fn main()->Unit{{()}}"
+            "fn unused[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires {access}(U),{access}(U){{q}} pub fn main()->Unit{{()}}"
         );
         let second = source.rfind(&format!("{access}(U)")).unwrap();
         let finite_error = check_project(&SourceRoot::new(&source).0).unwrap_err();

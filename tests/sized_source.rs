@@ -35,7 +35,7 @@ fn sized_host_bindings_respect_module_visibility() {
 
     for body in ["q", "U(q)"] {
         let main = format!(
-            "pub unitary fn f[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) {{ {body} }}"
+            "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U) {{ {body} }}"
         );
         for (provider, accepted) in [(public, true), (private, false)] {
             let program = ParsedProgram::parse(BTreeMap::from([
@@ -71,7 +71,7 @@ fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
         i128::MAX
     );
     let variables = (0..33)
-        .map(|i| format!("static n{i}: Nat"))
+        .map(|i| format!("const n{i}: Nat"))
         .collect::<Vec<_>>()
         .join(",");
     let variable_limit =
@@ -81,7 +81,7 @@ fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
         .collect::<Vec<_>>()
         .join(",");
     let parameters = (0..7)
-        .map(|i| format!("static n{i}: Nat"))
+        .map(|i| format!("const n{i}: Nat"))
         .collect::<Vec<_>>()
         .join(",");
     let alternative_limit = format!(
@@ -95,7 +95,7 @@ fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
         .collect::<Vec<_>>()
         .join(",");
     let work_limit = format!(
-        "{prefix}pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> requires {constraints} {{ q }}"
+        "{prefix}pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> requires {constraints} {{ q }}"
     );
     for (source, cause, obligation) in [
         (
@@ -139,7 +139,7 @@ fn symbolic_capacity_errors_keep_obligation_spans_and_causes() {
 }
 #[test]
 fn substituted_size_overflow_points_to_the_caller_module() {
-    let dep = "pub unitary fn identity[static n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<n+1>> { q }";
+    let dep = "pub unitary fn identity[const n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<n+1>> { q }";
     let prefix = "// Callsite diagnostics retain the caller location.\n";
     let main = format!(
         "{prefix}use dep::identity; pub unitary fn f(q: Q<Bits<{}>>) -> Q<Bits<{}>> {{ identity[{}](q) }}",
@@ -364,20 +364,20 @@ fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
 
 #[test]
 fn guarded_subtraction_index_and_linear_normalization() {
-    let valid = "use std::registers::take_bit; use std::registers::put_bit; pub unitary fn f[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { let (a,b) = take_bit[n,n-1](q); put_bit[n,n-1](a,b) }";
+    let valid = "use std::registers::take_bit; use std::registers::put_bit; pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { let (a,b) = take_bit[n,n-1](q); put_bit[n,n-1](a,b) }";
     ParsedProgram::parse(sources(valid)).unwrap();
     reject(&valid.replace(" requires n >= 1", ""), "size");
     reject(&valid.replace("take_bit[n,n-1]", "take_bit[n,n]"), "size");
     ParsedProgram::parse(sources(
-        "pub unitary fn f[static n: Nat](q: Q<Bits<2*n+1>>) -> Q<Bits<n+n+1>> { q }",
+        "pub unitary fn f[const n: Nat](q: Q<Bits<2*n+1>>) -> Q<Bits<n+n+1>> { q }",
     ))
     .unwrap();
     reject(
-        "pub unitary fn f[static n: Nat](q: Q<Bits<n*n>>) -> Q<Bits<n*n>> { q }",
+        "pub unitary fn f[const n: Nat](q: Q<Bits<n*n>>) -> Q<Bits<n*n>> { q }",
         "unsupported",
     );
     reject(
-        "pub unitary fn f[static n: Nat](q: Q<Bits<n-1>>) -> Q<Bits<n-1>> { q }",
+        "pub unitary fn f[const n: Nat](q: Q<Bits<n-1>>) -> Q<Bits<n-1>> { q }",
         "size",
     );
 }
@@ -393,7 +393,7 @@ fn unreachable_branch_and_empty_fold_still_check_names_access_and_ownership() {
         "ownership",
     );
     reject(
-        "pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { qfor static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(repeat_op(0,U))(c,q); } }",
+        "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) { qfor static k in 0..0 carry pair = (c,q) { let (c,q) = pair; yield controlled(repeat_op(0,U))(c,q); } }",
         "access",
     );
     reject(
@@ -409,7 +409,7 @@ fn unreachable_branch_and_empty_fold_still_check_names_access_and_ownership() {
 #[test]
 fn shadowing_moves_tuple_shape_and_effects() {
     reject(
-        "pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { let n = q; n }",
+        "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { let n = q; n }",
         "name",
     );
     reject(
@@ -451,7 +451,7 @@ fn every_import_resolves_and_mutual_cycles_are_rejected() {
     );
     assert_eq!(ParsedProgram::parse(modules).unwrap_err().code(), "cycle");
     reject(
-        "pub unitary fn f[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { f[n](q) }",
+        "pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { f[n](q) }",
         "cycle",
     );
     let mut modules = sources("use dep::g; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }");
@@ -468,12 +468,12 @@ fn every_import_resolves_and_mutual_cycles_are_rejected() {
 #[test]
 fn forwarding_checks_callee_size_and_access_premises() {
     let ordered = BTreeMap::from([
-        ("dep".into(), "pub unitary fn use_op[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }".into()),
-        ("main".into(), "use dep::use_op; pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { use_op[n,U](q) }".into()),
+        ("dep".into(), "pub unitary fn use_op[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }".into()),
+        ("main".into(), "use dep::use_op; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { use_op[n,U](q) }".into()),
     ]);
     ParsedProgram::parse(ordered).unwrap();
-    let dep = "pub unitary fn g[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { controlled(U)(c,q) }";
-    let main = "use dep::g; pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { g[n,U](c,q) }";
+    let dep = "pub unitary fn g[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { controlled(U)(c,q) }";
+    let main = "use dep::g; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires n >= 1, Controlled(U) { g[n,U](c,q) }";
     let modules =
         |main: String| BTreeMap::from([("main".into(), main), ("dep".into(), dep.into())]);
     ParsedProgram::parse(modules(main.into())).unwrap();
@@ -506,20 +506,20 @@ fn original_bytes_and_contextual_identifiers_are_retained() {
 #[test]
 fn duplicate_declarations_and_inconsistent_premises_reject() {
     reject(
-        "pub unitary fn f[static n: Nat, static n: Nat](q: Q<Bit>) -> Q<Bit> { q }",
+        "pub unitary fn f[const n: Nat, const n: Nat](q: Q<Bit>) -> Q<Bit> { q }",
         "name",
     );
     reject("pub unitary fn f(x: Bit, x: Bit) -> Bit { x }", "name");
     reject(
-        "pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> requires n < 0 { q }",
+        "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> requires n < 0 { q }",
         "size",
     );
     reject(
-        "pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> requires Controlled(n) { q }",
+        "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> requires Controlled(n) { q }",
         "access",
     );
     reject(
-        "pub unitary fn f[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U), Apply(U) { q }",
+        "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> requires Apply(U), Apply(U) { q }",
         "access",
     );
 }
@@ -533,7 +533,7 @@ fn grouping_semicolons_and_count_precedence_match_the_source_contract() {
         "pub unitary fn f(q: Q<Bit>) -> Q<Bit> { let (x) = q; x }",
         "parse",
     );
-    let source = "pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(repeat_op(2^(n+1),U))(c,q) }";
+    let source = "pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>,q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(repeat_op(2^(n+1),U))(c,q) }";
     ParsedProgram::parse(sources(source)).unwrap();
     reject(&source.replace("2^(n+1)", "2^n+1"), "parse");
     reject(&source.replace("2^(n+1)", "3^n"), "parse");
@@ -881,8 +881,8 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
             .unwrap();
         assert_eq!(instance.elaborate().unwrap_err().code(), "limit");
     }
-    let provider = "use std::quantum::phase; pub unitary fn rotate[static j: Nat, static d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }";
-    let main = "pub unitary fn f[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }";
+    let provider = "use std::quantum::phase; pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }";
+    let main = "pub unitary fn f[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }";
     let program = ParsedProgram::parse(BTreeMap::from([
         ("main".into(), main.into()),
         ("dep".into(), provider.into()),
@@ -903,7 +903,7 @@ fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
             format!("repeat_op({count},U)")
         };
         let main = format!(
-            "pub unitary fn f[static U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controlled(U) {{ controlled(repeat_op(0,{op}))(c,q) }}"
+            "pub unitary fn f[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) requires Controlled(U) {{ controlled(repeat_op(0,{op}))(c,q) }}"
         );
         let program = ParsedProgram::parse(BTreeMap::from([
             ("main".into(), main),
@@ -943,7 +943,7 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
             .code(),
         "limit"
     );
-    let source = "use std::quantum::h; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { let q = qfor static k in 0..n carry q = q { yield h(q); }; qfor static k in 0..n carry q = q { yield h(q); } }";
+    let source = "use std::quantum::h; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { let q = qfor static k in 0..n carry q = q { yield h(q); }; qfor static k in 0..n carry q = q { yield h(q); } }";
     let program = ParsedProgram::parse(sources(source)).unwrap();
     assert_eq!(
         program
@@ -987,12 +987,12 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
 fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
     let nested = std::thread::Builder::new().stack_size(2 * 1024 * 1024).spawn(|| {
         let expr = "h(".repeat(16) + "f[n-1](q)" + &")".repeat(16);
-        let text = format!("use std::quantum::h; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> {{ if static n > 0 {{ {expr} }} else {{ q }} }}");
+        let text = format!("use std::quantum::h; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> {{ if static n > 0 {{ {expr} }} else {{ q }} }}");
         ParsedProgram::parse(sources(&text)).unwrap().instantiate("main::f", naturals(&[("n",8)]), BTreeMap::new()).unwrap().elaborate().unwrap_err()
     }).unwrap().join().unwrap();
     assert_eq!(nested.code(), "limit");
     assert!(nested.message().contains("combined"));
-    let source = "use dep::identity; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static k in 0..n carry q = q { yield identity(q); } }";
+    let source = "use dep::identity; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static k in 0..n carry q = q { yield identity(q); } }";
     let modules = BTreeMap::from([
         ("main".into(), source.into()),
         (
@@ -1022,7 +1022,7 @@ fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
         .unwrap_err();
     assert_eq!(e.code(), "limit");
     assert!(e.message().contains("calls"));
-    let recursive = "pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { if static n == 0 { q } else { f[n-1](q) } }";
+    let recursive = "pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { if static n == 0 { q } else { f[n-1](q) } }";
     let program = ParsedProgram::parse(sources(recursive)).unwrap();
     assert!(
         program
@@ -1045,9 +1045,9 @@ fn concrete_shared_call_budget_and_recursion_depth_are_enforced() {
 #[test]
 fn concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained() {
     let modules = BTreeMap::from([
-        ("main".into(),"use skip::skip; use rotate::rotate; pub unitary fn f[static j: Nat, static d: Nat](q: Q<Bit>) -> Q<Bit> { skip[rotate[j,d]](q) }".into()),
-        ("skip".into(),"pub unitary fn skip[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }".into()),
-        ("rotate".into(),"use std::quantum::phase; pub unitary fn rotate[static j: Nat, static d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }".into()),
+        ("main".into(),"use skip::skip; use rotate::rotate; pub unitary fn f[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { skip[rotate[j,d]](q) }".into()),
+        ("skip".into(),"pub unitary fn skip[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit> { q }".into()),
+        ("rotate".into(),"use std::quantum::phase; pub unitary fn rotate[const j: Nat, const d: Nat](q: Q<Bit>) -> Q<Bit> { phase[j,d](q) }".into()),
     ]);
     let program = ParsedProgram::parse(modules).unwrap();
     assert_eq!(
@@ -1145,7 +1145,7 @@ fn inverse_fourier_source_proposal(
     source: &str,
     n: u32,
 ) -> qleisli::frontend::compile::HierarchyProposal {
-    let client = "use fourier::fourier; pub unitary fn inverse[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n],q) }";
+    let client = "use fourier::fourier; pub unitary fn inverse[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> requires n >= 1 { adjoint(fourier[n],q) }";
     ParsedProgram::parse(BTreeMap::from([
         ("fourier".into(), source.into()),
         ("client".into(), client.into()),
@@ -2020,7 +2020,7 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
     };
     for source in [
         "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{q}",
-        "pub unitary fn f[static n:Nat](q:Q<Bit>)->Q<Bit>{q}",
+        "pub unitary fn f[const n:Nat](q:Q<Bit>)->Q<Bit>{q}",
         "pub unitary fn f(q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {q}}",
     ] {
         parse_module(source).unwrap();
@@ -2038,7 +2038,7 @@ fn common_syntax_does_not_grant_missing_profile_or_capability_support() {
         "{error}"
     );
     let source =
-        "pub unitary fn f[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {U(q)}}";
+        "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{if static 0 == 0 {q} else {U(q)}}";
     parse_module(source).unwrap();
     reject(source, "access");
     let source = "pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{let copy=q; q}";
@@ -2137,7 +2137,7 @@ fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
     send_sync::<Instantiation>();
     send_sync::<ElaboratedProgram>();
 
-    let source = "use std::quantum::x; pub unitary fn f[static n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static i in 0..n carry q = q { let q = x(q); yield q; } }";
+    let source = "use std::quantum::x; pub unitary fn f[const n: Nat](q: Q<Bit>) -> Q<Bit> { qfor static i in 0..n carry q = q { let q = x(q); yield q; } }";
     let original = ParsedProgram::parse(sources(source)).unwrap();
     let retained = original.clone();
     drop(original);
@@ -2165,9 +2165,9 @@ fn common_lexical_tables_survive_cloning_and_distinguish_fold_activations() {
 
 #[test]
 fn common_lexical_static_substitution_uses_callee_binders_and_caller_values() {
-    let main = "use helper::apply; pub unitary fn f[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { apply[n,U](q) }";
-    let helper = "pub unitary fn apply[static n: Nat, static U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }";
-    let provider = "pub unitary fn keep[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
+    let main = "use helper::apply; pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { apply[n,U](q) }";
+    let helper = "pub unitary fn apply[const n: Nat, const U: Op<Bits<n>>](q: Q<Bits<n>>) -> Q<Bits<n>> requires Apply(U) { U(q) }";
+    let provider = "pub unitary fn keep[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
     let parsed = ParsedProgram::parse(BTreeMap::from([
         ("main".into(), main.into()),
         ("helper".into(), helper.into()),

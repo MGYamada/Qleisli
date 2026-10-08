@@ -48,7 +48,7 @@ fn seeded_generic_size_implications_agree_with_concrete_enumeration() {
             .unwrap();
         }
         let source = format!(
-            "pub unitary fn f[static n: Nat, static m: Nat](q: Q<Bits<{}>>) \
+            "pub unitary fn f[const n: Nat, const m: Nat](q: Q<Bits<{}>>) \
              -> Q<Bits<{}>> requires n <= {BOUND}, m <= {BOUND}{clauses} {{ q }}",
             expression(input),
             expression(output)

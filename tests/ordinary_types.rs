@@ -140,7 +140,7 @@ fn obsolete_spellings_and_other_bit_numerals_are_rejected_by_common_syntax() {
         assert!(!error.message.is_empty());
     }
     // The literal cutover does not reinterpret explicit static naturals as Bit.
-    parsed("pub unitary fn f[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { if static n < 2 { q } else { q } }")
+    parsed("pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { if static n < 2 { q } else { q } }")
         .instantiate("main::f", BTreeMap::from([("n".into(), 2)]), BTreeMap::new())
         .unwrap().elaborate().unwrap();
 }

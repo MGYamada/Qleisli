@@ -13,10 +13,10 @@ fn parsed(source: &str) -> ParsedProgram {
 
 #[test]
 fn computed_helper_sizes_and_chains_use_normalized_generic_arguments() {
-    let source = "static fn twice[static n:Nat]()->Nat{n+n}
-        static fn next[static n:Nat]()->Nat{twice[n]()+1}
-        pub unitary fn identity[static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
-        pub unitary fn f[static n:Nat](q:Q<Bits<2*n+1>>)->Q<Bits<2*n+1>>{identity[next[n]()](q)}";
+    let source = "static fn twice[const n:Nat]()->Nat{n+n}
+        static fn next[const n:Nat]()->Nat{twice[n]()+1}
+        pub unitary fn identity[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
+        pub unitary fn f[const n:Nat](q:Q<Bits<2*n+1>>)->Q<Bits<2*n+1>>{identity[next[n]()](q)}";
     for n in 0..=1 {
         let graph = parsed(source)
             .instantiate(
@@ -54,8 +54,8 @@ fn computed_helper_sizes_and_chains_use_normalized_generic_arguments() {
 #[test]
 fn static_exponent_schedule_preserves_complex_phase_and_an_external_reference() {
     let source = "use std::quantum::phase;
-        static fn exponent[static stage:Nat]()->Nat{stage+1}
-        pub unitary fn schedule[static count:Nat](q:Q<Bit>)->Q<Bit> requires count<=3 {
+        static fn exponent[const stage:Nat]()->Nat{stage+1}
+        pub unitary fn schedule[const count:Nat](q:Q<Bit>)->Q<Bit> requires count<=3 {
             qfor static i in 0..count carry r=q {
                 static let k=exponent[i](); yield phase[1,k](r);
             }
@@ -136,8 +136,8 @@ fn checked_helpers_have_no_runtime_instruction_or_entry_authority() {
 fn same_named_helpers_in_different_modules_keep_identity_and_visibility() {
     let modules = BTreeMap::from([
         ("main".into(), "use left::left; use right::right; pub observe fn main()->Bit{left[1]() and right[1]()}".into()),
-        ("left".into(), "static fn width[static n:Nat]()->Nat{n+1} pub fn left[static n:Nat]()->Bit{static let m=width[n]();if static m==n+1{1}else{0}}".into()),
-        ("right".into(), "static fn width[static n:Nat]()->Nat{n+2} pub fn right[static n:Nat]()->Bit{static let m=width[n]();if static m==n+2{1}else{0}}".into()),
+        ("left".into(), "static fn width[const n:Nat]()->Nat{n+1} pub fn left[const n:Nat]()->Bit{static let m=width[n]();if static m==n+1{1}else{0}}".into()),
+        ("right".into(), "static fn width[const n:Nat]()->Nat{n+2} pub fn right[const n:Nat]()->Bit{static let m=width[n]();if static m==n+2{1}else{0}}".into()),
     ]);
     let program = ParsedProgram::parse(modules.clone()).unwrap();
     let graph = program
@@ -167,7 +167,7 @@ fn same_named_helpers_in_different_modules_keep_identity_and_visibility() {
 
 #[test]
 fn helper_premises_are_required_at_the_original_call() {
-    let positive = "static fn previous[static n:Nat]()->Nat requires n>=1 {n-1}
+    let positive = "static fn previous[const n:Nat]()->Nat requires n>=1 {n-1}
         pub observe fn main()->Bit{static let n=previous[2]();0}";
     check_project(&SourceRoot::new(positive).0).unwrap();
     parsed(positive)
@@ -176,8 +176,8 @@ fn helper_premises_are_required_at_the_original_call() {
         .elaborate()
         .unwrap();
     for source in [
-        "static fn previous[static n:Nat]()->Nat requires n>=1 {n-1} pub observe fn main()->Bit{static let n=previous[0]();0}",
-        "static fn previous[static n:Nat]()->Nat requires n>=1 {n-1} pub unitary fn f[static n:Nat]()->Bit{static let k=previous[n]();0}",
+        "static fn previous[const n:Nat]()->Nat requires n>=1 {n-1} pub observe fn main()->Bit{static let n=previous[0]();0}",
+        "static fn previous[const n:Nat]()->Nat requires n>=1 {n-1} pub unitary fn f[const n:Nat]()->Bit{static let k=previous[n]();0}",
     ] {
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
@@ -202,15 +202,15 @@ fn runtime_dependencies_cycles_unused_invalid_bodies_and_arity_reject() {
             "cycle",
         ),
         (
-            "static fn invalid[static n:Nat]()->Nat{n-1} pub observe fn main()->Bit{0}",
+            "static fn invalid[const n:Nat]()->Nat{n-1} pub observe fn main()->Bit{0}",
             "size",
         ),
         (
-            "static fn number[static n:Nat]()->Nat{n} pub observe fn main()->Bit{static let k=number[]();0}",
+            "static fn number[const n:Nat]()->Nat{n} pub observe fn main()->Bit{static let k=number[]();0}",
             "static",
         ),
         (
-            "static fn nonlinear[static n:Nat]()->Nat{n*n} pub observe fn main()->Bit{0}",
+            "static fn nonlinear[const n:Nat]()->Nat{n*n} pub observe fn main()->Bit{0}",
             "unsupported",
         ),
         (
@@ -218,7 +218,7 @@ fn runtime_dependencies_cycles_unused_invalid_bodies_and_arity_reject() {
             "static",
         ),
         (
-            "static fn invalid[static n:Nat,static n:Nat]()->Nat{n} pub observe fn main()->Bit{0}",
+            "static fn invalid[const n:Nat,const n:Nat]()->Nat{n} pub observe fn main()->Bit{0}",
             "name",
         ),
         (

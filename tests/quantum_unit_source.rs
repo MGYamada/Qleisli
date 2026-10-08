@@ -1320,7 +1320,7 @@ fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
     );
     for count in ["k", "2^k"] {
         let text = format!(
-            "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{{z(q)}} pub unitary fn f[static k:Nat](q:Q<Bit>)->Q<Bit> requires k<=2 {{power(oracle,{count})(q)}}"
+            "use std::quantum::z; unitary fn oracle(q:Q<Bit>)->Q<Bit>{{z(q)}} pub unitary fn f[const k:Nat](q:Q<Bit>)->Q<Bit> requires k<=2 {{power(oracle,{count})(q)}}"
         );
         for k in 0..=2 {
             let source = elaborate(&text, "main::f", BTreeMap::from([("k".into(), k)]));

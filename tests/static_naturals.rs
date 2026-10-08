@@ -14,8 +14,8 @@ fn parsed(source: &str) -> ParsedProgram {
 
 #[test]
 fn aliases_normalize_sizes_and_generic_instances_without_runtime_values() {
-    let source = "pub unitary fn identity[static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
-        pub unitary fn twice[static n:Nat](q:Q<Bits<2*n>>)->Q<Bits<2*n>>{
+    let source = "pub unitary fn identity[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
+        pub unitary fn twice[const n:Nat](q:Q<Bits<2*n>>)->Q<Bits<2*n>>{
             static let width=n+n; static let normalized=width+0; identity[normalized](q)
         }";
     for n in 0..=2 {
@@ -57,7 +57,7 @@ fn aliases_normalize_sizes_and_generic_instances_without_runtime_values() {
 #[test]
 fn fold_bounds_and_per_iteration_aliases_match_independent_parity() {
     let source = "classical fn flip(a:Bit)->Bit{not a}
-        pub unitary fn f[static n:Nat]()->Bit{
+        pub unitary fn f[const n:Nat]()->Bit{
             static let end=n+1;
             for static i in 0..end carry a=0 {
                 static let next=i+1;
@@ -121,9 +121,9 @@ fn runtime_capture_scope_escape_dead_body_shadow_and_invalid_arithmetic_reject()
         "pub observe fn main()->Bit{static let n=later;static let later=1;0}",
         "pub observe fn main()->Bit{let a=if static 1==1{static let n=1;0}else{0};static let k=n;a}",
         "pub observe fn main()->Bit{for static i in 0..0 carry a=0{static let n=missing;yield a;}}",
-        "pub unitary fn f[static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{static let n=1;q} observe fn main()->Bit{0}",
+        "pub unitary fn f[const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{static let n=1;q} observe fn main()->Bit{0}",
         "pub observe fn main()->Bit{static let n=0-1;0}",
-        "pub unitary fn f[static n:Nat,static m:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{static let k=n*m;q} observe fn main()->Bit{0}",
+        "pub unitary fn f[const n:Nat,const m:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{static let k=n*m;q} observe fn main()->Bit{0}",
     ] {
         assert!(
             ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).is_err(),
@@ -138,7 +138,7 @@ fn runtime_capture_scope_escape_dead_body_shadow_and_invalid_arithmetic_reject()
 
 #[test]
 fn static_accounting_does_not_expand_the_basis_domain_of_an_identity_fold() {
-    let source = "pub unitary fn thread[static n:Nat,static rounds:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{
+    let source = "pub unitary fn thread[const n:Nat,const rounds:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{
         qfor static i in 0..rounds carry r=q{yield r;}
     }";
     let program = parsed(source);

@@ -27,7 +27,7 @@ fn study(name: &str) -> String {
 
 #[test]
 fn common_syntax_retains_basis_names_and_contextual_type_arguments() {
-    let tree=parse_module("pub unitary fn f[static A:Basis](q:Q<A>)->Q<A>{q} pub unitary fn g(q:Q<Bit>)->Q<Bit>{f[type(Bit)](q)}").unwrap();
+    let tree=parse_module("pub unitary fn f[const A:Basis](q:Q<A>)->Q<A>{q} pub unitary fn g(q:Q<Bit>)->Q<Bit>{f[type(Bit)](q)}").unwrap();
     assert!(matches!(
         tree.decls[0].static_params[0].kind,
         StaticParamKind::Basis
@@ -44,7 +44,7 @@ fn common_syntax_retains_basis_names_and_contextual_type_arguments() {
     assert!(matches!(static_args[0].kind, StaticOpKind::Type(_)));
     // Ordinary runtime calls keep their original meaning and category.
     parsed("pub unitary fn type(q:Q<Bit>)->Q<Bit>{q} pub unitary fn f(q:Q<Bit>)->Q<Bit>{type(q)}");
-    parsed("pub unitary fn f[static Bit:Nat](q:Q<Bits<Bit>>)->Q<Bits<Bit>>{q}");
+    parsed("pub unitary fn f[const Bit:Nat](q:Q<Bits<Bit>>)->Q<Bits<Bit>>{q}");
 }
 
 #[test]
@@ -85,7 +85,7 @@ fn unused_source_type_arguments_obey_the_same_closed_binding_capacity() {
     // executed maximum-size quantum case. An unused parameter cannot bypass
     // the closed Basis limit by avoiding Q and concrete interface checks.
     let p = parsed(
-        "pub unitary fn unused[static A:Basis]()->Unit{()} pub unitary fn f()->Unit{unused[type((Bit,Bit,Bit,Bit,Bit,Bit,Bit,Bit,Bit))]()}",
+        "pub unitary fn unused[const A:Basis]()->Unit{()} pub unitary fn f()->Unit{unused[type((Bit,Bit,Bit,Bit,Bit,Bit,Bit,Bit,Bit))]()}",
     );
     let instance = p
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -122,7 +122,7 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
         "if static 0 == 0 {q} else {U(q)}",
     ] {
         let source = format!(
-            "pub unitary fn unused[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A>{{{body}}} pub unitary fn good(q:Q<Bit>)->Q<Bit>{{q}}"
+            "pub unitary fn unused[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A>{{{body}}} pub unitary fn good(q:Q<Bit>)->Q<Bit>{{q}}"
         );
         assert_eq!(
             ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
@@ -132,9 +132,9 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
         );
     }
     for source in [
-        "pub unitary fn f[static U:Op<Bits<n>>,static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Apply(U){U(q)}",
-        "pub unitary fn f[static A:Basis](q:Q<A>)->Q<A>{let A=q;A}",
-        "pub unitary fn f[static A:Basis,static B:Basis](q:Q<A>)->Q<B>{q}",
+        "pub unitary fn f[const U:Op<Bits<n>>,const n:Nat](q:Q<Bits<n>>)->Q<Bits<n>> requires Apply(U){U(q)}",
+        "pub unitary fn f[const A:Basis](q:Q<A>)->Q<A>{let A=q;A}",
+        "pub unitary fn f[const A:Basis,const B:Basis](q:Q<A>)->Q<B>{q}",
     ] {
         assert!(ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).is_err());
     }
@@ -142,7 +142,7 @@ fn unused_and_zero_iteration_bodies_do_not_gain_missing_access() {
 
 #[test]
 fn entry_and_provider_bindings_are_explicit_and_deterministic() {
-    let source = "pub unitary fn id[static B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
+    let source = "pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}";
     let p = parsed(source);
     let error = p
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -193,7 +193,7 @@ fn entry_and_provider_bindings_are_explicit_and_deterministic() {
 #[test]
 fn exact_type_substitutions_are_distinct_specialization_cache_keys() {
     let p = parsed(
-        "pub unitary fn id[static A:Basis](q:Q<A>)->Q<A>{q} pub unitary fn f(a:Q<Bit>,b:Q<Bits<1>>)->(Q<Bit>,Q<Bits<1>>){(id[type(Bit)](a),id[type(Bits<1>)](b))}",
+        "pub unitary fn id[const A:Basis](q:Q<A>)->Q<A>{q} pub unitary fn f(a:Q<Bit>,b:Q<Bits<1>>)->(Q<Bit>,Q<Bits<1>>){(id[type(Bit)](a),id[type(Bits<1>)](b))}",
     );
     let e = p
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -218,7 +218,7 @@ fn names_forward_the_resolved_type_without_width_coercion() {
     let p = parsed(&study("opaque-forward"));
     // Supply a source provider in the same retained source map.
     let text = format!(
-        "{} pub unitary fn id[static B:Basis](q:Q<B>)->Q<B>{{q}}",
+        "{} pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{{q}}",
         p.source("main").unwrap()
     );
     let p = parsed(&text);
@@ -246,7 +246,7 @@ fn names_forward_the_resolved_type_without_width_coercion() {
 #[test]
 fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
     let root = common::SourceRoot::new(
-        "pub unitary fn id[static B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[static A:Basis,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}",
+        "pub unitary fn id[const B:Basis](q:Q<B>)->Q<B>{q} pub unitary fn f[const A:Basis,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U){U(q)}",
     );
     let kernel = std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker");
     for (ty, basis) in [("Unit", 0), ("Bit", 1), ("Bits<1>", 1), ("(Unit,Bit)", 1)] {
@@ -309,7 +309,7 @@ fn selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis() {
 fn same_algorithm_retains_small_reference_action_and_unit_scalar_phase() {
     let kernel =
         Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit audited native checker"));
-    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[static A:Basis,static k:Nat,static U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
+    let source = "use std::quantum::{x,phase_eighth}; pub unitary fn flip(q:Q<Bit>)->Q<Bit>{x(q)} pub unitary fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn repeat[const A:Basis,const k:Nat,const U:Op<A>](q:Q<A>)->Q<A> requires Apply(U),k<=4 {qfor static i in 0..k carry a=q {yield U(a)}}";
     let p = parsed(source);
     for (ty, provider, width) in [("Bit", "main::flip", 1), ("Unit", "main::scalar", 0)] {
         for n in 0..=4 {
@@ -383,11 +383,11 @@ fn one_basis_nat_body_composes_with_original_refined_provider_requirements() {
         meaning Eighth:Unit=phase_by(angle);
         pub unitary fn bit_provider(q:Q<Bit>)->Q<Bit>{x(q)}
         pub unitary fn unit_provider(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
-        unitary fn run[static A:Basis,static n:Nat,static U:Op<A>](q:Q<A>)->Q<A>
+        unitary fn run[const A:Basis,const n:Nat,const U:Op<A>](q:Q<A>)->Q<A>
             requires Apply(U),n<=2 {qfor static i in 0..n carry a=q {yield U(a)}}
-        pub unitary fn bit[static n:Nat,static U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit>
+        pub unitary fn bit[const n:Nat,const U:Op<Bit,Flip>](q:Q<Bit>)->Q<Bit>
             requires Apply(U),n<=2 {run[type(Bit),n,U](q)}
-        pub unitary fn unit[static n:Nat,static U:Op<Unit,Eighth>](q:Q<Unit>)->Q<Unit>
+        pub unitary fn unit[const n:Nat,const U:Op<Unit,Eighth>](q:Q<Unit>)->Q<Unit>
             requires Apply(U),n<=2 {run[type(Unit),n,U](q)}";
     for honest in [false, true] {
         let text = if honest {

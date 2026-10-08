@@ -499,7 +499,7 @@ use as::{f,as};
 unitary fn as(q: Q<Bit>) -> Q<Bit> { q }
 unitary fn call(q: Q<Bit>) -> Q<Bit> { basis as(q) as as { as } }
 unitary fn direct(as: Q<Bit>) -> Q<Bit> { basis as as as { as } }
-unitary fn sized[static as: Nat](q: Q<Bits<as>>) -> Q<Bits<as>> { q }
+unitary fn sized[const as: Nat](q: Q<Bits<as>>) -> Q<Bits<as>> { q }
 "#;
     let module = parse_module(source).unwrap();
     assert_eq!(module.uses.len(), 2);
@@ -828,7 +828,7 @@ fn common_token_stream_includes_sized_punctuation_without_trivia_joining() {
 #[test]
 fn common_natural_and_count_syntax_keeps_precedence_and_source_spans() {
     use qleisli::frontend::ast::{Count, NatKind, StaticOpKind, StaticParamKind};
-    let source = "pub unitary fn f[static n:Nat,static U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { adjoint(repeat_op(2^(n+1),U),q) }";
+    let source = "pub unitary fn f[const n:Nat,const U:Op<Bits<n+1*2>>](q:Q<Bits<n>>)->Q<Bits<n>> requires n+1*2 >= 0 { adjoint(repeat_op(2^(n+1),U),q) }";
     let ast = parse_module(source).unwrap();
     assert!(matches!(
         ast.decls[0].static_params[0].kind,

@@ -1,0 +1,363 @@
+{
+  "baseline_commit": "edb81184dfc852a8610f1b454d2a0d957e5382f1",
+  "files": [
+    {
+      "path": "tests/basis_polymorphism.rs",
+      "markers": 28,
+      "before_sha256": "0857bf0c4b1826c39037aa9d855cb137f9859214f10863e185205534e3678b71",
+      "desired_sha256": "bdb5f55b870eda731336c994174d2d3dc6cdc3e08c954ebcf1225e3959df2b50",
+      "final_sha256": "bdb5f55b870eda731336c994174d2d3dc6cdc3e08c954ebcf1225e3959df2b50"
+    },
+    {
+      "path": "tests/body_effects.rs",
+      "markers": 1,
+      "before_sha256": "0cc64e3be78622ce277aaa8527820c3b0e01ce08cca9a9cd3b403306d68dcab7",
+      "desired_sha256": "7722e9f8bd093d8e99b02092b722c005037e4990d6eab6a5db4512ca53fde70c",
+      "final_sha256": "7722e9f8bd093d8e99b02092b722c005037e4990d6eab6a5db4512ca53fde70c"
+    },
+    {
+      "path": "tests/checked_operations.rs",
+      "markers": 9,
+      "before_sha256": "02cfed5e754baf84e1d6262f16bb00c473e074018a367341beef7cfddd874754",
+      "desired_sha256": "57f3534878c63bdf00460cb75760bcb7e9dbff2463799955f173496823dfdc2f",
+      "final_sha256": "57f3534878c63bdf00460cb75760bcb7e9dbff2463799955f173496823dfdc2f"
+    },
+    {
+      "path": "tests/classical_functions.rs",
+      "markers": 21,
+      "before_sha256": "002143c9c90fc27d3e377855670c0e753d85d02523b95ef652a26fdfe8109901",
+      "desired_sha256": "4fdea3bcf034d5dd605690854fc010f2823443f872667b0772335a6c3dca40f2",
+      "final_sha256": "91745e958a8b8cebad89482768624cea62b450ae8d10fcafacdb39f4d0756a5d"
+    },
+    {
+      "path": "tests/default_construction_boundary.rs",
+      "markers": 2,
+      "before_sha256": "d1820a9db0493dbcc27bbc366170d30077d6c1def49ad91a2e3d2fb7456bd30a",
+      "desired_sha256": "59eb5fd95fd9ce7e6b88ca48a18118ae4c95e120f372a36c9ec86d80204e0d43",
+      "final_sha256": "59eb5fd95fd9ce7e6b88ca48a18118ae4c95e120f372a36c9ec86d80204e0d43"
+    },
+    {
+      "path": "tests/frontend_types.rs",
+      "markers": 1,
+      "before_sha256": "7f0f5fd4167a0ef7ec24dcabb7a3c06f59ddd40af92443cbd6ff7b8238b9a01a",
+      "desired_sha256": "d43a91a1128247fa567831745df6b2be3957a771ee8768e17d62499980c2e6eb",
+      "final_sha256": "d43a91a1128247fa567831745df6b2be3957a771ee8768e17d62499980c2e6eb"
+    },
+    {
+      "path": "tests/functional_boundary.rs",
+      "markers": 4,
+      "before_sha256": "7d1f57322e88fe00b4a4ce7663daede2e63873e3c3e2d25cb044953b9abcc698",
+      "desired_sha256": "e7ae9dcf66f50e6c31c06c3396f1f32724887fa285e6eb3252fe638ca3939ddc",
+      "final_sha256": "e7ae9dcf66f50e6c31c06c3396f1f32724887fa285e6eb3252fe638ca3939ddc"
+    },
+    {
+      "path": "tests/inference_law.rs",
+      "markers": 1,
+      "before_sha256": "e01eb54dfccdec35e845014b5cd2218fe3e64db2e012008abbde62ac81056d87",
+      "desired_sha256": "8212baebe3b29b77adeafd285c3ce960dc344d1e5add3a96e0ea32a1c0a16852",
+      "final_sha256": "8212baebe3b29b77adeafd285c3ce960dc344d1e5add3a96e0ea32a1c0a16852"
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "markers": 36,
+      "before_sha256": "15404b4f0034ab854a206b2b71436aa418410571c8ec69a1d29c1b5fe395a12e",
+      "desired_sha256": "17e7154f7bcb6aa0397c251cd7a357a2f7eb37bc4abfc3a074d7ec0c797874db",
+      "final_sha256": "48f74a27fbfb8d429c1ae42cc61630b803cf8bd8a093a9e7992d6aae9f481758"
+    },
+    {
+      "path": "tests/ordinary_booleans.rs",
+      "markers": 10,
+      "before_sha256": "a81e3034e5a9060b18f411a656907f1e09eeb308e6b8af77292d6170cb528c41",
+      "desired_sha256": "01812884a97de937ea78986b8094fc1c2ed7498492497456c8f607e233445567",
+      "final_sha256": "01812884a97de937ea78986b8094fc1c2ed7498492497456c8f607e233445567"
+    },
+    {
+      "path": "tests/ordinary_types.rs",
+      "markers": 1,
+      "before_sha256": "6843041219a011af92212fc32aa59621b124775f08eea92fa1f7dbb9b931a6e4",
+      "desired_sha256": "2f20be07a9da075f86dbab28b6af7740c0fc3a05b087a62b2c0bb4fae23ec65a",
+      "final_sha256": "2f20be07a9da075f86dbab28b6af7740c0fc3a05b087a62b2c0bb4fae23ec65a"
+    },
+    {
+      "path": "tests/parser.rs",
+      "markers": 3,
+      "before_sha256": "e337b72876462a3817a209d81632a293cf1c28a1cdfb46bb5a962189e20acc48",
+      "desired_sha256": "53c0e9d2cd342aea193bac756e25c9bf51868c878957d4e185b236bb15cf3afa",
+      "final_sha256": "53c0e9d2cd342aea193bac756e25c9bf51868c878957d4e185b236bb15cf3afa"
+    },
+    {
+      "path": "tests/qfor.rs",
+      "markers": 2,
+      "before_sha256": "855f000512a49b054c259327c025796422c66a85e907247b0e080fb52f1a4528",
+      "desired_sha256": "2a89bbe2a8cf3457ce01b7706247d727f2c79530b526744802c2482ec13ba78b",
+      "final_sha256": "2a89bbe2a8cf3457ce01b7706247d727f2c79530b526744802c2482ec13ba78b"
+    },
+    {
+      "path": "tests/qli_corpus.rs",
+      "markers": 1,
+      "before_sha256": "5426fb3ef36eacc825c5c766247e8150610ec2cd0cf88652aa87f8b0d250d0dd",
+      "desired_sha256": "a0117589ad329783b912b1f9de7a86ad1bbce8aa79cd79fc294f12918641796f",
+      "final_sha256": "a0117589ad329783b912b1f9de7a86ad1bbce8aa79cd79fc294f12918641796f"
+    },
+    {
+      "path": "tests/quantum_unit_source.rs",
+      "markers": 1,
+      "before_sha256": "9b0e9de59379930d341e9ac113a414e13deaca292905e8d9a267a3934779fb7a",
+      "desired_sha256": "ff18df31f229d73747d583156b6a989991a0464aafa1d3aa01fb4995254e7f12",
+      "final_sha256": "ff18df31f229d73747d583156b6a989991a0464aafa1d3aa01fb4995254e7f12"
+    },
+    {
+      "path": "tests/repair_diagnostics.rs",
+      "markers": 2,
+      "before_sha256": "d2fff41217e9c05ab776d1bae7ce3ce040765432412d1a369a61890bf90826af",
+      "desired_sha256": "b2a6801e10605e14f059e6e28e4d18405a01e063cf27b9a400c34d51db23bdbd",
+      "final_sha256": "b2a6801e10605e14f059e6e28e4d18405a01e063cf27b9a400c34d51db23bdbd"
+    },
+    {
+      "path": "tests/review_v027.rs",
+      "markers": 1,
+      "before_sha256": "16da4da7f109861b7f12ccdc50a229d5d8a59e9a00e2df1b84134899e43d7a74",
+      "desired_sha256": "783ad75003f5d6cf4042589fac0448642c311c146a1a8c1b8f455712ac327c3e",
+      "final_sha256": "783ad75003f5d6cf4042589fac0448642c311c146a1a8c1b8f455712ac327c3e"
+    },
+    {
+      "path": "tests/shared_resolution.rs",
+      "markers": 1,
+      "before_sha256": "8dd0299b0ede81623543620c9a4856c33723ba76c0fb95d6162120d2023aed44",
+      "desired_sha256": "c248fe0283b1731eb837bc0513ec1129bf32d8f445169c44ed4afbaf86ef5c69",
+      "final_sha256": "c248fe0283b1731eb837bc0513ec1129bf32d8f445169c44ed4afbaf86ef5c69"
+    },
+    {
+      "path": "tests/sized_cli.rs",
+      "markers": 1,
+      "before_sha256": "24c601e2ed420b444bf12ff83084a7cbecb179bc60952a669be295cda573ef5b",
+      "desired_sha256": "47e927397d221b0fd7b76b13650da9cfe3e55a9b87fd221d7f023bafb5b6fe51",
+      "final_sha256": "47e927397d221b0fd7b76b13650da9cfe3e55a9b87fd221d7f023bafb5b6fe51"
+    },
+    {
+      "path": "tests/sized_declarations.rs",
+      "markers": 8,
+      "before_sha256": "f5c92ad850b6497333db718ea7d9b2a15e0b95391ecf48afa59dff7d334ae496",
+      "desired_sha256": "dacaa8d0fb7c828702b991db7331bb37cd4675bfd636342167aa3179b8bba5a8",
+      "final_sha256": "dacaa8d0fb7c828702b991db7331bb37cd4675bfd636342167aa3179b8bba5a8"
+    },
+    {
+      "path": "tests/sized_linear_seeded.rs",
+      "markers": 2,
+      "before_sha256": "700bcee204c34aef5d64be12fd01312006ad81ebd11a0489de2a8937b22840e7",
+      "desired_sha256": "d61c7c99f10b0761292bb3bf4aba1f4bb14e6182bebbdff945b880df9f12d470",
+      "final_sha256": "d61c7c99f10b0761292bb3bf4aba1f4bb14e6182bebbdff945b880df9f12d470"
+    },
+    {
+      "path": "tests/sized_review_dialects.rs",
+      "markers": 2,
+      "before_sha256": "aef8565ae32cec962ea5042f4e40d665896c76b37d4f57159d522ec7c550dc9b",
+      "desired_sha256": "62595d0c0c5fe51fbee198649cb3fa74d7d2f1d909da5da6e5af533fec6ec8ce",
+      "final_sha256": "62595d0c0c5fe51fbee198649cb3fa74d7d2f1d909da5da6e5af533fec6ec8ce"
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "markers": 50,
+      "before_sha256": "f414ff5664dab6829f627586702abb98903023fd7d757a8a433098fafaf9f03e",
+      "desired_sha256": "1cf1651414d906170cd8709dae7ccb937c4f8cfb321279c4a2de23af99897b8b",
+      "final_sha256": "1cf1651414d906170cd8709dae7ccb937c4f8cfb321279c4a2de23af99897b8b"
+    },
+    {
+      "path": "tests/source_snapshots.rs",
+      "markers": 2,
+      "before_sha256": "3686a4a40af67307a13c52ff928b2fe5a8105a5d07ea49a960e00e1efc2b4a87",
+      "desired_sha256": "aedc3ba639d9fe3ff14677b05f905c8054476b6f51f98fd27cc675974e9b67bb",
+      "final_sha256": "aedc3ba639d9fe3ff14677b05f905c8054476b6f51f98fd27cc675974e9b67bb"
+    },
+    {
+      "path": "tests/static_helpers.rs",
+      "markers": 19,
+      "before_sha256": "63aeedf382f268581234282563f6acee4888c9ba4c1811f7919b0e7dba3a78b3",
+      "desired_sha256": "327fcb63d5529550e40670eb11f3027a78fac9401d39fd89c9ac475193748cc2",
+      "final_sha256": "327fcb63d5529550e40670eb11f3027a78fac9401d39fd89c9ac475193748cc2"
+    },
+    {
+      "path": "tests/static_naturals.rs",
+      "markers": 8,
+      "before_sha256": "c0467653f2a4454d4c8dcd6fb6e64001df52b222df9cbeb24a9be2f86c4e9c61",
+      "desired_sha256": "270bbf476fbf9732288aa7eaac10b5e54677f513da5c3843e120ad33752c068f",
+      "final_sha256": "270bbf476fbf9732288aa7eaac10b5e54677f513da5c3843e120ad33752c068f"
+    },
+    {
+      "path": "tests/tuple_shapes.rs",
+      "markers": 1,
+      "before_sha256": "10f1fb6b066d8f83635378c0fbbfe48886e9b09ce96f5bf0a253261022e662c7",
+      "desired_sha256": "416bd34887f4a9cb6afdcac141ba301bfd846a07deaf5d9039d675b57968e460",
+      "final_sha256": "416bd34887f4a9cb6afdcac141ba301bfd846a07deaf5d9039d675b57968e460"
+    }
+  ],
+  "scope": "current integration test string literals only; no Rust static variables or frozen fixtures",
+  "final_markers_changed": 217,
+  "formatting": "Rustfmt expanded one rejects call and added its optional final-argument comma; all other Rust tokens outside literals compare identical after whitespace masking",
+  "retained_historical_match": {
+    "path": "tests/classical_functions.rs",
+    "needle": "helper[static U:Op<Bit>]",
+    "purpose": "exact lookup into the unchanged historical first source; produced header is const"
+  },
+  "validation": {
+    "latest": {
+      "command": [
+        "cargo",
+        "test",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "body_effects",
+        "--test",
+        "checked_operations",
+        "--test",
+        "classical_functions",
+        "--test",
+        "default_construction_boundary",
+        "--test",
+        "frontend_types",
+        "--test",
+        "functional_boundary",
+        "--test",
+        "inference_law",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "ordinary_booleans",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "parser",
+        "--test",
+        "qfor",
+        "--test",
+        "qli_corpus",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "repair_diagnostics",
+        "--test",
+        "review_v027",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "sized_cli",
+        "--test",
+        "sized_declarations",
+        "--test",
+        "sized_linear_seeded",
+        "--test",
+        "sized_review_dialects",
+        "--test",
+        "sized_source",
+        "--test",
+        "source_snapshots",
+        "--test",
+        "static_helpers",
+        "--test",
+        "static_naturals",
+        "--test",
+        "tuple_shapes"
+      ],
+      "passed": 310,
+      "failed": 0,
+      "existing_ignored": 12,
+      "outcomes_equal": true,
+      "outcomes_sha256": "f70e5293a90c30a2a54a94b0312e7b583ac8716e399ac295b547eb6fc0be31e7",
+      "before_seconds": 96.44980699999724,
+      "after_seconds": 73.3145522500854,
+      "before_log_sha256": "02008cb2b7a98e642e28a6c8162c884603ad5de8181c850221448754000bcfa2",
+      "after_log_sha256": "262f6881d173e36733773d74c49f1984b0d706282eb7cf28fa19d5e47fceef7e",
+      "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+    },
+    "msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "test",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "body_effects",
+        "--test",
+        "checked_operations",
+        "--test",
+        "classical_functions",
+        "--test",
+        "default_construction_boundary",
+        "--test",
+        "frontend_types",
+        "--test",
+        "functional_boundary",
+        "--test",
+        "inference_law",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "ordinary_booleans",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "parser",
+        "--test",
+        "qfor",
+        "--test",
+        "qli_corpus",
+        "--test",
+        "quantum_unit_source",
+        "--test",
+        "repair_diagnostics",
+        "--test",
+        "review_v027",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "sized_cli",
+        "--test",
+        "sized_declarations",
+        "--test",
+        "sized_linear_seeded",
+        "--test",
+        "sized_review_dialects",
+        "--test",
+        "sized_source",
+        "--test",
+        "source_snapshots",
+        "--test",
+        "static_helpers",
+        "--test",
+        "static_naturals",
+        "--test",
+        "tuple_shapes"
+      ],
+      "passed": 310,
+      "failed": 0,
+      "existing_ignored": 12,
+      "outcomes_equal": true,
+      "outcomes_sha256": "f70e5293a90c30a2a54a94b0312e7b583ac8716e399ac295b547eb6fc0be31e7",
+      "before_seconds": 96.3533966250252,
+      "after_seconds": 74.06436516705435,
+      "before_log_sha256": "113aa7eb8314f1483b86d761a1e851ab25cdd15ed9e17837958d2fc2d4b2587d",
+      "after_log_sha256": "73231f52ce2dd74f1c7592353db2ad8972fb5ddbabb2634240d9c00414edba26",
+      "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+    }
+  },
+  "initial_migration_failure": {
+    "test": "nested_forward_helpers_keep_original_meanings_even_at_zero_counts",
+    "observed_on": [
+      "latest",
+      "msrv"
+    ],
+    "diagnostic": "Error { code: \"static\", module: Some(\"main\"), span: Span { start: 365, end: 366 }, message: \"unknown natural name n\" }",
+    "cause": "the initial desired rewrite changed a historical search needle, so the existing parameter insertion did not match",
+    "correction": "retain the original historical needle; generate only the new const header"
+  },
+  "current_metadata": {
+    "vm22_source_rows": 0,
+    "reviewed_comparison_files": [
+      "tests/sized_cli.rs",
+      "tests/sized_linear_seeded.rs"
+    ],
+    "vm29_identity": "unchanged; these comparison pins do not participate in its surface identity"
+  }
+}

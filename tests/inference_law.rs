@@ -173,7 +173,7 @@ fn expected_types_do_not_choose_physics_or_manufacture_access_and_effects() {
         ("pub unitary fn f(b:Bit)->Q<Bit>{b}", "type"),
         ("pub unitary fn f(q:Q<Bit>)->Q<Bits<1>>{q}", "type"),
         (
-            "pub unitary fn f[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{U(q)}",
+            "pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{U(q)}",
             "access",
         ),
         (

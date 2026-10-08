@@ -97,7 +97,7 @@ fn ordinary_types_share_the_sized_signature_classifier_without_general_basis_sup
 
 #[test]
 fn symbolic_sizes_keep_exact_owner_shape_and_canonical_mismatch_diagnostics() {
-    parsed("pub unitary fn f[static n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<1+n>> { q }");
+    parsed("pub unitary fn f[const n: Nat](q: Q<Bits<n+1>>) -> Q<Bits<1+n>> { q }");
     for (source, message) in [
         (
             "pub unitary fn f(q: Q<Bits<1>>) -> Q<Bit> { q }",

@@ -160,7 +160,7 @@ fn protocol_y_minus_has_the_full_independent_operator_phase() {
             &format!(
                 "use states::{{y_minus,y_plus}}; use phase_fault::shifted;\n\
                  use std::quantum::init0; use std::observe::measure_z;\n\
-                 unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}\n\
+                 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{U(q)}}\n\
                  observe fn main()->Bit{{measure_z(use_op[{provider}](init0()))}}\n"
             ),
         );

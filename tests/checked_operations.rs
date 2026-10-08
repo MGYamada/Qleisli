@@ -26,7 +26,7 @@ use std::observe::measure_z;
 classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
 meaning ZMeaning:Bit=phase_by(z_phase);
 unitary fn provider(q:Q<Bit>)->Q<Bit>{repeat_static(4,t,q)}
-unitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
 ";
 
 #[test]
@@ -121,7 +121,7 @@ fn canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meani
         compile_project(&SourceRoot::new(text).0).unwrap_err().code,
         ErrorCode::Contract
     );
-    let text = "unitary fn unused[static U:Op<Bit>](q:Q<Unit>)->Q<Unit> requires Apply(U),Adjoint(U){inverse(power(U,0))(q)}";
+    let text = "unitary fn unused[const U:Op<Bit>](q:Q<Unit>)->Q<Unit> requires Apply(U),Adjoint(U){inverse(power(U,0))(q)}";
     assert!(check_project(&SourceRoot::new(text).0).is_err());
 }
 
@@ -262,7 +262,7 @@ fn canonical_control_rejects_alias_arity_type_and_missing_access() {
         assert!(check_project(&SourceRoot::new(&text).0).is_err(), "{text}");
         assert!(ParsedProgram::parse(sources(&text)).is_err(), "{text}");
     }
-    let text = "unitary fn unused[static U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(power(U,0))(c,q)}";
+    let text = "unitary fn unused[const U:Op<Bit>](c:Q<Bit>,q:Q<Bit>)->(Q<Bit>,Q<Bit>) requires Apply(U){controlled(power(U,0))(c,q)}";
     let error = check_project(&SourceRoot::new(text).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::Capability);
     assert!(error.message.contains("Controlled"));
@@ -372,7 +372,7 @@ fn canonical_inverse_application_preserves_ordinary_names_and_both_consumers() {
 fn canonical_inverse_checks_unused_zero_count_generic_access() {
     for body in ["inverse(U)(q)", "inverse(repeat_op(0,U))(q)"] {
         let text = format!(
-            "// 日本語\r\npub unitary fn bad[static U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+            "// 日本語\r\npub unitary fn bad[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
             requires Apply(U){{{body}}}"
         );
         let finite = check_project(&SourceRoot::new(&text).0).unwrap_err();
@@ -495,7 +495,7 @@ fn legacy_exact_word_is_rejected_in_identifier_and_constructor_positions() {
     for source in [
         "unitary fn bind_op(q:Q<Bit>)->Q<Bit>{q}",
         "unitary fn client(bind_op:Q<Bit>)->Q<Bit>{bind_op}",
-        "unitary fn client[static bind_op:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}",
+        "unitary fn client[const bind_op:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}",
         "use provider::bind_op;",
         "use bind_op::provider;",
         "unitary fn client(q:Q<Bit>)->Q<Bit>{let bind_op=q; bind_op}",
@@ -674,7 +674,7 @@ fn receipt(operations: &[RawOp]) -> Arc<FunctionEvidence> {
 #[test]
 fn checked_operation_keeps_controlled_phase_and_exact_source_binding() {
     let source = format!("{PRELUDE}
-        unitary fn pair[static U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+        unitary fn pair[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
         requires Apply(U){{U(q)}}
         observe fn main()->(Bit,Bit){{
           let q=pair[controlled_op(inverse_op(repeat_op(3,checked_op(provider,ZMeaning))))](join(h(init0()),x(init0())));
@@ -763,7 +763,7 @@ fn rename_does_not_relax_phase_tree_or_generic_access_checks() {
             "type",
         ),
         (
-            "unitary fn missing[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Controlled(U){U(q)}
+            "unitary fn missing[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Controlled(U){U(q)}
           unitary fn bad(q:Q<Bit>)->Q<Bit>{missing[checked_op(provider,ZMeaning)](q)}",
             ErrorCode::Capability,
             "access",
@@ -785,7 +785,7 @@ fn rename_does_not_relax_phase_tree_or_generic_access_checks() {
 #[test]
 fn abstract_checked_provider_is_still_refused_by_finite_materialization() {
     let source = format!("{PRELUDE}
-        unitary fn abstracted[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{use_op[checked_op(U,ZMeaning)](q)}}
+        unitary fn abstracted[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){{use_op[checked_op(U,ZMeaning)](q)}}
         observe fn main()->Bit{{measure_z(abstracted[provider](init0()))}}");
     let error = compile_project(&SourceRoot::new(&source).0).unwrap_err();
     assert_eq!(error.code, ErrorCode::TypeMismatch, "{error}");
@@ -914,7 +914,7 @@ fn canonical_power_zero_and_unused_still_require_apply_and_a_valid_count() {
             ("(q:Q<Bit>)->Q<Bit>", "Adjoint(U)")
         };
         let text = format!(
-            "// 日本語\r\nunitary fn unused[static U:Op<Bit>]{signature} requires {access} {{{body}}}"
+            "// 日本語\r\nunitary fn unused[const U:Op<Bit>]{signature} requires {access} {{{body}}}"
         );
         let error = ParsedProgram::parse(sources(&text)).unwrap_err();
         let wanted = if body.starts_with("controlled") {

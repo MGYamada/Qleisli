@@ -18,6 +18,8 @@ development milestones from the scope of their evidence.
   preserve small IR proposals and historical comparison inputs.
   Move current frontend regression builders to `const` while preserving their
   full named outcomes, fresh native checks and historical source records.
+  Migrate current integration-test headers, preserving historical match needles,
+  the same 310 outcomes and all existing ignored cases on both Rust toolchains.
 
 - Select canonical `inverse`/`power` snapshots for fourteen semantic faults
   and the measurement-inverse rejection client. Preserve previous sources,
