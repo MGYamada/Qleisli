@@ -871,3 +871,21 @@ fn basis_requires_rejects_before_documentation_attachment() {
         );
     }
 }
+
+#[test]
+fn retired_static_parameter_headers_report_the_marker_and_const_migration() {
+    for source in [
+        "pub fn f[static n:Nat](q:Q<Bit>)->Q<Bit>{q}",
+        "pub fn f[const n:Nat,static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}",
+        "pub fn f[static n:Nat,const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}",
+    ] {
+        let error = parse_module(source).unwrap_err();
+        assert_eq!(
+            error.message,
+            "compile-time parameter headers use `const`; replace `static` with `const`"
+        );
+        let start = source.find("static").unwrap();
+        assert_eq!(error.span, Span::new(start, start + "static".len()));
+        check_token_prefixes(&source.replace("static", "const"), "migrated header");
+    }
+}

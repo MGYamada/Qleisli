@@ -21,8 +21,13 @@ fn historical_const_manifest_classification_does_not_admit_filesystem_source() {
     assert!(text.contains("requires schema-version = 2"), "{text}");
 }
 
-fn modules() -> Vec<String> {
-    [
+fn modules() -> (Vec<String>, common::SourceRoot) {
+    // Keep the existing bounded Fourier regression and all prior migrations.
+    let source = common::current_source_text("corpus/sized/qualtran_qft/fourier.qli");
+    let old = "fourier[static n: Nat]";
+    assert_eq!(source.matches(old).count(), 1);
+    let fourier = common::SourceRoot::new(&source.replacen(old, "fourier[const n: Nat]", 1));
+    let modules = [
         ("measurement", "corpus/sized/measured_qpe/measurement.qli"),
         (
             "initialization",
@@ -36,12 +41,15 @@ fn modules() -> Vec<String> {
     ]
     .into_iter()
     .map(|(name, path)| {
-        let selected = common::current_namespace_fixture(
-            &PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(path),
-        );
+        let selected = if name == "fourier" {
+            fourier.0.join("main.qli")
+        } else {
+            common::current_namespace_fixture(&PathBuf::from(env!("CARGO_MANIFEST_DIR")).join(path))
+        };
         format!("--module={name}={}", selected.display())
     })
-    .collect()
+    .collect();
+    (modules, fourier)
 }
 #[test]
 fn sized_cli_rejects_ambiguous_or_incomplete_bindings_before_loading() {
@@ -173,10 +181,11 @@ fn sized_cli_cannot_select_private_entries_or_providers() {
 }
 #[test]
 fn sized_cli_emits_only_an_untrusted_proposal_without_a_kernel() {
+    let (modules, _fourier) = modules();
     let file = std::env::temp_dir().join(format!("qleisli-sized-cli-{}.json", std::process::id()));
     let output = command()
         .args(["emit-proposal", "--entry=fourier::fourier", "--nat=n=1"])
-        .args(modules())
+        .args(&modules)
         .arg(format!("--output={}", file.display()))
         .output()
         .unwrap();
@@ -215,6 +224,7 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
             );
         }
     }
+    let (modules, _fourier) = modules();
     let args = [
         "--entry=measurement::qpe",
         "--nat=n=1",
@@ -228,7 +238,7 @@ fn sized_cli_native_source_check_run_and_fresh_sampling() {
         let mut cmd = command();
         cmd.args([action])
             .args(args)
-            .args(modules())
+            .args(&modules)
             .arg(format!("--kernel={}", kernel.display()));
         if action == "sample" {
             cmd.args(["--shots=8", "--seed=42"]);

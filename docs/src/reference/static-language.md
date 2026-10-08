@@ -42,9 +42,13 @@ Compile-time parameters use an explicit contextual `const` marker, for example
 specialization arguments; parentheses supply runtime arguments. `const` in
 this position is not a runtime value, a storage declaration or a general
 compile-time function API. Ordinary functions and locals named `const` retain
-ordinary name resolution. The old `[static name: Kind]` marker remains only
-temporary migration input under [#33](https://github.com/MGYamada/Qleisli/issues/33);
-its active clients and retirement remain unfinished work.
+ordinary name resolution. The old `[static name: Kind]` marker is rejected at
+that marker with a diagnostic instructing replacement by `const`, including
+when mixed with current markers. To migrate, replace each parameter-header
+marker and preserve parameter order, kinds and explicit arguments. This does
+not change `if static`, `qfor static`, `for static` or `static let`. Historical
+source bytes remain historical inputs; the production parser has no legacy
+header mode. See [#33](https://github.com/MGYamada/Qleisli/issues/33).
 
 Static parameters are explicit, positional and ordered. A parameter's kind may
 refer only to earlier parameters. For example, declare `n: Nat` before

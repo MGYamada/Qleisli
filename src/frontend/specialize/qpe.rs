@@ -261,9 +261,21 @@ mod tests {
                 None
             }
             .unwrap_or_else(|| {
-                std::fs::read_to_string(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join(path))
-                    .unwrap()
+                let script = "import sys; from pathlib import Path; sys.path.insert(0, 'scripts'); from current_source_fixtures import current_source_file; print(current_source_file(Path(sys.argv[1]).resolve()).read_text(), end='')";
+                let output = std::process::Command::new("python3")
+                    .args(["-c", script, path])
+                    .current_dir(env!("CARGO_MANIFEST_DIR"))
+                    .output()
+                    .unwrap();
+                assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+                String::from_utf8(output.stdout).unwrap()
             });
+            let body = if name == "fourier" {
+                // Preserve historical QFT bytes; translate only this test input.
+                let old = "fourier[static n: Nat]";
+                assert_eq!(body.matches(old).count(), 1);
+                body.replacen(old, "fourier[const n: Nat]", 1)
+            } else { body };
             (name.into(), body)
         })
         .collect();

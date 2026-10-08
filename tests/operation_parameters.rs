@@ -480,3 +480,23 @@ fn lexical_runtime_binding_rejects_static_shadow_before_later_calls() {
         assert_eq!(error.span.start, source.find("let U").unwrap() + 4);
     }
 }
+
+#[test]
+fn retired_static_headers_reject_at_both_source_entry_points() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+    for source in [
+        "pub fn f[static n:Nat](q:Q<Bit>)->Q<Bit>{q}",
+        "pub fn f[const n:Nat,static U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}",
+    ] {
+        let root = SourceRoot::new(source);
+        let project = check_project(&root.0).unwrap_err();
+        let selected =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        assert_eq!(project.code, ErrorCode::Project);
+        assert_eq!(selected.code(), "parse");
+        assert!(project.message.contains(selected.message()));
+        assert_eq!(project.span, selected.span());
+        assert_eq!(&source[project.span.start..project.span.end], "static");
+    }
+}

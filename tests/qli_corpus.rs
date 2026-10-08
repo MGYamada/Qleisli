@@ -224,12 +224,9 @@ fn canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes() {
     let root = project("operation_algorithms");
     root.write(
         "estimation.qli",
-        &fs::read_to_string(
-            Path::new(env!("CARGO_MANIFEST_DIR")).join(
-                "tests/fixtures/authoring_sessions/canonical-control-migration-v030/attempt-01/estimation.qli",
-            ),
-        )
-        .unwrap(),
+        &common::current_source_text(
+            "tests/fixtures/authoring_sessions/canonical-control-migration-v030/attempt-01/estimation.qli",
+        ),
     );
     distribution(&execute(&root), &[(vec![true, false, false, true], 1.0)]);
     distribution(
@@ -369,7 +366,7 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
             assert_eq!(parameter.kind, StaticParamKind::Natural);
             assert_eq!(parameter.name.text, "n");
             assert_eq!(location.span, parameter.name.span);
-            assert_eq!((location.line, location.column), (1, 25));
+            assert_eq!((location.line, location.column), (1, 24));
             assert_eq!(&source[location.span.start..location.span.end], "n");
             assert_eq!(
                 error.message,

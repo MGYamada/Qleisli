@@ -216,7 +216,10 @@ fn public_type_view_retains_exact_ordinary_quantum_and_tuple_constructors() {
 
 #[test]
 fn sized_symbolic_sizes_preserve_ordinary_bits_after_small_substitution() {
-    let program = parsed(source!("symbolic-word"));
+    let source = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word/main.qli",
+    );
+    let program = parsed(&source);
     for n in [0, 2] {
         let graph = program
             .instantiate(

@@ -3694,7 +3694,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "a6a0de99c3ce34ba40c9e1d383e4ff50d1271567887e8671bd00290b18f857fb",
+      "sha256": "6bbc511849f1ecb8b4cc73fc76763d5b29a07d1dc8221b3cbaf51cb226f2f7f2",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4018,7 +4018,7 @@
     },
     {
       "path": "src/frontend/specialize/fourier.rs",
-      "sha256": "5786e6e2c709d95cf692a8cf0d0252475ecda57c265d558cd97ffaf267a6b7a1",
+      "sha256": "b53343b76a56bbf8447e09b83d22c5a0ae011c6d1cf8d575ae1f22b9fe75e602",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4156,7 +4156,7 @@
     },
     {
       "path": "src/frontend/specialize/qpe.rs",
-      "sha256": "db75b56e25ec18cf30b95a34168bdd5a7234163510bb8c1890c4bb6cf9933aa6",
+      "sha256": "a3837fd67753ca18a036d915187bfeb8da395a9a9869af74bf4b59c5962b283a",
       "surface": {
         "declarations": [
           "QpeBindingProposal"
@@ -5787,7 +5787,7 @@
       "scripts/test_hierarchical_qpe_instrument.py": "d3bd39ceb713c08e77d06acbd363a0b2fe488fa99e07b1394edf17664d1d7996",
       "tests/fixtures/frontend_v030/ordinary-type-cutover/client-before/tests/sized_source.rs": "4a5bb7ed5ab3a9290e8dc7f27f6caa2dd6ed52a86cfd0647fb57bd20efea032f",
       "tests/sized_linear_seeded.rs": "d61c7c99f10b0761292bb3bf4aba1f4bb14e6182bebbdff945b880df9f12d470",
-      "tests/sized_cli.rs": "47e927397d221b0fd7b76b13650da9cfe3e55a9b87fd221d7f023bafb5b6fe51",
+      "tests/sized_cli.rs": "4b44d639dbd3d382af11be3bfbbd77a85bae09e3464c28136077bc35f0df77f7",
       "tests/hierarchical_qpe_host.rs": "f933d8c3a99f07df4d208ec52714869b956ff8bf915c1b6bf2a18c265b223877",
       "scripts/test_qpe_instrument_host.py": "37a5abb8c795fa17d7a12f2e4ada917c62e839154b14ad39bb9060bb436b3cb6",
       "tests/connections.rs": "6ef762f4c41fdf44aa8c10b41e0c8446291ad23772b7bf5357b07244de8322ed",

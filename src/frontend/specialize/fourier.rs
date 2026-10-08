@@ -835,7 +835,11 @@ mod tests {
     );
 
     fn source(text: &str, width: u32) -> ElaboratedProgram {
-        ParsedProgram::parse(BTreeMap::from([("fourier".into(), text.into())]))
+        // Header-only translation of retained historical bounded inputs.
+        let old = "fourier[static n: Nat]";
+        assert_eq!(text.matches(old).count(), 1);
+        let text = text.replacen(old, "fourier[const n: Nat]", 1);
+        ParsedProgram::parse(BTreeMap::from([("fourier".into(), text)]))
             .unwrap()
             .instantiate(
                 "fourier::fourier",

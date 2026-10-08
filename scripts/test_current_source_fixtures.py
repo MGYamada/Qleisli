@@ -746,6 +746,22 @@ class RepositoryMigrationTests(unittest.TestCase):
             'tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli',
             'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli',
         ])
+        for folder in ['basis-polymorphism-v030/attempt-02', 'inference-law-v030/attempt-01', 'quantum-tuple-unitors-v030/attempt-01', 'mixed-boolean-v030']:
+            candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                (fixtures.ROOT / "tests/fixtures/authoring_sessions" / folder).rglob("*.qli"))
+        candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+            (fixtures.ROOT / "tests/fixtures/frontend_v030/quantum-tuple-unitors/independent-sources").glob("*.qli"))
+        for folder in ['body-effects-v030/attempt-01', 'quantum-unit-v030/attempt-01', 'runtime-parameter-pattern-v030/validation-repairs', 'common-static-value-v030/attempt-01']:
+            candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                (fixtures.ROOT / "tests/fixtures/authoring_sessions" / folder).rglob("*.qli"))
+        for folder in ['tests/fixtures/frontend_v030/quantum-unit-source/current', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults']:
+            candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                (fixtures.ROOT / folder).glob("*.qli"))
+        candidates.update(['tests/fixtures/authoring_sessions/operation-application-v030/attempt-02/main.qli', 'tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01/iterative.qli'])
+        for folder in ['tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics', 'tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources']:
+            candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                (fixtures.ROOT / folder).rglob("*.qli"))
+        candidates.update(['tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word/main.qli', 'tests/fixtures/authoring_sessions/canonical-control-migration-v030/attempt-01/estimation.qli'])
         expected_files = set()
         for selected in candidates:
             for stage, _ in prior_maps:

@@ -264,9 +264,9 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
     }
 }
 
-fn measured_sources() -> BTreeMap<String, PathBuf> {
+fn measured_sources() -> (BTreeMap<String, PathBuf>, common::SourceRoot) {
     let root = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    [
+    let mut files: BTreeMap<String, PathBuf> = [
         ("measurement", "corpus/sized/measured_qpe/measurement.qli"),
         (
             "initialization",
@@ -290,7 +290,16 @@ fn measured_sources() -> BTreeMap<String, PathBuf> {
     ]
     .into_iter()
     .map(|(name, file)| (name.into(), common::current_namespace_fixture(&root.join(file))))
-    .collect()
+    .collect();
+    let historical = std::fs::read_to_string(&files["fourier"]).unwrap();
+    let translated = common::SourceRoot::new(&historical_fourier_header(&historical));
+    files.insert("fourier".into(), translated.0.join("main.qli"));
+    (files, translated)
+}
+
+fn load_measured_sources() -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
+    let (files, _translated) = measured_sources();
+    ParsedProgram::load(files)
 }
 fn naturals(values: &[(&str, u32)]) -> BTreeMap<String, u32> {
     values
@@ -301,7 +310,7 @@ fn naturals(values: &[(&str, u32)]) -> BTreeMap<String, u32> {
 
 #[test]
 fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
-    let files = measured_sources();
+    let (files, _translated) = measured_sources();
     let program = ParsedProgram::load(files.clone()).unwrap();
     // The same collection now retains all four ordinary bundled source modules.
     assert_eq!(program.module_names().count(), 18);
@@ -542,7 +551,7 @@ fn grouping_semicolons_and_count_precedence_match_the_source_contract() {
 
 #[test]
 fn concrete_bindings_preserve_provider_type_and_premises() {
-    let program = ParsedProgram::load(measured_sources()).unwrap();
+    let program = load_measured_sources().unwrap();
     let bindings = |n| {
         BTreeMap::from([(
             "U".into(),
@@ -716,7 +725,7 @@ fn classical_shadows_restore_outer_bindings_in_branches_and_folds() {
 
 #[test]
 fn concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout() {
-    let program = ParsedProgram::load(measured_sources()).unwrap();
+    let program = load_measured_sources().unwrap();
     for (n, m) in [(1, 1), (1, 3), (2, 2)] {
         let operations = BTreeMap::from([(
             "U".into(),
@@ -835,7 +844,7 @@ fn concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout() {
 
 #[test]
 fn concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order() {
-    let program = ParsedProgram::load(measured_sources()).unwrap();
+    let program = load_measured_sources().unwrap();
     let source = program
         .instantiate("retiming::retimed", naturals(&[("n", 2)]), BTreeMap::new())
         .unwrap()
@@ -870,7 +879,7 @@ fn concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order() {
 
 #[test]
 fn concrete_phase_and_repeat_limits_check_zero_and_unused_providers() {
-    let program = ParsedProgram::load(measured_sources()).unwrap();
+    let program = load_measured_sources().unwrap();
     for (j, d) in [(8, 3), (1, 9)] {
         let instance = program
             .instantiate(
@@ -961,7 +970,7 @@ fn concrete_elaboration_limits_are_aggregate_and_keep_empty_owners() {
         .unwrap();
     assert_eq!(graph.fold_iterations(), 4);
     assert_eq!(graph.definitions()[graph.root()].steps().len(), 4);
-    let program = ParsedProgram::load(measured_sources()).unwrap();
+    let program = load_measured_sources().unwrap();
     let graph = program
         .instantiate(
             "readout::measure_bits",
@@ -1084,7 +1093,7 @@ fn proposal(
     ns: &[(&str, u32)],
     operations: BTreeMap<String, OperationBinding>,
 ) -> qleisli::frontend::compile::HierarchyProposal {
-    let proposal = ParsedProgram::load(measured_sources())
+    let proposal = load_measured_sources()
         .unwrap()
         .instantiate(entry, naturals(ns), operations)
         .unwrap()
@@ -1123,11 +1132,19 @@ fn evolution(n: u32) -> BTreeMap<String, OperationBinding> {
     )])
 }
 
+// Retained bounded historical regressions receive only a test-local header
+// translation. The original files and QFT algorithm remain unchanged; this
+// adapter grants no production syntax fallback or generic implementation scope.
+fn historical_fourier_header(source: &str) -> String {
+    let old = "fourier[static n: Nat]";
+    assert_eq!(source.matches(old).count(), 1);
+    source.replacen(old, "fourier[const n: Nat]", 1)
+}
+
 fn delayed_fourier_source() -> String {
-    include_str!(
+    historical_fourier_header(include_str!(
         "fixtures/frontend_v030/qfor/current/tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli"
-    )
-    .into()
+    ))
 }
 
 fn fourier_source_proposal(source: &str, n: u32) -> qleisli::frontend::compile::HierarchyProposal {
@@ -1279,12 +1296,12 @@ fn hierarchy_eligibility_retains_boolean_location_and_body_checks() {
 
 #[test]
 fn root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source() {
-    let textbook = include_str!(
+    let textbook = historical_fourier_header(include_str!(
         "../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
-    );
+    ));
     let delayed = delayed_fourier_source();
     for n in 1..=3 {
-        let standard = fourier_source_proposal(textbook, n);
+        let standard = fourier_source_proposal(&textbook, n);
         let reordered = fourier_source_proposal(&delayed, n);
         assert_eq!(
             reordered
@@ -1330,14 +1347,14 @@ fn reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference() {
         max_amplitudes: 4096,
         max_steps: 1_000_000,
     };
-    let textbook = include_str!(
+    let textbook = historical_fourier_header(include_str!(
         "../tests/fixtures/frontend_v030/qfor/current/corpus/sized/qualtran_qft/fourier.qli"
-    );
+    ));
     let delayed = delayed_fourier_source();
     for n in 1..=3 {
         for inverse in [false, true] {
             let mut work = vec![];
-            for source in [textbook, delayed.as_str()] {
+            for source in [textbook.as_str(), delayed.as_str()] {
                 let p = if inverse {
                     inverse_fourier_source_proposal(source, n)
                 } else {
@@ -1471,7 +1488,7 @@ fn untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming() {
                 .contains("\"repeat\"")
         );
     }
-    let program = ParsedProgram::load(measured_sources()).unwrap();
+    let program = load_measured_sources().unwrap();
     {
         let error = program
             .instantiate("retiming::retimed", naturals(&[("n", 2)]), BTreeMap::new())
@@ -1795,7 +1812,7 @@ fn rust_source_proposals_check_natively_and_preserve_small_system_coefficients()
         }
     }
     // The one-bit Z provider has deterministic packed eigenphase labels.
-    let z = ParsedProgram::load(measured_sources())
+    let z = load_measured_sources()
         .unwrap()
         .instantiate(
             "measurement::qpe",

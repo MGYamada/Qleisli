@@ -309,11 +309,13 @@ impl Parser {
                 // functions and locals named `const` remain ordinary names.
                 if self.word("const") {
                     self.bump();
-                } else if self.consume(&TokenKind::Static).is_none() {
+                } else if self.at(&TokenKind::Static) {
+                    return Err(self.error(
+                        "compile-time parameter headers use `const`; replace `static` with `const`",
+                    ));
+                } else {
                     return Err(self.error("expected `const` before compile-time parameter"));
                 }
-                // `static` is temporary migration input until active clients
-                // and their preserved source records have migrated (#33).
                 // The sized profile historically permits type words as Nat
                 // names. Keep this contextual: operation/runtime identifiers
                 // still use the ordinary reserved-word rules.

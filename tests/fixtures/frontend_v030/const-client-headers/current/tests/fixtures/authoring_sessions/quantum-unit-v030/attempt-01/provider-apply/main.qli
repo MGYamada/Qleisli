@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn identity(q: Q<Unit>) -> Q<Unit> { q }
+pub unitary fn f[const U: Op<Unit>](q: Q<Unit>) -> Q<Unit> requires Apply(U) { U(q) }
+
+observe fn main() -> Unit { () }

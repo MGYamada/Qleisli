@@ -1,0 +1,33 @@
+//! Three-bit iterative QPE using fresh logical meters and classical feedback.
+//! Return low-weight phase bits first and preserve the conditional target.
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::t;
+use std::observe::measure_z;
+
+unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
+unitary fn quarter_phase(q: Q<Bit>) -> Q<Bit> { repeat_static(2,t,q) }
+
+unitary fn controlled[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>)
+requires Controlled(U) {
+    qif(c,q) { 0 => identity, 1 => U }
+}
+
+/// Consume each meter before preparing the next; target inputs need not be eigenstates.
+/// For output y = low + 2*middle + 4*high, the target branch is K_y rho K_y†,
+/// where K_y = (1/8) sum_{r=0}^7 exp(-2*pi*i*r*y/8) U^r.
+pub observe fn phase3[const U: Op<Bit>](q: Q<Bit>) -> ((Bit,Bit,Bit),Q<Bit>)
+requires Controlled(U) {
+    let (meter,q) = controlled[repeat_op(4,U)](h(init0()),q);
+    let low = measure_z(h(meter));
+
+    let (meter,q) = controlled[repeat_op(2,U)](h(init0()),q);
+    let meter = if low { adjoint(quarter_phase,meter) } else { meter };
+    let middle = measure_z(h(meter));
+
+    let (meter,q) = controlled[U](h(init0()),q);
+    let meter = if low { adjoint(t,meter) } else { meter };
+    let meter = if middle { adjoint(quarter_phase,meter) } else { meter };
+    let high = measure_z(h(meter));
+    ((low,middle,high),q)
+}

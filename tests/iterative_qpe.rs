@@ -5,14 +5,12 @@ use common::SourceRoot;
 use qleisli::frontend::compile::compile_project;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::BTreeMap;
-use std::fs;
-use std::path::Path;
 
 type Distribution = BTreeMap<Vec<bool>, f64>;
 type Complex = (f64, f64);
 
 fn read(path: &str) -> String {
-    fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(path)).unwrap()
+    common::current_source_text(path)
 }
 
 fn project(client: &str, coherent: bool) -> SourceRoot {
@@ -195,8 +193,13 @@ fn explicit_current_derivative_of_first_attempt_and_shipped_example_execute() {
         "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01",
         "examples/iterative_phase_estimation",
     ] {
-        let program =
-            compile_project(&Path::new(env!("CARGO_MANIFEST_DIR")).join(directory)).unwrap();
+        // Preserve the first attempt and select its header-only migration.
+        let selected = SourceRoot::new(&read(&format!("{directory}/main.qli")));
+        selected.write(
+            "iterative.qli",
+            &read(&format!("{directory}/iterative.qli")),
+        );
+        let program = compile_project(&selected.0).unwrap();
         let actual = run_closed(&program, SimulationLimits::default()).unwrap();
         assert_distribution(
             &actual,

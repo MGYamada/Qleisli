@@ -1260,9 +1260,9 @@ fn selected_z_interference_matches_finite_and_rejects_wrong_interfaces() {
 
 #[test]
 fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit() {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli");
-    let text = std::fs::read_to_string(path).unwrap();
+    let text = common::current_source_text(
+        "tests/fixtures/authoring_sessions/operation-application-v030/attempt-03/main.qli",
+    );
     let source = elaborate(&text, "main::main", BTreeMap::new());
     let raw = source.lower_raw().unwrap();
     let accepted = native::Kernel::selected()
@@ -1282,9 +1282,9 @@ fn complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit
 
 #[test]
 fn canonical_power_original_program_and_symbolic_counts_preserve_z_phase() {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/authoring_sessions/operation-application-v030/attempt-02/main.qli");
-    let original = std::fs::read_to_string(path).unwrap();
+    let original = common::current_source_text(
+        "tests/fixtures/authoring_sessions/operation-application-v030/attempt-02/main.qli",
+    );
     let complete = elaborate(&original, "main::main", BTreeMap::new())
         .lower_raw()
         .unwrap();

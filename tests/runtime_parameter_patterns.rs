@@ -14,12 +14,9 @@ use std::collections::BTreeMap;
 use std::path::Path;
 
 fn source(path: &str) -> String {
-    std::fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030")
-            .join(path),
-    )
-    .unwrap()
+    common::current_source_text(&format!(
+        "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/{path}"
+    ))
 }
 
 fn case(category: &str, name: &str) -> String {

@@ -4,13 +4,12 @@
 use qleisli::frontend::compile::{Error, OperationBinding, ParsedProgram};
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
-use std::path::Path;
+mod common;
 
 fn study(name: &str) -> String {
-    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(format!(
+    common::current_source_text(&format!(
         "tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/{name}/main.qli"
-    )))
-    .unwrap()
+    ))
 }
 fn parsed(source: &str) -> ParsedProgram {
     ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()

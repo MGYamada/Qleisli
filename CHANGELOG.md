@@ -11,7 +11,7 @@ development milestones from the scope of their evidence.
 
 - Support contextual `const` markers in compile-time parameter headers while
   preserving ordered kinds, explicit bindings and ordinary const-named values.
-  Keep old `static` headers only as temporary migration input.
+  Reject retired `static` headers with a located `const` migration diagnostic.
   Migrate ten maintained example headers to `const`, retaining independent
   phase, reference and protocol checks and the original source identities.
   Align the independent Python proposal parser's contextual header markers;

@@ -10,11 +10,13 @@ use std::path::{Path, PathBuf};
 use std::process::{Command, Output};
 
 fn fixture(category: &str, name: &str) -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("tests/fixtures/authoring_sessions/mixed-boolean-v030")
-        .join(category)
-        .join(name)
-        .join("main.qli")
+    common::current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/mixed-boolean-v030")
+            .join(category)
+            .join(name)
+            .join("main.qli"),
+    )
 }
 
 fn kernel() -> PathBuf {
@@ -603,6 +605,12 @@ fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() 
         header(&a, &a),
         meanings.join(",")
     );
+    // This bounded regression retains its historical Fourier implementation.
+    // Translate only its retired parameter header for the current parser.
+    let fourier_text = common::current_source_text("corpus/sized/qualtran_qft/fourier.qli");
+    let old_header = "fourier[static n: Nat]";
+    assert_eq!(fourier_text.matches(old_header).count(), 1);
+    let fourier = SourceRoot::new(&fourier_text.replacen(old_header, "fourier[const n: Nat]", 1));
     let files = SourceRoot::new("");
     let requested = files.0.join("fixed-provider.request.json");
     std::fs::write(&requested, provider).unwrap();
@@ -626,7 +634,11 @@ fn selected_tiny_qpe_keeps_the_fixed_provider_request_after_candidate_changes() 
             command.arg("--basis=1");
         }
         for (name, path) in module_paths {
-            let current = common::current_namespace_fixture(&root.join(path));
+            let current = if name == "fourier" {
+                fourier.0.join("main.qli")
+            } else {
+                common::current_namespace_fixture(&root.join(path))
+            };
             command.arg(format!("--module={name}={}", current.display()));
         }
         log.attach(&mut command, true);

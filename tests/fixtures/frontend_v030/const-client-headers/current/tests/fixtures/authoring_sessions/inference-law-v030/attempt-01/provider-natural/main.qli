@@ -1,0 +1,2 @@
+pub unitary fn keep[const n:Nat](q:Q<Bit>)->Q<Bit>{q}
+pub unitary fn f[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}

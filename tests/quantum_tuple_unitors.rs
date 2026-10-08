@@ -11,10 +11,9 @@ use qleisli::interchange::finite_matrix;
 use qleisli::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
 use std::collections::BTreeMap;
 use std::fmt::Write;
-use std::path::Path;
 
 fn read(path: &str) -> String {
-    std::fs::read_to_string(Path::new(env!("CARGO_MANIFEST_DIR")).join(path)).unwrap()
+    common::current_source_text(path)
 }
 fn study(name: &str) -> String {
     read(&format!(

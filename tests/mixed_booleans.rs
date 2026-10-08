@@ -13,17 +13,11 @@ use qleisli::interchange::native::{AcceptedProgram, Kernel};
 use qleisli::ir::{Effect, RawOp, SingleGate};
 use qleisli::sim::{SimulationError, SimulationLimits, run_closed};
 use std::collections::{BTreeMap, BTreeSet};
-use std::path::Path;
 
 fn source(category: &str, name: &str) -> String {
-    std::fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/authoring_sessions/mixed-boolean-v030")
-            .join(category)
-            .join(name)
-            .join("main.qli"),
-    )
-    .unwrap()
+    common::current_source_text(&format!(
+        "tests/fixtures/authoring_sessions/mixed-boolean-v030/{category}/{name}/main.qli"
+    ))
 }
 
 fn elaborate(source: &str, entry: &str, naturals: BTreeMap<String, u32>) -> ElaboratedProgram {

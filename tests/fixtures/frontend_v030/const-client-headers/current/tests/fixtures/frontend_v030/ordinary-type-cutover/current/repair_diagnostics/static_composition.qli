@@ -1,0 +1,4 @@
+unitary fn pair(q:Q<(Bit,Bit)>) -> Q<(Bit,Bit)> { q }
+unitary fn single(q:Q<Bit>) -> Q<Bit> { q }
+unitary fn apply[const U:Op<Bit>](q:Q<Bit>) -> Q<Bit> requires Apply(U) { U(q) }
+unitary fn bad(q:Q<Bit>) -> Q<Bit> { apply[then_op(single,pair)](q) }
