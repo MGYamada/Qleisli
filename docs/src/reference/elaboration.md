@@ -78,13 +78,13 @@ and [functional abstraction](functional-boundary.md).
 
 | Field | Contract |
 | --- | --- |
-| Source | `U(excl q)` or a call whose arguments all mark distinct whole lexical `Q<A>` owners |
+| Source | `U(excl q)` or a call whose arguments all mark distinct whole lexical `Q<A>` owners; finite project compilation additionally admits `ctrl` roles after fresh native sector checking |
 | Target | The existing consuming call, followed by replacement of each argument binder's value by its exact ordered returned owner; the access expression returns ordinary Unit |
 | Evaluation order | Resolve original source occurrences; supply owners once in argument order and execute the callee once. No copied AST occurrence acquires a second lexical identity. |
 | Owners | Keep the same lexical owner identities with returned values. Require actual inferred Unitary effect and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
 | Exact phase | Preserve the complete callee action, including entanglement, ordered axes and zero-width phase. Insert no inverse or cleanup. |
 | Source spans | Retain original callee and argument identifiers, byte spans and callee-body origins. Contextual marker spans do not replace owner-identifier spans. |
-| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, indexed/mixed/escaping access, unsupported `ctrl` or unavailable concrete projection rejects. |
+| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, indexed/mixed/escaping access, failed native control-sector check or unavailable concrete projection rejects. Selected-source Raw/hierarchical `ctrl` remains unsupported. |
 | Remaining obligations | Check emitted artifacts and requests independently. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises; it is not a source-preservation proof or quantitative resource certificate. General footprints, lifetimes and access declarations remain pending. |
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).

@@ -586,13 +586,6 @@ impl Checker<'_, '_> {
         let mut owners = Vec::new();
         let mut seen = BTreeSet::new();
         for argument in arguments {
-            if argument.access != QuantumAccess::Excl {
-                return Err(SourceError::new(
-                    "unsupported",
-                    argument.value.span,
-                    "ctrl source access requires independently bound basis-sector evidence; source elaboration is not yet supported",
-                ));
-            }
             let ExprKind::Name(owner) = &argument.value.kind else {
                 return Err(SourceError::new(
                     "unsupported",

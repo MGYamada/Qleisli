@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Admit whole-owner `ctrl` calls in finite project compilation only after
+  fresh native checking of each actual emitted call interval and ordered owner
+  interface. Reject H/X and target-side CNOT access; preserve phase kickback,
+  external correlations and zero-width phase. Selected-source lowering remains
+  unsupported; general access and source-preservation obligations remain open.
+
 - Connect retained source access obligations to fresh native checking of the
   actual Raw call interval read by source-step replay, with ordered original
   owner ports and basis trees. Public source `ctrl` remains unsupported pending

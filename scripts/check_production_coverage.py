@@ -31,7 +31,9 @@ CONTRACT_PROOF = {
         'For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original '
         'action; control_meaning establishes original BodyMeaning, exact interface, unitarity and '
         'sector preservation. control_reference proves projector commutation for every joint amplitude '
-        'and arbitrary reference; source ctrl elaboration and alias/resource obligations remain open.'
+        'and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted '
+        'call intervals and original ordered owner interfaces; selected-source integration, general '
+        'source preservation and alias/resource obligations remain open.'
     ),
     'gaps': (
         'This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
@@ -93,7 +95,10 @@ PATHS = {
         ('tests/quantum_unit_source.rs', 'complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit'),
         ('src/frontend/specialize/raw/preservation.rs', 'source_z_replay_rejects_native_valid_x_substitution'),
         ('tests/exclusive_access.rs', 'reassembled_owner_and_callee_binders_do_not_restore_old_snapshot'),
-        ('tests/exclusive_access.rs', 'exact_owner_shape_and_actual_body_effect_are_required')]),
+        ('tests/exclusive_access.rs', 'exact_owner_shape_and_actual_body_effect_are_required'),
+        ('tests/exclusive_access.rs', 'finite_ctrl_preserves_phase_kickback_and_an_entangled_reference'),
+        ('tests/exclusive_access.rs', 'finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls'),
+        ('tests/exclusive_access.rs', 'finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase')]),
     'contract-acceptance': path_rule('native-acceptance', 'contract finite-leaf', '--qirf-contract', [
         ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', '"--qirf-contract"']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),

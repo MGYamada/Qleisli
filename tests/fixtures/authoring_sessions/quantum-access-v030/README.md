@@ -2,8 +2,8 @@
 
 This informed #29/#69 study preserves four desired access programs and four
 explicit consume/return controls before access implementation. `ctrl`/`excl`
-are adopted names; these call forms are candidates for the unsettled detailed
-grammar, not supported syntax or new admission rules. No QFT is involved.
+are adopted names; the original observations preceded implementation of these
+call forms. They do not create admission rules. No QFT is involved.
 
 All **42 actual CLI observations** are retained with a fixed executable hash:
 19 first observations, 19 preparation-import repairs and four public-entry
@@ -23,9 +23,17 @@ These numerical observations are not an exact operator or external-reference
 proof; future access lowering must independently preserve those contracts.
 
 The explicit duplicate-owner control rejects through ownership checking in
-both paths. All four desired access sources currently reject at parsing;
+both paths. All four desired access sources rejected at baseline parsing;
 that does not establish range, overlap, control-sector or owner-restoration
 rules. This study completes no Issue and confers no scheduling permission.
+
+Seven later observations under `finite-access-after/` run the unchanged
+attempt-02 desired sources with the finite project CLI. Exclusive, entangled
+and kickback sources now check and reproduce the three stated distributions;
+the duplicate-owner source refuses with an ownership diagnostic. All 42
+baseline observations and original bytes remain intact, for 49 observations
+in total. These bounded observations do not establish general access support
+or an exact source-preservation theorem; selected-source ctrl remains pending.
 
 [session.json](session.json) binds each complete source/manifest snapshot and
 raw observation. The existing authoring checker validates record integrity;

@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "b913c7294a6325767d1d02fd06fd9bd1a9a95afe373e0004fb0ae351e82404c9",
+  "surface_sha256": "d740b316067b3dd40c55a9702f63f2f72c732352b9f9f7355ceb3fd17ffd143d",
   "groups": [
     {
       "id": "raw-core",
@@ -1962,6 +1962,18 @@
         {
           "path": "tests/exclusive_access.rs",
           "test": "exact_owner_shape_and_actual_body_effect_are_required"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "finite_ctrl_preserves_phase_kickback_and_an_entangled_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
@@ -2076,10 +2088,10 @@
           "test": "test_control_requests"
         }
       ],
-      "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; original-byte control requests through the same version-paired native mode (source ctrl remains unsupported)",
+      "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
       "checked_artifact": "QLV1 QIRF plus qleisli.native-contract request: encoded contract or leaf signature/ports/exact matrix; or control signature and ordered axes, without a proposed matrix",
       "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check -> Qirf.checkContract (encoded), or Validity.checkRoot and Qirf.check (leaf); or Qirf.ControlAccess.check (control)",
-      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference; source ctrl elaboration and alias/resource obligations remain open.",
+      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open.",
       "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
     },
     {

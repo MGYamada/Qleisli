@@ -658,15 +658,14 @@ impl Lowerer<'_, '_> {
             .charge(module, span, arguments.len().saturating_mul(3))?;
         let mut owners = Vec::new();
         let mut seen = BTreeSet::new();
+        let control = arguments
+            .iter()
+            .any(|arg| arg.access == QuantumAccess::Ctrl);
+        let mut ports = Vec::new();
+        let mut signatures = Vec::new();
+        let mut axes = Vec::new();
+        let mut offset = 0;
         for argument in arguments {
-            if argument.access != QuantumAccess::Excl {
-                return Err(self.error(
-                    module,
-                    argument.value.span,
-                    ErrorCode::Unsupported,
-                    "ctrl source elaboration requires independently bound sector evidence",
-                ));
-            }
             let ExprKind::Name(name) = &argument.value.kind else {
                 return Err(self.error(
                     module,
@@ -699,10 +698,30 @@ impl Lowerer<'_, '_> {
                     "exclusive access requires distinct live Q<A> owners",
                 ));
             }
-            let charge = key.name.len() + value.tree_size().nodes;
+            let mut charge = key.name.len() + value.tree_size().nodes;
+            if control {
+                let Value::Quantum(slot, _) = value else {
+                    unreachable!("whole quantum owner checked above");
+                };
+                let register = &self.raw.registers[slot];
+                charge += register.size();
+                signatures.push(super::operations::contract_basis(&register.basis));
+                ports.push(QuantumPort {
+                    token: register.token,
+                    wires: register.wires.clone(),
+                    shape: BasisShape {
+                        bits: register.wires.len() as u8,
+                    },
+                });
+                if argument.access == QuantumAccess::Ctrl {
+                    axes.extend(offset..offset + register.wires.len());
+                }
+                offset += register.wires.len();
+            }
             owners.push((key.clone(), value.ty()));
             self.compiler.charge(module, name.span, charge)?;
         }
+        let first = self.raw.operations.len();
         let result = self.runtime_call(
             module,
             callee,
@@ -735,6 +754,45 @@ impl Lowerer<'_, '_> {
                 ErrorCode::TypeMismatch,
                 "exclusive call must return the same exact ordered Q<A> interface",
             ));
+        }
+        if control {
+            self.compiler.charge(
+                module,
+                span,
+                self.raw.operations.len() - first + returned.len(),
+            )?;
+            let outputs = returned
+                .iter()
+                .map(|value| {
+                    let Value::Quantum(slot, _) = value else {
+                        unreachable!("exact returned owner interface checked above");
+                    };
+                    self.raw.registers[slot].token
+                })
+                .collect();
+            // Check the actual emitted call interval with the original ordered
+            // ports. A declared Unitary effect is not sector evidence.
+            let call = RawProgram {
+                quantum_inputs: ports,
+                classical_inputs: vec![],
+                operations: self.raw.operations[first..].to_vec(),
+                quantum_outputs: outputs,
+                classical_outputs: vec![],
+                declared_effect: Effect::Unitary,
+            };
+            self.compiler.kernel.check_control_owners(
+                &call, &signatures, &axes, &mut self.compiler.exact_work,
+            ).map_err(|failure| {
+                let code = match failure.code {
+                    "contract" => ErrorCode::Contract,
+                    "limit" => ErrorCode::Limit,
+                    "io" | "kernel" => ErrorCode::Project,
+                    _ => ErrorCode::InvalidIr,
+                };
+                self.error(module, span, code, format!(
+                    "{failure}; ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access"
+                ))
+            })?;
         }
         for ((key, _), value) in owners.into_iter().zip(returned) {
             self.access_updates

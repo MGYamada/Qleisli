@@ -280,9 +280,36 @@ arguments, a changed result interface and measurement through `excl` reject.
 Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
 The current call form requires every runtime argument to use an access marker;
 mixed ordinary/access arguments, indexed selections, escaping handles and
-access-parameter declarations remain unimplemented. `ctrl` markers reject
-until original-artifact sector evidence is connected to source acceptance.
+access-parameter declarations remain unimplemented. Selected-source Raw and
+hierarchical lowering still reject `ctrl` markers; the finite project path
+supports the independently checked form below.
 This limited implementation does not complete the general access Issues.
+
+### Whole-owner coherent control in finite projects
+
+The finite project checker/compiler admits `cnot(ctrl c, excl t)` using the
+same distinct live-owner, actual Unitary effect and exact returned-interface
+rules. It independently submits the actual emitted call interval, original
+ordered owner ports, complete basis forest and requested control axes to the
+native `control-owners` checker. Success of that fresh decision is required
+before retaining the updated owners. The complete generated program also
+passes ordinary native acceptance; no annotation or cached decision replaces
+either check. Missing, incompatible or failed checkers refuse.
+
+`ctrl` requires computational-basis sector preservation, not an unchanged
+quantum state or read-only access. Phase kickback and entanglement are allowed.
+H and X on a control owner reject despite being Unitary; CNOT preserves its
+control's sectors but not its target's. Exact scalar phase on `Q<Unit>` is
+retained. Control axes follow original argument/owner wire order, not sorted
+wire identifiers. Each call occurrence is checked, including nested calls and
+unused concrete declarations. Access exit neither restores the old state nor
+releases workspace. Overlapping arguments still reject.
+
+This path uses the existing bounded exact native profile (at most six physical
+input bits for a control decision), with cumulative exact work charged to the
+existing compiler budget. It does not establish a general source-preservation
+theorem, quantitative resource correspondence or scheduling permission.
+Selected-source lowering and general access lifetimes remain unfinished.
 
 ## Acceptance and evidence
 

@@ -123,9 +123,13 @@ requires binding to the original checked source. The strict native request
 receipt. `ControlOwnersAcceptance` retains the decoded ordered forest and
 coordinates, original packet bytes and actual checking execution.
 `control_owners_meaning` and `control_owners_reference` extend the original-body
-and arbitrary-reference results to this request. There is no source admission
-path yet; the native obligation alone supplies no authority to accept a `ctrl`
-annotation.
+and arbitrary-reference results to this request. The finite project path binds
+this request to each actual emitted control-call interval, original ordered
+owner ports/basis forest and returned tokens before updating source bindings.
+It checks nested calls and unused concrete declarations. The complete final
+artifact still requires ordinary native acceptance. Neither an annotation nor
+native unitarity alone supplies control-sector evidence; host source lowering
+and interval extraction are not a Lean source-preservation theorem.
 
 Selected source projection retains the original ordered access roles with the
 call's source identities and positions. Raw and hierarchical lowering, and

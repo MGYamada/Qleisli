@@ -95,7 +95,14 @@
         "repaired-before/overlap-finite.json",
         "repaired-before/overlap-selected.json",
         "repaired-before/overlap-explicit-finite.json",
-        "repaired-before/overlap-explicit-selected.json"
+        "repaired-before/overlap-explicit-selected.json",
+        "finite-access-after/exclusive-check.json",
+        "finite-access-after/exclusive-run.json",
+        "finite-access-after/entangled-check.json",
+        "finite-access-after/entangled-run.json",
+        "finite-access-after/kickback-check.json",
+        "finite-access-after/kickback-run.json",
+        "finite-access-after/overlap-check.json"
       ]
     },
     {

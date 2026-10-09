@@ -3329,7 +3329,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "4ee6d7055be382c2d94f2d40e10174fb812733fc8e2ff12bd134d9eca40d69b8",
+      "sha256": "ec3d92fe94b820cb5298b8d82ac8a024dbb0461f83f39d6660d81ba90b404159",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3458,7 +3458,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "1601deef2f476f3f592c8a8d4b107d825b4b0eb43ad76277eea853c97cb5eed6",
+      "sha256": "b1f08424b98eec28b053b94abf437a3cbff4e4702feff3164f38dfe71e53fac9",
       "group": "source",
       "surface": {
         "declarations": [],
