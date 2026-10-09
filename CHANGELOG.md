@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Center routine development on the shared local checks. Run hosted validation
+  at explicit Issue-completion checkpoints instead of ordinary pushes/PR
+  updates; retain exact PR size/fixture gates, required checks and full release
+  validation. CI success never closes an Issue automatically.
+
 - Check unused closed control-bearing functions and their concrete dependencies
   in selected Raw lowering, using original resolved identities and shared
   elaboration/native budgets. Preserve the public execution root and recheck

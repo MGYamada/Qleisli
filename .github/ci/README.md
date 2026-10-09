@@ -1,5 +1,33 @@
 # CI scheduling and evidence
 
+Develop and validate locally using the shared check groups below. Hosted CI
+runs at Issue-completion checkpoints, rather than after each implementation
+commit or PR update. Record the candidate Issues, their acceptance evidence,
+remaining obligations and exact commit in the PR before requesting that check.
+Several related Issues may share one checkpoint; do not close an Issue until
+its own criteria and the selected checks succeed. Unrun, cancelled or skipped
+required work is not success, and new source changes invalidate an old result.
+
+For PR completion, manually run the workflow on the candidate PR branch with
+`completion_pr` and `completion_issues`. The size gates fetch read-only GitHub
+PR metadata, require its actual head to equal the workflow's exact checkout,
+and count the cumulative Git diff against its base. A changed head or missing
+metadata fails closed. No API diff summary or last-commit comparison supplies
+the counts. Fixture growth and stable required contexts remain enforced;
+branch protection can wait for this explicit checkpoint. No label or routine
+push/PR event starts a run.
+
+Manual Issue checks on `main` require `completion_issues` as comma-separated
+positive numbers (for example `29,69`) and an exact reviewed `release_base`.
+The selected cumulative comparison base also reaches the constitutional
+continuity check; moving to manual dispatch does not drop that check.
+The Issue field records intended completion,
+not an automatic close or proof of criteria. Release-tag checks and explicit
+scoped release-readiness validation remain available, with their existing full
+proof, package, installation and exact-commit gates. Neither this scheduling
+policy nor a green run authorizes merging, tagging or publication. Completion
+runs use unique concurrency groups and are not cancelled by later pushes.
+
 `profiles.json` selects docs-only versus executable validation conservatively.
 Executable, proof, normative and unknown changes still run every selected suite.
 `ci_profiles.py` separately selects proof maintenance without treating tests as
@@ -17,7 +45,8 @@ Binary records are reported separately; this is not a file-byte limit. The
 first `changes` check binds repository/PR number, merge ref and both merge
 parents to the workflow context, rejects missing/malformed/shallow data, and
 runs before suite selection. Failure of `changes` fails the existing required
-contexts. Push/manual runs explicitly report the PR rule as not applicable.
+contexts. Non-PR tag/manual runs report the PR rule as not applicable;
+manual PR completion retains the API-bound exact base/head and cumulative gate.
 No claim is made that local JSON authenticates GitHub or that this installs
 branch protection; enforcement-code changes still require review.
 
@@ -49,7 +78,7 @@ reject without fetching external payloads. Stored archive bytes are counted;
 expanded archive contents and external payloads are not measured. PR additions
 use the event's exact base/head and unique merge base with no rename detection;
 moves into a fixture path count as additions. Binary changes are reported
-separately, and deletion counts cannot offset additions. Push/manual runs still
+separately, and deletion counts cannot offset additions. Tag/manual runs still
 check committed totals. The existing required contexts reject gate failure.
 
 Agents must run `python3 scripts/check_fixture_budget.py` before committing
@@ -90,9 +119,9 @@ can simulate the caller but cannot authenticate GitHub provenance. Reports
 are small external observations, not new fixture snapshots or release approval.
 
 Constitution, governance records, constitutional fixtures and Reference changes
-select the full policy-risk lane. The always-run documentation job also checks
+select the full policy-risk lane. Each selected documentation job also checks
 the adopted constitutional identity, historical candidate evidence, pending
-ledger, separately adopted initial interpretations and scoped admissions. PR/push checks compare
+ledger, separately adopted initial interpretations and scoped admissions. PR completion checks compare
 the available event base; the separate tag/readiness gate requires complete
 scoped acceptance and exact-candidate validation evidence. This is the first identity-enforcement
 component of #141, not complete interpretation/proof/artifact enforcement.
@@ -238,7 +267,7 @@ drivers, plus its shipped entry. Each driver retains source checking and a fresh
 native acceptance decision; repeated CLI/setup work is part of the runtime.
 The four case workers do not remove that cost.
 
-At the maintainer's request, ordinary PR/push validation uses `--quick`: all 87
+At the maintainer's request, test-lane completion validation uses `--quick`: all 87
 shipped entries, both X/Y measurements of 20 deterministic representative entries
 stratified by source and existing qubit width, four selected type-correct semantic
 faults and all rejection cases. It omits the other matrix entries, all additional
@@ -333,7 +362,7 @@ The workflow keeps scheduling, platform/tool installation, corpus/release
 conditions and the eight stable required contexts visible. Shared actions keep
 the previous report paths, artifact names, action pins, tool versions and trusted
 receipt outputs. Receipt calls remain conditional on tags or explicit readiness;
-ordinary PR tests do not create release evidence. Infrastructure regressions
+PR completion tests do not create release evidence. Infrastructure regressions
 execute the actual shell adapters with literal paths and failed commands and
 check every caller's preparation, coverage, cache and receipt wiring.
 
@@ -386,8 +415,8 @@ component proofs, independent semantic oracles and audit jobs remain required.
 ## Scoped release readiness (Issue #142)
 
 `release-readiness` runs after the eight real validation jobs for tags and for
-an explicitly selected `workflow_dispatch.release_readiness`. Ordinary PRs and
-manual full validation do not require completion of the 111 selected issues.
+an explicitly selected `workflow_dispatch.release_readiness`. Issue-completion
+checks and manual full validation are separate from release approval.
 The gate requires both the full suite profile and full proof lane. The legacy
 `check_constitution.py --require-release-ready` delegates to the same checker;
 it rejects missing caller context instead of treating the three broader pending

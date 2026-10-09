@@ -46,12 +46,12 @@ Follow the adopted cutover above:
 Lean alone issues new accepted handles; remove legacy paths after replacement
 checks. Full Soundness remains v0.5.0; external schemas await binding gates.
 
-Keep Lean/Mathlib at 4.30.0 and development Python at 3.11+. Follow the
-[test-oriented CI lanes](.github/ci/README.md): build/audit native checkers and run
-independent tests; compile changed proofs; full replay for releases,
-manual full runs and policy risks. Reject project axioms, unsafe/
+Pin Lean/Mathlib 4.30.0 and development Python 3.11+. Validate locally via
+[shared checks](.github/ci/README.md); hosted CI only for Issue completion/release.
+Build/audit native checkers, run independent tests and compile changed proofs;
+full replay for releases, full checks and policy risks. Reject project axioms, unsafe/
 partial definitions and runtime overrides, including private/generated helpers.
-Label temporary proofs with TP-ID, priority P0/P1/P2 and replacement/removal
+Mark temporary proofs TP-ID, P0/P1/P2 and replacement/removal
 conditions; keep them built/audited until callers and obligations migrate.
 Distinguish code, tests, proof, preservation and specification review.
 
@@ -90,7 +90,7 @@ explicitly approved v0.2.9 verifier migration (#276). Cargo.toml is authoritativ
 Cargo.lock, lakefiles, Python metadata/runtime, std Qargo and research Cargo via
 `scripts/maintain_release.py`; inspect its plan and source-review requirements. Synchronization must not change dependency versions. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
 Qargo.toml. Accumulate changes in [CHANGELOG](CHANGELOG.md), not per-task bumps.
-Run relevant checks; record performed/skipped results accurately. For releases
+Record performed/skipped checks accurately. For releases
 validate source, packages, installation and full CI; tag the exact checked commit.
 Selection, tagging, pushing and publication are distinct; published artifacts
 are immutable. Docs-only work need not rerun Rust/Lean tests.

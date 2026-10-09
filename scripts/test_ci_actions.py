@@ -27,6 +27,22 @@ def job(name):
 
 
 class CIActions(unittest.TestCase):
+    def test_hosted_validation_is_explicit_completion_or_release_only(self):
+        workflow = (ROOT / '.github/workflows/ci.yml').read_text()
+        trigger = workflow.split('on:\n')[1].split('\nconcurrency:')[0]
+        self.assertNotIn('branches:', trigger)
+        self.assertIn("tags: ['v*']", trigger)
+        self.assertNotIn('pull_request:', trigger)
+        self.assertNotIn('synchronize', trigger)
+        self.assertIn('completion_issues:', trigger)
+        self.assertIn('completion_pr:', trigger)
+        self.assertIn('base: ${{ steps.select.outputs.base }}', job('changes'))
+        self.assertIn('CONSTITUTION_BASE: ${{ needs.changes.outputs.base || inputs.release_base ||', job('check-docs'))
+        self.assertIn('if: always()', job('required'))
+        self.assertIn('cancel-in-progress: false', workflow)
+        self.assertIn('--report "$RUNNER_TEMP/pr-size.json"', job('changes'))
+        self.assertIn('--hosted --report "$RUNNER_TEMP/fixture-budget.json"', job('changes'))
+
     def shell(self, name, environment, code=0):
         # Execute the literal run block; GitHub inputs reach it only as env data.
         block = action(name).split('      run: |\n')[1].split('    - name:')[0]

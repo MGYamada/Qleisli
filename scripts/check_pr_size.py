@@ -2,7 +2,7 @@
 """Reject PRs with at least 1,000,000 added plus deleted Git text lines.
 
 Only MGYamada/Qleisli PR #307 has the human-authorized existing-PR exception.
-Hosted mode binds that identity to the GitHub event, ref and exact merge parents.
+Hosted mode binds it to the PR event/merge parents or API-bound manual PR head.
 Local --base/--head preflight has no exception. Moves count as delete plus add;
 binary records are reported separately, not interpreted as zero-byte changes.
 This gate counts immutable commits, never the working tree or API diff summaries.
@@ -16,6 +16,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+from urllib.request import Request, urlopen
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -24,6 +25,22 @@ EXCEPTION = ("MGYamada/Qleisli", 307)
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 NUMBER = re.compile(rb"(?:0|[1-9][0-9]*)\Z")
 REPOSITORY = re.compile(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\Z")
+
+
+def completion_pr(repository: str, number: int) -> dict:
+    """Fetch read-only GitHub metadata; counts still come only from exact Git objects."""
+    token = os.environ.get("GH_TOKEN")
+    if not token:
+        raise ValueError("manual PR validation requires its read-only workflow token")
+    request = Request(f"https://api.github.com/repos/{repository}/pulls/{number}", headers={
+        "Authorization": "Bearer " + token, "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    })
+    with urlopen(request, timeout=30) as response:
+        raw = response.read((1 << 20) + 1)
+    if len(raw) > 1 << 20:
+        raise ValueError("PR metadata exceeds its bounded response size")
+    return json.loads(raw, object_pairs_hook=unique_object)
 
 
 def git(root: Path, *args: str) -> bytes:
@@ -118,6 +135,25 @@ def hosted_context(root: Path, event_name: str, event: dict, expected_sha: str,
             "pull_request" in event
         ):
             raise ValueError("malformed non-PR workflow context")
+        selected = event.get("inputs", {}).get("completion_pr", "") if event_name == "workflow_dispatch" else ""
+        if selected:
+            if not isinstance(selected, str) or not re.fullmatch(r"[1-9][0-9]{0,9}", selected) or int(selected) > 2**31 - 1:
+                raise ValueError("invalid completion PR number")
+            number = int(selected)
+            pr = completion_pr(repository, number)
+            if not isinstance(pr, dict) or type(pr.get("number")) is not int or pr["number"] != number:
+                raise ValueError("completion PR metadata differs from the requested repository/number")
+            base_info, head_info = pr.get("base"), pr.get("head")
+            if not isinstance(base_info, dict) or not isinstance(head_info, dict) or not isinstance(
+                    base_info.get("repo"), dict) or base_info["repo"].get("full_name") != repository:
+                raise ValueError("completion PR metadata has no matching base/head repository")
+            base = exact_commit(root, base_info.get("sha"))
+            head = exact_commit(root, head_info.get("sha"))
+            if head != expected_sha:
+                raise ValueError("completion PR head differs from the exact workflow commit")
+            result = policy_result(count_diff(root, base, head), repository, number)
+            result.update(event=event_name, checkout_sha=expected_sha, merge_ref=None)
+            return result
         return dict(format=1, status="not-applicable", event=event_name,
                     checkout_sha=expected_sha, repository=repository, limit=LIMIT,
                     reason="PR-size requirement does not apply to push or manual validation")

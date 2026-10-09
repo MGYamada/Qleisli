@@ -106,7 +106,7 @@ class CIProfiles(unittest.TestCase):
                     self.assertEqual(main(), 0)
                 self.assertEqual(json.loads(report.read_text()), result)
                 self.assertEqual(json.loads(stdout.getvalue()), result)
-                self.assertEqual(outputs.read_text(), f"profile={profile}\nproof_lane={lane}\nhead={result['head']}\n")
+                self.assertEqual(outputs.read_text(), f"profile={profile}\nproof_lane={lane}\nhead={result['head']}\nbase=\n")
                 rendered = summary.read_text()
                 self.assertLess(len(rendered.encode()), 16 * 1024)
                 displayed = json.loads(rendered.split("```json\n")[1].split("\n```")[0])
@@ -178,6 +178,38 @@ class CIProfiles(unittest.TestCase):
         with patch("ci_profiles.git", side_effect=subprocess.CalledProcessError(1, "git")):
             self.assertFalse(registry_binding_only(ROOT, "a" * 40, "b" * 40))
 
+    def test_manual_pr_completion_keeps_cumulative_policy_risk_and_exact_head(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / ".github/ci").mkdir(parents=True)
+            (root / ".github/ci/profiles.json").write_text(json.dumps(self.policy))
+            def git(*args):
+                return subprocess.check_output(["git", *args], cwd=root, stderr=subprocess.DEVNULL).decode().strip()
+            git("init", "--quiet")
+            git("config", "user.email", "ci-fixture@example.invalid")
+            git("config", "user.name", "CI fixture")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "base")
+            base = git("rev-parse", "HEAD")
+            (root / ".github/policy").write_text("policy change\n")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "policy")
+            (root / "CHANGELOG.md").write_text("last commit is descriptive\n")
+            git("add", ".")
+            git("commit", "--quiet", "-m", "docs")
+            head = git("rev-parse", "HEAD")
+            event = {"repository": {"full_name": "MGYamada/Qleisli"}, "inputs": {
+                "completion_issues": "29,69", "completion_pr": "307", "validation": "tests"}}
+            metadata = {"number": 307, "base": {"sha": base, "repo": event["repository"]}, "head": {"sha": head}}
+            with patch("check_pr_size.completion_pr", return_value=metadata):
+                result = plan(root, "workflow_dispatch", event, head, "refs/heads/work")
+                self.assertEqual((result["profile"], result["proof_lane"]), ("full", "full"))
+                self.assertEqual(result["base"], base)
+                self.assertEqual(result["completion_pr"], 307)
+                self.assertEqual(result["paths"], [".github/policy", "CHANGELOG.md"])
+            with patch("check_pr_size.completion_pr", return_value={**metadata, "head": {"sha": base}}), self.assertRaises(ValueError):
+                plan(root, "workflow_dispatch", event, head, "refs/heads/work")
+
     def test_actual_git_diffs_deleted_renamed_inputs_missing_bases_and_releases(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -200,14 +232,24 @@ class CIProfiles(unittest.TestCase):
             event = {"pull_request": {"base": {"sha": base}}}
             self.assertEqual(plan(root, "pull_request", event, head, "refs/pull/1/merge")["profile"], "docs")
             self.assertEqual(plan(root, "push", {"before": base}, head, "refs/heads/main")["profile"], "docs")
-            self.assertEqual(plan(root, "workflow_dispatch", {"inputs": {"validation": "tests"}}, head, "refs/heads/main")["proof_lane"], "tests")
+            completion = {"inputs": {"validation": "tests", "completion_issues": "29,69", "release_base": base}}
+            selected = plan(root, "workflow_dispatch", completion, head, "refs/heads/main")
+            self.assertEqual(selected["proof_lane"], "tests")
+            self.assertEqual(selected["completion_issues"], [29, 69])
+            for issues in ["", "0", "-1", "29,29", "#29", "29, 69", "29;echo bad", "9" * 1025,
+                           "2147483648"]:
+                with self.subTest(issues=issues), self.assertRaises(ValueError):
+                    plan(root, "workflow_dispatch", {"inputs": {"completion_issues": issues}}, head, "refs/heads/main")
+            with self.assertRaises(ValueError):
+                plan(root, "workflow_dispatch", completion, head, "refs/heads/work")
+            release = plan(root, "workflow_dispatch", {"inputs": {"release_readiness": "true"}}, head, "refs/heads/work")
+            self.assertEqual(release["proof_lane"], "full")
             self.assertEqual(plan(root, "push", {"before": base}, head, "refs/tags/v0.2.7")["proof_lane"], "full")
             self.assertEqual(plan(root, "workflow_dispatch", {"inputs": {"validation": "tests"}}, head, "refs/tags/v0.2.7")["proof_lane"], "full")
             self.assertEqual(plan(root, "pull_request", {"pull_request": {"base": {"sha": base}, "head": {"ref": "codex/release-v027"}}}, head, "refs/pull/1/merge")["proof_lane"], "full")
             with self.assertRaises(ValueError):
                 plan(root, "workflow_dispatch", {"inputs": {"validation": "unknown"}}, head, "refs/heads/main")
             for name, payload, ref in [
-                ("workflow_dispatch", event, "refs/heads/main"),
                 ("push", {"before": base}, "refs/tags/v0.2.6"),
                 ("push", {"before": base, "forced": True}, "refs/heads/main"),
                 ("push", {"before": "0" * 40}, "refs/heads/main"),

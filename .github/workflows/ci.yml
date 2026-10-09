@@ -2,13 +2,19 @@ name: Specification and implementation checks
 
 on:
   push:
-    branches: [main]
     tags: ['v*']
-  pull_request:
   workflow_dispatch:
     inputs:
+      completion_issues:
+        description: Issue numbers being verified for completion (comma-separated; required except for releases)
+        type: string
+        default: ''
+      completion_pr:
+        description: PR number for completion (required for PR branches; exact head and cumulative size gates are checked)
+        type: string
+        default: ''
       validation:
-        description: Test harness or fresh full proof validation
+        description: Issue completion checks or fresh full proof validation
         type: choice
         options: [full, tests]
         default: full
@@ -17,7 +23,7 @@ on:
         type: boolean
         default: false
       release_base:
-        description: Exact reviewed requirements and guarantee base commit
+        description: Exact reviewed requirements/guarantee base (also required for non-PR Issue completion)
         type: string
         default: ''
       cache:
@@ -31,22 +37,26 @@ on:
         options: ['4', '2', '1']
         default: '4'
 
-# Only ordinary PRs supersede each other. Release PRs, tags and manual full runs
-# have unique groups, so even pending exact-source validation is never cancelled.
+# Completion/release checks are explicit and retain their exact-source results.
+# Ordinary pushes and PR updates do not start or cancel hosted validation.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'codex/release-') && !startsWith(github.head_ref, 'release/') && github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'codex/release-') && !startsWith(github.head_ref, 'release/') }}
+  group: ${{ github.workflow }}-${{ github.run_id }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   changes:
+    env:
+      GH_TOKEN: ${{ github.token }}
     runs-on: ubuntu-latest
     outputs:
       profile: ${{ steps.select.outputs.profile }}
       proof_lane: ${{ steps.select.outputs.proof_lane }}
       head: ${{ steps.select.outputs.head }}
+      base: ${{ steps.select.outputs.base }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -488,7 +498,7 @@ jobs:
           group: repository-integrity
       - name: Verify constitutional continuity against the event base
         env:
-          CONSTITUTION_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+          CONSTITUTION_BASE: ${{ needs.changes.outputs.base || inputs.release_base || github.event.pull_request.base.sha || github.event.before }}
         run: |
           base_args=()
           if [[ -n "$CONSTITUTION_BASE" && "$CONSTITUTION_BASE" != '0000000000000000000000000000000000000000' ]]; then

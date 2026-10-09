@@ -17,6 +17,21 @@ from ci_profiles import SUITES, check_needs
 
 
 class NumstatPolicy(unittest.TestCase):
+    def test_manual_pr_fetch_is_read_only_bounded_and_rejects_missing_auth(self):
+        with patch.dict(os.environ, {}, clear=True), self.assertRaises(ValueError):
+            size.completion_pr("MGYamada/Qleisli", 307)
+        with patch.dict(os.environ, {"GH_TOKEN": "test-token"}), patch(
+                "check_pr_size.urlopen", return_value=io.BytesIO(b'{"number":307}')) as request:
+            self.assertEqual(size.completion_pr("MGYamada/Qleisli", 307), {"number": 307})
+            args, kwargs = request.call_args
+            self.assertEqual(args[0].full_url, "https://api.github.com/repos/MGYamada/Qleisli/pulls/307")
+            self.assertEqual(args[0].get_method(), "GET")
+            self.assertEqual(kwargs, {"timeout": 30})
+        for response in [b"x" * ((1 << 20) + 1), b'{"number":307,"number":308}', b"not json"]:
+            with patch.dict(os.environ, {"GH_TOKEN": "test-token"}), patch(
+                    "check_pr_size.urlopen", return_value=io.BytesIO(response)), self.assertRaises(ValueError):
+                size.completion_pr("MGYamada/Qleisli", 307)
+
     def test_exact_threshold_sums_additions_and_deletions(self):
         for data in [b"999999\t0\ta\0", b"0\t999999\ta\0", b"500000\t499999\ta\0",
                      b"500000\t0\ta\0" + b"0\t499999\tb\0"]:
@@ -203,6 +218,32 @@ class GitBoundPolicy(unittest.TestCase):
             with self.assertRaises(ValueError):
                 size.hosted_context(self.root, name, event, self.merge,
                                     "refs/heads/main", "MGYamada/Qleisli")
+
+    def test_manual_completion_binds_actual_pr_head_and_cumulative_counts(self):
+        self.git("checkout", "--quiet", "--detach", self.head)
+        event = {"repository": {"full_name": "MGYamada/Qleisli"}, "inputs": {"completion_pr": "308"}}
+        def run(payload=event):
+            return size.hosted_context(self.root, "workflow_dispatch", payload, self.head,
+                                       "refs/heads/work", "MGYamada/Qleisli")
+        with patch("check_pr_size.completion_pr", return_value=self.event["pull_request"]) as fetch:
+            result = run()
+            fetch.assert_called_once_with("MGYamada/Qleisli", 308)
+            self.assertEqual(result["changed_lines"], 9)
+            self.assertEqual(result["merge_base"], self.base)
+            self.assertEqual(result["checkout_sha"], self.head)
+            self.assertEqual(result["pull_request"], 308)
+        for number in ["#308", "0", "-1", "308;echo bad", "2147483648", 308]:
+            with self.subTest(number=number), self.assertRaises(ValueError):
+                run({**event, "inputs": {"completion_pr": number}})
+        for change in [None, {}, {**self.event["pull_request"], "number": 307},
+                       {**self.event["pull_request"], "head": {"sha": self.base}},
+                       {**self.event["pull_request"], "base": None},
+                       {**self.event["pull_request"], "base": {"repo": {"full_name": "other/repo"}}}]:
+            with self.subTest(metadata=change), patch("check_pr_size.completion_pr", return_value=change), self.assertRaises(ValueError):
+                run()
+        with patch("check_pr_size.completion_pr", side_effect=OSError("unavailable")), self.assertRaises(OSError):
+            run()
+
 
     def test_cli_default_failure_reports_error_and_local_has_no_exception(self):
         with patch.dict(os.environ, {}, clear=True), patch("check_pr_size.ROOT", self.root), (

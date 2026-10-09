@@ -132,18 +132,47 @@ def plan(root: Path, event_name: str, event: dict, expected_sha: str, ref: str) 
                   profile="full", proof_lane="full", reason="release, manual or unrecognized event", paths=[],
                   dependency_cache=event.get("inputs", {}).get("cache", "enabled"),
                   project_build_cache="disabled")
+    manual_base = None
     if ref.startswith(("refs/tags/", "refs/heads/codex/release-", "refs/heads/release/")):
         result["reason"] = "release ref; fresh full validation"
         return result
     if event_name == "workflow_dispatch":
-        requested = event.get("inputs", {}).get("validation", "full")
+        inputs = event.get("inputs", {})
+        requested = inputs.get("validation", "full")
         if requested not in {"tests", "full"}:
             raise ValueError("unknown manual validation lane")
-        result["proof_lane"] = requested
+        if inputs.get("release_readiness") in (True, "true"):
+            result["reason"] = "explicit scoped release-readiness validation"
+            result["proof_lane"] = requested
+            return result
+        else:
+            issues = inputs.get("completion_issues", "")
+            if not isinstance(issues, str) or len(issues) > 1024 or not re.fullmatch(
+                    r"[1-9][0-9]*(,[1-9][0-9]*)*", issues):
+                raise ValueError("manual Issue completion requires comma-separated positive Issue numbers")
+            numbers = [int(number) for number in issues.split(",")]
+            if len(set(numbers)) != len(numbers) or any(
+                    number > 2**31 - 1 for number in numbers):
+                raise ValueError("duplicate, excessive or out-of-range completion Issues")
+            result.update(completion_issues=numbers, reason="explicit Issue completion validation")
+            if inputs.get("completion_pr"):
+                from check_pr_size import hosted_context
+                context = hosted_context(root, event_name, event, expected_sha, ref,
+                                         event.get("repository", {}).get("full_name"))
+                manual_base = context["base"]
+                result["completion_pr"] = context["pull_request"]
+            else:
+                if ref != "refs/heads/main":
+                    raise ValueError("branch Issue completion requires completion_pr to retain exact PR size gates")
+                manual_base = inputs.get("release_base")
+                if not isinstance(manual_base, str) or not SHA.fullmatch(manual_base) or manual_base == "0" * 40:
+                    raise ValueError("non-PR Issue completion requires an exact reviewed release_base")
+                git(root, "cat-file", "-e", f"{manual_base}^{{commit}}")
+    if event_name not in {"pull_request", "push"} and manual_base is None:
         return result
-    if event_name not in {"pull_request", "push"}:
-        return result
-    if event_name == "pull_request":
+    if manual_base is not None:
+        base = manual_base
+    elif event_name == "pull_request":
         base = event.get("pull_request", {}).get("base", {}).get("sha")
     else:
         if event.get("forced"):
@@ -171,6 +200,10 @@ def plan(root: Path, event_name: str, event: dict, expected_sha: str, ref: str) 
     source_only = "lean/schema-registry.json" in result["paths"] and registry_binding_only(root, base, head)
     result["registry_source_only_change"] = source_only
     result["proof_lane"] = "tests" if result["profile"] == "docs" else proof_lane(result["paths"], policy, source_only)
+    if manual_base is not None:
+        result["reason"] = "explicit Issue completion; " + result["reason"]
+        if requested == "full":
+            result.update(profile="full", proof_lane="full")
     if event_name == "pull_request" and event.get("pull_request", {}).get("head", {}).get("ref", "").startswith(("codex/release-", "release/")):
         result.update(profile="full", proof_lane="full", reason="release branch; fresh full validation")
     result["policy_sha256"] = hashlib.sha256((root / ".github/ci/profiles.json").read_bytes()).hexdigest()
@@ -245,7 +278,7 @@ def main() -> int:
         if args.report:
             args.report.write_text(encoded, encoding="utf-8")
         with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
-            output.write(f"profile={result['profile']}\nproof_lane={result['proof_lane']}\nhead={result['head']}\n")
+            output.write(f"profile={result['profile']}\nproof_lane={result['proof_lane']}\nhead={result['head']}\nbase={result['base'] or ''}\n")
         if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
             with Path(summary).open("a", encoding="utf-8") as output:
                 output.write(f"CI profile: **{result['profile']}**. Commit `{result['head']}`.\n\n")
