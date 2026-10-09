@@ -77,6 +77,39 @@ equation through `EncodedMeaning`, `encoded_meaning` and `check_encoded_sound`.
 Those bounded original-root results do not establish source, deployed-binary
 or host execution correspondence.
 
+### Original-artifact control-sector requests
+
+The existing version-paired `--qirf-contract` gate also accepts a strictly
+decoded `qleisli.native-contract` version-1 request with `kind: "control"`.
+Its complete field set is `format`, `version`, `kind`, `signature`, and `axes`.
+`signature` is the exact QIRF basis tree; `axes` is an ordered list of distinct
+physical bit positions in that interface. Extra fields, including a proposed
+matrix or producer success flag, reject. The original QLV1 packet format and
+encoded/leaf request contracts remain unchanged.
+
+Lean checks the original graph, root, dependency evidence and identical
+input/output interface, reconstructs its actual action, checks whole-space
+unitarity, and then requires every matrix entry between different requested
+computational-basis sectors to be exactly zero. The existing six-bit finite
+reconstruction limit and continuous work accounting apply. An empty axis list
+is meaningful for a zero-width logical owner; it does not erase ownership or
+nontrivial phase.
+
+`Protocol.NativeContract.ControlAcceptance` and `check_acceptance` retain the
+original body/request bytes, exact decoded signature/axes and the actual
+checker execution. `Qleisli.NativeContract.control_meaning` connects the same
+action to original-root `BodyMeaning`, its exact interface, sector condition
+and inverse laws. `control_reference` proves projector commutation on arbitrary
+joint complex amplitudes with any external reference. Phase kickback and
+entanglement are permitted; the result does not assert an unchanged reduced
+control state or separability.
+
+This transport obligation does not yet enable source `ctrl` calls. Original
+source places, call-specific artifact identity, aliasing, access lifetimes,
+lowering/execution correspondence and quantitative resource/scheduling claims
+remain separate obligations. No new native mode, external schema admission or
+constitutional guarantee is introduced.
+
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a
 validation record. These identity and proof checks do not admit a new guarantee,

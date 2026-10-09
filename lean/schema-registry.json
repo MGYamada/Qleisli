@@ -5,7 +5,7 @@
   "lean_toolchain": "leanprover/lean4:v4.30.0",
   "source_revision": {
     "algorithm": "sha256-sorted-path-and-content-map-v1",
-    "sha256": "5013ba5782a47fe4a7500e65918ee0b5277e6d515ce3f665f40eb08e32facc54",
+    "sha256": "12a73f1815743517510a624608decefd74841c22f4fbbd762ecfbf47e508e046",
     "files": {
       "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
       "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -56,7 +56,7 @@
       "lean/Qleisli/InstrumentExamples.lean": "68e3f4b59ffb3dadd1e49f18d246cb0077a94bc814b6ea709d9a27c833cc88c1",
       "lean/Qleisli/Interference.lean": "5c21d8dc126bbc0211908e012a63d33253a1651a128be8be3960e93b9eb4fee6",
       "lean/Qleisli/Kraus.lean": "00d400bd717f0631c17403790a282c1a2d59c80194d9e3b134842c8be1f0b511",
-      "lean/Qleisli/NativeContract.lean": "132bc5b71db33ad8b11f20344808d966e7f7a281fc140654cbea772c57a3f3cc",
+      "lean/Qleisli/NativeContract.lean": "84fc2e1ed82f3ad06c2f8a5fd181567fac992a74bdbbb85b851ff435e735c489",
       "lean/Qleisli/NativeContractWrapper.lean": "f34ae8f366332ca48b6376a9f1f46d1beae52aac316ce79b1d496647aa75ecbb",
       "lean/Qleisli/NativeHierarchy.lean": "fc1ff2b47fda70e8970b7f5e351314a6f3e922449b1a2bde1b251a4557eb7c40",
       "lean/Qleisli/NativeValidity.lean": "f71992f9e9521def99a20bda9b44b1a94aeadc00fd3b9d27eb417a238957f664",
@@ -123,7 +123,7 @@
       "lean-kernel/Protocol/Hierarchical.lean": "f7ca54548897f8eeaaa5191a6091eb42dbebb1cab075a9b6910bfc7a5f1f691a",
       "lean-kernel/Protocol/HierarchicalFinite.lean": "2c90dcd7995cc5de283869335210437f67267edfa73a8c6e9b798bda2e22304c",
       "lean-kernel/Protocol/Layout.lean": "da6b03a187ac74be6ee6b594c1b1af61bc77ea2ceb63e6a8e5afa8f78502e3d3",
-      "lean-kernel/Protocol/NativeContract.lean": "e11bfdcc00abb197fa4a1c1a10cfa33a9e6ef83b1f8b3d684ff505218bd42925",
+      "lean-kernel/Protocol/NativeContract.lean": "e2b43b95f11a9d6f25629777609464b484dd6088e1fffac2c1656a3c87977545",
       "lean-kernel/Protocol/Observation.lean": "d05cfb11fa50f461b385efa98e551a2feed7751022c93b3eca4a1dece4b3e874",
       "lean-kernel/Protocol/Product.lean": "cdc2605574ecab61ab79e47e611532d93495d1369c652b4c47fb501cf73f6ab7",
       "lean-kernel/Protocol/Qirf.lean": "6d033e538ba1d13d54c75757e47fbb17251b54f6037b327f6476c13fe66781cb",

@@ -20,14 +20,18 @@ CONTRACT_PROOF = {
     'proof_scope': (
         'Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded '
         'artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning '
-        'and check_sound establish RootMeaning for both request kinds. For leaf requests, leaf_meaning '
+        'and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning '
         'establishes original-body instrument meaning for the bounded closed unitary fragment, exact '
         'requested matrix/signature/ordered ports, and an actual verification of the output port; '
         'leaf_reference_laws extends both whole-space inverse laws to any finite reference. '
         'For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, '
         'exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper '
         'coefficients equal the original reconstructed matrix, including zero-width phase and axis order. '
-        'encoded_reference extends the equation to every reference amplitude function.'
+        'encoded_reference extends the equation to every reference amplitude function. '
+        'For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original '
+        'action; control_meaning establishes original BodyMeaning, exact interface, unitarity and '
+        'sector preservation. control_reference proves projector commutation for every joint amplitude '
+        'and arbitrary reference; source ctrl elaboration and alias/resource obligations remain open.'
     ),
     'gaps': (
         'This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
@@ -94,13 +98,15 @@ PATHS = {
         ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', '"--qirf-contract"']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),
         ('lean-kernel/Protocol/NativeContract.lean', ['def check ', 'QleisliKernel.Qirf.checkContract',
-         'QleisliKernel.Qirf.check ', 'structure Acceptance ', 'structure LeafAcceptance ', 'theorem check_acceptance']),
+         'QleisliKernel.Qirf.check ', 'structure Acceptance ', 'structure LeafAcceptance ',
+         'structure ControlAcceptance ', 'QleisliKernel.Qirf.ControlAccess.check', 'theorem check_acceptance']),
         ('lean-kernel/QleisliKernel/Qirf/Contract.lean', ['theorem checkContract_bound']),
         ('lean/Qleisli/Qirf.lean', ['theorem reconstruct_semantics', 'theorem check_semantics']),
         ('lean/Qleisli/NativeContract.lean', ['structure LeafMeaning ', 'theorem check_root_meaning',
          'theorem leaf_meaning', 'theorem leaf_reference_laws', 'theorem check_sound',
          'structure EncodedMeaning ', 'theorem encoded_meaning', 'theorem check_encoded_sound',
-         'theorem encoded_reference']),
+         'theorem encoded_reference', 'structure ControlMeaning ', 'theorem control_meaning',
+         'theorem control_reference']),
         ('lean/Qleisli/NativeContractWrapper.lean', ['theorem circuitMatrix_entries',
          'theorem check_encoded_original', 'theorem check_reference_original']),
         ('tests/fixtures/constitution_v030/native-contract-wrapper/Review.lean', [
@@ -110,7 +116,8 @@ PATHS = {
          '#check @QleisliKernel.Protocol.NativeContract.check_acceptance',
          '#check @Qleisli.NativeContract.check_sound', '#print Qleisli.NativeContract.LeafMeaning']),
     ], [('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase'),
-        ('tests/finite_leaf.rs', 'reconstruct_hadamard_in_both_formats_and_bind_complete_bytes')]),
+        ('tests/finite_leaf.rs', 'reconstruct_hadamard_in_both_formats_and_bind_complete_bytes'),
+        ('scripts/test_native_verification.py', 'test_control_requests')]),
     'source-documentation': path_rule('documentation', 'source', '', [
         ('src/bin/qleisli.rs', ['if options.command == "doc"', 'render_markdown(&source)']),
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),

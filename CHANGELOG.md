@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Bind original-byte control-sector requests through the existing native
+  contract gate. Reject producer matrices and receipts; prove original-body
+  meaning and projector commutation with arbitrary external references.
+  Source `ctrl` elaboration and general access/resource obligations remain open.
+
 - Elaborate whole-owner `excl` calls through existing consuming operations,
   requiring actual Unitary effects and exact ordered owner interfaces. Preserve
   returned values across lexical scope closure; reject overlap, spent owners,

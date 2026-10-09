@@ -1,5 +1,6 @@
 import Protocol.Validity
 import QleisliKernel.Qirf.Contract
+import QleisliKernel.Qirf.ControlAccess
 
 /-! Strict bounded request decoding; acceptance is delegated to the pure kernel.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
@@ -18,6 +19,16 @@ private def port (value : Json) : Except String Semantics.Raw.Port := do
   return ⟨← (← value.getObjVal? "token").getNat?,
     ← (← (← value.getObjVal? "wires").getArr?).toList.mapM Json.getNat?,
     ← (← shape.getObjVal? "bits").getNat?⟩
+
+/-- Decode an obligation, never a producer-supplied action or success receipt. -/
+private def checkControl (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM Unit := do
+  adapt (fields value ["format","version","kind","signature","axes"])
+  let signature ← adapt (Qirf.basis 129 (← adapt (value.getObjVal? "signature")))
+  let axes ← adapt ((← adapt (value.getObjVal? "axes")).getArr? >>= fun values =>
+    values.toList.mapM Json.getNat?)
+  let _ ← QleisliKernel.Qirf.ControlAccess.check artifact order signature axes
+  pure ()
 
 def check (bytes : ByteArray) : WorkM Bool := do
   let (body,request) ← adapt (Validity.packet bytes)
@@ -42,6 +53,8 @@ def check (bytes : ByteArray) : WorkM Bool := do
     let _ ← QleisliKernel.Qirf.Validity.checkRoot artifact order
     let _ ← QleisliKernel.Qirf.check artifact order signature input output matrix
     pure ()
+  else if kind == "control" then
+    checkControl artifact order value
   else throw .request
   return true
 
@@ -125,10 +138,37 @@ structure LeafAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array
   rootAccepted : (QleisliKernel.Qirf.Validity.checkRoot artifact order).run afterMatrix = (.ok root,afterRoot)
   accepted : (QleisliKernel.Qirf.check artifact order signature input output matrix).run afterRoot = (.ok actual,left)
 
+/-- A control request is bound to exact decoded coordinates and the freshly
+reconstructed action of the original artifact, including its dependencies. -/
+structure ControlAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  signatureJson : Json
+  axesJson : Json
+  signature : Semantics.Finite.Basis
+  axes : List Nat
+  actual : Semantics.Exact.Matrix
+  kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control"
+  signatureBound : value.getObjVal? "signature" = .ok signatureJson
+  signatureDecoded : Qirf.basis 129 signatureJson = .ok signature
+  axesBound : value.getObjVal? "axes" = .ok axesJson
+  axesDecoded : (axesJson.getArr? >>= fun values => values.toList.mapM Json.getNat?) = .ok axes
+  accepted : (QleisliKernel.Qirf.ControlAccess.check artifact order signature axes).run work = (.ok actual,left)
+
+/-- The requested sector obligation holds for the actual reconstructed action.
+The surrounding Acceptance additionally binds it to original packet bytes. -/
+theorem ControlAcceptance.preservesSectors
+    {artifact : QleisliKernel.Qirf.Artifact} {order : Array Nat} {value : Json}
+    {work left : Nat} (binding : ControlAcceptance artifact order value work left) :
+    Semantics.ControlAccess.PreservesSectors binding.actual binding.axes := by
+  obtain ⟨_,_,_,_,_,_,_,_,_,_,sectors⟩ :=
+    QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ binding.accepted
+  exact sectors
+
 inductive RequestAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
     (value : Json) (work left : Nat) where
   | encoded (binding : EncodedAcceptance artifact order value work left)
   | leaf (binding : LeafAcceptance artifact order value work left)
+  | control (binding : ControlAcceptance artifact order value work left)
 
 /-- Original QLV1 bytes, mandatory original request, decoded payload and the
 continuous work states of the actual native-contract checker. These are
@@ -157,6 +197,22 @@ private theorem adapt_bind_success {α β : Type} (input : Except String α)
   obtain ⟨value,middle,first,rest⟩ := bind_success _ _ _ _ _ ok
   obtain ⟨bound,same⟩ := adapt_success _ _ _ _ first
   exact ⟨value,bound,same ▸ rest⟩
+
+private theorem checkControl_binding (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) (work left : Nat)
+    (kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control")
+    (ok : (checkControl artifact order value).run work = (.ok (),left)) :
+    Nonempty (ControlAcceptance artifact order value work left) := by
+  unfold checkControl at ok
+  obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ ok
+  obtain ⟨signatureJson,sj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨signature,s,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨axesJson,aj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨axes,a,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨actual,middle,accepted,h⟩ := bind_success _ _ _ _ _ h
+  have final := pure_success _ _ _ _ h
+  exact ⟨⟨signatureJson,axesJson,signature,axes,actual,kindBound,sj,s,aj,a,
+    final.2.symm ▸ accepted⟩⟩
 
 theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok answer,left)) :
@@ -224,6 +280,16 @@ theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
           exact ⟨⟨.leaf ⟨signatureJson,inputJson,outputJson,matrixJson,signature,input,output,
             matrix,root,actual,h₂,h₃,kindBound,sj,s,ij,port_binding _ _ i,oj,
             port_binding _ _ o,mj,hm,hroot,last ▸ hcheck⟩⟩,final.1⟩
-        · cases h
+        · split at h
+          · rename_i isControl
+            obtain ⟨_,middle,accepted,hreturn⟩ := bind_success _ _ _ _ _ h
+            have final := pure_success _ _ _ _ hreturn
+            have kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control" := by
+              simp only [beq_iff_eq] at isControl
+              simp [kj,bind,Except.bind,k,isControl]
+            obtain ⟨binding⟩ := checkControl_binding artifact order value w₉ left kindBound
+              (final.2.symm ▸ accepted)
+            exact ⟨⟨.control binding⟩,final.1⟩
+          · cases h
 
 end QleisliKernel.Protocol.NativeContract

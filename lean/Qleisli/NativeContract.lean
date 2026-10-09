@@ -1,5 +1,6 @@
 import Qleisli.QirfValidity
 import Qleisli.NativeContractWrapper
+import Qleisli.ControlAccess
 import Protocol.NativeContract
 
 /-! Composition from the actual native-contract byte entry point to existing
@@ -13,7 +14,7 @@ open QleisliKernel.Semantics.Finite QleisliKernel.Semantics.ObservingFunction
 open Qleisli.Semantics.ObservingFunction
 open scoped Matrix
 
-/-- Either request kind validates the original root with the production
+/-- Every request kind validates the original root with the production
 checker. The encoded branch's finite wrapper result is not identified with the
 original root operator by this theorem. -/
 theorem acceptance_root_meaning {bytes : ByteArray} {answer : Bool} {work left : Nat}
@@ -32,6 +33,11 @@ theorem acceptance_root_meaning {bytes : ByteArray} {answer : Bool} {work left :
     exact ⟨request.root,request.afterMatrix,request.afterRoot,request.rootAccepted,
       Qleisli.Qirf.Validity.root_meaning _ _ _ _
         (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ request.rootAccepted)⟩
+  | control request =>
+    obtain ⟨root,a,_,_,accepted,_,_,_,_,_,_⟩ :=
+      QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ request.accepted
+    exact ⟨root,_,a,accepted,Qleisli.Qirf.Validity.root_meaning _ _ _ _
+      (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted)⟩
 
 theorem check_root_meaning (bytes : ByteArray) (answer : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok answer,left)) :
@@ -99,6 +105,34 @@ theorem leaf_reference_laws {R : Type} [Fintype R] [DecidableEq R]
   have first := HierarchicalUnitary.reference_isometry (R := R) _ (leaf_meaning binding).2.leftInverse
   exact ⟨first,mul_eq_one_comm.mp first⟩
 
+/-- Independent original-body meaning and exact sector preservation. This does
+not establish source places, aliasing, resource bounds or compiler preservation. -/
+structure ControlMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (root : QleisliKernel.Qirf.Validity.Root) (signature : Basis)
+    (axes : List Nat) (actual : Semantics.Exact.Matrix) : Prop where
+  rootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order root
+  interface : artifact.rootInterface = some (signature,signature)
+  classicalInputs : root.program.classicalInputs = []
+  body : BodyMeaning root.dependencies root.program actual
+  sectors : QleisliKernel.Semantics.ControlAccess.PreservesSectors actual axes
+  leftInverse : (Qleisli.Finite.square actual)ᴴ * Qleisli.Finite.square actual = 1
+  rightInverse : (Qleisli.Finite.square actual) * (Qleisli.Finite.square actual)ᴴ = 1
+
+theorem control_meaning {artifact : QleisliKernel.Qirf.Artifact} {order : Array Nat}
+    {value : Lean.Json} {work left : Nat}
+    (binding : ControlAcceptance artifact order value work left) :
+    ∃ root, ControlMeaning artifact order root binding.signature binding.axes binding.actual := by
+  obtain ⟨root,a,b,c,rootAccepted,interface,preflight,reconstructed,unitary,_,sectors⟩ :=
+    QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ binding.accepted
+  have rootMeaning := Qleisli.Qirf.Validity.root_meaning _ _ _ _
+    (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ rootAccepted)
+  have closed : root.program.classicalInputs = [] := by
+    simp only [QleisliKernel.Raw.BranchFunction.preflight,Bool.and_eq_true,List.isEmpty_iff] at preflight
+    exact preflight.1.1.1.2
+  have body := Qleisli.Raw.BranchFunction.reconstruct_denotes _ _ closed _ _ _ reconstructed
+  have inverses := Qleisli.Finite.wholeSpace_unitary _ _ _ unitary
+  exact ⟨root,rootMeaning,interface,closed,body,sectors,inverses.1,inverses.2⟩
+
 /-- The native success premise supplies the request binding. The leaf result
 is conditional only on the decoded request kind, not on a producer receipt or
 an assumed operator meaning. `check_encoded_sound` additionally exposes the
@@ -113,12 +147,15 @@ theorem check_sound (bytes : ByteArray) (answer : Bool) (work left : Nat)
       | .encoded _ => True
       | .leaf request => request.actual = request.matrix ∧
           LeafMeaning binding.artifact binding.order request.root request.signature
-            request.input request.output request.matrix := by
+            request.input request.output request.matrix
+      | .control request => ∃ root,
+          ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,acceptance_root_meaning binding,?_⟩
   cases binding.request with
   | encoded request => trivial
   | leaf request => exact leaf_meaning request
+  | control request => exact control_meaning request
 
 /-- Independent meaning of the original bounded, closed, unitary root in an
 encoded native request. The dependency interpretation is tied to a fresh graph
@@ -162,7 +199,7 @@ theorem encoded_meaning {artifact : QleisliKernel.Qirf.Artifact} {order : Array 
   exact ⟨root,actual,wrapper,a,b,c,rootAccepted,reconstructed,unitary,checked,
     rootMeaning,interface,closed,body,encoded,inverses.1,inverses.2⟩
 
-/-- Actual native-contract byte acceptance binds both request kinds to their
+/-- Actual native-contract byte acceptance binds all request kinds to their
 original-body meaning. The Acceptance witness retains the original bytes and
 decoded request; this does not assert Rust/source/codec or compiled-I/O correctness. -/
 theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat)
@@ -173,7 +210,9 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
           EncodedMeaning binding.artifact binding.order root request.required actual
       | .leaf request => request.actual = request.matrix ∧
           LeafMeaning binding.artifact binding.order request.root request.signature
-            request.input request.output request.matrix := by
+            request.input request.output request.matrix
+      | .control request => ∃ root,
+          ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,?_⟩
   cases binding.request with
@@ -181,6 +220,21 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
     obtain ⟨root,actual,_,_,_,_,_,_,_,_,meaning⟩ := encoded_meaning request
     exact ⟨root,actual,meaning⟩
   | leaf request => exact leaf_meaning request
+  | control request => exact control_meaning request
+
+/-- The original-byte control request preserves projectors on every joint
+amplitude and arbitrary reference; no separability premise is used. -/
+theorem control_reference {R : Type} {artifact : QleisliKernel.Qirf.Artifact}
+    {order : Array Nat} {value : Lean.Json} {work left : Nat}
+    (binding : ControlAcceptance artifact order value work left)
+    (joint : Nat → R → ℂ) (row : Nat) (hr : row ∈ List.range binding.actual.rows)
+    (sector : Nat) (reference : R) :
+    Qleisli.Semantics.Exact.action binding.actual
+        (Qleisli.ControlAccess.project binding.axes sector joint) row reference =
+      Qleisli.ControlAccess.project binding.axes sector
+        (Qleisli.Semantics.Exact.action binding.actual joint) row reference :=
+  Qleisli.ControlAccess.checked_action_project _ _ _ _ _ _ _ binding.accepted
+    joint row hr sector reference
 
 
 /-- The accepted original root preserves the requested encoded action for an

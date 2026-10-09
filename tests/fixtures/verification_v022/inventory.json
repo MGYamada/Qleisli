@@ -2173,7 +2173,7 @@
     },
     {
       "path": "lean-kernel/Protocol/NativeContract.lean",
-      "sha256": "e11bfdcc00abb197fa4a1c1a10cfa33a9e6ef83b1f8b3d684ff505218bd42925",
+      "sha256": "e2b43b95f11a9d6f25629777609464b484dd6088e1fffac2c1656a3c87977545",
       "group": "finite-contract",
       "surface": null
     },
@@ -2779,7 +2779,7 @@
     },
     {
       "path": "lean/Qleisli/NativeContract.lean",
-      "sha256": "132bc5b71db33ad8b11f20344808d966e7f7a281fc140654cbea772c57a3f3cc",
+      "sha256": "84fc2e1ed82f3ad06c2f8a5fd181567fac992a74bdbbb85b851ff435e735c489",
       "group": "finite-contract",
       "surface": null
     },

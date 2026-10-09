@@ -28,6 +28,75 @@ def packet(artifact, request=None):
     return b"QLV1" + len(artifact).to_bytes(4, "little") + len(request or b"").to_bytes(4, "little") + artifact + (request or b"")
 
 
+def test_control_requests(kernel, run):
+    """Fresh original-byte sector checks; no proposed matrix or cached decision."""
+    def check(artifact, signature, axes, accepted, request=None, error=None):
+        if request is None:
+            request = dict(format="qleisli.native-contract", version=1, kind="control",
+                           signature=signature, axes=axes)
+        output = run([kernel, "--qirf-contract", VERSION], 0 if accepted else 1,
+                     packet(encoded(artifact), encoded(request)))
+        lines = output.decode().splitlines()
+        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], output
+        if accepted:
+            assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000 and lines[3] == "1"
+        elif error is not None:
+            assert lines == ["qleisli.qirf-native 1", "error", error], output
+
+    pair = dict(tag="pair", left=dict(tag="bit"), right=dict(tag="bit"))
+    cnot = json.loads((FINITE / "raw_computed_target.v2.qirf").read_bytes())
+    check(cnot, pair, [0], True)
+    check(cnot, pair, [1], False, error="contract")  # Valid unitary, wrong sector.
+    check(cnot, pair, [0, 0], False, error="contract")
+    check(cnot, pair, [2], False, error="contract")
+    check(cnot, dict(tag="bits", width=2), [0], False, error="contract")
+    wrong_root = copy.deepcopy(cnot); wrong_root["root"] = 1
+    check(wrong_root, pair, [0], False, error="invalid_ir")
+    changed = copy.deepcopy(cnot)
+    changed["programs"][0]["operations"] = [dict(tag="apply_unitary", input=0, output=5,
+        steps=[dict(controls=[], action=dict(tag="hadamard", target=0))])]
+    check(changed, pair, [0], False, error="contract")
+
+    # Existing immutable first artifacts retain exact phases and zero-width owners.
+    for name, signature, axes, accepted in [
+            ("t", dict(tag="bit"), [0], True),
+            ("h", dict(tag="bit"), [0], False),
+            ("unit_phase", dict(tag="unit"), [], True),
+            ("unit_phase", dict(tag="unit"), [0], False)]:
+        check(json.loads((FINITE / f"{name}.v2.qirf").read_bytes()), signature, axes, accepted,
+              error=None if accepted else "contract")
+
+    # A dependency replacement is checked against its original independent circuit.
+    direct = copy.deepcopy(cnot)
+    direct["programs"][0]["operations"] = [dict(tag="apply_unitary", input=0, output=5,
+        steps=[dict(controls=[], action=dict(tag="monomial", indices=[0, 1],
+                                            permutation=[0, 3, 2, 1], phases=[0, 0, 0, 0]))])]
+    dependency = copy.deepcopy(direct)
+    dependency["programs"] = [copy.deepcopy(direct["programs"][0]) for _ in range(3)]
+    dependency["root"] = 2
+    dependency["programs"][2]["operations"][0]["steps"] = [dict(controls=[],
+        action=dict(tag="contract", indices=[0, 1], evidence=0, adjoint=False))]
+    dependency["evidence"] = [dict(tag="circuit", signature=pair, implementation=0,
+        specification=1, identity=dict(implementation="original", specification="reference", sources=[]))]
+    check(dependency, pair, [0], True)
+    dependency["programs"][0] = copy.deepcopy(changed["programs"][0])
+    check(dependency, pair, [0], False, error="contract")
+
+    request = dict(format="qleisli.native-contract", version=1, kind="control",
+                   signature=pair, axes=[0])
+    for field in request:
+        bad = copy.deepcopy(request); del bad[field]
+        check(cnot, pair, [0], False, bad)
+    for extra in [dict(matrix=[]), dict(accepted=True), dict(work=0)]:
+        check(cnot, pair, [0], False, dict(request, **extra))
+    for key, value in [("version", 2), ("axes", [-1]), ("axes", [True]), ("axes", "0"),
+                       ("kind", "claimed-control")]:
+        check(cnot, pair, [0], False, dict(request, **{key: value}))
+    for data in [packet(encoded(cnot)), packet(encoded(cnot), b"\xff"),
+                 packet(encoded(cnot), encoded(request)) + b"x"]:
+        run([kernel, "--qirf-contract", VERSION], 1, data)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, default=ROOT / "target/debug/qleisli")
@@ -76,6 +145,8 @@ def main():
                 assert missing_version == b"qleisli.qirf-native 1\nerror\nversion\n"
                 matching_version = run([kernel, mode, VERSION], 1, b"")
                 assert matching_version != b"qleisli.qirf-native 1\nerror\nversion\n"
+
+            test_control_requests(kernel, run)
 
             for command, extra in [("check", []), ("run", []), ("sample", ["--shots=64", "--seed=7"])]:
                 base = json.loads(run([binary, command, SOURCE, "--format=json", *extra]))
