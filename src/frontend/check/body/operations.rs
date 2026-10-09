@@ -688,6 +688,14 @@ impl Checker<'_, '_> {
             );
             error
         })?;
+        if arguments
+            .iter()
+            .any(|argument| argument.access == QuantumAccess::Ctrl)
+        {
+            // Retain the original obligation even when specialization never
+            // visits this declaration, branch, loop body or provider call.
+            self.obligation(span, ObligationKind::ControlSectors)?;
+        }
         for (key, binding) in owners {
             scope.moved.remove(&binding.identity);
             scope.values.insert(key, binding);

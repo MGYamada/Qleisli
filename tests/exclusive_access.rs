@@ -16,6 +16,39 @@ fn selected(source: &str) -> ParsedProgram {
 }
 
 #[test]
+fn selected_nonexecuted_control_obligations_refuse_before_transport() {
+    for program in [
+        "unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}",
+        "pub unitary fn main(q:Q<Bit>)->Q<Bit>{if static 0==0 {q}else{h(ctrl q);q}}",
+        "pub unitary fn main(q:Q<Bit>)->Q<Bit>{qfor static i in 0..0 carry r=q {h(ctrl r);yield r;}}",
+        "unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{power(oracle,0)(q)}",
+        "unitary fn unused(q:Q<Bit>)->Q<Bit>{if 1 {h(ctrl q);q}else{q}}pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}",
+    ] {
+        let source = format!("use std::quantum::h;{program}");
+        let concrete = selected(&source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        for error in [
+            concrete
+                .lower_raw()
+                .map(|_| ())
+                .expect_err("original ctrl obligation"),
+            concrete
+                .lower()
+                .map(|_| ())
+                .expect_err("original ctrl obligation"),
+        ] {
+            assert_eq!(error.code(), "unsupported", "{source}");
+            assert_eq!(error.module(), Some("main"));
+            let span = error.span();
+            assert!(source[span.start..span.end].starts_with("h(ctrl "));
+        }
+    }
+}
+
+#[test]
 fn updated_owners_survive_nested_blocks_calls_and_measurement() {
     for (body, expected) in [
         ("let q=init0(); x(excl q); measure_z(q)", vec![true]),

@@ -461,6 +461,7 @@ fn eighths(ns: &[u32]) -> Option<usize> {
 }
 // Capability selection precedes every emission and native decision.
 fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>) -> Result<()> {
+    source.require_control_evidence()?;
     for (id, definition) in source.definitions().iter().enumerate() {
         if selected.is_some_and(|selected| !selected.contains(&id)) {
             continue;

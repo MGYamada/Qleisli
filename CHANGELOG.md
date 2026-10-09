@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain original `ctrl` sector obligations in the common source judgment,
+  including unused declarations, unselected branches and empty loops. Selected
+  transport refuses these pending obligations at their original source sites
+  instead of losing them when no concrete step is emitted.
+
 - Refuse retained `ctrl` obligations in symbolic inverse/controlled replay,
   whose transformed trace cannot supply an original call interval for a fresh
   native sector check. Keep selected transport blocked pending integration.

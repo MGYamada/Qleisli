@@ -1475,6 +1475,7 @@ impl Lower<'_> {
 /// Preserve the existing preflight error API using the same typed classification
 /// used by target selection. Internal/limit failures are never reclassified.
 pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
+    source.require_control_evidence()?;
     for step in source
         .definitions()
         .iter()

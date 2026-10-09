@@ -138,6 +138,10 @@ sector authority nor rewrites the role to `excl`. Raw and hierarchical lowering,
 Raw source-step replay, inspect those roles and the exact owner interface.
 They reject an unchecked `ctrl` role before producing or validating transport;
 retaining a role is an obligation, not basis-sector evidence.
+The common judgment also records each original control call as a pending sector
+obligation. Selected transport checks that original collection before selecting
+concrete definitions: unused declarations, unselected branches, empty loops and
+zero-count providers cannot erase the obligation or its diagnostic location.
 
 The internal Raw replay bridge can discharge a retained control obligation
 using the checker associated with the accepted original artifact. It selects

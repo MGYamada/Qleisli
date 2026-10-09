@@ -468,6 +468,24 @@ impl ElaboratedProgram {
         }
         Ok(())
     }
+    pub(super) fn require_control_evidence(&self) -> Result<()> {
+        let checked = &self.instance.program.checked;
+        if let Some(obligation) = checked.obligations.iter().find(|obligation| {
+            matches!(
+                obligation.kind,
+                crate::frontend::check::ObligationKind::ControlSectors
+            )
+        }) {
+            let original = checked.resolution.declaration(obligation.definition);
+            return Err(Error::new(
+                "unsupported",
+                obligation.span,
+                "ctrl source access requires independently bound basis-sector evidence; source lowering is not yet supported",
+            )
+            .in_module(&original.name.0));
+        }
+        Ok(())
+    }
     /// Check every original Meaning against its actual closed provider, using
     /// fresh native finite equations and one aggregate exact-work budget.
     pub fn check_operation_meanings<'a>(

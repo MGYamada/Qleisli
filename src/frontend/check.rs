@@ -314,6 +314,7 @@ pub(super) struct Interface {
 
 #[derive(Clone, Debug)]
 pub(super) enum ObligationKind {
+    ControlSectors,
     Injectivity,
     ProtectedClean,
     CertifiedClean {
@@ -624,6 +625,7 @@ impl<'a> Program<'a> {
                     }
                 },
                 ObligationKind::Injectivity
+                | ObligationKind::ControlSectors
                 | ObligationKind::ProtectedClean
                 | ObligationKind::TransformedMeaning => {}
             }

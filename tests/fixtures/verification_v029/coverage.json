@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "6f1f05f8a676f6c50d2cf47ba434566f8326578d6e0d072fa6a72e270cc3b907",
+  "surface_sha256": "64c2ce2a9ef0ac389b52f357c263502ab3bf60199cf563b253d0b5596d720b0c",
   "groups": [
     {
       "id": "raw-core",
@@ -3004,10 +3004,24 @@
           ]
         },
         {
+          "path": "src/frontend/check/body/operations.rs",
+          "markers": [
+            "self.obligation(span, ObligationKind::ControlSectors)?"
+          ]
+        },
+        {
           "path": "src/frontend/specialize/elaborate.rs",
           "markers": [
             "pub fn check_operation_meanings",
-            "pub(super) fn require_unrefined"
+            "pub(super) fn require_unrefined",
+            "pub(super) fn require_control_evidence",
+            "checked.obligations.iter().find"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/lower.rs",
+          "markers": [
+            "source.require_control_evidence()?"
           ]
         },
         {
@@ -3090,6 +3104,10 @@
         {
           "path": "src/frontend/specialize/elaborate.rs",
           "test": "transformed_source_replay_cannot_erase_control_obligations"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_nonexecuted_control_obligations_refuse_before_transport"
         },
         {
           "path": "src/frontend/specialize/elaborate.rs",

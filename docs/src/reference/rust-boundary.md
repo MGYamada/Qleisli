@@ -283,7 +283,10 @@ mixed ordinary/access arguments, indexed selections, escaping handles and
 access-parameter declarations remain unimplemented. Selected-source preparation
 retains `ctrl` roles as obligations with original source identities and spans;
 Raw and hierarchical lowering still reject those obligations before emitting
-transport. The finite project path supports the independently checked form below.
+transport, including obligations in unused original declarations, unselected
+static branches, empty loops and zero-count providers. Diagnostics retain the
+original call's module and location even when it produces no concrete step.
+The finite project path supports the independently checked form below.
 This limited implementation does not complete the general access Issues.
 
 ### Whole-owner coherent control in finite projects
