@@ -97,6 +97,92 @@ def test_control_requests(kernel, run):
         run([kernel, "--qirf-contract", VERSION], 1, data)
 
 
+def test_control_owner_requests(kernel, run):
+    """Bind an explicit ordered owner forest to the original multi-port action."""
+    bit, unit = dict(tag="bit"), dict(tag="unit")
+    cnot = json.loads((FINITE / "raw_computed_target.v2.qirf").read_bytes())
+    cnot["root_interface"] = None
+    program = cnot["programs"][0]
+    program["quantum_inputs"] = [dict(token=0, wires=[7], shape=dict(bits=1)),
+                                 dict(token=1, wires=[19], shape=dict(bits=1))]
+    program["operations"] = [dict(tag="cnot", control=0, target=1,
+                                  control_out=2, target_out=3)]
+    program["quantum_outputs"] = [2, 3]
+    request = dict(format="qleisli.native-contract", version=1, kind="control-owners",
+                   signatures=[bit, bit], axes=[0])
+
+    def check(artifact=cnot, obligation=request, accepted=False, error=None):
+        output = run([kernel, "--qirf-contract", VERSION], 0 if accepted else 1,
+                     packet(encoded(artifact), encoded(obligation)))
+        lines = output.decode().splitlines()
+        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], output
+        if accepted:
+            assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000 and lines[3] == "1"
+        elif error is not None:
+            assert lines == ["qleisli.qirf-native 1", "error", error], output
+
+    check(accepted=True)
+    for axes in [[1], [0, 0], [2]]:
+        check(obligation=dict(request, axes=axes), error="contract")
+    for forest in [[], [dict(tag="bits", width=2)], [unit, dict(tag="bits", width=2)]]:
+        check(obligation=dict(request, signatures=forest), error="contract")
+    swapped = copy.deepcopy(cnot); swapped["programs"][0]["quantum_outputs"] = [3, 2]
+    check(swapped, error="contract")
+    hadamard = copy.deepcopy(cnot)
+    hadamard["programs"][0]["operations"] = [dict(tag="gate", gate="h", input=0, output=2)]
+    hadamard["programs"][0]["quantum_outputs"] = [2, 1]
+    check(hadamard, error="contract")
+    wrong_root = copy.deepcopy(cnot); wrong_root["root"] = 1
+    check(wrong_root, error="invalid_ir")
+    wrapped = copy.deepcopy(cnot)
+    pair = dict(tag="pair", left=bit, right=bit)
+    wrapped["root_interface"] = dict(input=pair, output=pair)
+    check(wrapped, error="contract")
+    check(obligation=dict(request, signatures=[bit] * 65), error="invalid_ir")
+
+    # Resolve real dependency evidence, not a producer's claimed callee effect.
+    direct = json.loads((FINITE / "raw_computed_target.v2.qirf").read_bytes())
+    direct["programs"][0]["operations"] = [dict(tag="apply_unitary", input=0, output=5,
+        steps=[dict(controls=[], action=dict(tag="monomial", indices=[0, 1],
+                                            permutation=[0, 3, 2, 1], phases=[0, 0, 0, 0]))])]
+    dependency = copy.deepcopy(cnot)
+    root = copy.deepcopy(program)
+    root["operations"] = [dict(tag="join", left=0, right=1, output=4),
+        dict(tag="apply_unitary", input=4, output=5, steps=[dict(controls=[],
+            action=dict(tag="contract", indices=[0, 1], evidence=0, adjoint=False))]),
+        dict(tag="split", input=5, left=6, right=7, left_bits=1)]
+    root["quantum_outputs"] = [6, 7]
+    dependency["programs"] = [copy.deepcopy(direct["programs"][0]),
+                               copy.deepcopy(direct["programs"][0]), root]
+    dependency["root"] = 2
+    dependency["evidence"] = [dict(tag="circuit", signature=pair, implementation=0,
+        specification=1, identity=dict(implementation="original", specification="reference", sources=[]))]
+    check(dependency, accepted=True)
+    dependency["programs"][0]["operations"][0]["steps"] = [dict(controls=[],
+        action=dict(tag="hadamard", target=0))]
+    check(dependency, error="contract")
+
+    # A zero-width owner keeps its ordered position and its exact scalar phase.
+    phase = json.loads((FINITE / "unit_phase.v2.qirf").read_bytes())
+    phase["root_interface"] = None
+    phase["programs"][0]["quantum_inputs"].append(dict(token=2, wires=[19], shape=dict(bits=1)))
+    phase["programs"][0]["quantum_outputs"].append(2)
+    phase_request = dict(request, signatures=[unit, bit], axes=[0])
+    check(phase, phase_request, True)
+    check(phase, dict(phase_request, signatures=[bit, unit]), error="contract")
+    phase_swap = copy.deepcopy(phase); phase_swap["programs"][0]["quantum_outputs"] = [2, 1]
+    check(phase_swap, phase_request, error="contract")
+
+    for field in request:
+        bad = copy.deepcopy(request); del bad[field]
+        check(obligation=bad)
+    for extra in [dict(matrix=[]), dict(accepted=True), dict(signature=bit)]:
+        check(obligation=dict(request, **extra), error="invalid_ir")
+    for key, value in [("version", 2), ("axes", [-1]), ("axes", [True]),
+                       ("signatures", bit), ("signatures", [dict(tag="unknown")])]:
+        check(obligation=dict(request, **{key: value}))
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, default=ROOT / "target/debug/qleisli")
@@ -147,6 +233,7 @@ def main():
                 assert matching_version != b"qleisli.qirf-native 1\nerror\nversion\n"
 
             test_control_requests(kernel, run)
+            test_control_owner_requests(kernel, run)
 
             for command, extra in [("check", []), ("run", []), ("sample", ["--shots=64", "--seed=7"])]:
                 base = json.loads(run([binary, command, SOURCE, "--format=json", *extra]))

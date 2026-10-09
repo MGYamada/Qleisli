@@ -8,7 +8,8 @@ development milestones from the scope of their evidence.
 
 - Bind original-byte control-sector requests through the existing native
   contract gate. Reject producer matrices and receipts; prove original-body
-  meaning and projector commutation with arbitrary external references.
+  meaning and projector commutation with arbitrary external references, including
+  ordered multi-owner requests with bounded forest decoding.
   Source `ctrl` elaboration and general access/resource obligations remain open.
 
 - Elaborate whole-owner `excl` calls through existing consuming operations,

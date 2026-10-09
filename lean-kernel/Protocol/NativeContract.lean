@@ -30,6 +30,22 @@ private def checkControl (artifact : QleisliKernel.Qirf.Artifact) (order : Array
   let _ ← QleisliKernel.Qirf.ControlAccess.check artifact order signature axes
   pure ()
 
+/-- Bound owner-forest decoding before traversing individual type trees. -/
+def decodeOwnerSignatures (value : Json) : Except String (List Semantics.Finite.Basis) := do
+  let values ← value.getArr?
+  if values.size > 64 then throw "too many owner signatures"
+  values.toList.mapM (Qirf.basis 129)
+
+/-- Decode an obligation, never a producer-supplied action or success receipt. -/
+private def checkControlOwners (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) : WorkM Unit := do
+  adapt (fields value ["format","version","kind","signatures","axes"])
+  let signatures ← adapt (decodeOwnerSignatures (← adapt (value.getObjVal? "signatures")))
+  let axes ← adapt ((← adapt (value.getObjVal? "axes")).getArr? >>= fun values =>
+    values.toList.mapM Json.getNat?)
+  let _ ← QleisliKernel.Qirf.ControlAccess.checkOwners artifact order signatures axes
+  pure ()
+
 def check (bytes : ByteArray) : WorkM Bool := do
   let (body,request) ← adapt (Validity.packet bytes)
   let some request := request | throw .request
@@ -55,6 +71,8 @@ def check (bytes : ByteArray) : WorkM Bool := do
     pure ()
   else if kind == "control" then
     checkControl artifact order value
+  else if kind == "control-owners" then
+    checkControlOwners artifact order value
   else throw .request
   return true
 
@@ -154,6 +172,22 @@ structure ControlAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Ar
   axesDecoded : (axesJson.getArr? >>= fun values => values.toList.mapM Json.getNat?) = .ok axes
   accepted : (QleisliKernel.Qirf.ControlAccess.check artifact order signature axes).run work = (.ok actual,left)
 
+/-- A control request is bound to exact decoded coordinates and the freshly
+reconstructed action of the original artifact, including its dependencies. -/
+structure ControlOwnersAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  signaturesJson : Json
+  axesJson : Json
+  signatures : List Semantics.Finite.Basis
+  axes : List Nat
+  actual : Semantics.Exact.Matrix
+  kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control-owners"
+  signaturesBound : value.getObjVal? "signatures" = .ok signaturesJson
+  signaturesDecoded : decodeOwnerSignatures signaturesJson = .ok signatures
+  axesBound : value.getObjVal? "axes" = .ok axesJson
+  axesDecoded : (axesJson.getArr? >>= fun values => values.toList.mapM Json.getNat?) = .ok axes
+  accepted : (QleisliKernel.Qirf.ControlAccess.checkOwners artifact order signatures axes).run work = (.ok actual,left)
+
 /-- The requested sector obligation holds for the actual reconstructed action.
 The surrounding Acceptance additionally binds it to original packet bytes. -/
 theorem ControlAcceptance.preservesSectors
@@ -169,6 +203,7 @@ inductive RequestAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Ar
   | encoded (binding : EncodedAcceptance artifact order value work left)
   | leaf (binding : LeafAcceptance artifact order value work left)
   | control (binding : ControlAcceptance artifact order value work left)
+  | controlOwners (binding : ControlOwnersAcceptance artifact order value work left)
 
 /-- Original QLV1 bytes, mandatory original request, decoded payload and the
 continuous work states of the actual native-contract checker. These are
@@ -212,6 +247,22 @@ private theorem checkControl_binding (artifact : QleisliKernel.Qirf.Artifact)
   obtain ⟨actual,middle,accepted,h⟩ := bind_success _ _ _ _ _ h
   have final := pure_success _ _ _ _ h
   exact ⟨⟨signatureJson,axesJson,signature,axes,actual,kindBound,sj,s,aj,a,
+    final.2.symm ▸ accepted⟩⟩
+
+private theorem checkControlOwners_binding (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (value : Json) (work left : Nat)
+    (kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control-owners")
+    (ok : (checkControlOwners artifact order value).run work = (.ok (),left)) :
+    Nonempty (ControlOwnersAcceptance artifact order value work left) := by
+  unfold checkControlOwners at ok
+  obtain ⟨_,_,h⟩ := adapt_bind_success _ _ _ _ _ ok
+  obtain ⟨signaturesJson,sj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨signatures,s,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨axesJson,aj,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨axes,a,h⟩ := adapt_bind_success _ _ _ _ _ h
+  obtain ⟨actual,middle,accepted,h⟩ := bind_success _ _ _ _ _ h
+  have final := pure_success _ _ _ _ h
+  exact ⟨⟨signaturesJson,axesJson,signatures,axes,actual,kindBound,sj,s,aj,a,
     final.2.symm ▸ accepted⟩⟩
 
 theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
@@ -290,6 +341,16 @@ theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
             obtain ⟨binding⟩ := checkControl_binding artifact order value w₉ left kindBound
               (final.2.symm ▸ accepted)
             exact ⟨⟨.control binding⟩,final.1⟩
-          · cases h
+          · split at h
+            · rename_i isControlOwners
+              obtain ⟨_,middle,accepted,hreturn⟩ := bind_success _ _ _ _ _ h
+              have final := pure_success _ _ _ _ hreturn
+              have kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "control-owners" := by
+                simp only [beq_iff_eq] at isControlOwners
+                simp [kj,bind,Except.bind,k,isControlOwners]
+              obtain ⟨binding⟩ := checkControlOwners_binding artifact order value w₉ left kindBound
+                (final.2.symm ▸ accepted)
+              exact ⟨⟨.controlOwners binding⟩,final.1⟩
+            · cases h
 
 end QleisliKernel.Protocol.NativeContract

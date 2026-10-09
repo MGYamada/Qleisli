@@ -117,9 +117,15 @@ the original input and live returned owner widths and positions, including
 zero-width owners. `checked_owners_meaning` and `checked_owners_action_project`
 bind the actual root/dependencies and full complex action to the sector law.
 Raw bit widths do not establish source type trees: the requested forest still
-requires binding to the original checked source. This component has no native
-request dispatcher or source admission path yet; it supplies no authority to
-accept a `ctrl` annotation.
+requires binding to the original checked source. The strict native request
+`kind = "control-owners"` carries exactly `format`, `version`, `kind`,
+`signatures` and `axes`; it accepts neither a proposed matrix nor a success
+receipt. `ControlOwnersAcceptance` retains the decoded ordered forest and
+coordinates, original packet bytes and actual checking execution.
+`control_owners_meaning` and `control_owners_reference` extend the original-body
+and arbitrary-reference results to this request. There is no source admission
+path yet; the native obligation alone supplies no authority to accept a `ctrl`
+annotation.
 
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a

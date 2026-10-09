@@ -38,6 +38,11 @@ theorem acceptance_root_meaning {bytes : ByteArray} {answer : Bool} {work left :
       QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ request.accepted
     exact ⟨root,_,a,accepted,Qleisli.Qirf.Validity.root_meaning _ _ _ _
       (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted)⟩
+  | controlOwners request =>
+    obtain ⟨root,a,_,_,accepted,_,_,_,_,_,_,_⟩ :=
+      QleisliKernel.Qirf.ControlAccess.checkOwners_bound _ _ _ _ _ _ _ request.accepted
+    exact ⟨root,_,a,accepted,Qleisli.Qirf.Validity.root_meaning _ _ _ _
+      (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted)⟩
 
 theorem check_root_meaning (bytes : ByteArray) (answer : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok answer,left)) :
@@ -133,6 +138,15 @@ theorem control_meaning {artifact : QleisliKernel.Qirf.Artifact} {order : Array 
   have inverses := Qleisli.Finite.wholeSpace_unitary _ _ _ unitary
   exact ⟨root,rootMeaning,interface,closed,body,sectors,inverses.1,inverses.2⟩
 
+/-- The ordered requested forest is retained with the original decoded root.
+Source/AST type-tree correspondence remains a separate obligation. -/
+theorem control_owners_meaning {artifact : QleisliKernel.Qirf.Artifact} {order : Array Nat}
+    {value : Lean.Json} {work left : Nat}
+    (binding : ControlOwnersAcceptance artifact order value work left) :
+    ∃ root, Qleisli.ControlAccess.OwnersMeaning artifact order root
+      binding.signatures binding.axes binding.actual :=
+  Qleisli.ControlAccess.checked_owners_meaning _ _ _ _ _ _ _ binding.accepted
+
 /-- The native success premise supplies the request binding. The leaf result
 is conditional only on the decoded request kind, not on a producer receipt or
 an assumed operator meaning. `check_encoded_sound` additionally exposes the
@@ -149,13 +163,17 @@ theorem check_sound (bytes : ByteArray) (answer : Bool) (work left : Nat)
           LeafMeaning binding.artifact binding.order request.root request.signature
             request.input request.output request.matrix
       | .control request => ∃ root,
-          ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual := by
+          ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual
+      | .controlOwners request => ∃ root,
+          Qleisli.ControlAccess.OwnersMeaning binding.artifact binding.order root
+            request.signatures request.axes request.actual := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,acceptance_root_meaning binding,?_⟩
   cases binding.request with
   | encoded request => trivial
   | leaf request => exact leaf_meaning request
   | control request => exact control_meaning request
+  | controlOwners request => exact control_owners_meaning request
 
 /-- Independent meaning of the original bounded, closed, unitary root in an
 encoded native request. The dependency interpretation is tied to a fresh graph
@@ -212,7 +230,10 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
           LeafMeaning binding.artifact binding.order request.root request.signature
             request.input request.output request.matrix
       | .control request => ∃ root,
-          ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual := by
+          ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual
+      | .controlOwners request => ∃ root,
+          Qleisli.ControlAccess.OwnersMeaning binding.artifact binding.order root
+            request.signatures request.axes request.actual := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,?_⟩
   cases binding.request with
@@ -221,6 +242,7 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
     exact ⟨root,actual,meaning⟩
   | leaf request => exact leaf_meaning request
   | control request => exact control_meaning request
+  | controlOwners request => exact control_owners_meaning request
 
 /-- The original-byte control request preserves projectors on every joint
 amplitude and arbitrary reference; no separability premise is used. -/
@@ -236,6 +258,20 @@ theorem control_reference {R : Type} {artifact : QleisliKernel.Qirf.Artifact}
   Qleisli.ControlAccess.checked_action_project _ _ _ _ _ _ _ binding.accepted
     joint row hr sector reference
 
+
+/-- Original-byte multi-owner requests commute with the requested projectors
+on arbitrary joint/reference amplitudes, without assuming separate states. -/
+theorem control_owners_reference {R : Type} {artifact : QleisliKernel.Qirf.Artifact}
+    {order : Array Nat} {value : Lean.Json} {work left : Nat}
+    (binding : ControlOwnersAcceptance artifact order value work left)
+    (joint : Nat → R → ℂ) (row : Nat) (hr : row ∈ List.range binding.actual.rows)
+    (sector : Nat) (reference : R) :
+    Qleisli.Semantics.Exact.action binding.actual
+        (Qleisli.ControlAccess.project binding.axes sector joint) row reference =
+      Qleisli.ControlAccess.project binding.axes sector
+        (Qleisli.Semantics.Exact.action binding.actual joint) row reference :=
+  Qleisli.ControlAccess.checked_owners_action_project _ _ _ _ _ _ _ binding.accepted
+    joint row hr sector reference
 
 /-- The accepted original root preserves the requested encoded action for an
 arbitrary reference amplitude function, without a product-state assumption.
