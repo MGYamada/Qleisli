@@ -260,6 +260,17 @@ interfaces and coefficient +1. Do not insert them to repair an argument tree.
 owners remain distinct. Canonical reassociation is not definitional equality
 and is not an admitted implicit elaboration.
 
+Selected Raw lowering supports explicit `take_bit[N,K]` and `put_bit[N,K]`
+under their existing statically established `K < N` premise and bounded
+concrete profile. Each expands to three existing Split/Join instructions.
+Taking preserves the ordered remainder; putting inserts the bit at its
+declared axis. Empty prefixes, suffixes and the `Bits<0>` remainder remain
+logical owners through the structural operations. This emits no physical
+SWAP, preparation, measurement or implicit discard. Independent source-step
+replay checks the actual original partition, intermediate fresh owners and
+returned wire order; native validity remains a separate fresh decision.
+This does not yet implement `q[K]`, slices or same-parent access formation.
+
 Ordinary literals do not prepare quantum states. `init0` retains its explicit
 Iso primitive contract; `basis` is a coherent map, not arbitrary state-preparation
 sugar. No implicit view partition/reassembly, borrow/ctrl insertion, arbitrary

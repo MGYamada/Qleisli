@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Lower explicit register `take_bit`/`put_bit` to existing Raw Split/Join
+  instructions, preserving ordered axes and zero-width remainder owners.
+  Independently replay their source partitions and reject native-valid
+  substitutions, including a wrong partition whose round trip is identity.
+  Indexed and slice access syntax remains pending.
+
 - Center routine development on the shared local checks. Run hosted validation
   at explicit Issue-completion checkpoints instead of ordinary pushes/PR
   updates; retain exact PR size/fixture gates, required checks and full release

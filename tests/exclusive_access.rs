@@ -801,3 +801,215 @@ fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
         );
     }
 }
+
+#[test]
+fn selected_register_access_preserves_exact_axes_and_untouched_reference() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    let kernel = Kernel::selected().unwrap();
+    // Every position at these small widths, including both empty end pieces
+    // and the zero-width remainder at width one. These expected equations are
+    // built from label bits, independently of either source or IR routing.
+    for n in 1..=3 {
+        for k in 0..n {
+            for gate in ["", "x(excl b);", "z(ctrl b);"] {
+                let text = format!(
+                    "use std::registers::{{take_bit,put_bit}};use std::quantum::{{x,z,split,join}};
+                    pub unitary fn main(input:Q<(Bits<{n}>,Bit)>)->Q<(Bits<{n}>,Bit)>{{
+                        let(q,r)=split(input);
+                        let(b,rest)=take_bit[{n},{k}](q);{gate}
+                        join(put_bit[{n},{k}](b,rest),r)
+                    }}"
+                );
+                let source = selected(&text)
+                    .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap();
+                let proposal = source
+                    .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .unwrap();
+                let basis = BasisType::Pair(Box::new(BasisType::Bits(n)), Box::new(BasisType::Bit));
+                let required = if gate.starts_with('x') {
+                    FiniteMeaning::permutation(
+                        basis,
+                        (0..1u16 << (n + 1)).map(|label| label ^ (1 << k)).collect(),
+                    )
+                    .unwrap()
+                } else {
+                    FiniteMeaning::phase(
+                        basis,
+                        (0..1u16 << (n + 1))
+                            .map(|label| {
+                                if gate.starts_with('z') && label & (1 << k) != 0 {
+                                    4
+                                } else {
+                                    0
+                                }
+                            })
+                            .collect(),
+                    )
+                    .unwrap()
+                };
+                proposal
+                    .check_finite_meaning(&kernel, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .unwrap();
+                let accepted = kernel.accept(proposal.proposal()).unwrap();
+                proposal.validate_source_steps(&accepted).unwrap();
+                // Six register repartitions plus two reference pack/unpack
+                // operations; no physical SWAP or preparation/measurement.
+                let raw = accepted.raw();
+                assert_eq!(
+                    raw.operations
+                        .iter()
+                        .filter(|op| matches!(
+                            op,
+                            qleisli::ir::RawOp::Split { .. } | qleisli::ir::RawOp::Join { .. }
+                        ))
+                        .count(),
+                    8
+                );
+                assert_eq!(raw.operations.len(), if gate.is_empty() { 8 } else { 9 });
+                if gate.starts_with('z') {
+                    let wrong =
+                        FiniteMeaning::phase(required.signature().clone(), vec![0; 1 << (n + 1)])
+                            .unwrap();
+                    assert_eq!(
+                        proposal
+                            .check_finite_meaning(
+                                &kernel,
+                                &wrong,
+                                &mut Budget::new(DEFAULT_EXACT_WORK)
+                            )
+                            .unwrap_err()
+                            .code(),
+                        "contract"
+                    );
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order() {
+    use qleisli::ir::RawOp;
+    let text = "use std::registers::{take_bit,put_bit};
+        pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{let(b,r)=take_bit[3,1](q);put_bit[3,1](b,r)}";
+    let source = selected(text)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let proposal = source.lower_raw().unwrap();
+    let kernel = Kernel::selected().unwrap();
+    let accepted = kernel.accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    for fault in 0..3 {
+        let mut raw = accepted.raw().clone();
+        if fault < 2 {
+            let RawOp::Split { left_bits, .. } = &mut raw.operations[0] else {
+                panic!("take prefix")
+            };
+            *left_bits = 0;
+            if fault == 1 {
+                // This paired mutation still denotes identity. Matching the
+                // round-trip matrix alone cannot establish original places.
+                let RawOp::Split { left_bits, .. } = &mut raw.operations[3] else {
+                    panic!("put prefix")
+                };
+                *left_bits = 0;
+            }
+        } else {
+            let RawOp::Join { left, right, .. } = &mut raw.operations[5] else {
+                panic!("put final join")
+            };
+            std::mem::swap(left, right);
+        }
+        let wrong = kernel.accept_raw(raw).unwrap();
+        assert_eq!(
+            proposal.validate_source_steps(&wrong).unwrap_err().code(),
+            "preservation"
+        );
+    }
+    let bad = format!(
+        "use std::quantum::h;{}",
+        text.replace("put_bit[3,1](b,r)", "h(ctrl b);put_bit[3,1](b,r)")
+    );
+    let source = selected(&bad)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let error = source
+        .lower_raw_with_kernel(
+            &kernel,
+            &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+        )
+        .unwrap_err();
+    assert_eq!(error.code(), "contract");
+    assert_eq!(&bad[error.span().start..error.span().end], "h(ctrl b)");
+}
+
+#[test]
+fn selected_generic_register_access_retains_original_static_bounds() {
+    let text = "use std::registers::{take_bit,put_bit};use std::quantum::x;
+        pub unitary fn main[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<N {
+            let(b,r)=take_bit[N,K](q);x(excl b);put_bit[N,K](b,r)
+        }";
+    let original = selected(text);
+    for (n, k) in [(1, 0), (3, 2)] {
+        let source = original
+            .instantiate(
+                "main::main",
+                BTreeMap::from([("N".into(), n), ("K".into(), k)]),
+                BTreeMap::new(),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let proposal = source.lower_raw().unwrap();
+        let accepted = Kernel::selected()
+            .unwrap()
+            .accept(proposal.proposal())
+            .unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+    }
+    assert!(
+        original
+            .instantiate(
+                "main::main",
+                BTreeMap::from([("N".into(), 3), ("K".into(), 3)]),
+                BTreeMap::new()
+            )
+            .is_err()
+    );
+    assert!(
+        ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            text.replace(" requires K<N", "")
+        )]))
+        .is_err()
+    );
+    assert_eq!(original.source("main"), Some(text));
+}
+
+#[test]
+fn selected_register_access_keeps_zero_width_phase_and_inverse_axis() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    for (text, n, phases) in [
+        ("use std::registers::{take_bit,put_bit};use std::quantum::phase_eighth;
+          pub unitary fn main(q:Q<Bits<1>>)->Q<Bits<1>>{let(b,r)=take_bit[1,0](q);phase_eighth(ctrl r);put_bit[1,0](b,r)}",
+          1, vec![1;2]),
+        ("use std::registers::{take_bit,put_bit};use std::quantum::phase;
+          unitary fn turn(q:Q<Bits<3>>)->Q<Bits<3>>{let(b,r)=take_bit[3,1](q);let b=phase[1,3](b);put_bit[3,1](b,r)}
+          pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{adjoint(turn)(q)}",
+          3, (0..8).map(|label| if label & 2 != 0 {7} else {0}).collect()),
+    ] {
+        let source = selected(text).instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap().elaborate().unwrap();
+        let kernel = Kernel::selected().unwrap();
+        let proposal = source.lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
+        let target = FiniteMeaning::phase(BasisType::Bits(n), phases).unwrap();
+        proposal.check_finite_meaning(&kernel, &target, &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap();
+    }
+}

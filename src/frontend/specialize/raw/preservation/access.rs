@@ -408,6 +408,39 @@ impl Trace<'_, '_, '_> {
                         axes.extend(self.owner(&inputs[1])?);
                         vec![Logical::Quantum(axes)]
                     }
+                    Primitive::TakeBit | Primitive::PutBit => {
+                        let [n, k] = step.natural_arguments() else {
+                            return Err(self
+                                .site
+                                .invalid("source register access loses static arguments"));
+                        };
+                        if k >= n || *n > 8 {
+                            return Err(self
+                                .site
+                                .invalid("source register access loses static bounds"));
+                        }
+                        self.charge(4 + *n as usize * 2)?;
+                        if step.primitive_kind() == Some(Primitive::TakeBit) {
+                            let mut axes = self.owner(&inputs[0])?;
+                            if axes.len() != *n as usize {
+                                return Err(self
+                                    .site
+                                    .invalid("source take_bit changes its register width"));
+                            }
+                            let bit = axes.remove(*k as usize);
+                            vec![Logical::Quantum(vec![bit]), Logical::Quantum(axes)]
+                        } else {
+                            let bit = self.single(&inputs[0])?;
+                            let mut axes = self.owner(&inputs[1])?;
+                            if axes.len() + 1 != *n as usize || axes.contains(&bit) {
+                                return Err(self
+                                    .site
+                                    .invalid("source put_bit changes or aliases its axes"));
+                            }
+                            axes.insert(*k as usize, bit);
+                            vec![Logical::Quantum(axes)]
+                        }
+                    }
                     _ => {
                         return Err(self.site.error(
                             "unsupported",

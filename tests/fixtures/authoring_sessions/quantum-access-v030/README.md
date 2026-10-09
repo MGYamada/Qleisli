@@ -1,5 +1,17 @@
 # Quantum access first-source study
 
+The indexed continuation in `attempt-06/` fixes four informed first sources
+and independent intended equations in [indexed-context.md](indexed-context.md)
+before checking. Four actual baseline checks preserve parser refusals for
+index/slice access and Raw-profile refusals for explicit take/put controls.
+Four separate after checks admit both unchanged explicit controls; four final
+checks retain those outcomes after explicit work-accounting changes. Indexed
+and slice forms still reject during parsing. All 87 observations remain,
+including the seven earlier usage errors. These are open-source check results,
+not executions or range/alias proofs. Independent exact tests cover widths
+1–3, every position, changed phase/axis, an untouched reference, zero-width
+remainder phase and inverse access. General indexed access remains unfinished.
+
 This informed #29/#69 study preserves four desired access programs and four
 explicit consume/return controls before access implementation. `ctrl`/`excl`
 are adopted names; the original observations preceded implementation of these

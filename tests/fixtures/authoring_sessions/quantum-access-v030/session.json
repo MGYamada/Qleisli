@@ -184,6 +184,36 @@
         "unused-control-after/unused-diagonal-run.json",
         "unused-control-after/unused-sector-change-check.json"
       ]
+    },
+    {
+      "id": "attempt-06",
+      "reason": "Preserve desired static index/slice sources and explicit take/put prerequisites before Raw support. The new indexed-context.md fixes independent equations before execution; parser/profile failures are not downstream range or alias evidence.",
+      "sha256": {
+        "indexed/main.qli": "bcdc127cd26dc6803637a01b28087e43a63c7c02d7511b3b1bfe101bd4ece8f0",
+        "slice/main.qli": "d2d1a3e9ddfca32ab9c4112dfbce31697cc5920a5cde85742222044ad99c52c2",
+        "explicit-roundtrip/main.qli": "407532059a689cbbfc7acb8b00234fe261546686fa02169c713b7e3db37becda",
+        "explicit-control/main.qli": "e88939a2a1d3373b378afae34e78ccd318ed54809e730e62920926e7609a13f6"
+      },
+      "manifest_sha256": {
+        "indexed/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "slice/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "explicit-roundtrip/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "explicit-control/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "indexed-before/indexed-check.json",
+        "indexed-before/slice-check.json",
+        "indexed-before/explicit-roundtrip-check.json",
+        "indexed-before/explicit-control-check.json",
+        "indexed-after/indexed-check.json",
+        "indexed-after/slice-check.json",
+        "indexed-after/explicit-roundtrip-check.json",
+        "indexed-after/explicit-control-check.json",
+        "indexed-final/indexed-check.json",
+        "indexed-final/slice-check.json",
+        "indexed-final/explicit-roundtrip-check.json",
+        "indexed-final/explicit-control-check.json"
+      ]
     }
   ]
 }

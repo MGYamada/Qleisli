@@ -521,6 +521,8 @@ fn check_profile(
                     | Primitive::PhaseEighth
                     | Primitive::Split
                     | Primitive::Join
+                    | Primitive::TakeBit
+                    | Primitive::PutBit
                     | Primitive::EmptyBits
                     | Primitive::PrependBit,
                 ) => {}
@@ -871,6 +873,139 @@ impl Emitter<'_> {
         }
         Ok(())
     }
+
+    /// Repartition the original ordered wires with existing structural IR.
+    /// The temporary prefix/suffix owners exist even at width zero; none is
+    /// prepared, discarded or represented by a physical permutation gate.
+    fn register_bit(
+        &mut self,
+        take: bool,
+        step: &super::SourceStep,
+        inputs: &[Vec<Atom>],
+    ) -> Result<Vec<Atom>> {
+        use crate::ir::RawOp;
+        let span = step.span();
+        let [n, k] = step.natural_arguments() else {
+            return Err(invalid(
+                span,
+                "register repartition loses its exact Nat arguments",
+            ));
+        };
+        if *n > 8 || k >= n {
+            return Err(invalid(span, "register repartition requires k < n <= 8"));
+        }
+        let width = *n as usize;
+        let position = *k as usize;
+        self.reserve_operations(3, span)?;
+        self.cells = self.cells.saturating_add(12 + width * 3);
+        if self.cells > MAX_CELLS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "register repartition exceeds value-cell bounds",
+            ));
+        }
+        if take {
+            let [input] = inputs else {
+                return Err(invalid(span, "take_bit requires one original owner"));
+            };
+            let slot = quantum(input, span)?;
+            let register = self
+                .raw
+                .registers
+                .remove(&slot)
+                .ok_or_else(|| invalid(span, "take_bit source owner is absent"))?;
+            if register.basis != SourceType::bits(*n) || register.wires.len() != width {
+                return Err(invalid(span, "take_bit changes its original register type"));
+            }
+            let prefix = self.raw.token();
+            let tail = self.raw.token();
+            let suffix = self.raw.token();
+            let bit = self
+                .raw
+                .register(SourceType::bit(), vec![register.wires[position]]);
+            let rest = self.raw.register(
+                SourceType::bits(n - 1),
+                register
+                    .wires
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(i, w)| (i != position).then_some(*w))
+                    .collect(),
+            );
+            self.raw.operations.extend([
+                RawOp::Split {
+                    input: register.token,
+                    left: prefix,
+                    right: tail,
+                    left_bits: *k as u8,
+                },
+                RawOp::Split {
+                    input: tail,
+                    left: self.raw.registers[&bit].token,
+                    right: suffix,
+                    left_bits: 1,
+                },
+                RawOp::Join {
+                    left: prefix,
+                    right: suffix,
+                    output: self.raw.registers[&rest].token,
+                },
+            ]);
+            Ok(vec![Atom::Quantum(bit), Atom::Quantum(rest)])
+        } else {
+            let [bit, rest] = inputs else {
+                return Err(invalid(span, "put_bit requires two original owners"));
+            };
+            let bit = quantum(bit, span)?;
+            let rest = quantum(rest, span)?;
+            if bit == rest {
+                return Err(invalid(span, "put_bit owners alias"));
+            }
+            let bit = self
+                .raw
+                .registers
+                .remove(&bit)
+                .ok_or_else(|| invalid(span, "put_bit bit owner is absent"))?;
+            let rest = self
+                .raw
+                .registers
+                .remove(&rest)
+                .ok_or_else(|| invalid(span, "put_bit register owner is absent"))?;
+            if bit.basis != SourceType::bit()
+                || bit.wires.len() != 1
+                || rest.basis != SourceType::bits(n - 1)
+                || rest.wires.len() != width - 1
+            {
+                return Err(invalid(span, "put_bit changes its original owner types"));
+            }
+            let mut wires = rest.wires;
+            wires.insert(position, bit.wires[0]);
+            let output = self.raw.register(SourceType::bits(*n), wires);
+            let prefix = self.raw.token();
+            let suffix = self.raw.token();
+            let head = self.raw.token();
+            self.raw.operations.extend([
+                RawOp::Split {
+                    input: rest.token,
+                    left: prefix,
+                    right: suffix,
+                    left_bits: *k as u8,
+                },
+                RawOp::Join {
+                    left: prefix,
+                    right: bit.token,
+                    output: head,
+                },
+                RawOp::Join {
+                    left: head,
+                    right: suffix,
+                    output: self.raw.registers[&output].token,
+                },
+            ]);
+            Ok(vec![Atom::Quantum(output)])
+        }
+    }
     fn input(&mut self, value: &SourceValue, span: Span) -> Result<Vec<Atom>> {
         match &value.ty().kind {
             Kind::Unit => Ok(vec![]),
@@ -992,6 +1127,11 @@ impl Emitter<'_> {
                     } else {
                         use Primitive::*;
                         match step.primitive_kind().expect("preflighted finite primitive") {
+                            TakeBit | PutBit => self.register_bit(
+                                step.primitive_kind() == Some(TakeBit),
+                                step,
+                                &inputs,
+                            )?,
                             EmptyBits => vec![Atom::Register(Arc::from([]))],
                             PrependBit => {
                                 let ([Atom::Classical(head)], [Atom::Register(tail)]) =

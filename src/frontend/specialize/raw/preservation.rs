@@ -704,6 +704,124 @@ impl Replay<'_, '_> {
         Ok(Atom::Classical(output))
     }
 
+    fn split_register(
+        &mut self,
+        token: TokenId,
+        wires: &[WireId],
+        width: usize,
+        site: Site<'_>,
+    ) -> Result<(Atom, Atom)> {
+        let Some(RawOp::Split {
+            input,
+            left,
+            right,
+            left_bits,
+        }) = self.raw.operations.get(self.cursor)
+        else {
+            return Err(site.invalid("register repartition omits an ordered split"));
+        };
+        if *input != token || usize::from(*left_bits) != width || width > wires.len() {
+            return Err(site.invalid("register repartition changes its source owner or split axis"));
+        }
+        let (left, right) = (*left, *right);
+        if self.live.remove(&token).as_deref() != Some(wires) {
+            return Err(site.invalid("register repartition consumes an unavailable owner"));
+        }
+        let left = self.introduce_owner(left, &wires[..width], false, site)?;
+        let right = self.introduce_owner(right, &wires[width..], false, site)?;
+        self.cursor += 1;
+        Ok((left, right))
+    }
+    fn join_register(&mut self, left: Atom, right: Atom, site: Site<'_>) -> Result<Atom> {
+        let (Atom::Quantum(l, lw), Atom::Quantum(r, rw)) = (left, right) else {
+            return Err(site.invalid("register repartition requires two quantum owners"));
+        };
+        let Some(RawOp::Join {
+            left,
+            right,
+            output,
+        }) = self.raw.operations.get(self.cursor)
+        else {
+            return Err(site.invalid("register repartition omits an ordered join"));
+        };
+        if *left != l || *right != r || l == r {
+            return Err(site.invalid("register repartition changes or aliases its ordered owners"));
+        }
+        let output = *output;
+        if self.live.remove(&l).as_ref() != Some(&lw) || self.live.remove(&r).as_ref() != Some(&rw)
+        {
+            return Err(site.invalid("register repartition joins unavailable owners"));
+        }
+        self.charge(lw.len() + rw.len(), site)?;
+        let wires: Vec<_> = lw.iter().chain(rw.iter()).copied().collect();
+        let result = self.introduce_owner(output, &wires, false, site)?;
+        self.cursor += 1;
+        Ok(result)
+    }
+    fn register_bit(
+        &mut self,
+        kind: Primitive,
+        step: &SourceStep,
+        inputs: &[Argument<'_>],
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
+        let [n, k] = step.natural_arguments() else {
+            return Err(site.invalid("register repartition loses its Nat arguments"));
+        };
+        if k >= n || *n > 8 {
+            return Err(site.invalid("register repartition loses its static bounds"));
+        }
+        self.charge(12 + *n as usize * 3, site)?;
+        if kind == Primitive::TakeBit {
+            let [input] = inputs else {
+                return Err(site.invalid("take_bit changes source arity"));
+            };
+            let [Atom::Quantum(token, wires)] = input.atoms.as_slice() else {
+                return Err(site.invalid("take_bit requires one original quantum owner"));
+            };
+            let output = SourceType::tuple(vec![
+                SourceType::quantum(SourceType::bit()),
+                SourceType::quantum(SourceType::bits(n - 1)),
+            ]);
+            if input.ty != &SourceType::quantum(SourceType::bits(*n))
+                || step.output().ty() != &output
+                || wires.len() != *n as usize
+            {
+                return Err(
+                    site.invalid("take_bit changes its exact original input or result tree")
+                );
+            }
+            let (prefix, tail) = self.split_register(*token, wires, *k as usize, site)?;
+            let Atom::Quantum(tail_token, tail_wires) = tail else {
+                unreachable!()
+            };
+            let (bit, suffix) = self.split_register(tail_token, &tail_wires, 1, site)?;
+            let rest = self.join_register(prefix, suffix, site)?;
+            Ok(vec![bit, rest])
+        } else {
+            let [bit, rest] = inputs else {
+                return Err(site.invalid("put_bit changes source arity"));
+            };
+            let ([Atom::Quantum(_, bit_wires)], [Atom::Quantum(token, wires)]) =
+                (bit.atoms.as_slice(), rest.atoms.as_slice())
+            else {
+                return Err(site.invalid("put_bit requires two original quantum owners"));
+            };
+            if bit.ty != &SourceType::quantum(SourceType::bit())
+                || bit_wires.len() != 1
+                || rest.ty != &SourceType::quantum(SourceType::bits(n - 1))
+                || wires.len() != (n - 1) as usize
+                || step.output().ty() != &SourceType::quantum(SourceType::bits(*n))
+            {
+                return Err(site.invalid("put_bit changes its exact original input or result tree"));
+            }
+            self.charge(1, site)?;
+            let (prefix, suffix) = self.split_register(*token, wires, *k as usize, site)?;
+            let head = self.join_register(prefix, bit.atoms[0].clone(), site)?;
+            Ok(vec![self.join_register(head, suffix, site)?])
+        }
+    }
+
     fn primitive(
         &mut self,
         kind: Primitive,
@@ -720,6 +838,8 @@ impl Replay<'_, '_> {
             | Primitive::PhaseEighth
             | Primitive::Split
             | Primitive::Join
+            | Primitive::TakeBit
+            | Primitive::PutBit
             | Primitive::EmptyBits
             | Primitive::PrependBit => Effect::Unitary,
             Primitive::Init0 => Effect::Iso,
@@ -732,14 +852,19 @@ impl Replay<'_, '_> {
             }
         };
         if effect(step.effect(), site)? != required
-            || (!matches!(kind, Primitive::Phase | Primitive::PrependBit)
-                && !step.natural_arguments().is_empty())
+            || (!matches!(
+                kind,
+                Primitive::Phase | Primitive::PrependBit | Primitive::TakeBit | Primitive::PutBit
+            ) && !step.natural_arguments().is_empty())
         {
             return Err(site.invalid(
                 "primitive effect or natural arguments differ from its source signature",
             ));
         }
         match (kind, inputs) {
+            (Primitive::TakeBit | Primitive::PutBit, _) => {
+                self.register_bit(kind, step, inputs, site)
+            }
             (Primitive::EmptyBits, []) if matches!(step.output().ty().kind, Kind::Bits(0)) => {
                 Ok(vec![Atom::Register(Arc::from([]))])
             }

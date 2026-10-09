@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "7ba9ac82581874b75c846166f8345f6bb8f6c65e704ab6ff62b94e0f4ac8dce2",
+  "surface_sha256": "d444513e623e52a7956774c981f28a444a175a21be7b5347e50466e6c6fe9768",
   "groups": [
     {
       "id": "raw-core",
@@ -2336,7 +2336,9 @@
           "markers": [
             "pub struct RawSourceProposal",
             "pub fn validate_source_steps(",
-            "native::Proposal::from_raw"
+            "native::Proposal::from_raw",
+            "fn register_bit(",
+            "self.reserve_operations(3, span)?"
           ]
         },
         {
@@ -2379,6 +2381,22 @@
         {
           "path": "tests/sized_source.rs",
           "test": "untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_register_access_preserves_exact_axes_and_untouched_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_generic_register_access_retains_original_static_bounds"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_register_access_keeps_zero_width_phase_and_inverse_axis"
         },
         {
           "path": "tests/sized_cli.rs",
@@ -2997,6 +3015,8 @@
             "Primitive::Join",
             "Raw split changes its owner or exact ordered partition",
             "Raw join changes or aliases its ordered owners",
+            "register repartition changes its source owner or split axis",
+            "register repartition changes or aliases its ordered owners",
             "self.control_call(step, &inputs, &output, first_instruction, site)?",
             "self.raw.operations[first..self.cursor].to_vec()",
             ".check_control_owners(&call, &signatures, &axes, self.control_work)"
