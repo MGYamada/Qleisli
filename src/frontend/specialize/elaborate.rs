@@ -10,6 +10,14 @@ const MAX_DEPTH: usize = 16;
 const MAX_STEPS: usize = 10_000;
 const MAX_CELLS: usize = 100_000;
 
+/// A call view borrows resolved source occurrences without cloning their trees.
+struct RuntimeCall<'a> {
+    name: &'a Reference,
+    arguments: &'a [Argument],
+    inputs: &'a [Expr],
+    span: Span,
+}
+
 use crate::frontend::resolve::{DefId, Target};
 use crate::frontend::types::Kind as TypeKind;
 use std::sync::Arc;
@@ -1498,7 +1506,17 @@ impl Builder<'_> {
         }
         scope.values = initial
             .into_iter()
-            .filter(|(_, b)| !scope.moved.contains(&b.identity))
+            .filter_map(|(key, original)| {
+                if scope.moved.contains(&original.identity) {
+                    return None;
+                }
+                if original.value.ty.linear() {
+                    let current = scope.values.get(&key)?;
+                    (current.identity == original.identity).then(|| (key, current.clone()))
+                } else {
+                    Some((key, original))
+                }
+            })
             .collect();
         Ok(result)
     }
@@ -1513,6 +1531,115 @@ impl Builder<'_> {
         let result = self.expr_inner(expr, scope, frame, depth);
         self.active_frames -= 1;
         result
+    }
+    fn runtime_call(
+        &mut self,
+        call: RuntimeCall<'_>,
+        scope: &mut Scope,
+        frame: &mut Frame,
+        depth: usize,
+    ) -> Result<SourceValue> {
+        let RuntimeCall {
+            name,
+            arguments,
+            inputs,
+            span,
+        } = call;
+        if let Some(op) = name.get(&scope.operations).cloned() {
+            let values = inputs
+                .iter()
+                .map(|e| self.expr(e, scope, frame, depth))
+                .collect::<Result<_>>()?;
+            return self.operation_step(StepKind::Apply(op), values, frame, span);
+        }
+        let target = self.resolve(name, scope, frame, span)?;
+        if let Target::Primitive(_) = target {
+            let path = self.program.checked.resolution.target_path(target);
+            let kind = Primitive::lookup(&path).ok_or_else(|| {
+                error(
+                    "unsupported",
+                    span,
+                    format!("selected concrete preparation does not support {path}"),
+                )
+            })?;
+            let signature = kind.signature();
+            // These contracts reject arity before evaluating the sole
+            // argument; its complete work is then retained exactly once.
+            if signature.types.dependent() || matches!(kind, Primitive::Unit | Primitive::Finish) {
+                if arguments.len() != signature.natural_arity {
+                    return Err(error(
+                        "static",
+                        span,
+                        "concrete primitive natural arity mismatch",
+                    ));
+                }
+                if inputs.len() != signature.types.runtime_arity() {
+                    return Err(error("type", span, "concrete operation arity mismatch"));
+                }
+            }
+            let naturals = arguments
+                .iter()
+                .map(|a| {
+                    let Argument::Natural(n) = a else {
+                        return Err(error(
+                            "static",
+                            span,
+                            "primitive requires natural arguments",
+                        ));
+                    };
+                    natural(n, &scope.naturals, &mut self.cells, &mut self.calls)
+                })
+                .collect::<Result<Vec<_>>>()?;
+            let values: Vec<SourceValue> = inputs
+                .iter()
+                .map(|e| self.expr(e, scope, frame, depth))
+                .collect::<Result<_>>()?;
+            let (types, output, effect) = primitive(
+                kind,
+                &naturals,
+                &values.iter().map(|value| &value.ty).collect::<Vec<_>>(),
+                span,
+            )?;
+            self.step(
+                StepKind::Primitive(kind, naturals),
+                types,
+                output,
+                effect,
+                values,
+                frame,
+                span,
+                0,
+            )
+        } else {
+            let Target::Declaration(definition) = target else {
+                unreachable!("primitive handled above")
+            };
+            let (types, naturals, operations) =
+                self.arguments(definition, arguments, scope, frame, depth, span)?;
+            let id = self.function(definition, types, naturals, operations.clone(), depth + 1)?;
+            let definition = &self.definitions[id];
+            let types = definition.inputs.iter().map(|v| v.ty.clone()).collect();
+            let output = definition.output.ty.clone();
+            let effect = definition.effect;
+            let peak = definition.peak_quantum;
+            let values = inputs
+                .iter()
+                .map(|e| self.expr(e, scope, frame, depth))
+                .collect::<Result<_>>()?;
+            self.step(
+                StepKind::Call {
+                    definition: id,
+                    operations,
+                },
+                types,
+                output,
+                effect,
+                values,
+                frame,
+                span,
+                peak,
+            )
+        }
     }
     fn expr_inner(
         &mut self,
@@ -1597,106 +1724,81 @@ impl Builder<'_> {
                 }
                 Ok(SourceValue::tuple(values))
             }
-            ExprKind::Call(name, arguments, inputs) => {
-                if let Some(op) = name.get(&scope.operations).cloned() {
-                    let values = inputs
-                        .iter()
-                        .map(|e| self.expr(e, scope, frame, depth))
-                        .collect::<Result<_>>()?;
-                    return self.operation_step(StepKind::Apply(op), values, frame, span);
-                }
-                let target = self.resolve(name, scope, frame, span)?;
-                if let Target::Primitive(_) = target {
-                    let path = self.program.checked.resolution.target_path(target);
-                    let kind = Primitive::lookup(&path).ok_or_else(|| {
-                        error(
+            ExprKind::AccessCall(name, arguments, inputs) => {
+                self.charge_cells(inputs.len().saturating_mul(3), span)?;
+                let mut owners = Vec::new();
+                let mut seen = BTreeSet::new();
+                for input in inputs {
+                    let ExprKind::Name(owner) = &input.kind else {
+                        return Err(error(
                             "unsupported",
-                            span,
-                            format!("selected concrete preparation does not support {path}"),
-                        )
-                    })?;
-                    let signature = kind.signature();
-                    // These contracts reject arity before evaluating the sole
-                    // argument; its complete work is then retained exactly once.
-                    if signature.types.dependent()
-                        || matches!(kind, Primitive::Unit | Primitive::Finish)
-                    {
-                        if arguments.len() != signature.natural_arity {
-                            return Err(error(
-                                "static",
-                                span,
-                                "concrete primitive natural arity mismatch",
-                            ));
-                        }
-                        if inputs.len() != signature.types.runtime_arity() {
-                            return Err(error("type", span, "concrete operation arity mismatch"));
-                        }
-                    }
-                    let naturals = arguments
-                        .iter()
-                        .map(|a| {
-                            let Argument::Natural(n) = a else {
-                                return Err(error(
-                                    "static",
-                                    span,
-                                    "primitive requires natural arguments",
-                                ));
-                            };
-                            natural(n, &scope.naturals, &mut self.cells, &mut self.calls)
-                        })
-                        .collect::<Result<Vec<_>>>()?;
-                    let values: Vec<SourceValue> = inputs
-                        .iter()
-                        .map(|e| self.expr(e, scope, frame, depth))
-                        .collect::<Result<_>>()?;
-                    let (types, output, effect) = primitive(
-                        kind,
-                        &naturals,
-                        &values.iter().map(|value| &value.ty).collect::<Vec<_>>(),
-                        span,
-                    )?;
-                    self.step(
-                        StepKind::Primitive(kind, naturals),
-                        types,
-                        output,
-                        effect,
-                        values,
-                        frame,
-                        span,
-                        0,
-                    )
-                } else {
-                    let Target::Declaration(definition) = target else {
-                        unreachable!("primitive handled above")
+                            input.span,
+                            "exclusive access requires a lexical owner",
+                        ));
                     };
-                    let (types, naturals, operations) =
-                        self.arguments(definition, arguments, scope, frame, depth, span)?;
-                    let id =
-                        self.function(definition, types, naturals, operations.clone(), depth + 1)?;
-                    let definition = &self.definitions[id];
-                    let types = definition.inputs.iter().map(|v| v.ty.clone()).collect();
-                    let output = definition.output.ty.clone();
-                    let effect = definition.effect;
-                    let peak = definition.peak_quantum;
-                    let values = inputs
-                        .iter()
-                        .map(|e| self.expr(e, scope, frame, depth))
-                        .collect::<Result<_>>()?;
-                    self.step(
-                        StepKind::Call {
-                            definition: id,
-                            operations,
-                        },
-                        types,
-                        output,
-                        effect,
-                        values,
-                        frame,
-                        span,
-                        peak,
-                    )
+                    let key = owner.local.as_ref().ok_or_else(|| {
+                        error("ownership", input.span, "exclusive owner is unavailable")
+                    })?;
+                    let binding = scope.values.get(key).ok_or_else(|| {
+                        error("ownership", input.span, "exclusive owner is consumed")
+                    })?;
+                    if !binding.value.ty.is_quantum_owner() || !seen.insert(binding.identity) {
+                        return Err(error(
+                            "ownership",
+                            input.span,
+                            "exclusive access requires distinct live Q<A> owners",
+                        ));
+                    }
+                    self.charge_cells(key.name.len() + binding.value.cells(), input.span)?;
+                    owners.push((key.clone(), binding.identity, binding.value.ty.clone()));
                 }
+                // Borrow the original projected references and arguments. No
+                // occurrence is cloned or resolved again to adapt ownership.
+                let value = self.runtime_call(
+                    RuntimeCall {
+                        name,
+                        arguments,
+                        inputs,
+                        span,
+                    },
+                    scope,
+                    frame,
+                    depth,
+                )?;
+                let returned = if owners.len() == 1 {
+                    vec![value]
+                } else {
+                    value.fields
+                };
+                if returned.len() != owners.len()
+                    || returned
+                        .iter()
+                        .zip(&owners)
+                        .any(|(value, (_, _, ty))| !value.ty.is_quantum_owner() || value.ty != *ty)
+                {
+                    return Err(error(
+                        "type",
+                        span,
+                        "exclusive call must return the same exact ordered owner interface",
+                    ));
+                }
+                for ((key, identity, _), value) in owners.into_iter().zip(returned) {
+                    scope.moved.remove(&identity);
+                    scope.values.insert(key, Binding { identity, value });
+                }
+                Ok(SourceValue::unit())
             }
+            ExprKind::Call(name, arguments, inputs) => self.runtime_call(
+                RuntimeCall {
+                    name,
+                    arguments,
+                    inputs,
+                    span,
+                },
+                scope,
+                frame,
+                depth,
+            ),
             ExprKind::Apply(argument, input) => {
                 let op = self.operation(argument, scope, frame, depth, span)?;
                 let value = self.expr(input, scope, frame, depth)?;

@@ -44,6 +44,7 @@ An implementation detail or Issue candidate does not enlarge this list.
 | Surface construction | Permitted expansion |
 | --- | --- |
 | Runtime products, patterns and ordinary calls | Exact value-tree binding and checked call-body expansion |
+| Whole-owner `excl` calls | One checked consuming call and retention of returned values on the same lexical binders |
 | Ordinary Boolean expressions and `classical fn` calls | Eager ordinary-value operations |
 | Runtime classical `if` | Classical branches with complete result/frame joins |
 | Static naturals, aliases and bounded helpers | Exact checked substitution; no runtime instruction |
@@ -72,6 +73,21 @@ the detailed grammar, capabilities and profile limits.
 
 See [exact trees](type-model.md#structural-equality-coherence-and-physical-maps)
 and [functional abstraction](functional-boundary.md).
+
+### Whole-owner exclusive calls
+
+| Field | Contract |
+| --- | --- |
+| Source | `U(excl q)` or a call whose arguments all mark distinct whole lexical `Q<A>` owners |
+| Target | The existing consuming call, followed by replacement of each argument binder's value by its exact ordered returned owner; the access expression returns ordinary Unit |
+| Evaluation order | Resolve original source occurrences; supply owners once in argument order and execute the callee once. No copied AST occurrence acquires a second lexical identity. |
+| Owners | Keep the same lexical owner identities with returned values. Require actual inferred Unitary effect and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
+| Exact phase | Preserve the complete callee action, including entanglement, ordered axes and zero-width phase. Insert no inverse or cleanup. |
+| Source spans | Retain original callee and argument identifiers, byte spans and callee-body origins. Contextual marker spans do not replace owner-identifier spans. |
+| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, indexed/mixed/escaping access, unsupported `ctrl` or unavailable concrete projection rejects. |
+| Remaining obligations | Check emitted artifacts and requests independently. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises; it is not a source-preservation proof or quantitative resource certificate. General footprints, lifetimes and access declarations remain pending. |
+
+See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
 
 ### Ordinary expressions and classical functions
 

@@ -442,7 +442,7 @@ impl Checker<'_, '_> {
         &mut self,
         name: &Ident,
         static_args: &[StaticOp],
-        runtime: &[Expr],
+        runtime: RuntimeArguments<'_>,
         scope: &mut Scope,
         span: Span,
     ) -> Result<Ty> {
@@ -456,7 +456,7 @@ impl Checker<'_, '_> {
             }
             access(operation, Access::Apply, span)?;
             let ty = Ty::quantum(self.program.budget.copy_ty(span, &operation.basis)?);
-            self.expr(&runtime[0], scope, Some(&ty))?;
+            self.expr(runtime.get(0), scope, Some(&ty))?;
             return Ok(ty);
         }
         match self.resolve(name)? {
@@ -564,6 +564,142 @@ impl Checker<'_, '_> {
                 Ok(result)
             }
         }
+    }
+    pub(super) fn exclusive_call(
+        &mut self,
+        name: &Ident,
+        static_args: &[StaticOp],
+        arguments: &[AccessArgument],
+        scope: &mut Scope,
+        span: Span,
+    ) -> Result<Ty> {
+        self.program
+            .budget
+            .charge(span, arguments.len().saturating_mul(3))?;
+        if arguments.is_empty() || arguments.len() > 64 {
+            return Err(SourceError::new(
+                "arity",
+                span,
+                "quantum access calls require one to 64 arguments",
+            ));
+        }
+        let mut owners = Vec::new();
+        let mut seen = BTreeSet::new();
+        for argument in arguments {
+            if argument.access != QuantumAccess::Excl {
+                return Err(SourceError::new(
+                    "unsupported",
+                    argument.value.span,
+                    "ctrl source access requires independently bound basis-sector evidence; source elaboration is not yet supported",
+                ));
+            }
+            let ExprKind::Name(owner) = &argument.value.kind else {
+                return Err(SourceError::new(
+                    "unsupported",
+                    argument.value.span,
+                    "exclusive access currently requires a whole lexical Q<A> owner",
+                ));
+            };
+            let key = self.local(owner).ok_or_else(|| {
+                SourceError::new(
+                    "ownership",
+                    owner.span,
+                    "exclusive access requires a live lexical owner",
+                )
+            })?;
+            let binding = scope.values.get(key).ok_or_else(|| {
+                SourceError::new(
+                    "ownership",
+                    owner.span,
+                    "exclusive access cannot use a consumed owner",
+                )
+            })?;
+            if binding.ty.quantum_basis().is_none() {
+                return Err(SourceError::new(
+                    "type",
+                    owner.span,
+                    "exclusive access requires one Q<A> owner, including zero-width owners",
+                ));
+            }
+            if !seen.insert(binding.identity) {
+                return Err(SourceError::new(
+                    "ownership",
+                    owner.span,
+                    "exclusive arguments overlap the same quantum owner",
+                ));
+            }
+            owners.push((
+                self.program.budget.key(owner.span, key)?,
+                Binding {
+                    identity: binding.identity,
+                    ty: self.program.budget.copy_ty(owner.span, &binding.ty)?,
+                },
+            ));
+        }
+        if self
+            .local(name)
+            .and_then(|key| scope.operations.get(key))
+            .is_none()
+        {
+            match self.resolve(name)? {
+                Target::Declaration(id) => {
+                    self.tick(span)?;
+                    self.effects.require_unitary(id, span);
+                }
+                Target::Primitive(primitive) => {
+                    self.program
+                        .budget
+                        .charge(span, primitive.module.len() + primitive.name.len() + 2)?;
+                    let path = format!("{}::{}", primitive.module, primitive.name);
+                    if primitive::Primitive::lookup(&path)
+                        .expect("typed sealed resolution")
+                        .effect()
+                        != Effect::Unitary
+                    {
+                        return Err(SourceError::new(
+                            "effect",
+                            span,
+                            "excl requires a coherent Unitary call; measurement, reset, discard and release remain consuming operations",
+                        ));
+                    }
+                }
+            }
+        }
+        let result = self.call(
+            name,
+            static_args,
+            RuntimeArguments::Accesses(arguments),
+            scope,
+            span,
+        )?;
+        let mut types = owners
+            .iter()
+            .map(|(_, binding)| self.program.budget.copy_ty(span, &binding.ty))
+            .collect::<Result<Vec<_>>>()?;
+        let expected = if types.len() == 1 {
+            types.pop().expect("one owner")
+        } else {
+            Ty::tuple(types)
+        };
+        normalize::expect(
+            &result,
+            &expected,
+            &scope.context,
+            span,
+            &self.program.budget,
+        )
+        .map_err(|mut error| {
+            error.message = format!(
+                "exclusive call must return the same exact ordered owner interface: {}",
+                error.message
+            );
+            error
+        })?;
+        for (key, binding) in owners {
+            scope.moved.remove(&binding.identity);
+            scope.values.insert(key, binding);
+        }
+        Ok(Ty::unit())
     }
     pub(super) fn named_operation(
         &mut self,

@@ -182,6 +182,16 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
                 self::expr(arg)?;
             }
         }
+        ExprKind::AccessCall {
+            static_args, args, ..
+        } => {
+            for op in static_args {
+                operation(op)?;
+            }
+            for arg in args {
+                self::expr(&arg.value)?;
+            }
+        }
         ExprKind::If {
             condition,
             then_branch,

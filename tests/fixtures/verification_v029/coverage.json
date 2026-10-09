@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "92cb7402fdeb984206a00518d69214216f56c123d439f8a138613c03adba1a6d",
+  "surface_sha256": "a5af8fa82eb5d41dfbc7e826501f12a013cce5434ab146a96c0400a626371f1d",
   "groups": [
     {
       "id": "raw-core",
@@ -98,7 +98,9 @@
       "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/meaning_evidence.rs"
+        "tests/meaning_evidence.rs",
+        "lean-kernel/QleisliKernel/Semantics/ControlAccess.lean",
+        "lean/Qleisli/ControlAccess.lean"
       ],
       "proof_gates": [
         "S05-C1",
@@ -142,7 +144,9 @@
       "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/finite_leaf.rs"
+        "tests/finite_leaf.rs",
+        "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
+        "lean-kernel/Tests.lean"
       ],
       "proof_gates": [
         "S05-C1",
@@ -819,6 +823,31 @@
         "tests/bits_cli.rs",
         "lean/Qleisli/FiniteBasisTransport.lean",
         "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "source-excl",
+      "status": "mixed-boundary",
+      "blocker": "Untrusted whole-owner call elaboration uses the existing fresh native gates. Lookup-level scope proofs retain binder/type embedding and update-provenance premises; full source preservation, general footprints/lifetimes, ctrl source binding and quantitative resource correspondence remain open. This component admits no constitutional guarantee.",
+      "evidence": [
+        "tests/exclusive_access.rs",
+        "lean/Qleisli/ExclusiveScope.lean",
+        "docs/src/reference/elaboration.md",
+        "docs/src/reference/rust-boundary.md"
       ],
       "proof_gates": [
         "S05-C1",
@@ -1925,6 +1954,14 @@
         {
           "path": "src/frontend/specialize/raw/preservation.rs",
           "test": "source_z_replay_rejects_native_valid_x_substitution"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "reassembled_owner_and_callee_binders_do_not_restore_old_snapshot"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "exact_owner_shape_and_actual_body_effect_are_required"
         }
       ],
       "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
@@ -2452,6 +2489,18 @@
         {
           "path": "tests/basis_polymorphism.rs",
           "test": "same_algorithm_retains_small_reference_action_and_unit_scalar_phase"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "global_calls_preserve_exact_coefficient_and_external_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "zero_width_owner_keeps_phase_and_cannot_be_duplicated"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "closed_static_branches_and_empty_fold_thread_updated_carry"
         }
       ],
       "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",

@@ -24,13 +24,13 @@ use std::borrow::Cow;
 
 #[derive(Clone, Copy)]
 enum CallArguments<'a> {
-    Runtime(&'a [Expr]),
+    Runtime(RuntimeArguments<'a>),
     Classical(&'a [BasisExpr]),
 }
 impl CallArguments<'_> {
     fn span(self, index: usize) -> Span {
         match self {
-            Self::Runtime(args) => args[index].span,
+            Self::Runtime(args) => args.get(index).span,
             Self::Classical(args) => args[index].span,
         }
     }
@@ -107,6 +107,7 @@ struct Lowerer<'c, 'p> {
     operation_sources: OperationSources,
     // Diagnostics only; never consulted by ownership, scope or IR checking.
     tuple_binding_origins: Vec<BTreeMap<String, Option<TupleBindingOrigin>>>,
+    access_updates: Vec<BTreeSet<crate::frontend::resolve::locals::BinderKey>>,
     effect: Effect,
     // Origin of the strongest derived effect; diagnostic metadata only.
     effect_source: Option<(String, Span)>,
@@ -326,8 +327,10 @@ impl Lowerer<'_, '_> {
         self.depth += 1;
         // A callee's lexical binders cannot explain the caller's operands.
         let caller_origins = std::mem::take(&mut self.tuple_binding_origins);
+        let caller_updates = std::mem::take(&mut self.access_updates);
         let result = self.call_user_inner(key, args, site);
         self.tuple_binding_origins = caller_origins;
+        self.access_updates = caller_updates;
         self.depth -= 1;
         result
     }
@@ -489,8 +492,15 @@ impl Lowerer<'_, '_> {
 
     fn block(&mut self, module: &str, block: &Block, env: &mut Env) -> Result<Value, CompileError> {
         self.tuple_binding_origins.push(BTreeMap::new());
+        self.access_updates.push(BTreeSet::new());
         let result = self.block_inner(module, block, env);
         self.tuple_binding_origins.pop();
+        let updates = self.access_updates.pop().expect("block updates");
+        if result.is_ok() {
+            if let Some(parent) = self.access_updates.last_mut() {
+                parent.extend(updates);
+            }
+        }
         result
     }
 
@@ -529,7 +539,15 @@ impl Lowerer<'_, '_> {
             }
         }
         let result = self.expr(module, &block.result, &mut local)?;
-        scope::close_scope(&mut entry, &local, &BTreeSet::new()).map_err(|name| {
+        if !self
+            .access_updates
+            .last()
+            .expect("block updates")
+            .is_empty()
+        {
+            self.compiler.charge(module, block.span, env_size(&entry))?;
+        }
+        scope::close_scope_with_updates(&mut entry, &local, self.access_updates.last().expect("block updates")).map_err(|name| {
             let span = self.compiler.locals.info(name.id).span;
             self.error(module, span, ErrorCode::Ownership, format!("local quantum ownership `{name}` escapes neither through the result nor an explicit discard"))
         })?;
@@ -625,6 +643,186 @@ impl Lowerer<'_, '_> {
         self.check_transformed(module, span, &basis, &steps, expected.as_ref())?;
         self.apply_circuit(slot, steps);
         Ok(value)
+    }
+
+    fn exclusive_call(
+        &mut self,
+        module: &str,
+        callee: &Ident,
+        static_args: &[StaticOp],
+        arguments: &[AccessArgument],
+        env: &mut Env,
+        span: Span,
+    ) -> Result<Value, CompileError> {
+        self.compiler
+            .charge(module, span, arguments.len().saturating_mul(3))?;
+        let mut owners = Vec::new();
+        let mut seen = BTreeSet::new();
+        for argument in arguments {
+            if argument.access != QuantumAccess::Excl {
+                return Err(self.error(
+                    module,
+                    argument.value.span,
+                    ErrorCode::Unsupported,
+                    "ctrl source elaboration requires independently bound sector evidence",
+                ));
+            }
+            let ExprKind::Name(name) = &argument.value.kind else {
+                return Err(self.error(
+                    module,
+                    argument.value.span,
+                    ErrorCode::Unsupported,
+                    "exclusive access requires a whole lexical Q<A> owner",
+                ));
+            };
+            let key = self.compiler.locals.local_key(name).ok_or_else(|| {
+                self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Ownership,
+                    "exclusive owner is unavailable",
+                )
+            })?;
+            let value = env.get(key).and_then(Binding::as_ref).ok_or_else(|| {
+                self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Ownership,
+                    "exclusive owner is consumed or hidden",
+                )
+            })?;
+            if !matches!(value, Value::Quantum(..)) || !seen.insert(key.clone()) {
+                return Err(self.error(
+                    module,
+                    name.span,
+                    ErrorCode::Ownership,
+                    "exclusive access requires distinct live Q<A> owners",
+                ));
+            }
+            let charge = key.name.len() + value.tree_size().nodes;
+            owners.push((key.clone(), value.ty()));
+            self.compiler.charge(module, name.span, charge)?;
+        }
+        let result = self.runtime_call(
+            module,
+            callee,
+            static_args,
+            RuntimeArguments::Accesses(arguments),
+            env,
+            span,
+        )?;
+        let returned = if owners.len() == 1 {
+            vec![result]
+        } else {
+            result.into_fields().ok_or_else(|| {
+                self.error(
+                    module,
+                    span,
+                    ErrorCode::TypeMismatch,
+                    "exclusive call must return the same ordered owner partition",
+                )
+            })?
+        };
+        if returned.len() != owners.len()
+            || returned
+                .iter()
+                .zip(&owners)
+                .any(|(value, (_, ty))| !matches!(value, Value::Quantum(..)) || value.ty() != *ty)
+        {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "exclusive call must return the same exact ordered Q<A> interface",
+            ));
+        }
+        for ((key, _), value) in owners.into_iter().zip(returned) {
+            self.access_updates
+                .last_mut()
+                .expect("exclusive call inside a block")
+                .insert(key.clone());
+            env.insert(key, Binding::Live(value));
+        }
+        Ok(Value::Unit)
+    }
+
+    fn runtime_call(
+        &mut self,
+        module: &str,
+        callee: &Ident,
+        static_args: &[StaticOp],
+        args: RuntimeArguments<'_>,
+        env: &mut Env,
+        span: Span,
+    ) -> Result<Value, CompileError> {
+        // Keep legacy ordinary-call resolution and diagnostics. New
+        // static calls resolve descriptions after runtime arguments.
+        let legacy_target = if static_args.is_empty() && self.bound_operation(callee).is_none() {
+            if self
+                .compiler
+                .locals
+                .local_key(callee)
+                .is_some_and(|key| env.contains_key(key))
+            {
+                return Err(self.error(
+                    module,
+                    callee.span,
+                    ErrorCode::TypeMismatch,
+                    "a local value is not callable",
+                ));
+            }
+            Some(self.compiler.resolve(module, callee)?)
+        } else {
+            None
+        };
+        let values = args
+            .iter()
+            .map(|arg| self.expr(module, arg, env))
+            .collect::<Result<Vec<_>, _>>()?;
+        self.static_name(module, callee, env)?;
+        if self.bound_operation(callee).is_some() {
+            if !static_args.is_empty() || values.len() != 1 {
+                return Err(self.error(
+                    module,
+                    span,
+                    ErrorCode::Arity,
+                    "operation application requires one quantum argument",
+                ));
+            }
+            let value = values.into_iter().next().expect("one argument");
+            let slot = self.quantum(module, span, &value, false)?;
+            let basis = self.raw.registers[&slot].basis.clone();
+            let steps = self
+                .operation_steps(module, callee, &basis, env, Access::Apply)?
+                .expect("bound operation");
+            self.apply_circuit(slot, steps);
+            return Ok(value);
+        }
+        let site = CallSite {
+            module,
+            span,
+            args: CallArguments::Runtime(args),
+        };
+        match legacy_target
+            .map(Ok)
+            .unwrap_or_else(|| self.compiler.resolve(module, callee))?
+        {
+            Callee::User(key) => {
+                let bindings = self.bind_operations(&key, static_args, env, site)?;
+                self.call_bound(&key, values, Some(site), bindings)
+            }
+            Callee::Sealed(namespace, name) => {
+                if !static_args.is_empty() {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::Arity,
+                        "sealed operations have no static parameters",
+                    ));
+                }
+                self.sealed_with_source(module, span, &namespace, &name, values, args)
+            }
+        }
     }
 
     fn expr(&mut self, module: &str, expr: &Expr, env: &mut Env) -> Result<Value, CompileError> {
@@ -863,77 +1061,19 @@ impl Lowerer<'_, '_> {
                 callee,
                 static_args,
                 args,
-            } => {
-                // Keep legacy ordinary-call resolution and diagnostics. New
-                // static calls resolve descriptions after runtime arguments.
-                let legacy_target =
-                    if static_args.is_empty() && self.bound_operation(callee).is_none() {
-                        if self
-                            .compiler
-                            .locals
-                            .local_key(callee)
-                            .is_some_and(|key| env.contains_key(key))
-                        {
-                            return Err(self.error(
-                                module,
-                                callee.span,
-                                ErrorCode::TypeMismatch,
-                                "a local value is not callable",
-                            ));
-                        }
-                        Some(self.compiler.resolve(module, callee)?)
-                    } else {
-                        None
-                    };
-                let values = args
-                    .iter()
-                    .map(|arg| self.expr(module, arg, env))
-                    .collect::<Result<Vec<_>, _>>()?;
-                self.static_name(module, callee, env)?;
-                if self.bound_operation(callee).is_some() {
-                    if !static_args.is_empty() || values.len() != 1 {
-                        return Err(self.error(
-                            module,
-                            expr.span,
-                            ErrorCode::Arity,
-                            "operation application requires one quantum argument",
-                        ));
-                    }
-                    let value = values.into_iter().next().expect("one argument");
-                    let slot = self.quantum(module, expr.span, &value, false)?;
-                    let basis = self.raw.registers[&slot].basis.clone();
-                    let steps = self
-                        .operation_steps(module, callee, &basis, env, Access::Apply)?
-                        .expect("bound operation");
-                    self.apply_circuit(slot, steps);
-                    return Ok(value);
-                }
-                let site = CallSite {
-                    module,
-                    span: expr.span,
-                    args: CallArguments::Runtime(args),
-                };
-                match legacy_target
-                    .map(Ok)
-                    .unwrap_or_else(|| self.compiler.resolve(module, callee))?
-                {
-                    Callee::User(key) => {
-                        let bindings = self.bind_operations(&key, static_args, env, site)?;
-                        self.call_bound(&key, values, Some(site), bindings)
-                    }
-                    Callee::Sealed(namespace, name) => {
-                        if !static_args.is_empty() {
-                            return Err(self.error(
-                                module,
-                                expr.span,
-                                ErrorCode::Arity,
-                                "sealed operations have no static parameters",
-                            ));
-                        }
-                        self.sealed_with_source(module, expr.span, &namespace, &name, values, args)
-                    }
-                }
-            }
+            } => self.runtime_call(
+                module,
+                callee,
+                static_args,
+                RuntimeArguments::Values(args),
+                env,
+                expr.span,
+            ),
+            ExprKind::AccessCall {
+                callee,
+                static_args,
+                args,
+            } => self.exclusive_call(module, callee, static_args, args, env, expr.span),
             ExprKind::If {
                 condition,
                 then_branch,
@@ -1105,6 +1245,7 @@ impl Lowerer<'_, '_> {
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             tuple_binding_origins: Vec::new(),
+            access_updates: Vec::new(),
             effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,
@@ -1375,6 +1516,7 @@ fn lower_function_inner(
         raw: RawState::new(),
         operation_sources: BTreeMap::new(),
         tuple_binding_origins: Vec::new(),
+        access_updates: Vec::new(),
         effect: Effect::Unitary,
         effect_source: None,
         depth: 0,

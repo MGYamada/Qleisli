@@ -530,7 +530,18 @@ impl Checker<'_, '_> {
                 callee,
                 static_args,
                 args,
-            } => self.call(callee, static_args, args, scope, span)?,
+            } => self.call(
+                callee,
+                static_args,
+                RuntimeArguments::Values(args),
+                scope,
+                span,
+            )?,
+            ExprKind::AccessCall {
+                callee,
+                static_args,
+                args,
+            } => self.exclusive_call(callee, static_args, args, scope, span)?,
             ExprKind::ApplyStatic { operation, input } => {
                 let repetition = named_literal_repetition(operation);
                 if let Some((_, count, count_span)) = repetition {

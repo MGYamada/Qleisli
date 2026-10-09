@@ -1259,6 +1259,9 @@ impl Parser {
                 ExprKind::Call { args, .. } | ExprKind::Controlled { args, .. } => {
                     pending.extend(args.iter().map(|arg| (arg, depth + 1)));
                 }
+                ExprKind::AccessCall { args, .. } => {
+                    pending.extend(args.iter().map(|arg| (&arg.value, depth + 1)));
+                }
                 ExprKind::If {
                     condition,
                     then_branch,
@@ -1671,6 +1674,51 @@ impl Parser {
             }
         }
         if self.consume(&TokenKind::LParen).is_some() {
+            if matches!(&self.current().kind, TokenKind::Ident(name) if name == "excl" || name == "ctrl")
+                && matches!(
+                    self.tokens.get(self.pos + 1).map(|token| &token.kind),
+                    Some(TokenKind::Ident(_))
+                )
+            {
+                let mut args = Vec::new();
+                loop {
+                    let marker = self.ident()?;
+                    let access = match marker.text.as_str() {
+                        "excl" => QuantumAccess::Excl,
+                        "ctrl" => QuantumAccess::Ctrl,
+                        _ => {
+                            return Err(
+                                self.error("each quantum access argument requires excl or ctrl")
+                            );
+                        }
+                    };
+                    let name = self.ident()?;
+                    let span = marker.span.cover(name.span);
+                    args.push(AccessArgument {
+                        access,
+                        value: Expr {
+                            kind: ExprKind::Name(name),
+                            span,
+                        },
+                    });
+                    if args.len() > 64 {
+                        return Err(self.error("quantum access call exceeds 64 arguments"));
+                    }
+                    if self.consume(&TokenKind::Comma).is_none() {
+                        break;
+                    }
+                }
+                let close = self.expect(&TokenKind::RParen)?;
+                let span = ident.span.cover(close.span);
+                return Ok(Expr {
+                    kind: ExprKind::AccessCall {
+                        callee: ident,
+                        static_args,
+                        args,
+                    },
+                    span,
+                });
+            }
             let args = self.expr_args()?;
             let close = self.expect(&TokenKind::RParen)?;
             let span = ident.span.cover(close.span);

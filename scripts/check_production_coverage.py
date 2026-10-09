@@ -87,7 +87,9 @@ PATHS = {
         ('tests/quantum_unit_source.rs', 'selected_z_direct_inverse_and_control_preserve_reference_phase'),
         ('tests/quantum_unit_source.rs', 'selected_z_interference_matches_finite_and_rejects_wrong_interfaces'),
         ('tests/quantum_unit_source.rs', 'complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit'),
-        ('src/frontend/specialize/raw/preservation.rs', 'source_z_replay_rejects_native_valid_x_substitution')]),
+        ('src/frontend/specialize/raw/preservation.rs', 'source_z_replay_rejects_native_valid_x_substitution'),
+        ('tests/exclusive_access.rs', 'reassembled_owner_and_callee_binders_do_not_restore_old_snapshot'),
+        ('tests/exclusive_access.rs', 'exact_owner_shape_and_actual_body_effect_are_required')]),
     'contract-acceptance': path_rule('native-acceptance', 'contract finite-leaf', '--qirf-contract', [
         ('src/interchange/native/contracts.rs', ['fn check_encoded(', 'fn check_leaf(', '"--qirf-contract"']),
         ('lean-kernel/Cli/Validity.lean', ['Protocol.NativeContract.check']),
@@ -177,7 +179,10 @@ PATHS = {
         ('src/frontend/specialize/raw.rs', 'source_meaning_gate_rejects_a_native_valid_replaced_provider'),
         ('src/frontend/specialize/raw.rs', 'checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy'),
         ('tests/basis_polymorphism.rs', 'selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis'),
-        ('tests/basis_polymorphism.rs', 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase')]),
+        ('tests/basis_polymorphism.rs', 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase'),
+        ('tests/exclusive_access.rs', 'global_calls_preserve_exact_coefficient_and_external_reference'),
+        ('tests/exclusive_access.rs', 'zero_width_owner_keeps_phase_and_cannot_be_duplicated'),
+        ('tests/exclusive_access.rs', 'closed_static_branches_and_empty_fold_thread_updated_carry')]),
     'source-meaning-check': path_rule('native-acceptance', 'finite-leaf sized-source-proposal', '--qirf-contract', [
         ('src/frontend/specialize/raw.rs', ['pub struct SourceMeaningCheck', 'pub fn check_finite_meaning',
          'pub struct CheckedSourceMeanings', 'program.checked.interface(definition.original).statics',

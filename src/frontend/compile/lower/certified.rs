@@ -153,6 +153,7 @@ impl Lowerer<'_, '_> {
             raw: RawState::new(),
             operation_sources: BTreeMap::new(),
             tuple_binding_origins: Vec::new(),
+            access_updates: Vec::new(),
             effect: Effect::Unitary,
             effect_source: None,
             depth: self.depth,

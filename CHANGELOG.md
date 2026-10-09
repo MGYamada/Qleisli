@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Elaborate whole-owner `excl` calls through existing consuming operations,
+  requiring actual Unitary effects and exact ordered owner interfaces. Preserve
+  returned values across lexical scope closure; reject overlap, spent owners,
+  changed interfaces and observing calls. General views, access declarations,
+  mixed arguments and source `ctrl` remain pending.
+
 - Add an internal bounded QIRF control-sector check tied to fresh graph/root
   validation and exact reconstruction, with an exact joint-reference projector
   commutation proof. Preserve phase-sensitive positive and negative tests;

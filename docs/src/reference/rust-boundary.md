@@ -242,8 +242,47 @@ ordinary user-defined identifier with the same spelling.
 | `Default` | Unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary/static data construction and explicit quantum preparation retain their distinct contracts above; normal user functions named `default` remain checked calls. |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
-| Shared `&` / exclusive `&mut` / `ctrl` | Reference/access-expression syntax is absent. Existing controlled operations are explicit and retain their owners; control may accumulate phase or entanglement. Temporary exclusive access and basis-preserving coherent access remain in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
+| Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` calls have the rule below. Stored references, access parameter declarations, indexed views and `ctrl` source elaboration remain unsupported. Existing controlled operations are explicit; control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
 | `borrow` versus clean/dirty workspace | There is no builtin workspace `borrow` form. Access and state-restoration obligations are separate; the public terminology/reserved-word decision remains in [#71](https://github.com/MGYamada/Qleisli/issues/71). |
+
+## Whole-owner exclusive calls
+
+`h(excl q)` temporarily supplies the live lexical owner `q` to the existing
+consuming call and retains its returned quantum value on the same binder.
+The access call itself has ordinary type `Unit`. A joint call such as
+`cnot(excl c, excl t)` requires distinct owners and returns them internally
+in argument order. Each argument must name one whole `Q<A>` owner; ordinary
+data and tuples containing several owners are not access places.
+
+The callee must have actual inferred `Unitary` effect. An annotation does not
+override its body. Its result must have exactly the original owner type for
+one argument, or the ordered tuple of those owner types for several arguments.
+Exact basis trees and owner partition matter, including `Q<Unit>`; equal bit
+width is insufficient. The callee executes once. Access closure inserts no
+inverse, reset, discard, release or fresh preparation. Returned values retain
+their changed state and phase, even across a nested lexical boundary.
+
+```qli
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+
+observe fn main() -> Bit {
+    let q = init0();
+    x(excl q);
+    measure_z(q)
+}
+```
+
+No mutable-binding marker is required. Consuming `q` after the access makes it
+unavailable as usual; access cannot revive a spent or hidden owner. Duplicate
+arguments, a changed result interface and measurement through `excl` reject.
+Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
+The current call form requires every runtime argument to use an access marker;
+mixed ordinary/access arguments, indexed selections, escaping handles and
+access-parameter declarations remain unimplemented. `ctrl` markers reject
+until original-artifact sector evidence is connected to source acceptance.
+This limited implementation does not complete the general access Issues.
 
 ## Acceptance and evidence
 

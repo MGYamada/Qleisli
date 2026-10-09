@@ -380,6 +380,12 @@ impl Task<'_> {
                     .checked_add(static_args.len())
                     .and_then(|n| n.checked_add(1))
                     .unwrap_or(usize::MAX),
+                ExprKind::AccessCall {
+                    args, static_args, ..
+                } => args
+                    .len()
+                    .saturating_add(static_args.len())
+                    .saturating_add(1),
                 ExprKind::Tuple(f) => f.len(),
                 ExprKind::And(..)
                 | ExprKind::Xor(..)
@@ -700,6 +706,15 @@ where
                         args,
                     } => {
                         tasks.extend(args.iter().rev().map(Task::Expression));
+                        tasks.extend(static_args.iter().rev().map(Task::Operation));
+                        tasks.push(Task::Reference(callee));
+                    }
+                    ExprKind::AccessCall {
+                        callee,
+                        static_args,
+                        args,
+                    } => {
+                        tasks.extend(args.iter().rev().map(|arg| Task::Expression(&arg.value)));
                         tasks.extend(static_args.iter().rev().map(Task::Operation));
                         tasks.push(Task::Reference(callee));
                     }

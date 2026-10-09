@@ -123,6 +123,7 @@ pub(super) enum ExprKind {
     Name(Reference),
     Tuple(Vec<Expr>),
     Call(Reference, Vec<Argument>, Vec<Expr>),
+    AccessCall(Reference, Vec<Argument>, Vec<Expr>),
     Apply(Argument, Box<Expr>),
     Adjoint(Argument, Box<Expr>),
     Controlled(Argument, Vec<Expr>),

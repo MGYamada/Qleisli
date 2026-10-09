@@ -14,6 +14,7 @@ import Qleisli.RawFunction
 import Qleisli.RawPure
 import Qleisli.RawInstrument
 import Qleisli.Scope
+import Qleisli.ExclusiveScope
 import Qleisli.Transition
 import Qleisli.Phi
 import Qleisli.Examples

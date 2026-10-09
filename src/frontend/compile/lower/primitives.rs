@@ -5,7 +5,7 @@
 
 use super::super::{CompileError, ErrorCode, MAX_BITS, Ty};
 use super::{Lowerer, Slot, Value};
-use crate::frontend::ast::{Expr, ExprKind, Span};
+use crate::frontend::ast::{Expr, ExprKind, RuntimeArguments, Span};
 use crate::ir::{Effect, RawOp, SingleGate};
 use std::collections::BTreeSet;
 
@@ -84,7 +84,14 @@ impl Lowerer<'_, '_> {
         name: &str,
         args: Vec<Value>,
     ) -> Result<Value, CompileError> {
-        self.sealed_with_source(module, span, namespace, name, args, &[])
+        self.sealed_with_source(
+            module,
+            span,
+            namespace,
+            name,
+            args,
+            RuntimeArguments::Values(&[]),
+        )
     }
 
     pub(super) fn sealed_with_source(
@@ -94,7 +101,7 @@ impl Lowerer<'_, '_> {
         namespace: &str,
         name: &str,
         mut args: Vec<Value>,
-        source_args: &[Expr],
+        source_args: RuntimeArguments<'_>,
     ) -> Result<Value, CompileError> {
         let declaration = crate::frontend::core::primitive(namespace, name).ok_or_else(|| {
             if crate::frontend::check::primitive::Primitive::lookup(&format!("{namespace}::{name}"))
@@ -179,7 +186,7 @@ impl Lowerer<'_, '_> {
                     .iter()
                     .enumerate()
                     .map(|(index, arg)| {
-                        self.quantum_argument(module, span, arg, true, source_args.get(index))
+                        self.quantum_argument(module, span, arg, true, source_args.optional(index))
                     })
                     .collect::<Result<Vec<_>, _>>()?;
                 if slots.iter().collect::<BTreeSet<_>>().len() != slots.len() {
@@ -259,7 +266,8 @@ impl Lowerer<'_, '_> {
             "join" => {
                 let a =
                     self.quantum_argument(module, span, &args[0], false, source_args.first())?;
-                let b = self.quantum_argument(module, span, &args[1], false, source_args.get(1))?;
+                let b =
+                    self.quantum_argument(module, span, &args[1], false, source_args.optional(1))?;
                 if a == b {
                     return Err(self.error(
                         module,

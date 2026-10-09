@@ -144,6 +144,11 @@ pub struct Expr {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    AccessCall {
+        callee: Ident,
+        static_args: Vec<StaticOp>,
+        args: Vec<AccessArgument>,
+    },
     ApplyStatic {
         operation: StaticOp,
         input: Box<Expr>,
@@ -225,6 +230,52 @@ pub enum ExprKind {
         ancilla_binder: Box<Ident>,
         body: Block,
     },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum QuantumAccess {
+    Excl,
+    Ctrl,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct AccessArgument {
+    pub access: QuantumAccess,
+    pub value: Expr,
+}
+
+/// Borrow original expressions; lexical occurrence identity must survive
+/// access adaptation. No copied AST or second resolution table is created.
+#[derive(Clone, Copy)]
+pub(in crate::frontend) enum RuntimeArguments<'a> {
+    Values(&'a [Expr]),
+    Accesses(&'a [AccessArgument]),
+}
+
+impl<'a> RuntimeArguments<'a> {
+    pub(in crate::frontend) fn len(self) -> usize {
+        match self {
+            Self::Values(args) => args.len(),
+            Self::Accesses(args) => args.len(),
+        }
+    }
+
+    pub(in crate::frontend) fn get(self, index: usize) -> &'a Expr {
+        match self {
+            Self::Values(args) => &args[index],
+            Self::Accesses(args) => &args[index].value,
+        }
+    }
+
+    pub(in crate::frontend) fn iter(self) -> impl ExactSizeIterator<Item = &'a Expr> {
+        (0..self.len()).map(move |index| self.get(index))
+    }
+    pub(in crate::frontend) fn optional(self, index: usize) -> Option<&'a Expr> {
+        (index < self.len()).then(|| self.get(index))
+    }
+    pub(in crate::frontend) fn first(self) -> Option<&'a Expr> {
+        self.optional(0)
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]

@@ -33,11 +33,90 @@ pub(super) fn close_scope<'a, K: Ord>(
     Ok(())
 }
 
+/// Align only explicitly updated lexical owners before the existing closure
+/// check. Fresh/shadowed bindings and changed interfaces are never replacements.
+/// Rejection leaves the caller's entry snapshot unchanged.
+pub(super) fn close_scope_with_updates<K: Ord + Clone>(
+    entry: &mut BTreeMap<K, Binding>,
+    local: &BTreeMap<K, Binding>,
+    updates: &BTreeSet<K>,
+) -> Result<(), K> {
+    if updates.is_empty() {
+        return close_scope(entry, local, &BTreeSet::new()).map_err(Clone::clone);
+    }
+    let mut aligned = entry.clone();
+    for name in updates {
+        let Some(original) = entry.get(name) else {
+            continue;
+        };
+        let (Some(old), Some(new)) = (original.as_ref(), local.get(name).and_then(Binding::as_ref))
+        else {
+            // A subsequently consumed owner remains spent at scope closure.
+            if matches!(local.get(name), Some(Binding::Consumed)) {
+                continue;
+            }
+            return Err(name.clone());
+        };
+        if !old.owns_quantum() || !new.owns_quantum() || old.ty() != new.ty() {
+            return Err(name.clone());
+        }
+        aligned.insert(name.clone(), Binding::Live(new.clone()));
+    }
+    close_scope(&mut aligned, local, &BTreeSet::new()).map_err(Clone::clone)?;
+    *entry = aligned;
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::frontend::compile::Ty;
     use crate::ir::ClassicalId;
+
+    #[test]
+    fn authorized_update_survives_and_later_consumption_stays_spent() {
+        let original = Binding::Live(Value::quantum(0, Ty::bit()));
+        let updated = Binding::Live(Value::quantum(1, Ty::bit()));
+        let updates = BTreeSet::from(["q"]);
+        let mut entry = BTreeMap::from([("q", original.clone())]);
+        let local = BTreeMap::from([("q", updated.clone())]);
+        assert_eq!(
+            close_scope_with_updates(&mut entry, &local, &updates),
+            Ok(())
+        );
+        assert_eq!(entry["q"], updated);
+        let local = BTreeMap::from([("q", Binding::Consumed)]);
+        assert_eq!(
+            close_scope_with_updates(&mut entry, &local, &updates),
+            Ok(())
+        );
+        assert_eq!(entry["q"], Binding::Consumed);
+        assert!(
+            close_scope_with_updates(&mut entry, &BTreeMap::from([("q", original)]), &updates)
+                .is_err()
+        );
+        assert_eq!(entry["q"], Binding::Consumed);
+    }
+
+    #[test]
+    fn update_cannot_change_interface_hide_owner_or_admit_fresh_shadow() {
+        let original = BTreeMap::from([("q", Binding::Live(Value::quantum(0, Ty::bit())))]);
+        for local in [
+            BTreeMap::from([("q", Binding::Live(Value::quantum(1, Ty::unit())))]),
+            BTreeMap::new(),
+            BTreeMap::from([
+                ("q", Binding::Live(Value::quantum(1, Ty::bit()))),
+                ("shadow", Binding::Live(Value::quantum(2, Ty::bit()))),
+            ]),
+        ] {
+            let mut entry = original.clone();
+            assert!(
+                close_scope_with_updates(&mut entry, &local, &BTreeSet::from(["q", "shadow"]))
+                    .is_err()
+            );
+            assert_eq!(entry, original);
+        }
+    }
 
     // Compare the historical name-keyed projection to explicit lexical IDs.
     // Production now includes that source identity in its map keys as well.
