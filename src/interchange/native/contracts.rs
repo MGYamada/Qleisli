@@ -51,6 +51,47 @@ fn contract(value: &Contract) -> Result<Value> {
 }
 
 impl Kernel {
+    /// Independently inspect the actual call fragment selected by source replay.
+    /// No producer matrix or success receipt participates in this request.
+    pub(crate) fn check_control_owners(
+        &self,
+        raw: &RawProgram,
+        signatures: &[BasisType],
+        axes: &[usize],
+        budget: &mut crate::contract::exact::Budget,
+    ) -> Result<NativeChecked> {
+        let proposal = Proposal::from_raw(raw, None, Version::V2, None)?;
+        let mut encoder = Encoder::new(Version::V2);
+        let request = json::encode(&Value::object([
+            ("format", Value::String("qleisli.native-contract".into())),
+            ("version", Value::Number(1)),
+            ("kind", Value::String("control-owners".into())),
+            (
+                "signatures",
+                Value::Array(
+                    signatures
+                        .iter()
+                        .map(|signature| signature.write(&mut encoder))
+                        .collect::<Result<_>>()?,
+                ),
+            ),
+            (
+                "axes",
+                Value::Array(
+                    axes.iter()
+                        .map(|axis| Value::Number(*axis as u64))
+                        .collect(),
+                ),
+            ),
+        ]))?;
+        let accepted = self.inspect_mode(proposal.artifact(), Some(&request), "--qirf-contract")?;
+        budget
+            .charge(accepted.exact_work())
+            .map_err(crate::contract::ContractError::from)
+            .map_err(super::super::contract_error)?;
+        Ok(accepted)
+    }
+
     pub(crate) fn check_encoded(
         &self,
         circuit: &Circuit,

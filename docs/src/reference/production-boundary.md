@@ -133,6 +133,18 @@ Raw source-step replay, inspect those roles and the exact owner interface.
 They reject an unchecked `ctrl` role before producing or validating transport;
 retaining a role is an obligation, not basis-sector evidence.
 
+The internal Raw replay bridge can discharge a retained control obligation
+using the checker associated with the accepted original artifact. It selects
+the actual instruction interval consumed by replay, its input/returned tokens
+and ordered source basis forest, then submits a fresh `control-owners` request.
+It does not take a producer-supplied call body, matrix or success receipt.
+Control replay without a native checker refuses. Work is shared across these
+decisions within the existing exact-work ceiling. Regression tests inject
+control roles into private source-step graphs; they establish this component's
+behavior, not public source `ctrl` support. AST-to-step preservation, Rust
+decoding/interval extraction and final lowering integration remain separate
+obligations; this host bridge is not a new Lean source-preservation theorem.
+
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a
 validation record. These identity and proof checks do not admit a new guarantee,

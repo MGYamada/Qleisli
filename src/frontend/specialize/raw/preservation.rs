@@ -124,6 +124,8 @@ struct Argument<'a> {
 struct Replay<'a> {
     source: &'a ElaboratedProgram,
     raw: &'a RawProgram,
+    kernel: Option<&'a crate::interchange::native::Kernel>,
+    control_work: crate::contract::exact::Budget,
     cursor: usize,
     calls: usize,
     steps: usize,
@@ -135,6 +137,96 @@ struct Replay<'a> {
 }
 
 impl Replay<'_> {
+    fn control_call(
+        &mut self,
+        step: &SourceStep,
+        inputs: &[Argument<'_>],
+        outputs: &[Atom],
+        first: usize,
+        site: Site<'_>,
+    ) -> Result<()> {
+        use crate::frontend::ast::QuantumAccess;
+        if !step.access_roles().contains(&QuantumAccess::Ctrl) {
+            return Ok(());
+        }
+        let kernel = self.kernel.ok_or_else(|| {
+            site.error(
+                "unsupported",
+                "ctrl source replay requires a fresh native sector decision",
+            )
+        })?;
+        self.charge(self.cursor - first + inputs.len() + outputs.len(), site)?;
+        let mut ports = Vec::new();
+        let mut signatures = Vec::new();
+        let mut axes = Vec::new();
+        let mut offset = 0;
+        for (input, role) in inputs.iter().zip(step.access_roles()) {
+            let [Atom::Quantum(token, wires)] = input.atoms.as_slice() else {
+                return Err(site.invalid("control call argument is not one quantum owner"));
+            };
+            let basis = input
+                .ty
+                .quantum_basis()
+                .ok_or_else(|| site.invalid("control call loses its source basis tree"))?;
+            self.charge(
+                basis
+                    .storage_size(4096, 64)
+                    .ok_or_else(|| {
+                        site.error("limit", "control call basis exceeds source storage limits")
+                    })?
+                    .nodes
+                    + wires.len(),
+                site,
+            )?;
+            signatures.push(super::finite_basis(basis).ok_or_else(|| {
+                site.error(
+                    "unsupported",
+                    "control call basis is outside the finite profile",
+                )
+            })?);
+            ports.push(crate::ir::QuantumPort {
+                token: *token,
+                wires: wires.to_vec(),
+                shape: crate::ir::BasisShape {
+                    bits: wires.len() as u8,
+                },
+            });
+            if *role == QuantumAccess::Ctrl {
+                axes.extend(offset..offset + wires.len());
+            }
+            offset += wires.len();
+        }
+        let returned = outputs
+            .iter()
+            .map(|output| match output {
+                Atom::Quantum(token, _) => Ok(*token),
+                _ => Err(site.invalid("control call returns an ordinary value")),
+            })
+            .collect::<Result<Vec<_>>>()?;
+        if returned.len() != ports.len() {
+            return Err(site.invalid("control call changes its ordered owner partition"));
+        }
+        // This is the actual interval just consumed by independent source replay,
+        // with its actual tokens/wires. No producer-supplied call body is used.
+        let call = RawProgram {
+            quantum_inputs: ports,
+            classical_inputs: vec![],
+            operations: self.raw.operations[first..self.cursor].to_vec(),
+            quantum_outputs: returned,
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        kernel
+            .check_control_owners(&call, &signatures, &axes, &mut self.control_work)
+            .map_err(|error| {
+                site.error(
+                    error.code,
+                    format!("ctrl requires exact computational-basis sector preservation: {error}"),
+                )
+            })?;
+        Ok(())
+    }
+
     fn access(
         &mut self,
         operation: &SourceOperation,
@@ -985,7 +1077,7 @@ impl Replay<'_> {
             .map(|(t, w)| (*t, w.clone()))
             .collect();
         for step in definition.steps() {
-            step.check_access_contract()?;
+            step.check_access_shape()?;
             self.steps += 1;
             let site = Site {
                 module: step.module(),
@@ -1006,6 +1098,7 @@ impl Replay<'_> {
                     atoms: self.read(input, &mut environment, site)?,
                 });
             }
+            let first_instruction = self.cursor;
             let output = if let Some(operation) = step.boolean() {
                 if step_effect != Effect::Unitary || !matches!(step.output().ty().kind, Kind::Bit) {
                     return Err(site.invalid("Boolean source result or effect differs"));
@@ -1080,6 +1173,7 @@ impl Replay<'_> {
                     "Raw replay does not support this source operation capability",
                 ));
             };
+            self.control_call(step, &inputs, &output, first_instruction, site)?;
             self.bind(step.output(), &output, &mut environment, site)?;
         }
         let output = self.read(definition.output(), &mut environment, site)?;
@@ -1121,6 +1215,16 @@ pub(super) fn validate_subject(
     operation: Option<&SourceOperation>,
     raw: &RawProgram,
 ) -> Result<()> {
+    validate_subject_with_kernel(source, subject, operation, raw, None)
+}
+
+pub(super) fn validate_subject_with_kernel(
+    source: &ElaboratedProgram,
+    subject: usize,
+    operation: Option<&SourceOperation>,
+    raw: &RawProgram,
+    kernel: Option<&crate::interchange::native::Kernel>,
+) -> Result<()> {
     let definition = source
         .definitions()
         .get(subject)
@@ -1159,6 +1263,8 @@ pub(super) fn validate_subject(
     let mut replay = Replay {
         source,
         raw,
+        kernel,
+        control_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
         cursor: 0,
         calls: 0,
         steps: 0,

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect retained source access obligations to fresh native checking of the
+  actual Raw call interval read by source-step replay, with ordered original
+  owner ports and basis trees. Public source `ctrl` remains unsupported pending
+  complete lowering integration.
+
 - Retain original ordered access roles through selected source projection and
   elaboration. Recheck the exact owner interface before Raw or hierarchical
   lowering and source replay; unchecked `ctrl` roles remain unsupported.

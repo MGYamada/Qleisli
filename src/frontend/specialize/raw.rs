@@ -296,7 +296,7 @@ impl RawSourceProposal {
                 "checked leaf differs from actual source artifact".into(),
             ));
         }
-        self.replay(leaf.program().raw())?;
+        self.replay(leaf.program())?;
         Ok(SourceMeaningCheck {
             source: self,
             required,
@@ -343,7 +343,7 @@ impl RawSourceProposal {
             .as_ref()?
             .select(&self.source, self.operation_depth)
     }
-    fn replay(&self, raw: &RawProgram) -> Result<()> {
+    fn replay(&self, accepted: &native::AcceptedProgram) -> Result<()> {
         let operation = if self.binding.is_some() {
             Some(self.operation().ok_or_else(|| {
                 invalid(
@@ -354,7 +354,13 @@ impl RawSourceProposal {
         } else {
             None
         };
-        preservation::validate_subject(&self.source, self.subject, operation, raw)
+        validate_source_with_kernel(
+            &self.source,
+            self.subject,
+            operation,
+            accepted.raw(),
+            &accepted.kernel(),
+        )
     }
     /// Compare the actual native-accepted artifact with retained ordered source
     /// steps. This issues no execution handle and proves no AST-to-step theorem.
@@ -367,8 +373,18 @@ impl RawSourceProposal {
                 "native accepted artifact differs from the source-bound Raw proposal",
             ));
         }
-        self.replay(accepted.raw())
+        self.replay(accepted)
     }
+}
+
+pub(super) fn validate_source_with_kernel(
+    source: &ElaboratedProgram,
+    subject: usize,
+    operation: Option<&super::SourceOperation>,
+    raw: &RawProgram,
+    kernel: &native::Kernel,
+) -> Result<()> {
+    preservation::validate_subject_with_kernel(source, subject, operation, raw, Some(kernel))
 }
 
 fn located(source: &ElaboratedProgram, id: usize, span: Span, message: &str) -> Error {

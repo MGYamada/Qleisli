@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "7970cc8f4c2dad02c435578afdb0ca0c4264217416137a28b7bdf4759a1022fc",
+  "surface_sha256": "b913c7294a6325767d1d02fd06fd9bd1a9a95afe373e0004fb0ae351e82404c9",
   "groups": [
     {
       "id": "raw-core",
@@ -2964,9 +2964,11 @@
             "operation.meanings.iter()",
             "lower_operation_site(source, site.clone(), depth)?",
             "finite_leaf::check_with_kernel",
-            "self.replay(leaf.program().raw())?",
+            "self.replay(leaf.program())?",
             "original operation binding is absent during replay",
-            "preservation::validate_subject(&self.source, self.subject, operation, raw)"
+            "accepted.artifact() != self.payload",
+            "self.replay(accepted)",
+            "preservation::validate_subject_with_kernel(source, subject, operation, raw, Some(kernel))"
           ]
         },
         {
@@ -2976,7 +2978,10 @@
             "Primitive::Split",
             "Primitive::Join",
             "Raw split changes its owner or exact ordered partition",
-            "Raw join changes or aliases its ordered owners"
+            "Raw join changes or aliases its ordered owners",
+            "self.control_call(step, &inputs, &output, first_instruction, site)?",
+            "self.raw.operations[first..self.cursor].to_vec()",
+            ".check_control_owners(&call, &signatures, &axes, &mut self.control_work)"
           ]
         },
         {
@@ -3065,6 +3070,18 @@
         {
           "path": "src/frontend/specialize/raw.rs",
           "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "native_replay_checks_actual_call_sectors_instead_of_effect_annotation"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "native_control_replay_checks_only_the_consumed_call_and_has_no_fallback"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase"
         }
       ],
       "entry_path": "RawSourceProposal::check_finite_meaning",

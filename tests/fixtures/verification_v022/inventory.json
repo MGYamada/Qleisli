@@ -3983,7 +3983,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "36624efa324ff8bb8bfcc8020d4cd9d6962f96c4abb1de39ced81f5adf2a2b7b",
+      "sha256": "80aa58fec375f66678ef45dd3f1b02094184f07726967eb694d06e1978be9ef7",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4210,7 +4210,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "a2b05aa6bd71c5f9db0e895a83f78f27eb246604401fc0b775fefc141ac0bf1e",
+      "sha256": "2c30dd6fb544eff475a5c657166e96729883cf84fa96e938d1568aa43fb56d06",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4259,7 +4259,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "38e58c15e60313fe8d58230b2e54f239c4b5347ba17262620cba6c2675bb7cf9",
+      "sha256": "d908b291a400af37578ea4d4d7866a0e942055606bde49a91fbc2f1447378589",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4673,7 +4673,7 @@
     },
     {
       "path": "src/interchange/native/contracts.rs",
-      "sha256": "54a8b0a7591c95babd7b5d2c8671eb1f312f88812fb9d2e0362e1857b2548d12",
+      "sha256": "bbada3f6335e308eb56acb01a451a8919afb9389673f9e97d0a410f709f3ec4b",
       "group": "finite-contract",
       "surface": {
         "declarations": [],

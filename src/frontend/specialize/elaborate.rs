@@ -222,6 +222,10 @@ enum StepKind {
     Controlled(SourceOperation),
 }
 impl SourceStep {
+    pub(super) fn access_roles(&self) -> &[crate::frontend::ast::QuantumAccess] {
+        &self.accesses
+    }
+
     // A retained role is a checking obligation, never evidence of preservation.
     // Both transport profiles must inspect it before generating a proposal.
     pub(super) fn check_access_contract(&self) -> Result<()> {
@@ -236,6 +240,14 @@ impl SourceStep {
                 "ctrl source access requires independently bound basis-sector evidence; source lowering is not yet supported",
             ));
         }
+        self.check_access_shape()
+    }
+
+    pub(super) fn check_access_shape(&self) -> Result<()> {
+        if self.accesses.is_empty() {
+            return Ok(());
+        }
+        let error = |code, message| Error::new(code, self.span, message).in_module(&self.module);
         let outputs = if self.inputs.len() == 1 {
             std::slice::from_ref(&self.output)
         } else {
@@ -2324,6 +2336,124 @@ mod access_role_tests {
         .unwrap()
         .elaborate()
         .unwrap()
+    }
+
+    #[test]
+    fn native_replay_checks_actual_call_sectors_instead_of_effect_annotation() {
+        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        let mut source = source();
+        let proposal = source.lower_raw().unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        // Inject a future role only into a private test graph. Public source
+        // ctrl remains unsupported; no source admission is asserted here.
+        let mut definitions = source.definitions.to_vec();
+        definitions[source.root].steps[0].accesses[0] = QuantumAccess::Ctrl;
+        source.definitions = definitions.into();
+        super::super::raw::validate_source_with_kernel(
+            &source,
+            source.root,
+            None,
+            accepted.raw(),
+            &kernel,
+        )
+        .unwrap();
+        // The same actually Unitary CNOT changes its target's basis sector.
+        let mut definitions = source.definitions.to_vec();
+        definitions[source.root].steps[0].accesses = vec![QuantumAccess::Excl, QuantumAccess::Ctrl];
+        source.definitions = definitions.into();
+        assert_eq!(
+            super::super::raw::validate_source_with_kernel(
+                &source,
+                source.root,
+                None,
+                accepted.raw(),
+                &kernel,
+            )
+            .unwrap_err()
+            .code(),
+            "contract"
+        );
+    }
+
+    #[test]
+    fn native_control_replay_checks_only_the_consumed_call_and_has_no_fallback() {
+        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        let mut source = ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "use std::quantum::{h,cnot};pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){h(excl c);cnot(excl c,excl t);(c,t)}".into(),
+        )])).unwrap().instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+            .unwrap().elaborate().unwrap();
+        let proposal = source.lower_raw().unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        let mut definitions = source.definitions.to_vec();
+        definitions[source.root].steps[1].accesses[0] = QuantumAccess::Ctrl;
+        source.definitions = definitions.into();
+        // H precedes the CNOT call. It is not part of that call's sector
+        // obligation, even though it acts on the same original owner.
+        super::super::raw::validate_source_with_kernel(
+            &source,
+            source.root,
+            None,
+            accepted.raw(),
+            &kernel,
+        )
+        .unwrap();
+        // An existing directory cannot be launched as a native checker.
+        let unavailable = crate::interchange::native::Kernel::new(env!("CARGO_MANIFEST_DIR"));
+        assert!(
+            super::super::raw::validate_source_with_kernel(
+                &source,
+                source.root,
+                None,
+                accepted.raw(),
+                &unavailable,
+            )
+            .is_err()
+        );
+        // A valid artifact with a different complete output order still fails
+        // independent replay, even when the call itself preserves its sectors.
+        let mut wrong = accepted.raw().clone();
+        wrong.quantum_outputs.swap(0, 1);
+        let wrong = kernel.accept_raw(wrong).unwrap();
+        assert_eq!(
+            super::super::raw::validate_source_with_kernel(
+                &source,
+                source.root,
+                None,
+                wrong.raw(),
+                &kernel,
+            )
+            .unwrap_err()
+            .code(),
+            "preservation"
+        );
+    }
+
+    #[test]
+    fn native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase() {
+        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        for (basis, operation, expected) in [
+            ("Bit", "h", Some("contract")),
+            ("Unit", "phase_eighth", None),
+        ] {
+            let mut source = ParsedProgram::parse(BTreeMap::from([("main".into(), format!(
+                "use std::quantum::{operation};pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(excl q);q}}"
+            ))])).unwrap().instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                .unwrap().elaborate().unwrap();
+            let proposal = source.lower_raw().unwrap();
+            let accepted = kernel.accept(proposal.proposal()).unwrap();
+            let mut definitions = source.definitions.to_vec();
+            definitions[source.root].steps[0].accesses[0] = QuantumAccess::Ctrl;
+            source.definitions = definitions.into();
+            let result = super::super::raw::validate_source_with_kernel(
+                &source,
+                source.root,
+                None,
+                accepted.raw(),
+                &kernel,
+            );
+            assert_eq!(result.as_ref().err().map(|e| e.code()), expected);
+        }
     }
 
     #[test]
