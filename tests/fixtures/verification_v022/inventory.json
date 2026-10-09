@@ -2761,7 +2761,7 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "d80e1754287c2daec853f032cd475240942a182bf6bd3743410ce079c9a7245f",
+      "sha256": "5c0808f587ac382c6bb54565c99d0b2bdeb4aa050c54b464351166433d8f800d",
       "group": "hierarchy",
       "surface": null
     },
@@ -4943,13 +4943,19 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
-      "sha256": "14c8afb00e630c506e2e61206d63c714cf7102f24636da469e5c54e8e2c83e1e",
+      "sha256": "57064f8ffbc08a5f4c960970db87e540c119f8a54533bcc31abe595aadc804c5",
       "group": "finite-leaf",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/ControlAccess.lean",
       "sha256": "5db2710734301c39647f4953090f1f0198f51d4a810bd46096de2bf414d05e51",
+      "group": "finite-meaning",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/ControlAccess.lean",
+      "sha256": "1354ef774249b9da05a277bb3b6f0f071ddf6e99a52274edffe3685fbf5addec",
       "group": "finite-meaning",
       "surface": null
     }

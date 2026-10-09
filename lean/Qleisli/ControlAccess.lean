@@ -1,4 +1,5 @@
 import Qleisli.Semantics.Exact
+import Qleisli.QirfValidity
 import QleisliKernel.Qirf.ControlAccess
 import Mathlib.Algebra.BigOperators.Ring.List
 
@@ -10,6 +11,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.ControlAccess
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
 open QleisliKernel.Semantics.ControlAccess Qleisli.Semantics.Exact
+open scoped Matrix
 
 theorem zero_scalar (value : Scalar) (h : Zero value) : scalar value = 0 := by
   rcases h with ⟨ha,hb,hc,hd⟩
@@ -65,6 +67,49 @@ theorem checked_action_project (artifact : QleisliKernel.Qirf.Artifact)
       project axes sector (action matrix joint) row reference := by
   obtain ⟨_,_,_,_,_,_,_,_,_,_,preserves⟩ :=
     QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ ok
+  exact action_project matrix axes preserves joint row hr sector reference
+
+/-- Meaning of the actual multi-owner action. The owner forest is an explicit
+request, not a type tree inferred from Raw bit widths. Its source/AST binding
+remains a separate obligation before public source control access is admitted. -/
+structure OwnersMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (root : QleisliKernel.Qirf.Validity.Root) (signatures : List Basis)
+    (axes : List Nat) (actual : Matrix) : Prop where
+  rootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order root
+  forest : QleisliKernel.Qirf.ControlAccess.ownerInterface root signatures = true
+  body : Qleisli.Semantics.ObservingFunction.BodyMeaning root.dependencies root.program actual
+  sectors : PreservesSectors actual axes
+  leftInverse : (Qleisli.Finite.square actual)ᴴ * Qleisli.Finite.square actual = 1
+  rightInverse : Qleisli.Finite.square actual * (Qleisli.Finite.square actual)ᴴ = 1
+
+theorem checked_owners_meaning (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (signatures : List Basis) (axes : List Nat) (actual : Matrix)
+    (work left : Nat)
+    (ok : (QleisliKernel.Qirf.ControlAccess.checkOwners artifact order signatures axes).run work =
+      (.ok actual,left)) :
+    ∃ root, OwnersMeaning artifact order root signatures axes actual := by
+  obtain ⟨root,a,b,c,rootAccepted,_,forest,preflight,reconstructed,unitary,_,sectors⟩ :=
+    QleisliKernel.Qirf.ControlAccess.checkOwners_bound _ _ _ _ _ _ _ ok
+  have rootMeaning := Qleisli.Qirf.Validity.root_meaning _ _ _ _
+    (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ rootAccepted)
+  have closed : root.program.classicalInputs = [] := by
+    simp only [QleisliKernel.Qirf.ControlAccess.ownersPreflight,Bool.and_eq_true,
+      List.isEmpty_iff] at preflight
+    exact preflight.1.1.2
+  have body := Qleisli.Raw.BranchFunction.reconstruct_denotes _ _ closed _ _ _ reconstructed
+  have inverses := Qleisli.Finite.wholeSpace_unitary _ _ _ unitary
+  exact ⟨root,rootMeaning,forest,body,sectors,inverses.1,inverses.2⟩
+
+theorem checked_owners_action_project (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array Nat) (signatures : List Basis) (axes : List Nat) (matrix : Matrix)
+    (work left : Nat)
+    (ok : (QleisliKernel.Qirf.ControlAccess.checkOwners artifact order signatures axes).run work =
+      (.ok matrix,left)) {R : Type} (joint : Nat → R → ℂ) (row : Nat)
+    (hr : row ∈ List.range matrix.rows) (sector : Nat) (reference : R) :
+    action matrix (project axes sector joint) row reference =
+      project axes sector (action matrix joint) row reference := by
+  obtain ⟨_,_,_,_,_,_,_,_,_,_,_,preserves⟩ :=
+    QleisliKernel.Qirf.ControlAccess.checkOwners_bound _ _ _ _ _ _ _ ok
   exact action_project matrix axes preserves joint row hr sector reference
 
 end Qleisli.ControlAccess

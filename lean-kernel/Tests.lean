@@ -69,6 +69,41 @@ example : ((Qirf.ControlAccess.check (original pair cnot) #[] pair [0]).run 2000
 example : ((Qirf.ControlAccess.checkMatrix 1 ⟨2,2,[]⟩ [0]).run 2000000).1.isOk = false := by cbv
 example : ((Qirf.ControlAccess.checkMatrix 0 ⟨1,1,[Scalar.one]⟩ [0]).run 2000000).1.isOk = false := by cbv
 
+-- Multi-owner checks retain original ports; no packing wrapper is constructed.
+private def separateCnot : Qirf.Artifact :=
+  ⟨#[⟨[⟨0,[7],1⟩,⟨1,[19],1⟩],[],[.pure (.cnot 0 1 2 3)],
+    [2,3],[],.unitary⟩],#[],#[],0,none⟩
+private def acceptsOwners (artifact : Qirf.Artifact) (signatures : List Basis)
+    (axes : List Nat) : Bool :=
+  ((Qirf.ControlAccess.checkOwners artifact #[0] signatures axes).run 2000000).1.isOk
+example : acceptsOwners separateCnot [[.bit],[.bit]] [0] = true := by decide +kernel
+example : acceptsOwners separateCnot [[.bit],[.bit]] [1] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.bit],[.bit]] [0,0] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.bit],[.bit]] [2] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.pair,.bit,.bit]] [0] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.unit],[.bits 2]] [0] = false := by decide +kernel
+example : acceptsOwners separateCnot [] [0] = false := by decide +kernel
+example : acceptsOwners {separateCnot with programs :=
+    #[⟨[⟨0,[7],1⟩,⟨1,[19],1⟩],[],[.pure (.cnot 0 1 2 3)],
+      [3,2],[],.unitary⟩]} [[.bit],[.bit]] [0] = false := by decide +kernel
+example : acceptsOwners {separateCnot with rootInterface := some (pair,pair)}
+    [[.bit],[.bit]] [0] = false := by decide +kernel
+example : acceptsOwners {separateCnot with programs :=
+    #[⟨[⟨0,[7],1⟩,⟨1,[19],1⟩],[],[.pure (.gate .h 0 2)],
+      [2,1],[],.unitary⟩]} [[.bit],[.bit]] [0] = false := by decide +kernel
+-- Logical zero-width owners and their ordered partition are retained.
+private def unitControl : Qirf.Artifact :=
+  ⟨#[⟨[⟨0,[],0⟩,⟨1,[19],1⟩],[],
+    [.pure (.applyUnitary 0 2 [⟨[],.monomial [] [0] [4]⟩])],
+    [2,1],[],.unitary⟩],#[],#[],0,none⟩
+example : acceptsOwners unitControl [[.unit],[.bit]] [] = true := by decide +kernel
+example : acceptsOwners unitControl [[.bit],[.unit]] [] = false := by decide +kernel
+example : acceptsOwners {unitControl with programs :=
+    #[⟨[⟨0,[],0⟩,⟨1,[19],1⟩],[],
+      [.pure (.applyUnitary 0 2 [⟨[],.monomial [] [0] [4]⟩])],
+      [1,2],[],.unitary⟩]} [[.unit],[.bit]] [] = false := by decide +kernel
+example : ((Qirf.ControlAccess.checkOwners separateCnot #[0] [[.bit],[.bit]] [0]).run 0).1.isOk = false := by cbv
+
 end ControlAccessTests
 
 namespace InterferenceTests

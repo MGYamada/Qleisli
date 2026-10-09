@@ -80,4 +80,71 @@ theorem check_bound (artifact : Artifact) (order : Array Nat) (signature : Basis
   exact ⟨root,a,b,c,hr,beq_iff_eq.mp interface,preflight,hm,hu,hs,
     checkMatrix_sectors _ _ _ _ _ hs⟩
 
+/-- Preserve the exact owner forest rather than flattening its type trees.
+This describes the requested interface, not source-type inference from widths. -/
+def ownerSignature (signatures : List Basis) : Basis :=
+  match signatures with
+  | [signature] => signature
+  | [left,right] => .pair :: (left ++ right)
+  | _ => .tuple signatures.length :: signatures.flatten
+
+/-- Ordered ports are taken from the original checked root. Zero-width owners
+still occupy a forest position. Equal total bit width cannot replace a port. -/
+def ownerInterface (root : Validity.Root) (signatures : List Basis) : Bool :=
+  !signatures.isEmpty && signatures.length ≤ 64 &&
+    root.program.inputs.length == signatures.length &&
+    root.program.outputs.length == signatures.length &&
+    (root.program.inputs.zip signatures).all (fun (port,signature) =>
+      basisValid signature && port.bits == width signature && port.wires.length == width signature) &&
+    (root.program.outputs.zip signatures).all (fun (token,signature) =>
+      ((root.checked.state.quantum.live.find? (·.token == token)).map fun port =>
+        port.bits == width signature && port.wires.length == width signature).getD false)
+
+def ownersPreflight (program : Semantics.Observation.Program) : Bool :=
+  program.effect == .unitary && program.classicalInputs.isEmpty &&
+    program.classicalOutputs.isEmpty && (Raw.BranchFunction.preflightOps 33 program.operations).isSome
+
+/-- The original multi-owner call is checked directly. No synthetic packing,
+routing, matrix or producer receipt is substituted for its emitted operations.
+The optional ordinary single-port root interface is absent for this request. -/
+def checkOwners (artifact : Artifact) (order : Array Nat) (signatures : List Basis)
+    (axes : List Nat) : WorkM Matrix := do
+  let root ← Validity.checkRoot artifact order
+  guard (artifact.rootInterface.isNone && ownerInterface root signatures) .request
+  guard (ownersPreflight root.program) .limit
+  let actual ← Raw.BranchFunction.reconstruct root.dependencies root.program
+  wholeSpace actual
+  checkMatrix (width (ownerSignature signatures)) actual axes
+  return actual
+
+/-- Bind the forest/sector result to the same original root, dependencies,
+returned ports, reconstructed action and continuous work states. -/
+theorem checkOwners_bound (artifact : Artifact) (order : Array Nat) (signatures : List Basis)
+    (axes : List Nat) (actual : Matrix) (work left : Nat)
+    (ok : (checkOwners artifact order signatures axes).run work = (.ok actual,left)) :
+    ∃ root a b c,
+      (Validity.checkRoot artifact order).run work = (.ok root,a) ∧
+      artifact.rootInterface.isNone = true ∧ ownerInterface root signatures = true ∧
+      ownersPreflight root.program = true ∧
+      (Raw.BranchFunction.reconstruct root.dependencies root.program).run a = (.ok actual,b) ∧
+      (wholeSpace actual).run b = (.ok (),c) ∧
+      (checkMatrix (width (ownerSignature signatures)) actual axes).run c = (.ok (),left) ∧
+      PreservesSectors actual axes := by
+  obtain ⟨root,a,hr,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,a₁,hi,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨interface,same₁⟩ := guard_success _ _ _ _ hi
+  subst a₁
+  obtain ⟨_,a₂,hp,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨preflight,same₂⟩ := guard_success _ _ _ _ hp
+  subst a₂
+  obtain ⟨matrix,b,hm,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,c,hu,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,d,hs,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨value,same⟩ := pure_success _ _ _ _ h
+  subst actual
+  subst d
+  simp only [Bool.and_eq_true] at interface
+  exact ⟨root,a,b,c,hr,interface.1,interface.2,preflight,hm,hu,hs,
+    checkMatrix_sectors _ _ _ _ _ hs⟩
+
 end QleisliKernel.Qirf.ControlAccess

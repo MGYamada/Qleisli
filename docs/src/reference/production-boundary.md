@@ -110,6 +110,17 @@ lowering/execution correspondence and quantitative resource/scheduling claims
 remain separate obligations. No new native mode, external schema admission or
 constitutional guarantee is introduced.
 
+The internal `Qirf.ControlAccess.checkOwners` component additionally checks
+an original call with several ordered quantum ports, without constructing a
+single-port packing wrapper. Its explicit requested basis forest must match
+the original input and live returned owner widths and positions, including
+zero-width owners. `checked_owners_meaning` and `checked_owners_action_project`
+bind the actual root/dependencies and full complex action to the sector law.
+Raw bit widths do not establish source type trees: the requested forest still
+requires binding to the original checked source. This component has no native
+request dispatcher or source admission path yet; it supplies no authority to
+accept a `ctrl` annotation.
+
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a
 validation record. These identity and proof checks do not admit a new guarantee,
