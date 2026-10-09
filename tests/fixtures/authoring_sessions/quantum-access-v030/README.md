@@ -43,11 +43,22 @@ The seven corrected `--ir-profile=raw` baseline calls accepted exclusive access,
 refused control as unsupported and rejected overlap. Seven later calls under
 `selected-access-after/` admit the entangled/kickback sources and reproduce
 00/11 and 10/11 with probability 1/2; overlap still refuses. There are now
-**70 observations**, including the seven explicitly separated usage errors.
+**70 observations** at that checkpoint, including the seven explicitly
+separated usage errors.
 The largest deviation in these selected runs is below 3e-16. These are bounded
 source/check/run observations, not general access support or source proofs.
 The checked Raw path retains unsupported original obligations without concrete
 intervals; checker-free emission and hierarchical control remain unsupported.
+
+The unused-body continuation preserves two informed private-function probes
+in `attempt-05/`, with two original unsupported checks under
+`unused-control-before/`. Three appended observations under
+`unused-control-after/` check and run the unused diagonal body (the unchanged
+public main returns 0 with probability 1), and reject the unused H body for
+its actual sector violation at the original call. The total is now **75
+observations**. Original resolved identities select additional closed audit
+bodies without changing the public execution root or supplying static bindings.
+These observations do not establish generic access or source preservation.
 
 [session.json](session.json) binds each complete source/manifest snapshot and
 raw observation. The existing authoring checker validates record integrity;

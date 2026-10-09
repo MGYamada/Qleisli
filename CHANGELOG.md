@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Check unused closed control-bearing functions and their concrete dependencies
+  in selected Raw lowering, using original resolved identities and shared
+  elaboration/native budgets. Preserve the public execution root and recheck
+  additional Meaning obligations; unclosed generics and inactive control calls
+  still refuse without substituted evidence.
+
 - Connect retained concrete whole-owner `ctrl` calls to selected Raw checking
   and execution through fresh native artifact/sector checks and source replay.
   Check every retained specialization and zero-count provider body under one

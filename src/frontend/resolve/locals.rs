@@ -82,6 +82,12 @@ pub(in crate::frontend) struct Table {
     scopes: Vec<Option<ScopeId>>,
 }
 impl Table {
+    /// Original resolved occurrences, including references in inactive branches.
+    /// Callers must bound traversal; diagnostic candidates are not resolution.
+    pub(in crate::frontend) fn resolved_uses(&self) -> &[UseInfo] {
+        &self.uses
+    }
+
     pub fn binder(&self, id: BinderId) -> &BinderInfo {
         assert_eq!(
             id.definition, self.definition,

@@ -67,6 +67,133 @@ fn checked_raw(source: &str, entry: &str) -> qleisli::interchange::native::Accep
 }
 
 #[test]
+fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    let kernel = Kernel::selected().unwrap();
+    let ordinary = "pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}";
+    let baseline = selected(ordinary)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower_raw()
+        .unwrap();
+    for unused in [
+        "unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}",
+        "unitary fn oracle[const N:Nat](q:Q<Bit>)->Q<Bit>{z(ctrl q);q}
+         unitary fn unused(q:Q<Bit>)->Q<Bit>{oracle[1](q)}",
+        "unitary fn oracle[const N:Nat](q:Q<Bit>)->Q<Bit>{z(ctrl q);q}
+         unitary fn unused(q:Q<Bit>)->Q<Bit>{oracle[1](q)}
+         unitary fn other(q:Q<Bit>)->Q<Bit>{oracle[2](q)}",
+    ] {
+        let text = format!("use std::quantum::z;{unused}{ordinary}");
+        let parsed = selected(&text);
+        assert!(
+            parsed
+                .instantiate("main::unused", BTreeMap::new(), BTreeMap::new())
+                .is_err()
+        );
+        let source = parsed
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let before = source.definitions().len();
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let proposal = source.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
+        assert_eq!(
+            source.definitions().len(),
+            before,
+            "immutable original graph"
+        );
+        assert!(proposal.source().definitions().len() > before);
+        assert_eq!(
+            proposal.source().definitions()[proposal.source().root()].path(),
+            "main::main"
+        );
+        assert_eq!(
+            proposal.proposal().artifact(),
+            baseline.proposal().artifact(),
+            "unchanged execution root: {text}"
+        );
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+        let spent = DEFAULT_EXACT_WORK - budget.remaining();
+        assert_eq!(
+            source
+                .lower_raw_with_kernel(&kernel, &mut Budget::new(spent - 1))
+                .unwrap_err()
+                .code(),
+            "limit"
+        );
+        assert_eq!(
+            source
+                .lower_raw_with_kernel(
+                    &Kernel::new(env!("CARGO_MANIFEST_DIR")),
+                    &mut Budget::new(DEFAULT_EXACT_WORK)
+                )
+                .unwrap_err()
+                .code(),
+            "io"
+        );
+        assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+    }
+}
+
+#[test]
+fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    for (body, code) in [
+        ("unitary fn unused[const N:Nat](q:Q<Bit>)->Q<Bit>{z(ctrl q);q}", "unsupported"),
+        ("unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}
+          unitary fn bad(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}", "contract"),
+        ("unitary fn oracle[const N:Nat](q:Q<Bit>)->Q<Bit>{h(ctrl q);q}
+          unitary fn unused(q:Q<Bit>)->Q<Bit>{oracle[1](q)}", "contract"),
+        ("unitary fn oracle[const N:Nat](q:Q<Bit>)->Q<Bit>{qfor static i in 0..N carry r=q{z(ctrl r);yield r;}}
+          unitary fn unused(q:Q<Bit>)->Q<Bit>{oracle[0](q)}
+          unitary fn other(q:Q<Bit>)->Q<Bit>{oracle[1](q)}", "unsupported"),
+        ("unitary fn unused(q:Q<Bit>)->Q<Bit>{if static 0==0 {q}else{z(ctrl q);q}}", "unsupported"),
+        ("classical fn flip(b:Bit)->Bit{not b}
+          meaning Flip:Bit=permutation_by(flip);
+          unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
+          unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);adjoint(checked_op(identity,Flip))(q)}", "meaning"),
+    ] {
+        let text = format!("use std::quantum::{{z,h}};{body}pub unitary fn main(q:Q<Bit>)->Q<Bit>{{q}}");
+        let source = selected(&text).instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap().elaborate().unwrap();
+        let error = source.lower_raw_with_kernel(&Kernel::selected().unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err();
+        assert_eq!(error.code(), code, "{text}: {error}");
+        if code != "meaning" {
+            assert_eq!(error.module(), Some("main"));
+            assert!(["h(ctrl ", "z(ctrl "].iter().any(|prefix| text[error.span().start..error.span().end].starts_with(prefix)), "{error}");
+        }
+    }
+    let parsed = ParsedProgram::parse(BTreeMap::from([
+        (
+            "main".into(),
+            "pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}".into(),
+        ),
+        (
+            "helper".into(),
+            "use std::quantum::h;unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}".into(),
+        ),
+    ]))
+    .unwrap();
+    let error = parsed
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+        .lower_raw_with_kernel(
+            &Kernel::selected().unwrap(),
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+        )
+        .unwrap_err();
+    assert_eq!(error.code(), "contract");
+    assert_eq!(error.module(), Some("helper"));
+}
+
+#[test]
 fn selected_control_requires_checker_and_one_bounded_budget() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     let source = selected("use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}")
@@ -113,7 +240,7 @@ fn selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_provi
     for (body, code) in [
         (
             "unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}",
-            "unsupported",
+            "contract",
         ),
         (
             "pub unitary fn main(q:Q<Bit>)->Q<Bit>{if static 0==0 {q}else{h(ctrl q);q}}",

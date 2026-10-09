@@ -1170,9 +1170,9 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
     lower_inner(source, source.root(), None, None, None).map_err(|error| error.in_module(module))
 }
 
-/// The only control-enabled emission entry. Require coverage of every original
-/// obligation before checking all retained concrete control-bearing bodies,
-/// including unused providers, then independently check the selected root.
+/// The only control-enabled emission entry. Append closed original audit roots,
+/// require coverage of every original obligation, check all retained concrete
+/// control-bearing bodies, then independently check the unchanged selected root.
 /// No role is rewritten and no native result is reused as acceptance authority.
 pub(super) fn lower_with_kernel(
     source: &ElaboratedProgram,
@@ -1181,7 +1181,6 @@ pub(super) fn lower_with_kernel(
 ) -> Result<RawSourceProposal> {
     use crate::frontend::{ast::QuantumAccess, check::ObligationKind};
     source.require_unrefined()?;
-    let checked = &source.instantiation().program.checked;
     if !source.has_control_obligations() {
         return lower(source);
     }
@@ -1193,6 +1192,12 @@ pub(super) fn lower_with_kernel(
             "source control budget exceeds the shared exact-work ceiling",
         ));
     }
+    let audited = super::elaborate::with_control_roots(source, budget)?;
+    let source = audited.as_ref().unwrap_or(source);
+    // Extra original bodies can introduce Meaning obligations. The Raw
+    // control path must not bypass their normal refinement boundary.
+    source.require_unrefined()?;
+    let checked = &source.instantiation().program.checked;
     // The elaborator already bounds this immutable graph. Also bound the
     // number of additional body checks; never create a budget per definition.
     if source.definitions().len() > MAX_CALLS {

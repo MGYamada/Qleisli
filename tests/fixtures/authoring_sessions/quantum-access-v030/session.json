@@ -165,6 +165,25 @@
         "selected-access-after/kickback-run.json",
         "selected-access-after/overlap-check.json"
       ]
+    },
+    {
+      "id": "attempt-05",
+      "reason": "Informed original-source contract probe for private concrete control bodies not reached by the selected public entry. Preserve their current unsupported refusals before connecting them to independent native checks; no static binding is invented and no body is substituted for the public root.",
+      "sha256": {
+        "unused-diagonal/main.qli": "d6ef5196e6d768b0eda1f42338051dd6f80d2dfba497a7bde44afa839a11a73c",
+        "unused-sector-change/main.qli": "1bd8baf785e07e289f23f4dc40895d35dae1b82450c421b934e7eeb40fba9bd5"
+      },
+      "manifest_sha256": {
+        "unused-diagonal/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "unused-sector-change/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "unused-control-before/unused-diagonal-check.json",
+        "unused-control-before/unused-sector-change-check.json",
+        "unused-control-after/unused-diagonal-check.json",
+        "unused-control-after/unused-diagonal-run.json",
+        "unused-control-after/unused-sector-change-check.json"
+      ]
     }
   ]
 }

@@ -3873,7 +3873,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "8ddb0feb68c6f21a8eb69650ea8e6e76264714e155aa801ec409d5d7de7954e9",
+      "sha256": "9560248f2b323498803d5923541812d878a31eea6aca9a0f29bf43f1ebaa346b",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3983,7 +3983,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "eae102dd044cca1a137177aa504d9865a88722685a5d85ad92343733c32cab29",
+      "sha256": "319b7fe723ac5d294071d72b3bc237d622146878e97b04be229323435c58e009",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4212,7 +4212,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "cd99b79da432d25f9d82d2fc56ada1cec7cabb7949b444633eddf898fdb98e76",
+      "sha256": "42900be0f08363b0520de034cc8152f1b608cb5470f9f923a5df3e0fbe4b64c9",
       "group": "sized-source",
       "surface": {
         "declarations": [

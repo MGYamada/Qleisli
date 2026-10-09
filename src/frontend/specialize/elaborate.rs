@@ -536,8 +536,9 @@ impl ElaboratedProgram {
     pub fn lower_raw(&self) -> Result<super::RawSourceProposal> {
         super::raw::lower(self)
     }
-    /// Check retained whole-owner control calls against their actual emitted
-    /// intervals using fresh native decisions and one aggregate work budget.
+    /// Check whole-owner control calls against their actual emitted intervals,
+    /// including closed unused bodies discovered from original resolution,
+    /// using fresh native decisions and one aggregate work budget.
     /// Original obligations without a concrete call remain unsupported. The
     /// returned proposal still requires native acceptance and source replay;
     /// this is neither a source-preservation theorem nor an accepted handle.
@@ -639,6 +640,79 @@ struct Frame {
 }
 
 pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
+    build(instance, &[]).map(|(source, _)| source)
+}
+
+/// Rebuild the same selected graph first, then append closed original bodies
+/// whose resolved dependencies can reach a control obligation. This changes no
+/// public entry or static argument and supplies proposals, never acceptance.
+pub(super) fn with_control_roots(
+    source: &ElaboratedProgram,
+    budget: &mut crate::contract::exact::Budget,
+) -> Result<Option<ElaboratedProgram>> {
+    use crate::frontend::{check::ObligationKind, resolve::locals::ResolvedUse};
+    let checked = &source.instance.program.checked;
+    let span = source.definitions[source.root].span;
+    let mut cells = 0;
+    let mut charge = |at, amount| {
+        charge_retained_cells(&mut cells, amount, at)?;
+        budget
+            .charge(amount)
+            .map_err(|e| error("limit", at, e.to_string()))
+    };
+    // Resolved identities discover potential roots. They do not assert a
+    // dynamic call, control-sector property or source-preservation theorem.
+    let mut reverse = BTreeMap::<DefId, Vec<DefId>>::new();
+    for (&caller, table) in &checked.lexical {
+        charge(span, 1)?;
+        for usage in table.resolved_uses() {
+            charge(usage.span, 1)?;
+            if let ResolvedUse::Global(Target::Declaration(callee)) = usage.target {
+                reverse.entry(callee).or_default().push(caller);
+            }
+        }
+    }
+    let mut relevant = BTreeSet::new();
+    let mut pending = Vec::new();
+    for obligation in &checked.obligations {
+        charge(obligation.span, 1)?;
+        if matches!(obligation.kind, ObligationKind::ControlSectors)
+            && relevant.insert(obligation.definition)
+        {
+            pending.push(obligation.definition);
+        }
+    }
+    while let Some(callee) = pending.pop() {
+        for &caller in reverse.get(&callee).into_iter().flatten() {
+            charge(span, 1)?;
+            if relevant.insert(caller) {
+                pending.push(caller);
+            }
+        }
+    }
+    let mut retained = BTreeSet::new();
+    for definition in source.definitions.iter() {
+        charge(definition.span, 1)?;
+        retained.insert(definition.original);
+    }
+    let mut roots = Vec::new();
+    for id in relevant {
+        charge(span, 1)?;
+        if !retained.contains(&id) && checked.interface(id).statics.is_empty() {
+            roots.push(id);
+        }
+    }
+    if roots.is_empty() {
+        return Ok(None);
+    }
+    let (audited, work) = build(&source.instance, &roots)?;
+    budget
+        .charge(work)
+        .map_err(|e| error("limit", span, e.to_string()))?;
+    Ok(Some(audited))
+}
+
+fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedProgram, usize)> {
     let mut builder = Builder {
         program: &instance.program,
         definitions: Vec::new(),
@@ -687,13 +761,20 @@ pub(super) fn elaborate(instance: &Instantiation) -> Result<ElaboratedProgram> {
         operations,
         0,
     )?;
-    Ok(ElaboratedProgram {
-        instance: instance.clone(),
-        definitions: builder.definitions.into(),
-        root,
-        calls: builder.calls,
-        folds: builder.folds,
-    })
+    for &id in extra_roots {
+        builder.function(id, BTreeMap::new(), BTreeMap::new(), BTreeMap::new(), 0)?;
+    }
+    let work = builder.cells + builder.steps + builder.calls + builder.folds;
+    Ok((
+        ElaboratedProgram {
+            instance: instance.clone(),
+            definitions: builder.definitions.into(),
+            root,
+            calls: builder.calls,
+            folds: builder.folds,
+        },
+        work,
+    ))
 }
 
 fn natural(

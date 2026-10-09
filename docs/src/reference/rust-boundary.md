@@ -287,9 +287,14 @@ fresh native decisions for every retained concrete control-bearing definition
 and the selected root, sharing one exact-work budget. Each control call is
 bound to the actual decoded instruction interval and original ordered owners.
 Every original obligation must have a concrete call in **each** retained
-specialization of its declaration. Missing calls in unused declarations,
-unselected static branches or empty loops remain unsupported; a different
-specialization cannot supply their evidence. Zero-count providers with retained
+specialization of its declaration. The checker also elaborates unused closed
+functions whose original resolved dependencies reach a control obligation,
+sharing the selected graph's existing call, fold, depth and storage bounds.
+It adds no public entry or invented static argument and leaves the execution
+root unchanged. Additional bodies retain their Meaning/refinement obligations.
+Unclosed generic declarations and missing calls in unselected static branches
+or empty loops remain unsupported; a different specialization cannot supply
+their evidence. Zero-count providers with retained
 bodies are checked independently of their execution count. Symbolic inverse or
 controlled transforms containing access obligations remain unsupported.
 `lower_raw`, checker-free `emit-proposal`, and hierarchical lowering still
