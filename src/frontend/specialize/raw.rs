@@ -460,6 +460,7 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
             }
         }
         for step in definition.steps() {
+            step.check_access_contract()?;
             if step
                 .inputs()
                 .iter()

@@ -985,6 +985,7 @@ impl Replay<'_> {
             .map(|(t, w)| (*t, w.clone()))
             .collect();
         for step in definition.steps() {
+            step.check_access_contract()?;
             self.steps += 1;
             let site = Site {
                 module: step.module(),

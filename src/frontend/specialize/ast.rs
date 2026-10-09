@@ -3,6 +3,7 @@
 use super::Span;
 
 pub(super) use crate::frontend::ast::Compare;
+pub(super) use crate::frontend::ast::QuantumAccess;
 pub(super) use crate::frontend::ordinary::Boolean;
 use crate::frontend::pattern::{Node as PatternNode, PatternView};
 use crate::frontend::resolve::locals::UseSiteId;
@@ -123,7 +124,7 @@ pub(super) enum ExprKind {
     Name(Reference),
     Tuple(Vec<Expr>),
     Call(Reference, Vec<Argument>, Vec<Expr>),
-    AccessCall(Reference, Vec<Argument>, Vec<Expr>),
+    AccessCall(Reference, Vec<Argument>, Vec<Expr>, Vec<QuantumAccess>),
     Apply(Argument, Box<Expr>),
     Adjoint(Argument, Box<Expr>),
     Controlled(Argument, Vec<Expr>),

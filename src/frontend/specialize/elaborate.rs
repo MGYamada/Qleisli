@@ -206,6 +206,8 @@ pub struct SourceStep {
     inputs: Vec<SourceValue>,
     output: SourceValue,
     effect: Effect,
+    // Original ordered call roles; ordinary calls have no access annotation.
+    accesses: Vec<crate::frontend::ast::QuantumAccess>,
 }
 #[derive(Clone, Debug)]
 enum StepKind {
@@ -220,6 +222,48 @@ enum StepKind {
     Controlled(SourceOperation),
 }
 impl SourceStep {
+    // A retained role is a checking obligation, never evidence of preservation.
+    // Both transport profiles must inspect it before generating a proposal.
+    pub(super) fn check_access_contract(&self) -> Result<()> {
+        use crate::frontend::ast::QuantumAccess;
+        if self.accesses.is_empty() {
+            return Ok(());
+        }
+        let error = |code, message| Error::new(code, self.span, message).in_module(&self.module);
+        if self.accesses.contains(&QuantumAccess::Ctrl) {
+            return Err(error(
+                "unsupported",
+                "ctrl source access requires independently bound basis-sector evidence; source lowering is not yet supported",
+            ));
+        }
+        let outputs = if self.inputs.len() == 1 {
+            std::slice::from_ref(&self.output)
+        } else {
+            &self.output.fields
+        };
+        if self.accesses.len() > 64
+            || self.accesses.len() != self.inputs.len()
+            || outputs.len() != self.inputs.len()
+            || self
+                .inputs
+                .iter()
+                .zip(outputs)
+                .any(|(input, output)| !input.ty.is_quantum_owner() || input.ty != output.ty)
+        {
+            return Err(error(
+                "preservation",
+                "access call differs from its exact ordered quantum owner interface",
+            ));
+        }
+        if self.effect != Effect::Unitary {
+            return Err(error(
+                "effect",
+                "access call requires an actual Unitary effect",
+            ));
+        }
+        Ok(())
+    }
+
     pub fn kind(&self) -> &'static str {
         match self.kind {
             StepKind::Boolean(_) => "boolean",
@@ -1724,7 +1768,7 @@ impl Builder<'_> {
                 }
                 Ok(SourceValue::tuple(values))
             }
-            ExprKind::AccessCall(name, arguments, inputs) => {
+            ExprKind::AccessCall(name, arguments, inputs, accesses) => {
                 self.charge_cells(inputs.len().saturating_mul(3), span)?;
                 let mut owners = Vec::new();
                 let mut seen = BTreeSet::new();
@@ -1754,6 +1798,7 @@ impl Builder<'_> {
                 }
                 // Borrow the original projected references and arguments. No
                 // occurrence is cloned or resolved again to adapt ownership.
+                let first_step = frame.steps.len();
                 let value = self.runtime_call(
                     RuntimeCall {
                         name,
@@ -1765,6 +1810,15 @@ impl Builder<'_> {
                     frame,
                     depth,
                 )?;
+                if frame.steps.len() != first_step + 1 {
+                    return Err(error(
+                        "preservation",
+                        span,
+                        "access call must retain one original ordered source step",
+                    ));
+                }
+                frame.steps[first_step].accesses = accesses.clone();
+                frame.steps[first_step].check_access_contract()?;
                 let returned = if owners.len() == 1 {
                     vec![value]
                 } else {
@@ -1977,6 +2031,7 @@ impl Builder<'_> {
             inputs,
             output: output.clone(),
             effect,
+            accesses: Vec::new(),
         });
         Ok(output)
     }
@@ -2248,5 +2303,59 @@ mod natural_budget_tests {
         assert_eq!(error.code(), "limit");
         assert_eq!(error.span(), span);
         assert_eq!(calls, 0, "work must stop before calling the helper");
+    }
+}
+
+#[cfg(test)]
+mod access_role_tests {
+    use super::*;
+    use crate::frontend::ast::QuantumAccess;
+
+    fn source() -> ElaboratedProgram {
+        ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "use std::quantum::cnot;
+             pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){
+                 cnot(excl t,excl c);(c,t)}"
+                .into(),
+        )]))
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap()
+    }
+
+    #[test]
+    fn roles_follow_original_argument_order_through_projection_and_elaboration() {
+        let source = source();
+        let definition = &source.definitions[source.root];
+        let [step] = definition.steps.as_slice() else {
+            panic!("one original CNOT call");
+        };
+        assert_eq!(step.accesses, [QuantumAccess::Excl, QuantumAccess::Excl]);
+        assert_eq!(step.inputs[0].identity(), definition.inputs[1].identity());
+        assert_eq!(step.inputs[1].identity(), definition.inputs[0].identity());
+        source.lower_raw().unwrap();
+        source.lower().unwrap();
+    }
+
+    #[test]
+    fn lowering_profiles_cannot_erase_unchecked_roles_or_equal_width_type_changes() {
+        let mut source = source();
+        let mut definitions = source.definitions.to_vec();
+        definitions[source.root].steps[0].accesses[0] = QuantumAccess::Ctrl;
+        source.definitions = definitions.into();
+        assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+        assert_eq!(source.lower().unwrap_err().code(), "unsupported");
+        let mut definitions = source.definitions.to_vec();
+        let step = &mut definitions[source.root].steps[0];
+        step.accesses[0] = QuantumAccess::Excl;
+        step.output.fields[0].ty = SourceType {
+            kind: TypeKind::Q(Box::new(SourceType::bits(1))),
+        };
+        source.definitions = definitions.into();
+        assert_eq!(source.lower_raw().unwrap_err().code(), "preservation");
+        assert_eq!(source.lower().unwrap_err().code(), "preservation");
     }
 }

@@ -127,6 +127,12 @@ and arbitrary-reference results to this request. There is no source admission
 path yet; the native obligation alone supplies no authority to accept a `ctrl`
 annotation.
 
+Selected source projection retains the original ordered access roles with the
+call's source identities and positions. Raw and hierarchical lowering, and
+Raw source-step replay, inspect those roles and the exact owner interface.
+They reject an unchecked `ctrl` role before producing or validating transport;
+retaining a role is an obligation, not basis-sector evidence.
+
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a
 validation record. These identity and proof checks do not admit a new guarantee,

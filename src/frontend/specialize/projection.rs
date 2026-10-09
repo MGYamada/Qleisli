@@ -382,6 +382,7 @@ impl Projection<'_, '_> {
                     args.iter()
                         .map(|arg| self.expr(&arg.value))
                         .collect::<Result<_>>()?,
+                    args.iter().map(|arg| arg.access).collect(),
                 )
             }
             source::ExprKind::ApplyStatic { operation, input } => {

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain original ordered access roles through selected source projection and
+  elaboration. Recheck the exact owner interface before Raw or hierarchical
+  lowering and source replay; unchecked `ctrl` roles remain unsupported.
+
 - Bind original-byte control-sector requests through the existing native
   contract gate. Reject producer matrices and receipts; prove original-body
   meaning and projector commutation with arbitrary external references, including

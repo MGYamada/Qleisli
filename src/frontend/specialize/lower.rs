@@ -1475,6 +1475,13 @@ impl Lower<'_> {
 /// Preserve the existing preflight error API using the same typed classification
 /// used by target selection. Internal/limit failures are never reclassified.
 pub(super) fn check_profile(source: &ElaboratedProgram) -> Result<()> {
+    for step in source
+        .definitions()
+        .iter()
+        .flat_map(|definition| definition.steps())
+    {
+        step.check_access_contract()?;
+    }
     match hierarchy_eligibility(source)? {
         HierarchyEligibility::Eligible => Ok(()),
         HierarchyEligibility::Ineligible(error) => Err(error),
