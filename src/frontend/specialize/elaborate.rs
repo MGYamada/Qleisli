@@ -1830,7 +1830,9 @@ impl Builder<'_> {
                     ));
                 }
                 frame.steps[first_step].accesses = accesses.clone();
-                frame.steps[first_step].check_access_contract()?;
+                // Elaboration retains obligations; transport profiles must
+                // discharge control sectors before claiming source acceptance.
+                frame.steps[first_step].check_access_shape()?;
                 let returned = if owners.len() == 1 {
                     vec![value]
                 } else {
@@ -2336,6 +2338,81 @@ mod access_role_tests {
         .unwrap()
         .elaborate()
         .unwrap()
+    }
+
+    #[test]
+    fn public_source_control_roles_reach_replay_as_obligations_not_authority() {
+        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        for (basis, operation, expected) in [
+            ("Bit", "h", Some("contract")),
+            ("Bit", "z", None),
+            ("Unit", "phase_eighth", None),
+        ] {
+            let text = format!(
+                "use std::quantum::{operation};pub unitary fn f(q:Q<{basis}>)->Q<{basis}>{{{operation}(ctrl q);q}}"
+            );
+            let prepare = |text: String| {
+                ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                    .unwrap()
+                    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap()
+            };
+            let source = prepare(text.clone());
+            let step = &source.definitions[source.root].steps[0];
+            assert_eq!(step.access_roles(), [QuantumAccess::Ctrl]);
+            assert_eq!(
+                step.inputs[0].identity(),
+                source.definitions[source.root].inputs[0].identity()
+            );
+            assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+            assert_eq!(source.lower().unwrap_err().code(), "unsupported");
+            // An explicitly different exclusive source supplies an ordinary
+            // accepted artifact, never control evidence. Replay reads the
+            // original public ctrl source graph without mutating its roles.
+            let exclusive = prepare(text.replace("(ctrl q)", "(excl q)"));
+            let proposal = exclusive.lower_raw().unwrap();
+            let accepted = kernel.accept(proposal.proposal()).unwrap();
+            let result = super::super::raw::validate_source_with_kernel(
+                &source,
+                source.root,
+                None,
+                accepted.raw(),
+                &kernel,
+            );
+            assert_eq!(result.as_ref().err().map(|e| e.code()), expected);
+        }
+        for (roles, expected) in [("ctrl t,excl c", None), ("excl t,ctrl c", Some("contract"))] {
+            let text = format!(
+                "use std::quantum::cnot;pub unitary fn f(c:Q<Bit>,t:Q<Bit>)->(Q<Bit>,Q<Bit>){{cnot({roles});(c,t)}}"
+            );
+            let prepare = |text: String| {
+                ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                    .unwrap()
+                    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap()
+            };
+            let source = prepare(text.clone());
+            let step = &source.definitions[source.root].steps[0];
+            assert_eq!(
+                step.inputs[0].identity(),
+                source.definitions[source.root].inputs[1].identity()
+            );
+            let exclusive = prepare(text.replace("ctrl", "excl"));
+            let proposal = exclusive.lower_raw().unwrap();
+            let accepted = kernel.accept(proposal.proposal()).unwrap();
+            let result = super::super::raw::validate_source_with_kernel(
+                &source,
+                source.root,
+                None,
+                accepted.raw(),
+                &kernel,
+            );
+            assert_eq!(result.as_ref().err().map(|e| e.code()), expected);
+        }
     }
 
     #[test]

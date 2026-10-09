@@ -363,28 +363,17 @@ impl Projection<'_, '_> {
                 callee,
                 static_args,
                 args,
-            } => {
-                if args
+            } => ExprKind::AccessCall(
+                self.ident(callee)?,
+                static_args
                     .iter()
-                    .any(|arg| arg.access != source::QuantumAccess::Excl)
-                {
-                    return Err(unsupported(
-                        expr.span,
-                        "ctrl source elaboration requires bound sector evidence",
-                    ));
-                }
-                ExprKind::AccessCall(
-                    self.ident(callee)?,
-                    static_args
-                        .iter()
-                        .map(|value| self.argument(value))
-                        .collect::<Result<_>>()?,
-                    args.iter()
-                        .map(|arg| self.expr(&arg.value))
-                        .collect::<Result<_>>()?,
-                    args.iter().map(|arg| arg.access).collect(),
-                )
-            }
+                    .map(|value| self.argument(value))
+                    .collect::<Result<_>>()?,
+                args.iter()
+                    .map(|arg| self.expr(&arg.value))
+                    .collect::<Result<_>>()?,
+                args.iter().map(|arg| arg.access).collect(),
+            ),
             source::ExprKind::ApplyStatic { operation, input } => {
                 ExprKind::Apply(self.argument(operation)?, Box::new(self.expr(input)?))
             }

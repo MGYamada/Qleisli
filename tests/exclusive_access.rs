@@ -182,6 +182,10 @@ fn finite_ctrl_preserves_phase_kickback_and_an_entangled_reference() {
         assert_eq!(
             selected(&source)
                 .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap()
+                .lower_raw()
                 .unwrap_err()
                 .code(),
             "unsupported"

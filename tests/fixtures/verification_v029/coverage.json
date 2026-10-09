@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "d740b316067b3dd40c55a9702f63f2f72c732352b9f9f7355ceb3fd17ffd143d",
+  "surface_sha256": "b7dfaa1bfacabd572970bd032f4418f09ee6e03472fb6d821d2d2c3b42f74d10",
   "groups": [
     {
       "id": "raw-core",
@@ -3082,6 +3082,10 @@
         {
           "path": "src/frontend/specialize/raw.rs",
           "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "public_source_control_roles_reach_replay_as_obligations_not_authority"
         },
         {
           "path": "src/frontend/specialize/elaborate.rs",

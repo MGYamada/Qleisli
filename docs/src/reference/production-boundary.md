@@ -132,7 +132,9 @@ native unitarity alone supplies control-sector evidence; host source lowering
 and interval extraction are not a Lean source-preservation theorem.
 
 Selected source projection retains the original ordered access roles with the
-call's source identities and positions. Raw and hierarchical lowering, and
+call's source identities and positions, including public `ctrl` occurrences.
+Elaboration checks the exact owner shape and actual effect; it neither grants
+sector authority nor rewrites the role to `excl`. Raw and hierarchical lowering, and
 Raw source-step replay, inspect those roles and the exact owner interface.
 They reject an unchecked `ctrl` role before producing or validating transport;
 retaining a role is an obligation, not basis-sector evidence.
@@ -143,9 +145,9 @@ the actual instruction interval consumed by replay, its input/returned tokens
 and ordered source basis forest, then submits a fresh `control-owners` request.
 It does not take a producer-supplied call body, matrix or success receipt.
 Control replay without a native checker refuses. Work is shared across these
-decisions within the existing exact-work ceiling. Regression tests inject
-control roles into private source-step graphs; they establish this component's
-behavior, not public source `ctrl` support. AST-to-step preservation, Rust
+decisions within the existing exact-work ceiling. Regression tests use original
+public control source graphs as well as private graph mutations; they establish
+this replay component's behavior, not selected-source transport admission. AST-to-step preservation, Rust
 decoding/interval extraction and final lowering integration remain separate
 obligations; this host bridge is not a new Lean source-preservation theorem.
 

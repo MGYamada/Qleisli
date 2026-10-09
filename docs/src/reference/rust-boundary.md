@@ -242,7 +242,7 @@ ordinary user-defined identifier with the same spelling.
 | `Default` | Unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary/static data construction and explicit quantum preparation retain their distinct contracts above; normal user functions named `default` remain checked calls. |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
-| Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` calls have the rule below. Stored references, access parameter declarations, indexed views and `ctrl` source elaboration remain unsupported. Existing controlled operations are explicit; control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
+| Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` and finite-project `ctrl` calls have the rules below. Selected preparation retains control obligations; its transport lowering remains unsupported. Stored references, access parameter declarations and indexed views remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
 | `borrow` versus clean/dirty workspace | There is no builtin workspace `borrow` form. Access and state-restoration obligations are separate; the public terminology/reserved-word decision remains in [#71](https://github.com/MGYamada/Qleisli/issues/71). |
 
 ## Whole-owner exclusive calls
@@ -280,9 +280,10 @@ arguments, a changed result interface and measurement through `excl` reject.
 Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
 The current call form requires every runtime argument to use an access marker;
 mixed ordinary/access arguments, indexed selections, escaping handles and
-access-parameter declarations remain unimplemented. Selected-source Raw and
-hierarchical lowering still reject `ctrl` markers; the finite project path
-supports the independently checked form below.
+access-parameter declarations remain unimplemented. Selected-source preparation
+retains `ctrl` roles as obligations with original source identities and spans;
+Raw and hierarchical lowering still reject those obligations before emitting
+transport. The finite project path supports the independently checked form below.
 This limited implementation does not complete the general access Issues.
 
 ### Whole-owner coherent control in finite projects

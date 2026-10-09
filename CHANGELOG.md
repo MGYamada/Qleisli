@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain public `ctrl` obligations through selected-source projection and
+  elaboration, preserving original owner identities and positions. Ordinary
+  Raw/hierarchical proposal generation still refuses those obligations; native
+  replay regressions now also read original public source graphs.
+
 - Admit whole-owner `ctrl` calls in finite project compilation only after
   fresh native checking of each actual emitted call interval and ordered owner
   interface. Reject H/X and target-side CNOT access; preserve phase kickback,
