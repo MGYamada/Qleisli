@@ -126,6 +126,45 @@
         "public-before/kickback-explicit-selected.json",
         "public-before/overlap-explicit-selected.json"
       ]
+    },
+    {
+      "id": "attempt-04",
+      "reason": "Expose the existing desired attempt-02 access sources publicly for selected Raw routing; preserve the original private sources and all earlier observations. This is an informed continuation of the phase/entanglement contract study, not a new algorithm or a general proof. The first seven calls mistakenly used --ir=raw and returned usage errors; they remain separate from corrected --ir-profile=raw baseline checks.",
+      "sha256": {
+        "exclusive/main.qli": "882bd946f8292781083d0199884f7436e86cd03f07f645a757f5d5eccc1a0d42",
+        "entangled/main.qli": "e210fe668ed2984564aefce04660d36c78f760e487155c0003145c193a069594",
+        "kickback/main.qli": "34c7eda6b1ba8a6e9fb9b001cf9ef3c6376822bf564ea6809a0344409e14d829",
+        "overlap/main.qli": "d7f7ed71cfc984eb17abf6b69ae4ed5766b2242364aaff3e76dc7ba01c320b86"
+      },
+      "manifest_sha256": {
+        "exclusive/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "entangled/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "kickback/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+        "overlap/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "selected-access-usage-before/exclusive-check.json",
+        "selected-access-usage-before/exclusive-run.json",
+        "selected-access-usage-before/entangled-check.json",
+        "selected-access-usage-before/entangled-run.json",
+        "selected-access-usage-before/kickback-check.json",
+        "selected-access-usage-before/kickback-run.json",
+        "selected-access-usage-before/overlap-check.json",
+        "selected-access-before/exclusive-check.json",
+        "selected-access-before/exclusive-run.json",
+        "selected-access-before/entangled-check.json",
+        "selected-access-before/entangled-run.json",
+        "selected-access-before/kickback-check.json",
+        "selected-access-before/kickback-run.json",
+        "selected-access-before/overlap-check.json",
+        "selected-access-after/exclusive-check.json",
+        "selected-access-after/exclusive-run.json",
+        "selected-access-after/entangled-check.json",
+        "selected-access-after/entangled-run.json",
+        "selected-access-after/kickback-check.json",
+        "selected-access-after/kickback-run.json",
+        "selected-access-after/overlap-check.json"
+      ]
     }
   ]
 }

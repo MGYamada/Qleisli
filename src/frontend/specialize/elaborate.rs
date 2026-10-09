@@ -468,6 +468,22 @@ impl ElaboratedProgram {
         }
         Ok(())
     }
+    /// Whether the original checked source contains pending control-sector
+    /// obligations, including declarations/calls absent from this instance.
+    /// This is source metadata, not evidence that a control call is valid.
+    pub fn has_control_obligations(&self) -> bool {
+        self.instance
+            .program
+            .checked
+            .obligations
+            .iter()
+            .any(|obligation| {
+                matches!(
+                    obligation.kind,
+                    crate::frontend::check::ObligationKind::ControlSectors
+                )
+            })
+    }
     pub(super) fn require_control_evidence(&self) -> Result<()> {
         let checked = &self.instance.program.checked;
         if let Some(obligation) = checked.obligations.iter().find(|obligation| {
@@ -519,6 +535,18 @@ impl ElaboratedProgram {
     /// This performs no native acceptance or source-preservation proof.
     pub fn lower_raw(&self) -> Result<super::RawSourceProposal> {
         super::raw::lower(self)
+    }
+    /// Check retained whole-owner control calls against their actual emitted
+    /// intervals using fresh native decisions and one aggregate work budget.
+    /// Original obligations without a concrete call remain unsupported. The
+    /// returned proposal still requires native acceptance and source replay;
+    /// this is neither a source-preservation theorem nor an accepted handle.
+    pub fn lower_raw_with_kernel(
+        &self,
+        kernel: &crate::interchange::native::Kernel,
+        budget: &mut crate::contract::exact::Budget,
+    ) -> Result<super::RawSourceProposal> {
+        super::raw::lower_with_kernel(self, kernel, budget)
     }
     /// Propose the actual closed definition bound to an entry operation.
     /// Keep the original caller instance and an explicit leaf subject. This

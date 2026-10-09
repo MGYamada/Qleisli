@@ -242,7 +242,7 @@ ordinary user-defined identifier with the same spelling.
 | `Default` | Unavailable for live quantum-containing types, including `Q<Unit>` and nested owners. Ordinary/static data construction and explicit quantum preparation retain their distinct contracts above; normal user functions named `default` remain checked calls. |
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
-| Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` and finite-project `ctrl` calls have the rules below. Selected preparation retains control obligations; its transport lowering remains unsupported. Stored references, access parameter declarations and indexed views remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
+| Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` and finite-project `ctrl` calls have the rules below. Selected Raw checking admits retained concrete control calls after fresh native sector checks; hierarchy and checker-free emission refuse them. Stored references, access parameter declarations and indexed views remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
 | `borrow` versus clean/dirty workspace | There is no builtin workspace `borrow` form. Access and state-restoration obligations are separate; the public terminology/reserved-word decision remains in [#71](https://github.com/MGYamada/Qleisli/issues/71). |
 
 ## Whole-owner exclusive calls
@@ -281,15 +281,25 @@ Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
 The current call form requires every runtime argument to use an access marker;
 mixed ordinary/access arguments, indexed selections, escaping handles and
 access-parameter declarations remain unimplemented. Selected-source preparation
-retains `ctrl` roles as obligations with original source identities and spans;
-Raw and hierarchical lowering still reject those obligations before emitting
-transport, including obligations in unused original declarations, unselected
-static branches, empty loops and zero-count providers. Diagnostics retain the
-original call's module and location even when it produces no concrete step.
-The finite project path supports the independently checked form below.
-This limited implementation does not complete the general access Issues.
+retains `ctrl` roles as obligations with original source identities and spans.
+`ElaboratedProgram::lower_raw_with_kernel` and selected CLI Raw checking require
+fresh native decisions for every retained concrete control-bearing definition
+and the selected root, sharing one exact-work budget. Each control call is
+bound to the actual decoded instruction interval and original ordered owners.
+Every original obligation must have a concrete call in **each** retained
+specialization of its declaration. Missing calls in unused declarations,
+unselected static branches or empty loops remain unsupported; a different
+specialization cannot supply their evidence. Zero-count providers with retained
+bodies are checked independently of their execution count. Symbolic inverse or
+controlled transforms containing access obligations remain unsupported.
+`lower_raw`, checker-free `emit-proposal`, and hierarchical lowering still
+refuse control obligations. Final Raw consumption freshly checks the artifact
+and replays its source calls again; no source annotation or earlier native
+success substitutes for those checks. Diagnostics retain the original call's
+module and location. This limited implementation does not complete the general
+access Issues or establish a Lean source-preservation theorem.
 
-### Whole-owner coherent control in finite projects
+### Whole-owner coherent control
 
 The finite project checker/compiler admits `cnot(ctrl c, excl t)` using the
 same distinct live-owner, actual Unitary effect and exact returned-interface

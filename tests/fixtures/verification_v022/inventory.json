@@ -3085,7 +3085,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "7669ac4da1af8659ffba9488151567445bec707d75956d3ee22896162ec84946",
+      "sha256": "8eb75dbcb07b4dd130f35d5d9f4715533a35bda279c443eadffd14025239a093",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3983,7 +3983,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "c6cc33291c3181ad26fb6597ef50670a1fd08268ec9a6a4e9c96dc5bafb5e3c4",
+      "sha256": "eae102dd044cca1a137177aa504d9865a88722685a5d85ad92343733c32cab29",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4010,6 +4010,7 @@
           "pub fn fields(&self) -> &[SourceType]",
           "pub fn fields(&self) -> &[SourceValue]",
           "pub fn fold_iterations(&self) -> usize",
+          "pub fn has_control_obligations(&self) -> bool",
           "pub fn has_operation_meanings(&self) -> bool",
           "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
           "pub fn identity(&self) -> Option<u32>",
@@ -4023,6 +4024,7 @@
           "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
           "pub fn lower_raw_operation(&self, name: &str) -> Result<super::RawSourceProposal>",
           "pub fn lower_raw_operation_at( &self, caller: usize, name: &str, ) -> Result<super::RawSourceProposal>",
+          "pub fn lower_raw_with_kernel( &self, kernel: &crate::interchange::native::Kernel, budget: &mut crate::contract::exact::Budget, ) -> Result<super::RawSourceProposal>",
           "pub fn module(&self) -> &str",
           "pub fn module(&self) -> &str",
           "pub fn natural_arguments(&self) -> &[u32]",
@@ -4210,7 +4212,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "782e1254d2a210493a4e84373b8809fedc382ba058326f2861974b058fb351b2",
+      "sha256": "cd99b79da432d25f9d82d2fc56ada1cec7cabb7949b444633eddf898fdb98e76",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4259,7 +4261,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "d908b291a400af37578ea4d4d7866a0e942055606bde49a91fbc2f1447378589",
+      "sha256": "98663bbbf241b86484f0aee2b200809469e879d2796d2fb580e5dd03b20af480",
       "group": "sized-source",
       "surface": {
         "declarations": [],

@@ -460,8 +460,14 @@ fn eighths(ns: &[u32]) -> Option<usize> {
     Some((j * 8 / denominator) as usize)
 }
 // Capability selection precedes every emission and native decision.
-fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>) -> Result<()> {
-    source.require_control_evidence()?;
+fn check_profile(
+    source: &ElaboratedProgram,
+    selected: Option<&BTreeSet<usize>>,
+    checking_control: bool,
+) -> Result<()> {
+    if !checking_control {
+        source.require_control_evidence()?;
+    }
     for (id, definition) in source.definitions().iter().enumerate() {
         if selected.is_some_and(|selected| !selected.contains(&id)) {
             continue;
@@ -477,7 +483,11 @@ fn check_profile(source: &ElaboratedProgram, selected: Option<&BTreeSet<usize>>)
             }
         }
         for step in definition.steps() {
-            step.check_access_contract()?;
+            if checking_control {
+                step.check_access_shape()?;
+            } else {
+                step.check_access_contract()?;
+            }
             if step
                 .inputs()
                 .iter()
@@ -1157,7 +1167,97 @@ pub(super) fn lower(source: &ElaboratedProgram) -> Result<RawSourceProposal> {
         .path()
         .rsplit_once("::")
         .map_or(root.path(), |(module, _)| module);
-    lower_inner(source, source.root(), None, None).map_err(|error| error.in_module(module))
+    lower_inner(source, source.root(), None, None, None).map_err(|error| error.in_module(module))
+}
+
+/// The only control-enabled emission entry. Require coverage of every original
+/// obligation before checking all retained concrete control-bearing bodies,
+/// including unused providers, then independently check the selected root.
+/// No role is rewritten and no native result is reused as acceptance authority.
+pub(super) fn lower_with_kernel(
+    source: &ElaboratedProgram,
+    kernel: &native::Kernel,
+    budget: &mut Budget,
+) -> Result<RawSourceProposal> {
+    use crate::frontend::{ast::QuantumAccess, check::ObligationKind};
+    source.require_unrefined()?;
+    let checked = &source.instantiation().program.checked;
+    if !source.has_control_obligations() {
+        return lower(source);
+    }
+    let span = source.definitions()[source.root()].span();
+    if budget.remaining() > DEFAULT_EXACT_WORK {
+        return Err(Error::new(
+            "limit",
+            span,
+            "source control budget exceeds the shared exact-work ceiling",
+        ));
+    }
+    // The elaborator already bounds this immutable graph. Also bound the
+    // number of additional body checks; never create a budget per definition.
+    if source.definitions().len() > MAX_CALLS {
+        return Err(Error::new(
+            "limit",
+            span,
+            "source control checking exceeds 1024 concrete definitions",
+        ));
+    }
+    let mut retained = BTreeMap::<_, Vec<BTreeSet<_>>>::new();
+    let mut subjects = Vec::new();
+    for (id, definition) in source.definitions().iter().enumerate() {
+        let mut calls = BTreeSet::new();
+        for step in definition.steps() {
+            budget
+                .charge(1)
+                .map_err(|e| Error::new("limit", step.span(), e.to_string()))?;
+            if step.access_roles().contains(&QuantumAccess::Ctrl) {
+                let span = step.span();
+                calls.insert((span.start, span.end));
+            }
+        }
+        if !calls.is_empty() {
+            subjects.push(id);
+        }
+        retained.entry(definition.original).or_default().push(calls);
+    }
+    for obligation in &checked.obligations {
+        if !matches!(obligation.kind, ObligationKind::ControlSectors) {
+            continue;
+        }
+        let instances = retained.get(&obligation.definition);
+        let mut covered = instances.is_some();
+        for calls in instances.into_iter().flatten() {
+            budget
+                .charge(1)
+                .map_err(|e| Error::new("limit", obligation.span, e.to_string()))?;
+            covered &= calls.contains(&(obligation.span.start, obligation.span.end));
+        }
+        if !covered {
+            let original = checked.resolution.declaration(obligation.definition);
+            return Err(Error::new(
+                "unsupported", obligation.span,
+                "ctrl source access has no retained concrete call interval; independent sector checking is not yet supported for this original obligation",
+            ).in_module(&original.name.0));
+        }
+    }
+    for subject in subjects {
+        // Check each specialization, not just one representative per source
+        // declaration. Zero-count providers still retain their original body.
+        let definition = &source.definitions()[subject];
+        let module = definition
+            .path()
+            .rsplit_once("::")
+            .map_or(definition.path(), |(module, _)| module);
+        lower_inner(source, subject, None, None, Some((kernel, budget)))
+            .map_err(|error| error.in_module(module))?;
+    }
+    let root = &source.definitions()[source.root()];
+    let module = root
+        .path()
+        .rsplit_once("::")
+        .map_or(root.path(), |(module, _)| module);
+    lower_inner(source, source.root(), None, None, Some((kernel, budget)))
+        .map_err(|error| error.in_module(module))
 }
 
 pub(super) fn lower_operation(
@@ -1289,6 +1389,7 @@ fn lower_operation_site(
         subject,
         Some(&selected),
         Some((site, operation_depth)),
+        None,
     )
     .map_err(|error| error.in_module(module))
 }
@@ -1298,8 +1399,9 @@ fn lower_inner(
     subject: usize,
     selected: Option<&BTreeSet<usize>>,
     binding: Option<(OperationSite, usize)>,
+    checking: Option<(&native::Kernel, &mut Budget)>,
 ) -> Result<RawSourceProposal> {
-    check_profile(source, selected)?;
+    check_profile(source, selected, checking.is_some())?;
     let root = &source.definitions()[subject];
     let mut emitter = Emitter {
         source,
@@ -1377,7 +1479,9 @@ fn lower_inner(
         classical_outputs,
         declared_effect: effect(source, subject),
     };
-    preservation::validate_subject(source, subject, operation, &raw)?;
+    if checking.is_none() {
+        preservation::validate_subject(source, subject, operation, &raw)?;
+    }
     // A finite request binds the actual artifact's declared type as well as
     // its ports. Retain a unary quantum boundary only for an exact matching
     // source tree; zero width alone never establishes a Unit signature.
@@ -1394,6 +1498,27 @@ fn lower_inner(
     });
     let proposal = native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
         .map_err(|error| Error::new("transport", root.span(), error.to_string()))?;
+    if let Some((kernel, budget)) = checking {
+        // These checks bind the original source roles to decoded, freshly
+        // accepted bytes. A valid whole body alone is not sector evidence.
+        budget
+            .charge(proposal.artifact().len())
+            .map_err(|e| Error::new("limit", root.span(), e.to_string()))?;
+        let accepted = kernel
+            .accept(&proposal)
+            .map_err(|e| Error::new(e.code, root.span(), e.to_string()))?;
+        budget
+            .charge(accepted.native_exact_work())
+            .map_err(|e| Error::new("limit", root.span(), e.to_string()))?;
+        preservation::validate_subject_with_control_work(
+            source,
+            subject,
+            operation,
+            accepted.raw(),
+            Some(kernel),
+            budget,
+        )?;
+    }
     let finite_boundary =
         if raw.declared_effect == Effect::Unitary {
             if let Some(interface) = interface {

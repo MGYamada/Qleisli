@@ -104,7 +104,7 @@ joint complex amplitudes with any external reference. Phase kickback and
 entanglement are permitted; the result does not assert an unchanged reduced
 control state or separability.
 
-This transport obligation does not yet enable source `ctrl` calls. Original
+This request alone does not enable source `ctrl` calls. Original
 source places, call-specific artifact identity, aliasing, access lifetimes,
 lowering/execution correspondence and quantitative resource/scheduling claims
 remain separate obligations. No new native mode, external schema admission or
@@ -134,14 +134,19 @@ and interval extraction are not a Lean source-preservation theorem.
 Selected source projection retains the original ordered access roles with the
 call's source identities and positions, including public `ctrl` occurrences.
 Elaboration checks the exact owner shape and actual effect; it neither grants
-sector authority nor rewrites the role to `excl`. Raw and hierarchical lowering, and
-Raw source-step replay, inspect those roles and the exact owner interface.
-They reject an unchecked `ctrl` role before producing or validating transport;
-retaining a role is an obligation, not basis-sector evidence.
+sector authority nor rewrites the role to `excl`. Checker-free Raw and
+hierarchical lowering reject retained control roles. Native-checked selected
+Raw lowering independently checks every retained control-bearing concrete body
+and the selected root, then replays its actual decoded calls with fresh sector
+requests. Final consumption repeats native acceptance and source replay;
+retaining a role or an earlier success is not acceptance authority.
 The common judgment also records each original control call as a pending sector
-obligation. Selected transport checks that original collection before selecting
-concrete definitions: unused declarations, unselected branches, empty loops and
-zero-count providers cannot erase the obligation or its diagnostic location.
+obligation. Native-checked selected Raw lowering requires every original
+obligation to have a concrete interval in each retained specialization of its
+declaration; absent intervals remain unsupported. One specialization cannot
+cover another's missing call. Unused original declarations, unselected branches,
+empty loops and zero-count providers cannot erase the obligation or its
+location. Retained zero-count provider bodies are checked before root emission.
 
 The internal Raw replay bridge can discharge a retained control obligation
 using the checker associated with the accepted original artifact. It selects
@@ -150,10 +155,11 @@ and ordered source basis forest, then submits a fresh `control-owners` request.
 It does not take a producer-supplied call body, matrix or success receipt.
 Control replay without a native checker refuses. Work is shared across these
 decisions within the existing exact-work ceiling. Regression tests use original
-public control source graphs as well as private graph mutations; they establish
-this replay component's behavior, not selected-source transport admission. AST-to-step preservation, Rust
-decoding/interval extraction and final lowering integration remain separate
-obligations; this host bridge is not a new Lean source-preservation theorem.
+public control source graphs as well as private graph mutations. The checked
+Raw entry shares this budget across all body and root decisions; it refuses an
+increased ceiling, exhaustion or unavailable checker. AST-to-step preservation
+and Rust decoding/interval extraction remain separate obligations; this host
+bridge is not a new Lean source-preservation theorem.
 Symbolic inverse/controlled replay also refuses retained control roles: its
 transformed trace does not supply the original call intervals required by this
 native bridge. Zero-count and unused-provider obligations must still be covered

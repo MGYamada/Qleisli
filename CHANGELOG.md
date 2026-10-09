@@ -6,25 +6,32 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect retained concrete whole-owner `ctrl` calls to selected Raw checking
+  and execution through fresh native artifact/sector checks and source replay.
+  Check every retained specialization and zero-count provider body under one
+  exact-work budget; refuse original obligations without concrete intervals.
+  Checker-free emission, hierarchy and symbolic transformed control bodies
+  remain unsupported; general access and source-preservation duties stay open.
+
 - Retain original `ctrl` sector obligations in the common source judgment,
   including unused declarations, unselected branches and empty loops. Selected
-  transport refuses these pending obligations at their original source sites
-  instead of losing them when no concrete step is emitted.
+  native-checked Raw lowering refuses any obligation without a concrete call
+  in each retained specialization, preserving its original diagnostic site.
 
 - Refuse retained `ctrl` obligations in symbolic inverse/controlled replay,
   whose transformed trace cannot supply an original call interval for a fresh
-  native sector check. Keep selected transport blocked pending integration.
+  native sector check. Such transformed control bodies remain unsupported.
 
 - Retain public `ctrl` obligations through selected-source projection and
   elaboration, preserving original owner identities and positions. Ordinary
-  Raw/hierarchical proposal generation still refuses those obligations; native
+  checker-free Raw/hierarchical proposal generation refuses them; native
   replay regressions now also read original public source graphs.
 
 - Admit whole-owner `ctrl` calls in finite project compilation only after
   fresh native checking of each actual emitted call interval and ordered owner
   interface. Reject H/X and target-side CNOT access; preserve phase kickback,
-  external correlations and zero-width phase. Selected-source lowering remains
-  unsupported; general access and source-preservation obligations remain open.
+  external correlations and zero-width phase. General access and
+  source-preservation obligations remain open.
 
 - Connect retained source access obligations to fresh native checking of the
   actual Raw call interval read by source-step replay, with ordered original

@@ -121,11 +121,11 @@ struct Argument<'a> {
     atoms: Vec<Atom>,
 }
 
-struct Replay<'a> {
+struct Replay<'a, 'b> {
     source: &'a ElaboratedProgram,
     raw: &'a RawProgram,
     kernel: Option<&'a crate::interchange::native::Kernel>,
-    control_work: crate::contract::exact::Budget,
+    control_work: &'b mut crate::contract::exact::Budget,
     cursor: usize,
     calls: usize,
     steps: usize,
@@ -136,7 +136,7 @@ struct Replay<'a> {
     live: BTreeMap<TokenId, Arc<[WireId]>>,
 }
 
-impl Replay<'_> {
+impl Replay<'_, '_> {
     fn control_call(
         &mut self,
         step: &SourceStep,
@@ -217,7 +217,7 @@ impl Replay<'_> {
             declared_effect: Effect::Unitary,
         };
         kernel
-            .check_control_owners(&call, &signatures, &axes, &mut self.control_work)
+            .check_control_owners(&call, &signatures, &axes, self.control_work)
             .map_err(|error| {
                 site.error(
                     error.code,
@@ -1225,6 +1225,18 @@ pub(super) fn validate_subject_with_kernel(
     raw: &RawProgram,
     kernel: Option<&crate::interchange::native::Kernel>,
 ) -> Result<()> {
+    let mut budget = crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK);
+    validate_subject_with_control_work(source, subject, operation, raw, kernel, &mut budget)
+}
+
+pub(super) fn validate_subject_with_control_work(
+    source: &ElaboratedProgram,
+    subject: usize,
+    operation: Option<&SourceOperation>,
+    raw: &RawProgram,
+    kernel: Option<&crate::interchange::native::Kernel>,
+    control_work: &mut crate::contract::exact::Budget,
+) -> Result<()> {
     let definition = source
         .definitions()
         .get(subject)
@@ -1264,7 +1276,7 @@ pub(super) fn validate_subject_with_kernel(
         source,
         raw,
         kernel,
-        control_work: crate::contract::exact::Budget::new(crate::contract::DEFAULT_EXACT_WORK),
+        control_work,
         cursor: 0,
         calls: 0,
         steps: 0,

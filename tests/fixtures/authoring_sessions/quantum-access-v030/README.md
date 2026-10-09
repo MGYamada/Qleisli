@@ -33,7 +33,21 @@ and kickback sources now check and reproduce the three stated distributions;
 the duplicate-owner source refuses with an ownership diagnostic. All 42
 baseline observations and original bytes remain intact, for 49 observations
 in total. These bounded observations do not establish general access support
-or an exact source-preservation theorem; selected-source ctrl remains pending.
+or an exact source-preservation theorem.
+
+The selected Raw continuation preserves the four desired attempt-02 sources
+with a separately recorded public-entry repair in `attempt-04/`. Seven initial
+calls mistakenly used `--ir=raw` and returned usage errors; those raw failures
+remain under `selected-access-usage-before/` and establish no source behavior.
+The seven corrected `--ir-profile=raw` baseline calls accepted exclusive access,
+refused control as unsupported and rejected overlap. Seven later calls under
+`selected-access-after/` admit the entangled/kickback sources and reproduce
+00/11 and 10/11 with probability 1/2; overlap still refuses. There are now
+**70 observations**, including the seven explicitly separated usage errors.
+The largest deviation in these selected runs is below 3e-16. These are bounded
+source/check/run observations, not general access support or source proofs.
+The checked Raw path retains unsupported original obligations without concrete
+intervals; checker-free emission and hierarchical control remain unsupported.
 
 [session.json](session.json) binds each complete source/manifest snapshot and
 raw observation. The existing authoring checker validates record integrity;

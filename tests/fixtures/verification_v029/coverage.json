@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "64c2ce2a9ef0ac389b52f357c263502ab3bf60199cf563b253d0b5596d720b0c",
+  "surface_sha256": "7ba9ac82581874b75c846166f8345f6bb8f6c65e704ab6ff62b94e0f4ac8dce2",
   "groups": [
     {
       "id": "raw-core",
@@ -1965,7 +1965,7 @@
         },
         {
           "path": "tests/exclusive_access.rs",
-          "test": "finite_ctrl_preserves_phase_kickback_and_an_entangled_reference"
+          "test": "both_source_paths_preserve_ctrl_phase_kickback_and_an_entangled_reference"
         },
         {
           "path": "tests/exclusive_access.rs",
@@ -2353,6 +2353,7 @@
           "markers": [
             "pub fn lower_raw_operation(",
             "pub fn lower_raw_operation_at(",
+            "pub fn lower_raw_with_kernel(",
             "definitions: Arc<[SourceDefinition]>"
           ]
         },
@@ -2980,7 +2981,12 @@
             "original operation binding is absent during replay",
             "accepted.artifact() != self.payload",
             "self.replay(accepted)",
-            "preservation::validate_subject_with_kernel(source, subject, operation, raw, Some(kernel))"
+            "preservation::validate_subject_with_kernel(source, subject, operation, raw, Some(kernel))",
+            "pub(super) fn lower_with_kernel(",
+            "retained.entry(definition.original).or_default().push(calls)",
+            "covered &= calls.contains",
+            "accepted.native_exact_work()",
+            "preservation::validate_subject_with_control_work("
           ]
         },
         {
@@ -2993,7 +2999,7 @@
             "Raw join changes or aliases its ordered owners",
             "self.control_call(step, &inputs, &output, first_instruction, site)?",
             "self.raw.operations[first..self.cursor].to_vec()",
-            ".check_control_owners(&call, &signatures, &axes, &mut self.control_work)"
+            ".check_control_owners(&call, &signatures, &axes, self.control_work)"
           ]
         },
         {
@@ -3108,6 +3114,22 @@
         {
           "path": "tests/exclusive_access.rs",
           "test": "selected_nonexecuted_control_obligations_refuse_before_transport"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_control_requires_checker_and_one_bounded_budget"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_providers"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_control_retains_exact_scalar_phase_and_diagonal_meaning"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_raw_control_checks_without_weakening_emission"
         },
         {
           "path": "src/frontend/specialize/elaborate.rs",

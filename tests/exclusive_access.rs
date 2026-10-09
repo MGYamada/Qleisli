@@ -48,6 +48,121 @@ fn selected_nonexecuted_control_obligations_refuse_before_transport() {
     }
 }
 
+fn checked_raw(source: &str, entry: &str) -> qleisli::interchange::native::AcceptedProgram {
+    let source = selected(source)
+        .instantiate(entry, BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let kernel = Kernel::selected().unwrap();
+    let proposal = source
+        .lower_raw_with_kernel(
+            &kernel,
+            &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+        )
+        .unwrap();
+    let accepted = kernel.accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+    accepted
+}
+
+#[test]
+fn selected_control_requires_checker_and_one_bounded_budget() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    let source = selected("use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}")
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let kernel = Kernel::selected().unwrap();
+    for limit in [0, 1, DEFAULT_EXACT_WORK + 1] {
+        assert_eq!(
+            source
+                .lower_raw_with_kernel(&kernel, &mut Budget::new(limit))
+                .unwrap_err()
+                .code(),
+            "limit"
+        );
+    }
+    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"));
+    assert_eq!(
+        source
+            .lower_raw_with_kernel(&unavailable, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap_err()
+            .code(),
+        "io"
+    );
+    let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+    source.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
+    let spent = DEFAULT_EXACT_WORK - budget.remaining();
+    assert!(spent > 1);
+    assert_eq!(
+        source
+            .lower_raw_with_kernel(&kernel, &mut Budget::new(spent - 1))
+            .unwrap_err()
+            .code(),
+        "limit"
+    );
+    // Reusing storage/budget does not reuse native acceptance or mutate roles.
+    assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+}
+
+#[test]
+fn selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_providers() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    for (body, code) in [
+        (
+            "unitary fn unused(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{q}",
+            "unsupported",
+        ),
+        (
+            "pub unitary fn main(q:Q<Bit>)->Q<Bit>{if static 0==0 {q}else{h(ctrl q);q}}",
+            "unsupported",
+        ),
+        (
+            "pub unitary fn main(q:Q<Bit>)->Q<Bit>{qfor static i in 0..0 carry r=q {h(ctrl r);yield r;}}",
+            "unsupported",
+        ),
+        (
+            "unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{power(oracle,0)(q)}",
+            "contract",
+        ),
+        (
+            "unitary fn oracle(q:Q<Bit>)->Q<Bit>{h(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{adjoint(oracle)(q)}",
+            "contract",
+        ),
+        (
+            "unitary fn oracle(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}pub unitary fn main(q:Q<Bit>)->Q<Bit>{adjoint(oracle)(q)}",
+            "unsupported",
+        ),
+        (
+            "unitary fn oracle[const N:Nat](q:Q<Bit>)->Q<Bit>{qfor static i in 0..N carry r=q {h(ctrl r);yield r;}}pub unitary fn main(q:Q<Bit>)->Q<Bit>{let q=oracle[0](q);oracle[1](q)}",
+            "unsupported",
+        ),
+    ] {
+        let text = format!("use std::quantum::{{h,z}};{body}");
+        let source = selected(&text)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let error = source
+            .lower_raw_with_kernel(
+                &Kernel::selected().unwrap(),
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+            )
+            .unwrap_err();
+        assert_eq!(error.code(), code, "{text}: {error}");
+        assert_eq!(error.module(), Some("main"));
+        assert!(
+            ["h(ctrl ", "z(ctrl "]
+                .iter()
+                .any(|prefix| text[error.span().start..error.span().end].starts_with(prefix)),
+            "{text}: {error}"
+        );
+    }
+}
+
 #[test]
 fn updated_owners_survive_nested_blocks_calls_and_measurement() {
     for (body, expected) in [
@@ -174,7 +289,7 @@ fn overlap_spent_owner_wrong_interface_and_nonunitary_calls_refuse() {
 }
 
 #[test]
-fn finite_ctrl_preserves_phase_kickback_and_an_entangled_reference() {
+fn both_source_paths_preserve_ctrl_phase_kickback_and_an_entangled_reference() {
     for (body, expected) in [
         (
             "let c=init0();let t=init0();h(excl c);x(excl t);h(excl t);cnot(ctrl c,excl t);h(excl c);h(excl t);(measure_z(c),measure_z(t))",
@@ -196,22 +311,25 @@ fn finite_ctrl_preserves_phase_kickback_and_an_entangled_reference() {
         };
         let source = format!("{IMPORTS} pub observe fn main()->{result}{{{body}}}");
         let accepted = compile_project(&SourceRoot::new(&source).0).unwrap();
-        let actual = run_closed(&accepted, SimulationLimits::default()).unwrap();
-        // X prepares |1>, H X prepares |->, and CNOT on |-> produces
-        // phase kickback. Uncomputing the CNOT to r exposes that phase while
-        // retaining its correlation: the expected output is exactly 101.
-        assert!(
-            (actual[&expected] - 1.0).abs() < 1e-12,
-            "{source}: {actual:?}"
-        );
-        assert!(
-            actual
-                .iter()
-                .filter(|(bits, _)| *bits != &expected)
-                .all(|(_, p)| *p < 1e-12)
-        );
-        // Selected lowering is a separate pending integration. Preparation
-        // must not confer native authority or erase the retained roles.
+        let raw = checked_raw(&source, "main::main");
+        for accepted in [&accepted, &raw] {
+            let actual = run_closed(accepted, SimulationLimits::default()).unwrap();
+            // X prepares |1>, H X prepares |->, and CNOT on |-> produces
+            // phase kickback. Uncomputing the CNOT to r exposes that phase while
+            // retaining its correlation: the expected output is exactly 101.
+            assert!(
+                (actual[&expected] - 1.0).abs() < 1e-12,
+                "{source}: {actual:?}"
+            );
+            assert!(
+                actual
+                    .iter()
+                    .filter(|(bits, _)| *bits != &expected)
+                    .all(|(_, p)| *p < 1e-12)
+            );
+        }
+        // Kernel-free preparation must still refuse control obligations;
+        // checked lowering does not confer reusable native authority.
         assert_eq!(
             selected(&source)
                 .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
@@ -237,6 +355,19 @@ fn finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls() {
         assert!(error.message.contains("sector preservation"));
         assert!(error.message.contains("not read-only"));
         assert!(error.message.contains("phase kickback"));
+        let source = selected(&source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let error = source
+            .lower_raw_with_kernel(
+                &Kernel::selected().unwrap(),
+                &mut qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+            )
+            .unwrap_err();
+        assert_eq!(error.code(), "contract");
+        assert!(error.message().contains("sector preservation"));
     }
     let source = format!(
         "{IMPORTS} unitary fn bad(q:Q<Bit>)->Q<Bit>{{h(ctrl q);q}} pub observe fn main()->Bit{{0}}"
@@ -258,8 +389,16 @@ fn finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase() {
             .abs()
             < 1e-12
     );
+    let raw = checked_raw(&source, "main::main");
+    assert!(
+        (run_closed(&raw, SimulationLimits::default()).unwrap()[&vec![true, true]] - 1.0).abs()
+            < 1e-12
+    );
     let source = "use std::quantum::phase_eighth;pub unitary fn f(q:Q<Unit>)->Q<Unit>{phase_eighth(ctrl q);q}";
     check_project(&SourceRoot::new(source).0).unwrap();
+    let raw = checked_raw(source, "main::f");
+    assert_eq!(raw.raw().quantum_inputs.len(), 1);
+    assert!(raw.raw().quantum_inputs[0].wires.is_empty());
     let root = SourceRoot::new(source);
     let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"));
     let error = qleisli::frontend::compile::check_project_with_kernel(
@@ -492,6 +631,46 @@ fn closed_static_branches_and_empty_fold_thread_updated_carry() {
             (0..4)
                 .map(|i| input[i ^ (rounds as usize % 2)])
                 .collect::<Vec<_>>()
+        );
+    }
+}
+
+#[test]
+fn selected_control_retains_exact_scalar_phase_and_diagonal_meaning() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    for (text, basis, phases) in [
+        (
+            "use std::quantum::phase_eighth;pub unitary fn main(q:Q<Unit>)->Q<Unit>{phase_eighth(ctrl q);q}",
+            BasisType::Unit,
+            vec![1],
+        ),
+        (
+            "use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}",
+            BasisType::Bit,
+            vec![0, 4],
+        ),
+    ] {
+        let source = selected(text)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let kernel = Kernel::selected().unwrap();
+        let proposal = source
+            .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let target = FiniteMeaning::phase(basis.clone(), phases.clone()).unwrap();
+        proposal
+            .check_finite_meaning(&kernel, &target, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        // Unitarity or preservation of sectors does not erase exact phase.
+        let wrong = FiniteMeaning::phase(basis, vec![0; phases.len()]).unwrap();
+        assert_eq!(
+            proposal
+                .check_finite_meaning(&kernel, &wrong, &mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap_err()
+                .code(),
+            "contract"
         );
     }
 }

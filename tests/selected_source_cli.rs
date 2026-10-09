@@ -735,3 +735,40 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
     assert!(help.status.success());
     assert!(!String::from_utf8_lossy(&help.stdout).contains("qleisli sized"));
 }
+
+#[test]
+fn selected_raw_control_checks_without_weakening_emission() {
+    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04");
+    for name in ["entangled", "kickback", "overlap"] {
+        let source = path.join(name).join("main.qli");
+        let mut command = selected("check", &source, "main::main");
+        command
+            .arg("--ir-profile=raw")
+            .arg(format!("--lean-kernel={}", kernel().display()));
+        let text = result(command.output().unwrap(), "check", name != "overlap");
+        if name != "overlap" {
+            scope(&text, "main::main", "raw");
+        } else {
+            assert!(text.contains("ownership"), "{text}");
+        }
+    }
+    // Emitting a proposal is explicitly checker-free. It cannot hide the
+    // original control obligation or acquire acceptance from another action.
+    let output = std::env::temp_dir().join(format!(
+        "qleisli-control-emission-{}.json",
+        std::process::id()
+    ));
+    let mut command = selected(
+        "emit-proposal",
+        &path.join("entangled/main.qli"),
+        "main::main",
+    );
+    command
+        .arg("--ir-profile=raw")
+        .arg(format!("--output={}", output.display()))
+        .env_remove("QLEISLI_KERNEL");
+    let text = result(command.output().unwrap(), "emit-proposal", false);
+    assert!(text.contains("unsupported"), "{text}");
+    assert!(!output.exists());
+}
