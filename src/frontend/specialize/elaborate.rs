@@ -2416,13 +2416,56 @@ mod access_role_tests {
     }
 
     #[test]
+    fn transformed_source_replay_cannot_erase_control_obligations() {
+        let kernel = crate::interchange::native::Kernel::selected().unwrap();
+        for (parameters, body) in [
+            ("q:Q<Bit>", "adjoint(oracle)(q)"),
+            ("c:Q<Bit>,q:Q<Bit>", "controlled(oracle)(c,q)"),
+        ] {
+            let output = if parameters.starts_with("c:") {
+                "(Q<Bit>,Q<Bit>)"
+            } else {
+                "Q<Bit>"
+            };
+            let text = format!(
+                "use std::quantum::h;unitary fn oracle(q:Q<Bit>)->Q<Bit>{{h(ctrl q);q}}pub unitary fn f({parameters})->{output}{{{body}}}"
+            );
+            let prepare = |text: String| {
+                ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                    .unwrap()
+                    .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap()
+            };
+            let source = prepare(text.clone());
+            assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+            let exclusive = prepare(text.replace("ctrl q", "excl q"));
+            let proposal = exclusive.lower_raw().unwrap();
+            let accepted = kernel.accept(proposal.proposal()).unwrap();
+            assert_eq!(
+                super::super::raw::validate_source_with_kernel(
+                    &source,
+                    source.root,
+                    None,
+                    accepted.raw(),
+                    &kernel,
+                )
+                .unwrap_err()
+                .code(),
+                "unsupported"
+            );
+        }
+    }
+
+    #[test]
     fn native_replay_checks_actual_call_sectors_instead_of_effect_annotation() {
         let kernel = crate::interchange::native::Kernel::selected().unwrap();
         let mut source = source();
         let proposal = source.lower_raw().unwrap();
         let accepted = kernel.accept(proposal.proposal()).unwrap();
-        // Inject a future role only into a private test graph. Public source
-        // ctrl remains unsupported; no source admission is asserted here.
+        // Mutate only a private test graph. Selected-source transport still
+        // refuses ctrl; this test asserts no source admission.
         let mut definitions = source.definitions.to_vec();
         definitions[source.root].steps[0].accesses[0] = QuantumAccess::Ctrl;
         source.definitions = definitions.into();

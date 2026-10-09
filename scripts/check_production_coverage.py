@@ -232,6 +232,7 @@ PATHS = {
         ('tests/classical_functions.rs', 'source_meaning_signature_effect_and_budget_guards_precede_native_io'),
         ('src/frontend/specialize/raw.rs', 'source_meaning_gate_rejects_a_native_valid_replaced_provider'),
         ('src/frontend/specialize/elaborate.rs', 'public_source_control_roles_reach_replay_as_obligations_not_authority'),
+        ('src/frontend/specialize/elaborate.rs', 'transformed_source_replay_cannot_erase_control_obligations'),
         ('src/frontend/specialize/elaborate.rs', 'native_replay_checks_actual_call_sectors_instead_of_effect_annotation'),
         ('src/frontend/specialize/elaborate.rs', 'native_control_replay_checks_only_the_consumed_call_and_has_no_fallback'),
         ('src/frontend/specialize/elaborate.rs', 'native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase')]),

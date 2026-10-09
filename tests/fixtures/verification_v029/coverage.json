@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "b7dfaa1bfacabd572970bd032f4418f09ee6e03472fb6d821d2d2c3b42f74d10",
+  "surface_sha256": "6f1f05f8a676f6c50d2cf47ba434566f8326578d6e0d072fa6a72e270cc3b907",
   "groups": [
     {
       "id": "raw-core",
@@ -3086,6 +3086,10 @@
         {
           "path": "src/frontend/specialize/elaborate.rs",
           "test": "public_source_control_roles_reach_replay_as_obligations_not_authority"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "transformed_source_replay_cannot_erase_control_obligations"
         },
         {
           "path": "src/frontend/specialize/elaborate.rs",

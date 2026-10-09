@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Refuse retained `ctrl` obligations in symbolic inverse/controlled replay,
+  whose transformed trace cannot supply an original call interval for a fresh
+  native sector check. Keep selected transport blocked pending integration.
+
 - Retain public `ctrl` obligations through selected-source projection and
   elaboration, preserving original owner identities and positions. Ordinary
   Raw/hierarchical proposal generation still refuses those obligations; native

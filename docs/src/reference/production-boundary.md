@@ -150,6 +150,10 @@ public control source graphs as well as private graph mutations; they establish
 this replay component's behavior, not selected-source transport admission. AST-to-step preservation, Rust
 decoding/interval extraction and final lowering integration remain separate
 obligations; this host bridge is not a new Lean source-preservation theorem.
+Symbolic inverse/controlled replay also refuses retained control roles: its
+transformed trace does not supply the original call intervals required by this
+native bridge. Zero-count and unused-provider obligations must still be covered
+before selected transport can be admitted; they are not waived by empty output.
 
 `tests/fixtures/constitution_v030/native-contract-bridge/` preserves the unchanged
 executable prefix, printed theorem/predicate types and axiom sets, and a

@@ -257,6 +257,10 @@ impl Trace<'_, '_, '_> {
             self.bind(input, &actual, &mut frame)?;
         }
         for step in definition.steps() {
+            // This symbolic transformed trace has no original Raw call interval
+            // on which to obtain a fresh native sector decision. Do not erase a
+            // retained control obligation while constructing an inverse/control.
+            step.check_access_contract()?;
             if step.effect() != "unitary" {
                 return Err(self.site.invalid("source access contains a non-pure step"));
             }
