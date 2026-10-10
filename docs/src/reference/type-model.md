@@ -281,6 +281,35 @@ ordinary Unit value ports while retaining the exact source interface and all
 executed operations. A computation returning Unit can still consume owners or
 perform observable work; omitting its result port does not omit its body.
 
+## Callable values and scoped bodies
+
+At the live-owner boundary, ordinary quantum functions are first-order:
+arguments and results explicitly expose their quantum owners. A declaration
+name is not a runtime callable value that can be copied, stored or returned
+with hidden quantum state. Static `Op<A>` descriptions contain programs and
+their provider identities, not captured live `Q<A>` owners. Their bounded
+composition and capability rules are specified in the
+[static language](static-language.md#capability-derivation-for-enabled-descriptions).
+
+The adopted [callable boundary #89](https://github.com/MGYamada/Qleisli/issues/89)
+forbids unrestricted closure capture of live quantum owners, including nested
+and zero-width owners. A future linear or one-shot quantum callable requires
+a separately specified type, usage, effect and access contract. Ordinary
+closure values are not supported by the current source grammar; this boundary
+does not introduce them or claim a type-aware capture diagnostic for unsupported
+standalone closure syntax.
+
+The `|...|` body of `with_computed` is a scoped construction, not a closure
+value. It cannot escape or be stored for later invocation. Its two-argument
+form permits ordinary classical outer values but hides outer live quantum
+owners; its three-argument certified form hides all outer runtime values and
+exposes the explicit data and auxiliary binders. A forbidden outer use is
+diagnosed at that resolved binding's use. A body-local binding with the same
+name has its own identity and is not an outer capture. An already consumed
+binding retains its consumption diagnostic. These checks do not replace the
+separate exact compute/use/uncompute and logical-operation evidence obligations;
+see the [workspace boundary](rust-boundary.md#checked-cleanup-is-a-separate-contract).
+
 ## Inference and generic responsibilities
 
 The [static language](static-language.md) specifies natural expressions,
