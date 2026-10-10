@@ -36,9 +36,61 @@ The current bodies of [#45](https://github.com/MGYamada/Qleisli/issues/45),
 [#46](https://github.com/MGYamada/Qleisli/issues/46),
 [#83](https://github.com/MGYamada/Qleisli/issues/83) and
 [#89](https://github.com/MGYamada/Qleisli/issues/89) were read from GitHub on
-2026-10-04. All four remain design issues. Their respective last-update times
+2026-10-04. All four were open design issues at that observation. Their respective last-update times
 were 08:19:58Z, 08:19:59Z, 08:20:02Z and 08:18:25Z on that date. Issue examples
 such as the old `Op<A,M>` are inputs to this decision, not adopted grammar.
+
+**Current boundary evidence (2026-10-10):** #45 and #89 are now closed against
+their own scoped acceptance conditions; #83 and #46 remain open. The
+[arrow-interface study](https://github.com/MGYamada/Qleisli/tree/codex/v0.3.0-foundation/tests/fixtures/authoring_sessions/arrow-interfaces-v030)
+preserves six unchanged first sources. Direct unitor/preparation and an
+endomorphic static control pass the existing selected CLI; a unitor supplied
+to `Op<(Unit,Bit)>` rejects at its exact provider tree. Both desired comma-form
+arrows reject in the existing Meaning slot. These observations do not implement
+general arrows or independently verify the candidate's requested meaning.
+
+### Implementation constraints exposed by the current checker
+
+The generalization must change the shared original-source judgment and both
+materialization adapters together. Adding a parser field while projecting it
+back to the old single basis would silently change the requested interface.
+Before changing the normative contract, implement these candidate rules:
+
+- Retain exact domain and codomain independently through ordered formal
+  substitution, provider resolution, operation construction, specialization
+  identity, Meaning obligations and actual-artifact/native-request attachment.
+  `Op<A>` still abbreviates precisely `A -> A`; the equal-dimensional unitor
+  negative remains invalid for that endomorphic formal.
+- Track the pure law separately from executable access. A general applicable
+  arrow supplies an isometry law and has an Iso upper effect bound. An
+  endomorphism can retain the current Unitary inference by the finite-space
+  isometry law. A differing-tree arrow can have Unitary effect only with checked
+  equal-dimension/two-sided laws; identical physical width is insufficient to
+  convert its source trees. Abstract bodies cannot use the fortunate law or
+  effect of one later concrete provider to justify other instantiations.
+- Adjointable requires a full-space two-sided law and the actual reverse
+  realization. Reverse the domain/codomain when constructing the adjoint.
+  Controllable and repetition require an exact endomorphism interface, including
+  a zero repetition count. Composition matches the exact middle tree, and
+  ordered tensoring constructs both interface trees independently. Observe
+  providers never enter this pure-arrow category.
+- Preserve the existing Iso transport's explicit empty-readout mapping where
+  it is used. An instrument-shaped transport is not an Observe effect, an
+  arbitrary instrument Meaning or a general adjoint API. Every proposed new
+  static-provider route still needs fresh native acceptance of its actual
+  original artifact; a direct-call success supplies no cached provider receipt.
+- Resolve the existing Meaning comma slot explicitly as part of the grammar
+  cutover below. Do not infer category from a name or keep a second parser
+  interpretation. Preserve the first rejected sources and append migrated
+  clients separately after the selected grammar is implemented.
+
+These are implementation requirements for this nonnormative candidate, not a
+new binding interpretation or an assertion that the corresponding rules are
+already executable. The present common checker still requires each concrete
+static source provider to be a unary principal-Unitary endomorphism. The tests
+in `tests/operation_parameters.rs` retain the direct/control effect distinction
+and both public source entry points' wrong-tree refusal without making desired
+future syntax rejection a permanent regression requirement.
 
 ## Recommended decisions
 

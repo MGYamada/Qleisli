@@ -5,6 +5,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [arrow-interface boundary study](arrow-interfaces-v030/README.md) preserves
+six unchanged first sources and actual checks distinguishing direct unitor and
+preparation support from static endomorphism restrictions and the proposed
+codomain/Meaning grammar collision. Check success reports producer consistency;
+general-arrow implementation and independent Meaning equality remain open.
+
 The [access-vocabulary study](access-vocabulary-v030/README.md) retains three
 unchanged sources and six actual checks separating unsupported resource syntax
 from ordinary functions named `borrow`.

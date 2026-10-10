@@ -550,3 +550,61 @@ fn direct_literal_power_keeps_named_function_access_distinct_from_static_provide
         );
     }
 }
+
+fn arrow_study(name: &str) -> String {
+    std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/arrow-interfaces-v030/attempt-01")
+            .join(format!("{name}.qli")),
+    )
+    .unwrap()
+}
+
+#[test]
+fn direct_arrows_keep_their_principal_effect_before_static_arrow_extension() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use qleisli::ir::Effect;
+    use std::collections::BTreeMap;
+
+    for (name, effect) in [
+        ("direct-unitor", Effect::Unitary),
+        ("direct-preparation", Effect::Iso),
+        ("endomorphic-control", Effect::Unitary),
+    ] {
+        let source = arrow_study(name);
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
+        assert_eq!(
+            parsed.function_effect("main::main").unwrap().inferred(),
+            effect,
+            "{name}"
+        );
+        // Whole-source checking and a selected specialization remain separate
+        // from native acceptance and an independently requested Meaning.
+        parsed
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .check_lowering_profile()
+            .unwrap();
+    }
+}
+
+#[test]
+fn an_equal_dimension_unitor_is_not_an_endomorphic_static_provider() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+
+    let source = arrow_study("endomorphic-unitor-refusal");
+    let files = SourceRoot::new(&source);
+    let project = check_project(&files.0).unwrap_err();
+    let selected =
+        ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())])).unwrap_err();
+    assert_eq!(project.code, ErrorCode::TypeMismatch);
+    assert_eq!(selected.code(), "type");
+    assert_eq!(project.message, selected.message());
+    assert_eq!(project.span, selected.span());
+    assert_eq!(&source[project.span.start..project.span.end], "strip");
+    assert!(project.message.contains("Q<Bit>"), "{project}");
+    assert!(project.message.contains("Q<(Unit,Bit)>"), "{project}");
+}

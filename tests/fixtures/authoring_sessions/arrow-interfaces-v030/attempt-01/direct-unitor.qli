@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{split,join,finish,unit,init0,h};
+unitary fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
+pub unitary fn main(q:Q<(Unit,Bit)>)->Q<Bit>{strip(q)}
