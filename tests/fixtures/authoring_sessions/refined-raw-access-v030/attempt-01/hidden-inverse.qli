@@ -1,0 +1,8 @@
+use std::quantum::phase;
+fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+classical fn phi(b:Bit)->(Bit,(Bit,Bit)){(b,(0,0))}
+meaning M:Bit=phase_by(phi);
+fn inner[const U:Op<Bit,M>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+fn wrapped(q:Q<Bit>)->Q<Bit>{inner[twist](q)}
+fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+pub fn main(q:Q<Bit>)->Q<Bit>{invoke[adjoint(wrapped)](q)}

@@ -1,0 +1,48 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Bind transformed Raw access substeps to original exact Meaning requests under #83/#46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "129019b7db7f1b35bbfa0988f826f1fca84672a4",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve complete desired access programs before changing the transformed interval gate.",
+      "sha256": {
+        "hidden-inverse.qli": "483e92b54f33b092bc9892f97bfcac09285d5baeeb342a7fe508dd5886b29045",
+        "nested-control-inverse.qli": "2e602a011f77a6b91a3e811800f55cbfbdbcba48fbb6fbb5b790d1c80f13ee90",
+        "controlled-scalar.qli": "62f1e7b6261e5b7ae94b5f4124c020fe2e1a4860045ea8f397f4ff0dcefa67e0",
+        "reordered-tensor-inverse.qli": "fc644b9a5ee1cf82ce218b49a80cd94e11e0c309bff6dbe8468c0d592839f5b9"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "ab85fd86ced2f585b669796a1183d8933ed97ece6ccff39db6e4d734c8013137"
+      },
+      "observations": [
+        "observations/hidden-inverse-before.json",
+        "observations/nested-control-inverse-before.json",
+        "observations/controlled-scalar-before.json",
+        "observations/reordered-tensor-inverse-before.json",
+        "observations/hidden-inverse-after.json",
+        "observations/nested-control-inverse-after.json",
+        "observations/controlled-scalar-after.json",
+        "observations/reordered-tensor-inverse-after.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Additional informed probe for metadata-only axis reordering hidden inside a controlled called definition. Created after the first four positive and substitution tests passed, before repairing conditional coordinate reconstruction.",
+      "sha256": {
+        "hidden-controlled-swap.qli": "42cf7c4e03278394e54b8bb40c367d960ca171fdf0f30be0decd816010cb58e8"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "ab85fd86ced2f585b669796a1183d8933ed97ece6ccff39db6e4d734c8013137"
+      },
+      "observations": [
+        "observations/hidden-controlled-swap-before-coordinate-fix.json",
+        "observations/hidden-controlled-swap-after.json"
+      ]
+    }
+  ]
+}

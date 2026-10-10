@@ -4294,7 +4294,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "cc4af81cc42344d3ffab4930abd58dd8186290f58c804d5301e7afce23960d7c",
+      "sha256": "d121632f9668d970359144b71bdfd7b1bdd5e6125df9c4d10c3aff412c1786af",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4344,7 +4344,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "e15a6770548a9e02cb98028013d7193ccfc29461d157fa24af34215edfa05a4b",
+      "sha256": "6ed016cd3d86848c72e5fb25e58ff91921de68d89ae1941ead56d56dd7b586cb",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4360,7 +4360,17 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access.rs",
-      "sha256": "c020d79bf4247d99b98367b7c9b8693dfd16a80066e44418337764439ef51f96",
+      "sha256": "110523b062f8a9286c66f9c8a8deb44daba3bdccbdfe5b7db2fca0146d14c885",
+      "group": "sized-source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation/access_meaning.rs",
+      "sha256": "317789616568bc7c2d8e1a4f78e9b17ee356c1022d8e1d37d306a6dd3fb3cceb",
       "group": "sized-source",
       "surface": {
         "declarations": [],

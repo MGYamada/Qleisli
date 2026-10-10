@@ -8,6 +8,21 @@ use super::{
 use crate::ir::{BitControl, CircuitAction, CircuitStep};
 use std::collections::{BTreeMap, BTreeSet};
 
+/// Located by the independent source traversal, never by a producer receipt.
+pub(super) struct Interval {
+    pub(super) leaf: usize,
+    pub(super) first: usize,
+    pub(super) end: usize,
+    pub(super) input: Vec<usize>,
+    pub(super) output: Vec<usize>,
+    pub(super) controls: Vec<usize>,
+    pub(super) adjoint: bool,
+}
+pub(super) struct Expected {
+    pub(super) steps: Vec<CircuitStep>,
+    pub(super) intervals: Vec<Interval>,
+}
+
 #[derive(Clone)]
 enum Logical {
     Classical,
@@ -23,6 +38,8 @@ struct Trace<'a, 'b, 's> {
     cells: &'b mut usize,
     steps: Vec<CircuitStep>,
     site: Site<'s>,
+    meanings: &'a [super::super::CheckedMeaning],
+    intervals: Vec<Interval>,
 }
 impl Trace<'_, '_, '_> {
     fn charge(&mut self, n: usize) -> Result<()> {
@@ -208,6 +225,73 @@ impl Trace<'_, '_, '_> {
         })
     }
     fn operation(
+        &mut self,
+        op: &SourceOperation,
+        arguments: Vec<Vec<Logical>>,
+        depth: usize,
+    ) -> Result<Vec<Logical>> {
+        let first = self.steps.len();
+        if self.meanings.is_empty() {
+            return self.operation_inner(op, arguments, depth);
+        }
+        self.charge_binding(op)?;
+        self.charge(self.meanings.len())?;
+        let key = op.key();
+        let leaves = self
+            .meanings
+            .iter()
+            .enumerate()
+            .filter_map(|(index, (required, _))| (*required == key).then_some(index))
+            .collect::<Vec<_>>();
+        let input = if leaves.is_empty() {
+            vec![]
+        } else {
+            let [input] = arguments.as_slice() else {
+                return Err(self.site.invalid("Meaning access changes argument arity"));
+            };
+            self.owner(input)?
+        };
+        let outputs = self.operation_inner(op, arguments, depth)?;
+        if !leaves.is_empty() {
+            let output = self.owner(&outputs)?;
+            let (ports, effect, _) =
+                super::super::operation_signature(op, self.source.definitions(), op.span())?;
+            let basis = ports
+                .input
+                .quantum_basis()
+                .and_then(super::super::finite_basis)
+                .ok_or_else(|| self.site.invalid("Meaning access loses its exact basis"))?;
+            if ports.input != ports.output || effect != crate::ir::Effect::Unitary {
+                return Err(self
+                    .site
+                    .invalid("Meaning access changes its exact interface or effect"));
+            }
+            for leaf in leaves {
+                if &basis != self.meanings[leaf].1.boundary().signature() {
+                    return Err(self
+                        .site
+                        .invalid("Meaning access substitutes the original type tree"));
+                }
+                self.charge(1 + input.len() + output.len())?;
+                if self.intervals.len() >= MAX_CALLS {
+                    return Err(self
+                        .site
+                        .error("limit", "source access exceeds 1024 Meaning intervals"));
+                }
+                self.intervals.push(Interval {
+                    leaf,
+                    first,
+                    end: self.steps.len(),
+                    input: input.clone(),
+                    output: output.clone(),
+                    controls: vec![],
+                    adjoint: false,
+                });
+            }
+        }
+        Ok(outputs)
+    }
+    fn operation_inner(
         &mut self,
         op: &SourceOperation,
         arguments: Vec<Vec<Logical>>,
@@ -607,6 +691,7 @@ impl Trace<'_, '_, '_> {
                 .invalid("source access provider is not a finite quantum owner")
         })?;
         self.charge(width)?;
+        let first_interval = self.intervals.len();
         let output = self.operation(
             op,
             vec![vec![Logical::Quantum((0..width).collect())]],
@@ -625,6 +710,18 @@ impl Trace<'_, '_, '_> {
                     .ok_or_else(|| self.site.invalid("source access loses an original axis"))?;
                 self.monomial(vec![position, other], vec![0, 2, 1, 3], vec![0; 4])?;
                 arrangement.swap(position, other);
+            }
+        }
+        if !self.meanings.is_empty() {
+            self.charge_binding(op)?;
+            let key = op.key();
+            for interval in &mut self.intervals[first_interval..] {
+                if self.meanings[interval.leaf].0 == key {
+                    // Include the actual canonical output routing in this
+                    // whole-operation equation, before any inverse/control.
+                    interval.end = self.steps.len();
+                    interval.output = (0..width).collect();
+                }
             }
         }
         Ok(width)
@@ -648,12 +745,40 @@ impl Trace<'_, '_, '_> {
             cells: &mut *self.cells,
             steps: Vec::new(),
             site: self.site,
+            meanings: self.meanings,
+            intervals: Vec::new(),
         };
         let width = child.canonical(op, depth)?;
         if width != target.len() {
             return Err(self.site.invalid("source access changes its target axes"));
         }
-        let mut steps = child.steps;
+        let count = child.steps.len();
+        let Trace {
+            mut steps,
+            mut intervals,
+            ..
+        } = child;
+        let first = self.steps.len();
+        for interval in &mut intervals {
+            if !controlled {
+                (interval.first, interval.end) = (count - interval.end, count - interval.first);
+                std::mem::swap(&mut interval.input, &mut interval.output);
+                interval.adjoint = !interval.adjoint;
+            }
+            for axis in interval
+                .input
+                .iter_mut()
+                .chain(&mut interval.output)
+                .chain(&mut interval.controls)
+            {
+                *axis = target[*axis];
+            }
+            if let Some(control) = control {
+                interval.controls.push(control);
+            }
+            interval.first += first;
+            interval.end += first;
+        }
         if !controlled {
             invert(&mut steps, self.site)?;
         }
@@ -667,6 +792,18 @@ impl Trace<'_, '_, '_> {
             }
             self.push(step)?;
         }
+        self.charge(
+            intervals
+                .iter()
+                .map(|i| 1 + i.input.len() + i.output.len() + i.controls.len())
+                .sum(),
+        )?;
+        if self.intervals.len() + intervals.len() > MAX_CALLS {
+            return Err(self
+                .site
+                .error("limit", "source access exceeds 1024 Meaning intervals"));
+        }
+        self.intervals.extend(intervals);
         Ok(arguments.into_iter().flatten().collect())
     }
 }
@@ -716,21 +853,24 @@ fn invert(steps: &mut [CircuitStep], site: Site<'_>) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn expected(
+pub(super) fn expected_with_meanings(
     source: &ElaboratedProgram,
     op: &SourceOperation,
     depth: usize,
     calls: &mut usize,
     cells: &mut usize,
-    controlled: bool,
+    requirements: (&[super::super::CheckedMeaning], bool),
     site: Site<'_>,
-) -> Result<Vec<CircuitStep>> {
+) -> Result<Expected> {
+    let (meanings, controlled) = requirements;
     let mut trace = Trace {
         source,
         calls,
         cells,
         steps: Vec::new(),
         site,
+        meanings,
+        intervals: Vec::new(),
     };
     let width = trace.canonical(op, depth)?;
     if controlled {
@@ -745,7 +885,28 @@ pub(super) fn expected(
     } else {
         invert(&mut trace.steps, site)?;
     }
-    Ok(trace.steps)
+    let count = trace.steps.len();
+    for interval in &mut trace.intervals {
+        if controlled {
+            for axis in interval
+                .input
+                .iter_mut()
+                .chain(&mut interval.output)
+                .chain(&mut interval.controls)
+            {
+                *axis += 1;
+            }
+            interval.controls.push(0);
+        } else {
+            (interval.first, interval.end) = (count - interval.end, count - interval.first);
+            std::mem::swap(&mut interval.input, &mut interval.output);
+            interval.adjoint = !interval.adjoint;
+        }
+    }
+    Ok(Expected {
+        steps: trace.steps,
+        intervals: trace.intervals,
+    })
 }
 
 #[cfg(test)]
@@ -794,6 +955,8 @@ mod tests {
                 cells: &mut cells,
                 steps: Vec::new(),
                 site: Site::definition(root),
+                meanings: &[],
+                intervals: Vec::new(),
             };
             let result = trace.charge_binding(binding);
             assert_eq!(result.is_ok(), succeeds, "depth={depth}");
@@ -839,6 +1002,8 @@ mod tests {
                     cells: &mut cells,
                     steps: Vec::new(),
                     site: Site::definition(root),
+                    meanings: &[],
+                    intervals: Vec::new(),
                 };
                 let result = trace.charge_binding(binding);
                 assert_eq!(result.is_ok(), succeeds, "{operation}, initial={initial}");

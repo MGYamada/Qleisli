@@ -18,6 +18,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 mod access;
+mod access_meaning;
 
 const MAX_CALLS: usize = 1024;
 const MAX_DEPTH: usize = 16;
@@ -242,15 +243,6 @@ impl Replay<'_, '_> {
         controlled: bool,
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
-        // A transformed definition can reach refinements absent from its
-        // immediate operation tree. Keep the full refined Raw access boundary
-        // closed until transformed interval requests are implemented.
-        if !self.meanings.is_empty() {
-            return Err(site.error(
-                "unsupported",
-                "Raw Meaning interval checking for inverse or controlled access is not yet supported",
-            ));
-        }
         if inputs.len() != 1 + usize::from(controlled) {
             return Err(site.invalid("source access changes argument arity"));
         }
@@ -280,13 +272,13 @@ impl Replay<'_, '_> {
         {
             return Err(site.invalid("source access substitutes an exact interface or effect"));
         }
-        let expected = access::expected(
+        let expected = access::expected_with_meanings(
             self.source,
             operation,
             depth,
             &mut self.calls,
             &mut self.cells,
-            controlled,
+            (self.meanings, controlled),
             site,
         )?;
         if !controlled {
@@ -298,11 +290,12 @@ impl Replay<'_, '_> {
             else {
                 return Err(site.invalid("Raw program omits the source inverse action"));
             };
-            if input != target_token || steps != &expected {
+            if input != target_token || steps != &expected.steps {
                 return Err(
                     site.invalid("Raw inverse differs from the original ordered source action")
                 );
             }
+            self.access_meanings(steps, &expected.intervals, site)?;
             let output = *output;
             if self.live.remove(target_token).as_ref() != Some(target_wires) {
                 return Err(site.invalid("source inverse consumes an unavailable owner"));
@@ -344,11 +337,12 @@ impl Replay<'_, '_> {
         else {
             return Err(site.invalid("Raw control omits its conditional exact action"));
         };
-        if *input != joined || steps != &expected {
+        if *input != joined || steps != &expected.steps {
             return Err(
                 site.invalid("Raw controlled action changes phase, axes or original provider")
             );
         }
+        self.access_meanings(steps, &expected.intervals, site)?;
         let transformed = *transformed;
         self.live.remove(&joined);
         self.introduce_owner(transformed, &wires, false, site)?;
@@ -370,6 +364,28 @@ impl Replay<'_, '_> {
         let target = self.introduce_owner(right, target_wires, false, site)?;
         self.cursor += 3;
         Ok(vec![control, target])
+    }
+    fn access_meanings(
+        &mut self,
+        steps: &[crate::ir::CircuitStep],
+        intervals: &[access::Interval],
+        site: Site<'_>,
+    ) -> Result<()> {
+        if intervals.is_empty() {
+            return Ok(());
+        }
+        let kernel = self
+            .kernel
+            .ok_or_else(|| site.invalid("Meaning access requires a native checker"))?;
+        access_meaning::check(
+            kernel,
+            self.meanings,
+            intervals,
+            steps,
+            self.control_work,
+            &mut self.cells,
+            site,
+        )
     }
     fn charge(&mut self, count: usize, site: Site<'_>) -> Result<()> {
         self.cells = self.cells.saturating_add(count);
@@ -1207,8 +1223,11 @@ impl Replay<'_, '_> {
         let outputs = self.operation_inner(operation, arguments, depth, site)?;
         let meanings = self.meanings;
         self.charge(meanings.len(), site)?;
-        for (_, leaf) in meanings.iter().filter(|(key, _)| *key == operation.key()) {
-            self.meaning_interval(operation, arguments, &outputs, first, leaf, site)?;
+        if !meanings.is_empty() {
+            let key = operation.key();
+            for (_, leaf) in meanings.iter().filter(|(required, _)| *required == key) {
+                self.meaning_interval(operation, arguments, &outputs, first, leaf, site)?;
+            }
         }
         Ok(outputs)
     }

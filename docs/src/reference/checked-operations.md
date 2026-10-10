@@ -70,11 +70,18 @@ actual materialized Raw bodies before the checked collection can produce a hiera
 proposal. That proposal still needs fresh hierarchy acceptance. Direct
 unchecked hierarchy or Raw lowering rejects when original Meaning obligations remain.
 The checked collection can also emit Raw for direct application, sequential and
-tensor composition: independent source replay checks the actual instruction
+tensor composition, adjoints and controlled access: independent source replay checks the actual instruction
 interval, owner boundary and ordered axes against each original finite request
 through a fresh native decision. Unexecuted and zero-repeat child requests are
-still checked before emission. Refined Raw inverse/controlled access and source
-`ctrl` obligations remain unsupported; failure does not select another profile.
+still checked before emission. For inverse and controlled access, independent
+source traversal retains each original subtree's actual substep range and axis
+boundary, including requests hidden inside called definitions. Inversion reverses
+that range and its boundary; coherent control retains the inactive identity
+sector and the exact active-sector matrix. Coordinate reconstruction follows
+the same surrounding controls, preserving metadata-only axis changes and Unit
+phase. These fresh finite equations retain the existing six-bit bound, shared
+work budget and final whole-artifact acceptance. Source `ctrl` obligations remain
+unsupported on this refined Raw path; failure does not select another profile.
 The complete emitted artifact still requires fresh native validity and source
 replay before execution. A provider outside its concrete
 profile also rejects, rather than losing its Meaning request. Other static

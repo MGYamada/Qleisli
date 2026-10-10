@@ -21,6 +21,11 @@ Whole exact Meanings and annotated zero-count children now reach native checks;
 wrong-axis and false-child requests reject. Bounded source replay and complex
 observations remain separate from general source preservation.
 
+The [transformed Raw Meaning study](refined-raw-access-v030/README.md) preserves
+five unchanged sources and ten real checks, including the conditional-coordinate
+counterexample found after four initial successes. Exact matrix and genuine
+wrong-evidence regressions distinguish source replay from Meaning binding.
+
 The [Meaning composition study](meaning-composition-v030/README.md) retains
 initial parse/visibility/profile failures and explicit pure entry adapters, with
 real native rejection of wrong phase order and wrong tensor axes. Broader

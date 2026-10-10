@@ -22,6 +22,8 @@ const MAX_DEPTH: usize = 16;
 const MAX_CELLS: usize = 100_000;
 const MAX_LIVE_QUBITS: usize = 16;
 
+pub(super) type CheckedMeaning = (super::elaborate::OperationKey, CheckedUnitaryLeaf);
+
 #[derive(Clone, Debug)]
 enum OperationSite {
     Binding(usize, String),
@@ -70,7 +72,7 @@ impl OperationSite {
 #[derive(Debug)]
 pub struct CheckedSourceMeanings<'a> {
     source: &'a ElaboratedProgram,
-    pub(super) leaves: Arc<Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>>,
+    pub(super) leaves: Arc<Vec<CheckedMeaning>>,
 }
 impl CheckedSourceMeanings<'_> {
     pub fn checked_bindings(&self) -> usize {
@@ -285,7 +287,7 @@ pub struct RawSourceProposal {
     operation_depth: usize,
     proposal: native::Proposal,
     finite_boundary: Option<UnitaryBoundary>,
-    meanings: Option<Arc<Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>>>,
+    meanings: Option<Arc<Vec<CheckedMeaning>>>,
 }
 
 /// A fresh native finite equation with replay of these retained source steps.
@@ -2129,6 +2131,98 @@ mod tests {
         .unwrap_err();
         assert_eq!(error.code(), "contract", "{error}");
         assert!(error.message().contains("actual Raw operation interval"));
+    }
+
+    #[test]
+    fn transformed_raw_meanings_reject_genuine_identity_evidence_for_other_substeps() {
+        let checker = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let directory = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01");
+        for name in [
+            "hidden-inverse",
+            "nested-control-inverse",
+            "controlled-scalar",
+            "reordered-tensor-inverse",
+            "hidden-controlled-swap",
+        ] {
+            let text = std::fs::read_to_string(
+                directory
+                    .with_file_name(if name == "hidden-controlled-swap" {
+                        "attempt-02"
+                    } else {
+                        "attempt-01"
+                    })
+                    .join(format!("{name}.qli")),
+            )
+            .unwrap();
+            let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+                .unwrap()
+                .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap();
+            let checked = source
+                .check_operation_meanings(&checker, &mut Budget::new(DEFAULT_EXACT_WORK))
+                .unwrap();
+            let raw = lower_inner(&source, source.root(), None, None, None).unwrap();
+            let accepted = checker.accept(raw.proposal()).unwrap();
+            raw.validate_source_steps(&accepted).unwrap();
+            // Each replacement is a real fresh native equation with the same
+            // exact type tree. Only its action differs from the required one.
+            let foreign = checked
+                .leaves
+                .iter()
+                .map(|(key, leaf)| {
+                    let signature = leaf.boundary().signature().clone();
+                    let dim = 1usize << signature.bits().unwrap();
+                    let identity =
+                        FiniteMeaning::permutation(signature.clone(), (0..dim as u16).collect())
+                            .unwrap();
+                    let target = identity.target_ir().unwrap();
+                    let interface = RootInterface {
+                        input: signature.clone(),
+                        output: signature.clone(),
+                    };
+                    let proposal =
+                        native::Proposal::from_raw(&target, Some(&interface), Version::V2, None)
+                            .unwrap();
+                    let accepted = checker.accept(&proposal).unwrap();
+                    let boundary = UnitaryBoundary::new(
+                        signature,
+                        target.quantum_inputs[0].clone(),
+                        accepted.output_ports()[0].clone(),
+                    )
+                    .unwrap();
+                    let leaf = finite_leaf::check_with_kernel(
+                        &checker,
+                        proposal.artifact(),
+                        &boundary,
+                        &identity
+                            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+                            .unwrap(),
+                        &mut Budget::new(DEFAULT_EXACT_WORK),
+                    )
+                    .unwrap();
+                    (key.clone(), leaf)
+                })
+                .collect::<Vec<_>>();
+            assert!(!foreign.is_empty());
+            let error = preservation::validate_subject_with_meanings(
+                &source,
+                source.root(),
+                None,
+                accepted.raw(),
+                Some(&checker),
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+                &foreign,
+            )
+            .unwrap_err();
+            assert_eq!(error.code(), "contract", "{name}: {error}");
+            assert!(
+                error.message().contains("actual transformed Raw substeps"),
+                "{name}: {error}"
+            );
+        }
     }
 
     #[test]

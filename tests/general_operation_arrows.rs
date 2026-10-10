@@ -535,10 +535,9 @@ fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants()
     let checked = adjoint
         .check_operation_meanings(&kernel, &mut budget)
         .unwrap();
-    assert_eq!(
-        checked.lower_raw(&kernel, &mut budget).unwrap_err().code(),
-        "unsupported"
-    );
+    let raw = checked.lower_raw(&kernel, &mut budget).unwrap();
+    raw.validate_source_steps(&kernel.accept(raw.proposal()).unwrap())
+        .unwrap();
     for (attempt, name) in [
         ("attempt-01", "zero-bad-child"),
         ("attempt-02", "wrong-tensor"),
@@ -553,5 +552,111 @@ fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants()
             .unwrap_err();
         assert_eq!(error.code(), "contract", "{name}: {error}");
         assert!(error.message().contains("original Meaning"));
+    }
+}
+
+#[test]
+fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order() {
+    use qleisli::contract::{
+        BasisType,
+        exact::{Budget, Exact, Matrix},
+    };
+    use qleisli::interchange::{
+        finite_leaf::{UnitaryBoundary, check_unitary},
+        native::Kernel,
+    };
+    let bit = BasisType::Bit;
+    let pair = |a, b| BasisType::Pair(Box::new(a), Box::new(b));
+    // Literal whole-program expectations, independent of generated requests
+    // and of the producer's inversion/control/axis transformations.
+    let cases = [
+        ("hidden-inverse", bit.clone(), vec![0, 1], vec![0, 7]),
+        (
+            "nested-control-inverse",
+            pair(bit.clone(), bit.clone()),
+            vec![0, 1, 2, 3],
+            vec![0, 0, 0, 7],
+        ),
+        (
+            "controlled-scalar",
+            pair(bit.clone(), BasisType::Unit),
+            vec![0, 1],
+            vec![0, 1],
+        ),
+        (
+            "reordered-tensor-inverse",
+            pair(pair(bit.clone(), bit.clone()), bit),
+            vec![0, 2, 1, 3, 4, 6, 5, 7],
+            vec![0, 0, 0, 0, 7, 7, 7, 7],
+        ),
+    ];
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/refined-raw-access-v030/attempt-01");
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let extra = (
+        "hidden-controlled-swap",
+        pair(BasisType::Bit, pair(BasisType::Bit, BasisType::Bit)),
+        vec![0, 1, 2, 5, 4, 3, 6, 7],
+        vec![0; 8],
+    );
+    for (name, signature, permutation, phases) in cases.into_iter().chain([extra]) {
+        let text = std::fs::read_to_string(
+            directory
+                .with_file_name(if name == "hidden-controlled-swap" {
+                    "attempt-02"
+                } else {
+                    "attempt-01"
+                })
+                .join(format!("{name}.qli")),
+        )
+        .unwrap();
+        let source = parsed(&text)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut budget = Budget::new(100_000);
+        let checked = source
+            .check_operation_meanings(&kernel, &mut budget)
+            .unwrap();
+        assert!(checked.checked_bindings() > 0, "{name}");
+        let raw = checked
+            .lower_raw(&kernel, &mut budget)
+            .unwrap_or_else(|e| panic!("{name}: {e}"));
+        let accepted = kernel.accept(raw.proposal()).unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+        let boundary = UnitaryBoundary::new(
+            signature,
+            accepted.raw().quantum_inputs[0].clone(),
+            accepted.output_ports()[0].clone(),
+        )
+        .unwrap();
+        let dim = permutation.len();
+        let mut entries = vec![Exact::zero(); dim * dim];
+        for column in 0..dim {
+            entries[permutation[column] * dim + column] = Exact::phase(phases[column]);
+        }
+        check_unitary(
+            raw.payload(),
+            &boundary,
+            &Matrix::new(dim, dim, entries).unwrap(),
+            &mut Budget::new(100_000),
+        )
+        .unwrap_or_else(|e| panic!("{name}: {e}"));
+        let root = SourceRoot::new(&text);
+        let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .args([
+                "check",
+                "--format=json",
+                "--entry=main::main",
+                "--ir-profile=raw",
+            ])
+            .arg(format!(
+                "--module=main={}",
+                root.0.join("main.qli").display()
+            ))
+            .output()
+            .unwrap();
+        assert!(result.status.success(), "{name}: {result:?}");
     }
 }

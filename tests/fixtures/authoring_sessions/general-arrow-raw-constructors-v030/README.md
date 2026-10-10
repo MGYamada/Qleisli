@@ -43,3 +43,11 @@ a suspended owner and scalar work; and keep zero-budget rejection. The native
 checker, protocol and constitutional guarantees are unchanged. Rectangular
 Meanings, transformed Raw requests and general source/runtime preservation
 remain required work, not waived acceptance conditions.
+
+## Subsequent transformed interval work
+
+The later [transformed Raw Meaning study](../refined-raw-access-v030/README.md)
+adds inverse/control substep checks and conditional coordinate reconstruction.
+The unchanged adjoint source now also passes the library's refined Raw regression.
+The earlier unsupported observations above remain historical evidence; source
+`ctrl` and rectangular Meanings still require separate work.

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Bind refined Raw adjoint and controlled substeps to original exact Meaning
+  requests, including hidden called-body requests and conditional axis routing.
+  Preserve scalar phase, existing finite bounds and fresh native decisions;
+  source `ctrl`, rectangular Meanings and broader #83/#46 remain unfinished.
+
 - Connect checked finite operation Meanings to Raw direct, sequential and tensor
   application. Independently replay and freshly check actual emitted instruction
   intervals against original requests, preserving owners, phase and axes.
