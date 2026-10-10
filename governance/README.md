@@ -123,6 +123,17 @@ hash alone is not a fresh proof check. The legacy full-expression identity
 profile remains available for unchanged representations. This is technical
 preservation of the two existing scopes, not a new guarantee admission.
 
+The fixed Raw/Basis profile additionally checks the historical operation
+meanings in `lean/Qleisli/Semantics/RawLegacy/`, the bidirectional embedding in
+`lean/Qleisli/RawRepresentationTransport.lean`, and its fixed
+`RawTransportReview.lean`. Its extractor retains the actual current checker,
+original-byte witness and root-selection types. Only a fixed namespace/helper
+mapping and bound-variable display names differ in the historical semantic
+comparison; binder kinds, indices, types, bodies and constructor fields remain
+protected. Live verification runs both typed transport reviews and fresh
+extraction. This profile does not itself enable a new opcode or establish
+source, decoder, native compiler or runtime preservation.
+
 Changes to the checker or workflow remain subject to review. This implementation
 does not complete constitutional CI, prove a Fundamental Theorem, or implement
 an automated Article IX correction path. A valid human rectification would need

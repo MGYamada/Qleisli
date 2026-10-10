@@ -600,6 +600,19 @@ class CheckedBasisTransportProfile(unittest.TestCase):
         c = checker.continuity
         self.current = json.loads((ROOT / checker.CURRENT_PATH).read_text())["continuity"]
         self.binding = copy.deepcopy(self.current)
+        self.binding.pop("raw_transport", None)
+        # Exercise the still-supported Basis profile against the immutable
+        # historical expression bytes, independently of the active profile.
+        self.compressed = (ROOT / c.REVIEWED_PATH).read_bytes()
+        self.binding.update(extractor=dict(path=c.EXTRACTOR_PATH, sha256=c.EXTRACTOR_SHA256),
+            command=dict(argv=c.ARGV, cwd="lean", exit_code=0),
+            stdout=dict(path=c.CURRENT_PATH, compression="gzip", sha256=c.digest(self.compressed),
+                        uncompressed_sha256=c.digest(gzip.decompress(self.compressed))))
+        read = checker.read_file
+        self.fixture_read = lambda root, name: self.compressed if name == c.CURRENT_PATH else read(root, name)
+        patched = patch("check_ratification_packet.read_file", side_effect=self.fixture_read)
+        patched.start()
+        self.addCleanup(patched.stop)
         self.binding.update(format=c.BASIS_FORMAT, transport=dict(
             source=dict(path=c.TRANSPORT_SOURCE, sha256=c.TRANSPORT_SHA256),
             review=dict(path=c.TRANSPORT_REVIEW, sha256=c.TRANSPORT_REVIEW_SHA256),
@@ -621,7 +634,7 @@ class CheckedBasisTransportProfile(unittest.TestCase):
         c = checker.continuity
         with patch.object(c, "baseline", return_value=self.expected):
             c.validate(ROOT, self.binding, self.revision, {})
-        current = gzip.decompress((ROOT / c.CURRENT_PATH).read_bytes())
+        current = gzip.decompress(self.compressed)
         transport = (ROOT / c.TRANSPORT_STDOUT).read_bytes()
         def run(argv, **kwargs):
             output = transport if argv == c.TRANSPORT_ARGV else current
@@ -676,7 +689,7 @@ class CheckedBasisTransportProfile(unittest.TestCase):
 
     def test_changed_transport_source_review_output_or_reference_semantics_reject(self):
         c = checker.continuity
-        original_read = checker.read_file
+        original_read = self.fixture_read
         for changed_path in (c.TRANSPORT_SOURCE, c.TRANSPORT_REVIEW, c.TRANSPORT_STDOUT, c.QIRF_SEMANTICS):
             def altered(root, name):
                 data = original_read(root, name)
@@ -695,6 +708,147 @@ class CheckedBasisTransportProfile(unittest.TestCase):
                 c.replay_transport(ROOT)
         with patch.object(c.subprocess, "run", return_value=subprocess.CompletedProcess(c.TRANSPORT_ARGV, 0, output, b"")):
             c.replay_transport(ROOT)
+
+
+class CheckedRawTransportProfile(unittest.TestCase):
+    def setUp(self):
+        c = checker.continuity
+        self.reviewed = gzip.decompress((ROOT / c.REVIEWED_PATH).read_bytes())
+        old = json.loads(self.reviewed)
+        # Bounded in-memory test data, not a regenerated production snapshot.
+        entries = {c.expression_name(row["name"]): copy.deepcopy(row) for row in old["declarations"]}
+        for row in old["declarations"]:
+            before = c.expression_name(row["name"])
+            after = c.raw_rename(before)
+            if before != after:
+                mapped = c.raw_convert(row)
+                module = c.expression_name(row["module"]).rsplit(".", 1)[-1]
+                mapped["module"] = c.elaborated_name("Qleisli.Semantics.RawLegacy." + module)
+                entries[after] = mapped
+        old["roots"] += [c.raw_convert(name) for name in old["roots"][:3]]
+        old["declarations"] = list(entries.values())
+        self.snapshot = old
+        self.output = json.dumps(old).encode()
+        self.compressed = gzip.compress(self.output, mtime=0)
+        self.binding = copy.deepcopy(json.loads((ROOT / checker.CURRENT_PATH).read_text())["continuity"])
+        self.binding.update(format=c.RAW_FORMAT,
+            extractor=dict(path=c.RAW_EXTRACTOR, sha256=c.RAW_EXTRACTOR_SHA256),
+            command=dict(argv=c.RAW_ARGV, cwd="lean", exit_code=0),
+            stdout=dict(path=c.CURRENT_PATH, compression="gzip", sha256=c.digest(self.compressed),
+                        uncompressed_sha256=c.digest(self.output)),
+            raw_transport=dict(sources=c.RAW_SOURCES,
+                review=dict(path=c.RAW_REVIEW, sha256=c.RAW_REVIEW_SHA256),
+                stdout=dict(path=c.RAW_STDOUT, sha256=c.RAW_STDOUT_SHA256),
+                stderr=dict(path=c.STDERR_PATH, sha256=c.digest(b"")),
+                command=dict(argv=c.RAW_REVIEW_ARGV, cwd="lean", exit_code=0)))
+        self.revision = dict(sha256=self.binding["source_revision_sha256"],
+                             files={**c.RAW_SOURCES, c.TRANSPORT_SOURCE: c.TRANSPORT_SHA256})
+        self.expected = json.loads((ROOT / c.BASELINE_PATH).read_text())
+
+    def validate(self):
+        c = checker.continuity
+        read = checker.read_file
+        def contents(root, name):
+            return self.compressed if name == c.CURRENT_PATH else read(root, name)
+        with patch.object(c, "baseline", return_value=self.expected), \
+             patch("check_ratification_packet.read_file", side_effect=contents):
+            return c.validate(ROOT, self.binding, self.revision, {})
+
+    def test_real_typed_proof_files_and_all_historical_meanings_required(self):
+        result = checker.continuity.compare_raw_projection(self.output, self.reviewed)
+        self.assertGreater(result["independent_meaning_declarations"], 200)
+        self.assertGreater(result["protected_bindings"], 20)
+        self.validate()
+
+    def test_weakened_semantics_and_original_subject_rejected(self):
+        c = checker.continuity
+        names = [c.raw_rename(name) for name in c.SEMANTIC_ROOTS]
+        names += ["Qleisli.Semantics.RawLegacy.Ownership.Pure.mk",
+                  "Qleisli.Semantics.RawLegacy.Raw.Op", *c.ACTUAL_ENDPOINTS, *c.BINDING_PREFIXES]
+        for name in names:
+            changed = copy.deepcopy(self.snapshot)
+            row = next(row for row in changed["declarations"] if c.expression_name(row["name"]) == name)
+            row["declaration"] = ["const", c.elaborated_name("True"), []]
+            with self.subTest(name=name), self.assertRaises(PacketError):
+                c.compare_raw_projection(json.dumps(changed).encode(), self.reviewed)
+
+    def test_binder_display_names_only_may_change(self):
+        c = checker.continuity
+        term = ["forall", c.elaborated_name("before"), "default", ["sort", ["zero"]], ["bvar", 0]]
+        renamed = copy.deepcopy(term)
+        renamed[1] = c.elaborated_name("after")
+        self.assertEqual(c.raw_convert(term), c.raw_convert(renamed))
+        for index, replacement in ((2, "implicit"), (3, ["sort", ["succ", ["zero"]]]), (4, ["bvar", 1])):
+            changed = copy.deepcopy(renamed)
+            changed[index] = replacement
+            self.assertNotEqual(c.raw_convert(term), c.raw_convert(changed))
+
+    def test_wrong_origin_missing_definition_duplicate_and_roots_reject(self):
+        c = checker.continuity
+        for mutation in ("origin", "missing", "duplicate", "root", "boolean-version"):
+            changed = copy.deepcopy(self.snapshot)
+            if mutation == "origin":
+                next(row for row in changed["declarations"] if c.expression_name(row["name"]) ==
+                     "Qleisli.Semantics.RawLegacy.Ownership.OwnershipSafe")["project"] = False
+            elif mutation == "missing":
+                changed["declarations"] = [row for row in changed["declarations"] if c.expression_name(row["name"]) !=
+                                           "Qleisli.Semantics.RawLegacy.Ownership.Pure.mk"]
+            elif mutation == "duplicate":
+                changed["declarations"].append(changed["declarations"][0])
+            elif mutation == "root":
+                changed["roots"].pop()
+            else:
+                changed["version"] = True
+            with self.subTest(mutation=mutation), self.assertRaises(PacketError):
+                c.compare_raw_projection(json.dumps(changed).encode(), self.reviewed)
+
+    def test_proof_sources_extractors_and_commands_cannot_be_selected_by_record(self):
+        mutations = (
+            lambda b: b.pop("raw_transport"),
+            lambda b: b["raw_transport"].update(sources={}),
+            lambda b: b["raw_transport"]["command"].update(exit_code=False),
+            lambda b: b["raw_transport"].update(review={}),
+            lambda b: b["extractor"].update(sha256="0" * 64),
+            lambda b: b["command"].update(argv=checker.continuity.ARGV),
+            lambda b: b.update(version=True),
+            lambda b: b.update(source_revision_sha256="0" * 64),
+        )
+        for mutate in mutations:
+            previous = copy.deepcopy(self.binding)
+            mutate(self.binding)
+            with self.assertRaises(PacketError):
+                self.validate()
+            self.binding = previous
+        self.revision["files"] = {}
+        with self.assertRaisesRegex(PacketError, "source closure"):
+            self.validate()
+
+    def test_live_review_and_extraction_both_required(self):
+        c = checker.continuity
+        read = checker.read_file
+        def contents(root, name):
+            return self.compressed if name == c.CURRENT_PATH else read(root, name)
+        outputs = {tuple(c.TRANSPORT_ARGV): read(ROOT, c.TRANSPORT_STDOUT),
+                   tuple(c.RAW_REVIEW_ARGV): read(ROOT, c.RAW_STDOUT), tuple(c.RAW_ARGV): self.output}
+        for fail in (None, "typed", "extraction", "warning", "exit"):
+            def run(argv, **kwargs):
+                output = outputs[tuple(argv)]
+                if fail == "typed" and argv == c.RAW_REVIEW_ARGV:
+                    output += b"forged"
+                if fail == "extraction" and argv == c.RAW_ARGV:
+                    output += b" "
+                return subprocess.CompletedProcess(argv, 1 if fail == "exit" else 0,
+                    output, b"warning" if fail == "warning" else b"")
+            with patch.object(c, "baseline", return_value=self.expected), \
+                 patch("check_ratification_packet.read_file", side_effect=contents), \
+                 patch.object(c.subprocess, "run", side_effect=run) as commands:
+                if fail is None:
+                    c.replay(ROOT, self.binding, self.revision, {})
+                    self.assertEqual([call.args[0] for call in commands.call_args_list],
+                                     [c.TRANSPORT_ARGV, c.RAW_REVIEW_ARGV, c.RAW_ARGV])
+                else:
+                    with self.assertRaises(PacketError):
+                        c.replay(ROOT, self.binding, self.revision, {})
 
 
 if __name__ == "__main__":

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect the checked historical Raw embedding to a fixed continuity profile
+  with fresh typed proof reviews, original-byte/root binding checks and
+  negative regression tests. Retain the identity and Basis-only profiles.
+  This enables no new public opcode and admits no additional guarantee.
+
 - Prove an injective embedding of the pre-Unit Raw representation, preserving
   whole literal traces, original-root selection, and both ownership and
   classical-scope judgments in both directions. This transport groundwork does

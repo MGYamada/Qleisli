@@ -492,7 +492,9 @@ def check(root=ROOT, *, verify_lean=False, require_adopted=False):
         require(read_file(root, CURRENT_PATH) == current_bytes, "current evidence changed during Lean replay")
     mode = "source-identity-only"
     if verify_lean:
-        mode = ("current-Lean-basis-transport-and-source-identity"
+        mode = ("current-Lean-raw-basis-transport-and-source-identity"
+                if current["continuity"]["format"] == continuity.RAW_FORMAT
+                else "current-Lean-basis-transport-and-source-identity"
                 if current["continuity"]["format"] == continuity.BASIS_FORMAT
                 else "current-Lean-identity-transport-and-source-identity")
     return {"mode": mode,

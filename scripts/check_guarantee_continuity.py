@@ -205,8 +205,15 @@ def validate(root, binding, revision, archive):
     # Default identity keeps the entire historical expression comparison.
     # This explicit profile additionally requires a fixed typed transport proof.
     require(type(binding) is dict, "invalid continuity evidence")
+    if binding.get("format") == RAW_FORMAT:
+        return validate_raw(root, binding, revision, archive)
     if binding.get("format") != BASIS_FORMAT:
         return validate_identity(root, binding, revision, archive)
+    return validate_basis_record(root, binding, revision, archive)
+
+
+def validate_basis_record(root, binding, revision, archive, *, projection=None):
+    projection = compare_protected_projection if projection is None else projection
     exact_keys(binding, {"format", "version", "baseline", "extractor", "source_revision_sha256",
                          "command", "stdout", "stderr", "transport"}, "basis transport evidence")
     require(type(binding["version"]) is int and binding["version"] == 1,
@@ -221,7 +228,7 @@ def validate(root, binding, revision, archive):
     current = decompressed(checked_file(root, CURRENT_PATH, binding["stdout"]["sha256"]))
     require(digest(current) == binding["stdout"]["uncompressed_sha256"], "corrupt basis snapshot")
     reviewed = decompressed(checked_file(root, REVIEWED_PATH, expected["expressions"]["sha256"]))
-    compare_protected_projection(current, reviewed)
+    projection(current, reviewed)
     require_fields(binding["stderr"], dict(path=STDERR_PATH, sha256=digest(b"")), "continuity stderr")
     checked_file(root, STDERR_PATH, digest(b""))
     require(type(binding["command"]) is dict
@@ -266,6 +273,8 @@ def compare_extraction(output, expected):
 
 def replay(root, binding, revision, archive):
     """Replay fixed extraction and required transport after package build/audit."""
+    if type(binding) is dict and binding.get("format") == RAW_FORMAT:
+        return replay_raw(root, binding, revision, archive)
     expected = validate(root, binding, revision, archive)
     if binding.get("format") == BASIS_FORMAT:
         replay_transport(root)
@@ -284,3 +293,160 @@ def replay(root, binding, revision, archive):
         validate(root, binding, revision, archive)
     else:
         compare_extraction(result.stdout, expected)
+
+
+# A fixed optional profile for operation-representation changes. A record cannot
+# choose the renaming, semantic roots, proof, extractor, or original-byte types.
+# The existing identity and Basis profiles retain their original checks.
+RAW_FORMAT = "qleisli.current-artifact-raw-basis-transport"
+RAW_EXTRACTOR = f"{FIXTURE}/RawExtract.lean"
+RAW_EXTRACTOR_SHA256 = "0bf01a8a4b817f7c834f113baa977ca9516dd9da54f353b80711944aca747cc2"
+RAW_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{RAW_EXTRACTOR}"]
+RAW_REVIEW = f"{FIXTURE}/RawTransportReview.lean"
+RAW_REVIEW_SHA256 = "bb0516b40cf53966948dab152b84c8aaee220b5ada69536b36e25ab4a73f9193"
+RAW_REVIEW_ARGV = ["lake", "env", "lean", "-DwarningAsError=true", f"../{RAW_REVIEW}"]
+RAW_STDOUT = f"{FIXTURE}/raw-transport.stdout.txt"
+RAW_STDOUT_SHA256 = "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4"
+RAW_SOURCES = {
+    "lean/Qleisli/RawRepresentationTransport.lean": "c7302a56de91e66302776e51b2bbf244f2a6b1977c5a636f398708a7f45e1848",
+    "lean/Qleisli/Semantics/RawLegacy/Raw.lean": "96f8b25c5a63bfccf14872125bc0574b058114ea5c5910b3ea05a8167617af6c",
+    "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean": "24820273afe49a3c5a52486045782ce7442d1e7e47cc88cf928c7cd1351be8ef",
+    "lean/Qleisli/Semantics/RawLegacy/Observation.lean": "eecee63208af37966f04add90209e67ce667a76b1fe78cdae85b2bce82f18567",
+    "lean/Qleisli/Semantics/RawLegacy/Ownership.lean": "737c8d37a9e9e68341d4e0b891abe29346c68be59837373c8581c286d73b34d1",
+    "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean": "95bf2280528b2dc85023f70e27be6c088dc9a5afb15701a9bec6d39bebdb5ec4",
+}
+RAW_PREFIXES = {
+    "Raw": ("Op", "Program"),
+    "RawTrace": ("step",),
+    "Observation": ("Op", "Program"),
+    "Ownership": ("outputs", "allocated", "Access", "Pure", "Step", "Run", "OwnershipSafe"),
+    "ClassicalScope": ("Step", "Run", "ScopeSafe"),
+}
+RAW_RENAMES = {
+    f"QleisliKernel.Semantics.{module}.{name}": f"Qleisli.Semantics.RawLegacy.{module}.{name}"
+    for module, names in RAW_PREFIXES.items() for name in names
+}
+# These generated match helpers were checked by their full elaborated types and
+# bodies. This is a closed mapping, not matching arbitrary generated names.
+RAW_RENAMES.update({
+    f"QleisliKernel.Semantics.RawTrace.step.match_{old}":
+        f"Qleisli.Semantics.RawLegacy.RawTrace.step.match_{new}"
+    for old, new in ((3, 5), (5, 7), (7, 9))
+})
+
+
+def raw_rename(name):
+    for before, after in sorted(RAW_RENAMES.items(), key=lambda pair: len(pair[0]), reverse=True):
+        if name == before or name.startswith(before + "."):
+            return after + name[len(before):]
+    return name
+
+
+def elaborated_name(name):
+    result = ["anonymous"]
+    for part in name.split("."):
+        result = ["num", result, int(part)] if part.isdecimal() else ["str", result, part]
+    return result
+
+
+def raw_convert(value, *, rename=True):
+    """Only rename fixed constants and alpha-normalize bound display names.
+
+    De Bruijn indices, binder kinds, types, values, constructor counts and
+    bodies are retained. Free variables are already rejected by the extractor.
+    """
+    if type(value) is list:
+        if value and type(value[0]) is str and value[0] in {"anonymous", "str", "num"}:
+            name = expression_name(value)
+            mapped = raw_rename(name) if rename else name
+            return value if mapped == name else elaborated_name(mapped)
+        result = [raw_convert(child, rename=rename) for child in value]
+        if result and type(result[0]) is str and result[0] in {"lam", "forall", "let"}:
+            require(len(result) >= 2, "malformed bound expression")
+            result[1] = ["anonymous"]
+        return result
+    if type(value) is dict:
+        return {key: raw_convert(child, rename=rename) for key, child in value.items()}
+    return value
+
+
+def compare_raw_projection(output, reviewed):
+    old_roots, old = expression_index(reviewed)
+    current_roots, current = expression_index(output)
+    require(current_roots == old_roots + [raw_convert(name) for name in old_roots[:3]],
+            "changed raw continuity root selection")
+    protected, pending = set(), list(SEMANTIC_ROOTS)
+    while pending:
+        name = pending.pop()
+        if name in protected:
+            continue
+        require(name in old, "missing historical independent meaning")
+        protected.add(name)
+        pending.extend(expression_references(old[name]["declaration"], old) - protected)
+    for name in sorted(protected):
+        mapped = raw_rename(name)
+        expected = raw_convert(old[name])
+        if mapped != name:
+            module = expression_name(old[name]["module"]).rsplit(".", 1)[-1]
+            expected["module"] = elaborated_name("Qleisli.Semantics.RawLegacy." + module)
+        require(mapped in current and raw_convert(current[mapped], rename=False) == expected,
+                "changed historical Raw meaning: " + name)
+    # These types still mention the actual current checker, decoded artifact,
+    # original bytes and selected root. They are NOT renamed or alpha-relaxed.
+    bindings = set(ACTUAL_ENDPOINTS)
+    bindings.update(name for name in old if any(
+        name == prefix or name.startswith(prefix + ".") for prefix in BINDING_PREFIXES))
+    for name in sorted(bindings):
+        require(name in old and current.get(name) == old[name],
+                "changed original-subject binding: " + name)
+    return dict(independent_meaning_declarations=len(protected), protected_bindings=len(bindings))
+
+
+def validate_raw(root, binding, revision, archive):
+    exact_keys(binding, {"format", "version", "baseline", "extractor", "source_revision_sha256",
+                         "command", "stdout", "stderr", "transport", "raw_transport"}, "Raw transport evidence")
+    require(binding["format"] == RAW_FORMAT, "unsupported Raw transport format")
+    # Reuse the mandatory Basis proof/closure/evidence checks; the new extractor
+    # supplies both the current binding roots and frozen old-operation meanings.
+    adapted = dict(binding)
+    raw_transport = adapted.pop("raw_transport")
+    require_fields(adapted["extractor"], dict(path=RAW_EXTRACTOR, sha256=RAW_EXTRACTOR_SHA256),
+                   "fixed Raw extractor")
+    require(type(adapted["command"]) is dict and type(adapted["command"].get("exit_code")) is int,
+            "invalid Raw extraction exit code type")
+    require_fields(adapted["command"], dict(argv=RAW_ARGV, cwd="lean", exit_code=0), "fixed Raw extraction command")
+    adapted.update(format=BASIS_FORMAT, extractor=dict(path=EXTRACTOR_PATH, sha256=EXTRACTOR_SHA256),
+                   command=dict(argv=ARGV, cwd="lean", exit_code=0))
+    expected = validate_basis_record(root, adapted, revision, archive, projection=compare_raw_projection)
+    require_fields(raw_transport, dict(
+        sources=RAW_SOURCES, review=dict(path=RAW_REVIEW, sha256=RAW_REVIEW_SHA256),
+        stdout=dict(path=RAW_STDOUT, sha256=RAW_STDOUT_SHA256),
+        stderr=dict(path=STDERR_PATH, sha256=digest(b"")),
+        command=dict(argv=RAW_REVIEW_ARGV, cwd="lean", exit_code=0)), "fixed checked Raw transport")
+    require(type(raw_transport["command"]["exit_code"]) is int, "invalid Raw transport exit code type")
+    for path, sha in RAW_SOURCES.items():
+        checked_file(root, path, sha)
+        require(revision["files"].get(path) == sha, "Raw transport proof missing from current source closure")
+    for path, sha in ((RAW_EXTRACTOR, RAW_EXTRACTOR_SHA256), (RAW_REVIEW, RAW_REVIEW_SHA256),
+                      (RAW_STDOUT, RAW_STDOUT_SHA256)):
+        checked_file(root, path, sha)
+    return expected
+
+
+def replay_raw(root, binding, revision, archive):
+    expected = validate_raw(root, binding, revision, archive)
+    replay_transport(root)
+    for argv, expected_stdout, label in (
+        (RAW_REVIEW_ARGV, checked_file(root, RAW_STDOUT, RAW_STDOUT_SHA256), "Raw typed transport review"),
+        (RAW_ARGV, decompressed(checked_file(root, CURRENT_PATH, binding["stdout"]["sha256"])), "Raw extraction"),
+    ):
+        try:
+            result = subprocess.run(argv, cwd=Path(root) / "lean", capture_output=True, check=False)
+        except OSError as error:
+            raise PacketError("cannot run " + label) from error
+        require(result.returncode == 0 and result.stderr == b"" and result.stdout == expected_stdout,
+                "failed or differing fresh " + label)
+        if argv == RAW_ARGV:
+            reviewed = decompressed(checked_file(root, REVIEWED_PATH, expected["expressions"]["sha256"]))
+            compare_raw_projection(result.stdout, reviewed)
+    validate_raw(root, binding, revision, archive)
