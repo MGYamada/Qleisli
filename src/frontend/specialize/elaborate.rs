@@ -306,7 +306,7 @@ impl SourceOperation {
     }
 }
 
-fn operation_signature<'a>(
+pub(super) fn operation_signature<'a>(
     operation: &'a SourceOperation,
     definitions: &'a [SourceDefinition],
     span: Span,
@@ -625,42 +625,6 @@ impl ElaboratedProgram {
                         )
                     })
         })
-    }
-    pub(super) fn require_raw_operation_trees(&self) -> Result<()> {
-        for definition in self.definitions.iter() {
-            for operation in definition
-                .operations
-                .values()
-                .chain(definition.steps.iter().filter_map(SourceStep::operation))
-            {
-                if operation.has_constructed() {
-                    return Err(error(
-                        "unsupported", operation.span,
-                        "Raw operation materialization does not yet support retained operation constructors",
-                    ).in_module(operation.module()));
-                }
-            }
-        }
-        Ok(())
-    }
-    pub(super) fn require_supported_constructor_meanings(&self) -> Result<()> {
-        for definition in self.definitions.iter() {
-            for operation in definition
-                .operations
-                .values()
-                .chain(definition.steps.iter().filter_map(SourceStep::operation))
-            {
-                if operation.has_constructed() && operation.has_meanings() {
-                    return Err(error(
-                        "unsupported",
-                        operation.span,
-                        "Meaning checking of retained operation constructors is not yet supported",
-                    )
-                    .in_module(operation.module()));
-                }
-            }
-        }
-        Ok(())
     }
     pub(super) fn require_unrefined(&self) -> Result<()> {
         if self.has_operation_meanings() {

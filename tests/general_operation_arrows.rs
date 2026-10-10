@@ -302,7 +302,7 @@ fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
 }
 
 #[test]
-fn unsupported_raw_and_refined_constructor_paths_refuse_without_erasing_children() {
+fn raw_constructors_check_refined_children_even_under_zero_repetition() {
     let source = "fn id(q:Q<Bit>)->Q<Bit>{q}
         fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
         pub fn main(q:Q<Bit>)->Q<Bit>{invoke[then_op(id,id)](q)}";
@@ -314,7 +314,11 @@ fn unsupported_raw_and_refined_constructor_paths_refuse_without_erasing_children
             .unwrap()
     };
     let plain = elaborate(source);
-    assert_eq!(plain.lower_raw().unwrap_err().code(), "unsupported");
+    let kernel =
+        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let raw = plain.lower_raw().unwrap();
+    let accepted = kernel.accept(raw.proposal()).unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
     let source = format!(
         "classical fn phi(b:Bit)->(Bit,(Bit,Bit)){{(0,(0,b))}}
         meaning M:Bit=phase_by(phi); {}",
@@ -325,13 +329,21 @@ fn unsupported_raw_and_refined_constructor_paths_refuse_without_erasing_children
     let kernel =
         qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
     let mut budget = qleisli::contract::exact::Budget::new(20_000);
-    assert_eq!(
-        refined
-            .check_operation_meanings(&kernel, &mut budget)
-            .unwrap_err()
-            .code(),
-        "unsupported"
-    );
+    // Preserve the original false phase claim as a negative even though the
+    // enclosing zero power produces the identity. No child claim is skipped.
+    let error = refined
+        .check_operation_meanings(&kernel, &mut budget)
+        .unwrap_err();
+    assert_eq!(error.code(), "contract");
+    assert!(error.message().contains("original Meaning"));
+    let identity = elaborate(&source.replace("(0,(0,b))", "(0,(0,0))"));
+    let checked = identity
+        .check_operation_meanings(&kernel, &mut qleisli::contract::exact::Budget::new(20_000))
+        .unwrap();
+    // The original call argument and the callee's retained U binding each
+    // carry this child annotation and must both be checked.
+    assert_eq!(checked.checked_bindings(), 2);
+    checked.lower_hierarchy().unwrap();
 }
 
 #[test]
@@ -391,5 +403,44 @@ fn constructors_preserve_the_existing_nested_repetition_product_bound() {
             "check",
             0,
         );
+    }
+}
+
+#[test]
+fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants() {
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030");
+    let read = |attempt: &str, name: &str| {
+        std::fs::read_to_string(directory.join(attempt).join(format!("{name}.qli"))).unwrap()
+    };
+    let omega = std::f64::consts::FRAC_1_SQRT_2;
+    amplitudes(
+        &selected(&read("attempt-01", "sequence"), "run", 1),
+        &[[0.0, 0.0], [1.0, 0.0]],
+    );
+    amplitudes(
+        &selected(&read("attempt-01", "adjoint"), "run", 1),
+        &[[0.0, 0.0], [omega, -omega]],
+    );
+    amplitudes(
+        &selected(&read("attempt-02", "tensor"), "run", 0),
+        &[[0.0, 0.0], [1.0, 0.0], [0.0, 0.0], [0.0, 0.0]],
+    );
+    let kernel =
+        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    for (attempt, name) in [
+        ("attempt-01", "zero-bad-child"),
+        ("attempt-02", "wrong-tensor"),
+    ] {
+        let source = parsed(&read(attempt, name))
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let error = source
+            .check_operation_meanings(&kernel, &mut qleisli::contract::exact::Budget::new(100_000))
+            .unwrap_err();
+        assert_eq!(error.code(), "contract", "{name}: {error}");
+        assert!(error.message().contains("original Meaning"));
     }
 }

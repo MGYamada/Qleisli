@@ -217,6 +217,61 @@ impl Trace<'_, '_, '_> {
             return self.function(id, arguments, depth);
         }
         self.call(depth)?;
+        if let Some((kind, children, ports)) = op.constructed() {
+            use crate::frontend::specialize::ast::OperationConstructor as C;
+            return match kind {
+                C::Then => {
+                    let middle = self.operation(&children[0], arguments, depth + 1)?;
+                    self.operation(&children[1], vec![middle], depth + 1)
+                }
+                C::Adjoint => self.transform(&children[0], arguments, depth + 1, false),
+                C::Conjugate => {
+                    let first = self.transform(&children[0], arguments, depth + 1, false)?;
+                    let middle = self.operation(&children[1], vec![first], depth + 1)?;
+                    self.operation(&children[0], vec![middle], depth + 1)
+                }
+                C::Tensor | C::Controlled => {
+                    let [input]: [Vec<Logical>; 1] = arguments.try_into().map_err(|_| {
+                        self.site.invalid("packed operation argument arity differs")
+                    })?;
+                    let axes = self.owner(&input)?;
+                    let fields = ports
+                        .input
+                        .quantum_basis()
+                        .and_then(SourceType::tuple_fields)
+                        .filter(|fields| fields.len() == 2)
+                        .ok_or_else(|| self.site.invalid("packed operation input tree differs"))?;
+                    let n = fields[0]
+                        .basis_width()
+                        .ok_or_else(|| self.site.invalid("packed operation is not finite"))?
+                        as usize;
+                    if n > axes.len() {
+                        return Err(self.site.invalid("packed operation field exceeds axes"));
+                    }
+                    self.charge(axes.len() + 2)?;
+                    let left = vec![Logical::Quantum(axes[..n].to_vec())];
+                    let right = vec![Logical::Quantum(axes[n..].to_vec())];
+                    let output = if kind == C::Tensor {
+                        let left = self.operation(&children[0], vec![left], depth + 1)?;
+                        let right = self.operation(&children[1], vec![right], depth + 1)?;
+                        let mut axes = self.owner(&left)?;
+                        axes.extend(self.owner(&right)?);
+                        axes
+                    } else {
+                        let outputs =
+                            self.transform(&children[0], vec![left, right], depth + 1, true)?;
+                        let [Logical::Quantum(left), Logical::Quantum(right)] = outputs.as_slice()
+                        else {
+                            return Err(self.site.invalid("packed control changes owner arity"));
+                        };
+                        let mut axes = left.clone();
+                        axes.extend(right);
+                        axes
+                    };
+                    Ok(vec![Logical::Quantum(output)])
+                }
+            };
+        }
         let [mut value]: [Vec<Logical>; 1] = arguments.try_into().map_err(|_| {
             self.site
                 .invalid("source repetition changes whole argument arity")
@@ -504,30 +559,26 @@ impl Trace<'_, '_, '_> {
         Ok(output)
     }
     fn canonical(&mut self, op: &SourceOperation, depth: usize) -> Result<usize> {
-        let mut base = op;
-        let mut d = 0;
-        while let Some(child) = base.child() {
-            self.charge(1)?;
-            d += 1;
-            if d > MAX_DEPTH {
+        let mut pending = vec![(op, 0)];
+        while let Some((operation, level)) = pending.pop() {
+            if level > MAX_DEPTH {
                 return Err(self
                     .site
                     .error("limit", "source access operation exceeds depth bounds"));
             }
-            base = child;
+            if !operation.children().is_empty() {
+                self.charge(1)?;
+                pending.extend(operation.children().iter().map(|child| (child, level + 1)));
+            }
         }
-        let definition = &self.source.definitions()[base
-            .definition()
-            .ok_or_else(|| self.site.invalid("source access has no closed provider"))?];
-        let [input] = definition.inputs() else {
-            return Err(self.site.invalid("source access provider is not unary"));
-        };
-        if input.ty() != definition.output().ty() {
+        let (ports, effect, _) =
+            super::super::operation_signature(op, self.source.definitions(), op.span())?;
+        if effect != crate::ir::Effect::Unitary {
             return Err(self
                 .site
-                .invalid("source access provider changes its exact endomorphism tree"));
+                .invalid("source access requires principal Unitary effect"));
         }
-        let width = quantum_width(input.ty()).ok_or_else(|| {
+        let width = quantum_width(ports.input).ok_or_else(|| {
             self.site
                 .invalid("source access provider is not a finite quantum owner")
         })?;

@@ -9,6 +9,12 @@ The [general pure arrow study](general-arrows-v030/README.md) retains six first
 sources, a manifest-only repair and twelve actual refusals. The repaired
 manifest exposes the unsupported Arrow token; downstream laws remain untested.
 
+The [Raw constructor study](general-arrow-raw-constructors-v030/README.md)
+retains five first programs, two oracle repairs and twelve actual checks.
+Whole exact Meanings and annotated zero-count children now reach native checks;
+wrong-axis and false-child requests reject. Bounded source replay and complex
+observations remain separate from general source preservation.
+
 The [Meaning composition study](meaning-composition-v030/README.md) retains
 initial parse/visibility/profile failures and explicit pure entry adapters, with
 real native rejection of wrong phase order and wrong tensor axes. Broader

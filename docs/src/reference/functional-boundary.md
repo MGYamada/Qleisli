@@ -112,9 +112,15 @@ The table gives the existing endomorphic common-source rules; the
 separate ports and their current selected hierarchy implementation. Concrete
 lowering eligibility still depends on the profile and retained evidence.
 Finite provider materialization retains its refusal of explicit specialization
-through this path. Selected hierarchy projection retains constructor trees,
-but refined constructor materialization remains unsupported. A successful
-common judgment cannot replace the independent evidence required by a profile.
+through this path. Selected hierarchy projection and bounded pure Raw
+materialization retain ordered constructor trees and both exact ports. Finite
+endomorphic Meaning requests apply to the whole tree and every annotated child,
+including children under zero repetitions. Each request checks the actual Raw
+artifact with Lean, then independently replays its source steps. Adjoint reverses
+both ports; packed control and repetition still require endomorphisms. Unsupported
+Raw primitives and rectangular Meaning equations remain separate profile limits.
+A successful common judgment cannot replace the independent evidence required
+by a profile.
 
 | Form | Required interface and access |
 | --- | --- |

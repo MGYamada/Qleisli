@@ -6,6 +6,14 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Materialize retained pure operation constructor trees through the bounded Raw
+  adapter, preserving exact ports, ordered tensor axes, inverse phase and
+  conjugation order. Check whole finite endomorphic Meanings and every annotated
+  descendant with fresh native decisions, including zero-count children;
+  independently replay the actual Raw steps. Native-valid gate/phase mutations
+  remain rejected by replay. Unsupported Raw primitives, rectangular Meanings,
+  general source preservation and broader #83/#46 conditions remain pending.
+
 - Retain ordered operation constructor trees through selected hierarchy lowering,
   including preparation composition/tensor and principal-Unitary differing-tree
   adjoints. Preserve packed-control phase, exact middle types and conjugation

@@ -1,5 +1,7 @@
 //! Source-bound finite proposals. This adapter supplies no acceptance decision.
 //! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use super::ast::OperationConstructor;
+use super::elaborate::operation_signature;
 use super::primitive::Primitive;
 use super::{ElaboratedProgram, Error, Result, SourceType, SourceValue, Span};
 use crate::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
@@ -24,11 +26,19 @@ const MAX_LIVE_QUBITS: usize = 16;
 enum OperationSite {
     Binding(usize, String),
     Step(usize, usize),
+    Descendant(Box<OperationSite>, Vec<usize>),
 }
 impl OperationSite {
+    fn origin(&self) -> &Self {
+        match self {
+            Self::Descendant(site, _) => site.origin(),
+            _ => self,
+        }
+    }
     fn caller(&self) -> usize {
         match self {
             Self::Binding(id, _) | Self::Step(id, _) => *id,
+            Self::Descendant(site, _) => site.caller(),
         }
     }
     fn select<'a>(
@@ -40,6 +50,13 @@ impl OperationSite {
         let mut operation = match self {
             Self::Binding(_, name) => definition.operations().get(name)?,
             Self::Step(_, step) => definition.steps().get(*step)?.operation()?,
+            Self::Descendant(site, path) => {
+                let mut operation = site.select(source, 0)?;
+                for index in path {
+                    operation = operation.children().get(*index)?;
+                }
+                operation
+            }
         };
         for _ in 0..depth {
             operation = operation.child()?;
@@ -74,7 +91,6 @@ pub(super) fn check_operation_meanings<'a>(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<CheckedSourceMeanings<'a>> {
-    source.require_supported_constructor_meanings()?;
     if budget.remaining() > DEFAULT_EXACT_WORK {
         return Err(Error::new(
             "limit",
@@ -123,28 +139,37 @@ struct MeaningCollector<'a, 'b> {
 impl MeaningCollector<'_, '_> {
     fn annotated(&mut self, site: &OperationSite) -> Result<()> {
         let source = self.source;
-        let mut operation = site.select(source, 0).expect("original operation site");
-        let mut depth = 0;
-        loop {
-            if depth > MAX_DEPTH {
+        let root = site.select(source, 0).expect("original operation site");
+        let mut pending = vec![(root, Vec::new())];
+        let mut visited = 0;
+        while let Some((operation, path)) = pending.pop() {
+            visited += 1;
+            if path.len() > MAX_DEPTH || visited > MAX_CELLS {
                 return Err(Error::new(
                     "limit",
                     operation.span(),
                     "Raw operation exceeds existing depth bound",
                 ));
             }
+            let descendant = OperationSite::Descendant(Box::new(site.clone()), path.clone());
             for required in operation.meanings.iter() {
-                self.check(site, depth, required.id).map_err(|mut error| {
-                    error.span = required.span;
-                    error.module = Some(required.module.clone());
-                    error
-                })?;
+                let (selected, depth) = if root.has_constructed() {
+                    (&descendant, 0)
+                } else {
+                    (site, path.len())
+                };
+                self.check(selected, depth, required.id)
+                    .map_err(|mut error| {
+                        error.span = required.span;
+                        error.module = Some(required.module.clone());
+                        error
+                    })?;
             }
-            let Some(child) = operation.child() else {
-                break;
-            };
-            operation = child;
-            depth += 1;
+            for (index, child) in operation.children().iter().enumerate().rev() {
+                let mut child_path = path.clone();
+                child_path.push(index);
+                pending.push((child, child_path));
+            }
         }
         Ok(())
     }
@@ -188,9 +213,10 @@ impl MeaningCollector<'_, '_> {
         let check = proposal
             .check_finite_meaning(self.kernel, &required, self.budget)
             .map_err(|mut error| {
-                let location = match site {
+                let location = match site.origin() {
                     OperationSite::Binding(_, name) => name.clone(),
                     OperationSite::Step(_, step) => format!("step {step}"),
+                    OperationSite::Descendant(..) => unreachable!("original operation site"),
                 };
                 error.message = format!(
                     "operation binding {}::{location} must satisfy original Meaning {}: {}",
@@ -313,8 +339,8 @@ impl RawSourceProposal {
     pub fn payload(&self) -> &[u8] {
         self.proposal.artifact()
     }
-    /// Underlying original definition within the retained caller's source graph.
-    /// For a repeated binding, operation() retains the complete wrapper.
+    /// Original leaf definition, or original caller for a constructed operation.
+    /// `operation()` retains the exact selected tree and both of its ports.
     /// The caller's instantiation metadata is never rewritten as leaf metadata.
     pub fn definition(&self) -> &super::SourceDefinition {
         &self.source.definitions()[self.subject]
@@ -323,19 +349,22 @@ impl RawSourceProposal {
         self.subject
     }
     pub fn operation_binding(&self) -> Option<(usize, &str)> {
-        match self.binding.as_ref()? {
+        match self.binding.as_ref()?.origin() {
             OperationSite::Binding(id, name) => Some((*id, name)),
             OperationSite::Step(_, _) => None,
+            OperationSite::Descendant(..) => unreachable!("original operation site"),
         }
     }
     /// Original source-step locator for a direct operation expression.
     pub fn operation_step(&self) -> Option<(usize, usize)> {
-        match self.binding.as_ref()? {
+        match self.binding.as_ref()?.origin() {
             OperationSite::Step(id, step) => Some((*id, *step)),
             OperationSite::Binding(_, _) => None,
+            OperationSite::Descendant(..) => unreachable!("original operation site"),
         }
     }
-    /// Selected descendant in the immutable original operation wrapper.
+    /// Legacy repetition depth after selecting the original operation subtree.
+    /// Constructor descendants are selected by their retained ordered path.
     pub fn operation_depth(&self) -> usize {
         self.operation_depth
     }
@@ -466,7 +495,6 @@ fn check_profile(
     selected: Option<&BTreeSet<usize>>,
     checking_control: bool,
 ) -> Result<()> {
-    source.require_raw_operation_trees()?;
     if !checking_control {
         source.require_control_evidence()?;
     }
@@ -665,27 +693,37 @@ impl Emitter<'_> {
         if control == Some(target) {
             return Err(invalid(span, "controlled source operands alias"));
         }
-        let mut base = op;
-        let mut operation_depth = 0;
-        while let Some(child) = base.child() {
-            self.cells = self.cells.saturating_add(1);
-            operation_depth += 1;
-            if self.cells > MAX_CELLS || operation_depth > MAX_DEPTH {
+        let mut pending = vec![(op, 0)];
+        while let Some((operation, level)) = pending.pop() {
+            if level > MAX_DEPTH {
                 return Err(Error::new(
                     "limit",
                     span,
-                    "Raw access binding exceeds existing work/depth bounds",
+                    "Raw access exceeds operation depth bounds",
                 ));
             }
-            base = child;
+            if !operation.children().is_empty() {
+                self.cells = self.cells.saturating_add(1);
+                if self.cells > MAX_CELLS {
+                    return Err(Error::new(
+                        "limit",
+                        span,
+                        "Raw access exceeds operation cell bounds",
+                    ));
+                }
+                pending.extend(operation.children().iter().map(|child| (child, level + 1)));
+            }
         }
-        let definition =
-            &self.source.definitions()[base.definition().expect("closed source operation")];
+        let (ports, effect, _) = operation_signature(op, self.source.definitions(), span)?;
         let basis = &self.raw.registers[&target].basis;
-        if definition.inputs().len() != 1
-            || definition.inputs()[0].ty().quantum_basis() != Some(basis)
-            || definition.output().ty() != definition.inputs()[0].ty()
-            || definition.effect() != "unitary"
+        let actual_input = if controlled {
+            ports.input
+        } else {
+            ports.output
+        };
+        if actual_input.quantum_basis() != Some(basis)
+            || (controlled && ports.input != ports.output)
+            || effect != Effect::Unitary
         {
             return Err(invalid(
                 span,
@@ -701,13 +739,13 @@ impl Emitter<'_> {
             calls: self.calls,
             cells: self.cells,
         };
-        let input = child.input(&definition.inputs()[0], span)?;
+        let input = child.input_type(ports.input, span)?;
         let input_slot = quantum(&input, span)?;
         let input_token = child.raw.registers[&input_slot].token;
         let input_wires = child.raw.registers[&input_slot].wires.clone();
         let output = child.operation(op, vec![input], depth)?;
         let output_slot = quantum(&output, span)?;
-        if child.raw.registers[&output_slot].basis != self.raw.registers[&target].basis {
+        if Some(&child.raw.registers[&output_slot].basis) != ports.output.quantum_basis() {
             return Err(invalid(
                 span,
                 "source access changes its exact returned basis tree",
@@ -788,10 +826,23 @@ impl Emitter<'_> {
                 output,
                 steps,
             });
+            let basis = ports
+                .input
+                .quantum_basis()
+                .ok_or_else(|| invalid(span, "inverse output is not a quantum owner"))?;
+            self.cells = self.cells.saturating_add(basis.tree_size().nodes);
+            if self.cells > MAX_CELLS {
+                return Err(Error::new(
+                    "limit",
+                    span,
+                    "Raw inverse basis exceeds cell bounds",
+                ));
+            }
             self.raw.registers.insert(
                 target,
                 crate::frontend::raw_state::Register {
                     token: output,
+                    basis: basis.clone(),
                     ..target_register
                 },
             );
@@ -815,20 +866,157 @@ impl Emitter<'_> {
                 "Raw operation exceeds existing call/depth bounds",
             ));
         }
+        if let Some((kind, children, _)) = op.constructed() {
+            return match kind {
+                OperationConstructor::Then => {
+                    let middle = self.operation(&children[0], arguments, depth + 1)?;
+                    self.operation(&children[1], vec![middle], depth + 1)
+                }
+                OperationConstructor::Adjoint => {
+                    self.access(&children[0], arguments, depth + 1, false)
+                }
+                OperationConstructor::Conjugate => {
+                    let first = self.access(&children[0], arguments, depth + 1, false)?;
+                    let middle = self.operation(&children[1], vec![first], depth + 1)?;
+                    self.operation(&children[0], vec![middle], depth + 1)
+                }
+                OperationConstructor::Tensor | OperationConstructor::Controlled => {
+                    let [input]: [Vec<Atom>; 1] = arguments.try_into().map_err(|_| {
+                        invalid(op.span(), "packed constructor requires one whole argument")
+                    })?;
+                    let (left, right) = self.split_owner(quantum(&input, op.span())?, op.span())?;
+                    let (left, right) = if kind == OperationConstructor::Tensor {
+                        let left = self.operation(
+                            &children[0],
+                            vec![vec![Atom::Quantum(left)]],
+                            depth + 1,
+                        )?;
+                        let right = self.operation(
+                            &children[1],
+                            vec![vec![Atom::Quantum(right)]],
+                            depth + 1,
+                        )?;
+                        (quantum(&left, op.span())?, quantum(&right, op.span())?)
+                    } else {
+                        let result = self.access(
+                            &children[0],
+                            vec![vec![Atom::Quantum(left)], vec![Atom::Quantum(right)]],
+                            depth + 1,
+                            true,
+                        )?;
+                        let [Atom::Quantum(left), Atom::Quantum(right)] = result.as_slice() else {
+                            return Err(invalid(
+                                op.span(),
+                                "packed control changes its owner frame",
+                            ));
+                        };
+                        (*left, *right)
+                    };
+                    Ok(vec![Atom::Quantum(self.join_owners(
+                        left,
+                        right,
+                        op.span(),
+                    )?)])
+                }
+            };
+        }
         let child = op.child().expect("retained repeat child");
-        let mut value = arguments
-            .into_iter()
-            .next()
-            .expect("preflighted unary operation");
+        let [mut value]: [Vec<Atom>; 1] = arguments
+            .try_into()
+            .map_err(|_| invalid(op.span(), "repeated operation requires one whole argument"))?;
         for _ in 0..op.repeat_count().expect("retained repeat count") {
             value = self.operation(child, vec![value], depth + 1)?;
         }
         Ok(value)
     }
+    fn split_owner(&mut self, input: Slot, span: Span) -> Result<(Slot, Slot)> {
+        self.reserve_operations(1, span)?;
+        let register = self
+            .raw
+            .registers
+            .remove(&input)
+            .ok_or_else(|| invalid(span, "constructor split owner is absent"))?;
+        let fields = register
+            .basis
+            .tuple_fields()
+            .filter(|fields| fields.len() == 2)
+            .ok_or_else(|| invalid(span, "constructor requires a binary packed basis"))?;
+        self.cells = self
+            .cells
+            .saturating_add(register.basis.tree_size().nodes + register.wires.len() + 2);
+        if self.cells > MAX_CELLS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "Raw constructor split exceeds value-cell bounds",
+            ));
+        }
+        let width = fields[0]
+            .basis_width()
+            .ok_or_else(|| invalid(span, "constructor field is not finite"))?
+            as usize;
+        if width > register.wires.len() {
+            return Err(invalid(span, "constructor field exceeds actual wires"));
+        }
+        let left = self
+            .raw
+            .register(fields[0].clone(), register.wires[..width].to_vec());
+        let right = self
+            .raw
+            .register(fields[1].clone(), register.wires[width..].to_vec());
+        self.raw.operations.push(crate::ir::RawOp::Split {
+            input: register.token,
+            left: self.raw.registers[&left].token,
+            right: self.raw.registers[&right].token,
+            left_bits: width as u8,
+        });
+        Ok((left, right))
+    }
+    fn join_owners(&mut self, left: Slot, right: Slot, span: Span) -> Result<Slot> {
+        self.reserve_operations(1, span)?;
+        if left == right {
+            return Err(invalid(span, "constructor aliases its tensor owners"));
+        }
+        let left = self
+            .raw
+            .registers
+            .remove(&left)
+            .ok_or_else(|| invalid(span, "constructor left owner is absent"))?;
+        let right = self
+            .raw
+            .registers
+            .remove(&right)
+            .ok_or_else(|| invalid(span, "constructor right owner is absent"))?;
+        self.cells = self
+            .cells
+            .saturating_add(1 + left.wires.len() + right.wires.len());
+        if self.cells > MAX_CELLS {
+            return Err(Error::new(
+                "limit",
+                span,
+                "Raw constructor join exceeds value-cell bounds",
+            ));
+        }
+        let (l, r) = (left.token, right.token);
+        let mut wires = left.wires;
+        wires.extend(right.wires);
+        let output = self
+            .raw
+            .register(SourceType::pair(left.basis, right.basis), wires);
+        self.raw.operations.push(crate::ir::RawOp::Join {
+            left: l,
+            right: r,
+            output: self.raw.registers[&output].token,
+        });
+        Ok(output)
+    }
     fn charge_value(&mut self, value: &SourceValue, span: Span) -> Result<()> {
+        self.charge_type(value.ty(), span)
+    }
+    fn charge_type(&mut self, ty: &SourceType, span: Span) -> Result<()> {
         // Ordinary register elements occupy transport storage even when the
         // type has only one node. Bound every allocation before emission.
-        let mut pending = vec![value.ty()];
+        let mut pending = vec![ty];
         while let Some(ty) = pending.pop() {
             match &ty.kind {
                 Kind::Bits(width) => self.cells = self.cells.saturating_add(*width as usize),
@@ -836,9 +1024,7 @@ impl Emitter<'_> {
                 _ => {}
             }
         }
-        self.cells = self
-            .cells
-            .saturating_add(value.ty().owner_shape_size().nodes);
+        self.cells = self.cells.saturating_add(ty.owner_shape_size().nodes);
         if self.cells > MAX_CELLS {
             return Err(Error::new(
                 "limit",
@@ -1044,7 +1230,10 @@ impl Emitter<'_> {
         }
     }
     fn input(&mut self, value: &SourceValue, span: Span) -> Result<Vec<Atom>> {
-        match &value.ty().kind {
+        self.input_type(value.ty(), span)
+    }
+    fn input_type(&mut self, ty: &SourceType, span: Span) -> Result<Vec<Atom>> {
+        match &ty.kind {
             Kind::Unit => Ok(vec![]),
             Kind::Bit => Ok(vec![Atom::Classical(self.raw.classical())]),
             Kind::Bits(width) => Ok(vec![Atom::Register(
@@ -1085,10 +1274,10 @@ impl Emitter<'_> {
                     self.raw.register((**basis).clone(), wires),
                 )])
             }
-            Kind::Tuple(_) => {
+            Kind::Tuple(fields) => {
                 let mut atoms = Vec::new();
-                for field in value.fields() {
-                    atoms.extend(self.input(field, span)?);
+                for field in fields {
+                    atoms.extend(self.input_type(field, span)?);
                 }
                 Ok(atoms)
             }
@@ -1457,7 +1646,6 @@ fn lower_operation_site(
     site: OperationSite,
     operation_depth: usize,
 ) -> Result<RawSourceProposal> {
-    source.require_raw_operation_trees()?;
     let caller_id = site.caller();
     let caller = source.definitions().get(caller_id).ok_or_else(|| {
         invalid(
@@ -1493,10 +1681,36 @@ fn lower_operation_site(
         }
         base = child;
     }
-    let subject = base.definition().expect("closed operation base");
+    let subject = base.definition().unwrap_or(caller_id);
+    let (ports, operation_effect, _) = operation_signature(op, source.definitions(), op.span())?;
+    if !supported(ports.input) || !supported(ports.output) {
+        return Err(located(
+            source,
+            caller_id,
+            op.span(),
+            "Raw operation requires closed finite quantum ports",
+        ));
+    }
     let mut selected = BTreeSet::new();
-    let mut pending = vec![subject];
-    let mut cells = 1usize;
+    let mut pending = Vec::new();
+    let mut cells = 0usize;
+    let mut operations = vec![(op, 0usize)];
+    while let Some((operation, depth)) = operations.pop() {
+        cells = cells.saturating_add(1);
+        if depth > MAX_DEPTH || cells > MAX_CELLS {
+            return Err(Error::new(
+                "limit",
+                operation.span(),
+                "Raw operation dependency depth/cells exceeded",
+            ));
+        }
+        if let Some(id) = operation.definition() {
+            pending.push(id);
+        }
+        for child in operation.children().iter().rev() {
+            operations.push((child, depth + 1));
+        }
+    }
     while let Some(id) = pending.pop() {
         if !selected.insert(id) {
             continue;
@@ -1533,9 +1747,8 @@ fn lower_operation_site(
                 )
             }))
         {
-            let mut base = operation;
-            let mut depth = 0;
-            loop {
+            let mut pending_operations = vec![(operation, 0usize)];
+            while let Some((operation, depth)) = pending_operations.pop() {
                 cells = cells.saturating_add(1);
                 if cells > MAX_CELLS || depth > MAX_DEPTH {
                     return Err(Error::new(
@@ -1544,25 +1757,20 @@ fn lower_operation_site(
                         "Raw operation dependency selection exceeds existing work/depth bounds",
                     ));
                 }
-                if let Some(child) = base.child() {
-                    base = child;
-                    depth += 1;
-                } else {
-                    pending.push(base.definition().expect("closed actual operation"));
-                    break;
+                if let Some(id) = operation.definition() {
+                    pending.push(id);
+                }
+                for child in operation.children().iter().rev() {
+                    pending_operations.push((child, depth + 1));
                 }
             }
         }
     }
     let definition = &source.definitions()[subject];
-    if definition.effect() != "unitary"
-        || definition.inputs().len() != 1
-        || !definition.inputs()[0].ty().is_quantum_owner()
-        || definition.inputs()[0].ty() != definition.output().ty()
-    {
+    if operation_effect > Effect::Iso {
         return Err(invalid(
             op.span(),
-            "operation must preserve one exact quantum owner",
+            "Raw pure operation exceeds its principal effect ceiling",
         ));
     }
     let module = definition
@@ -1594,10 +1802,22 @@ fn lower_inner(
         calls: 0,
         cells: 0,
     };
+    let operation = binding.as_ref().map(|(site, depth)| {
+        site.select(source, *depth)
+            .expect("retained original operation site")
+    });
+    let signature = operation
+        .map(|op| operation_signature(op, source.definitions(), op.span()))
+        .transpose()?;
     let mut arguments = vec![];
-    for value in root.inputs() {
-        emitter.charge_value(value, root.span())?;
-        arguments.push(emitter.input(value, root.span())?);
+    if let Some((ports, _, _)) = &signature {
+        emitter.charge_type(ports.input, root.span())?;
+        arguments.push(emitter.input_type(ports.input, root.span())?);
+    } else {
+        for value in root.inputs() {
+            emitter.charge_value(value, root.span())?;
+            arguments.push(emitter.input(value, root.span())?);
+        }
     }
     let mut quantum_inputs = Vec::new();
     let mut classical_inputs = Vec::new();
@@ -1617,10 +1837,6 @@ fn lower_inner(
             }
         }
     }
-    let operation = binding.as_ref().map(|(site, depth)| {
-        site.select(source, *depth)
-            .expect("retained original operation site")
-    });
     let outputs = if let Some(op) = operation {
         emitter.operation(op, arguments, 0)?
     } else {
@@ -1662,7 +1878,9 @@ fn lower_inner(
         operations: emitter.raw.operations,
         quantum_outputs,
         classical_outputs,
-        declared_effect: effect(source, subject),
+        declared_effect: signature
+            .as_ref()
+            .map_or_else(|| effect(source, subject), |(_, effect, _)| *effect),
     };
     if checking.is_none() {
         preservation::validate_subject(source, subject, operation, &raw)?;
@@ -1670,12 +1888,20 @@ fn lower_inner(
     // A finite request binds the actual artifact's declared type as well as
     // its ports. Retain a unary quantum boundary only for an exact matching
     // source tree; zero width alone never establishes a Unit signature.
-    let interface = match root.inputs() {
-        [input] if input.ty() == root.output().ty() => match &input.ty().kind {
-            Kind::Q(basis) => finite_basis(basis),
+    let interface = if let Some((ports, _, _)) = &signature {
+        if ports.input == ports.output {
+            ports.input.quantum_basis().and_then(finite_basis)
+        } else {
+            None
+        }
+    } else {
+        match root.inputs() {
+            [input] if input.ty() == root.output().ty() => match &input.ty().kind {
+                Kind::Q(basis) => finite_basis(basis),
+                _ => None,
+            },
             _ => None,
-        },
-        _ => None,
+        }
     }
     .map(|basis| RootInterface {
         input: basis.clone(),

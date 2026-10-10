@@ -245,28 +245,25 @@ impl Replay<'_, '_> {
         let [Atom::Quantum(target_token, target_wires)] = target.atoms.as_slice() else {
             return Err(site.invalid("source access requires one whole target owner"));
         };
-        let mut base = operation;
-        let mut d = 0;
-        while let Some(child) = base.child() {
-            self.charge(1, site)?;
-            d += 1;
-            if d > MAX_DEPTH {
+        let mut pending = vec![(operation, 0)];
+        while let Some((operation, depth)) = pending.pop() {
+            if depth > MAX_DEPTH {
                 return Err(site.error("limit", "source access binding exceeds depth bounds"));
             }
-            base = child;
+            if !operation.children().is_empty() {
+                self.charge(1, site)?;
+                pending.extend(operation.children().iter().map(|child| (child, depth + 1)));
+            }
         }
-        let definition = self
-            .source
-            .definitions()
-            .get(
-                base.definition()
-                    .ok_or_else(|| site.invalid("source access has no provider"))?,
-            )
-            .ok_or_else(|| site.invalid("source access provider is missing"))?;
-        if definition.inputs().len() != 1
-            || definition.inputs()[0].ty() != target.ty
-            || definition.output().ty() != target.ty
-            || definition.effect() != "unitary"
+        let (ports, principal, _) =
+            super::operation_signature(operation, self.source.definitions(), operation.span())?;
+        if (if controlled {
+            ports.input
+        } else {
+            ports.output
+        }) != target.ty
+            || (controlled && ports.input != ports.output)
+            || principal != Effect::Unitary
         {
             return Err(site.invalid("source access substitutes an exact interface or effect"));
         }
@@ -1169,18 +1166,130 @@ impl Replay<'_, '_> {
             };
             if definition.inputs().len() != 1
                 || definition.inputs()[0].ty() != argument.ty
-                || definition.output().ty() != argument.ty
-                || effect(definition.effect(), site)? != Effect::Unitary
+                || effect(definition.effect(), site)? > Effect::Iso
             {
-                return Err(site.invalid(
-                    "forward operation changes its exact endomorphism interface or effect",
-                ));
+                return Err(
+                    site.invalid("forward operation changes its exact input interface or effect")
+                );
             }
             return self.function(id, arguments, depth, site);
         }
         self.calls += 1;
         if self.calls > MAX_CALLS || depth > MAX_DEPTH {
             return Err(site.error("limit", "Raw operation replay exceeds call/depth bounds"));
+        }
+        if let Some((kind, children, ports)) = operation.constructed() {
+            use crate::frontend::specialize::ast::OperationConstructor as C;
+            let [argument] = arguments else {
+                return Err(site.invalid("constructor requires one whole argument"));
+            };
+            if argument.ty != &ports.input {
+                return Err(site.invalid("constructor changes its complete input type"));
+            }
+            return match kind {
+                C::Then => {
+                    let middle = self.operation(&children[0], arguments, depth + 1, site)?;
+                    let (first, _, _) = super::operation_signature(
+                        &children[0],
+                        self.source.definitions(),
+                        site.span,
+                    )?;
+                    self.operation(
+                        &children[1],
+                        &[Argument {
+                            ty: first.output,
+                            atoms: middle,
+                        }],
+                        depth + 1,
+                        site,
+                    )
+                }
+                C::Adjoint => self.access(&children[0], arguments, depth + 1, false, site),
+                C::Conjugate => {
+                    let first = self.access(&children[0], arguments, depth + 1, false, site)?;
+                    let (outer, _, _) = super::operation_signature(
+                        &children[0],
+                        self.source.definitions(),
+                        site.span,
+                    )?;
+                    let middle = self.operation(
+                        &children[1],
+                        &[Argument {
+                            ty: outer.input,
+                            atoms: first,
+                        }],
+                        depth + 1,
+                        site,
+                    )?;
+                    self.operation(
+                        &children[0],
+                        &[Argument {
+                            ty: outer.input,
+                            atoms: middle,
+                        }],
+                        depth + 1,
+                        site,
+                    )
+                }
+                C::Tensor | C::Controlled => {
+                    let (left, right) = self.split_constructor(argument, site)?;
+                    let (a, _, _) = super::operation_signature(
+                        &children[0],
+                        self.source.definitions(),
+                        site.span,
+                    )?;
+                    let (left, right) = if kind == C::Tensor {
+                        let (b, _, _) = super::operation_signature(
+                            &children[1],
+                            self.source.definitions(),
+                            site.span,
+                        )?;
+                        let left = self.operation(
+                            &children[0],
+                            &[Argument {
+                                ty: a.input,
+                                atoms: vec![left],
+                            }],
+                            depth + 1,
+                            site,
+                        )?;
+                        let right = self.operation(
+                            &children[1],
+                            &[Argument {
+                                ty: b.input,
+                                atoms: vec![right],
+                            }],
+                            depth + 1,
+                            site,
+                        )?;
+                        (left, right)
+                    } else {
+                        let control = SourceType::quantum(SourceType::bit());
+                        let mut output = self.access(
+                            &children[0],
+                            &[
+                                Argument {
+                                    ty: &control,
+                                    atoms: vec![left],
+                                },
+                                Argument {
+                                    ty: a.input,
+                                    atoms: vec![right],
+                                },
+                            ],
+                            depth + 1,
+                            true,
+                            site,
+                        )?;
+                        if output.len() != 2 {
+                            return Err(site.invalid("packed control owner arity differs"));
+                        }
+                        let right = output.pop().unwrap();
+                        (output, vec![right])
+                    };
+                    self.join_constructor(&left, &right, site)
+                }
+            };
         }
         let [argument] = arguments else {
             return Err(site.invalid("repeated operation requires one whole argument"));
@@ -1199,6 +1308,73 @@ impl Replay<'_, '_> {
             )?;
         }
         Ok(value)
+    }
+    fn split_constructor(&mut self, input: &Argument<'_>, site: Site<'_>) -> Result<(Atom, Atom)> {
+        let fields = input
+            .ty
+            .quantum_basis()
+            .and_then(SourceType::tuple_fields)
+            .filter(|fields| fields.len() == 2)
+            .ok_or_else(|| site.invalid("constructor split input tree differs"))?;
+        let width = basis_width(&fields[0])
+            .ok_or_else(|| site.invalid("constructor split basis is not finite"))?;
+        let [Atom::Quantum(token, wires)] = input.atoms.as_slice() else {
+            return Err(site.invalid("constructor split requires one owner"));
+        };
+        if width > wires.len() {
+            return Err(site.invalid("constructor split field exceeds axes"));
+        }
+        let Some(RawOp::Split {
+            input: actual,
+            left,
+            right,
+            left_bits,
+        }) = self.raw.operations.get(self.cursor)
+        else {
+            return Err(site.invalid("Raw constructor split is missing"));
+        };
+        if actual != token || usize::from(*left_bits) != width {
+            return Err(site.invalid("Raw constructor split changes original ordered axes"));
+        }
+        let (left, right) = (*left, *right);
+        if self.live.remove(token).as_ref() != Some(wires) {
+            return Err(site.invalid("constructor consumes an absent owner"));
+        }
+        let left = self.introduce_owner(left, &wires[..width], false, site)?;
+        let right = self.introduce_owner(right, &wires[width..], false, site)?;
+        self.cursor += 1;
+        Ok((left, right))
+    }
+    fn join_constructor(
+        &mut self,
+        left: &[Atom],
+        right: &[Atom],
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
+        let ([Atom::Quantum(l, lw)], [Atom::Quantum(r, rw)]) = (left, right) else {
+            return Err(site.invalid("constructor tensor results are not two owners"));
+        };
+        let Some(RawOp::Join {
+            left: actual_l,
+            right: actual_r,
+            output,
+        }) = self.raw.operations.get(self.cursor)
+        else {
+            return Err(site.invalid("Raw constructor join is missing"));
+        };
+        if actual_l != l || actual_r != r || l == r {
+            return Err(site.invalid("Raw constructor join changes ordered owners"));
+        }
+        let output = *output;
+        if self.live.remove(l).as_ref() != Some(lw) || self.live.remove(r).as_ref() != Some(rw) {
+            return Err(site.invalid("constructor returns unavailable owners"));
+        }
+        self.charge(lw.len() + rw.len(), site)?;
+        let mut wires = lw.to_vec();
+        wires.extend(rw.iter().copied());
+        let atom = self.introduce_owner(output, &wires, false, site)?;
+        self.cursor += 1;
+        Ok(vec![atom])
     }
 
     fn function(
@@ -1290,9 +1466,8 @@ impl Replay<'_, '_> {
                         site.invalid("source call changes an operation parameter identity")
                     })?;
                     for value in [operation, retained] {
-                        let mut value = value;
-                        let mut depth = 0;
-                        loop {
+                        let mut pending = vec![(value, 0)];
+                        while let Some((value, depth)) = pending.pop() {
                             self.charge(1, site)?;
                             if depth > MAX_DEPTH {
                                 return Err(site.error(
@@ -1300,12 +1475,7 @@ impl Replay<'_, '_> {
                                     "Raw call binding exceeds operation depth bounds",
                                 ));
                             }
-                            if let Some(child) = value.child() {
-                                value = child;
-                                depth += 1;
-                            } else {
-                                break;
-                            }
+                            pending.extend(value.children().iter().map(|child| (child, depth + 1)));
                         }
                     }
                     if operation.key() != retained.key() {
@@ -1409,6 +1579,11 @@ pub(super) fn validate_subject_with_control_work(
         .get(subject)
         .ok_or_else(|| Error::new("preservation", Span::default(), "source subject is absent"))?;
     let site = Site::definition(definition);
+    let signature = operation
+        .map(|operation| {
+            super::operation_signature(operation, source.definitions(), operation.span())
+        })
+        .transpose()?;
     if let Some(operation) = operation {
         let mut base = operation;
         let mut depth = 0;
@@ -1419,16 +1594,15 @@ pub(super) fn validate_subject_with_control_work(
             }
             base = child;
         }
-        if base.definition() != Some(subject)
-            || definition.effect() != "unitary"
-            || definition.inputs().len() != 1
-            || quantum_width(definition.inputs()[0].ty()).is_none()
-            || definition.inputs()[0].ty() != definition.output().ty()
-        {
-            return Err(site.invalid("operation subject differs from its exact unary base"));
+        if base.definition().is_some_and(|id| id != subject) {
+            return Err(site.invalid("operation subject differs from its original leaf"));
         }
     }
-    if raw.declared_effect != effect(definition.effect(), site)? {
+    let declared = signature.as_ref().map_or_else(
+        || effect(definition.effect(), site),
+        |(_, effect, _)| Ok(*effect),
+    )?;
+    if raw.declared_effect != declared {
         return Err(site.invalid("Raw declared effect differs from the source root"));
     }
     if raw.classical_inputs.len() > MAX_CELLS
@@ -1466,45 +1640,59 @@ pub(super) fn validate_subject_with_control_work(
     replay.charge(definition.inputs().len(), site)?;
     let (mut classical, mut quantum) = (0usize, 0usize);
     let mut arguments = Vec::new();
-    for input in definition.inputs() {
-        let mut atoms = Vec::new();
-        for (_, kind) in replay.atoms(input, site)? {
-            let is_quantum = kind.quantum_width();
-            let register_width = kind.register_width();
-            if let Some(width) = is_quantum {
-                let port = raw
-                    .quantum_inputs
-                    .get(quantum)
-                    .ok_or_else(|| site.invalid("Raw program omits a quantum source input"))?;
-                quantum += 1;
-                if usize::from(port.shape.bits) != width || port.wires.len() != width {
-                    return Err(
-                        site.invalid("Raw input changes the source's exact quantum owner shape")
-                    );
-                }
-                atoms.push(Atom::Quantum(port.token, Arc::from(port.wires.as_slice())));
-            } else if let Some(width) = register_width {
-                let end = classical
-                    .checked_add(width)
-                    .ok_or_else(|| site.error("limit", "ordinary input width overflow"))?;
-                let ids = raw.classical_inputs.get(classical..end).ok_or_else(|| {
-                    site.invalid("Raw program omits ordinary register input elements")
-                })?;
-                atoms.push(Atom::Register(Arc::from(ids)));
-                classical = end;
-            } else {
-                let id = raw
-                    .classical_inputs
-                    .get(classical)
-                    .ok_or_else(|| site.invalid("Raw program omits an ordinary source input"))?;
-                classical += 1;
-                atoms.push(Atom::Classical(*id));
-            }
+    if let Some((ports, _, _)) = &signature {
+        let width = quantum_width(ports.input)
+            .ok_or_else(|| site.invalid("operation input is not a finite quantum owner"))?;
+        let [port] = raw.quantum_inputs.as_slice() else {
+            return Err(site.invalid("operation input owner arity differs"));
+        };
+        if usize::from(port.shape.bits) != width || port.wires.len() != width {
+            return Err(site.invalid("operation input changes its exact width"));
         }
+        quantum = 1;
         arguments.push(Argument {
-            ty: input.ty(),
-            atoms,
+            ty: ports.input,
+            atoms: vec![Atom::Quantum(port.token, Arc::from(port.wires.as_slice()))],
         });
+    } else {
+        for input in definition.inputs() {
+            let mut atoms = Vec::new();
+            for (_, kind) in replay.atoms(input, site)? {
+                let is_quantum = kind.quantum_width();
+                let register_width = kind.register_width();
+                if let Some(width) = is_quantum {
+                    let port = raw
+                        .quantum_inputs
+                        .get(quantum)
+                        .ok_or_else(|| site.invalid("Raw program omits a quantum source input"))?;
+                    quantum += 1;
+                    if usize::from(port.shape.bits) != width || port.wires.len() != width {
+                        return Err(site
+                            .invalid("Raw input changes the source's exact quantum owner shape"));
+                    }
+                    atoms.push(Atom::Quantum(port.token, Arc::from(port.wires.as_slice())));
+                } else if let Some(width) = register_width {
+                    let end = classical
+                        .checked_add(width)
+                        .ok_or_else(|| site.error("limit", "ordinary input width overflow"))?;
+                    let ids = raw.classical_inputs.get(classical..end).ok_or_else(|| {
+                        site.invalid("Raw program omits ordinary register input elements")
+                    })?;
+                    atoms.push(Atom::Register(Arc::from(ids)));
+                    classical = end;
+                } else {
+                    let id = raw.classical_inputs.get(classical).ok_or_else(|| {
+                        site.invalid("Raw program omits an ordinary source input")
+                    })?;
+                    classical += 1;
+                    atoms.push(Atom::Classical(*id));
+                }
+            }
+            arguments.push(Argument {
+                ty: input.ty(),
+                atoms,
+            });
+        }
     }
     if classical != raw.classical_inputs.len() || quantum != raw.quantum_inputs.len() {
         return Err(site.invalid("Raw program has extra source inputs"));
@@ -1747,6 +1935,107 @@ mod tests {
         let accepted = kernel().accept_raw(raw).unwrap();
         validate(source, accepted.raw()).unwrap();
         accepted
+    }
+
+    #[test]
+    fn rectangular_constructor_subject_keeps_its_own_ports_and_suspended_caller() {
+        let source = elaborate(
+            "use std::quantum::{split,join};
+            fn regroup(q:Q<(Bit,(Bit,Bit))>)->Q<((Bit,Bit),Bit)>{
+                let(a,bc)=split(q);let(b,c)=split(bc);join(join(a,b),c)}
+            fn invoke[const U:Op<((Bit,Bit),Bit) -> (Bit,(Bit,Bit))>](
+                q:Q<((Bit,Bit),Bit)>,r:Q<Bit>)->(Q<(Bit,(Bit,Bit))>,Q<Bit>)
+                requires Applicable(U){(U(q),r)}
+            pub fn main(q:Q<((Bit,Bit),Bit)>,r:Q<Bit>)->(Q<(Bit,(Bit,Bit))>,Q<Bit>){
+                invoke[adjoint(regroup)](q,r)}",
+            "main::main",
+        );
+        let caller = source
+            .definitions()
+            .iter()
+            .position(|d| d.path() == "main::invoke")
+            .unwrap();
+        let proposal = source.lower_raw_operation_at(caller, "U").unwrap();
+        assert_eq!(proposal.definition_index(), caller);
+        assert_eq!(proposal.operation_binding(), Some((caller, "U")));
+        let accepted = kernel().accept(proposal.proposal()).unwrap();
+        assert_eq!(accepted.raw().quantum_inputs.len(), 1);
+        assert_eq!(accepted.raw().quantum_inputs[0].wires.len(), 3);
+        proposal.validate_source_steps(&accepted).unwrap();
+        let mut wrong = accepted.raw().clone();
+        let RawOp::ApplyUnitary { steps, .. } = &mut wrong.operations[0] else {
+            panic!("the general adjoint has one independently replayed circuit");
+        };
+        // Reversing the three logical axes is still a native-valid unitary.
+        steps.push(crate::ir::CircuitStep {
+            controls: vec![],
+            action: CircuitAction::Monomial {
+                indices: vec![0, 2],
+                permutation: vec![0, 2, 1, 3],
+                phases: vec![0; 4],
+            },
+        });
+        let accepted = kernel().accept_raw(wrong).unwrap();
+        assert!(
+            validate_subject_with_kernel(
+                &source,
+                caller,
+                proposal.operation(),
+                accepted.raw(),
+                Some(&kernel())
+            )
+            .is_err()
+        );
+        let root = source.lower_raw().unwrap();
+        let accepted = kernel().accept(root.proposal()).unwrap();
+        assert_eq!(accepted.raw().quantum_inputs.len(), 2);
+        root.validate_source_steps(&accepted).unwrap();
+    }
+
+    #[test]
+    fn constructor_replay_rejects_native_valid_gate_and_phase_substitutions() {
+        let prefix = "use std::quantum::{x,h,phase};
+            fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+            fn had(q:Q<Bit>)->Q<Bit>{h(q)}
+            fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}";
+        for (basis, operation) in [
+            ("Bit", "then_op(flip,had)"),
+            ("Bit", "adjoint(then_op(twist,had))"),
+            ("(Bit,Bit)", "tensor_op(then_op(twist,twist),had)"),
+            ("(Bit,Bit)", "controlled(adjoint(twist))"),
+            ("Bit", "conjugate_op(then_op(twist,twist),had)"),
+        ] {
+            let text = format!("{prefix}
+                fn invoke[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}> requires Applicable(U){{U(q)}}
+                pub fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[{operation}](q)}}");
+            let source = elaborate(&text, "main::main");
+            let proposal = source.lower_raw().unwrap();
+            let accepted = kernel().accept(proposal.proposal()).unwrap();
+            proposal.validate_source_steps(&accepted).unwrap();
+            let mut wrong = accepted.raw().clone();
+            let changed = wrong.operations.iter_mut().any(|step| match step {
+                RawOp::Gate { gate, .. } => {
+                    *gate = if *gate == SingleGate::X {
+                        SingleGate::H
+                    } else {
+                        SingleGate::X
+                    };
+                    true
+                }
+                RawOp::ApplyUnitary { steps, .. } => steps.iter_mut().any(|step| {
+                    if let CircuitAction::Monomial { phases, .. } = &mut step.action {
+                        phases[0] = (phases[0] + 1) % 8;
+                        true
+                    } else {
+                        false
+                    }
+                }),
+                _ => false,
+            });
+            assert!(changed, "{operation}");
+            let accepted = kernel().accept_raw(wrong).unwrap();
+            assert!(validate(&source, accepted.raw()).is_err(), "{operation}");
+        }
     }
 
     #[test]

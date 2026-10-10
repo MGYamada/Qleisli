@@ -1,0 +1,8 @@
+use std::quantum::{x,phase};
+fn flip(q:Q<Bit>)->Q<Bit>{x(q)}
+fn id(q:Q<Bit>)->Q<Bit>{q}
+fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+classical fn flipping(b:Bit)->Bit{not b}
+meaning Flip:Bit=permutation_by(flipping);
+fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+pub fn main(q:Q<Bit>)->Q<Bit>{invoke[power(then_op(checked_op(id,Flip),id),0)](q)}

@@ -4021,7 +4021,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "f1e590d477d5c0ada94ca6ffaa849ed2e985713afda49935e83073a776838459",
+      "sha256": "ba2ae25fabd1f272109faa25ae9754eb714e7fad09ab86c7a6a402b7fd2a6a1e",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4250,7 +4250,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "41369474f6da88fdce5d9b77b005c944cf8a3c130d0c76ed73c7762362d6df6b",
+      "sha256": "b61ce0ec87880bb90157a7ad522da1cdcaed2c10b24a4162447d45c1b46df208",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4299,7 +4299,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "8bc555484deea07a7c45842c4861d6976ef510203606fbda9caaa510073ee166",
+      "sha256": "9b83523ba231e9cfaa7c9e1006ecef40f86380fb6825a623fb3b086126c28b73",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4315,7 +4315,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access.rs",
-      "sha256": "67954c629996101fa23e26d58ebc40b654dd6d3a01eb7aacf5371459e3b65205",
+      "sha256": "a91939740a2a6091af11c4cfdb598921e62e973e89c33cfc984e86a52c5c091c",
       "group": "sized-source",
       "surface": {
         "declarations": [],
