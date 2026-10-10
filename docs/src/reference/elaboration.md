@@ -360,7 +360,7 @@ the common checking stage above does not yet connect their implicit lowering.
 
 Ordinary literals do not prepare quantum states. `init0` retains its explicit
 Iso primitive contract; `basis` is a coherent map, not arbitrary state-preparation
-sugar. No implicit view partition/reassembly, borrow/ctrl insertion, arbitrary
+sugar. No implicit view partition/reassembly, excl/ctrl insertion, arbitrary
 wire permutation or cleanup is admitted here. Add conveniences only after their
 complete contract and checking evidence; an Issue's candidate list is insufficient.
 

@@ -5,6 +5,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [access-vocabulary study](access-vocabulary-v030/README.md) retains three
+unchanged sources and six actual checks separating unsupported resource syntax
+from ordinary functions named `borrow`.
+
 The [unrestricted closure diagnostic study](closure-capture-v030/README.md)
 preserves actual before/after refusals and a first-order control without
 introducing executable closures.

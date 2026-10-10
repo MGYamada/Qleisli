@@ -1,0 +1,3 @@
+# Informed quantum access vocabulary diagnostic study
+
+Issue #71 fixes excl/ctrl as access vocabulary and clean/dirty as separate workspace contracts. borrow has no builtin quantum semantics and remains an ordinary identifier. Three complete first sources are frozen before the diagnostic change: unsupported borrow q, unsupported Rust &mut q and an ordinary explicitly checked function named borrow. No external model or blind benchmark is claimed. Preserve actual JSON, original source bytes, command times and executable hashes. Parsing and source checking do not execute a distribution or prove source preservation.

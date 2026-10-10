@@ -104,6 +104,35 @@ fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
 }
 
 #[test]
+fn borrow_resource_spelling_has_no_builtin_or_type_inferred_semantics() {
+    for ty in ["Bit", "Q<Bit>", "Q<Unit>", "(Bit,Q<Bits<0>>)"] {
+        let source = format!("// 日本語\r\npub fn client(q:{ty})->{ty}{{borrow q;q}}");
+        let message = shared_rejection(
+            &source,
+            "parse",
+            "parse",
+            at(&source, "borrow q", 0, "borrow".len()),
+            "Qleisli has no builtin `borrow` resource form",
+        );
+        assert!(message.contains("explicit `excl` or `ctrl` arguments"));
+        assert!(message.contains("independent workspace restoration contracts"));
+        assert!(message.contains("general source forms remain unsupported"));
+        assert!(!message.contains("https://"));
+    }
+    closed_bit(
+        "fn borrow(q:Bit)->Bit{q}pub fn main()->Bit{borrow(1)}",
+        true,
+    );
+    closed_bit("pub fn main()->Bit{let borrow=1;borrow}", true);
+    closed_bit(
+        "use std::quantum::{init0,h};use std::observe::measure_z;
+        unitary fn borrow(q:Q<Bit>)->Q<Bit>{h(h(q))}
+        pub observe fn main()->Bit{measure_z(borrow(init0()))}",
+        false,
+    );
+}
+
+#[test]
 fn unrestricted_closures_locate_actual_live_captures_before_native_dispatch() {
     for ty in ["Q<Bit>", "Q<Unit>", "Q<Bits<0>>", "(Bit,(Unit,Q<Bit>))"] {
         for body in [

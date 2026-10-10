@@ -3760,7 +3760,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "ec4c0252287e6b01e3aac38162e0ea0a0a136682b97c376a62538a7b91c10370",
+      "sha256": "5e1242b9c9a8f3ae9f444c94fe4340f408d7045b2d6a34b91a4ad4466793fb0b",
       "group": "source",
       "surface": {
         "declarations": [

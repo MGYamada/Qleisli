@@ -1375,6 +1375,18 @@ impl Parser {
     }
 
     fn expr_primary(&mut self) -> Result<Expr, ParseError> {
+        // Diagnose the unsupported resource form without reserving the name:
+        // ordinary borrow(q) calls and bindings still use normal resolution.
+        if self.word("borrow")
+            && self
+                .tokens
+                .get(self.pos + 1)
+                .is_some_and(|t| matches!(t.kind, TokenKind::Ident(_)))
+        {
+            return Err(self.error(
+                "Qleisli has no builtin `borrow` resource form; for quantum access, use explicit `excl` or `ctrl` arguments. Clean/dirty are independent workspace restoration contracts, not access modes; their general source forms remain unsupported",
+            ));
+        }
         if self.at(&TokenKind::Pipe)
             || (self.word("move")
                 && self

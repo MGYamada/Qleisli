@@ -901,6 +901,13 @@ fn unrestricted_capture_keeps_text_json_identity_and_original_location() {
 fn binding_refusals_precede_native_dispatch_in_text_and_json() {
     for (body, code, marker, length, explanation) in [
         (
+            "borrow q;0",
+            "parse",
+            "borrow q",
+            6,
+            "Qleisli has no builtin `borrow` resource form",
+        ),
+        (
             "let q=init0();q=h(q);measure_z(q)",
             "ownership",
             "q=h",

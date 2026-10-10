@@ -243,7 +243,7 @@ ordinary user-defined identifier with the same spelling.
 | Wildcard / rest patterns | `_` may ignore only unrestricted data; every quantum-containing matched field remains linear. Ordinary tuple patterns retain exact immediate shape. Rest patterns are absent; their future omission must not hide owners. |
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
 | Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` and finite-project `ctrl` calls have the rules below. Selected Raw checking admits retained concrete control calls after fresh native sector checks, including static indexed/slice arguments; hierarchy and checker-free control emission refuse them. Stored references, escaping views and access parameter declarations remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
-| `borrow` versus clean/dirty workspace | There is no builtin workspace `borrow` form. Access and state-restoration obligations are separate; the public terminology/reserved-word decision remains in [#71](https://github.com/MGYamada/Qleisli/issues/71). |
+| `borrow` versus clean/dirty workspace | `borrow` has no builtin quantum-resource semantics. `excl`/`ctrl` express access; clean/dirty express independent workspace restoration obligations. See the [access vocabulary](#access-vocabulary-and-workspace-contracts). |
 
 ## Explicit calls and receiver access
 
@@ -264,6 +264,32 @@ It does not mechanically rewrite a receiver into either access mode.
 Explicit call lowering follows the [access and evaluation rules](elaboration.md)
 and the native obligations below. Receiver sugar supplies no alternative
 acceptance route or evidence.
+
+## Access vocabulary and workspace contracts
+
+The [#71 decision](https://github.com/MGYamada/Qleisli/issues/71) uses **access**
+for public quantum operation authority. `excl` grants temporary exclusive
+arbitrary coherent access over its exact footprint; `ctrl` grants the distinct
+basis-sector-preserving coherent access. Neither means state restoration,
+separability or cleanliness. An `excl` argument does not require a `mut`
+binding. Rust `&mut` is not a Qleisli access spelling and is not automatically
+converted to either mode.
+
+Clean and dirty describe independent workspace contracts. Clean discharge
+requires the specified exact known state; dirty discharge requires exact
+restoration for every initial state and external reference. Ending an access
+does not discharge either obligation. General clean/dirty source forms remain
+unsupported; existing checked `with_computed` has its own bounded contract.
+See [checked cleanup](#checked-cleanup-is-a-separate-contract).
+
+`borrow` is not reserved and has no builtin quantum-resource semantics.
+Unsupported `borrow q` receives a located syntax diagnostic, without inferring
+whether Rust access or dirty workspace was intended. Ordinary declarations,
+calls and bindings named `borrow` retain normal checking; their name grants no
+access, restoration or ownership permission. Ownership transfer is expressed
+by the existing consuming calls and bindings; this terminology does not add a
+standalone `move q` form. Internal Rust documentation may still discuss normal
+borrowing of compiler data structures.
 
 ## Whole-owner exclusive calls
 

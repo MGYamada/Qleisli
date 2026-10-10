@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Clarify quantum access vocabulary and diagnose unsupported `borrow q`
+  without reserving ordinary names or implying clean/dirty workspace support.
+  Explicit `excl`/`ctrl` and checked consuming calls retain their contracts.
+
 - Consolidate seven historical frontend validation log groups into lossless,
   Git-verified archives; retain original bytes, paths and executable modes.
   Current test inputs and authoring/constitutional evidence stay intact.
