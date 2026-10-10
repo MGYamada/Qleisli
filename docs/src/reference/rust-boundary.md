@@ -235,7 +235,7 @@ ordinary user-defined identifier with the same spelling.
 | Conflating measure, discard, release, reset or uncompute | Their explicit transitions are distinguished above; no generic spelling or scope exit selects among them. |
 | Assignment to initialized places | Quantum-containing places cannot be assigned to, including nested products and zero-width owners. `q = h(q)` is forbidden replacement; `let q = h(q)` consumes the old owner before rebinding. A consumed binding cannot be refilled by assignment. Bare lexical assignments receive a typed refusal before RHS checking; field/index assignment remains unsupported syntax. Ordinary/static assignment is also unsupported in this profile, with a distinct diagnostic. See [#73](https://github.com/MGYamada/Qleisli/issues/73). |
 | Indexing / `Index` / `IndexMut` | Explicit `excl q[i]` / `ctrl q[a..b]` select statically bounded, ordered places under the [selector rules](elaboration.md#static-ordered-axis-places). They do not form ordinary values or references, move owners by bare indexing, or use indexing traits/runtime bounds checks. Existing explicit `take_bit[n,k]` / `put_bit[n,k]` consume/return owners with checked static bounds and ordered axes. |
-| Method-call autoref/autoderef | No method-call syntax or hidden reference conversion. Explicit first-order calls keep their declared argument types; future access-mode inference is tracked in [#75](https://github.com/MGYamada/Qleisli/issues/75). |
+| Method-call autoref/autoderef | No method-call syntax or hidden receiver conversion. Quantum autoref, autoderef, `Deref`/`DerefMut` dispatch, receiver coercion and access-contract overload selection never insert or forward `excl`/`ctrl`. Explicit first-order calls keep their declared argument types and access modes; see [receiver access](#explicit-calls-and-receiver-access). |
 | `mem::swap` / exchange / physical SWAP | No builtin swap. Binding routing, an ordered axis map and a quantum gate are distinct contracts; tuple spelling grants no physical interchange. Their public boundary remains in [#76](https://github.com/MGYamada/Qleisli/issues/76). |
 | `mut` | A mutable-binding marker grants no quantum access. `let mut q = ...` rejects for a quantum-containing value; ordinary mutable bindings also remain unsupported, with a separate diagnostic. Gates already change states through consuming calls and explicit returned owners; `excl`/`ctrl` need no marker. The ordinary identifier `mut`, as in `let mut = 0`, retains normal name rules. See [#77](https://github.com/MGYamada/Qleisli/issues/77). |
 | Ordinary `for` / `IntoIterator` over quantum data | No ordinary iterator/trait machinery. Bounded `qfor static ... carry ... yield ...` explicitly threads quantum-containing carry and checks its body even for an empty range. `for static` permits only ordinary carry. Neither has hidden quantum capture or runtime iteration; see [Static language](static-language.md). |
@@ -244,6 +244,26 @@ ordinary user-defined identifier with the same spelling.
 | `?`, assertions and early failure | No propagation operator, assertion builtin or language unwind path. A user function's name does not supply such behavior. See the [checking and execution boundary](source-text.md#checking-failures-and-quantum-execution). |
 | Shared `&` / exclusive `&mut` / `ctrl` | Whole-owner `excl` and finite-project `ctrl` calls have the rules below. Selected Raw checking admits retained concrete control calls after fresh native sector checks, including static indexed/slice arguments; hierarchy and checker-free control emission refuse them. Stored references, escaping views and access parameter declarations remain unsupported. Control may accumulate phase or entanglement. General access remains in [#29](https://github.com/MGYamada/Qleisli/issues/29) / [#69](https://github.com/MGYamada/Qleisli/issues/69). |
 | `borrow` versus clean/dirty workspace | There is no builtin workspace `borrow` form. Access and state-restoration obligations are separate; the public terminology/reserved-word decision remains in [#71](https://github.com/MGYamada/Qleisli/issues/71). |
+
+## Explicit calls and receiver access
+
+Quantum access is written at an ordinary call site, for example `h(excl q)`
+or `controlled(U)(ctrl c, excl q)`. The receiver spellings `q.h()` and
+`target.controlled_u(control)` are unsupported. The compiler does not guess
+which access contract their author intended. An ordinary wrapper function
+must expose its actual interface and pass the same ownership, effect and
+access checks; a wrapper name grants no hidden projection or forwarding.
+There are no user-defined `Deref`/`DerefMut` hooks or receiver adjustments.
+
+Field/method receiver syntax is currently absent for ordinary classical and
+static values as well. Their ordinary first-order calls are unaffected. A
+syntax diagnostic therefore reports the unsupported form without guessing
+the receiver's type and conditions its `excl`/`ctrl` advice on quantum access.
+It does not mechanically rewrite a receiver into either access mode.
+
+Explicit call lowering follows the [access and evaluation rules](elaboration.md)
+and the native obligations below. Receiver sugar supplies no alternative
+acceptance route or evidence.
 
 ## Whole-owner exclusive calls
 

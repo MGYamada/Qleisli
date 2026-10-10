@@ -794,6 +794,44 @@ fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
 }
 
 #[test]
+fn unsupported_method_receivers_keep_text_json_spans_before_native_dispatch() {
+    for ty in ["Bit", "Q<Bit>"] {
+        let source = format!("// 日本語\r\npub fn main(q:{ty})->{ty}{{q.h();q}}");
+        let files = SourceRoot::new(&source);
+        let absent = files.0.join("must-not-start-a-native-checker");
+        let start = source.rfind('.').unwrap();
+        for json in [false, true] {
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command
+                .args(["check", "--entry=main::main", "--ir-profile=raw"])
+                .arg(format!(
+                    "--module=main={}",
+                    files.0.join("main.qli").display()
+                ))
+                .arg(format!("--lean-kernel={}", absent.display()));
+            if json {
+                command.arg("--format=json");
+            }
+            let output = command.output().unwrap();
+            assert!(!output.status.success());
+            let text = if json {
+                result(output, "check", false)
+            } else {
+                assert!(output.stdout.is_empty());
+                String::from_utf8(output.stderr).unwrap()
+            };
+            assert!(text.contains("field and method receiver syntax is unsupported"));
+            assert!(text.contains("explicit `excl ...` or `ctrl ...`"));
+            assert!(!text.contains("https://github.com"));
+            if json {
+                assert!(text.contains("\"code\":\"parse\""));
+                assert!(text.contains(&format!("\"start\":{start},\"end\":{}", start + 1)));
+            }
+        }
+    }
+}
+
+#[test]
 fn binding_refusals_precede_native_dispatch_in_text_and_json() {
     for (body, code, marker, length, explanation) in [
         (

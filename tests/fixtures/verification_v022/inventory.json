@@ -3698,7 +3698,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "082ee2fcaf52ac489a910cf27e3e6b8661e6d902814b10ca4cbca4078ed6cc78",
+      "sha256": "e95d6447e619fa70b187125258dad1a97f9747556564f698325a7b9d55fedb72",
       "group": "source",
       "surface": {
         "declarations": [

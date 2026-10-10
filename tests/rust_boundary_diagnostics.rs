@@ -125,6 +125,40 @@ fn unsupported_references_explain_control_without_guessing_the_expression_type()
 }
 
 #[test]
+fn method_receivers_never_infer_access_or_guess_the_receiver_type() {
+    for ty in ["Bit", "Q<Bit>", "(Bit,Q<Unit>)"] {
+        for receiver in ["q.h()", "q.controlled_u(q)", "q.inner.h()"] {
+            let source =
+                format!("// 日本語\r\npub unitary fn client(q:{ty})->{ty}{{{receiver};q}}");
+            let message = shared_rejection(
+                &source,
+                "parse",
+                "parse",
+                at(&source, receiver, 1, 1),
+                "unexpected character `.`",
+            );
+            assert!(message.contains("field and method receiver syntax is unsupported"));
+            assert!(message.contains("For quantum access"));
+            assert!(message.contains("explicit `excl ...` or `ctrl ...`"));
+            assert!(message.contains("cannot infer or forward quantum access"));
+            assert!(!message.contains("https://"));
+        }
+    }
+    // The ordinary function spelling and comments containing methods retain
+    // normal rules. No classical receiver syntax was supported before this.
+    closed_bit(
+        "// q.flip() is a comment\nclassical fn flip(q:Bit)->Bit{not q}
+         pub observe fn main()->Bit{flip(0)}",
+        true,
+    );
+    closed_bit(
+        "use std::quantum::{init0,h};use std::observe::measure_z;
+         pub observe fn main()->Bit{let q=init0();h(excl q);h(excl q);measure_z(q)}",
+        false,
+    );
+}
+
+#[test]
 fn unresolved_drop_keeps_callee_priority_without_inspecting_its_argument() {
     let mut messages = Vec::new();
     // The Unicode/CRLF prefix also keeps the common and filesystem locations

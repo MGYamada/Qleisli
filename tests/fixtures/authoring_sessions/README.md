@@ -5,6 +5,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [receiver-boundary probes](method-boundary-v030/README.md) preserve four
+unchanged first sources and eight actual before/after CLI observations. Three
+receiver forms retain parse codes/spans; explicit access remains accepted.
+
 The [binding-boundary probes](binding-boundary-v030/README.md) preserve eight
 unchanged first sources and sixteen before/after CLI observations. Quantum
 replacement and `mut` refusals now distinguish ownership from unsupported

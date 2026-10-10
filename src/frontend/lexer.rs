@@ -318,7 +318,9 @@ fn scan(
                 '<' if scanner.join(&mut token, '-') => TokenKind::LeftArrow,
                 '<' => TokenKind::LAngle,
                 _ => {
-                    let message = if ch == '!' {
+                    let message = if ch == '.' {
+                        "unexpected character `.`; field and method receiver syntax is unsupported; use an ordinary function call. For quantum access, write explicit `excl ...` or `ctrl ...` arguments: receiver adjustment cannot infer or forward quantum access".into()
+                    } else if ch == '!' {
                         match tokens.last().map(|token| &token.kind) {
                             Some(TokenKind::Ident(name))
                                 if matches!(

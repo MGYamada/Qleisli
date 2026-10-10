@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Explain unsupported field/method receiver syntax without guessing its type.
+  Quantum access requires explicit call arguments; receiver adjustment cannot
+  infer or forward `excl`/`ctrl`. Existing ordinary calls remain unchanged.
+
 - Publish the existing static operation capability derivations and check
   opaque forwarding of each enabled constructor through both source paths.
   Meaning refinements and zero powers grant no additional provider access.

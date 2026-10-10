@@ -1,0 +1,3 @@
+# Informed receiver-boundary diagnostic study
+
+Issue #75 fixes explicit quantum access and prohibits receiver autoref/autoderef or hidden forwarding. Current lexer/parser, Reference and Rust-boundary tests were read before freezing these four sources and before changing production code. No external model was invoked; exact model/sampling metadata is unavailable. This is informed maintenance, not a blind benchmark. The lexer cannot infer a receiver type, so method/field syntax must remain unsupported for ordinary and quantum values alike; guidance must condition quantum advice on the caller context. Explicit access is a positive control, not a proof of source preservation. No new method syntax, wrapper coercion or trait dispatch is intended.
