@@ -2801,7 +2801,7 @@
     },
     {
       "path": "lean/Qleisli.lean",
-      "sha256": "49d5ed9d0134ede3554491d4f6c21bf82c504033afd5c38c603672578190735b",
+      "sha256": "616ddc36de4dd0c6671140e021fa62511245c94b5d4e9c27994be277af652396",
       "group": "raw-core",
       "surface": null
     },
@@ -5041,6 +5041,42 @@
     {
       "path": "lean/Qleisli/RawUnit.lean",
       "sha256": "e68e5219cd977cc980b6604546543f16bbc0fae5bba78b4d409a0e1e295aefc3",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/RawRepresentationTransport.lean",
+      "sha256": "c7302a56de91e66302776e51b2bbf244f2a6b1977c5a636f398708a7f45e1848",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean",
+      "sha256": "95bf2280528b2dc85023f70e27be6c088dc9a5afb15701a9bec6d39bebdb5ec4",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/Observation.lean",
+      "sha256": "eecee63208af37966f04add90209e67ce667a76b1fe78cdae85b2bce82f18567",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/Ownership.lean",
+      "sha256": "737c8d37a9e9e68341d4e0b891abe29346c68be59837373c8581c286d73b34d1",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/Raw.lean",
+      "sha256": "96f8b25c5a63bfccf14872125bc0574b058114ea5c5910b3ea05a8167617af6c",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean",
+      "sha256": "24820273afe49a3c5a52486045782ce7442d1e7e47cc88cf928c7cd1351be8ef",
       "group": "raw-core",
       "surface": null
     }

@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prove an injective embedding of the pre-Unit Raw representation, preserving
+  whole literal traces, original-root selection, and both ownership and
+  classical-scope judgments in both directions. This transport groundwork does
+  not enable Unit opcodes or replace the current constitutional verifier profile.
+
 - Prove executable structural Raw Unit-map building blocks against independent
   owner/interface rules and exact event meaning. Preserve suspended owners,
   issued identities and prior scalar work. Public Raw opcode decoding, dispatch

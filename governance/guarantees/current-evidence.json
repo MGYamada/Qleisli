@@ -18,7 +18,7 @@
     "lean_toolchain": "leanprover/lean4:v4.30.0",
     "source_revision": {
       "algorithm": "sha256-sorted-path-and-content-map-v1",
-      "sha256": "3c01ef0e9a0ff3a2c364c0c45471dfb6a08716a34275305fde5a6cd44686fffe",
+      "sha256": "cfe286cace34c98cf81ffe65d60a62a8ed03f20f6083b1e9ff3b7337f466f2e2",
       "files": {
         "lean/Audit.lean": "868632922357531ff94d9af2f40705635624753bb5cdc6fb5482696918120f13",
         "lean/Qleisli/CallLowering.lean": "e88c9af9a7a4bc5bdea1d467bd0dbb5d4001333136eef567264a1ffc77e0b2cc",
@@ -92,6 +92,7 @@
         "lean/Qleisli/RawProtectedCommutation.lean": "6005d23fc77a7900f144797d413f7fd823a72e1379567efb1fd31b88143d5dbb",
         "lean/Qleisli/RawProtectedEvaluation.lean": "a488dfcd1a4f7c1f2d119078a639a1d33c9d54a0845c14ca45f06bf904c5e7af",
         "lean/Qleisli/RawPure.lean": "61db51897b27cf54ceb87fb09cce17b653fc667fcd61268d896ea082fb25c31c",
+        "lean/Qleisli/RawRepresentationTransport.lean": "c7302a56de91e66302776e51b2bbf244f2a6b1977c5a636f398708a7f45e1848",
         "lean/Qleisli/RawStreamedInstrument.lean": "6256195944c7cba12ea83359daa7ef680f5be8741dd919c83bdeedc0098f1d2a",
         "lean/Qleisli/RawUnit.lean": "e68e5219cd977cc980b6604546543f16bbc0fae5bba78b4d409a0e1e295aefc3",
         "lean/Qleisli/Resource.lean": "6893254dfc2b6b80867df7404a85292830ea88ecd462a3df847c42b89d613c1a",
@@ -117,10 +118,15 @@
         "lean/Qleisli/Semantics/RawAction.lean": "40e4ff0b8d3e3b20ca6e64959f72742c5b6876a2f2b460edfa363c8745bab7fb",
         "lean/Qleisli/Semantics/RawFunction.lean": "bcfd2976d4ade6bf6911a02f4d318e66fa12954a503b21a8d789fbaeca2e3947",
         "lean/Qleisli/Semantics/RawInstrument.lean": "ac2701df2ec9a7505794d4e1f929090d1fded2cf96e420285d82ab0132f97127",
+        "lean/Qleisli/Semantics/RawLegacy/ClassicalScope.lean": "95bf2280528b2dc85023f70e27be6c088dc9a5afb15701a9bec6d39bebdb5ec4",
+        "lean/Qleisli/Semantics/RawLegacy/Observation.lean": "eecee63208af37966f04add90209e67ce667a76b1fe78cdae85b2bce82f18567",
+        "lean/Qleisli/Semantics/RawLegacy/Ownership.lean": "737c8d37a9e9e68341d4e0b891abe29346c68be59837373c8581c286d73b34d1",
+        "lean/Qleisli/Semantics/RawLegacy/Raw.lean": "96f8b25c5a63bfccf14872125bc0574b058114ea5c5910b3ea05a8167617af6c",
+        "lean/Qleisli/Semantics/RawLegacy/RawTrace.lean": "24820273afe49a3c5a52486045782ce7442d1e7e47cc88cf928c7cd1351be8ef",
         "lean/Qleisli/Semantics/RawPure.lean": "a88d0ad27be76e32f024011fd9198a87bc97cfe624b9ab53b1bcc70f0d38318d",
         "lean/Qleisli/SharedControlCommutation.lean": "54d534e523fd4d1eee80ef0d1a0b410ef6a0c2900ddbce6cd467c33b59c88cde",
         "lean/Qleisli/Transition.lean": "e2a6be7d61e3b56b4079ba1ec39feca391a6d0feb3bc7193792993a0d4612b19",
-        "lean/Qleisli.lean": "49d5ed9d0134ede3554491d4f6c21bf82c504033afd5c38c603672578190735b",
+        "lean/Qleisli.lean": "616ddc36de4dd0c6671140e021fa62511245c94b5d4e9c27994be277af652396",
         "lean/SchemaExport.lean": "40cbef842550d1e08c26f8371844713e5d47d236b953f9d63b6fff3ee675c02e",
         "lean/lake-manifest.json": "b20b277cfda76e3b62fbaac5ccffa00c331fa4d320c30c108f3fed3a80b73936",
         "lean/lakefile.toml": "70c000687aa6ec019d69db771f6f74e9eba06d82ba6f0ca23806e20c6d97327f",
@@ -250,12 +256,12 @@
     },
     "files": {
       "tests/fixtures/constitution_v030/initial-guarantees/Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
-      "lean/schema-registry.json": "11671a4cd154d323631e75165587e6d802078b14950e4729a2335bdddc928808",
+      "lean/schema-registry.json": "c5aa7d2883699e1acbab30a4558dc22f8f0002f261585ae92eb45eeca0b823df",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
       "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "8b9dc51cd9dd8537cde9da904a41ca4c7f64fb1ef9e7033ed8ab481380fb9ecc"
+      "tests/fixtures/constitution_v030/current-guarantee-registry.json": "12a90ae444f76dc153c616a773e6b5af8f7774c288a0dd02589774ca4c11c07b"
     },
     "commands": [
       {
@@ -268,7 +274,7 @@
         ],
         "cwd": "lean",
         "exit_code": 0,
-        "seconds": 21.704175292048603,
+        "seconds": 22.937056749942712,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt"
       },
@@ -282,7 +288,7 @@
         ],
         "cwd": "lean-kernel",
         "exit_code": 0,
-        "seconds": 64.0915679159807,
+        "seconds": 61.560125749907456,
         "stdout": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
         "stderr": "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt"
       }
@@ -325,7 +331,7 @@
       ],
       "cwd": "lean",
       "exit_code": 0,
-      "seconds": 20.432202541967854,
+      "seconds": 21.601886124932207,
       "stdout": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
       "stderr": "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt"
     }
@@ -341,7 +347,7 @@
       "path": "tests/fixtures/constitution_v030/initial-guarantees-continuity/Extract.lean",
       "sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77"
     },
-    "source_revision_sha256": "3c01ef0e9a0ff3a2c364c0c45471dfb6a08716a34275305fde5a6cd44686fffe",
+    "source_revision_sha256": "cfe286cace34c98cf81ffe65d60a62a8ed03f20f6083b1e9ff3b7337f466f2e2",
     "command": {
       "argv": [
         "lake",
