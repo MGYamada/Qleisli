@@ -3135,18 +3135,22 @@
             "budget",
             "OperationSite::Step(caller, step)",
             "operation.meanings.iter()",
-            "lower_operation_site(source, site.clone(), depth)?",
+            "lower_operation_site(source, site.clone(), depth, checking)?",
             "finite_leaf::check_with_kernel",
-            "self.replay(leaf.program())?",
+            "self.replay_with_work(leaf.program(), budget)?",
             "original operation binding is absent during replay",
             "accepted.artifact() != self.payload",
             "self.replay(accepted)",
-            "preservation::validate_subject_with_kernel(source, subject, operation, raw, Some(kernel))",
+            "self.meanings.as_deref().map_or(&[], Vec::as_slice)",
             "pub(super) fn lower_with_kernel(",
             "retained.entry(definition.original).or_default().push(calls)",
             "covered &= calls.contains",
             "accepted.native_exact_work()",
-            "preservation::validate_subject_with_control_work("
+            "preservation::validate_subject_with_meanings(",
+            "fn lower_refined_with_control(",
+            "fn lower_controlled_source(",
+            "let meanings = check_operation_meanings(source, kernel, budget)?.leaves",
+            "proposal.meanings = Some(meanings)"
           ]
         },
         {
@@ -3201,6 +3205,18 @@
         }
       ],
       "tests": [
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "control_audit_collects_new_meanings_in_the_expanded_original_graph"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "finite_meaning_replay_charges_control_sectors_to_the_callers_budget"
+        },
+        {
+          "path": "tests/general_operation_arrows.rs",
+          "test": "source_control_and_meaning_share_actual_audit_bodies_and_exact_requests"
+        },
         {
           "path": "tests/classical_functions.rs",
           "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"

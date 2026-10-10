@@ -660,3 +660,100 @@ fn transformed_raw_meanings_preserve_hidden_requests_scalar_phase_and_axis_order
         assert!(result.status.success(), "{name}: {result:?}");
     }
 }
+
+#[test]
+fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
+    use qleisli::contract::{
+        BasisType,
+        exact::{Budget, Exact, Matrix},
+    };
+    use qleisli::interchange::{
+        finite_leaf::{UnitaryBoundary, check_unitary},
+        native::Kernel,
+    };
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01");
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    for (name, permutation, phases) in [
+        ("valid-combined", [1, 0], [0, 4]),
+        ("unused-valid", [0, 1], [0, 0]),
+        ("control-provider", [0, 1], [0, 4]),
+    ] {
+        let text = std::fs::read_to_string(directory.join(format!("{name}.qli"))).unwrap();
+        let source = parsed(&text)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut budget = Budget::new(100_000);
+        let checked = source
+            .check_operation_meanings(&kernel, &mut budget)
+            .unwrap_or_else(|e| panic!("{name}: {e}"));
+        let raw = checked
+            .lower_raw(&kernel, &mut budget)
+            .unwrap_or_else(|e| panic!("{name}: {e}"));
+        let accepted = kernel.accept(raw.proposal()).unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+        let boundary = UnitaryBoundary::new(
+            BasisType::Bit,
+            accepted.raw().quantum_inputs[0].clone(),
+            accepted.output_ports()[0].clone(),
+        )
+        .unwrap();
+        let mut entries = vec![Exact::zero(); 4];
+        for column in 0..2 {
+            entries[permutation[column] * 2 + column] = Exact::phase(phases[column]);
+        }
+        check_unitary(
+            raw.payload(),
+            &boundary,
+            &Matrix::new(2, 2, entries).unwrap(),
+            &mut Budget::new(100_000),
+        )
+        .unwrap();
+        assert_eq!(
+            checked
+                .lower_raw(&kernel, &mut Budget::new(0))
+                .unwrap_err()
+                .code(),
+            "limit"
+        );
+        let missing = Kernel::new("/nonexistent/qleisli-refined-control-checker");
+        assert_eq!(
+            checked
+                .lower_raw(&missing, &mut Budget::new(100_000))
+                .unwrap_err()
+                .code(),
+            "io"
+        );
+        let root = SourceRoot::new(&text);
+        let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .args([
+                "check",
+                "--format=json",
+                "--entry=main::main",
+                "--ir-profile=raw",
+            ])
+            .arg(format!(
+                "--module=main={}",
+                root.0.join("main.qli").display()
+            ))
+            .output()
+            .unwrap();
+        assert!(result.status.success(), "{name}: {result:?}");
+    }
+    for name in ["bad-control", "false-meaning", "unused-false"] {
+        let text = std::fs::read_to_string(directory.join(format!("{name}.qli"))).unwrap();
+        let source = parsed(&text)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut budget = Budget::new(100_000);
+        let error = match source.check_operation_meanings(&kernel, &mut budget) {
+            Ok(checked) => checked.lower_raw(&kernel, &mut budget).unwrap_err(),
+            Err(error) => error,
+        };
+        assert_eq!(error.code(), "contract", "{name}: {error}");
+    }
+}

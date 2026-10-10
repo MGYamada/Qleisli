@@ -26,6 +26,11 @@ five unchanged sources and ten real checks, including the conditional-coordinate
 counterexample found after four initial successes. Exact matrix and genuine
 wrong-evidence regressions distinguish source replay from Meaning binding.
 
+The [refined source control study](refined-source-control-v030/README.md) retains
+six unchanged sources and twelve checks joining native sector and Meaning gates.
+Unused audit bodies retain both obligations; false Meaning and control requests
+reach actual contract rejection, with no new acceptance path.
+
 The [Meaning composition study](meaning-composition-v030/README.md) retains
 initial parse/visibility/profile failures and explicit pure entry adapters, with
 real native rejection of wrong phase order and wrong tensor axes. Broader

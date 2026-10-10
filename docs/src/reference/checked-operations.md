@@ -80,8 +80,15 @@ that range and its boundary; coherent control retains the inactive identity
 sector and the exact active-sector matrix. Coordinate reconstruction follows
 the same surrounding controls, preserving metadata-only axis changes and Unit
 phase. These fresh finite equations retain the existing six-bit bound, shared
-work budget and final whole-artifact acceptance. Source `ctrl` obligations remain
-unsupported on this refined Raw path; failure does not select another profile.
+work budget and final whole-artifact acceptance. Refined Raw source `ctrl` uses
+the existing exact sector gate as well as the Meaning gate. Closed audit roots
+are re-elaborated and all their original Meaning requests are checked in that
+expanded graph; earlier leaf keys are not transplanted. Every original control
+obligation still requires a retained concrete call interval, including unused
+bodies and specializations. Unclosed generic or erased intervals reject. All
+finite equations and sector replay consume the same caller budget. Symbolic
+inverse/control transformation of a body containing source `ctrl` remains
+unsupported; failure does not select another profile.
 The complete emitted artifact still requires fresh native validity and source
 replay before execution. A provider outside its concrete
 profile also rejects, rather than losing its Meaning request. Other static

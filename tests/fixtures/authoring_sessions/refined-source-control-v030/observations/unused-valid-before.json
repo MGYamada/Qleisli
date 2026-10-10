@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--ir-profile=raw"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T22:34:05.058327+00:00",
+  "cli_sha256_before": "18829d44ba4e2c3c9e48110395b7888dcd92b44f75c9ca9f4cce16818ee1ff39",
+  "cli_sha256_after": "18829d44ba4e2c3c9e48110395b7888dcd92b44f75c9ca9f4cce16818ee1ff39",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "meaning",
+        "severity": "error",
+        "message": "original operation Meanings require checking every binding before lowering; use the checked Meaning collection",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

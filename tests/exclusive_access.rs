@@ -255,14 +255,16 @@ fn selected_control_audit_keeps_original_generic_branch_and_meaning_obligations(
         ("classical fn flip(b:Bit)->Bit{not b}
           meaning Flip:Bit=permutation_by(flip);
           unitary fn identity(q:Q<Bit>)->Q<Bit>{q}
-          unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);adjoint(checked_op(identity,Flip))(q)}", "meaning"),
+          unitary fn unused(q:Q<Bit>)->Q<Bit>{z(ctrl q);adjoint(checked_op(identity,Flip))(q)}", "contract"),
     ] {
         let text = format!("use std::quantum::{{z,h}};{body}pub unitary fn main(q:Q<Bit>)->Q<Bit>{{q}}");
         let source = selected(&text).instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap().elaborate().unwrap();
         let error = source.lower_raw_with_kernel(&Kernel::selected().unwrap(), &mut Budget::new(DEFAULT_EXACT_WORK)).unwrap_err();
         assert_eq!(error.code(), code, "{text}: {error}");
-        if code != "meaning" {
+        if body.contains("checked_op(identity,Flip)") {
+            assert!(error.message().contains("original Meaning"), "{error}");
+        } else {
             assert_eq!(error.module(), Some("main"));
             assert!(["h(ctrl ", "z(ctrl "].iter().any(|prefix| text[error.span().start..error.span().end].starts_with(prefix)), "{error}");
         }

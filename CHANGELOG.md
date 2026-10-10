@@ -6,10 +6,15 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Join refined Raw source `ctrl` sector checks with original Meaning checks,
+  including added closed audit bodies and control-bearing providers. Recheck
+  bindings in the expanded graph and charge finite-equation replay to the caller's
+  shared budget. Retain original coverage refusals and transformed-control limits.
+
 - Bind refined Raw adjoint and controlled substeps to original exact Meaning
   requests, including hidden called-body requests and conditional axis routing.
   Preserve scalar phase, existing finite bounds and fresh native decisions;
-  source `ctrl`, rectangular Meanings and broader #83/#46 remain unfinished.
+  rectangular Meanings and broader #83/#46 remain unfinished.
 
 - Connect checked finite operation Meanings to Raw direct, sequential and tensor
   application. Independently replay and freshly check actual emitted instruction

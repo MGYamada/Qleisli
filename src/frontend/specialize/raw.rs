@@ -94,6 +94,9 @@ impl CheckedSourceMeanings<'_> {
         kernel: &native::Kernel,
         budget: &mut Budget,
     ) -> Result<RawSourceProposal> {
+        if self.source.has_control_obligations() {
+            return lower_refined_with_control(self.source, kernel, budget);
+        }
         self.source.require_control_evidence()?;
         if budget.remaining() > DEFAULT_EXACT_WORK {
             return Err(Error::new(
@@ -235,7 +238,11 @@ impl MeaningCollector<'_, '_> {
         }
         // Fix the original request before producing or checking its actual body.
         let required = program.meaning_targets[&id].finite(span)?;
-        let proposal = lower_operation_site(source, site.clone(), depth)?;
+        let checking =
+            source
+                .has_control_obligations()
+                .then_some((self.kernel, &mut *self.budget, &[][..]));
+        let proposal = lower_operation_site(source, site.clone(), depth, checking)?;
         self.bytes = self
             .bytes
             .checked_add(proposal.payload().len())
@@ -364,7 +371,7 @@ impl RawSourceProposal {
                 "checked leaf differs from actual source artifact".into(),
             ));
         }
-        self.replay(leaf.program())?;
+        self.replay_with_work(leaf.program(), budget)?;
         Ok(SourceMeaningCheck {
             source: self,
             required,
@@ -415,6 +422,13 @@ impl RawSourceProposal {
             .select(&self.source, self.operation_depth)
     }
     fn replay(&self, accepted: &native::AcceptedProgram) -> Result<()> {
+        self.replay_with_work(accepted, &mut Budget::new(DEFAULT_EXACT_WORK))
+    }
+    fn replay_with_work(
+        &self,
+        accepted: &native::AcceptedProgram,
+        budget: &mut Budget,
+    ) -> Result<()> {
         let operation = if self.binding.is_some() {
             Some(self.operation().ok_or_else(|| {
                 invalid(
@@ -425,25 +439,17 @@ impl RawSourceProposal {
         } else {
             None
         };
-        if let Some(meanings) = &self.meanings {
-            return preservation::validate_subject_with_meanings(
-                &self.source,
-                self.subject,
-                operation,
-                accepted.raw(),
-                Some(&accepted.kernel()),
-                &mut Budget::new(DEFAULT_EXACT_WORK),
-                meanings,
-            );
-        }
-        validate_source_with_kernel(
+        preservation::validate_subject_with_meanings(
             &self.source,
             self.subject,
             operation,
             accepted.raw(),
-            &accepted.kernel(),
+            Some(&accepted.kernel()),
+            budget,
+            self.meanings.as_deref().map_or(&[], Vec::as_slice),
         )
     }
+
     /// Compare the actual native-accepted artifact with retained ordered source
     /// steps. This issues no execution handle and proves no AST-to-step theorem.
     /// No independent general source meaning is requested by Raw validity.
@@ -459,6 +465,7 @@ impl RawSourceProposal {
     }
 }
 
+#[cfg(test)]
 pub(super) fn validate_source_with_kernel(
     source: &ElaboratedProgram,
     subject: usize,
@@ -1640,11 +1647,18 @@ pub(super) fn lower_with_kernel(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<RawSourceProposal> {
-    use crate::frontend::{ast::QuantumAccess, check::ObligationKind};
     source.require_unrefined()?;
     if !source.has_control_obligations() {
         return lower(source);
     }
+    lower_refined_with_control(source, kernel, budget)
+}
+
+fn lower_refined_with_control(
+    source: &ElaboratedProgram,
+    kernel: &native::Kernel,
+    budget: &mut Budget,
+) -> Result<RawSourceProposal> {
     let span = source.definitions()[source.root()].span();
     if budget.remaining() > DEFAULT_EXACT_WORK {
         return Err(Error::new(
@@ -1655,9 +1669,21 @@ pub(super) fn lower_with_kernel(
     }
     let audited = super::elaborate::with_control_roots(source, budget)?;
     let source = audited.as_ref().unwrap_or(source);
-    // Extra original bodies can introduce Meaning obligations. The Raw
-    // control path must not bypass their normal refinement boundary.
-    source.require_unrefined()?;
+    // Audit roots can add concrete bindings absent from the selected graph.
+    // Check all original requests again in this exact expanded graph; earlier
+    // leaf keys are not transplanted across re-elaboration or reused as acceptance.
+    let meanings = check_operation_meanings(source, kernel, budget)?.leaves;
+    lower_controlled_source(source, kernel, budget, meanings)
+}
+
+fn lower_controlled_source(
+    source: &ElaboratedProgram,
+    kernel: &native::Kernel,
+    budget: &mut Budget,
+    meanings: Arc<Vec<CheckedMeaning>>,
+) -> Result<RawSourceProposal> {
+    use crate::frontend::{ast::QuantumAccess, check::ObligationKind};
+    let span = source.definitions()[source.root()].span();
     let checked = &source.instantiation().program.checked;
     // The elaborator already bounds this immutable graph. Also bound the
     // number of additional body checks; never create a budget per definition.
@@ -1714,16 +1740,32 @@ pub(super) fn lower_with_kernel(
             .path()
             .rsplit_once("::")
             .map_or(definition.path(), |(module, _)| module);
-        lower_inner(source, subject, None, None, Some((kernel, budget)))
-            .map_err(|error| error.in_module(module))?;
+        lower_inner(
+            source,
+            subject,
+            None,
+            None,
+            Some((kernel, budget, &meanings)),
+        )
+        .map_err(|error| error.in_module(module))?;
     }
     let root = &source.definitions()[source.root()];
     let module = root
         .path()
         .rsplit_once("::")
         .map_or(root.path(), |(module, _)| module);
-    lower_inner(source, source.root(), None, None, Some((kernel, budget)))
-        .map_err(|error| error.in_module(module))
+    let mut proposal = lower_inner(
+        source,
+        source.root(),
+        None,
+        None,
+        Some((kernel, budget, &meanings)),
+    )
+    .map_err(|error| error.in_module(module))?;
+    if !meanings.is_empty() {
+        proposal.meanings = Some(meanings);
+    }
+    Ok(proposal)
 }
 
 pub(super) fn lower_operation(
@@ -1731,13 +1773,19 @@ pub(super) fn lower_operation(
     caller_id: usize,
     name: &str,
 ) -> Result<RawSourceProposal> {
-    lower_operation_site(source, OperationSite::Binding(caller_id, name.into()), 0)
+    lower_operation_site(
+        source,
+        OperationSite::Binding(caller_id, name.into()),
+        0,
+        None,
+    )
 }
 
 fn lower_operation_site(
     source: &ElaboratedProgram,
     site: OperationSite,
     operation_depth: usize,
+    checking: Option<(&native::Kernel, &mut Budget, &[CheckedMeaning])>,
 ) -> Result<RawSourceProposal> {
     let caller_id = site.caller();
     let caller = source.definitions().get(caller_id).ok_or_else(|| {
@@ -1875,7 +1923,7 @@ fn lower_operation_site(
         subject,
         Some(&selected),
         Some((site, operation_depth)),
-        None,
+        checking,
     )
     .map_err(|error| error.in_module(module))
 }
@@ -1885,7 +1933,7 @@ fn lower_inner(
     subject: usize,
     selected: Option<&BTreeSet<usize>>,
     binding: Option<(OperationSite, usize)>,
-    checking: Option<(&native::Kernel, &mut Budget)>,
+    checking: Option<(&native::Kernel, &mut Budget, &[CheckedMeaning])>,
 ) -> Result<RawSourceProposal> {
     check_profile(source, selected, checking.is_some())?;
     let root = &source.definitions()[subject];
@@ -2002,7 +2050,7 @@ fn lower_inner(
     });
     let proposal = native::Proposal::from_raw(&raw, interface.as_ref(), Version::V2, None)
         .map_err(|error| Error::new("transport", root.span(), error.to_string()))?;
-    if let Some((kernel, budget)) = checking {
+    if let Some((kernel, budget, meanings)) = checking {
         // These checks bind the original source roles to decoded, freshly
         // accepted bytes. A valid whole body alone is not sector evidence.
         budget
@@ -2014,13 +2062,14 @@ fn lower_inner(
         budget
             .charge(accepted.native_exact_work())
             .map_err(|e| Error::new("limit", root.span(), e.to_string()))?;
-        preservation::validate_subject_with_control_work(
+        preservation::validate_subject_with_meanings(
             source,
             subject,
             operation,
             accepted.raw(),
             Some(kernel),
             budget,
+            meanings,
         )?;
     }
     let finite_boundary =
@@ -2077,6 +2126,70 @@ mod tests {
     use super::*;
     use crate::frontend::compile::ParsedProgram;
     use crate::ir::RawOp;
+
+    #[test]
+    fn control_audit_collects_new_meanings_in_the_expanded_original_graph() {
+        let text = include_str!(
+            "../../../tests/fixtures/authoring_sessions/refined-source-control-v030/attempt-01/unused-valid.qli"
+        );
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let kernel = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+        let checked = source
+            .check_operation_meanings(&kernel, &mut budget)
+            .unwrap();
+        assert_eq!(checked.checked_bindings(), 0);
+        let raw = checked.lower_raw(&kernel, &mut budget).unwrap();
+        assert!(raw.source.definitions().len() > source.definitions().len());
+        assert!(!raw.meanings.as_ref().unwrap().is_empty());
+        assert_eq!(
+            raw.definition().original,
+            source.definitions()[source.root()].original
+        );
+        raw.validate_source_steps(&kernel.accept(raw.proposal()).unwrap())
+            .unwrap();
+    }
+
+    #[test]
+    fn finite_meaning_replay_charges_control_sectors_to_the_callers_budget() {
+        let text = "use std::quantum::z;pub fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}";
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let kernel = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let raw = source
+            .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let required = FiniteMeaning::phase(BasisType::Bit, vec![0, 4]).unwrap();
+        let mut finite_only = Budget::new(DEFAULT_EXACT_WORK);
+        let matrix = required.matrix(&mut finite_only).unwrap();
+        finite_leaf::check_with_kernel(
+            &kernel,
+            raw.payload(),
+            raw.finite_boundary.as_ref().unwrap(),
+            &matrix,
+            &mut finite_only,
+        )
+        .unwrap();
+        let cost = DEFAULT_EXACT_WORK - finite_only.remaining();
+        // This covers the finite equation, but not the additional fresh sector
+        // check during source replay. A hidden default budget would wrongly pass.
+        let error = raw
+            .check_finite_meaning(&kernel, &required, &mut Budget::new(cost))
+            .unwrap_err();
+        assert_eq!(error.code(), "limit", "{error}");
+        assert!(error.message().contains("ctrl requires"), "{error}");
+        raw.check_finite_meaning(&kernel, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+    }
 
     #[test]
     fn raw_meaning_intervals_reject_a_fresh_valid_leaf_for_another_action() {

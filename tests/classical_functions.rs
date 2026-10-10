@@ -281,12 +281,12 @@ fn selected_cli_checks_explicit_requests_without_a_refined_formal() {
                     .unwrap();
                 assert_eq!(
                     result.status.success(),
-                    honest && profile != "raw",
+                    honest,
                     "{honest}/{json}/{profile}: {} {}",
                     String::from_utf8_lossy(&result.stdout),
                     String::from_utf8_lossy(&result.stderr)
                 );
-                if !honest && profile != "raw" {
+                if !honest {
                     assert!(
                         String::from_utf8_lossy(if json { &result.stdout } else { &result.stderr })
                             .contains("original Meaning")
@@ -767,12 +767,12 @@ fn selected_cli_checks_original_annotations_and_rejects_raw_bypass() {
                     .unwrap();
                 assert_eq!(
                     output.status.success(),
-                    honest && profile != "raw",
+                    honest,
                     "{honest}, {json}, {profile}: {} {}",
                     String::from_utf8_lossy(&output.stdout),
                     String::from_utf8_lossy(&output.stderr)
                 );
-                if !honest && profile != "raw" {
+                if !honest {
                     assert!(
                         String::from_utf8_lossy(if json { &output.stdout } else { &output.stderr })
                             .contains("original Meaning")

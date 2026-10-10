@@ -587,7 +587,13 @@ native validity and source replay. Inverse and controlled access retain original
 subtree requests, actual substep ranges and independent axis boundaries; fresh
 native equations compare these with adjoint or control-lifted exact matrices.
 Conditional coordinate reconstruction preserves hidden output reordering and
-Unit phase. Source `ctrl` obligations remain unsupported on this refined route. The selected CLI
+Unit phase. Source `ctrl` can coexist with Meaning requests on the selected Raw
+route through the existing exact sector gate. Expanded closed audit roots check
+every original request in their own concrete graph, including unused bodies;
+all original control obligations must retain concrete call coverage. Unclosed
+generics, erased call intervals and symbolic inverse/control bodies containing
+source `ctrl` still reject. Finite equations and their sector replay share the
+caller's budget. The selected CLI
 uses the same all-binding gate for its selected route; native failure cannot
 select another profile. `emit-proposal` for a
 refined source needs the checker selected by `QLEISLI_KERNEL` to perform these
