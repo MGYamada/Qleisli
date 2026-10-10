@@ -1,1 +1,0 @@
-{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"arity","severity":"error","message":"with_computed predicate requires exactly one explicit basis parameter of type `(Bit,Bit)`; found 2 parameters","primary":{"path":"kernel.qli","start":701,"end":707,"line":14,"column":30},"related":[]}],"result":null}

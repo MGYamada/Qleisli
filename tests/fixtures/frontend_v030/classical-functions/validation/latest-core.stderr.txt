@@ -1,4 +1,0 @@
-   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
-    Finished `test` profile [unoptimized] target(s) in 0.82s
-     Running tests/classical_functions.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/classical_functions-3dfa9d7e289a46ff)
-error: test failed, to rerun pass `--test classical_functions`

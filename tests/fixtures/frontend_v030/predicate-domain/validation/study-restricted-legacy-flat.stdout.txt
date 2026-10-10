@@ -1,3 +1,0 @@
-finite.load: ok, 1 local modules
-sized.parse: main:21..80: unsupported: sized preparation profile: requires an ordinary function
-finite.check: Diagnostic { code: "arity", message: "with_computed predicate requires exactly one explicit basis parameter of type `(Bit,Bit,Bit)`; found 3 parameters", primary: Some(SourceLocation { path: "/private/tmp/qleisli-basis-arity-study-0d93a18/restricted-legacy-flat/main.qli", span: Span { start: 152, end: 161 }, line: 3, column: 72 }) }

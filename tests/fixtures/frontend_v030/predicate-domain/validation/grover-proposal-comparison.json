@@ -1,6 +1,0 @@
-{
-  "proposal_bytes_identical": true,
-  "all_non_source_fields_identical": true,
-  "source_snapshot_changes": [],
-  "explanation": "Source text identity intentionally follows the migrated declaration; program/evidence/interface and source index/path fields are identical."
-}

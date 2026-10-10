@@ -35,7 +35,7 @@ execution success. These are bounded studies, not general LLM benchmarks.
 
 ## Verification and remaining duties
 
-[Actual command records](validation/validation-summary.json) distinguish repaired
+[Actual command records (archived)](validation/README.md) (`validation/validation-summary.json`) distinguish repaired
 failures from successful checks. The independent eleven-test suite checks the
 exact coherent image and reference action, noninjective ordinary AND, Unit and
 ordered trees, eager observation, private/unused definitions, lexical dependency

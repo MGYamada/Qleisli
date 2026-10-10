@@ -1,1 +1,0 @@
-{"format": "qleisli.instrument-host-validation", "version": 1, "status": "passed", "binary_cases": 772, "host_command": ["cargo", "test", "--test", "hierarchical_host", "instrument", "--", "--include-ignored", "--nocapture"], "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85", "production_integration": false, "named_qpe_binding": false}

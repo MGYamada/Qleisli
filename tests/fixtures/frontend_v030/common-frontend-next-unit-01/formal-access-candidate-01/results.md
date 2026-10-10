@@ -15,8 +15,8 @@ Actual Rust **1.98.1 and 1.85.0 each passed 147 tests with zero failures**:
 four existing shared-type unit tests and 143 tests across thirteen integration
 targets. Both runs passed formatting, all-target compilation, warnings-denied
 all-target Clippy and CLI rebuild. The separate raw stage records are in
-[latest attempt 02](validation/latest-attempt-02/results.json) and
-[MSRV attempt 01](validation/msrv-attempt-01/results.json). Their 715 declared
+[latest attempt 02 (archived)](validation/README.md) (`validation/latest-attempt-02/results.json`) and
+[MSRV attempt 01 (archived)](validation/README.md) (`validation/msrv-attempt-01/results.json`). Their 715 declared
 source inputs remained unchanged throughout each run. This is an incomplete
 build/runtime/fixture closure, not validation of a complete committed release.
 
@@ -28,9 +28,9 @@ formula, including external-reference slices, at tolerance `1e-11`. Numerical
 observations do not establish exact correspondence or a general theorem.
 
 The genuine first formatting failure remains in
-[latest attempt 01](validation/latest-attempt-01/results.json); only two test
+[latest attempt 01 (archived)](validation/README.md) (`validation/latest-attempt-01/results.json`); only two test
 assertions were reformatted before the successful second run.
-[The repair record](validation/format-repair-01.json) identifies those bytes.
+[The repair record (archived)](validation/README.md) (`validation/format-repair-01.json`) identifies those bytes.
 Three existing sized tests remain ignored. Two unrelated 3000-file import
 stress tests, the 4000-source differential suite, full CI and Lean
 build/audit/replay were not run in this bounded validation. No new maximum

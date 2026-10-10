@@ -2,7 +2,7 @@
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
 
-The 79 original files from commit `f73551fdb8257fd06d5d6fc615095a54962df40d` are preserved in
+The 139 original files from commit `f73551fdb8257fd06d5d6fc615095a54962df40d` are preserved in
 [the lossless archive](../validation.tar.gz), with full original paths, byte
 lengths, executable modes and SHA-256 hashes in [the manifest](../validation.archive.json).
 The original README, if present, is an archive member too. This is historical

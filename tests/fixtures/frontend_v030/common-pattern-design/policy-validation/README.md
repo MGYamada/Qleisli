@@ -19,7 +19,7 @@ continuity against `faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2`; current inventory
 and coverage guards; and both corresponding mutation suites. Their actual
 counts, exits and failures must come from new retained run output. Rust pattern,
 ownership, type, effect and public CLI tests are separate root-run work through
-the [bounded Rust driver](../validation/driver.py); this policy driver does not
+the [bounded Rust driver (archived)](../validation/README.md) (`../validation/driver.py`); this policy driver does not
 run or assert their success. No Lean build, audit or replay is performed.
 
 Input hashes are collected at execution after root's final barrier. They cover

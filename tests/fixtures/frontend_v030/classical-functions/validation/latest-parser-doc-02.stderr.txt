@@ -1,4 +1,0 @@
-   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
-    Finished `test` profile [unoptimized] target(s) in 5.84s
-     Running tests/documentation.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/documentation-8faf6365647983a1)
-error: test failed, to rerun pass `--test documentation`

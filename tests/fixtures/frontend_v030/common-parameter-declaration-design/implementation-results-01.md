@@ -28,7 +28,7 @@ retained 714 declared input identities; those maps are incomplete build/fixture
 closures. The comparison used the observed latest CLI; the subsequent MSRV
 build changed the shared executable and is not substituted for that comparison.
 No failed compiler stage occurred in these two runs. Raw outputs and actual
-commands are preserved in [validation](validation/README.md).
+commands are preserved in [validation (archived)](validation/README.md) (`validation/README.md`).
 
 The [independent implementation review](independent-implementation-review.md)
 found no actionable defect in the stable three-file diff. The reviewer did

@@ -16,7 +16,7 @@ then-current source identities rather than claiming a clean commit checkout.
 Cases distinguish flat, left-nested and right-nested three-input domains,
 nullary versus explicit `Unit`, both computed forms, Meaning and ordinary calls.
 
-[Current observations](validation/study-comparison.json) rerun the same source
+[Current observations (archived)](validation/README.md) (`validation/study-comparison.json`) rerun the same source
 bytes: 10 accept and 16 reject, versus the initial 14/12. The eight legacy
 predicate uses now report `arity`, including four previously accepted cases.
 Unary matching trees, Meaning and ordinary-call outcomes are retained. Unary
@@ -42,14 +42,14 @@ paths and bytes. Each Rust harness checks the original's new `arity` failure,
 then executes or rejects the separately named current translation for its
 original semantic reason. No input is silently repaired or omitted.
 
-The [recorded derivative comparison](validation/summary.json) uses the preserved
+The [recorded derivative comparison (archived)](validation/README.md) (`validation/summary.json`) uses the preserved
 `fae0` baseline CLI and the current CLI. Three positive projects have identical
 complete run distributions and identical **non-source** proposal fields:
 programs, evidence, exact interfaces and source references. Embedded local and
 stdlib source texts change exactly as recorded by their before/after hashes;
 full artifact byte identity is intentionally not claimed. The current
 phase-mismatch example still fails its independent contract check. Commands,
-original full proposals, stdout and stderr are retained in [validation](validation/commands.json).
+original full proposals, stdout and stderr are retained in [validation (archived)](validation/README.md) (`validation/commands.json`).
 The independent `predicate-domain-independent` fixture separately compares
 small full complex actions, reference correlations, axis order and Unit phase
 against independent expectations and the immediate pre-migration baseline.
@@ -63,18 +63,18 @@ This is a byte-preservation check, not a fresh replay of all 799 native outcomes
 
 ## Executed validation and limits
 
-[Initial existing-test summary](validation/initial-focused-test-summary.json)
+[Initial existing-test summary (archived)](validation/README.md) (`validation/initial-focused-test-summary.json`)
 accurately retains the first run's failure: generated zero/dual-Unit predicates
 in `source_ir_correspondence` still used the removed convention. The test was
 migrated to explicit Unit trees, retaining its phase assertions, and the failed
 test then passed. Other five tests in that target passed in the first run.
-Together with the [six additional targets](validation/remaining-focused-tests.stdout.txt),
+Together with the [six additional targets (archived)](validation/README.md) (`validation/remaining-focused-tests.stdout.txt`),
 147 distinct existing tests passed across 14 targets. The later six-target
 command has directly captured streams; the earlier terminal run is explicitly
 labelled as a post-execution summary rather than a saved raw stream.
 
 The first derivative comparison also made an overly broad full-artifact equality
-assertion. [Its recorded correction](validation/initial-artifact-comparison.json)
+assertion. [Its recorded correction (archived)](validation/README.md) (`validation/initial-artifact-comparison.json`)
 retains the original driver and proposal bytes, then compares non-source fields
 and precisely identified source-text changes. No production repair resulted.
 

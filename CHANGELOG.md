@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Consolidate seven historical frontend validation log groups into lossless,
+  Git-verified archives; retain original bytes, paths and executable modes.
+  Current test inputs and authoring/constitutional evidence stay intact.
+
 - Diagnose unsupported unrestricted closure capture at the resolved live
   quantum owner's use, including nested and zero-width owners. Preserve
   shadowing and classical values; closure annotations grant no type evidence

@@ -1,9 +1,0 @@
-
-running 4 tests
-test frontend::types::tests::linearity_retains_zero_width_owners_inside_mixed_products ... ok
-test frontend::types::tests::equal_width_does_not_identify_type_or_owner_trees ... ok
-test frontend::types::tests::size_obligations_keep_order_and_errors_after_a_sibling_mismatch ... ok
-test frontend::types::tests::size_solver_cannot_equate_different_tuple_or_quantum_shapes ... ok
-
-test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 112 filtered out; finished in 0.00s
-

@@ -96,8 +96,9 @@ references and focused changed-file or command evidence over repeated complete
 inventories or source snapshots. Preserve required first-source, failure and
 counterexample records.
 
-The maintainer separately authorized lossless consolidation of the historical
-common-AST implementation packet after reference and budget preflight. Its
+The maintainer authorized lossless consolidation of the historical common-AST
+implementation packet and, on 2026-10-10, seven historical frontend validation
+log groups after reference and budget preflight. Each
 `*.archive.json` manifest binds the entire original inventory to the original
 Git commit; `check_fixture_archives.py --git-baseline` compares every byte and
 executable mode in CI. It rejects omitted, duplicate, nonregular, changed and
@@ -106,6 +107,10 @@ and 18,000-member ceiling. This archive check supplements the stored-size gate;
 it does not waive budgets or authorize future automatic record deletion.
 Current executable fixtures remain ordinary files; historical member references
 remain recoverable from the archive and Git. Archive checks never run records.
+Keep routine validation output outside `tests/fixtures`; retain focused first
+sources, counterexamples and changed-result evidence instead of copying complete
+logs or source inventories for each toolchain. Consolidating another historical
+group requires checking its current consumers and exact original inventory.
 
 `--base BASE_SHA --head HEAD_SHA` gives a committed local fixture preflight,
 with complete history, exact hashes and no PR-growth exception. Whole-PR

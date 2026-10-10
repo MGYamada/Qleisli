@@ -41,7 +41,7 @@ Python checks use at most two workers. Source changes and native/mdBook
 executable changes cause failure; fixed mdBook identity also requires the
 observed version to be exactly 0.5.4.
 
-The [separate bounded Rust driver](../validation/driver.py) and first-source
+The [separate bounded Rust driver (archived)](../validation/README.md) (`../validation/driver.py`) and first-source
 replay are root-run work. This policy driver neither runs them nor asserts their
 success. The context-reset [startup check](preparation-startup-v2/constitution.json)
 was separately performed during preparation and returned exit 0; it is not a

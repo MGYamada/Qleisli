@@ -1,7 +1,0 @@
-   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
-    Finished `test` profile [unoptimized] target(s) in 7.65s
-     Running tests/classical_functions.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/classical_functions-f9f514bd969e171c)
-     Running tests/parser.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/parser-397a51f9e37d96a6)
-     Running tests/runtime_parameter_patterns.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/runtime_parameter_patterns-8d14a601c94704b9)
-     Running tests/sampling.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/sampling-79fb316f13b943e4)
-     Running tests/source_judgments.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/source_judgments-8c5781ef4a2e1733)

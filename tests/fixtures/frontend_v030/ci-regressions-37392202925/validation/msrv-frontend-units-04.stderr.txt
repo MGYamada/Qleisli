@@ -1,3 +1,0 @@
-   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
-    Finished `test` profile [unoptimized] target(s) in 5.82s
-     Running unittests src/lib.rs (/private/tmp/qleisli-ci-repair-validation-target/debug/deps/qleisli-0cfc2ae30d33b13f)

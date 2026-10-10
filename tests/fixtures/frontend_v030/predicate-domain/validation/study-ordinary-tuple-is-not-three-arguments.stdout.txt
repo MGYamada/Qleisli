@@ -1,3 +1,0 @@
-finite.load: ok, 1 local modules
-sized.parse: main:21..74: unsupported: sized preparation profile: requires an ordinary function
-finite.check: Diagnostic { code: "arity", message: "basis argument count does not match", primary: Some(SourceLocation { path: "/private/tmp/qleisli-basis-arity-study-0d93a18/ordinary-tuple-is-not-three-arguments/main.qli", span: Span { start: 122, end: 136 }, line: 3, column: 48 }) }

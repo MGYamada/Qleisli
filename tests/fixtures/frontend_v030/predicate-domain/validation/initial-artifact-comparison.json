@@ -1,7 +1,0 @@
-{
-  "status": "comparison-assumption-corrected",
-  "driver": "../record-first.py",
-  "failure": "Pair-contract proposals were not byte-identical because source snapshots must retain the changed predicate and bundled stdlib text.",
-  "result": "record.py checks all non-source fields for exact equality, identical source indices/paths, and permits only the two recorded old/current source-text SHA pairs. Original full proposal bytes are preserved.",
-  "production_change_required": false
-}

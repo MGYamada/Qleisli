@@ -1,1 +1,0 @@
-{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"contract","severity":"error","message":"exact equation U E_in = E_out u does not hold","primary":{"path":"main.qli","start":648,"end":654,"line":16,"column":30},"related":[]}],"result":null}
