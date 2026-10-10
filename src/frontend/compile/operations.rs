@@ -134,6 +134,40 @@ impl Compiler<'_> {
         contract_basis(&basis)
             .bits()
             .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        if let FnBody::MeaningCompose { first, second }
+        | FnBody::MeaningTensor {
+            left: first,
+            right: second,
+        } = &decl.body
+        {
+            let left = self.meaning_key(&key_name.0, first)?;
+            let right = self.meaning_key(&key_name.0, second)?;
+            let dimension = 1usize
+                << contract_basis(&basis)
+                    .bits()
+                    .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+            self.charge(&key_name.0, decl.span, dimension * 2)?;
+            let left = &self.meanings[&left].target;
+            let right = &self.meanings[&right].target;
+            let target = if matches!(&decl.body, FnBody::MeaningTensor { .. }) {
+                left.tensor(right)
+            } else {
+                left.compose(right)
+            }
+            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+            let matrix = target
+                .matrix(&mut self.exact_work)
+                .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+            self.meanings.insert(
+                *key,
+                DeclaredMeaning {
+                    basis,
+                    target,
+                    matrix,
+                },
+            );
+            return Ok(());
+        }
         let FnBody::Meaning {
             permutation,
             function,

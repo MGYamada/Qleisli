@@ -1106,6 +1106,14 @@
         "Natural": {
           "declaration": "Natural(Natural)",
           "group": "source"
+        },
+        "MeaningCompose": {
+          "declaration": "MeaningCompose { first: Ident, second: Ident }",
+          "group": "source"
+        },
+        "MeaningTensor": {
+          "declaration": "MeaningTensor { left: Ident, right: Ident }",
+          "group": "source"
         }
       }
     },
@@ -3203,7 +3211,7 @@
     },
     {
       "path": "src/contract/meaning.rs",
-      "sha256": "5928730da1973c9c2e2ae0627a397eb164f610d59da32f0ec297698da4b3a73d",
+      "sha256": "3dcd705b288a9e55ef124601e977623ad1387cbb4b2ef33d7d2ef818778c302c",
       "group": "finite-meaning",
       "surface": {
         "declarations": [
@@ -3280,7 +3288,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "66b734d659e9c9b6139f9f9da445c0ce8699e50f33fbc396fc59aec4a87b0161",
+      "sha256": "5d617bde0e22842133e6f7f592cea93cfcdba7efc2b6f8001c9b1c6567da5fa0",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3329,7 +3337,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "04071d12c8b362e17ca9169d1a282a820a76cf2faa0cf11b599394267c1b271d",
+      "sha256": "a0a002278fb5f4f07adbe6ce471b72c5822d146dc0702e45f9bacba377e7881b",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3347,7 +3355,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "66e5379adce56bceeccd1a86ae89c486a394d9bc64dc903a58a6ed6854414f64",
+      "sha256": "9292a07f442d6c1ce6798568ebcb4b0645e4939c401b063f673c321ddd1e7397",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3367,7 +3375,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "0f0b07a954276342414ac0282bcac49ba3afa3550bdb9c077414d7ec5ce2a2a4",
+      "sha256": "f6d58d39a05a6b4c67ad150c3db2966c0ddde87d2b2e53583c98f3588952ffda",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3377,7 +3385,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "742f6420fbd817da83a34b9c7aabba7ddd50f75eec9adc7e65182442295e397a",
+      "sha256": "e9ecbfe612fafa7a56a0c38e522db55430a3ea74e9c68b16037063ddff17d80e",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3546,7 +3554,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "61cb5b458324aa76304d46784fc64be48d7a5d70a20f10a58cb007bf1615b5ac",
+      "sha256": "e651bc4adca4e33d402413122a9352e39f9f23d897288858f45ea2b32bd35ceb",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3582,7 +3590,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "81ead2310d75b2051f7efbfaaad0365c023d8c2be9ce9a0ea01eae02004d27b4",
+      "sha256": "a61c8660be8836d8741505d89895205ebbcfff53c524fd3e6a040684786a12b3",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3629,7 +3637,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "e2a7f219739340ac690bbbda65d0a71c613ba23bf8089ecc39186331539f5c4f",
+      "sha256": "09c3f93180f1538552030d9cef667d8c951229051d78242b228644d2edce585d",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3760,7 +3768,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "5e1242b9c9a8f3ae9f444c94fe4340f408d7045b2d6a34b91a4ad4466793fb0b",
+      "sha256": "29734e807f4dee6f1a481986782196694e1841dbeb0d6a47d97a81f0a471ec47",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3901,7 +3909,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "7675431d98982ebba83c2874488c01160dcac26cf2083ccabc363800f2024f5a",
+      "sha256": "37268b0cfc8e1430e168cecc4f075166925f988858866f57236abb2ad74ee631",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3943,7 +3951,7 @@
     },
     {
       "path": "src/frontend/specialize.rs",
-      "sha256": "cded5786a05a321d8e2b308c1b32067b470dbf2affe0516e09613b38160f7d27",
+      "sha256": "981aaa5652c4273f8324d10aade84d2d8dc90feffcf07b1b56caa8946024d2b3",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4189,7 +4197,7 @@
     },
     {
       "path": "src/frontend/specialize/meaning.rs",
-      "sha256": "de7158d27b969654349c7b3d351d632a40e52806bfbeb1679eac7fff1fb28072",
+      "sha256": "3ac169c1f0aba7499d1b1c8cca98435ed3e798fa96985427f91c24aa0a2ce17d",
       "group": "sized-source",
       "surface": {
         "declarations": [],

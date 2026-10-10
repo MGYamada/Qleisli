@@ -250,15 +250,37 @@ impl Parser {
             self.expect(&TokenKind::Colon)?;
             let return_type = self.basis_type()?;
             self.expect(&TokenKind::Equals)?;
-            let permutation = if self.consume(&TokenKind::PermutationBy).is_some() {
-                true
+            let body = if self.word("compose") || self.word("tensor") {
+                let tensor = self.word("tensor");
+                self.bump();
+                self.expect(&TokenKind::LParen)?;
+                let first = self.ident()?;
+                self.expect(&TokenKind::Comma)?;
+                let second = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                if tensor {
+                    FnBody::MeaningTensor {
+                        left: first,
+                        right: second,
+                    }
+                } else {
+                    FnBody::MeaningCompose { first, second }
+                }
             } else {
-                self.expect(&TokenKind::PhaseBy)?;
-                false
+                let permutation = if self.consume(&TokenKind::PermutationBy).is_some() {
+                    true
+                } else {
+                    self.expect(&TokenKind::PhaseBy)?;
+                    false
+                };
+                self.expect(&TokenKind::LParen)?;
+                let function = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                FnBody::Meaning {
+                    permutation,
+                    function,
+                }
             };
-            self.expect(&TokenKind::LParen)?;
-            let function = self.ident()?;
-            self.expect(&TokenKind::RParen)?;
             let end = self.expect(&TokenKind::Semicolon)?.span.end;
             return Ok(Decl {
                 public,
@@ -268,10 +290,7 @@ impl Parser {
                 requires: vec![],
                 params: vec![],
                 return_type,
-                body: FnBody::Meaning {
-                    permutation,
-                    function,
-                },
+                body,
                 span: Span::new(start, end),
             });
         }

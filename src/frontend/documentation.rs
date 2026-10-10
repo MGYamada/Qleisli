@@ -62,7 +62,9 @@ pub(crate) fn attach(
                     debug_assert!(matches!(tokens[opening].kind, TokenKind::LBrace));
                     return Some((opening, index));
                 }
-                super::ast::FnBody::Meaning { .. } => return None,
+                super::ast::FnBody::Meaning { .. }
+                | super::ast::FnBody::MeaningCompose { .. }
+                | super::ast::FnBody::MeaningTensor { .. } => return None,
                 super::ast::FnBody::Quantum(body) => body.span.start,
                 super::ast::FnBody::Basis(_) => decl.return_type.span.end,
             };
@@ -184,7 +186,9 @@ fn render(
             if decl.public { "public" } else { "private" }
         ));
         let end = match &decl.body {
-            super::ast::FnBody::Meaning { .. } => decl.span.end,
+            super::ast::FnBody::Meaning { .. }
+            | super::ast::FnBody::MeaningCompose { .. }
+            | super::ast::FnBody::MeaningTensor { .. } => decl.span.end,
             super::ast::FnBody::Quantum(body) if !decl.requires.is_empty() => body.span.start,
             _ => decl.return_type.span.end,
         };

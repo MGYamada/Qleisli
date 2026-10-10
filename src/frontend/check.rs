@@ -507,7 +507,12 @@ impl<'a> Program<'a> {
                 self.budget.charge(span, 1)?;
                 let target = self.interfaces.get(&id).ok_or_else(failure)?;
                 if target.kind != FnKind::Meaning
-                    || !matches!(self.decl(id).body, ast::FnBody::Meaning { .. })
+                    || !matches!(
+                        self.decl(id).body,
+                        ast::FnBody::Meaning { .. }
+                            | ast::FnBody::MeaningCompose { .. }
+                            | ast::FnBody::MeaningTensor { .. }
+                    )
                 {
                     return Err(failure().in_module(&interface.module));
                 }
@@ -642,6 +647,7 @@ pub(super) fn program_with<'a, R>(
         &BTreeMap<DefId, Interface>,
         &StaticHelpers,
         &BTreeMap<DefId, FunctionEffect>,
+        &[DefId],
         &mut BTreeMap<DefId, Index<'a>>,
         &Budget,
     ) -> Result<R>,
@@ -779,6 +785,7 @@ pub(super) fn program_with<'a, R>(
         &program.interfaces,
         &program.helpers,
         &effects,
+        &dependency_order,
         &mut program.indices,
         &program.budget,
     )?;

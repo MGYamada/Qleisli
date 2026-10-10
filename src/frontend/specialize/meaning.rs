@@ -93,6 +93,72 @@ mod tests {
     }
 
     #[test]
+    fn composite_targets_keep_forward_identity_phase_wrap_and_exact_product_tree() {
+        let program = ParsedProgram::parse(BTreeMap::from([(
+            "main".into(),
+            "meaning ZX:Bit=compose(Z,X);
+             meaning XZ:Bit=compose(X,Z);
+             meaning Both:(Bit,Bit)=tensor(Z,X);
+             meaning PhaseProduct:(Unit,Bit)=tensor(Scalar,X);
+             meaning Wrap:Unit=compose(Scalar,Scalar);
+             meaning Z:Bit=phase_by(z); meaning X:Bit=permutation_by(x);
+             meaning Scalar:Unit=phase_by(s);
+             classical fn z(b:Bit)->(Bit,(Bit,Bit)){(0,(0,b))}
+             classical fn x(b:Bit)->Bit{not b}
+             classical fn s(u:Unit)->(Bit,(Bit,Bit)){(0,(1,1))}"
+                .into(),
+        )]))
+        .unwrap();
+        // Literal independent tables: Z then X differs from X then Z by -1.
+        for (name, permutation, phases) in [
+            ("main::ZX", vec![1, 0], vec![0, 4]),
+            ("main::XZ", vec![1, 0], vec![4, 0]),
+            ("main::Both", vec![2, 3, 0, 1], vec![0, 4, 0, 4]),
+            ("main::PhaseProduct", vec![1, 0], vec![6, 6]),
+            ("main::Wrap", vec![0], vec![4]),
+        ] {
+            let actual = target(&program, name).finite(Span::default()).unwrap();
+            assert_eq!(actual.permutation_table(), permutation, "{name}");
+            assert_eq!(actual.phase_table(), phases, "{name}");
+        }
+        assert_eq!(
+            target(&program, "main::PhaseProduct").basis,
+            Ty::pair(Ty::unit(), Ty::bit())
+        );
+    }
+
+    #[test]
+    fn composite_imports_keep_distinct_original_targets_and_contextual_names() {
+        let program = ParsedProgram::parse(BTreeMap::from([
+            (
+                "left".into(),
+                "classical fn compose(b:Bit)->Bit{not b}
+                pub meaning M:Bit=permutation_by(compose);"
+                    .into(),
+            ),
+            (
+                "right".into(),
+                "classical fn tensor(b:Bit)->Bit{b}
+                pub meaning Other:Bit=permutation_by(tensor);"
+                    .into(),
+            ),
+            (
+                "main".into(),
+                "use left::M;
+                meaning Composite:Bit=compose(M,Other);
+                use right::Other;"
+                    .into(),
+            ),
+        ]))
+        .unwrap();
+        let actual = target(&program, "main::Composite")
+            .finite(Span::default())
+            .unwrap();
+        assert_eq!(actual.permutation_table(), &[1, 0]);
+        assert_eq!(actual.phase_table(), &[0, 0]);
+    }
+
+    #[test]
     fn retained_target_does_not_authorize_an_unused_lying_provider() {
         let program = ParsedProgram::parse(BTreeMap::from([(
             "main".into(),
@@ -133,6 +199,10 @@ mod tests {
 pub(super) enum Rows {
     Permutation(Vec<u16>),
     Phase(Vec<u16>),
+    Monomial {
+        permutation: Vec<u16>,
+        phases: Vec<u8>,
+    },
 }
 impl TargetTable {
     pub(super) fn finite(
@@ -170,6 +240,10 @@ impl TargetTable {
         // visits at most 4096 nodes/depth 64 and copies at most 64 rows.
         let basis = signature(&self.basis, span)?;
         let requested = match &self.rows {
+            Rows::Monomial {
+                permutation,
+                phases,
+            } => FiniteMeaning::new(basis, permutation.clone(), phases.clone()),
             Rows::Permutation(rows) => FiniteMeaning::permutation(basis, rows.clone()),
             Rows::Phase(rows) => {
                 let phases = rows
@@ -187,6 +261,10 @@ impl TargetTable {
     pub(super) fn cells(&self) -> usize {
         match &self.rows {
             Rows::Permutation(rows) | Rows::Phase(rows) => rows.len(),
+            Rows::Monomial {
+                permutation,
+                phases,
+            } => permutation.len() + phases.len(),
         }
     }
 }
@@ -213,9 +291,11 @@ pub(super) fn validate(
     resolution: &Resolution,
     interfaces: &BTreeMap<DefId, Interface>,
     indices: &BTreeMap<DefId, Index<'_>>,
+    order: &[DefId],
     budget: &Budget,
 ) -> Result<BTreeMap<DefId, TargetTable>> {
     let mut targets = BTreeMap::new();
+    let mut composites = std::collections::BTreeSet::new();
     for (id, declaration) in resolution.declarations() {
         budget.charge(Span::default(), 1)?;
         if declaration.kind != FnKind::Meaning {
@@ -229,11 +309,40 @@ pub(super) fn validate(
             budget,
             definition: id,
         };
+        if matches!(
+            &context.declaration().body,
+            FnBody::MeaningCompose { .. } | FnBody::MeaningTensor { .. }
+        ) {
+            budget.charge(context.declaration().span, 1)?;
+            composites.insert(id);
+            continue;
+        }
         let target = context
             .target()
             .map_err(|e| e.in_module(&declaration.name.0))?;
         budget.charge(context.declaration().span, 1)?;
         targets.insert(id, target);
+    }
+    if !composites.is_empty() {
+        for &id in order {
+            budget.charge(Span::default(), 1)?;
+            if !composites.contains(&id) {
+                continue;
+            }
+            let context = Context {
+                sources,
+                resolution,
+                interfaces,
+                indices,
+                budget,
+                definition: id,
+            };
+            let target = context
+                .binary_target(&targets)
+                .map_err(|e| e.in_module(&resolution.declaration(id).name.0))?;
+            budget.charge(context.declaration().span, 1)?;
+            targets.insert(id, target);
+        }
     }
     Ok(targets)
 }
@@ -338,6 +447,69 @@ impl<'a> Context<'a, '_> {
             }
         }
         Ok(())
+    }
+    fn binary_target(&self, targets: &BTreeMap<DefId, TargetTable>) -> Result<TargetTable> {
+        let declaration = self.declaration();
+        let (first, second, tensor) = match &declaration.body {
+            FnBody::MeaningCompose { first, second } => (first, second, false),
+            FnBody::MeaningTensor { left, right } => (left, right, true),
+            _ => unreachable!("checked composite Meaning"),
+        };
+        let basis = self.closed(&self.interfaces[&self.definition].result, declaration.span)?;
+        let width = self.width(&basis, declaration.span)?;
+        if width > crate::contract::MAX_CONTRACT_BITS {
+            return Err(SourceError::new(
+                "limit",
+                declaration.span,
+                "exact Meanings support at most 6 bits",
+            ));
+        }
+        let left = &targets[&self.global(first)?];
+        let right = &targets[&self.global(second)?];
+        self.budget.charge(
+            declaration.span,
+            left.cells() + right.cells() + (2usize << width),
+        )?;
+        check::type_size_budgeted(
+            &left.basis,
+            4096,
+            64,
+            true,
+            first.span,
+            &mut |span, cells| self.budget.charge(span, cells),
+        )?;
+        check::type_size_budgeted(
+            &right.basis,
+            4096,
+            64,
+            true,
+            second.span,
+            &mut |span, cells| self.budget.charge(span, cells),
+        )?;
+        let left = left
+            .finite(first.span)
+            .map_err(|e| self.error(first.span, e.to_string()))?;
+        let right = right
+            .finite(second.span)
+            .map_err(|e| self.error(second.span, e.to_string()))?;
+        let target = if tensor {
+            left.tensor(&right)
+        } else {
+            left.compose(&right)
+        }
+        .map_err(|e| self.error(declaration.span, e.to_string()))?;
+        // Charge the retained copies independently of target construction.
+        self.budget.charge(
+            declaration.span,
+            target.permutation_table().len() + target.phase_table().len(),
+        )?;
+        Ok(TargetTable {
+            basis,
+            rows: Rows::Monomial {
+                permutation: target.permutation_table().to_vec(),
+                phases: target.phase_table().to_vec(),
+            },
+        })
     }
     fn target(&self) -> Result<TargetTable> {
         let declaration = self.declaration();

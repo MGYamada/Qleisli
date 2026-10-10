@@ -71,6 +71,67 @@ The rename changes no AST meaning, primitive, protocol/schema, checker or
 constitutional edition; the later bounded implementation retains the existing
 independent evidence gates.
 
+## Bounded exact Meaning composition
+
+A finite endomorphic Meaning declaration has one of these bodies:
+
+```text
+MeaningBody ::= permutation_by ( Identifier )
+              | phase_by ( Identifier )
+              | compose ( Identifier , Identifier )
+              | tensor ( Identifier , Identifier )
+```
+
+`compose` and `tensor` are contextual identifiers in this position, not reserved
+words. Operands resolve to declared Meanings through ordinary visibility rules;
+forward references are allowed, while dependency cycles reject. Every declared
+Meaning is checked, including unused declarations. A runtime value or classical
+function name is not a Meaning operand.
+
+If `First` and `Second` both have the exact basis tree `A`,
+`meaning M: A = compose(First, Second);` applies First and then Second.
+Writing their actions as
+`First|x> = zeta_8^a[x] |p[x]>` and
+`Second|y> = zeta_8^b[y] |q[y]>`, the result sends `x` to `q[p[x]]`
+with phase `(a[x] + b[p[x]]) mod 8`. Composition requires identical trees;
+equal physical dimension does not admit an implicit conversion.
+
+If `Left` has basis `A` and `Right` has basis `B`,
+`meaning T: (A, B) = tensor(Left, Right);` requires that exact ordered pair.
+The first field occupies the low-order axes. For dimensions `dA` and `dB`,
+column `x + dA*y` goes to `p[x] + dA*q[y]` with phase
+`(a[x] + b[y]) mod 8`. Nested products and zero-width fields retain their type
+identity; in particular a scalar phase on `Unit` is not discarded.
+
+For example:
+
+```qli
+classical fn flip(b: Bit) -> Bit { not b }
+classical fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
+meaning X: Bit = permutation_by(flip);
+meaning Z: Bit = phase_by(z_phase);
+meaning ZX: Bit = compose(Z, X);
+meaning Ordered: (Bit, Bit) = tensor(Z, X);
+```
+
+These constructors normalize monomial targets within the existing six-bit
+finite bound and work limits. Equality retains every column, exact phase and
+axis order; it is not probability equality or equality up to global phase.
+For example, `compose(X, Z)` differs from `ZX` by a minus sign. Target formation
+does not prove a provider correct: `checked_op` and refined parameters still
+require the existing fresh native comparison against the independently formed
+request, with original source/dependency and provider identities retained.
+
+The finite source route supports its existing closed observing entry. The
+selected hierarchy route supports its existing pure input/output entry for
+these refined operations; a readout entry outside its existing profile still
+rejects. No readout/instrument rule is broadened by Meaning composition.
+Rectangular arrows, nonmonomial/reference/instrument Meanings and general
+matrix-versus-composite equality remain unfinished under
+[#46](https://github.com/MGYamada/Qleisli/issues/46) and
+[#83](https://github.com/MGYamada/Qleisli/issues/83). These bounded constructors
+do not complete those Issues or establish source-to-request preservation.
+
 ## Migration and evidence identity
 
 Replace `bind_op(implementation, Meaning)` with the identical arguments to

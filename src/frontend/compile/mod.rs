@@ -699,7 +699,7 @@ fn process_loaded_project_details(
             .map(|(name, module)| (name.as_str(), &module.ast))
             .collect(),
         SourceLimits::finite(),
-        |resolution, _, _, _, indices, budget| {
+        |resolution, _, _, _, _, indices, budget| {
             let mut occurrences = OccurrencesForest::default();
             for (id, index) in indices {
                 let declaration = resolution.declaration(*id);

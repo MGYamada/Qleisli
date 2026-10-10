@@ -572,9 +572,17 @@ where
         let mut tasks = vec![match &declaration.body {
             FnBody::Natural(n) => Task::Natural(n),
             FnBody::Meaning { function, .. } => Task::Reference(function),
+            FnBody::MeaningCompose { second, .. } => Task::Reference(second),
+            FnBody::MeaningTensor { right, .. } => Task::Reference(right),
             FnBody::Basis(expression) => Task::Basis(expression),
             FnBody::Quantum(block) => Task::Block(block),
         }];
+        if let FnBody::MeaningCompose { first, .. } | FnBody::MeaningTensor { left: first, .. } =
+            &declaration.body
+        {
+            (self.charge)(first.span, 1)?;
+            tasks.push(Task::Reference(first));
+        }
         if declaration.kind != FnKind::Static {
             tasks.push(Task::Type(&declaration.return_type));
         }

@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [Meaning composition study](meaning-composition-v030/README.md) retains
+initial parse/visibility/profile failures and explicit pure entry adapters, with
+real native rejection of wrong phase order and wrong tensor axes. Broader
+Meaning calculus and observing entry support remain open.
+
 The [arrow-interface boundary study](arrow-interfaces-v030/README.md) preserves
 six unchanged first sources and actual checks distinguishing direct unitor and
 preparation support from static endomorphism restrictions and the proposed

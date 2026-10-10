@@ -49,6 +49,18 @@ to `Op<(Unit,Bit)>` rejects at its exact provider tree. Both desired comma-form
 arrows reject in the existing Meaning slot. These observations do not implement
 general arrows or independently verify the candidate's requested meaning.
 
+**Bounded Meaning implementation (2026-10-10):** declared finite monomial
+Meanings now support contextual `compose(First, Second)` and
+`tensor(Left, Right)` in both source adapters. The
+[Reference](../reference/checked-operations.md#bounded-exact-meaning-composition)
+specifies exact endomorphic typing, order, phase and limits. Fresh native
+provider checks reject reversed Z/X order and exchanged tensor axes. The
+observing and pure-entry adapters and their actual profile refusals are retained
+in the [composition study](https://github.com/MGYamada/Qleisli/tree/codex/v0.3.0-foundation/tests/fixtures/authoring_sessions/meaning-composition-v030).
+This does not implement the general rectangular, nonmonomial/reference or
+instrument Meanings proposed below, complete native extensional equality,
+prove source-to-request preservation or close #46/#83.
+
 ### Implementation constraints exposed by the current checker
 
 The generalization must change the shared original-source judgment and both

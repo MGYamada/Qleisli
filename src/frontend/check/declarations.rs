@@ -130,7 +130,12 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
     if !matches!(
         (decl.kind, &decl.body),
         (FnKind::Classical, ast::FnBody::Basis(_))
-            | (FnKind::Meaning, ast::FnBody::Meaning { .. })
+            | (
+                FnKind::Meaning,
+                ast::FnBody::Meaning { .. }
+                    | ast::FnBody::MeaningCompose { .. }
+                    | ast::FnBody::MeaningTensor { .. }
+            )
             | (
                 FnKind::Inferred | FnKind::Iso | FnKind::Unitary | FnKind::Observe,
                 ast::FnBody::Quantum(_)

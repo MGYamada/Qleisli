@@ -273,6 +273,12 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
             permutation,
             function,
         } => checker.meaning(*permutation, function, &expected, &scope)?,
+        FnBody::MeaningCompose { first, second } => {
+            checker.meaning_binary(first, second, false, &expected, &scope)?
+        }
+        FnBody::MeaningTensor { left, right } => {
+            checker.meaning_binary(left, right, true, &expected, &scope)?
+        }
         FnBody::Quantum(body) => {
             checker.block(body, &mut scope, Some(&expected))?;
             if let Some(key) = checker.live_owner(&scope, body.span)? {

@@ -142,6 +142,41 @@ impl Checker<'_, '_> {
         self.program.budget.ty(expr.span, &result)?;
         Ok(result)
     }
+    pub(super) fn meaning_binary(
+        &mut self,
+        first: &Ident,
+        second: &Ident,
+        tensor: bool,
+        basis: &Ty,
+        scope: &Scope,
+    ) -> Result<()> {
+        let left =
+            super::super::declarations::meaning_identity(self.program, self.definition, first)?;
+        let right =
+            super::super::declarations::meaning_identity(self.program, self.definition, second)?;
+        self.program.budget.charge(first.span, 2)?;
+        self.edges.push((left, first.span));
+        self.edges.push((right, second.span));
+        let a = &self.program.interfaces[&left].result;
+        let b = &self.program.interfaces[&right].result;
+        if tensor {
+            let product = Ty::pair(
+                self.program.budget.copy_ty(first.span, a)?,
+                self.program.budget.copy_ty(second.span, b)?,
+            );
+            self.program.budget.ty(first.span, &product)?;
+            normalize::expect(
+                &product,
+                basis,
+                &scope.context,
+                first.span,
+                &self.program.budget,
+            )
+        } else {
+            normalize::expect(a, basis, &scope.context, first.span, &self.program.budget)?;
+            normalize::expect(b, basis, &scope.context, second.span, &self.program.budget)
+        }
+    }
     pub(super) fn meaning(
         &mut self,
         permutation: bool,

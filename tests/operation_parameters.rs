@@ -608,3 +608,84 @@ fn an_equal_dimension_unitor_is_not_an_endomorphic_static_provider() {
     assert!(project.message.contains("Q<Bit>"), "{project}");
     assert!(project.message.contains("Q<(Unit,Bit)>"), "{project}");
 }
+
+fn composition_study(name: &str, attempt: &str) -> String {
+    std::fs::read_to_string(
+        std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/authoring_sessions/meaning-composition-v030")
+            .join(attempt)
+            .join(format!("{name}.qli")),
+    )
+    .unwrap()
+}
+
+#[test]
+fn composed_meanings_check_actual_providers_in_both_public_paths() {
+    use qleisli::contract::exact::Budget;
+    use qleisli::frontend::compile::ParsedProgram;
+    use qleisli::interchange::native::Kernel;
+    use std::collections::BTreeMap;
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    for (name, valid) in [
+        ("compose", true),
+        ("compose-wrong-order", false),
+        ("tensor", true),
+        ("tensor-wrong-axes", false),
+    ] {
+        // Finite uses the observing client; selected uses its explicit pure adapter.
+        // Exact targets and implementation bodies are identical in both snapshots.
+        let source = composition_study(name, "attempt-03");
+        let root = SourceRoot::new(&composition_study(name, "attempt-02"));
+        let finite = check_project(&root.0);
+        let selected = ParsedProgram::parse(BTreeMap::from([("main".into(), source)]))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        // The unchanged evidence gate must run before hierarchy emission.
+        assert_eq!(selected.lower().unwrap_err().code(), "meaning");
+        let checked = selected.check_operation_meanings(
+            &kernel,
+            &mut Budget::new(qleisli::contract::DEFAULT_EXACT_WORK),
+        );
+        if valid {
+            finite.unwrap_or_else(|e| panic!("{name}: {e}"));
+            let checked = checked.unwrap_or_else(|e| panic!("{name}: {e}"));
+            assert!(checked.checked_bindings() > 0);
+            let proposal = checked.lower_hierarchy().unwrap();
+            qleisli::interchange::hierarchical::Kernel::new(
+                std::env::var_os("QLEISLI_KERNEL").unwrap(),
+            )
+            .check_against_native(proposal.payload(), proposal.comparison_request())
+            .unwrap();
+        } else {
+            assert_eq!(finite.unwrap_err().code, ErrorCode::Contract, "{name}");
+            assert_eq!(checked.unwrap_err().code(), "contract", "{name}");
+        }
+    }
+}
+
+#[test]
+fn composed_meanings_reject_unused_wrong_trees_categories_and_cycles() {
+    use qleisli::frontend::compile::ParsedProgram;
+    use std::collections::BTreeMap;
+    for declarations in [
+        "meaning Bad:(Unit,Bit)=compose(X,X);",
+        "meaning Bad:(Bit,Unit)=tensor(X,U); meaning Other:(Unit,Bit)=compose(Bad,Bad);",
+        "meaning Bad:(Bit,Bit)=tensor(X,f);",
+        "meaning Bad:Bit=compose(X,Bad);",
+        "meaning A:Bit=compose(X,B); meaning B:Bit=compose(A,X);",
+    ] {
+        let source = format!(
+            "classical fn f(b:Bit)->Bit{{b}} classical fn u(v:Unit)->Unit{{v}}
+             meaning X:Bit=permutation_by(f); meaning U:Unit=permutation_by(u);
+             {declarations} unitary fn main(q:Q<Bit>)->Q<Bit>{{q}}"
+        );
+        let root = SourceRoot::new(&source);
+        let finite = check_project(&root.0).unwrap_err();
+        let selected = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap_err();
+        assert_eq!(finite.message, selected.message());
+        assert_ne!(selected.code(), "parse");
+    }
+}

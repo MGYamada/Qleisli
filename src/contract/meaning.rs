@@ -45,7 +45,42 @@ impl FiniteMeaning {
         }
         Self::new(signature, (0..1 << bits).collect(), phases)
     }
-    fn new(
+    /// Apply this target first, followed by `next`, without quotienting phase.
+    pub(crate) fn compose(&self, next: &Self) -> Result<Self, ContractError> {
+        if self.signature != next.signature {
+            return Err(ContractError::Type(
+                "Meaning composition requires identical exact basis trees",
+            ));
+        }
+        let permutation = self
+            .permutation
+            .iter()
+            .map(|&y| next.permutation[usize::from(y)])
+            .collect();
+        let phases = self
+            .permutation
+            .iter()
+            .zip(&self.phases)
+            .map(|(&y, &phase)| (phase + next.phases[usize::from(y)]) % 8)
+            .collect();
+        Self::new(self.signature.clone(), permutation, phases)
+    }
+    /// Ordered product: this target acts on the low-order (first-field) axes.
+    pub(crate) fn tensor(&self, right: &Self) -> Result<Self, ContractError> {
+        let signature = BasisType::pair(self.signature.clone(), right.signature.clone());
+        let dimension = 1usize << signature.bits()?;
+        let left_dimension = self.permutation.len();
+        let mut permutation = Vec::with_capacity(dimension);
+        let mut phases = Vec::with_capacity(dimension);
+        for input in 0..dimension {
+            let a = input % left_dimension;
+            let b = input / left_dimension;
+            permutation.push(self.permutation[a] + left_dimension as u16 * right.permutation[b]);
+            phases.push((self.phases[a] + right.phases[b]) % 8);
+        }
+        Self::new(signature, permutation, phases)
+    }
+    pub(crate) fn new(
         signature: BasisType,
         permutation: Vec<u16>,
         phases: Vec<u8>,

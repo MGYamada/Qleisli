@@ -6,10 +6,15 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Compose and tensor independently declared finite monomial Meanings through
+  both source adapters, retaining exact phase, ordered basis trees and fresh
+  native provider checks. Preserve forward references and refuse cycles and
+  wrong providers; broader arrow and instrument Meaning work remains open.
+
 - Retain exact borrowed input/output interfaces when preparing static source
   providers across the common checker and concrete adapters. Keep existing
   endomorphism checks explicit and remove output-only type copies; general
-  static-arrow syntax and Meaning extensions remain unimplemented.
+  static-arrow syntax remains unimplemented.
 
 - Clarify quantum access vocabulary and diagnose unsupported `borrow q`
   without reserving ordinary names or implying clean/dirty workspace support.

@@ -234,9 +234,9 @@ impl ParsedProgram {
         let (checked, (projections, meaning_targets)) = super::check::program_with(
             originals,
             super::check::SourceLimits::selected(),
-            |resolution, interfaces, helpers, _, indices, budget| {
+            |resolution, interfaces, helpers, _, order, indices, budget| {
                 let meaning_targets =
-                    meaning::validate(&sources, resolution, interfaces, indices, budget)?;
+                    meaning::validate(&sources, resolution, interfaces, indices, order, budget)?;
                 let mut projections = BTreeMap::new();
                 for (id, declaration) in resolution.declarations() {
                     let original = &sources
