@@ -1723,53 +1723,63 @@ pub(super) fn validate_subject_with_control_work(
 mod tests {
     #[test]
     fn access_replay_rejects_native_valid_inverse_order_phase_and_control_frame_substitutions() {
-        let source = elaborate(
-            "use std::quantum::{h,phase};unitary fn turn(q:Q<Bit>)->Q<Bit>{h(phase[1,3](q))} pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){(adjoint(turn)(q),r)}",
-            "main::caller",
-        );
-        let phase = crate::ir::CircuitStep {
-            controls: vec![],
-            action: CircuitAction::Monomial {
-                indices: vec![0],
-                permutation: vec![0, 1],
-                phases: vec![0, 7],
-            },
-        };
-        let hadamard = crate::ir::CircuitStep {
-            controls: vec![],
-            action: CircuitAction::Hadamard { target: 0 },
-        };
-        let raw = RawProgram {
-            quantum_inputs: vec![
-                QuantumPort {
-                    token: TokenId(0),
-                    shape: BasisShape::BIT,
-                    wires: vec![WireId(0)],
+        for body in ["h(phase[1,3](q))", "helper[then_op(twist,had)](q)"] {
+            let source = elaborate(
+                &format!(
+                    "use std::quantum::{{h,phase}};
+                unitary fn twist(q:Q<Bit>)->Q<Bit>{{phase[1,3](q)}}
+                unitary fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
+                unitary fn helper[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>
+                    requires Applicable(U){{U(q)}}
+                unitary fn turn(q:Q<Bit>)->Q<Bit>{{{body}}}
+                pub unitary fn caller(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){{(adjoint(turn)(q),r)}}"
+                ),
+                "main::caller",
+            );
+            let phase = crate::ir::CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Monomial {
+                    indices: vec![0],
+                    permutation: vec![0, 1],
+                    phases: vec![0, 7],
                 },
-                QuantumPort {
-                    token: TokenId(1),
-                    shape: BasisShape::BIT,
-                    wires: vec![WireId(1)],
-                },
-            ],
-            classical_inputs: vec![],
-            operations: vec![RawOp::ApplyUnitary {
-                input: TokenId(0),
-                output: TokenId(2),
-                steps: vec![hadamard.clone(), phase.clone()],
-            }],
-            quantum_outputs: vec![TokenId(2), TokenId(1)],
-            classical_outputs: vec![],
-            declared_effect: Effect::Unitary,
-        };
-        checked(&source, raw.clone());
-        let mut wrong = raw;
-        let RawOp::ApplyUnitary { steps, .. } = &mut wrong.operations[0] else {
-            unreachable!()
-        };
-        steps.reverse();
-        let accepted = kernel().accept_raw(wrong).unwrap();
-        assert!(validate(&source, accepted.raw()).is_err());
+            };
+            let hadamard = crate::ir::CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Hadamard { target: 0 },
+            };
+            let raw = RawProgram {
+                quantum_inputs: vec![
+                    QuantumPort {
+                        token: TokenId(0),
+                        shape: BasisShape::BIT,
+                        wires: vec![WireId(0)],
+                    },
+                    QuantumPort {
+                        token: TokenId(1),
+                        shape: BasisShape::BIT,
+                        wires: vec![WireId(1)],
+                    },
+                ],
+                classical_inputs: vec![],
+                operations: vec![RawOp::ApplyUnitary {
+                    input: TokenId(0),
+                    output: TokenId(2),
+                    steps: vec![hadamard.clone(), phase.clone()],
+                }],
+                quantum_outputs: vec![TokenId(2), TokenId(1)],
+                classical_outputs: vec![],
+                declared_effect: Effect::Unitary,
+            };
+            checked(&source, raw.clone());
+            let mut wrong = raw;
+            let RawOp::ApplyUnitary { steps, .. } = &mut wrong.operations[0] else {
+                unreachable!()
+            };
+            steps.reverse();
+            let accepted = kernel().accept_raw(wrong).unwrap();
+            assert!(validate(&source, accepted.raw()).is_err());
+        }
 
         let source = elaborate(
             "use std::quantum::phase_eighth;unitary fn turn(q:Q<Unit>)->Q<Unit>{phase_eighth(q)} pub unitary fn caller(c:Q<Bit>,q:Q<Unit>,r:Q<Bit>)->(Q<Bit>,Q<Unit>,Q<Bit>){let(c,q)=controlled(turn)(c,q);(c,q,r)}",

@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Bound every constructor child before operation-key comparison in independent
+  Raw access replay, including zero-count children. Preserve Repeat-chain
+  accounting and existing caps; reject excessive depth or value cells before
+  key expansion. Retain independent inverse-order and suspended-owner checks
+  through generic calls.
+
 - Materialize retained pure operation constructor trees through the bounded Raw
   adapter, preserving exact ports, ordered tensor axes, inverse phase and
   conjugation order. Check whole finite endomorphic Meanings and every annotated

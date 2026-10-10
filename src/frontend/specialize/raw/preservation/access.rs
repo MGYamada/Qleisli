@@ -287,6 +287,21 @@ impl Trace<'_, '_, '_> {
         }
         Ok(value)
     }
+    fn charge_binding(&mut self, op: &SourceOperation) -> Result<()> {
+        // Key comparison below expands every ordered child, including children
+        // of zero repetitions. Bound that traversal before allocating either key.
+        let mut pending = vec![(op, 0)];
+        while let Some((operation, depth)) = pending.pop() {
+            self.charge(1)?;
+            if depth > MAX_DEPTH {
+                return Err(self
+                    .site
+                    .error("limit", "source access binding exceeds depth bounds"));
+            }
+            pending.extend(operation.children().iter().map(|child| (child, depth + 1)));
+        }
+        Ok(())
+    }
     fn function(
         &mut self,
         id: usize,
@@ -396,22 +411,7 @@ impl Trace<'_, '_, '_> {
                             .invalid("source access substitutes a parameter identity")
                     })?;
                     for op in [operation, retained] {
-                        let mut op = op;
-                        let mut d = 0;
-                        loop {
-                            self.charge(1)?;
-                            if d > MAX_DEPTH {
-                                return Err(self
-                                    .site
-                                    .error("limit", "source access binding exceeds depth bounds"));
-                            }
-                            if let Some(child) = op.child() {
-                                op = child;
-                                d += 1;
-                            } else {
-                                break;
-                            }
-                        }
+                        self.charge_binding(op)?;
                     }
                     if operation.key() != retained.key() {
                         return Err(self
@@ -722,4 +722,109 @@ pub(super) fn expected(
         invert(&mut trace.steps, site)?;
     }
     Ok(trace.steps)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::frontend::compile::ParsedProgram;
+
+    fn source(operation: &str, basis: &str) -> ElaboratedProgram {
+        let text = format!(
+            "unitary fn leaf(q:Q<Bit>)->Q<Bit>{{q}}
+             unitary fn invoke[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
+                requires Applicable(U){{U(q)}}
+             pub unitary fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[{operation}](q)}}"
+        );
+        ParsedProgram::parse(BTreeMap::from([("main".into(), text)]))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+    }
+
+    #[test]
+    fn access_binding_checks_depth_of_nonrepeat_children_before_key_expansion() {
+        for (depth, succeeds) in [(MAX_DEPTH, true), (MAX_DEPTH + 1, false)] {
+            // The right child contributes no executed circuit steps. Its full
+            // identity still participates in the call's provider-key comparison.
+            let mut child = "leaf".to_owned();
+            for _ in 1..depth {
+                child = format!("power({child},0)");
+            }
+            let source = source(&format!("then_op(leaf,{child})"), "Bit");
+            let root = &source.definitions()[source.root()];
+            let binding = root
+                .steps()
+                .iter()
+                .find_map(|step| step.operation_bindings())
+                .unwrap()
+                .get("U")
+                .unwrap();
+            let mut calls = 0;
+            let mut cells = 0;
+            let mut trace = Trace {
+                source: &source,
+                calls: &mut calls,
+                cells: &mut cells,
+                steps: Vec::new(),
+                site: Site::definition(root),
+            };
+            let result = trace.charge_binding(binding);
+            assert_eq!(result.is_ok(), succeeds, "depth={depth}");
+            if let Err(error) = result {
+                assert_eq!(error.code(), "limit");
+                assert!(error.message().contains("depth bounds"));
+            }
+            assert!(trace.steps.is_empty());
+        }
+    }
+
+    #[test]
+    fn access_binding_charges_all_constructor_children_even_below_zero_repeat() {
+        for (basis, operation, nodes) in [
+            ("Bit", "leaf", 1),
+            ("Bit", "power(leaf,0)", 2),
+            ("Bit", "then_op(leaf,leaf)", 3),
+            ("(Bit,Bit)", "tensor_op(leaf,leaf)", 3),
+            ("Bit", "adjoint(then_op(leaf,leaf))", 4),
+            ("(Bit,Bit)", "controlled(adjoint(leaf))", 3),
+            ("Bit", "conjugate_op(leaf,leaf)", 3),
+            ("Bit", "then_op(leaf,power(adjoint(leaf),0))", 5),
+        ] {
+            let source = source(operation, basis);
+            let root = &source.definitions()[source.root()];
+            let binding = root
+                .steps()
+                .iter()
+                .find_map(|step| step.operation_bindings())
+                .unwrap()
+                .get("U")
+                .unwrap();
+            for (initial, succeeds) in [
+                (0, true),
+                (MAX_CELLS - nodes, true),
+                (MAX_CELLS - nodes + 1, false),
+            ] {
+                let mut cells = initial;
+                let mut calls = 0;
+                let mut trace = Trace {
+                    source: &source,
+                    calls: &mut calls,
+                    cells: &mut cells,
+                    steps: Vec::new(),
+                    site: Site::definition(root),
+                };
+                let result = trace.charge_binding(binding);
+                assert_eq!(result.is_ok(), succeeds, "{operation}, initial={initial}");
+                if let Err(error) = result {
+                    assert_eq!(error.code(), "limit");
+                }
+                assert!(trace.steps.is_empty());
+                assert_eq!(calls, 0);
+                assert_eq!(cells, initial + nodes, "{operation}");
+            }
+        }
+    }
 }
