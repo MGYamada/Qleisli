@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Diagnose forbidden quantum-containing assignment and mutable bindings using
+  original lexical identities and transitive types. Distinguish unsupported
+  ordinary/static mutation, preserve consuming `let` rebinding and contextual
+  identifier `mut`, and refuse before native dispatch without hidden disposal.
+
 - Clarify existing source-order evaluation and quantum temporary/access exit
   rules. Check effectful Unit arguments and tuple fields through both source
   paths; reject implicit quantum destruction and native-valid noncommuting

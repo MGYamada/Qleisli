@@ -794,6 +794,78 @@ fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
 }
 
 #[test]
+fn binding_refusals_precede_native_dispatch_in_text_and_json() {
+    for (body, code, marker, length, explanation) in [
+        (
+            "let q=init0();q=h(q);measure_z(q)",
+            "ownership",
+            "q=h",
+            1,
+            "assignment would replace a live quantum owner",
+        ),
+        (
+            "let mut q=init0();measure_z(q)",
+            "ownership",
+            "mut q",
+            3,
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "let q=0;q=1;q",
+            "unsupported",
+            "q=1",
+            1,
+            "ordinary place assignment is unsupported",
+        ),
+        (
+            "let mut q=0;q",
+            "unsupported",
+            "mut q",
+            3,
+            "ordinary mutable bindings are unsupported",
+        ),
+    ] {
+        let source = format!(
+            "// 日本語\r\nuse std::quantum::init0;use std::quantum::h;
+            use std::observe::measure_z;pub observe fn main()->Bit{{{body}}}"
+        );
+        let files = SourceRoot::new(&source);
+        let absent = files.0.join("must-not-start-a-native-checker");
+        let start = source.rfind(marker).unwrap();
+        for json in [false, true] {
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command
+                .args(["check", "--entry=main::main", "--ir-profile=raw"])
+                .arg(format!(
+                    "--module=main={}",
+                    files.0.join("main.qli").display()
+                ))
+                .arg(format!("--lean-kernel={}", absent.display()));
+            if json {
+                command.arg("--format=json");
+            }
+            let output = command.output().unwrap();
+            assert!(!output.status.success(), "{output:?}");
+            let text = if json {
+                result(output, "check", false)
+            } else {
+                assert!(output.stdout.is_empty(), "{output:?}");
+                String::from_utf8(output.stderr).unwrap()
+            };
+            assert!(text.contains(explanation), "{text}");
+            assert!(!text.contains("https://github.com"), "{text}");
+            if json {
+                assert!(text.contains(&format!("\"code\":\"{code}\"")), "{text}");
+                assert!(
+                    text.contains(&format!("\"start\":{start},\"end\":{}", start + length)),
+                    "{text}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn selected_static_places_choose_raw_before_native_acceptance() {
     for call in [
         "x(excl q[1]);",

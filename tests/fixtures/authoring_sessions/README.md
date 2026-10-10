@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [binding-boundary probes](binding-boundary-v030/README.md) preserve eight
+unchanged first sources and sixteen before/after CLI observations. Quantum
+replacement and `mut` refusals now distinguish ownership from unsupported
+ordinary mutation; consuming rebinding and the ordinary name `mut` still pass.
+
 The [control-diagnostic replay](control-diagnostics-v030/session.json) preserves
 five unchanged sources and ten actual CLI observations. Four refusals retain
 their categories and original spans while adding the reference/control

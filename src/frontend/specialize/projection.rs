@@ -444,6 +444,12 @@ impl Projection<'_, '_> {
                     source::StmtKind::StaticLet { name, value } => {
                         Statement::StaticLet(self.binding(name)?, self.natural(value)?)
                     }
+                    source::StmtKind::MutableLet { .. } | source::StmtKind::Assign { .. } => {
+                        return Err(unsupported(
+                            statement.span,
+                            "mutable bindings and place assignment cannot be projected",
+                        ));
+                    }
                     source::StmtKind::Let {
                         pattern: binder,
                         value,

@@ -118,8 +118,25 @@ pub struct Stmt {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum StmtKind {
-    StaticLet { name: Ident, value: Natural },
-    Let { pattern: Pattern, value: Expr },
+    StaticLet {
+        name: Ident,
+        value: Natural,
+    },
+    Let {
+        pattern: Pattern,
+        value: Expr,
+    },
+    /// Retained only for a typed refusal; never an accepted binding form.
+    MutableLet {
+        marker: Span,
+        pattern: Pattern,
+        value: Expr,
+    },
+    /// Retained only for a typed refusal; never lowered as replacement.
+    Assign {
+        target: Ident,
+        value: Expr,
+    },
     Expr(Expr),
 }
 

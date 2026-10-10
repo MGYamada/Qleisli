@@ -116,6 +116,12 @@ fn block(block: &Block) -> Result<(), Failure> {
     for statement in &block.statements {
         match &statement.kind {
             StmtKind::StaticLet { .. } => {}
+            StmtKind::MutableLet { .. } | StmtKind::Assign { .. } => {
+                return Err((
+                    statement.span,
+                    "mutable bindings and place assignment are unsupported",
+                ));
+            }
             StmtKind::Let { value, .. } => expr(value)?,
             StmtKind::Expr(value) => expr(value)?,
         }

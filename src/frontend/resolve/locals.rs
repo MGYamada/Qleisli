@@ -367,7 +367,10 @@ impl Task<'_> {
                     children = children.saturating_add(
                         if matches!(
                             statement.kind,
-                            StmtKind::Let { .. } | StmtKind::StaticLet { .. }
+                            StmtKind::Let { .. }
+                                | StmtKind::MutableLet { .. }
+                                | StmtKind::Assign { .. }
+                                | StmtKind::StaticLet { .. }
                         ) {
                             2
                         } else {
@@ -705,10 +708,14 @@ where
                                 Task::Bind(name, BindingKind::StaticNatural),
                                 Task::Natural(value),
                             ]),
-                            StmtKind::Let { pattern, value } => tasks.extend([
+                            StmtKind::Let { pattern, value }
+                            | StmtKind::MutableLet { pattern, value, .. } => tasks.extend([
                                 Task::Pattern(pattern, BindingKind::Runtime),
                                 Task::Expression(value),
                             ]),
+                            StmtKind::Assign { target, value } => {
+                                tasks.extend([Task::Expression(value), Task::Reference(target)])
+                            }
                             StmtKind::Expr(expression) => tasks.push(Task::Expression(expression)),
                         }
                     }

@@ -402,6 +402,60 @@ impl Checker<'_, '_> {
                     let value = self.expr(value, scope, None)?;
                     bind(pattern, value, self.index(), scope, &self.program.budget)?;
                 }
+                StmtKind::MutableLet { marker, value, .. } => {
+                    let ty = self.expr(value, scope, None)?;
+                    return Err(if ty.linear() {
+                        SourceError::new(
+                            "ownership",
+                            *marker,
+                            "'mut' does not grant quantum access; live quantum-containing bindings are not assignable. Use explicit consuming let rebinding or an excl/ctrl call with its required coherent-access contract",
+                        )
+                    } else {
+                        SourceError::new(
+                            "unsupported",
+                            *marker,
+                            "ordinary mutable bindings are unsupported in this profile; use immutable let bindings",
+                        )
+                    });
+                }
+                StmtKind::Assign { target, .. } => {
+                    let key = self.local(target).ok_or_else(|| SourceError::new(
+                        "name", target.span, "assignment requires a lexical binding; place assignment is unsupported"))?;
+                    // Inspect the original destination before its RHS. Even
+                    // q = h(q) is forbidden replacement, not linear rebinding.
+                    // No RHS is executed, owner moved, or replacement emitted.
+                    return Err(match scope.values.get(key) {
+                        Some(binding) if binding.ty.linear() => SourceError::new(
+                            "ownership",
+                            target.span,
+                            "assignment would replace a live quantum owner; Qleisli does not assign to quantum-containing places. Consume the owner explicitly and introduce the result with 'let'",
+                        ),
+                        Some(_) => SourceError::new(
+                            "unsupported",
+                            target.span,
+                            "ordinary place assignment is unsupported in this profile; use a new let binding",
+                        ),
+                        None if matches!(
+                            self.index().table.binder(key.id).kind,
+                            BindingKind::StaticNatural
+                                | BindingKind::StaticBasis
+                                | BindingKind::StaticOperation
+                                | BindingKind::FoldIndex
+                        ) =>
+                        {
+                            SourceError::new(
+                                "unsupported",
+                                target.span,
+                                "static place assignment is unsupported; use a distinct static binding",
+                            )
+                        }
+                        None => SourceError::new(
+                            "ownership",
+                            target.span,
+                            "assignment cannot refill a consumed quantum binding; introduce the result with 'let'",
+                        ),
+                    });
+                }
                 StmtKind::Expr(expr) => {
                     if self.expr(expr, scope, None)?.linear() {
                         return Err(disposal_error(

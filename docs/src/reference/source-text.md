@@ -27,6 +27,18 @@ values have fresh
 dynamic owner identities distinct from these lexical keys. Arguments and RHS
 expressions evaluate completely, once, from left to right before binding.
 
+The raw AST also retains bare lexical assignment and a `let mut name = ...`
+marker solely for typed refusal. Neither form can occur in a successfully
+checked program or be lowered to replacement. Assignment inspects the resolved
+destination's current type before checking its RHS; even a consuming RHS does
+not authorize replacing a quantum-containing place. A mutable binding checks
+its initializer's type to distinguish quantum ownership from unsupported
+ordinary mutability. Both refusals retain original byte locations. `mut` is
+contextual: `let mut = 0; mut` remains an ordinary immutable binding and use.
+General field/index assignment syntax and ordinary reassignment are unsupported;
+these diagnostic forms grant neither. See the
+[assignment and mutability boundary](rust-boundary.md).
+
 One private source collection retains complete original bytes, common AST and
 provenance. Filesystem entries retain their selected path; in-memory entries
 carry no invented file or manifest. Both loaders add the fixed registry's four

@@ -520,6 +520,14 @@ impl Lowerer<'_, '_> {
                 // The shared judgment checked this compile-time binding.
                 // It has no runtime value or owner in a finite body.
                 StmtKind::StaticLet { .. } => {}
+                StmtKind::MutableLet { .. } | StmtKind::Assign { .. } => {
+                    return Err(self.error(
+                        module,
+                        stmt.span,
+                        ErrorCode::Unsupported,
+                        "mutable bindings and place assignment cannot be lowered",
+                    ));
+                }
                 StmtKind::Let { pattern, value } => {
                     let value = self.expr(module, value, &mut local)?;
                     let mut names = BTreeSet::new();

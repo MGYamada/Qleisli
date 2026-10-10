@@ -1114,7 +1114,7 @@
       "name": "StmtKind",
       "members": {
         "Let": {
-          "declaration": "Let { pattern: Pattern, value: Expr }",
+          "declaration": "Let { pattern: Pattern, value: Expr, }",
           "group": "source"
         },
         "Expr": {
@@ -1122,7 +1122,15 @@
           "group": "source"
         },
         "StaticLet": {
-          "declaration": "StaticLet { name: Ident, value: Natural }",
+          "declaration": "StaticLet { name: Ident, value: Natural, }",
+          "group": "source"
+        },
+        "MutableLet": {
+          "declaration": "MutableLet { marker: Span, pattern: Pattern, value: Expr, }",
+          "group": "source"
+        },
+        "Assign": {
+          "declaration": "Assign { target: Ident, value: Expr, }",
           "group": "source"
         }
       }
@@ -3268,7 +3276,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "8ba8c1c65f1071dcf7bcdbb6c6e57a1c1ab2b00220a02d5ae03af625c8ba0959",
+      "sha256": "9e91e6fe31408286cfc4621ff7ad9a1dcf2a27a7bec743b24fbdd084d877434c",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3334,7 +3342,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "e928e7f8239302f0855470509af98a439c674a88131866ca28537ebaf41a99ba",
+      "sha256": "261a4c444d00aad1510ef9b92126d23920c10077b9f8911d1e7f88eb935aba47",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3473,7 +3481,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "9dedb033e19a9ed58f14b22d1db2c81676235d4bd90416af30d09f9d789d0353",
+      "sha256": "af029fdefaeaf6853a80b72abbe67588bbe5056515f6ce41fb849c323153a1eb",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3579,7 +3587,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "c45156b564ecd0f3b861f002695553de062284a6070ca4de71ac085d8b243070",
+      "sha256": "4abe3b94ce32f39c98c6b018f4385e27b9b98ce5013a552a0d5c75dd584fdaee",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3747,7 +3755,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "33cb32c6f2ac26a15fb9d80d22eb54a04e292d8acc1ec00b36af2fdd67c8e89d",
+      "sha256": "1c6ece490810a57ef1cbc8c9ed9a5723577ea61db2b8e50f7b340c24cf176094",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3888,7 +3896,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "9330a5f3537ecb4f2dd85bd36aea57a4395ba1b9740b3c4c366872d11476d18d",
+      "sha256": "57d1044226196a78d20674cf7dd0f013a92b54bec8efb5bcdc4b86a658d94343",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4186,7 +4194,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "1ef7384ef9967d6022e8a983d45ddfc8de98e06d04c9eabe4960f4c6362e5049",
+      "sha256": "38f5f6c61906d833faf6a3a1c683810be2e528d76552fa8304d1a54da9618d75",
       "group": "sized-source",
       "surface": {
         "declarations": [],

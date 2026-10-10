@@ -1034,12 +1034,27 @@ impl Parser {
                 continue;
             }
             if let Some(let_token) = self.consume(&TokenKind::Let) {
+                // Keep `let mut = ...` as an ordinary contextual name. The
+                // marker is retained for typed rejection, not accepted mutation.
+                let mutable = (self.word("mut")
+                    && matches!(
+                        self.tokens.get(self.pos + 1).map(|t| &t.kind),
+                        Some(TokenKind::Ident(_))
+                    ))
+                .then(|| self.bump().span);
                 let pattern = self.pattern()?;
                 self.expect(&TokenKind::Equals)?;
                 let value = self.expr()?;
                 let end = self.expect(&TokenKind::Semicolon)?.span.end;
                 statements.push(Stmt {
-                    kind: StmtKind::Let { pattern, value },
+                    kind: match mutable {
+                        Some(marker) => StmtKind::MutableLet {
+                            marker,
+                            pattern,
+                            value,
+                        },
+                        None => StmtKind::Let { pattern, value },
+                    },
                     span: Span::new(let_token.span.start, end),
                 });
                 continue;
@@ -1057,6 +1072,23 @@ impl Parser {
             } else {
                 self.expr()?
             };
+            if !yielded && self.consume(&TokenKind::Equals).is_some() {
+                let ExprKind::Name(target) = expr.kind else {
+                    return Err(ParseError {
+                        message:
+                            "place assignment is unsupported; use explicit consuming let rebinding"
+                                .into(),
+                        span: expr.span,
+                    });
+                };
+                let value = self.expr()?;
+                let end = self.expect(&TokenKind::Semicolon)?.span.end;
+                statements.push(Stmt {
+                    span: Span::new(target.span.start, end),
+                    kind: StmtKind::Assign { target, value },
+                });
+                continue;
+            }
             if yielded {
                 self.consume(&TokenKind::Semicolon);
                 let close = self.expect(&TokenKind::RBrace)?;
@@ -1273,7 +1305,10 @@ impl Parser {
                         pending.extend(block.statements.iter().filter_map(|statement| {
                             let value = match &statement.kind {
                                 StmtKind::StaticLet { .. } => return None,
-                                StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                                StmtKind::Let { value, .. }
+                                | StmtKind::MutableLet { value, .. }
+                                | StmtKind::Assign { value, .. }
+                                | StmtKind::Expr(value) => value,
                             };
                             Some((value, depth + 1))
                         }));
@@ -1290,7 +1325,10 @@ impl Parser {
                             Some((
                                 match &s.kind {
                                     StmtKind::StaticLet { .. } => return None,
-                                    StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                                    StmtKind::Let { value, .. }
+                                    | StmtKind::MutableLet { value, .. }
+                                    | StmtKind::Assign { value, .. }
+                                    | StmtKind::Expr(value) => value,
                                 },
                                 depth + 1,
                             ))
@@ -1309,7 +1347,10 @@ impl Parser {
                     pending.extend(body.statements.iter().filter_map(|statement| {
                         let value = match &statement.kind {
                             StmtKind::StaticLet { .. } => return None,
-                            StmtKind::Let { value, .. } | StmtKind::Expr(value) => value,
+                            StmtKind::Let { value, .. }
+                            | StmtKind::MutableLet { value, .. }
+                            | StmtKind::Assign { value, .. }
+                            | StmtKind::Expr(value) => value,
                         };
                         Some((value, depth + 1))
                     }));

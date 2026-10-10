@@ -316,3 +316,141 @@ fn reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement() {
         Effect::Unitary
     );
 }
+
+#[test]
+fn assignment_classifies_the_original_destination_before_its_rhs() {
+    for ty in ["Q<Bit>", "Q<Unit>", "Q<Bits<0>>", "(Bit,(Unit,Q<Unit>))"] {
+        let source = format!(
+            "// 日本語\r\npub unitary fn client(packet:{ty})->{ty}{{packet=missing(0);packet}}"
+        );
+        let message = shared_rejection(
+            &source,
+            "ownership",
+            "ownership",
+            at(&source, "packet=", 0, 6),
+            "assignment would replace a live quantum owner",
+        );
+        assert!(message.contains("Consume the owner explicitly"));
+        assert!(message.contains("'let'"));
+        assert!(!message.contains("mut"));
+    }
+    for ty in ["Bit", "Unit", "Bits<0>", "(Bit,(Unit,Bit))"] {
+        // The name q supplies no quantum evidence; the checked type does.
+        let source = format!("pub unitary fn client(q:{ty})->{ty}{{q=missing(0);q}}");
+        shared_rejection(
+            &source,
+            "unsupported",
+            "unsupported",
+            at(&source, "q=", 0, 1),
+            "ordinary place assignment is unsupported",
+        );
+    }
+    let source = "use std::quantum::h;pub unitary fn client(q:Q<Bit>)->Q<Bit>{q=h(q);q}";
+    shared_rejection(
+        source,
+        "ownership",
+        "ownership",
+        at(source, "q=h", 0, 1),
+        "assignment would replace a live quantum owner",
+    );
+}
+
+#[test]
+fn mutable_marker_uses_transitive_quantum_type_and_original_byte_span() {
+    for (ty, code, prefix) in [
+        ("Q<Bit>", "ownership", "'mut' does not grant quantum access"),
+        (
+            "Q<Unit>",
+            "ownership",
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "Q<Bits<0>>",
+            "ownership",
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "(Bit,(Unit,Q<Unit>))",
+            "ownership",
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "Bit",
+            "unsupported",
+            "ordinary mutable bindings are unsupported",
+        ),
+        (
+            "(Bit,Unit)",
+            "unsupported",
+            "ordinary mutable bindings are unsupported",
+        ),
+    ] {
+        let source = format!(
+            "// 日本語 mut\r\npub unitary fn client(q:{ty})->{ty}{{let mut packet=q;packet}}"
+        );
+        let message =
+            shared_rejection(&source, code, code, at(&source, "mut packet", 0, 3), prefix);
+        assert!(!message.contains("https://"));
+    }
+}
+
+#[test]
+fn assignment_cannot_refill_spent_or_static_bindings_or_create_unknown_ones() {
+    for (source, code, finite_code, marker, prefix) in [
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{let r=q;q=r;r}",
+            "ownership",
+            "ownership",
+            "q=r",
+            "assignment cannot refill a consumed quantum binding",
+        ),
+        (
+            "pub unitary fn client()->Unit{static let n=0;n=1;()}",
+            "unsupported",
+            "unsupported",
+            "n=1",
+            "static place assignment is unsupported",
+        ),
+        (
+            "pub unitary fn client()->Unit{q=missing(0);()}",
+            "name",
+            "unknown_name",
+            "q=missing",
+            "assignment requires a lexical binding",
+        ),
+    ] {
+        shared_rejection(source, code, finite_code, at(source, marker, 0, 1), prefix);
+    }
+}
+
+#[test]
+fn forbidden_replacement_is_checked_in_unused_branches_and_empty_folds() {
+    for body in [
+        "if 0 {q=q;q}else{q}",
+        "if 0 {q}else{q=q;q}",
+        "qfor static i in 0..0 carry r=q {r=r;yield r;}",
+    ] {
+        // This definition is unused by main, but its original body still has
+        // to pass. A zero trip count or unselected arm grants no exemption.
+        let source =
+            format!("unitary fn unused(q:Q<Bit>)->Q<Bit>{{{body}}}pub fn main()->Bit{{0}}");
+        let marker = if body.contains("r=r") { "r=r" } else { "q=q" };
+        shared_rejection(
+            &source,
+            "ownership",
+            "ownership",
+            at(&source, marker, 0, 1),
+            "assignment would replace a live quantum owner",
+        );
+    }
+}
+
+#[test]
+fn contextual_mut_name_and_explicit_consuming_rebinding_remain_ordinary_rules() {
+    closed_bit("pub fn main()->Bit{let mut=0;mut}", false);
+    let source = "use std::quantum::init0;use std::quantum::h;use std::quantum::z;
+        use std::observe::measure_z;
+        pub observe fn main()->Bit{let q=init0();let q=h(q);z(ctrl q);h(excl q);measure_z(q)}";
+    // H Z H is X: neither consuming rebinding nor explicit access needs mut.
+    closed_bit(source, true);
+}
