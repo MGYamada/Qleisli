@@ -426,6 +426,12 @@ impl Projection<'_, '_> {
                 initial: Box::new(self.expr(initial)?),
                 body: self.block(body)?,
             },
+            source::ExprKind::UnsupportedClosure(_) => {
+                return Err(unsupported(
+                    expr.span,
+                    "runtime closure values are unsupported",
+                ));
+            }
             _ => return Err(unsupported(expr.span, "unsupported runtime expression")),
         };
         Ok(Expr {

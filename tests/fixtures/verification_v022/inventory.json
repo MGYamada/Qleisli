@@ -1240,6 +1240,10 @@
         "AccessCall": {
           "declaration": "AccessCall { callee: Ident, static_args: Vec<StaticOp>, args: Vec<AccessArgument>, }",
           "group": "source-excl"
+        },
+        "UnsupportedClosure": {
+          "declaration": "UnsupportedClosure(Box<UnsupportedClosure>)",
+          "group": "source"
         }
       }
     },
@@ -3276,7 +3280,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "9e91e6fe31408286cfc4621ff7ad9a1dcf2a27a7bec743b24fbdd084d877434c",
+      "sha256": "66b734d659e9c9b6139f9f9da445c0ce8699e50f33fbc396fc59aec4a87b0161",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3313,6 +3317,7 @@
           "StmtKind",
           "Type",
           "TypeKind",
+          "UnsupportedClosure",
           "UseDecl"
         ],
         "functions": [
@@ -3342,7 +3347,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "261a4c444d00aad1510ef9b92126d23920c10077b9f8911d1e7f88eb935aba47",
+      "sha256": "66e5379adce56bceeccd1a86ae89c486a394d9bc64dc903a58a6ed6854414f64",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3481,7 +3486,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "af029fdefaeaf6853a80b72abbe67588bbe5056515f6ce41fb849c323153a1eb",
+      "sha256": "ed7d29ad56f9d74803398c5371b5dae724597b1c280d9c5fa514301f701e84fa",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3587,7 +3592,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "4abe3b94ce32f39c98c6b018f4385e27b9b98ce5013a552a0d5c75dd584fdaee",
+      "sha256": "8f85e3cd68eb9ad1dc386a2c784efb48666e1c2672196e4e345a5937e8f58cf2",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3755,7 +3760,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "1c6ece490810a57ef1cbc8c9ed9a5723577ea61db2b8e50f7b340c24cf176094",
+      "sha256": "ec4c0252287e6b01e3aac38162e0ea0a0a136682b97c376a62538a7b91c10370",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3896,7 +3901,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "57d1044226196a78d20674cf7dd0f013a92b54bec8efb5bcdc4b86a658d94343",
+      "sha256": "7675431d98982ebba83c2874488c01160dcac26cf2083ccabc363800f2024f5a",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4194,7 +4199,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "38f5f6c61906d833faf6a3a1c683810be2e528d76552fa8304d1a54da9618d75",
+      "sha256": "da1741e3390bc430ac15527f6ccf48e23436b2db21778a2e8da048f4a70fc095",
       "group": "sized-source",
       "surface": {
         "declarations": [],

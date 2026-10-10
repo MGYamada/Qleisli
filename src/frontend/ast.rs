@@ -159,8 +159,20 @@ pub struct Expr {
     pub span: Span,
 }
 
+/// Diagnostic syntax only. Common checking always refuses this expression;
+/// neither its parameters nor its body describe an executable callable value.
+/// Optional annotations are parsed for bounded syntax only, not type facts;
+/// their original bytes remain in the retained source collection.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UnsupportedClosure {
+    pub parameters: Vec<Pattern>,
+    pub body: Block,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    /// Retain lexical identities for capture diagnostics, never for lowering.
+    UnsupportedClosure(Box<UnsupportedClosure>),
     AccessCall {
         callee: Ident,
         static_args: Vec<StaticOp>,

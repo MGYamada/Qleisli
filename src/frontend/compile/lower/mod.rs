@@ -935,6 +935,12 @@ impl Lowerer<'_, '_> {
         env: &mut Env,
     ) -> Result<Value, CompileError> {
         match &expr.kind {
+            ExprKind::UnsupportedClosure(_) => Err(self.error(
+                module,
+                expr.span,
+                ErrorCode::Unsupported,
+                "runtime closure values are unsupported",
+            )),
             ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => Err(self.error(
                 module,
                 expr.span,

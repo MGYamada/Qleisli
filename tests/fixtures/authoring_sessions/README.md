@@ -5,6 +5,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [unrestricted closure diagnostic study](closure-capture-v030/README.md)
+preserves actual before/after refusals and a first-order control without
+introducing executable closures.
+
 The [provisional std::gate clients](std-gate-v030/README.md) preserve two first
 sources and four actual before/after checks. Missing-module refusals become
 ordinary library checks; independent meaning/wire/work tests remain separate.

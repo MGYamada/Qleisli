@@ -303,6 +303,53 @@ impl Checker<'_, '_> {
     fn tick(&self, span: Span) -> Result<()> {
         self.program.budget.charge(span, 1)
     }
+    fn closure_error(
+        &self,
+        closure: &UnsupportedClosure,
+        scope: &Scope,
+        span: Span,
+    ) -> Result<SourceError> {
+        // Ranges select diagnostic candidates only. Actual lexical identities
+        // and current checked owner types decide capture, never a name/annotation.
+        // This expression is refused even when no candidate is a live owner.
+        for usage in self.index().table.resolved_uses() {
+            self.tick(usage.span)?;
+            if usage.span.start < closure.body.span.start || usage.span.end > closure.body.span.end
+            {
+                continue;
+            }
+            let ResolvedUse::Local(id) = usage.target else {
+                continue;
+            };
+            let key = self.index().table.key(id);
+            if let Some(binding) = scope.values.get(key) {
+                self.program.budget.ty(usage.span, &binding.ty)?;
+                if binding.ty.linear() {
+                    return Ok(SourceError::new(
+                        "ownership",
+                        usage.span,
+                        format!(
+                            "unrestricted closure cannot capture live quantum ownership in `{}`; pass owners explicitly to a first-order function. Runtime closure values are unsupported; no linear or one-shot callable type is provided",
+                            key.name
+                        ),
+                    ));
+                }
+            } else if self.index().table.binder(id).span.end <= span.start
+                && self.index().table.binder(id).kind == BindingKind::Runtime
+            {
+                return Ok(SourceError::new(
+                    "ownership",
+                    usage.span,
+                    format!("quantum ownership `{}` has already been consumed", key.name),
+                ));
+            }
+        }
+        Ok(SourceError::new(
+            "unsupported",
+            span,
+            "runtime closure values are unsupported; use a declared first-order function or a bounded static operation description",
+        ))
+    }
     fn live_owner<'s>(&self, scope: &'s Scope, span: Span) -> Result<Option<&'s BinderKey>> {
         let mut first: Option<&BinderKey> = None;
         for (key, binding) in &scope.values {
@@ -505,6 +552,9 @@ impl Checker<'_, '_> {
         let span = expr.span;
         self.tick(span)?;
         let result = match &expr.kind {
+            ExprKind::UnsupportedClosure(closure) => {
+                return Err(self.closure_error(closure, scope, span)?);
+            }
             ExprKind::Unit => Ty::unit(),
             ExprKind::Bit(bit) => self.boolean(Boolean::Constant(*bit), &[], scope, span)?,
             ExprKind::Not(a) => self.boolean(Boolean::Not, &[a.as_ref()], scope, span)?,

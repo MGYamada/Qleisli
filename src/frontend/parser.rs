@@ -1270,6 +1270,19 @@ impl Parser {
             }
             maximum = maximum.max(depth);
             match &node.kind {
+                ExprKind::UnsupportedClosure(closure) => {
+                    pending.push((&closure.body.result, depth + 1));
+                    pending.extend(closure.body.statements.iter().filter_map(|statement| {
+                        let value = match &statement.kind {
+                            StmtKind::StaticLet { .. } => return None,
+                            StmtKind::Let { value, .. }
+                            | StmtKind::MutableLet { value, .. }
+                            | StmtKind::Assign { value, .. }
+                            | StmtKind::Expr(value) => value,
+                        };
+                        Some((value, depth + 1))
+                    }));
+                }
                 ExprKind::Not(inner)
                 | ExprKind::ApplyContract { input: inner, .. }
                 | ExprKind::ApplyStatic { input: inner, .. }
@@ -1362,6 +1375,15 @@ impl Parser {
     }
 
     fn expr_primary(&mut self) -> Result<Expr, ParseError> {
+        if self.at(&TokenKind::Pipe)
+            || (self.word("move")
+                && self
+                    .tokens
+                    .get(self.pos + 1)
+                    .is_some_and(|t| t.kind == TokenKind::Pipe))
+        {
+            return self.unsupported_closure();
+        }
         let quantum_fold = self.at(&TokenKind::Qfor);
         if quantum_fold
             || (self.word("for")
@@ -1427,6 +1449,51 @@ impl Parser {
             return self.with_computed(with_token);
         }
         self.expr_atom()
+    }
+
+    fn unsupported_closure(&mut self) -> Result<Expr, ParseError> {
+        let start = self.current().span;
+        if self.word("move") {
+            self.bump();
+        }
+        self.expect(&TokenKind::Pipe)?;
+        let mut parameters = Vec::new();
+        if !self.at(&TokenKind::Pipe) {
+            loop {
+                parameters.push(self.pattern()?);
+                if self.consume(&TokenKind::Colon).is_some() {
+                    // Bounded syntax only: rejected closures acquire no type
+                    // facts from their own parameter or return annotations.
+                    self.ty()?;
+                }
+                self.tuple_arity(parameters.len())?;
+                if self.consume(&TokenKind::Comma).is_none() || self.at(&TokenKind::Pipe) {
+                    break;
+                }
+            }
+        }
+        self.expect(&TokenKind::Pipe)?;
+        if self.consume(&TokenKind::Arrow).is_some() {
+            self.ty()?;
+            if !self.at(&TokenKind::LBrace) {
+                return Err(self.error("a closure return annotation requires a block"));
+            }
+        }
+        let body = if self.at(&TokenKind::LBrace) {
+            self.block()?
+        } else {
+            let result = self.expr()?;
+            Block {
+                span: result.span,
+                implicit_result: false,
+                statements: vec![],
+                result: Box::new(result),
+            }
+        };
+        Ok(Expr {
+            span: start.cover(body.span),
+            kind: ExprKind::UnsupportedClosure(Box::new(UnsupportedClosure { parameters, body })),
+        })
     }
 
     fn retired_operation_syntax(&self) -> ParseError {

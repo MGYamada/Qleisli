@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Diagnose unsupported unrestricted closure capture at the resolved live
+  quantum owner's use, including nested and zero-width owners. Preserve
+  shadowing and classical values; closure annotations grant no type evidence
+  and runtime closure values remain unsupported on both source paths.
+
 - Add provisional two-Bit `std::gate::{swap,permute_axes}` as ordinary checked
   `.qli` source. Preserve physical CNOT work versus explicit output-axis routing;
   no new primitive, general register SWAP or arbitrary permutation API is added.

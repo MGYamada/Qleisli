@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/closure-capture-v030/attempt-01/quantum-capture.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T08:00:52.663560+00:00",
+  "cli_sha256_before": "016636e9cd73229d5fbc3ab23f0610d40ba56a7331e6b69656fc8098d3e5695a",
+  "cli_sha256_after": "016636e9cd73229d5fbc3ab23f0610d40ba56a7331e6b69656fc8098d3e5695a",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "unrestricted closure cannot capture live quantum ownership in `q`; pass owners explicitly to a first-order function. Runtime closure values are unsupported; no linear or one-shot callable type is provided",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/closure-capture-v030/attempt-01/quantum-capture.qli",
+          "start": 121,
+          "end": 122
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

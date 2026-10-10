@@ -104,6 +104,110 @@ fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
 }
 
 #[test]
+fn unrestricted_closures_locate_actual_live_captures_before_native_dispatch() {
+    for ty in ["Q<Bit>", "Q<Unit>", "Q<Bits<0>>", "(Bit,(Unit,Q<Bit>))"] {
+        for body in [
+            "|| packet",
+            "move || packet",
+            "|x| packet",
+            "|x:Bit| packet",
+            "|| -> Bit { packet }",
+            "|(x,y)| packet",
+            "|| { packet }",
+            "|| { if 0 { packet } else { packet } }",
+            "|| || packet",
+            "|| { let packet=packet; packet }",
+        ] {
+            let source =
+                format!("// 日本語\r\npub fn client(packet:{ty})->{ty}{{let f={body};packet}}");
+            let start =
+                source.find("let f=").unwrap() + "let f=".len() + body.find("packet").unwrap();
+            // The declaration in let packet=packet is not a captured use.
+            let start = if body.contains("let packet=") {
+                start + "packet=".len()
+            } else {
+                start
+            };
+            let message = shared_rejection(
+                &source,
+                "ownership",
+                "ownership",
+                Span::new(start, start + "packet".len()),
+                "unrestricted closure cannot capture live quantum ownership in `packet`",
+            );
+            assert!(message.contains("first-order function"));
+            assert!(!message.contains("https://"));
+        }
+    }
+}
+
+#[test]
+fn unsupported_closures_do_not_invent_capture_from_names_or_shadowing() {
+    for (ty, body) in [
+        ("Bit", "|| q"),
+        ("Unit", "move || q"),
+        ("Q<Bit>", "|q| q"),
+        ("Q<Bit>", "|q:Q<Bit>| q"),
+        ("Q<Bit>", "|x:q| x"),
+        ("Bit", "|| -> Q<Bit> { q }"),
+        ("Q<Bit>", "|(q,other)| q"),
+        ("Q<Bit>", "|| { let q=0; q }"),
+        ("Q<Bit>", "|| { let (q,other)=(0,1); q }"),
+    ] {
+        let source = format!("pub fn client(q:{ty})->{ty}{{let f={body};q}}");
+        let start = source.find("let f=").unwrap() + "let f=".len();
+        let message = shared_rejection(
+            &source,
+            "unsupported",
+            "unsupported",
+            Span::new(start, start + body.len()),
+            "runtime closure values are unsupported",
+        );
+        assert!(!message.contains("cannot capture live quantum"));
+    }
+    let source = "pub fn client(q:Q<Bit>)->Q<Bit>{let saved=q;let f=||q;saved}";
+    shared_rejection(
+        source,
+        "ownership",
+        "ownership",
+        at(source, "||q", 2, 1),
+        "quantum ownership `q` has already been consumed",
+    );
+    let control = "use std::quantum::{init0,h};use std::observe::measure_z;
+        unitary fn move(q:Q<Bit>)->Q<Bit>{h(h(q))}
+        pub observe fn main()->Bit{measure_z(move(init0()))}";
+    closed_bit(control, false);
+}
+
+#[test]
+fn rejected_closure_syntax_keeps_existing_depth_and_parameter_limits() {
+    use qleisli::frontend::parser::parse_module;
+    let ordinary = |body: &str| format!("pub fn client(q:Bit)->Bit{{let f={body};q}}");
+    // These bounded diagnostic forms parse, but neither source checker accepts
+    // them. A parsed AST is not callable execution authority.
+    for body in ["||q", "|x:Bit|->Bit{x}"] {
+        parse_module(&ordinary(body)).unwrap();
+        assert!(ParsedProgram::parse(sources(&ordinary(body))).is_err());
+    }
+    let parameters = (0..65).map(|i| format!("p{i}")).collect::<Vec<_>>();
+    for count in [64, 65] {
+        let body = format!("|{}|q", parameters[..count].join(","));
+        let parsed = parse_module(&ordinary(&body));
+        assert_eq!(parsed.is_ok(), count == 64);
+        if let Err(error) = parsed {
+            assert!(error.message.contains("64"));
+        }
+    }
+    let body = format!("{}q", "||".repeat(65));
+    assert!(
+        parse_module(&ordinary(&body))
+            .unwrap_err()
+            .message
+            .contains("64")
+    );
+}
+
+#[test]
 fn unsupported_references_explain_control_without_guessing_the_expression_type() {
     for ty in ["Q<Bit>", "Bit"] {
         for argument in ["&q", "&mut q", "&ctrl q"] {

@@ -381,6 +381,7 @@ impl Task<'_> {
                 children
             }
             Self::Expression(n) => match &n.kind {
+                ExprKind::UnsupportedClosure(closure) => closure.parameters.len().saturating_add(3),
                 ExprKind::Name(_) | ExprKind::Not(_) => 1,
                 ExprKind::Call {
                     args, static_args, ..
@@ -721,6 +722,17 @@ where
                     }
                 }
                 Task::Expression(expression) => match &expression.kind {
+                    ExprKind::UnsupportedClosure(closure) => {
+                        tasks.extend([Task::Leave, Task::Block(&closure.body)]);
+                        tasks.extend(
+                            closure
+                                .parameters
+                                .iter()
+                                .rev()
+                                .map(|p| Task::Pattern(p, BindingKind::Runtime)),
+                        );
+                        tasks.push(Task::Enter);
+                    }
                     ExprKind::Name(name) => tasks.push(Task::Reference(name)),
                     ExprKind::Call {
                         callee,

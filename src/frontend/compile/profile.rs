@@ -130,6 +130,9 @@ fn block(block: &Block) -> Result<(), Failure> {
 }
 fn expr(expr: &Expr) -> Result<(), Failure> {
     match &expr.kind {
+        ExprKind::UnsupportedClosure(_) => {
+            return Err((expr.span, "runtime closure values are unsupported"));
+        }
         ExprKind::StaticIf { .. } | ExprKind::StaticFold { .. } => {
             return Err((
                 expr.span,

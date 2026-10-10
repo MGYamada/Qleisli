@@ -295,9 +295,19 @@ The adopted [callable boundary #89](https://github.com/MGYamada/Qleisli/issues/8
 forbids unrestricted closure capture of live quantum owners, including nested
 and zero-width owners. A future linear or one-shot quantum callable requires
 a separately specified type, usage, effect and access contract. Ordinary
-closure values are not supported by the current source grammar; this boundary
-does not introduce them or claim a type-aware capture diagnostic for unsupported
-standalone closure syntax.
+closure values remain unsupported. The parser retains bounded `||expr`,
+`|pattern, ...|expr` and block-body forms, with optional contextual `move`,
+parameter annotations and block return annotations, solely for rejection
+diagnostics. None can be lowered or executed. An annotation supplies no type
+or ownership evidence for this rejected syntax.
+
+When a body refers to an outer live quantum owner, the diagnostic is
+`ownership` at the original resolved use, using that outer binding's checked
+type. Ordinary classical values named `q` are not quantum captures. Closure
+parameters and body-local bindings retain separate lexical identities, so
+shadowing does not capture the outer binding. An already consumed outer
+binding retains its consumption error. Other closure values are refused as
+`unsupported`; parsing their diagnostic syntax does not admit callable values.
 
 The `|...|` body of `with_computed` is a scoped construction, not a closure
 value. It cannot escape or be stored for later invocation. Its two-argument

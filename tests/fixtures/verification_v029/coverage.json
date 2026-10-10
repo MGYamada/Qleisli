@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "0bff001f1a66adee4035486f2947c7fc91a7988e0429df3d6604c5e7dbc1eb3c",
+  "surface_sha256": "43f3c2de41f8c990bc5b6c0b3ecabe602e0f16380aefd23a3faed2dc934fb234",
   "groups": [
     {
       "id": "raw-core",
@@ -172,7 +172,10 @@
         "tests/static_operations.rs",
         "tests/ordinary_booleans.rs",
         "stdlib/src/gate.qli",
-        "tests/axis_routing_boundary.rs"
+        "tests/axis_routing_boundary.rs",
+        "tests/rust_boundary_diagnostics.rs",
+        "tests/selected_source_cli.rs",
+        "tests/fixtures/authoring_sessions/closure-capture-v030/README.md"
       ],
       "proof_gates": [
         "S05-C1",
