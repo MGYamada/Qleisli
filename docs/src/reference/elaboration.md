@@ -355,13 +355,17 @@ logical owners through the structural operations. This emits no physical
 SWAP, preparation, measurement or implicit discard. Independent source-step
 replay checks the actual original partition, intermediate fresh owners and
 returned wire order; native validity remains a separate fresh decision.
-These primitives supply structural building blocks for selected places;
-the common checking stage above does not yet connect their implicit lowering.
+These primitives and selected-place lowering use the same existing structural
+instructions. Explicit indexed/slice access connects common checking to ordered
+partition and reconstruction under the
+[static-place rules](#static-ordered-axis-places); it does not insert a source
+`take_bit`/`put_bit` call or infer an access mode.
 
 Ordinary literals do not prepare quantum states. `init0` retains its explicit
 Iso primitive contract; `basis` is a coherent map, not arbitrary state-preparation
-sugar. No implicit view partition/reassembly, excl/ctrl insertion, arbitrary
-wire permutation or cleanup is admitted here. Add conveniences only after their
+sugar. Beyond explicit selected-place access, no implicit view partition or
+reassembly is admitted. No excl/ctrl insertion, arbitrary wire permutation or
+cleanup is admitted here. Add conveniences only after their
 complete contract and checking evidence; an Issue's candidate list is insufficient.
 
 ## Original locations and failure

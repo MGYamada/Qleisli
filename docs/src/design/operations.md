@@ -17,6 +17,21 @@ and other constructor renames remain candidates. The naming decision adopts
 none of those extensions; [Checked operations](../reference/checked-operations.md)
 specifies the current bounded contract.
 
+**Implementation review update (2026-10-10):** the earlier
+[operator-arrow study](https://github.com/MGYamada/Qleisli/blob/09e21a305c7e6fca1e8d82378756ca35ae5a305b/tests/fixtures/authoring_sessions/operator-arrow-v030/README.md)
+is a historical observation, not a list of current limitations. Rechecking its
+unchanged preparation `Q<Unit> -> Q<Bit>` and explicit unitor sources now succeeds
+through the selected hierarchy path. These checks report producer consistency,
+`request_origin: producer` and `source_meaning_verified: false`; they do not
+establish independent expected-meaning equality or general static arrows.
+The unchanged quantum-capturing closure now rejects at the resolved owner's
+use with an ownership diagnostic, rather than a parser failure. A false
+`unitary` assertion on preparation still rejects with inferred Iso effect and
+the explicit unsupported-external-unitarity explanation. No historical source
+or observation has been rewritten. The proposed domain/codomain syntax,
+rectangular Meaning evidence and complete instrument requests below remain
+unimplemented; these bounded repairs do not settle #83 or complete #46.
+
 The current bodies of [#45](https://github.com/MGYamada/Qleisli/issues/45),
 [#46](https://github.com/MGYamada/Qleisli/issues/46),
 [#83](https://github.com/MGYamada/Qleisli/issues/83) and
