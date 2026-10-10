@@ -76,10 +76,13 @@ fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
         "done(h(excl q), z(excl q));",
         "(h(excl q), z(excl q));",
         "h(excl q); z(excl q);",
+        "pair(excl q);",
+        "let q=pair(q);",
     ] {
         let text = format!(
             "{IMPORTS} use std::quantum::z;
              fn done(a:Unit,b:Unit)->Unit{{()}}
+             unitary fn pair(q:Q<Bit>)->Q<Bit>{{h(excl q);z(excl q);q}}
              pub observe fn main()->Bit{{let q=init0();{expression}h(excl q);measure_z(q)}}"
         );
         let finite = compile_project(&SourceRoot::new(&text).0).unwrap();
@@ -116,13 +119,17 @@ fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
 
 #[test]
 fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
-    for body in [
-        "init0(); 0",
-        "h(init0()); 0",
-        "let _=init0(); 0",
-        "let q=init0(); let q=init0(); measure_z(q)",
+    for (body, rejected, occurrence) in [
+        ("init0(); 0", "init0()", 0),
+        ("h(init0()); 0", "h(init0())", 0),
+        ("let _=init0(); 0", "_", 0),
+        ("let q=init0(); 0", "q", 0),
+        ("let q=init0(); let q=init0(); measure_z(q)", "q", 1),
     ] {
-        let text = format!("{IMPORTS}pub observe fn main()->Bit{{{body}}}");
+        let text = format!("// 量子の一時値\r\n{IMPORTS}pub observe fn main()->Bit{{{body}}}");
+        let body_start = text.len() - body.len() - 1;
+        let start = body_start + body.match_indices(rejected).nth(occurrence).unwrap().0;
+        let expected_span = (start, start + rejected.len());
         let error =
             ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
         assert_eq!(error.code(), "ownership", "{text}: {error}");
@@ -132,9 +139,18 @@ fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
                 .contains("implicit quantum destruction is forbidden")
         );
         assert_eq!(error.module(), Some("main"));
-        assert!(error.span().end > error.span().start);
+        assert_eq!(
+            (error.span().start, error.span().end),
+            expected_span,
+            "{text}: {error}"
+        );
         let finite = check_project(&SourceRoot::new(&text).0).unwrap_err();
         assert_eq!(finite.code, ErrorCode::Ownership, "{text}: {finite}");
+        assert_eq!(
+            (finite.span.start, finite.span.end),
+            expected_span,
+            "{text}: {finite}"
+        );
     }
     // An unnamed live owner may flow directly to an explicit consumer;
     // ordinary Bit and Unit temporaries require no quantum destruction.
