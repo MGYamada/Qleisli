@@ -38,7 +38,7 @@ impl FunctionEffect {
 pub(super) fn assertion(kind: FnKind) -> Option<Effect> {
     match kind {
         FnKind::Unitary => Some(Effect::Unitary),
-        FnKind::Iso => Some(Effect::Iso),
+        FnKind::Isometry => Some(Effect::Isometry),
         FnKind::Observe => Some(Effect::Observe),
         FnKind::Static | FnKind::Inferred | FnKind::Classical | FnKind::Meaning => None,
     }
@@ -222,16 +222,26 @@ mod tests {
         let iso_span = Span::new(10, 20);
         let unitary_span = Span::new(30, 40);
         for (first, second, expected, origin) in [
-            (Effect::Iso, Effect::Unitary, Effect::Unitary, unitary_span),
-            (Effect::Unitary, Effect::Iso, Effect::Unitary, iso_span),
-            (Effect::Iso, Effect::Iso, Effect::Iso, iso_span),
+            (
+                Effect::Isometry,
+                Effect::Unitary,
+                Effect::Unitary,
+                unitary_span,
+            ),
+            (Effect::Unitary, Effect::Isometry, Effect::Unitary, iso_span),
+            (
+                Effect::Isometry,
+                Effect::Isometry,
+                Effect::Isometry,
+                iso_span,
+            ),
         ] {
             let mut body = BodyEffects::new(Span::default());
             body.require_effect(id, first, iso_span);
             body.require_effect(id, second, unitary_span);
             assert_eq!(body.required[&id], (expected, origin));
             assert_eq!(body.storage_cells(), 2);
-            for actual in [Effect::Unitary, Effect::Iso, Effect::Observe] {
+            for actual in [Effect::Unitary, Effect::Isometry, Effect::Observe] {
                 let inferred = BTreeMap::from([(id, actual)]);
                 assert_eq!(body.first_violation(&inferred).is_some(), actual > expected);
             }
@@ -241,7 +251,7 @@ mod tests {
             );
         }
         let mut actual = BodyEffects::new(iso_span);
-        actual.add(Effect::Iso, iso_span);
+        actual.add(Effect::Isometry, iso_span);
         let modules =
             parse_module("fn provider(q:Q<Bit>)->Q<Bit>{q} fn caller(q:Q<Bit>)->Q<Bit>{q}")
                 .unwrap();
@@ -258,7 +268,7 @@ mod tests {
         )
         .unwrap()
         .unwrap();
-        assert_eq!(inferred[&caller_id], Effect::Iso);
+        assert_eq!(inferred[&caller_id], Effect::Isometry);
         assert_eq!(
             caller.first_violation(&inferred),
             Some((Effect::Unitary, unitary_span))
@@ -271,7 +281,7 @@ mod tests {
         let first = Span::new(10, 20);
         let second = Span::new(30, 40);
         let mut outer = BodyEffects::new(first);
-        outer.require_effect(id, Effect::Iso, first);
+        outer.require_effect(id, Effect::Isometry, first);
         let mut region = BodyEffects::new(second);
         region.require_unitary(id, second);
         region.add(Effect::Observe, second);

@@ -133,7 +133,7 @@ impl Parser {
                 || self.at(&TokenKind::Classical)
                 || self.at(&TokenKind::Static)
                 || self.at(&TokenKind::Basis)
-                || self.at(&TokenKind::Iso)
+                || self.at(&TokenKind::Isometry)
                 || self.at(&TokenKind::Unitary)
                 || self.at(&TokenKind::Observe)
                 || self.at(&TokenKind::Fn)
@@ -301,8 +301,8 @@ impl Parser {
             FnKind::Static
         } else if self.consume(&TokenKind::Classical).is_some() {
             FnKind::Classical
-        } else if self.consume(&TokenKind::Iso).is_some() {
-            FnKind::Iso
+        } else if self.consume(&TokenKind::Isometry).is_some() {
+            FnKind::Isometry
         } else if self.consume(&TokenKind::Unitary).is_some() {
             FnKind::Unitary
         } else if self.consume(&TokenKind::Observe).is_some() {

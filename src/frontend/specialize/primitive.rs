@@ -150,7 +150,7 @@ primitives! {
     Phase => ("std::quantum::phase", 2, Fixed(&[Bit], Bit), Unitary, None),
     PhaseEighth => ("std::quantum::phase_eighth", 0, QuantumEndomorphism, Unitary, None),
     ControlledPhase => ("std::quantum::controlled_phase", 2, Fixed(&[Bit, Bit], Tuple(&[Bit, Bit])), Unitary, None),
-    Init0 => ("std::quantum::init0", 0, Fixed(&[], Bit), Iso, None),
+    Init0 => ("std::quantum::init0", 0, Fixed(&[], Bit), Isometry, None),
     MeasureZ => ("std::observe::measure_z", 0, Fixed(&[Bit], CBit), Observe, None),
     TakeBit => ("std::registers::take_bit", 2, Fixed(&[Bits(A(0, 0))], Tuple(&[Bit, Bits(A(0, -1))])), Unitary, RegisterIndex),
     PutBit => ("std::registers::put_bit", 2, Fixed(&[Bit, Bits(A(0, -1))], Bits(A(0, 0))), Unitary, RegisterIndex),

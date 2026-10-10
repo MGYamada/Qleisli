@@ -468,7 +468,7 @@ fn atom_count(ty: &SourceType) -> usize {
 fn effect(source: &ElaboratedProgram, subject: usize) -> Effect {
     match source.definitions()[subject].effect() {
         "unitary" => Effect::Unitary,
-        "iso" => Effect::Iso,
+        "iso" => Effect::Isometry,
         "observe" => Effect::Observe,
         _ => unreachable!("private source effect"),
     }
@@ -1808,7 +1808,7 @@ fn lower_operation_site(
         }
     }
     let definition = &source.definitions()[subject];
-    if operation_effect > Effect::Iso {
+    if operation_effect > Effect::Isometry {
         return Err(invalid(
             op.span(),
             "Raw pure operation exceeds its principal effect ceiling",

@@ -175,11 +175,15 @@ and a dagger-isomorphism, respectively.
 The unpublished migration currently accepts the old source prefix `iso` through
 the same checked assertion. It is a temporary migration route, not the final
 0.3.0 compatibility contract; new source uses `isometry`. Retirement of the old
-prefix and migration of public effect identifiers/diagnostics remain required
-under #57. Existing versioned QIRF effect tags retain the spelling `"iso"`;
-source vocabulary does not silently change that transport format. During this
-stage the public Rust effect variant and Debug-based effect diagnostics still
-use `Iso`; the Reference's `Isometry` names the selected semantic class.
+prefix and migration of remaining active sources remain required under #57.
+Public Rust effect, function-kind and token-kind variants use `Isometry`, and
+body-effect diagnostics use that spelling too. Rust callers migrate
+`Effect::Iso`, `FnKind::Iso` and `TokenKind::Iso` to their `Isometry` variants;
+there is no Rust compatibility alias. Existing versioned QIRF effect tags retain
+the spelling `"iso"`; source vocabulary does not silently change that transport
+format. The checked source graph's effect tag and its native hierarchy adapters
+also retain their existing transport spelling. Those tags do not introduce a
+second source effect or grant inverse/control access.
 
 Both arms and the body of a zero-iteration static fold participate in common
 checking and effect inference. A decreasing runtime self-call uses the least

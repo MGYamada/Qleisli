@@ -51,7 +51,7 @@ impl<'a> Site<'a> {
 fn effect(name: &str, site: Site<'_>) -> Result<Effect> {
     match name {
         "unitary" => Ok(Effect::Unitary),
-        "iso" => Ok(Effect::Iso),
+        "iso" => Ok(Effect::Isometry),
         "observe" => Ok(Effect::Observe),
         _ => Err(site.invalid("unknown source effect")),
     }
@@ -877,7 +877,7 @@ impl Replay<'_, '_> {
             | Primitive::EmptyBits
             | Primitive::PrependBit => Effect::Unitary,
             Primitive::Unit | Primitive::Finish => Effect::Unitary,
-            Primitive::Init0 => Effect::Iso,
+            Primitive::Init0 => Effect::Isometry,
             Primitive::MeasureZ => Effect::Observe,
             _ => {
                 return Err(site.error(
@@ -1200,7 +1200,7 @@ impl Replay<'_, '_> {
             };
             if definition.inputs().len() != 1
                 || definition.inputs()[0].ty() != argument.ty
-                || effect(definition.effect(), site)? > Effect::Iso
+                || effect(definition.effect(), site)? > Effect::Isometry
             {
                 return Err(
                     site.invalid("forward operation changes its exact input interface or effect")

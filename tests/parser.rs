@@ -83,7 +83,7 @@ pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
     assert_eq!(module.decls.len(), 1);
     let decl = &module.decls[0];
     assert!(decl.public);
-    assert_eq!(decl.kind, FnKind::Iso);
+    assert_eq!(decl.kind, FnKind::Isometry);
     assert_eq!(decl.name.text, "entangle");
     assert!(matches!(decl.return_type.kind, TypeKind::Q(_)));
     let FnBody::Quantum(body) = &decl.body else {

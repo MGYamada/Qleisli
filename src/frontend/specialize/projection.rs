@@ -136,7 +136,7 @@ impl Projection<'_, '_> {
         self.charge(declaration.span, 1)?;
         match declaration.kind {
             source::FnKind::Unitary
-            | source::FnKind::Iso
+            | source::FnKind::Isometry
             | source::FnKind::Observe
             | source::FnKind::Inferred
             | source::FnKind::Classical => {}

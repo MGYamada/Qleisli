@@ -30,8 +30,8 @@ impl BasisShape {
 }
 
 /// The claimed function classification. This declaration order is the
-/// verifier's permitted-effect order: Unitary < Iso < Observe. It linearizes the
-/// pure/observe effect and the Iso/Unitary classification of the formal core.
+/// verifier's permitted-effect order: Unitary < Isometry < Observe. It linearizes the
+/// pure/observe effect and the Isometry/Unitary classification of the formal core.
 /// The verifier derives the minimum required classification from commands and
 /// rejects a declaration narrower than the derived effect.
 /// With classical inputs, `Unitary` denotes a family U_c, one unitary quantum
@@ -40,7 +40,7 @@ impl BasisShape {
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Effect {
     Unitary,
-    Iso,
+    Isometry,
     Observe,
 }
 

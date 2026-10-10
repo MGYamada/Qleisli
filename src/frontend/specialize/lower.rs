@@ -63,7 +63,7 @@ impl HierarchyProposal {
         &self.precursor
     }
     /// Whether the proposal uses initialization/unitary/readout transport.
-    /// This includes principal Iso roots with no measurements and does not
+    /// This includes principal Isometry roots with no measurements and does not
     /// classify the source effect or establish an isometry theorem.
     pub fn is_instrument(&self) -> bool {
         self.instrument

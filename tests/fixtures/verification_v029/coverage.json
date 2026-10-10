@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "ae9fa73d2fa01aef0b64a550770fcc261d286d01d1382b88ea4ae93e5e060200",
+  "surface_sha256": "cecdaf80725ebfc9b6a756b30b7c152510bfba6b278a61eae9539987c6634a80",
   "groups": [
     {
       "id": "raw-core",

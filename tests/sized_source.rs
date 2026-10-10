@@ -1247,7 +1247,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         assert_eq!(prepared.lower().unwrap_err(), error);
     }
     // Preparation now has an explicit hierarchy path with empty readout; the
-    // source remains Iso rather than acquiring an observation effect.
+    // source remains Isometry rather than acquiring an observation effect.
     let preparation = ParsedProgram::parse(sources(
         "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
     ))
@@ -1266,7 +1266,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
         "iso"
     );
     assert!(preparation.lower().unwrap().is_instrument());
-    // A broader assertion on H does not make its body an Iso root.
+    // A broader assertion on H does not make its body an Isometry root.
     ParsedProgram::parse(sources(
         "use std::quantum::h; pub iso fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
     ))

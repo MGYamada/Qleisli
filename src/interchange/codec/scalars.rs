@@ -70,7 +70,7 @@ macro_rules! enum_codec {
         }
     };
 }
-enum_codec!(Effect { Unitary => "unitary", Iso => "iso", Observe => "observe" });
+enum_codec!(Effect { Unitary => "unitary", Isometry => "iso", Observe => "observe" });
 enum_codec!(SingleGate { H => "h", X => "x", Z => "z", T => "t" });
 enum_codec!(ScalarPhase { MinusOne => "minus_one", EighthTurn => "eighth_turn" });
 enum_codec!(ProtectedRegion { Source => "source", Ancilla => "ancilla" });

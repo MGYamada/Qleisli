@@ -692,7 +692,7 @@ fn sealed_kind(module: &str, name: &str) -> Option<FnKind> {
     let path = format!("{module}::{name}");
     super::check::primitive::Primitive::lookup(&path).map(|item| match item.effect() {
         crate::ir::Effect::Unitary => FnKind::Unitary,
-        crate::ir::Effect::Iso => FnKind::Iso,
+        crate::ir::Effect::Isometry => FnKind::Isometry,
         crate::ir::Effect::Observe => FnKind::Observe,
     })
 }

@@ -37,7 +37,7 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
                 }
                 RawOp::Init0 { output, wire } => {
                     map.insert(*output, vec![*wire]);
-                    effect = effect.max(Effect::Iso);
+                    effect = effect.max(Effect::Isometry);
                 }
                 RawOp::Reset {
                     output, fresh_wire, ..
@@ -112,7 +112,7 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
                     ..
                 } => {
                     if wires(map, *input)?.len() != output_wires.len() {
-                        effect = effect.max(Effect::Iso);
+                        effect = effect.max(Effect::Isometry);
                     }
                     map.insert(*output, output_wires.clone());
                 }

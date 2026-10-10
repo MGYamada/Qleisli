@@ -269,7 +269,7 @@ pub(super) fn closed_interface_budgeted(
                     .map(|ty| close(ty).map(SourceType::quantum))
                     .transpose()?;
                 let ceiling = if codomain.is_some() && !access[1] && !access[2] {
-                    crate::ir::Effect::Iso
+                    crate::ir::Effect::Isometry
                 } else {
                     crate::ir::Effect::Unitary
                 };
@@ -387,7 +387,7 @@ pub(super) fn instantiate(
                             ))
                         } else {
                             format!(
-                                "pure operation provider {} has inferred body effect `{effect:?}`; at most Iso is required",
+                                "pure operation provider {} has inferred body effect `{effect:?}`; at most Isometry is required",
                                 resolution.path(provider_id)
                             )
                         },

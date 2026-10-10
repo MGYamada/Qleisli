@@ -32,13 +32,13 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
         (
             "use std::quantum::init0;\nunitary fn bad()->Q<Bit>{init0()}",
             "init0()",
-            "Iso",
+            "Isometry",
             "Unitary",
         ),
         (
             "unitary fn bad(q:Q<Bit>)->Q<(Bit,Bit)>{basis q as x { (x,x) }}",
             "basis q as x { (x,x) }",
-            "Iso",
+            "Isometry",
             "Unitary",
         ),
         (
@@ -47,28 +47,28 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
              iso fn bad()->Unit{strong(); weak()}",
             "strong()",
             "Observe",
-            "Iso",
+            "Isometry",
         ),
         (
             "use std::quantum::init0; use std::observe::measure_z;
              fn strong()->Unit{let b=measure_z(init0());()} iso fn bad()->Unit{if 0 {strong()} else {()}}",
             "strong()",
             "Observe",
-            "Iso",
+            "Isometry",
         ),
         (
             "use std::quantum::init0; use std::observe::measure_z;
              fn strong()->Unit{let b=measure_z(init0());()} iso fn bad()->Unit{if 1 {()} else {strong()}}",
             "strong()",
             "Observe",
-            "Iso",
+            "Isometry",
         ),
         (
             "use std::quantum::init0; use std::observe::measure_z;
              fn strong()->Bit{measure_z(init0())} iso fn bad()->Unit{if strong() {()} else {()}}",
             "strong()",
             "Observe",
-            "Iso",
+            "Isometry",
         ),
     ] {
         let root = SourceRoot::new(source);
@@ -121,7 +121,7 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
         assert_eq!(output.status.code(), Some(1));
         let text = String::from_utf8(if json { output.stdout } else { output.stderr }).unwrap();
         assert!(
-            text.contains("body effect `Observe` exceeds asserted `Iso`"),
+            text.contains("body effect `Observe` exceeds asserted `Isometry`"),
             "{text}"
         );
         if json {

@@ -23,7 +23,8 @@
         "after/preparation.json",
         "after/preparation-raw.json",
         "after/preparation-run.json",
-        "after/observing-assertion.json"
+        "after/observing-assertion.json",
+        "after-public-names/observing-assertion.json"
       ]
     }
   ]

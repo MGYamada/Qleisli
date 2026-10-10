@@ -399,7 +399,7 @@ impl OperationMode {
 }
 fn formal_effect(codomain: &Option<Ty>, access: &[bool; 3]) -> crate::ir::Effect {
     if codomain.is_some() && !access[1] && !access[2] {
-        crate::ir::Effect::Iso
+        crate::ir::Effect::Isometry
     } else {
         crate::ir::Effect::Unitary
     }

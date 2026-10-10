@@ -50,7 +50,7 @@ pub enum FnKind {
     Classical,
     /// An ordinary body-bearing function with no effect assertion.
     Inferred,
-    Iso,
+    Isometry,
     Unitary,
     Observe,
 }

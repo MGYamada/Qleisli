@@ -1441,7 +1441,7 @@ impl Lowerer<'_, '_> {
             },
         );
         if bits > reg.wires.len() {
-            self.add_effect(module, span, Effect::Iso);
+            self.add_effect(module, span, Effect::Isometry);
         }
         Ok(Value::quantum(slot, basis))
     }

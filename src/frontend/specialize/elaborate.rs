@@ -338,12 +338,12 @@ pub(super) fn operation_signature<'a>(
     };
     if !input.ty.is_quantum_owner()
         || !definition.output.ty.is_quantum_owner()
-        || definition.effect > Effect::Iso
+        || definition.effect > Effect::Isometry
     {
         return Err(error(
             "type",
             span,
-            "pure operation requires quantum ports and effect at most Iso",
+            "pure operation requires quantum ports and effect at most Isometry",
         ));
     }
     Ok((
@@ -752,7 +752,7 @@ impl ElaboratedProgram {
 fn effect_name(effect: Effect) -> &'static str {
     match effect {
         Effect::Unitary => "unitary",
-        Effect::Iso => "iso",
+        Effect::Isometry => "iso",
         Effect::Observe => "observe",
     }
 }
@@ -1484,14 +1484,14 @@ impl Builder<'_> {
                 "pure operation provider requires exactly one quantum input",
             ));
         };
-        if definition.effect > Effect::Iso
+        if definition.effect > Effect::Isometry
             || !input.ty.is_quantum_owner()
             || !definition.output.ty.is_quantum_owner()
         {
             return Err(error(
                 "type",
                 span,
-                "pure operation provider requires quantum input/output and inferred effect at most Iso",
+                "pure operation provider requires quantum input/output and inferred effect at most Isometry",
             ));
         }
         Ok(crate::frontend::types::UnaryInterface {

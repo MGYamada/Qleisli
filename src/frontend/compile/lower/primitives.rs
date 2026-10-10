@@ -136,7 +136,7 @@ impl Lowerer<'_, '_> {
             span,
             match declaration.kind {
                 crate::frontend::ast::FnKind::Unitary => Effect::Unitary,
-                crate::frontend::ast::FnKind::Iso => Effect::Iso,
+                crate::frontend::ast::FnKind::Isometry => Effect::Isometry,
                 crate::frontend::ast::FnKind::Observe => Effect::Observe,
                 _ => unreachable!("sealed quantum declaration"),
             },

@@ -92,7 +92,7 @@ fn many_live_wires_do_not_require_quadratic_duplicate_checks() {
         operations,
         (0..count).map(t).collect(),
         vec![],
-        Effect::Iso,
+        Effect::Isometry,
     ))
     .unwrap();
     assert_eq!(checked.program().quantum_outputs.len(), count as usize);
@@ -461,7 +461,7 @@ fn implicit_drop_is_rejected() {
             vec![],
             vec![],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "omitted",
     );
@@ -487,7 +487,7 @@ fn noninjective_and_partial_lifts_are_rejected() {
                 }],
                 vec![t(1)],
                 vec![],
-                Effect::Iso,
+                Effect::Isometry,
             ),
             phrase,
         );
@@ -526,7 +526,7 @@ fn measurement_cannot_claim_pure_effect() {
             }],
             vec![],
             vec![c(0)],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "effect",
     );
@@ -678,7 +678,7 @@ fn branch_rejects_unmerged_or_mismatched_quantum_contexts() {
             }],
             vec![],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "unmerged",
     );
@@ -727,7 +727,7 @@ fn branch_effects_cannot_be_hidden_and_arm_ids_must_be_globally_fresh() {
             }],
             vec![],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "effect",
     );
@@ -882,7 +882,7 @@ fn oversized_register_and_deeply_nested_branch_are_rejected() {
             vec![],
             vec![t(0)],
             vec![],
-            Effect::Iso,
+            Effect::Isometry,
         ),
         "finite basis shape",
     );

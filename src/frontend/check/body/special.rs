@@ -373,7 +373,7 @@ impl Checker<'_, '_> {
             }
         };
         if !equal {
-            self.effects.add(Effect::Iso, span);
+            self.effects.add(Effect::Isometry, span);
         }
         self.obligation(span, ObligationKind::Injectivity)?;
         Ok(Ty::quantum(output))

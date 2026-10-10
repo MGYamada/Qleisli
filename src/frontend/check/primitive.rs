@@ -98,7 +98,7 @@ impl Primitive {
     }
     pub fn effect(self) -> Effect {
         match self {
-            Self::Init0 => Effect::Iso,
+            Self::Init0 => Effect::Isometry,
             Self::MeasureZ | Self::Reset | Self::Discard => Effect::Observe,
             _ => Effect::Unitary,
         }

@@ -28,7 +28,7 @@ pub enum TokenKind {
     Pub,
     Classical,
     Basis,
-    Iso,
+    Isometry,
     Unitary,
     Observe,
     Fn,
@@ -110,7 +110,7 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         // #57 migration: the adopted source spelling uses the same checked
         // effect assertion. Retire the legacy spelling after active sources
         // migrate; the internal token name does not change versioned IR tags.
-        "isometry" | "iso" => TokenKind::Iso,
+        "isometry" | "iso" => TokenKind::Isometry,
         "unitary" => TokenKind::Unitary,
         "observe" => TokenKind::Observe,
         "fn" => TokenKind::Fn,
@@ -164,7 +164,7 @@ impl TokenKind {
             Self::Pub => "`pub`",
             Self::Classical => "`classical`",
             Self::Basis => "`basis`",
-            Self::Iso => "`isometry`",
+            Self::Isometry => "`isometry`",
             Self::Unitary => "`unitary`",
             Self::Observe => "`observe`",
             Self::Fn => "`fn`",

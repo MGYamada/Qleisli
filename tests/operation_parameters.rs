@@ -568,7 +568,7 @@ fn direct_arrows_keep_their_principal_effect_before_static_arrow_extension() {
 
     for (name, effect) in [
         ("direct-unitor", Effect::Unitary),
-        ("direct-preparation", Effect::Iso),
+        ("direct-preparation", Effect::Isometry),
         ("endomorphic-control", Effect::Unitary),
     ] {
         let source = arrow_study(name);

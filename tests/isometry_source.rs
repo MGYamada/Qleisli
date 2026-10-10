@@ -129,8 +129,8 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
     ] {
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
         let fact = parsed.function_effect("main::main").unwrap();
-        assert_eq!(fact.inferred(), Effect::Iso);
-        assert_eq!(fact.asserted(), Some(Effect::Iso));
+        assert_eq!(fact.inferred(), Effect::Isometry);
+        assert_eq!(fact.asserted(), Some(Effect::Isometry));
         let raw = parsed
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -141,7 +141,7 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
         let checker = qleisli::interchange::native::Kernel::new(kernel());
         let accepted = checker.accept(raw.proposal()).unwrap();
         raw.validate_source_steps(&accepted).unwrap();
-        assert_eq!(accepted.raw().declared_effect, Effect::Iso);
+        assert_eq!(accepted.raw().declared_effect, Effect::Isometry);
         assert!(accepted.raw().quantum_inputs.is_empty());
         assert_eq!(accepted.raw().quantum_outputs.len(), 1);
         assert!(matches!(
@@ -194,7 +194,7 @@ fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() 
     let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), pure.into())])).unwrap();
     let fact = parsed.function_effect("main::main").unwrap();
     assert_eq!(fact.inferred(), Effect::Unitary);
-    assert_eq!(fact.asserted(), Some(Effect::Iso));
+    assert_eq!(fact.asserted(), Some(Effect::Isometry));
 }
 
 #[test]
@@ -232,7 +232,7 @@ fn isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope() 
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
         assert_eq!(
             parsed.function_effect("main::entry").unwrap().inferred(),
-            Effect::Iso,
+            Effect::Isometry,
             "{name}"
         );
         for json in [false, true] {
@@ -318,7 +318,7 @@ fn isometry_cli_run_keeps_the_retained_frame_axis_and_exact_scalar_phase() {
 #[test]
 fn isometry_cli_sampling_requires_actual_observation() {
     // Even an asserted Observe upper bound does not grant an observation API
-    // to the inferred Iso entry, or produce sampled classical outcomes.
+    // to the inferred Isometry entry, or produce sampled classical outcomes.
     let files = SourceRoot::new("");
     let absent = files.0.join("absent-kernel");
     for name in ["unit-zero", "unit-phase", "empty-classical"] {

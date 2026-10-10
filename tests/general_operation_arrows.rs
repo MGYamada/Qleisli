@@ -71,7 +71,7 @@ fn retained_first_sources_reach_native_checking_and_complex_execution() {
             .function_effect("main::main")
             .unwrap()
             .inferred(),
-        Effect::Iso
+        Effect::Isometry
     );
     selected(&preparation, "check", 0);
     amplitudes(

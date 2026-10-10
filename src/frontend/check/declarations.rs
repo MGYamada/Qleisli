@@ -148,7 +148,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
                     | ast::FnBody::MeaningTensor { .. }
             )
             | (
-                FnKind::Inferred | FnKind::Iso | FnKind::Unitary | FnKind::Observe,
+                FnKind::Inferred | FnKind::Isometry | FnKind::Unitary | FnKind::Observe,
                 ast::FnBody::Quantum(_)
             )
     ) {

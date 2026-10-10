@@ -38,7 +38,7 @@ pub const PRIMITIVES: &[Primitive] = &[
     Primitive {
         module: "std::quantum",
         name: "init0",
-        kind: FnKind::Iso,
+        kind: FnKind::Isometry,
         arity: 0,
         signature: "() -> Q<Bit>",
     },

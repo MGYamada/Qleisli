@@ -41,8 +41,12 @@ fn false_annotations_reject_direct_and_transitive_effects_in_both_profiles() {
             "Observe",
             "Unitary",
         ),
-        ("iso fn f(q:Q<Bit>)->Bit{measure_z(q)}", "Observe", "Iso"),
-        ("unitary fn f()->Q<Bit>{init0()}", "Iso", "Unitary"),
+        (
+            "iso fn f(q:Q<Bit>)->Bit{measure_z(q)}",
+            "Observe",
+            "Isometry",
+        ),
+        ("unitary fn f()->Q<Bit>{init0()}", "Isometry", "Unitary"),
         (
             "fn g(q:Q<Bit>)->Bit{measure_z(q)} unitary fn f(q:Q<Bit>)->Bit{g(q)}",
             "Observe",
@@ -78,7 +82,7 @@ fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
             fact.asserted(),
             match prefix {
                 "unitary " => Some(Effect::Unitary),
-                "iso " => Some(Effect::Iso),
+                "iso " => Some(Effect::Isometry),
                 "observe " => Some(Effect::Observe),
                 _ => None,
             }
@@ -191,7 +195,7 @@ fn typed_finite_lifts_preserve_width_and_scalar_phase_classification() {
             include_str!(
                 "fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli"
             ),
-            Effect::Iso,
+            Effect::Isometry,
         ),
         (
             include_str!(
@@ -475,7 +479,7 @@ fn principal_classes_do_not_depend_on_declaration_order_or_call_expansion() {
         let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), source)])).unwrap();
         for (name, effect) in [
             ("a", Effect::Unitary),
-            ("b", Effect::Iso),
+            ("b", Effect::Isometry),
             ("c", Effect::Observe),
         ] {
             let path = format!("main::{name}");

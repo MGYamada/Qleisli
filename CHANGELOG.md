@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Rename the public Rust effect, function-kind and token-kind variants from
+  `Iso` to `Isometry`, including body-effect diagnostics. Callers migrate their
+  variant references; no Rust alias is added. Keep the effect order, all checking
+  rules and explicit versioned/checked-graph transport tags unchanged. Legacy
+  source-prefix retirement and remaining source migration under #57 are open.
+
 - Connect the adopted `isometry fn` spelling to the common source judgment,
   actual inferred effects, both concrete consumers and fresh native checking.
   Migrate current examples without changing versioned QIRF `"iso"` tags. Legacy

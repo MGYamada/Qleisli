@@ -156,7 +156,7 @@ fn resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation() {
     checked_finite_effects(
         "use std::quantum::init0; fn default()->Q<Bit>{init0()}\n\
          pub fn client()->Q<Bit>{default()}",
-        &[("default", Effect::Iso), ("client", Effect::Iso)],
+        &[("default", Effect::Isometry), ("client", Effect::Isometry)],
     );
     let generic = "fn default[const A:Basis](q:Q<A>)->Q<A>{q}\n\
         pub fn client(q:Q<Bit>)->Q<Bit>{default[type(Bit)](q)}";
@@ -221,7 +221,7 @@ fn false_unitary_assertions_cannot_hide_default_named_preparation() {
             "effect",
             "effect",
             at(source, marker, 0, marker.len()),
-            "body effect `Iso` exceeds asserted `Unitary`",
+            "body effect `Isometry` exceeds asserted `Unitary`",
         );
         assert!(
             message.contains("Semantic error: \"externally unitary\" is not supported"),
