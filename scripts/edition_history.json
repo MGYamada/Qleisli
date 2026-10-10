@@ -188,6 +188,32 @@
         "before/residual.json": "d2b750da7dced34f579f457a6d8a299d3aff79866bb1668f6e7452fc3ab87710",
         "before/unreachable.json": "97b3a466162c1fc07bf21879af157a7d30c85d814511100dda7d4797b33aa232"
       }
+    },
+    {
+      "root": "tests/fixtures/authoring_sessions/general-arrows-v030",
+      "kind": "rejected-filesystem-authoring-attempt",
+      "filesystem_admission": false,
+      "explanation": "Six first CLI checks rejected the invented schema key before source parsing. Preserve their exact source/manifest bytes and observed project refusals. This record grants no filesystem admission; manifest-only attempt-02 remains subject to ordinary schema-2 checks.",
+      "projects": [
+        "attempt-01"
+      ],
+      "files": {
+        "attempt-01/Qargo.toml": "942e5d973bb98e537a950356b2a8bd3e2d0f78473aa6d90bb37fa7c018ec60b7",
+        "attempt-01/controlled.qli": "7a31a9f4dfc78c8c82c016fbaacef26ed20828c7854e40c73f2f329caeb073f6",
+        "attempt-01/false-unitary.qli": "c73d36522d3b2ce3295349885360e1c65c98b6efccaa95d0bbca00223a020d98",
+        "attempt-01/preparation.qli": "85d51ba59ccd3f68631ebe60b0e0bda863388faeb1fd417f3f80f6fe4528b201",
+        "attempt-01/unitor.qli": "30f4b9ef7775d357c6695abefb7e3300fd178cefd12c91c0fb806d222a0b490e",
+        "attempt-01/wrong-input.qli": "082571142672e764e11d14ff49965e1992ae095e5dc59d9c6a88fb8f41f0b040",
+        "attempt-01/zero-power.qli": "a1aeca87b8129740d9aa0705649121c3f0d9517574cb323c78626d08762ce2a2"
+      },
+      "anchors": {
+        "observations/controlled-before.json": "1bf84ff41b2dcf87f6a712685a330765d105361a13708f082cc209ad7ff7f63b",
+        "observations/false-unitary-before.json": "1eca1e22dba87f53957011c4febdf504785f75d5c96bdeb37ae968b7dffd0a8f",
+        "observations/preparation-before.json": "7f551c05a00cd0455f5a5aff396fda58ade55d4520acc98b88fd27ac140b8e74",
+        "observations/unitor-before.json": "c90cfdacb4b8ad0308f82b2aba231bcc3ccca1eb15b4fb22a2be2bd2bd70ba05",
+        "observations/wrong-input-before.json": "fa037a768b489c87819d02584f16dc94ef7b7f07028927545793997eae64b7a4",
+        "observations/zero-power-before.json": "1db2894521b159d53183eec7c833bee74f08122ddd35fc891890847bb5ec7e35"
+      }
     }
   ],
   "version": 1

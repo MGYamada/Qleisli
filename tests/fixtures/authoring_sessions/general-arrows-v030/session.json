@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Implement general pure operation arrows through common typing and actual selected/native lowering under #83",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "0512825470c86793edc6af6d96a5b8019e50f6ad",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze Arrow-token spelling, preparation/unitor providers and law/type counterexamples before production changes.",
+      "sha256": {
+        "controlled.qli": "7a31a9f4dfc78c8c82c016fbaacef26ed20828c7854e40c73f2f329caeb073f6",
+        "false-unitary.qli": "c73d36522d3b2ce3295349885360e1c65c98b6efccaa95d0bbca00223a020d98",
+        "preparation.qli": "85d51ba59ccd3f68631ebe60b0e0bda863388faeb1fd417f3f80f6fe4528b201",
+        "unitor.qli": "30f4b9ef7775d357c6695abefb7e3300fd178cefd12c91c0fb806d222a0b490e",
+        "wrong-input.qli": "082571142672e764e11d14ff49965e1992ae095e5dc59d9c6a88fb8f41f0b040",
+        "zero-power.qli": "a1aeca87b8129740d9aa0705649121c3f0d9517574cb323c78626d08762ce2a2"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "942e5d973bb98e537a950356b2a8bd3e2d0f78473aa6d90bb37fa7c018ec60b7"
+      },
+      "observations": [
+        "observations/preparation-before.json",
+        "observations/unitor-before.json",
+        "observations/false-unitary-before.json",
+        "observations/wrong-input-before.json",
+        "observations/zero-power-before.json",
+        "observations/controlled-before.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "The first checks reject the invented manifest key; copy the existing tests/Qargo.toml contract without changing any source.",
+      "sha256": {
+        "controlled.qli": "7a31a9f4dfc78c8c82c016fbaacef26ed20828c7854e40c73f2f329caeb073f6",
+        "false-unitary.qli": "c73d36522d3b2ce3295349885360e1c65c98b6efccaa95d0bbca00223a020d98",
+        "preparation.qli": "85d51ba59ccd3f68631ebe60b0e0bda863388faeb1fd417f3f80f6fe4528b201",
+        "unitor.qli": "30f4b9ef7775d357c6695abefb7e3300fd178cefd12c91c0fb806d222a0b490e",
+        "wrong-input.qli": "082571142672e764e11d14ff49965e1992ae095e5dc59d9c6a88fb8f41f0b040",
+        "zero-power.qli": "a1aeca87b8129740d9aa0705649121c3f0d9517574cb323c78626d08762ce2a2"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/preparation-manifest-repaired.json",
+        "observations/unitor-manifest-repaired.json",
+        "observations/false-unitary-manifest-repaired.json",
+        "observations/wrong-input-manifest-repaired.json",
+        "observations/zero-power-manifest-repaired.json",
+        "observations/controlled-manifest-repaired.json"
+      ]
+    }
+  ]
+}

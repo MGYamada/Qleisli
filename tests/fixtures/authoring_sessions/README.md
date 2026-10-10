@@ -5,6 +5,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [general pure arrow study](general-arrows-v030/README.md) retains six first
+sources, a manifest-only repair and twelve actual refusals. The repaired
+manifest exposes the unsupported Arrow token; downstream laws remain untested.
+
 The [Meaning composition study](meaning-composition-v030/README.md) retains
 initial parse/visibility/profile failures and explicit pure entry adapters, with
 real native rejection of wrong phase order and wrong tensor axes. Broader

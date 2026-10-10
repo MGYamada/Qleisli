@@ -3337,7 +3337,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "a0a002278fb5f4f07adbe6ce471b72c5822d146dc0702e45f9bacba377e7881b",
+      "sha256": "6a1b88942c7a45c60cc79ded846edd4e6543fec1a6f9fd57acfc4c98182badbd",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3656,7 +3656,7 @@
     },
     {
       "path": "src/frontend/effects.rs",
-      "sha256": "61fa01297c302881c52f951202f304198e80e1f70c88c4bdb22398f101d57909",
+      "sha256": "0e213586f3cf990e74e2b183439737eb28e5e4d0161e3f278e423660884425b5",
       "group": "source",
       "surface": {
         "declarations": [

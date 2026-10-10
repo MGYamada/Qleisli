@@ -754,17 +754,17 @@ pub(super) fn program_with<'a, R>(
             )
             .in_module(program.module(*id))
         })?;
-        for (provider, span) in &bodies[id].unitary {
-            if inferred[provider] != crate::ir::Effect::Unitary {
-                return Err(SourceError::new(
-                    "effect",
-                    *span,
-                    super::effects::unitary_required(
-                        "operation provider's inferred body effect must be Unitary",
-                    ),
+        if let Some((ceiling, span)) = bodies[id].first_violation(&inferred) {
+            let message = if ceiling == crate::ir::Effect::Unitary {
+                super::effects::unitary_required(
+                    "operation provider's inferred body effect must be Unitary",
                 )
-                .in_module(program.module(*id)));
-            }
+            } else {
+                format!(
+                    "operation provider's inferred body effect exceeds required {ceiling:?} ceiling"
+                )
+            };
+            return Err(SourceError::new("effect", span, message).in_module(program.module(*id)));
         }
         program.budget.charge(decl.span, 1)?;
         effects.insert(*id, fact);

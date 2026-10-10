@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Separate provider effect ceilings from principal body-effect inference in the
+  common checker. Repeated demands keep the strictest ceiling and its original
+  location; existing Unitary diagnostics and work accounting are preserved.
+  This prepares general pure arrows without enabling their source syntax.
+
 - Compose and tensor independently declared finite monomial Meanings through
   both source adapters, retaining exact phase, ordered basis trees and fresh
   native provider checks. Preserve forward references and refuse cycles and

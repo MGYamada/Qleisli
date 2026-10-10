@@ -68,7 +68,7 @@ pub(super) struct BodyEffects {
     local: Effect,
     origin: Span,
     calls: BTreeMap<DefId, Span>,
-    pub unitary: BTreeMap<DefId, Span>,
+    required: BTreeMap<DefId, (Effect, Span)>,
 }
 
 impl BodyEffects {
@@ -77,7 +77,7 @@ impl BodyEffects {
             local: Effect::Unitary,
             origin: span,
             calls: BTreeMap::new(),
-            unitary: BTreeMap::new(),
+            required: BTreeMap::new(),
         }
     }
 
@@ -93,11 +93,37 @@ impl BodyEffects {
     }
 
     pub fn require_unitary(&mut self, id: DefId, span: Span) {
-        self.unitary.entry(id).or_insert(span);
+        self.require_effect(id, Effect::Unitary, span);
+    }
+
+    /// Requirements are upper bounds, so repeated demands meet at the stricter
+    /// ceiling. They never seed, lower or replace principal effect inference.
+    pub(super) fn require_effect(&mut self, id: DefId, ceiling: Effect, span: Span) {
+        self.required
+            .entry(id)
+            .and_modify(|(previous, origin)| {
+                if ceiling < *previous {
+                    *previous = ceiling;
+                    *origin = span;
+                }
+            })
+            .or_insert((ceiling, span));
+    }
+
+    pub(super) fn first_violation(
+        &self,
+        inferred: &BTreeMap<DefId, Effect>,
+    ) -> Option<(Effect, Span)> {
+        self.required.iter().find_map(|(id, &(ceiling, span))| {
+            inferred
+                .get(id)
+                .is_none_or(|actual| *actual > ceiling)
+                .then_some((ceiling, span))
+        })
     }
 
     pub fn storage_cells(&self) -> usize {
-        1 + self.calls.len() + self.unitary.len()
+        1 + self.calls.len() + self.required.len()
     }
 
     pub fn inferred_with(&self, effects: &BTreeMap<DefId, Effect>) -> Option<Effect> {
@@ -112,8 +138,8 @@ impl BodyEffects {
         for (id, span) in &body.calls {
             self.call(*id, *span);
         }
-        for (id, span) in &body.unitary {
-            self.require_unitary(*id, *span);
+        for (id, (ceiling, span)) in &body.required {
+            self.require_effect(*id, *ceiling, *span);
         }
     }
 
@@ -175,4 +201,84 @@ pub(super) fn infer_with<E>(
         }
     }
     Ok(Some(effects))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::frontend::{parser::parse_module, resolve::Resolution};
+
+    fn provider() -> DefId {
+        let module = parse_module("fn provider(q:Q<Bit>)->Q<Bit>{q}").unwrap();
+        Resolution::new([("main", &module)])
+            .unwrap()
+            .qualified("main::provider")
+            .unwrap()
+    }
+
+    #[test]
+    fn provider_ceilings_meet_without_replacing_principal_effects() {
+        let id = provider();
+        let iso_span = Span::new(10, 20);
+        let unitary_span = Span::new(30, 40);
+        for (first, second, expected, origin) in [
+            (Effect::Iso, Effect::Unitary, Effect::Unitary, unitary_span),
+            (Effect::Unitary, Effect::Iso, Effect::Unitary, iso_span),
+            (Effect::Iso, Effect::Iso, Effect::Iso, iso_span),
+        ] {
+            let mut body = BodyEffects::new(Span::default());
+            body.require_effect(id, first, iso_span);
+            body.require_effect(id, second, unitary_span);
+            assert_eq!(body.required[&id], (expected, origin));
+            assert_eq!(body.storage_cells(), 2);
+            for actual in [Effect::Unitary, Effect::Iso, Effect::Observe] {
+                let inferred = BTreeMap::from([(id, actual)]);
+                assert_eq!(body.first_violation(&inferred).is_some(), actual > expected);
+            }
+            assert_eq!(
+                body.first_violation(&BTreeMap::new()),
+                Some((expected, origin))
+            );
+        }
+        let mut actual = BodyEffects::new(iso_span);
+        actual.add(Effect::Iso, iso_span);
+        let modules =
+            parse_module("fn provider(q:Q<Bit>)->Q<Bit>{q} fn caller(q:Q<Bit>)->Q<Bit>{q}")
+                .unwrap();
+        let resolution = Resolution::new([("main", &modules)]).unwrap();
+        let caller_id = resolution.qualified("main::caller").unwrap();
+        // DefId is collection-local; obtain the provider from this same collection.
+        let id = resolution.qualified("main::provider").unwrap();
+        let mut caller = BodyEffects::new(Span::default());
+        caller.call(id, iso_span);
+        caller.require_unitary(id, unitary_span);
+        let inferred = infer_with(
+            &BTreeMap::from([(id, actual), (caller_id, caller.clone())]),
+            |_, _| Ok::<(), ()>(()),
+        )
+        .unwrap()
+        .unwrap();
+        assert_eq!(inferred[&caller_id], Effect::Iso);
+        assert_eq!(
+            caller.first_violation(&inferred),
+            Some((Effect::Unitary, unitary_span))
+        );
+    }
+
+    #[test]
+    fn merging_regions_keeps_the_strictest_original_provider_demand() {
+        let id = provider();
+        let first = Span::new(10, 20);
+        let second = Span::new(30, 40);
+        let mut outer = BodyEffects::new(first);
+        outer.require_effect(id, Effect::Iso, first);
+        let mut region = BodyEffects::new(second);
+        region.require_unitary(id, second);
+        region.add(Effect::Observe, second);
+        outer.merge(&region);
+        assert_eq!(outer.required[&id], (Effect::Unitary, second));
+        assert_eq!(outer.inferred_with(&BTreeMap::new()), Some(Effect::Observe));
+        assert_eq!(outer.origin(&BTreeMap::new()), second);
+        assert_eq!(outer.storage_cells(), 2);
+    }
 }
