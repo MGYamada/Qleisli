@@ -1,4 +1,4 @@
-//! Bounded #76 routing experiments; these local names are not new library APIs.
+//! Provisional two-Bit std::gate contracts and bounded routing comparisons.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
 mod common;
 
@@ -17,14 +17,15 @@ use std::collections::BTreeMap;
 fn source(body: &str) -> String {
     format!(
         "use std::quantum::{{split,join,cnot,init0}};use std::observe::measure_z;
+         use std::gate::{{swap,permute_axes}};
          pub unitary fn probe(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{let(a,b)=split(q);{body}}}"
     )
 }
 
-fn selected(text: &str) -> AcceptedProgram {
+fn selected_at(text: &str, entry: &str) -> AcceptedProgram {
     let program = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
         .unwrap()
-        .instantiate("main::probe", BTreeMap::new(), BTreeMap::new())
+        .instantiate(entry, BTreeMap::new(), BTreeMap::new())
         .unwrap()
         .elaborate()
         .unwrap();
@@ -35,6 +36,10 @@ fn selected(text: &str) -> AcceptedProgram {
     let accepted = kernel.accept(proposal.proposal()).unwrap();
     proposal.validate_source_steps(&accepted).unwrap();
     accepted
+}
+
+fn selected(text: &str) -> AcceptedProgram {
+    selected_at(text, "main::probe")
 }
 
 fn finite(text: &str) -> AcceptedProgram {
@@ -115,6 +120,8 @@ fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
             false,
         ),
         ("join(b,a)", 0, true),
+        ("let(a,b)=swap(a,b);join(a,b)", 3, false),
+        ("permute_axes(join(a,b))", 0, true),
     ] {
         let text = source(body);
         let finite = finite(&text);
@@ -165,6 +172,28 @@ fn physical_swap_and_structural_routing_keep_distinct_wires_and_actual_work() {
                     assert_eq!(evidence.meaning().entries()[row * 4 + column], expected);
                 }
             }
+        }
+    }
+}
+
+#[test]
+fn ordinary_std_gate_calls_preserve_explicit_access_and_ordered_outcomes() {
+    use qleisli::sim::{SimulationLimits, run_closed};
+    for body in [
+        "let(a,b)=(init0(),x(init0()));swap(excl a,excl b);(measure_z(a),measure_z(b))",
+        "let q=join(init0(),x(init0()));permute_axes(excl q);let(a,b)=split(q);(measure_z(a),measure_z(b))",
+    ] {
+        let text = format!(
+            "use std::gate::{{swap,permute_axes}};use std::quantum::{{init0,x,join,split}};
+             use std::observe::measure_z;pub observe fn main()->(Bit,Bit){{{body}}}"
+        );
+        for program in [
+            compile_project(&SourceRoot::new(&text).0).unwrap(),
+            selected_at(&text, "main::main"),
+        ] {
+            let result = run_closed(&program, SimulationLimits::default()).unwrap();
+            assert_eq!(result.len(), 1);
+            assert_eq!(result[&vec![true, false]], 1.0);
         }
     }
 }

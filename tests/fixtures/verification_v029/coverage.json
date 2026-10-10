@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "be4184007fea269812b2e4e93b84d4abd23fcd5bc9f6f9acd63a7039f8b01331",
+  "surface_sha256": "0bff001f1a66adee4035486f2947c7fc91a7988e0429df3d6604c5e7dbc1eb3c",
   "groups": [
     {
       "id": "raw-core",
@@ -170,7 +170,9 @@
       "evidence": [
         "tests/review_v021.rs",
         "tests/static_operations.rs",
-        "tests/ordinary_booleans.rs"
+        "tests/ordinary_booleans.rs",
+        "stdlib/src/gate.qli",
+        "tests/axis_routing_boundary.rs"
       ],
       "proof_gates": [
         "S05-C1",

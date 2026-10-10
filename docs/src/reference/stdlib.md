@@ -37,6 +37,7 @@ chapter promises neither `qft<N>` nor a future completion target.
 | `std::transform` | Its defining contract is a mathematical basis transform with an explicit whole-input operator and ordered coordinates, such as Hadamard or Fourier transformation. A contract defined as reflection about a subspace belongs in `reflection`; a measurement belongs in `measurement`. | `stdlib/src/transform.qli` |
 | `std::reflection` | Its defining contract is a phase-fixed reflection about a specified state or subspace, including the exact projector, sign and owner interface. Being unitary alone is not this classification. | `stdlib/src/reflection.qli` |
 | `std::measurement` | Its defining mathematical operation is a complete measurement instrument with declared classical outcomes and residual quantum owners, including destructive measurement or a measurement that retains data. An arbitrary observing routine is not enough. | `stdlib/src/measurement.qli` |
+| `std::gate` (provisional) | An ordinary checked gate or explicit routing helper has an exact ordered-axis contract. Physical action and structural representation order remain distinct. | `stdlib/src/gate.qli` |
 | `std::arithmetic` (reserved) | Its public identity is a reusable parameterized arithmetic or number-theoretic operation whose contract is independent of one hard-coded circuit instance. | No current bundled module or public export. |
 
 The reserved shape `std::arithmetic::modexp<N>` represents modular
@@ -54,7 +55,7 @@ namespace migration changes none of those entries or their trust status.
 
 ## Current interfaces and contracts
 
-The four bundled ordinary modules expose nine public definitions and one private
+The five bundled ordinary modules expose eleven public definitions and one private
 classical helper. Contract identifiers retain their existing meanings after the
 move; they are not constitutional ledger entries or verification badges.
 
@@ -65,10 +66,24 @@ move; they are not constitutional ledger entries or verification badges.
 | `std::transform::hadamard2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R001: ordered H tensor H; Unitary. |
 | `std::transform::qft2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | F001: positive F4 with included reversal; Unitary. |
 | `std::transform::qft3` | `fn (Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)>` | F002: positive F8 with included reversal; Unitary. |
+| `std::gate::swap` (provisional) | `unitary fn (Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)` | Physical two-Bit SWAP, exact phase +1; three CNOTs, original output wire order. |
+| `std::gate::permute_axes` (provisional) | `unitary fn (Q<(Bit,Bit)>) -> Q<(Bit,Bit)>` | Structural two-axis map `[1,0]`, exact phase +1; reversed output wire order, no gate instruction. |
 | `std::reflection::reflect_uniform2` | `fn (Q<(Bit, Bit)>) -> Q<(Bit, Bit)>` | R002: `2|++><++| - I`, with this exact sign; Unitary. |
 | `std::measurement::measure_x` | `fn (Q<Bit>) -> Bit` | R003: destructive X measurement; Observe. |
 | `std::measurement::measure_z2` | `fn (Q<(Bit, Bit)>) -> (Bit, Bit)` | R004: destructive ordered two-bit Z measurement; Observe. |
 | `std::measurement::parity_zz` | `fn (Q<Bit>, Q<Bit>) -> ((Q<Bit>, Q<Bit>), Bit)` | R005: nondestructive Z-parity measurement of the data; Observe. |
+
+The provisional `std::gate` functions are ordinary `.qli`, not sealed
+compiler entries. Their two-Bit interfaces are explicit: generic register SWAP
+and arbitrary permutation witnesses remain unsupported. `swap(excl a, excl b)`
+returns authority to the updated original owners; `permute_axes(q)` consumes
+and returns its pair with the explicit axis map. Neither is binding exchange.
+Under fixed input/output coordinates both denote `|a,b> -> |b,a>` with phase
++1, but their wire maps and physical work differ. Matrix equality alone grants
+no optimizer permission to replace one routing implementation by the other.
+Actual target routing and quantitative resource claims need their own checked
+correspondence and accounting; zero source gate instructions are not a promise
+of zero physical routing cost.
 
 These rows are interface descriptions, not declaration syntax or new function
 types. Runtime principal effects are derived from checked bodies under
@@ -149,7 +164,7 @@ retained in `tests/fixtures/authoring_sessions/stdlib-semantic-namespaces-v030/`
 
 ## Checking and later structure
 
-All four modules, their private/unused declarations and caller source undergo
+All five modules, their private/unused declarations and caller source undergo
 the same mandatory common-source judgment. Concrete lowering and fresh native
 acceptance remain separate stages with profile-specific support. A path grants
 no sealed status, body-derived effect, independent exact Meaning, provider

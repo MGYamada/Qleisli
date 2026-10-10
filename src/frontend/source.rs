@@ -49,6 +49,11 @@ impl BundledRegistry {
                 text: include_str!("../../stdlib/src/basis.qli"),
             },
             BundledSource {
+                name: "std::gate",
+                path: "<bundled>/std/gate.qli",
+                text: include_str!("../../stdlib/src/gate.qli"),
+            },
+            BundledSource {
                 name: "std::measurement",
                 path: "<bundled>/std/measurement.qli",
                 text: include_str!("../../stdlib/src/measurement.qli"),

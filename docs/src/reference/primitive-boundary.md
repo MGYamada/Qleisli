@@ -209,9 +209,9 @@ target-realization or quantitative resource theorem.
 
 ## Ordinary library and module resolution
 
-`src/frontend/source.rs::BundledRegistry` embeds **four ordinary source
-modules with nine public definitions**; one additional private basis helper is
-used by `std::reflection`. Both loaders retain all four complete original sources
+`src/frontend/source.rs::BundledRegistry` embeds **five ordinary source
+modules with eleven public definitions**; one additional private basis helper is
+used by `std::reflection`. Both loaders retain all five complete original sources
 and their fixed manifest. They receive normal common declaration, type, owner,
 access, dependency and effect checking rather than `ImportOrigin::Sealed`.
 Concrete materialization and native checking occur under the actual consumer's
@@ -223,6 +223,7 @@ specialization:
 | `std::basis`, `stdlib/src/basis.qli` | `xor2`, `and2` | Total finite ordinary basis-label maps. Neither is injective over its two-input domain; a coherent enclosing construction must meet its own obligations. |
 | `std::transform`, `stdlib/src/transform.qli` | `hadamard2`, `qft2`, `qft3` | Ordered H tensor H; positive finite Fourier phase, first leaf least significant, output reversal included, no auxiliary or input-state promise. Fourier interfaces remain fixed-width. |
 | `std::reflection`, `stdlib/src/reflection.qli` | `reflect_uniform2` | Phase-fixed reflection `2|s><s| - I` with exact computed-auxiliary cleanup. Private `nonzero2` is a normal basis helper; Hadamard is imported from ordinary transform source. |
+| `std::gate`, `stdlib/src/gate.qli` (provisional) | `swap`, `permute_axes` | Ordinary two-Bit physical SWAP with three CNOTs versus structural axis map `[1,0]`; neither is a new sealed primitive. Generic register/permutation interfaces remain unsupported. |
 | `std::measurement`, `stdlib/src/measurement.qli` | `measure_x`, `measure_z2`, `parity_zz` | Complete destructive X/Z instruments and nondestructive data-parity measurement with their original owner/result trees and reference behavior. |
 
 The [semantic namespace Reference](stdlib.md) gives every mathematical module's
@@ -253,7 +254,7 @@ Both loaders reserve `std` and `std::`. Compiler-owned modules expose only the
 fixed common catalog; an unknown sealed name is an error, not a fallback to
 caller source. Ordinary bundles retain their provenance and original ASTs,
 with bundled bytes checked under each loader's byte policy before
-parsing/copying. The selected loader additionally reserves all four bundled
+parsing/copying. The selected loader additionally reserves all five bundled
 module slots and counts their bytes toward its aggregate limit. The finite
 loader retains its separate bounded and explicit legacy byte policies and
 local filesystem discovery limits. No ambient source replacement or checking

@@ -15,9 +15,9 @@ continues; existing fixed-QFT implementations retain their contracts and
 regression evidence. Historical family studies are not current release gates.
 
 The normative [semantic namespace Reference](docs/src/reference/stdlib.md)
-defines mathematical admission and naming rules. The four ordinary bundled
+defines mathematical admission and naming rules. The five ordinary bundled
 modules are `std::basis`, `std::transform`, `std::reflection` and
-`std::measurement`, with nine public definitions and one private reflection
+`std::measurement` and provisional `std::gate`, with eleven public definitions and one private reflection
 helper. Public names describe mathematical operations; algorithm selection
 belongs in an explicit parameter, policy or configuration layer. Genuine
 parameterized families own their canonical semantic identity, while reservations

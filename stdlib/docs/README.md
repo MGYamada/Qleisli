@@ -5,8 +5,8 @@ schema 2: name `std`, product version `0.3.0-alpha`, Qleisli edition `"2026"`,
 and separate `src`, `tests` and `docs` roots. All three directories are included
 in the qrate. The language import namespace remains `std::`.
 
-The compiler embeds four ordinary [source modules](../src): `std::basis`,
-`std::transform`, `std::reflection` and `std::measurement`, with nine public
+The compiler embeds five ordinary [source modules](../src): `std::basis`,
+`std::transform`, `std::reflection`, `std::measurement` and provisional `std::gate`, with eleven public
 definitions and one private reflection helper. Their edition manifest is
 embedded in the distribution too. It reads no installed qargo executable to use
 them. Their mathematical admission rules, exact contracts and path migration

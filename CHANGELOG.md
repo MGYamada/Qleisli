@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add provisional two-Bit `std::gate::{swap,permute_axes}` as ordinary checked
+  `.qli` source. Preserve physical CNOT work versus explicit output-axis routing;
+  no new primitive, general register SWAP or arbitrary permutation API is added.
+
 - Explain unsupported field/method receiver syntax without guessing its type.
   Quantum access requires explicit call arguments; receiver adjustment cannot
   infer or forward `excl`/`ctrl`. Existing ordinary calls remain unchanged.

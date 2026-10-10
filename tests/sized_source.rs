@@ -340,8 +340,17 @@ fn naturals(values: &[(&str, u32)]) -> BTreeMap<String, u32> {
 fn measured_qpe_dependency_closure_and_concrete_entry_bindings() {
     let (files, _translated) = measured_sources();
     let program = ParsedProgram::load(files.clone()).unwrap();
-    // The same collection now retains all four ordinary bundled source modules.
-    assert_eq!(program.module_names().count(), 18);
+    // Compare the complete independent namespace set, including ordinary std.
+    let mut expected: Vec<_> = files.keys().map(String::as_str).collect();
+    expected.extend([
+        "std::basis",
+        "std::gate",
+        "std::measurement",
+        "std::reflection",
+        "std::transform",
+    ]);
+    expected.sort_unstable();
+    assert_eq!(program.module_names().collect::<Vec<_>>(), expected);
     for (name, file) in files {
         assert_eq!(
             program.source(&name).unwrap(),

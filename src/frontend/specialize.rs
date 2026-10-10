@@ -141,7 +141,10 @@ impl ParsedProgram {
             return Err(Error::new(
                 "limit",
                 Span::default(),
-                "provide 1 through 60 local modules; four bundled modules count toward 64",
+                format!(
+                    "provide 1 through {} local modules; {bundled} bundled modules count toward {MAX_MODULES}",
+                    MAX_MODULES.saturating_sub(bundled)
+                ),
             ));
         }
         Ok(())

@@ -41,12 +41,12 @@ these diagnostic forms grant neither. See the
 
 One private source collection retains complete original bytes, common AST and
 provenance. Filesystem entries retain their selected path; in-memory entries
-carry no invented file or manifest. Both loaders add the fixed registry's four
+carry no invented file or manifest. Both loaders add the fixed registry's five
 ordinary source modules and validate its edition-2026 manifest. Both loaders
 apply their byte policies to bundled bytes before copying or parsing;
 placement under `std::` supplies no checking exemption. The selected loader
-also reserves all four bundled module slots. It accepts 1 through 60 supplied
-modules: the four bundles count toward its
+also reserves all five bundled module slots. It accepts 1 through 59 supplied
+modules: the five bundles count toward its
 64-module ceiling and its 1 MiB aggregate byte limit. Its 64 KiB/module limit
 also applies. Finite bounded and explicit legacy byte-loading policies remain
 separate; this unit does not make an unbounded byte loader bounded.
@@ -432,7 +432,7 @@ retry through a same-named global declaration.
 `src/frontend/resolve.rs` and `resolve/locals.rs` retain canonical declaration,
 lexical-use and original-span associations. The common typed primitive catalog
 has 27 fixed names; finite and selected concrete emitters still support their
-own subsets. The four ordinary bundled modules undergo the same common
+own subsets. The five ordinary bundled modules undergo the same common
 judgment as caller source. No ambient standard-library discovery, replacement
 of reserved `std` modules or new alias/re-export syntax is admitted here.
 Source facts, concrete capability and independent native acceptance remain

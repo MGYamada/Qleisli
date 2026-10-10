@@ -5,6 +5,10 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [provisional std::gate clients](std-gate-v030/README.md) preserve two first
+sources and four actual before/after checks. Missing-module refusals become
+ordinary library checks; independent meaning/wire/work tests remain separate.
+
 The [receiver-boundary probes](method-boundary-v030/README.md) preserve four
 unchanged first sources and eight actual before/after CLI observations. Three
 receiver forms retain parse codes/spans; explicit access remains accepted.

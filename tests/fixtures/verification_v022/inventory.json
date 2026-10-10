@@ -140,7 +140,7 @@
       "id": "source",
       "producer": "Human/AI .qli; complete retained original source collections and public loader policies",
       "consumer": "Shared whole-original check and typed facts consumed before finite/selected eligibility; actual lowerers/evidence/native gates remain separate",
-      "obligation": "Every original body, including unused/dead/zero forms and all four actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation",
+      "obligation": "Every original body, including unused/dead/zero forms and all five actual ordinary bundles, undergoes the same name/type/linear-owner/effect judgment; pending obligations remain pending and valid output IR alone does not prove original-source preservation",
       "reference": "docs/src/reference/source-text.md; docs/src/reference/type-model.md; tests/fixtures/frontend_v030/common-original-ast-design/contract-01.md",
       "replacement": [
         "VM-28"
@@ -3938,7 +3938,7 @@
     },
     {
       "path": "src/frontend/specialize.rs",
-      "sha256": "0cc6fed04307b48d9ae8b45ceafcf0c20118347938769a89e39211ad0dd54460",
+      "sha256": "cded5786a05a321d8e2b308c1b32067b470dbf2affe0516e09613b38160f7d27",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4310,7 +4310,7 @@
     },
     {
       "path": "src/frontend/source.rs",
-      "sha256": "caa1c9a6f61876f2942c0ad711b4c57064407acdb271998a0991a5fd8b04273b",
+      "sha256": "7af877d0f58b3ba3e0531679279883a49313ab1266da06c9a9ad08574c0bc430",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4943,6 +4943,12 @@
       "surface": null
     },
     {
+      "path": "stdlib/src/gate.qli",
+      "sha256": "240945833ed4bef0a84c9ee8f1eaa48d1bd6e3a7499e083e752557d7d9b7f74d",
+      "group": "source",
+      "surface": null
+    },
+    {
       "path": "stdlib/src/measurement.qli",
       "sha256": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
       "group": "source",
@@ -5124,9 +5130,9 @@
       "status": "Finite production remains native-only; both source consumers first use shared untrusted original-AST judgments; full Soundness remains pending",
       "request": "Existing source declarations; requested function meanings where present; no new caller parameter",
       "binding": "Fresh whole-original checking and collection-local typed facts precede eligibility; actual generated IR is independently verified; source-preservation/provider/transformation obligations remain pending",
-      "encoding": "One common original type/owner/effect/name judgment including all four actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
+      "encoding": "One common original type/owner/effect/name judgment including all five actual ordinary bundles; exact tuples/moves/scopes and typed primitive catalog; concrete finite and selected emitter/profile restrictions remain separate",
       "domain": "Finite \u03b68; numeric run output is approximate diagnostic only",
-      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including4 bundles/60 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
+      "limits": "Parser nesting64/tuple64; common tree4096/depth64 and separate project-wide1M source work; finite calls/static expansion1M work/depth64 plus source policy1MiB/file16MiB/project or explicit legacy; selected64 modules including5 bundles/59 locals,64KiB/file1MiB aggregate including bundles,16384 live-scope cells and existing concrete limits",
       "failure": "Located existing diagnostics/exit statuses; failed compilation cannot issue evidence",
       "replacement": [
         "VM-28"
