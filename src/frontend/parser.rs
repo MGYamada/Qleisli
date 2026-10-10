@@ -1693,9 +1693,25 @@ impl Parser {
                         }
                     };
                     let name = self.ident()?;
-                    let span = marker.span.cover(name.span);
+                    let selection = if self.consume(&TokenKind::LBracket).is_some() {
+                        let start = self.natural()?;
+                        let selection = if self.consume(&TokenKind::DotDot).is_some() {
+                            AxisSelection::Range {
+                                start,
+                                end: self.natural()?,
+                            }
+                        } else {
+                            AxisSelection::Index(start)
+                        };
+                        self.expect(&TokenKind::RBracket)?;
+                        Some(selection)
+                    } else {
+                        None
+                    };
+                    let span = marker.span.cover(self.tokens[self.pos - 1].span);
                     args.push(AccessArgument {
                         access,
+                        selection,
                         value: Expr {
                             kind: ExprKind::Name(name),
                             span,

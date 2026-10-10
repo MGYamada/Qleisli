@@ -1,6 +1,57 @@
 //! Checked static descriptions and actual original callee specialization.
 use super::*;
+
+pub(super) struct PreparedAccess<'a> {
+    pub expression: &'a Expr,
+    pub ty: Ty,
+}
+#[derive(Clone, Copy)]
+pub(super) enum CallArguments<'a> {
+    Source(RuntimeArguments<'a>),
+    Places(&'a [PreparedAccess<'a>]),
+}
+impl<'a> CallArguments<'a> {
+    fn len(self) -> usize {
+        match self {
+            Self::Source(args) => args.len(),
+            Self::Places(args) => args.len(),
+        }
+    }
+    fn get(self, index: usize) -> &'a Expr {
+        match self {
+            Self::Source(args) => args.get(index),
+            Self::Places(args) => args[index].expression,
+        }
+    }
+    fn iter(self) -> impl Iterator<Item = &'a Expr> {
+        (0..self.len()).map(move |index| self.get(index))
+    }
+}
 impl Checker<'_, '_> {
+    fn call_argument(
+        &mut self,
+        arguments: CallArguments<'_>,
+        index: usize,
+        scope: &mut Scope,
+        expected: Option<&Ty>,
+    ) -> Result<Ty> {
+        match arguments {
+            CallArguments::Source(args) => self.expr(args.get(index), scope, expected),
+            CallArguments::Places(args) => {
+                let arg = &args[index];
+                if let Some(expected) = expected {
+                    normalize::expect(
+                        &arg.ty,
+                        expected,
+                        &scope.context,
+                        arg.expression.span,
+                        &self.program.budget,
+                    )?;
+                }
+                self.program.budget.copy_ty(arg.expression.span, &arg.ty)
+            }
+        }
+    }
     /// Direct runtime transforms preserve the whole owner group. Opaque Op
     /// arguments and constructors continue to use their single-owner basis.
     pub(super) fn transformed_operation(
@@ -446,6 +497,22 @@ impl Checker<'_, '_> {
         scope: &mut Scope,
         span: Span,
     ) -> Result<Ty> {
+        self.call_arguments(
+            name,
+            static_args,
+            CallArguments::Source(runtime),
+            scope,
+            span,
+        )
+    }
+    pub(super) fn call_arguments(
+        &mut self,
+        name: &Ident,
+        static_args: &[StaticOp],
+        runtime: CallArguments<'_>,
+        scope: &mut Scope,
+        span: Span,
+    ) -> Result<Ty> {
         if let Some(operation) = self.local(name).and_then(|key| scope.operations.get(key)) {
             if !static_args.is_empty() || runtime.len() != 1 {
                 return Err(SourceError::new(
@@ -456,7 +523,7 @@ impl Checker<'_, '_> {
             }
             access(operation, Access::Apply, span)?;
             let ty = Ty::quantum(self.program.budget.copy_ty(span, &operation.basis)?);
-            self.expr(runtime.get(0), scope, Some(&ty))?;
+            self.call_argument(runtime, 0, scope, Some(&ty))?;
             return Ok(ty);
         }
         match self.resolve(name)? {
@@ -484,9 +551,8 @@ impl Checker<'_, '_> {
                 self.effects.add(primitive.effect(), span);
                 if primitive.dependent() {
                     self.program.budget.charge(span, runtime.len())?;
-                    let inputs = runtime
-                        .iter()
-                        .map(|expr| self.expr(expr, scope, None))
+                    let inputs = (0..runtime.len())
+                        .map(|index| self.call_argument(runtime, index, scope, None))
                         .collect::<Result<_>>()?;
                     primitive.output(inputs, span, &self.program.budget)
                 } else {
@@ -497,7 +563,7 @@ impl Checker<'_, '_> {
                         .collect::<Result<Vec<_>>>()?;
                     let (inputs, result) =
                         primitive.fixed(&ns, &scope.context, span, &self.program.budget)?;
-                    for (expr, ty) in runtime.iter().zip(&inputs) {
+                    for (index, (expr, ty)) in runtime.iter().zip(&inputs).enumerate() {
                         // Only a direct, still-live lexical tuple binding can
                         // carry binding-specific help. Retain its identity,
                         // without copying the owner/type tree.
@@ -515,7 +581,7 @@ impl Checker<'_, '_> {
                         } else {
                             None
                         };
-                        self.expr(expr, scope, Some(ty)).map_err(|mut error| {
+                        self.call_argument(runtime, index, scope, Some(ty)).map_err(|mut error| {
                             if error.code == "type"
                                 && !error.primitive_argument_located
                                 && error.span == expr.span
@@ -558,12 +624,49 @@ impl Checker<'_, '_> {
                         "runtime argument arity mismatch",
                     ));
                 }
-                for (expr, ty) in runtime.iter().zip(&inputs) {
-                    self.expr(expr, scope, Some(ty))?;
+                for (index, ty) in inputs.iter().enumerate() {
+                    self.call_argument(runtime, index, scope, Some(ty))?;
                 }
                 Ok(result)
             }
         }
+    }
+    pub(super) fn require_access_unitary(
+        &mut self,
+        name: &Ident,
+        scope: &Scope,
+        span: Span,
+    ) -> Result<()> {
+        if self
+            .local(name)
+            .and_then(|key| scope.operations.get(key))
+            .is_none()
+        {
+            match self.resolve(name)? {
+                Target::Declaration(id) => {
+                    self.tick(span)?;
+                    self.effects.require_unitary(id, span);
+                }
+                Target::Primitive(primitive) => {
+                    self.program
+                        .budget
+                        .charge(span, primitive.module.len() + primitive.name.len() + 2)?;
+                    let path = format!("{}::{}", primitive.module, primitive.name);
+                    if primitive::Primitive::lookup(&path)
+                        .expect("typed sealed resolution")
+                        .effect()
+                        != Effect::Unitary
+                    {
+                        return Err(SourceError::new(
+                            "effect",
+                            span,
+                            "excl requires a coherent Unitary call; measurement, reset, discard and release remain consuming operations",
+                        ));
+                    }
+                }
+            }
+        }
+        Ok(())
     }
     pub(super) fn exclusive_call(
         &mut self,
@@ -573,6 +676,12 @@ impl Checker<'_, '_> {
         scope: &mut Scope,
         span: Span,
     ) -> Result<Ty> {
+        if arguments
+            .iter()
+            .any(|argument| argument.selection.is_some())
+        {
+            return self.indexed_access_call(name, static_args, arguments, scope, span);
+        }
         self.program
             .budget
             .charge(span, arguments.len().saturating_mul(3))?;
@@ -629,35 +738,7 @@ impl Checker<'_, '_> {
                 },
             ));
         }
-        if self
-            .local(name)
-            .and_then(|key| scope.operations.get(key))
-            .is_none()
-        {
-            match self.resolve(name)? {
-                Target::Declaration(id) => {
-                    self.tick(span)?;
-                    self.effects.require_unitary(id, span);
-                }
-                Target::Primitive(primitive) => {
-                    self.program
-                        .budget
-                        .charge(span, primitive.module.len() + primitive.name.len() + 2)?;
-                    let path = format!("{}::{}", primitive.module, primitive.name);
-                    if primitive::Primitive::lookup(&path)
-                        .expect("typed sealed resolution")
-                        .effect()
-                        != Effect::Unitary
-                    {
-                        return Err(SourceError::new(
-                            "effect",
-                            span,
-                            "excl requires a coherent Unitary call; measurement, reset, discard and release remain consuming operations",
-                        ));
-                    }
-                }
-            }
-        }
+        self.require_access_unitary(name, scope, span)?;
         let result = self.call(
             name,
             static_args,

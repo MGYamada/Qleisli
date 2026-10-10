@@ -242,6 +242,23 @@ pub enum QuantumAccess {
 pub struct AccessArgument {
     pub access: QuantumAccess,
     pub value: Expr,
+    /// A static place selector, never a value extraction or a reference.
+    pub selection: Option<AxisSelection>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum AxisSelection {
+    Index(Natural),
+    Range { start: Natural, end: Natural },
+}
+impl AxisSelection {
+    pub(in crate::frontend) fn naturals(&self) -> impl Iterator<Item = &Natural> {
+        let values = match self {
+            Self::Index(index) => [Some(index), None],
+            Self::Range { start, end } => [Some(start), Some(end)],
+        };
+        values.into_iter().flatten()
+    }
 }
 
 /// Borrow original expressions; lexical occurrence identity must survive

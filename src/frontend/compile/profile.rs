@@ -189,6 +189,12 @@ fn expr(expr: &Expr) -> Result<(), Failure> {
                 operation(op)?;
             }
             for arg in args {
+                if arg.selection.is_some() {
+                    return Err((
+                        arg.value.span,
+                        "finite profile does not yet lower indexed quantum access",
+                    ));
+                }
                 self::expr(&arg.value)?;
             }
         }

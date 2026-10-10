@@ -40,6 +40,7 @@ fn unresolved_function_message(name: &str) -> String {
 }
 
 mod operations;
+mod places;
 mod special;
 
 struct PatternBinding<'a, 'ast> {

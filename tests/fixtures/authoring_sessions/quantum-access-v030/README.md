@@ -6,7 +6,12 @@ before checking. Four actual baseline checks preserve parser refusals for
 index/slice access and Raw-profile refusals for explicit take/put controls.
 Four separate after checks admit both unchanged explicit controls; four final
 checks retain those outcomes after explicit work-accounting changes. Indexed
-and slice forms still reject during parsing. All 87 observations remain,
+and slice forms still rejected during parsing at that checkpoint. Four later
+checks in `indexed-common-check/` reach the explicit unsupported-lowering
+diagnostic for both unchanged desired forms; both explicit controls still
+accept. The selector grammar and common judgment now run before that profile
+boundary. These checks do not establish executable indexed access.
+All 91 observations remain,
 including the seven earlier usage errors. These are open-source check results,
 not executions or range/alias proofs. Independent exact tests cover widths
 1–3, every position, changed phase/axis, an untouched reference, zero-width

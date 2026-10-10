@@ -89,6 +89,40 @@ and [functional abstraction](functional-boundary.md).
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
 
+### Static ordered-axis places: common checking stage
+
+The common AST represents `excl q[i]`, `ctrl q[i]` and explicit half-open
+`q[a..b]` selections as a parent-owner occurrence and static selector, with
+the access role and original byte spans retained. An index selects `Q<Bit>`;
+a range selects `Q<Bits<b-a>>`. These interfaces are distinct even at width
+one. Bare indexing is not a value or an ownership-extraction operation.
+
+Common checking requires a live lexical `Q<Bits<N>>` parent and proves
+`0 <= a <= b <= N` (or `0 <= i < N`) under the original static context.
+Each pair of selected arguments on the same parent must be provably disjoint.
+Different parent names alone are not evidence of different axes; checks use
+resolved binding identities. Empty ranges select no axes, but whole-owner
+access still overlaps another access on that parent, including an empty range.
+The selected callee must have an actual Unitary effect and return the exact
+ordered selected interface. The parent remains live after the source call;
+the expression has ordinary Unit type. `ctrl` retains its separate original
+sector obligation and does not obtain permission from the annotation.
+
+Every original declaration and both branch/fold bodies undergo common
+checking. Static branch and loop premises participate in arithmetic proof,
+including impossible contexts, as for other static obligations. Names, types,
+effects and ownership are still checked in unexecuted code. Runtime indices,
+unproved bounds/disjointness, overflow and budget exhaustion fail at compile
+time; there is no runtime bounds panic.
+
+**Lowering remains incomplete.** Selected-source instantiation explicitly
+refuses an indexed-access body; finite lowering also refuses this profile.
+No selector is silently treated as whole-owner access. Connecting checked
+places to exact partition/application/reassembly, source-step replay and fresh
+native control checking remains required before these programs are executable.
+This stage supplies neither native acceptance nor a general source/phase,
+reference-preservation or quantitative-resource proof.
+
 ### Ordinary expressions and classical functions
 
 | Field | Contract |
@@ -269,7 +303,8 @@ logical owners through the structural operations. This emits no physical
 SWAP, preparation, measurement or implicit discard. Independent source-step
 replay checks the actual original partition, intermediate fresh owners and
 returned wire order; native validity remains a separate fresh decision.
-This does not yet implement `q[K]`, slices or same-parent access formation.
+These primitives supply structural building blocks for selected places;
+the common checking stage above does not yet connect their implicit lowering.
 
 Ordinary literals do not prepare quantum states. `init0` retains its explicit
 Iso primitive contract; `basis` is a coherent map, not arbitrary state-preparation

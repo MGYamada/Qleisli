@@ -697,7 +697,7 @@ fn contextual_markers_keep_original_locations_and_bounded_arity() {
         panic!("lexical owner")
     };
     assert_eq!(&source[owner.span.start..owner.span.end], "q");
-    for arguments in ["excl q,q", "q,excl q", "excl q[0]", "excl q()"] {
+    for arguments in ["excl q,q", "q,excl q", "excl q[]", "excl q()"] {
         assert!(
             parse_module(&format!("fn f(q:Q<Bit>)->Q<Bit>{{h({arguments});q}}")).is_err(),
             "{arguments}"
@@ -712,6 +712,176 @@ fn contextual_markers_keep_original_locations_and_bounded_arity() {
     );
     let error = parse_module(&source).unwrap_err();
     assert!(error.message.contains("64"), "{error}");
+}
+
+#[test]
+fn indexed_places_retain_original_axis_and_owner_occurrences() {
+    use qleisli::frontend::ast::{AxisSelection, ExprKind, FnBody, QuantumAccess, StmtKind};
+    use qleisli::frontend::parser::parse_module;
+    let source = "// π\r\npub unitary fn f[const k:Nat](q:Q<Bits<3>>)->Q<Bits<3>>{gate(excl q[k+1],ctrl q[0..k]);q}";
+    let module = parse_module(source).unwrap();
+    let FnBody::Quantum(body) = &module.decls[0].body else {
+        panic!("quantum body")
+    };
+    let StmtKind::Expr(call) = &body.statements[0].kind else {
+        panic!("call")
+    };
+    let ExprKind::AccessCall { args, .. } = &call.kind else {
+        panic!("access call")
+    };
+    assert_eq!(args.len(), 2);
+    for (arg, access, text) in [
+        (&args[0], QuantumAccess::Excl, "excl q[k+1]"),
+        (&args[1], QuantumAccess::Ctrl, "ctrl q[0..k]"),
+    ] {
+        assert_eq!(arg.access, access);
+        assert_eq!(&source[arg.value.span.start..arg.value.span.end], text);
+        let ExprKind::Name(owner) = &arg.value.kind else {
+            panic!("parent owner")
+        };
+        assert_eq!(&source[owner.span.start..owner.span.end], "q");
+    }
+    assert!(matches!(args[0].selection, Some(AxisSelection::Index(_))));
+    assert!(matches!(
+        args[1].selection,
+        Some(AxisSelection::Range { .. })
+    ));
+    for expression in [
+        "q[0]",
+        "q[0..1]",
+        "h(q[0])",
+        "h(excl q[..1])",
+        "h(ctrl q[0..])",
+    ] {
+        assert!(
+            parse_module(&format!("fn f(q:Q<Bits<2>>)->Q<Bits<2>>{{{expression};q}}")).is_err(),
+            "{expression}"
+        );
+    }
+}
+
+#[test]
+fn indexed_places_check_symbolic_bounds_and_ordered_selected_types() {
+    for text in [
+        "use std::quantum::h;pub unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<N {h(excl q[K]);q}",
+        "unitary fn id[const W:Nat](r:Q<Bits<W>>)->Q<Bits<W>>{r} pub unitary fn f[const N:Nat,const A:Nat,const B:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires A<=B,B<=N {id[B-A](excl q[A..B]);q}",
+        "unitary fn pair[const A:Nat,const B:Nat](a:Q<Bits<A>>,b:Q<Bits<B>>)->(Q<Bits<A>>,Q<Bits<B>>){(a,b)}pub unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires K<=N {pair[N-K,K](excl q[K..N],ctrl q[0..K]);q}",
+        "use std::quantum::cnot;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{cnot(ctrl q[0],excl q[1]);q}",
+        "use std::quantum::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<J,J<N {cnot(ctrl q[I],excl q[J]);q}",
+        "use std::quantum::cnot;pub unitary fn f(a:Q<Bits<1>>,b:Q<Bits<1>>)->(Q<Bits<1>>,Q<Bits<1>>){cnot(ctrl a[0],excl b[0]);(a,b)}",
+        "use std::quantum::h;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{static let k=1;h(excl q[k]);h(excl q[0]);q}",
+        "unitary fn id(r:Q<Bits<0>>)->Q<Bits<0>>{r}pub unitary fn f(q:Q<Bits<0>>)->Q<Bits<0>>{id(excl q[0..0]);q}",
+    ] {
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]));
+        assert!(parsed.is_ok(), "{text}: {parsed:?}");
+        assert_eq!(parsed.unwrap().source("main"), Some(text));
+    }
+}
+
+#[test]
+fn indexed_places_refuse_unproved_bounds_overlap_and_changed_interfaces() {
+    for (body, code) in [
+        ("h(excl q[2]);q", "size"),
+        ("h(excl q[0-1]);q", "size"),
+        (
+            "h(excl q[170141183460469231731687303715884105727]);q",
+            "limit",
+        ),
+        ("cnot(ctrl q[0],excl q[0]);q", "ownership"),
+        ("range_pair(excl q[0..2],ctrl q[1..2]);q", "ownership"),
+        ("range_pair(excl q,ctrl q[0..0]);q", "ownership"),
+        ("h(excl q[0..1]);q", "type"),
+        ("range(excl q[0]);q", "type"),
+        ("change(excl q[0]);q", "type"),
+        ("measure_z(excl q[0]);q", "effect"),
+        ("let moved=q;h(excl q[0]);moved", "ownership"),
+        ("let k=0;h(excl q[k]);q", "static"),
+    ] {
+        let text = format!(
+            "use std::quantum::{{h,cnot}};use std::observe::measure_z;unitary fn range(r:Q<Bits<1>>)->Q<Bits<1>>{{r}}unitary fn range_pair(a:Q<Bits<2>>,b:Q<Bits<1>>)->(Q<Bits<2>>,Q<Bits<1>>){{(a,b)}}unitary fn change(r:Q<Bit>)->(Q<Bit>,Unit){{(r,())}}pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{{{body}}}"
+        );
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        assert_eq!(error.code(), code, "{text}: {error}");
+        if body.contains("170141183460469231731687303715884105727") {
+            assert_eq!(
+                &text[error.span().start..error.span().end],
+                "excl q[170141183460469231731687303715884105727]"
+            );
+        }
+    }
+}
+
+#[test]
+fn indexed_place_obligations_cover_unused_branches_and_empty_loops() {
+    for (program, code) in [
+        (
+            "unitary fn unused(q:Q<Bits<2>>)->Q<Bits<2>>{h(excl q[2]);q}pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}",
+            "size",
+        ),
+        (
+            "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{if static 0==0 {q}else{h(excl q[0..1]);q}}",
+            "type",
+        ),
+        (
+            "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{if 1 {q}else{h(excl q[2]);q}}",
+            "size",
+        ),
+        (
+            "pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{qfor static i in 0..0 carry r=q{h(excl r[0..1]);yield r;}}",
+            "type",
+        ),
+        (
+            "pub unitary fn f[const N:Nat,const K:Nat](q:Q<Bits<N>>)->Q<Bits<N>>{h(excl q[K]);q}",
+            "size",
+        ),
+    ] {
+        let text = format!("use std::quantum::h;{program}");
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        assert_eq!(error.code(), code, "{text}: {error}");
+    }
+}
+
+#[test]
+fn indexed_place_profiles_refuse_unconnected_lowering_explicitly() {
+    let text = "use std::quantum::h;pub unitary fn f(q:Q<Bits<2>>)->Q<Bits<2>>{h(excl q[0]);q}";
+    let parsed = selected(text);
+    let error = parsed
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap_err();
+    assert_eq!(error.code(), "unsupported");
+    assert!(error.message().contains("indexed quantum access lowering"));
+    assert_eq!(&text[error.span().start..error.span().end], "excl q[0]");
+    let error = check_project(&SourceRoot::new(text).0).unwrap_err();
+    assert_eq!(error.code, ErrorCode::Unsupported);
+    assert!(
+        error
+            .message
+            .contains("register types are outside the finite lowering profile"),
+        "{error}"
+    );
+    // An invalid source must fail the common judgment before either lowerer.
+    let invalid = text.replace("q[0]", "q[2]");
+    assert_eq!(
+        check_project(&SourceRoot::new(&invalid).0)
+            .unwrap_err()
+            .code,
+        ErrorCode::TypeMismatch
+    );
+}
+
+#[test]
+fn symbolic_place_overlap_requires_original_binder_guards() {
+    let text = "use std::quantum::cnot;pub unitary fn f[const N:Nat,const I:Nat,const J:Nat](q:Q<Bits<N>>)->Q<Bits<N>> requires I<N,J<N {cnot(ctrl q[I],excl q[J]);q}";
+    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+        .expect_err("disjointness is not implied by independent bounds");
+    assert_eq!(error.code(), "ownership");
+    assert_eq!(&text[error.span().start..error.span().end], "excl q[J]");
+    let text = "use std::quantum::h;pub unitary fn f[const N:Nat](q:Q<Bits<N>>)->Q<Bits<N>>{let N=0;h(excl q[N]);q}";
+    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+        .expect_err("runtime shadow is not a static index");
+    assert_eq!(error.code(), "name", "{error}");
 }
 
 #[test]

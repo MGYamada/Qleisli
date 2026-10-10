@@ -212,7 +212,11 @@
         "indexed-final/indexed-check.json",
         "indexed-final/slice-check.json",
         "indexed-final/explicit-roundtrip-check.json",
-        "indexed-final/explicit-control-check.json"
+        "indexed-final/explicit-control-check.json",
+        "indexed-common-check/indexed-check.json",
+        "indexed-common-check/slice-check.json",
+        "indexed-common-check/explicit-roundtrip-check.json",
+        "indexed-common-check/explicit-control-check.json"
       ]
     }
   ]

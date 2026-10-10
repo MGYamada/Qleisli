@@ -279,8 +279,11 @@ unavailable as usual; access cannot revive a spent or hidden owner. Duplicate
 arguments, a changed result interface and measurement through `excl` reject.
 Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
 The current call form requires every runtime argument to use an access marker;
-mixed ordinary/access arguments, indexed selections, escaping handles and
-access-parameter declarations remain unimplemented. Selected-source preparation
+mixed ordinary/access arguments, escaping handles and access-parameter
+declarations remain unimplemented. Indexed selections have a common AST and
+static bounds/disjointness judgment, but their concrete lowering is still
+unimplemented; see [static places](elaboration.md#static-ordered-axis-places-common-checking-stage).
+Selected-source preparation
 retains `ctrl` roles as obligations with original source identities and spans.
 `ElaboratedProgram::lower_raw_with_kernel` and selected CLI Raw checking require
 fresh native decisions for every retained concrete control-bearing definition

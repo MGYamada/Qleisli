@@ -391,6 +391,15 @@ impl Task<'_> {
                 } => args
                     .len()
                     .saturating_add(static_args.len())
+                    .saturating_add(
+                        args.iter()
+                            .map(|arg| {
+                                arg.selection
+                                    .as_ref()
+                                    .map_or(0, |selection| selection.naturals().count())
+                            })
+                            .sum::<usize>(),
+                    )
                     .saturating_add(1),
                 ExprKind::Tuple(f) => f.len(),
                 ExprKind::And(..)
@@ -721,6 +730,11 @@ where
                         args,
                     } => {
                         tasks.extend(args.iter().rev().map(|arg| Task::Expression(&arg.value)));
+                        for arg in args.iter().rev() {
+                            if let Some(selection) = &arg.selection {
+                                tasks.extend(selection.naturals().map(Task::Natural));
+                            }
+                        }
                         tasks.extend(static_args.iter().rev().map(Task::Operation));
                         tasks.push(Task::Reference(callee));
                     }

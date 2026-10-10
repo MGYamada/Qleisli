@@ -2090,6 +2090,20 @@
           "group": "source-excl"
         }
       }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "name": "AxisSelection",
+      "members": {
+        "Index": {
+          "declaration": "Index(Natural)",
+          "group": "source-excl"
+        },
+        "Range": {
+          "declaration": "Range { start: Natural, end: Natural }",
+          "group": "source-excl"
+        }
+      }
     }
   ],
   "sources": [
@@ -3254,13 +3268,14 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "97e34bb07815287e26c18382d999de97934ffc5874de04fee5cff8778b53f849",
+      "sha256": "8ba8c1c65f1071dcf7bcdbb6c6e57a1c1ab2b00220a02d5ae03af625c8ba0959",
       "group": "source",
       "surface": {
         "declarations": [
           "Access",
           "AccessArgument",
           "AccessConstraint",
+          "AxisSelection",
           "BasisExpr",
           "BasisExprKind",
           "Block",
@@ -3319,7 +3334,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "417cb70f522178af9ab549611376b2795d46cd591b9864868ddeadc2a4baa4a1",
+      "sha256": "e928e7f8239302f0855470509af98a439c674a88131866ca28537ebaf41a99ba",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3329,7 +3344,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "a9359da8295a757b28bb8c52ed8b5fa075bcfeb1faf72cc34084c87d89968500",
+      "sha256": "a551b0d7b953ae9526f810b30600e27365442194a44abe71d415bf77ca936f78",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3564,7 +3579,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "b403286507d3754712f525b4494f0c82211ce8f8f5dd3edbc50a4d09fd67b499",
+      "sha256": "c45156b564ecd0f3b861f002695553de062284a6070ca4de71ac085d8b243070",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3732,7 +3747,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "8647f832d63d549a79a73ba628e6d951b401bc59a5379d7026f6a8d7916c86ed",
+      "sha256": "33cb32c6f2ac26a15fb9d80d22eb54a04e292d8acc1ec00b36af2fdd67c8e89d",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3873,7 +3888,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "9560248f2b323498803d5923541812d878a31eea6aca9a0f29bf43f1ebaa346b",
+      "sha256": "9330a5f3537ecb4f2dd85bd36aea57a4395ba1b9740b3c4c366872d11476d18d",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4171,7 +4186,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "6997049eaa8b8995ee1b7ddcb5ba1546cebde70300b54caeaa8c1dd657586f56",
+      "sha256": "80d7c3b3a3b69fbada4c9c52172abf9f340ee39deb1122b2d2bdd803e5ed6798",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4960,6 +4975,16 @@
       "sha256": "1354ef774249b9da05a277bb3b6f0f071ddf6e99a52274edffe3685fbf5addec",
       "group": "finite-meaning",
       "surface": null
+    },
+    {
+      "path": "src/frontend/check/body/places.rs",
+      "sha256": "ce79b34e887a1d50a3ddec9f65e855a15c61fac91461aa6eac85e3fa44baf4d0",
+      "group": "source-excl",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [
