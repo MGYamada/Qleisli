@@ -6,7 +6,7 @@ import json
 import tempfile
 import unittest
 
-from check_editions import HISTORY, HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, REJECTED_CONST_ROOT, REJECTED_ARROW_ROOT, ROOT, check_editions
+from check_editions import HISTORY, HISTORICAL_ROOT, REJECTED_AUTHORING_ROOT, REJECTED_CONST_ROOT, REJECTED_ARROW_ROOT, REJECTED_ADJOINT_ROOT, ROOT, check_editions
 
 MANIFEST = 'schema-version = 2\n[qrate]\nedition = "2026"\n'
 
@@ -57,7 +57,7 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts, {"manifests": 2, "qli": 2, "qlt": 1,
-                                  "historical_manifests": 30, "historical_sources": 63})
+                                  "historical_manifests": 31, "historical_sources": 64})
 
     def test_historical_source_manifest_generator_and_record_are_immutable(self):
         base = self.copy_history()
@@ -101,7 +101,7 @@ class EditionTests(unittest.TestCase):
         errors, counts = check_editions(self.root)
         self.assertEqual(errors, [])
         self.assertEqual(counts["qli"], 3)  # The new project has ordinary coverage.
-        self.assertEqual(counts["historical_sources"], 63)
+        self.assertEqual(counts["historical_sources"], 64)
 
     def test_const_first_refusals_are_exact_history_and_repaired_sources_are_ordinary(self):
         self.copy_history()
@@ -146,6 +146,34 @@ class EditionTests(unittest.TestCase):
         self.write(f"{REJECTED_ARROW_ROOT}/attempt-02/Qargo.toml", MANIFEST)
         self.assertEqual(check_editions(self.root)[0], [])
         self.write(f"{REJECTED_ARROW_ROOT}/attempt-02/Qargo.toml", "schema = 2")
+        self.assertTrue(any("attempt-02/Qargo.toml: requires schema-version = 2" in e
+                            for e in check_editions(self.root)[0]))
+
+    def test_adjoint_refusal_keeps_exact_inputs_and_repaired_attempt_ordinary(self):
+        self.copy_history()
+        base = self.root / REJECTED_ADJOINT_ROOT
+        for name in ("attempt-01/main.qli", "attempt-01/Qargo.toml",
+                     "observations/before.json"):
+            with self.subTest(name=name):
+                path = base / name
+                original = path.read_bytes()
+                path.write_bytes(original + b"\n")
+                self.assertTrue(any("historical input identity changed" in e
+                                    for e in check_editions(self.root)[0]))
+                path.write_bytes(original)
+        self.write(f"{REJECTED_ADJOINT_ROOT}/attempt-01/new.qli", "new source")
+        self.assertTrue(any("historical source inventory changed" in e
+                            for e in check_editions(self.root)[0]))
+        (base / "attempt-01/new.qli").unlink()
+        for name in ("main.qli", "Qargo.toml"):
+            self.write(f"{REJECTED_ADJOINT_ROOT}/attempt-02/{name}",
+                       (ROOT / REJECTED_ADJOINT_ROOT / "attempt-02" / name).read_text())
+        errors, counts = check_editions(self.root)
+        self.assertEqual(errors, [])
+        self.assertEqual(counts["qli"], 3)
+        self.assertEqual(counts["manifests"], 3)
+        self.assertEqual(counts["historical_sources"], 64)
+        self.write(f"{REJECTED_ADJOINT_ROOT}/attempt-02/Qargo.toml", "schema = 2")
         self.assertTrue(any("attempt-02/Qargo.toml: requires schema-version = 2" in e
                             for e in check_editions(self.root)[0]))
 

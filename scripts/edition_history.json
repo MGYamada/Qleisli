@@ -214,6 +214,22 @@
         "observations/wrong-input-before.json": "fa037a768b489c87819d02584f16dc94ef7b7f07028927545793997eae64b7a4",
         "observations/zero-power-before.json": "1db2894521b159d53183eec7c833bee74f08122ddd35fc891890847bb5ec7e35"
       }
+    },
+    {
+      "root": "tests/fixtures/authoring_sessions/direct-arrow-adjoint-v030",
+      "kind": "rejected-filesystem-authoring-attempt",
+      "filesystem_admission": false,
+      "explanation": "The first CLI check rejected the incorrect schema key before source checking. Preserve the exact source, manifest and observed project refusal. This record grants no filesystem admission; the manifest-only attempt-02 and all subsequent clients remain subject to ordinary schema-2 checks.",
+      "projects": [
+        "attempt-01"
+      ],
+      "files": {
+        "attempt-01/Qargo.toml": "530004057c52b82fac2f53f009676c26ea2c6a401f856b50a7f8292bffea5a97",
+        "attempt-01/main.qli": "1c2dbd4c67a8b3319cfe9174fe2fa80e3b072570553f7ff91449839918ef968c"
+      },
+      "anchors": {
+        "observations/before.json": "2ce1600a4f5e2982c70daee24df63f4563966b373825857a7fb3899eb58dbdec"
+      }
     }
   ],
   "version": 1

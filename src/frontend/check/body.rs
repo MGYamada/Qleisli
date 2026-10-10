@@ -695,7 +695,7 @@ impl Checker<'_, '_> {
             }
             ExprKind::Adjoint { operation, input } => {
                 let target = self.expr(input, scope, None)?;
-                self.transformed_operation(
+                let result = self.transformed_operation(
                     operation,
                     &target,
                     scope,
@@ -704,7 +704,7 @@ impl Checker<'_, '_> {
                     span,
                 )?;
                 self.obligation(span, ObligationKind::TransformedMeaning)?;
-                target
+                result
             }
             ExprKind::Controlled { operation, args } => {
                 if args.len() != 2 {

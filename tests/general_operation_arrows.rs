@@ -757,3 +757,147 @@ fn source_control_and_meaning_share_actual_audit_bodies_and_exact_requests() {
         assert_eq!(error.code(), "contract", "{name}: {error}");
     }
 }
+
+#[test]
+fn direct_formal_adjoint_reverses_exact_ports_and_keeps_phase_with_a_reference() {
+    let source =
+        include_str!("fixtures/authoring_sessions/direct-arrow-adjoint-v030/attempt-02/main.qli");
+    for basis in 0..=1 {
+        let mut expected = [[0.0; 2]; 2];
+        expected[basis] = [1.0, 0.0];
+        amplitudes(&selected(source, "run", basis), &expected);
+    }
+    let constructed = source.replace(
+        "reverse[strip](q)",
+        "adjoint(then_op(strip,identity_bit))(q)",
+    ) + "fn identity_bit(q:Q<Bit>)->Q<Bit>{q}";
+    for basis in 0..=1 {
+        let mut expected = [[0.0; 2]; 2];
+        expected[basis] = [1.0, 0.0];
+        amplitudes(&selected(&constructed, "run", basis), &expected);
+    }
+    let source = "use std::quantum::{split,finish,phase,join};
+        fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);phase[1,3](b)}
+        fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<(Unit,Bit)>
+            requires Adjointable(U){adjoint(U)(q)}
+        pub fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{
+            let(b,r)=split(q);join(reverse[strip](b),r)}";
+    // The first bit acquires the inverse phase; the second is an untouched
+    // reference. All four joint columns distinguish reversed axes and phase.
+    let omega = std::f64::consts::FRAC_1_SQRT_2;
+    for basis in 0..4 {
+        let mut expected = [[0.0; 2]; 4];
+        expected[basis] = if basis & 1 == 0 {
+            [1.0, 0.0]
+        } else {
+            [omega, -omega]
+        };
+        amplitudes(&selected(source, "run", basis), &expected);
+    }
+    let source = source.replace(
+        "pub fn main(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
+        "fn open(q:Q<(Bit,Bit)>)->Q<((Unit,Bit),Bit)>{",
+    ) + "use std::quantum::{init0,h}; use std::observe::measure_z;
+         pub observe fn main()->Bit{
+            let(q,r)=split(open(join(h(init0()),init0())));
+            let(u,b)=split(q);finish(u);let _=measure_z(r);measure_z(h(phase[1,3](b)))}";
+    let root = SourceRoot::new(&source);
+    let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args([
+            "run",
+            "--format=json",
+            "--ir-profile=raw",
+            "--entry=main::main",
+        ])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .output()
+        .unwrap();
+    assert!(result.status.success(), "{result:?}");
+    let text = String::from_utf8(result.stdout).unwrap();
+    for (bit, expected) in [(false, 1.0), (true, 0.0)] {
+        let probability: f64 = text
+            .split_once(&format!("\"bits\":[{bit}],\"probability\":"))
+            .unwrap()
+            .1
+            .split_once('}')
+            .unwrap()
+            .0
+            .parse()
+            .unwrap();
+        assert!((probability - expected).abs() < 1e-12, "{text}");
+    }
+}
+
+#[test]
+fn direct_formal_adjoint_keeps_capability_effect_and_exact_tree_refusals() {
+    for (source, code) in [
+        (
+            "fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<(Unit,Bit)>
+            requires Applicable(U){adjoint(U)(q)}",
+            "effect",
+        ),
+        (
+            "fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<(Bit,Unit)>)->Q<(Unit,Bit)>
+            requires Adjointable(U){adjoint(U)(q)}",
+            "type",
+        ),
+        (
+            "fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<Bit>
+            requires Adjointable(U){adjoint(U)(q)}",
+            "type",
+        ),
+        (
+            "use std::quantum::{init0,finish};
+            fn prep(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+            fn reverse[const U:Op<Unit -> Bit>](q:Q<Bit>)->Q<Unit>
+                requires Adjointable(U){adjoint(U)(q)}
+            pub fn main(q:Q<Bit>)->Q<Unit>{reverse[prep](q)}",
+            "effect",
+        ),
+    ] {
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+        assert_eq!(error.code(), code, "{error}");
+    }
+}
+
+#[test]
+fn direct_formal_adjoint_preserves_original_nested_meaning_obligations() {
+    use qleisli::contract::exact::Budget;
+    use qleisli::interchange::native::Kernel;
+    let kernel = Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    for (body, honest) in [("phase[1,1](q)", true), ("q", false)] {
+        let source = format!(
+            "use std::quantum::{{split,finish,phase}};
+             classical fn z_phase(b:Bit)->(Bit,(Bit,Bit)){{(0,(0,b))}}
+             meaning Z:Bit=phase_by(z_phase);
+             fn direct(q:Q<Bit>)->Q<Bit>{{{body}}}
+             fn apply[const U:Op<Bit,Z>](q:Q<Bit>)->Q<Bit>
+                 requires Applicable(U){{U(q)}}
+             fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{{
+                 let(u,b)=split(q);finish(u);apply[checked_op(direct,Z)](b)}}
+             fn reverse[const U:Op<(Unit,Bit) -> Bit>](q:Q<Bit>)->Q<(Unit,Bit)>
+                 requires Adjointable(U){{adjoint(U)(q)}}
+             pub fn main(q:Q<Bit>)->Q<(Unit,Bit)>{{reverse[strip](q)}}"
+        );
+        let program = parsed(&source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut budget = Budget::new(100_000);
+        let result = program
+            .check_operation_meanings(&kernel, &mut budget)
+            .and_then(|checked| checked.lower_raw(&kernel, &mut budget));
+        if honest {
+            let raw = result.unwrap();
+            let accepted = kernel.accept(raw.proposal()).unwrap();
+            raw.validate_source_steps(&accepted).unwrap();
+        } else {
+            assert_eq!(result.unwrap_err().code(), "contract");
+        }
+    }
+}

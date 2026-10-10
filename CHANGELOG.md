@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Reverse both exact ports for direct adjoints of opaque general operation
+  parameters. Reuse the checked inverse constructor in selected lowering,
+  preserving provider/Meaning bindings and named runtime-group restrictions.
+
 - Preserve `Op<A>` / `Op<A -> A>` equivalence in the ordinary finite project
   adapter using the common checker's exact port equality. Keep different-port
   restrictions, original Meaning checks and native acceptance unchanged.

@@ -1839,6 +1839,18 @@ impl Builder<'_> {
             .iter()
             .map(|argument| self.operation(argument, scope, frame, depth, span))
             .collect::<Result<Vec<_>>>()?;
+        self.finish_constructed_operation(constructor, children, frame, span)
+    }
+    /// Finish already-resolved children through the one constructor contract.
+    /// Callers charge the child vector before allocation; source identities and
+    /// original Meaning annotations remain on those children.
+    fn finish_constructed_operation(
+        &mut self,
+        constructor: OperationConstructor,
+        children: Vec<SourceOperation>,
+        frame: &Frame,
+        span: Span,
+    ) -> Result<SourceOperation> {
         let signatures = children
             .iter()
             .map(|operation| operation_signature(operation, &self.definitions, span))
@@ -2401,8 +2413,30 @@ impl Builder<'_> {
             }
             ExprKind::Adjoint(argument, input) => {
                 let op = self.operation(argument, scope, frame, depth, span)?;
+                let formal = matches!(argument, Argument::Natural(Natural {
+                    kind: NatKind::Name(name), ..
+                }) if name.get(&scope.operations).is_some());
+                // Opaque arrows exchange their exact ports under adjoint.
+                // Reuse the static inverse constructor and its source replay;
+                // ordinary named runtime groups retain their existing rule.
+                let kind = if formal {
+                    let (ports, _, _) = operation_signature(&op, &self.definitions, span)?;
+                    if ports.input != ports.output {
+                        self.charge_cells(9, span)?;
+                        StepKind::Apply(self.finish_constructed_operation(
+                            OperationConstructor::Adjoint,
+                            vec![op],
+                            frame,
+                            span,
+                        )?)
+                    } else {
+                        StepKind::Adjoint(op)
+                    }
+                } else {
+                    StepKind::Adjoint(op)
+                };
                 let value = self.expr(input, scope, frame, depth)?;
-                self.operation_step(StepKind::Adjoint(op), vec![value], frame, span)
+                self.operation_step(kind, vec![value], frame, span)
             }
             ExprKind::Controlled(argument, inputs) => {
                 let op = self.operation(argument, scope, frame, depth, span)?;

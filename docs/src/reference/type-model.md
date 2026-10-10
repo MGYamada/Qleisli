@@ -396,7 +396,12 @@ independently inferred principal effect is at most Isometry. An annotation canno
 make an Observe body pure or make an Isometry body Unitary.
 
 `Adjointable(U)` requires a principal-Unitary provider and a supported reverse
-implementation; an adjoint exchanges the ports. `Controllable(U)` additionally
+implementation; an adjoint exchanges the ports. For an opaque formal
+`U: Op<A -> B>`, direct `adjoint(U)(q)` consumes `Q<B>` and returns `Q<A>`,
+just as applying the static adjoint through another operation parameter does.
+The selected lowering retains the original provider and Meaning requests in
+the same inverse-constructor path. This differs from the ordinary named
+runtime-group rule below. `Controllable(U)` additionally
 requires the exact endomorphism `A = B`. Repetition also requires `A = B`,
 including a zero count. Sequential construction matches the exact middle tree;
 tensor construction retains ordered pairs of both input and output trees.

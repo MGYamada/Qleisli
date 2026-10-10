@@ -53,7 +53,7 @@ impl Checker<'_, '_> {
         }
     }
     /// Direct runtime transforms preserve the whole owner group. Opaque Op
-    /// arguments and constructors continue to use their single-owner basis.
+    /// arguments and constructors use one owner, with exchanged adjoint ports.
     pub(super) fn transformed_operation(
         &mut self,
         op: &StaticOp,
@@ -62,7 +62,7 @@ impl Checker<'_, '_> {
         requested: Access,
         target_span: Span,
         span: Span,
-    ) -> Result<()> {
+    ) -> Result<Ty> {
         if self.depth >= 64 {
             return Err(SourceError::new(
                 "limit",
@@ -84,7 +84,7 @@ impl Checker<'_, '_> {
         requested: Access,
         target_span: Span,
         span: Span,
-    ) -> Result<()> {
+    ) -> Result<Ty> {
         self.tick(op.span)?;
         match &op.kind {
             StaticOpKind::Repeat(count, child) if self.runtime_group_leaf(child)? => {
@@ -164,7 +164,7 @@ impl Checker<'_, '_> {
                     name.span,
                     ObligationKind::RuntimeGroupProvider { provider: id },
                 )?;
-                return Ok(());
+                return Ok(group);
             }
         }
         let basis = target.quantum_basis().ok_or_else(|| {
@@ -178,19 +178,38 @@ impl Checker<'_, '_> {
                 },
             )
         })?;
+        let adjoint_mode = OperationMode {
+            arrows: true,
+            ..OperationMode::ENDO
+        };
         let operation = if let StaticOpKind::Name(name) = &op.kind {
-            self.target_operation(name, basis, scope)?
+            if requested == Access::Adjoint
+                && self
+                    .local(name)
+                    .is_some_and(|key| scope.operations.contains_key(key))
+            {
+                self.named_operation_with(name, &[], scope, false, adjoint_mode)?
+            } else {
+                self.target_operation(name, basis, scope)?
+            }
+        } else if requested == Access::Adjoint {
+            self.operation_inner_with(op, scope, adjoint_mode)?
         } else {
             self.operation_inner(op, scope)?
         };
         access(&operation, requested, span)?;
         normalize::expect(
-            &operation.basis,
+            if requested == Access::Adjoint {
+                operation.output()
+            } else {
+                &operation.basis
+            },
             basis,
             &scope.context,
             span,
             &self.program.budget,
-        )
+        )?;
+        Ok(Ty::quantum(operation.basis))
     }
     fn runtime_group_leaf(&self, op: &StaticOp) -> Result<bool> {
         let mut leaf = op;

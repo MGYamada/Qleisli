@@ -3399,7 +3399,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "9292a07f442d6c1ce6798568ebcb4b0645e4939c401b063f673c321ddd1e7397",
+      "sha256": "935d99b099dda80a5449ffe54bb88add130a02afa30bd845036408b6ddb28353",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3409,7 +3409,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "28f263ac82e76d020ac3c232184a13f46479793194db5b2cd6e45ce091e84d30",
+      "sha256": "70787d0ee3266ffc7565618dd4240d334be051431fb8fdebb8aa1d9f1fb52a79",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4065,7 +4065,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "e6b5fd4016a0e1077bbc6742578dfd22a31799fc7569235ee7919ac7a94aa227",
+      "sha256": "30c9c8409e10dda8aa0c760c7cef955df41a08a7ef0f793c5be0e6d1f879d840",
       "group": "sized-source",
       "surface": {
         "declarations": [

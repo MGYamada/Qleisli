@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [direct general-arrow adjoint study](direct-arrow-adjoint-v030/README.md)
+preserves a manifest repair, the actual wrong-port refusal and later unchanged
+source checks/runs. Independent phase/reference and false-Meaning regressions
+separate direct formal adjoints from ordinary named runtime-group restrictions.
+
 The [explicit endomorphism study](explicit-endomorphism-v030/README.md) preserves
 an ordinary project's rejected `Op<Bit -> Bit>` source before the adapter repair.
 Its later execution and independent phase/product regressions distinguish exact
