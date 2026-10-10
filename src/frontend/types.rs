@@ -13,6 +13,21 @@ pub struct Type<N> {
     pub(super) kind: Kind<N>,
 }
 
+/// Exact borrowed ports of a unary source function. This view establishes
+/// arity only; effects, quantum ownership, laws and executable access are
+/// checked separately. In particular it does not identify the two trees.
+pub(super) struct UnaryInterface<'a, N> {
+    pub input: &'a Type<N>,
+    pub output: &'a Type<N>,
+}
+
+impl<'a, N> UnaryInterface<'a, N> {
+    pub fn new(inputs: &'a [Type<N>], output: &'a Type<N>) -> Option<Self> {
+        let [input] = inputs else { return None };
+        Some(Self { input, output })
+    }
+}
+
 #[derive(Clone, Debug)]
 pub(super) enum Kind<N> {
     Unit,

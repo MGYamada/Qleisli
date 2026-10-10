@@ -352,7 +352,8 @@ impl Compiler<'_> {
                 "static provider requires Q<A> -> Q<A>",
             ));
         };
-        if params != [result.clone()] {
+        let ports = crate::frontend::types::UnaryInterface::new(&params, &result);
+        if ports.is_none_or(|ports| ports.input != ports.output) {
             return Err(self.error(
                 module,
                 name.span,

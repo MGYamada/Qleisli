@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain exact borrowed input/output interfaces when preparing static source
+  providers across the common checker and concrete adapters. Keep existing
+  endomorphism checks explicit and remove output-only type copies; general
+  static-arrow syntax and Meaning extensions remain unimplemented.
+
 - Clarify quantum access vocabulary and diagnose unsupported `borrow q`
   without reserving ordinary names or implying clean/dirty workspace support.
   Explicit `excl`/`ctrl` and checked consuming calls retain their contracts.

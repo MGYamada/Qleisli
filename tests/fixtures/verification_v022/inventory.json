@@ -3357,7 +3357,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "a551b0d7b953ae9526f810b30600e27365442194a44abe71d415bf77ca936f78",
+      "sha256": "d79ac3e84d10a822a9098f438d6de1d2fe25c2b4cb2602a9f6e5f6a1d341f7c8",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3582,7 +3582,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "102ec28f1b8fb77b1dec869737581442e46b7084672713d69d64c5cc59d016a8",
+      "sha256": "81ead2310d75b2051f7efbfaaad0365c023d8c2be9ce9a0ea01eae02004d27b4",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4011,7 +4011,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "bd35448287d8e7aaab959160f79fabe9273a53b1e3279324bc1f09b8a1048e58",
+      "sha256": "4d917f1ab00dd3a0371fded3e41976ed1c9cc4b558bede6d65e47b45abff1b17",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4343,13 +4343,14 @@
     },
     {
       "path": "src/frontend/types.rs",
-      "sha256": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+      "sha256": "0b0a3775c8aaa600f01010c37a3c9d1dca20e909dd8fc218d3516f8bf92e1d8b",
       "group": "source",
       "surface": {
         "declarations": [
           "Type"
         ],
         "functions": [
+          "pub fn new(inputs: &'a [Type<N>], output: &'a Type<N>) -> Option<Self>",
           "pub fn quantum_basis(&self) -> Option<&Self>"
         ],
         "capacity_constants": []

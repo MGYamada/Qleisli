@@ -836,9 +836,11 @@ impl Checker<'_, '_> {
                         "operation must be a unary quantum endomorphism",
                     ));
                 }
+                let ports = crate::frontend::types::UnaryInterface::new(&inputs, &result)
+                    .expect("checked unary provider arity");
                 normalize::expect(
-                    &inputs[0],
-                    &result,
+                    ports.input,
+                    ports.output,
                     &scope.context,
                     name.span,
                     &self.program.budget,
@@ -887,9 +889,11 @@ impl Checker<'_, '_> {
                         "operation provider requires Q<A> -> Q<A> with one exact quantum input",
                     ));
                 }
+                let ports = crate::frontend::types::UnaryInterface::new(&inputs, &result)
+                    .expect("checked unary provider arity");
                 normalize::expect(
-                    &inputs[0],
-                    &result,
+                    ports.input,
+                    ports.output,
                     &scope.context,
                     name.span,
                     &self.program.budget,

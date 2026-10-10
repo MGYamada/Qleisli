@@ -793,7 +793,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
             BTreeMap::new(),
             0,
         )?;
-        builder.provider_type(id, Span::default())?;
+        builder.provider_interface(id, Span::default())?;
         operations.insert(
             name.clone(),
             SourceOperation {
@@ -1240,9 +1240,9 @@ impl Builder<'_> {
             let resolved_naturals = closed.naturals;
             let resolved_bases = closed.bases;
             for (key, required) in &closed.operations {
-                let target_type =
-                    self.provider_type(operations[&key.name].target(), function.span)?;
-                if &target_type != required {
+                let target_id = operations[&key.name].target();
+                let ports = self.provider_interface(target_id, function.span)?;
+                if ports.input != required || ports.output != required {
                     return Err(error(
                         "type",
                         function.span,
@@ -1261,7 +1261,12 @@ impl Builder<'_> {
                 {
                     let target = &program.meaning_targets[id];
                     self.charge_cells(target.cells(), function.span)?;
-                    if target_type.quantum_basis() != Some(&target.basis) {
+                    // The provider check above retained both exact ports. No
+                    // owned output-only type stands in for this signature.
+                    let provider = &self.definitions[target_id];
+                    if provider.inputs[0].ty.quantum_basis() != Some(&target.basis)
+                        || provider.output.ty.quantum_basis() != Some(&target.basis)
+                    {
                         return Err(error(
                             "type",
                             function.span,
@@ -1350,12 +1355,23 @@ impl Builder<'_> {
         self.active.remove(&key);
         result.map_err(|e| e.in_module(&module))
     }
-    fn provider_type(&self, id: usize, span: Span) -> Result<SourceType> {
+    fn provider_interface(
+        &self,
+        id: usize,
+        span: Span,
+    ) -> Result<crate::frontend::types::UnaryInterface<'_, u32>> {
         let definition = &self.definitions[id];
+        let ports = match definition.inputs.as_slice() {
+            [input] => Some(crate::frontend::types::UnaryInterface {
+                input: &input.ty,
+                output: &definition.output.ty,
+            }),
+            _ => None,
+        };
         if definition.effect != Effect::Unitary
-            || definition.inputs.len() != 1
-            || !definition.inputs[0].ty.is_quantum_owner()
-            || definition.inputs[0].ty != definition.output.ty
+            || ports
+                .as_ref()
+                .is_none_or(|ports| !ports.input.is_quantum_owner() || ports.input != ports.output)
         {
             return Err(error(
                 "type",
@@ -1363,7 +1379,7 @@ impl Builder<'_> {
                 "provider must be unitary and preserve one exact quantum input owner",
             ));
         }
-        Ok(definition.output.ty.clone())
+        Ok(ports.expect("checked unary quantum provider"))
     }
     fn runtime_provider_type(&mut self, id: usize, span: Span) -> Result<SourceType> {
         fn preflight(ty: &SourceType, cells: &mut usize, span: Span) -> Result<(usize, usize)> {
@@ -1583,10 +1599,9 @@ impl Builder<'_> {
                         "checked_op requires an original finite Meaning",
                     )
                 })?;
-                if self
-                    .provider_type(operation.target(), *span)?
-                    .quantum_basis()
-                    != Some(&target.basis)
+                let ports = self.provider_interface(operation.target(), *span)?;
+                if ports.input.quantum_basis() != Some(&target.basis)
+                    || ports.output.quantum_basis() != Some(&target.basis)
                 {
                     return Err(error(
                         "type",
