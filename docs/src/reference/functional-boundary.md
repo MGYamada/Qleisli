@@ -107,11 +107,14 @@ or EXACT discharge.
 
 ### Admitted operation construction
 
-The table gives common-source description/interface rules, rather than concrete
-lowering eligibility. Finite provider materialization retains its refusal of
-the explicit-specialization constructor through this path; selected projection
-supports a narrower constructor set. Neither can gain support merely from a
-successful common judgment. The current constructors retain these rules:
+The table gives the existing endomorphic common-source rules; the
+[general pure-arrow rules](type-model.md#general-pure-operation-arrows) specify
+separate ports and their current selected hierarchy implementation. Concrete
+lowering eligibility still depends on the profile and retained evidence.
+Finite provider materialization retains its refusal of explicit specialization
+through this path. Selected hierarchy projection retains constructor trees,
+but refined constructor materialization remains unsupported. A successful
+common judgment cannot replace the independent evidence required by a profile.
 
 | Form | Required interface and access |
 | --- | --- |

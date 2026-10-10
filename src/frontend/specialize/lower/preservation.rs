@@ -582,7 +582,14 @@ impl Replay<'_> {
                     None
                 }
             });
-            let outputs = if let Some(child) = transparent.filter(|_| !atomic) {
+            let outputs = if let Some(operation) = step.operation().filter(|op| {
+                step.kind() == "apply" && step.effect() != "unitary" && op.has_constructed()
+            }) {
+                path.push(i);
+                let output = self.operation(operation, args, path, (id, i, step));
+                path.pop();
+                output?
+            } else if let Some(child) = transparent.filter(|_| !atomic) {
                 path.push(i);
                 let output = self.function(child, args, path);
                 path.pop();
@@ -614,13 +621,129 @@ impl Replay<'_> {
         }
         Ok(result)
     }
+    fn constructor_event(
+        &mut self,
+        args: &[Item],
+        path: &[usize],
+        origin: (usize, usize, &SourceStep),
+        structural: Option<Primitive>,
+    ) -> Result<Vec<Item>> {
+        let event = self
+            .proposal
+            .events
+            .get(self.next)
+            .ok_or_else(|| invalid("constructor source event was omitted"))?;
+        if event.definition != origin.0
+            || event.step != origin.1
+            || event.call_path != path
+            || event.module != origin.2.module()
+            || event.span != origin.2.span()
+            || event.inputs != args
+        {
+            return Err(invalid(
+                "constructor event differs from retained source tree/path/operands",
+            ));
+        }
+        self.event_contract(event, structural, "unitary")?;
+        self.next += 1;
+        Ok(event.outputs.clone())
+    }
+    fn operation(
+        &mut self,
+        operation: &super::SourceOperation,
+        args: Vec<Item>,
+        path: &mut Vec<usize>,
+        origin: (usize, usize, &SourceStep),
+    ) -> Result<Vec<Item>> {
+        self.calls += 1;
+        if self.calls > 1024 || path.len() > 16 {
+            return Err(invalid("constructor trace replay call bound exceeded"));
+        }
+        if let Some(id) = operation.definition() {
+            return self.function(id, args, path);
+        }
+        if let Some(child) = operation.child() {
+            let mut output = args;
+            for iteration in 0..operation
+                .repeat_count()
+                .ok_or_else(|| invalid("missing source repeat count"))?
+            {
+                path.push(iteration as usize);
+                let next = self.operation(child, output, path, origin);
+                path.pop();
+                output = next?;
+            }
+            return Ok(output);
+        }
+        let (kind, children, ports) = operation
+            .constructed()
+            .ok_or_else(|| invalid("missing retained constructor"))?;
+        if ports.effect == crate::ir::Effect::Unitary {
+            return self.constructor_event(&args, path, origin, None);
+        }
+        match kind {
+            super::OperationConstructor::Then => {
+                path.push(0);
+                let middle = self.operation(&children[0], args, path, origin);
+                path.pop();
+                path.push(1);
+                let output = self.operation(&children[1], middle?, path, origin);
+                path.pop();
+                output
+            }
+            super::OperationConstructor::Conjugate => {
+                path.push(0);
+                let first = self.constructor_event(&args, path, origin, None);
+                path.pop();
+                path.push(1);
+                let middle = self.operation(&children[1], first?, path, origin);
+                path.pop();
+                path.push(2);
+                let output = self.operation(&children[0], middle?, path, origin);
+                path.pop();
+                output
+            }
+            super::OperationConstructor::Tensor => {
+                path.push(0);
+                let split = self.constructor_event(&args, path, origin, Some(Primitive::Split));
+                path.pop();
+                let split = split?;
+                let [left, right] = split.as_slice() else {
+                    return Err(invalid("tensor source split arity differs"));
+                };
+                path.push(1);
+                let left = self.operation(&children[0], vec![left.clone()], path, origin);
+                path.pop();
+                path.push(2);
+                let right = self.operation(&children[1], vec![right.clone()], path, origin);
+                path.pop();
+                let mut operands = left?;
+                operands.extend(right?);
+                path.push(3);
+                let output = self.constructor_event(&operands, path, origin, Some(Primitive::Join));
+                path.pop();
+                output
+            }
+            _ => Err(invalid("non-unitary source transform in constructor trace")),
+        }
+    }
     fn event(&mut self, e: &SourceEvent, step: &SourceStep) -> Result<()> {
+        self.event_contract(e, step.primitive_kind(), step.effect())
+    }
+    // Overrides originate only in replay of the retained constructor tree,
+    // never in producer metadata or an event's claimed kind/effect.
+    fn event_contract(
+        &mut self,
+        e: &SourceEvent,
+        primitive: Option<Primitive>,
+        effect: &str,
+    ) -> Result<()> {
         if self.current != e.before {
             return Err(invalid("source full frames do not compose"));
         }
         unique(&e.before)?;
         unique(&e.after)?;
-        if step.primitive_kind().map(trace_kind).unwrap_or("pure") != e.kind {
+        if primitive.map(trace_kind).unwrap_or("pure") != e.kind {
             return Err(invalid("source event kind differs from actual primitive"));
         }
         let selected = quantum(&e.inputs);
@@ -645,13 +768,13 @@ impl Replay<'_> {
             .collect();
         let expected = match e.kind {
             "pure" => {
-                if step.effect() != "unitary"
+                if effect != "unitary"
                     || e.inputs.len() != selected.len()
                     || e.outputs.len() != outputs.len()
                 {
                     return Err(invalid("non-unitary source step proposed as pure"));
                 }
-                if !self.measured.is_empty() && !step.primitive_kind().is_some_and(structural) {
+                if !self.measured.is_empty() && !primitive.is_some_and(structural) {
                     return Err(invalid("quantum gate crossed observation"));
                 }
                 let d = self
@@ -670,7 +793,7 @@ impl Replay<'_> {
                 // structural node, not an arbitrary accepted zero-axis gate
                 // with the same endpoints. Derive this independently of the
                 // proposal producer's primitive dispatch.
-                let unit_operation = match step.primitive_kind() {
+                let unit_operation = match primitive {
                     Some(Primitive::Unit) => Some("pack_unit"),
                     Some(Primitive::Finish) => Some("unpack_unit"),
                     Some(Primitive::Split) => Some("split_tuple"),
@@ -681,10 +804,7 @@ impl Replay<'_> {
                     let body = field(d, "body")?;
                     if tag(body)? != "structural" || tag(field(body, "operation")?)? != operation {
                         return Err(invalid(
-                            if matches!(
-                                step.primitive_kind(),
-                                Some(Primitive::Split | Primitive::Join)
-                            ) {
+                            if matches!(primitive, Some(Primitive::Split | Primitive::Join)) {
                                 "actual product source map differs from its canonical structural node"
                             } else {
                                 "actual Unit source map differs from its canonical structural node"
@@ -692,7 +812,7 @@ impl Replay<'_> {
                         ));
                     }
                 }
-                match step.primitive_kind() {
+                match primitive {
                     Some(Primitive::Split) => {
                         let [input] = selected.as_slice() else {
                             return Err(invalid("split source owner arity differs"));
@@ -737,7 +857,7 @@ impl Replay<'_> {
                 [outputs.clone(), rest].concat()
             }
             "init0" => {
-                if step.primitive_kind() != Some(Primitive::Init0)
+                if primitive != Some(Primitive::Init0)
                     || e.node.is_some()
                     || !e.inputs.is_empty()
                     || e.outputs.len() != 1
@@ -757,7 +877,7 @@ impl Replay<'_> {
                 [self.current.clone(), outputs.clone()].concat()
             }
             "observe" => {
-                if step.primitive_kind() != Some(Primitive::MeasureZ)
+                if primitive != Some(Primitive::MeasureZ)
                     || e.node.is_some()
                     || selected.len() != 1
                     || selected[0].kind != PortKind::Bit
@@ -776,7 +896,7 @@ impl Replay<'_> {
                 rest
             }
             "empty_bits" => {
-                if step.primitive_kind() != Some(Primitive::EmptyBits)
+                if primitive != Some(Primitive::EmptyBits)
                     || e.node.is_some()
                     || !e.inputs.is_empty()
                     || e.outputs != [Item::Classical(vec![])]
@@ -786,7 +906,7 @@ impl Replay<'_> {
                 self.current.clone()
             }
             "prepend_bit" => {
-                if step.primitive_kind() != Some(Primitive::PrependBit)
+                if primitive != Some(Primitive::PrependBit)
                     || e.node.is_some()
                     || e.inputs.len() != 2
                 {
@@ -1151,6 +1271,64 @@ mod tests {
         change(graph);
         p.graph = json::encode(graph).unwrap();
         p.payload = json::encode(&actual).unwrap();
+    }
+    #[test]
+    fn tensor_initialization_replay_rejects_wrong_tree_paths_and_structural_nodes() {
+        let source = include_str!(
+            "../../../../tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/tensor.qli"
+        );
+        let valid = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+            .unwrap()
+            .instantiate("main::entry", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower()
+            .unwrap();
+        validate(&valid).unwrap();
+        let split = valid
+            .events
+            .iter()
+            .position(|e| {
+                e.call_path.last() == Some(&0) && e.inputs.len() == 1 && e.outputs.len() == 2
+            })
+            .unwrap();
+        let join = valid
+            .events
+            .iter()
+            .position(|e| {
+                e.call_path.last() == Some(&3) && e.inputs.len() == 2 && e.outputs.len() == 1
+            })
+            .unwrap();
+        let mut bad = valid.clone();
+        *bad.events[split].call_path.last_mut().unwrap() = 1;
+        rejects(&bad);
+        let mut bad = valid.clone();
+        bad.events.swap(split, join);
+        rejects(&bad);
+        let mut bad = valid.clone();
+        bad.events.remove(split);
+        rejects(&bad);
+        let mut bad = valid.clone();
+        let node = bad.events[split].node.unwrap();
+        graph_mutation(&mut bad, |graph| {
+            let Value::Array(definitions) = object_mut(graph).get_mut("definitions").unwrap()
+            else {
+                panic!()
+            };
+            let body = object_mut(&mut definitions[node]).get_mut("body").unwrap();
+            object_mut(body).insert(
+                "operation".into(),
+                Value::object([("tag", Value::String("join_tuple".into()))]),
+            );
+        });
+        rejects(&bad);
+        let mut bad = valid;
+        let Item::Quantum(output) = &mut bad.events[join].outputs[0] else {
+            panic!()
+        };
+        output.axes.reverse();
+        rejects(&bad);
     }
     #[test]
     fn initialization_certificate_rejects_missing_crossings_and_source_events() {

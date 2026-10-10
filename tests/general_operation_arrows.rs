@@ -187,3 +187,209 @@ fn whole_source_checking_refuses_arrow_counterexamples_before_profile_selection(
         assert_eq!(error.code(), code, "{error}");
     }
 }
+
+#[test]
+fn retained_constructor_sources_preserve_ports_phase_and_ordered_axes() {
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01");
+    let source = |name: &str| {
+        std::fs::read_to_string(directory.join(format!("{name}.qli")))
+            .unwrap()
+            .replace("pub fn entry", "pub fn main")
+    };
+    let omega = std::f64::consts::FRAC_1_SQRT_2;
+    amplitudes(&selected(&source("sequence"), "run", 0), &[[omega, 0.0]; 2]);
+    for name in ["adjoint", "endomorphic-sequence"] {
+        for basis in 0..=1 {
+            let mut expected = [[0.0; 2]; 2];
+            expected[basis] = [1.0, 0.0];
+            amplitudes(&selected(&source(name), "run", basis), &expected);
+        }
+    }
+    for basis in 0..=1 {
+        // Axis zero belongs to the left factor. The retained right input is
+        // therefore output bit one; this also detects a reversed tensor.
+        let mut expected = [[0.0; 2]; 4];
+        expected[basis * 2] = [1.0, 0.0];
+        amplitudes(&selected(&source("tensor"), "run", basis), &expected);
+    }
+    assert_eq!(
+        ParsedProgram::parse(BTreeMap::from([("main".into(), source("wrong-middle"))]))
+            .unwrap_err()
+            .code(),
+        "type"
+    );
+}
+
+#[test]
+fn constructed_endomorphisms_repeat_and_preserve_complex_phase() {
+    let source = "use std::quantum::{finish,split,phase};
+        fn unitor(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
+        fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+        fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub fn main(q:Q<Bit>)->Q<Bit>{invoke[power(then_op(then_op(adjoint(unitor),unitor),twist),2)](q)}";
+    amplitudes(&selected(source, "run", 0), &[[1.0, 0.0], [0.0, 0.0]]);
+    amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [0.0, 1.0]]);
+}
+
+#[test]
+fn selected_pure_tensor_control_and_conjugation_keep_exact_ordering() {
+    let prefix = "use std::quantum::{h,phase};
+        fn twist(q:Q<Bit>)->Q<Bit>{phase[1,3](q)}
+        fn had(q:Q<Bit>)->Q<Bit>{h(q)}";
+    let omega = std::f64::consts::FRAC_1_SQRT_2;
+    for (operation, basis, expected) in [
+        (
+            "tensor_op(twist,had)",
+            1,
+            vec![[0.0, 0.0], [0.5, 0.5], [0.0, 0.0], [0.5, 0.5]],
+        ),
+        (
+            "controlled(twist)",
+            3,
+            vec![[0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [omega, omega]],
+        ),
+    ] {
+        let source = format!("{prefix} fn invoke[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)> requires Applicable(U){{U(q)}}
+            pub fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{{invoke[{operation}](q)}}");
+        amplitudes(&selected(&source, "run", basis), &expected);
+    }
+    let source = format!(
+        "{prefix} fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}
+        pub fn main(q:Q<Bit>)->Q<Bit>{{invoke[conjugate_op(twist,had)](q)}}"
+    );
+    amplitudes(&selected(&source, "run", 0), &[[omega, 0.0], [0.5, 0.5]]);
+    let source = "use std::quantum::{split,join,finish,phase};
+        fn strip(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
+        fn middle(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,b)=split(q);join(u,phase[1,3](b))}
+        fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub fn main(q:Q<Bit>)->Q<Bit>{invoke[conjugate_op(strip,middle)](q)}";
+    amplitudes(&selected(source, "run", 1), &[[0.0, 0.0], [omega, omega]]);
+}
+
+#[test]
+fn shared_constructor_subtrees_remain_bounded_before_expanded_key_allocation() {
+    let source = |depth: usize| {
+        let mut source = String::from(
+            "use std::quantum::h; fn had(q:Q<Bit>)->Q<Bit>{h(q)}
+            fn f0[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}",
+        );
+        for n in 1..=depth {
+            source.push_str(&format!("fn f{n}[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{f{}[then_op(U,U)](q)}}",n-1));
+        }
+        source.push_str(&format!(
+            "pub fn main(q:Q<Bit>)->Q<Bit>{{f{depth}[had](q)}}"
+        ));
+        source
+    };
+    amplitudes(&selected(&source(4), "run", 1), &[[0.0, 0.0], [1.0, 0.0]]);
+    let mut repeated_leaf = String::from("had");
+    for _ in 0..24 {
+        repeated_leaf = format!("power({repeated_leaf},0)");
+    }
+    // Repeated old-profile leaves still occupy key cells when duplicated by
+    // a constructor, even though their runtime power is zero.
+    for source in [
+        source(18),
+        source(10).replace("f10[had]", &format!("f10[{repeated_leaf}]")),
+    ] {
+        let instance = parsed(&source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap();
+        let error = instance.elaborate().unwrap_err();
+        assert_eq!(error.code(), "limit");
+    }
+}
+
+#[test]
+fn unsupported_raw_and_refined_constructor_paths_refuse_without_erasing_children() {
+    let source = "fn id(q:Q<Bit>)->Q<Bit>{q}
+        fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub fn main(q:Q<Bit>)->Q<Bit>{invoke[then_op(id,id)](q)}";
+    let elaborate = |source: &str| {
+        parsed(source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+    };
+    let plain = elaborate(source);
+    assert_eq!(plain.lower_raw().unwrap_err().code(), "unsupported");
+    let source = format!(
+        "classical fn phi(b:Bit)->(Bit,(Bit,Bit)){{(0,(0,b))}}
+        meaning M:Bit=phase_by(phi); {}",
+        source.replace("then_op(id,id)", "power(then_op(checked_op(id,M),id),0)")
+    );
+    let refined = elaborate(&source);
+    assert_eq!(refined.lower().unwrap_err().code(), "meaning");
+    let kernel =
+        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    let mut budget = qleisli::contract::exact::Budget::new(20_000);
+    assert_eq!(
+        refined
+            .check_operation_meanings(&kernel, &mut budget)
+            .unwrap_err()
+            .code(),
+        "unsupported"
+    );
+}
+
+#[test]
+fn runtime_transforms_check_the_complete_endomorphic_interface_even_when_unused() {
+    let source = include_str!(
+        "fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli"
+    );
+    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    assert_eq!(error.code(), "type", "{error}");
+    assert_eq!(
+        check_project(&SourceRoot::new(source).0).unwrap_err().code,
+        ErrorCode::TypeMismatch
+    );
+}
+
+#[test]
+fn constructors_preserve_the_existing_nested_repetition_product_bound() {
+    for source in [
+        include_str!(
+            "fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-then.qli"
+        ),
+        include_str!(
+            "fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/repeat-adjoint.qli"
+        ),
+    ] {
+        let source = source.replace("pub fn entry", "pub fn main");
+        let instance = parsed(&source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap();
+        let error = instance.elaborate().unwrap_err();
+        assert_eq!(error.code(), "limit", "{error}");
+        // Exactly 256 repetitions on every path remains supported.
+        selected(
+            &source.replace("power(had,256)", "power(had,128)"),
+            "check",
+            0,
+        );
+    }
+    for (basis, constructor) in [
+        ("(Bit,Bit)", "tensor_op(power(had,256),id)"),
+        ("(Bit,Bit)", "controlled(power(had,256))"),
+        ("Bit", "conjugate_op(power(had,256),id)"),
+    ] {
+        let source = format!(
+            "use std::quantum::h; fn had(q:Q<Bit>)->Q<Bit>{{h(q)}}
+             fn id(q:Q<Bit>)->Q<Bit>{{q}}
+             fn invoke[const U:Op<{basis}>](q:Q<{basis}>)->Q<{basis}>
+                requires Applicable(U){{U(q)}}
+             pub fn main(q:Q<{basis}>)->Q<{basis}>{{invoke[power({constructor},2)](q)}}"
+        );
+        let instance = parsed(&source)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap();
+        assert_eq!(instance.elaborate().unwrap_err().code(), "limit");
+        selected(
+            &source.replace("power(had,256)", "power(had,128)"),
+            "check",
+            0,
+        );
+    }
+}

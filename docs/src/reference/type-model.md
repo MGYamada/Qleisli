@@ -401,12 +401,23 @@ Generic bodies use their declared capability and effect bounds, never a more
 fortunate later concrete provider. Existing monomial Meaning refinements are
 endomorphic: both ports must match their exact declared basis.
 
-The current selected profile materializes forward application of a transparent
-ordinary provider by lowering its actual body, retaining both ports and obtaining
-fresh native acceptance of the resulting artifact. The finite adapter reports
-explicit unsupported general-arrow lowering. General composite and transformed
-operation materialization and rectangular Meaning evidence remain unsupported;
-the common judgment checks their port and access rules before profile selection.
+The current selected hierarchy profile retains transparent providers and ordered
+constructor trees. Sequential application lowers both actual bodies; tensor
+splits the packed input, applies the left and right factors, and joins their
+ordered results. Initializations retain their source paths and complete caller
+frames. A separate replay checks the tensor's canonical split/join boundaries
+and stable initialization extraction; it is not a proof of every gate's source
+meaning. Principal-Unitary adjoints exchange exact ports, including differing
+trees. Packed control requires an exact endomorphism. Powers check that same
+condition even at zero. Conjugation preserves the existing order `C† -> U -> C`:
+for `C: A -> B`, the middle operation is over A and the result is over B.
+All proposals require fresh native acceptance under existing capacity bounds.
+
+The finite adapter still explicitly refuses general-arrow lowering. Raw
+materialization of retained constructor trees, constructor trees containing
+attached Meaning requests, and rectangular Meaning evidence remain unsupported;
+these paths reject rather than omit a child, codomain or Meaning obligation.
+The common judgment checks their port and access rules before profile selection.
 Native acceptance of produced IR does not establish source preservation; public
 results retain `source_meaning_verified: false`. Bounded independent exact
 requests and small complex executions are regression evidence, not a general

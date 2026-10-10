@@ -89,6 +89,15 @@ pub(super) enum Argument {
     Definition(Reference, Vec<Argument>, Span),
     Repeat(Count, Box<Argument>, Span),
     Checked(Reference, Reference, Span),
+    Constructed(OperationConstructor, Vec<Argument>, Span),
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
+pub(super) enum OperationConstructor {
+    Then,
+    Tensor,
+    Adjoint,
+    Controlled,
+    Conjugate,
 }
 #[derive(Clone, Debug)]
 pub(super) enum Pattern {

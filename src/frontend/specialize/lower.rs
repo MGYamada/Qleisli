@@ -1,4 +1,5 @@
 //! Bounded untrusted proposal generation. Native reconstruction is still required.
+use super::ast::OperationConstructor;
 use super::primitive::Primitive;
 use super::{
     ElaboratedProgram, Error, HierarchyEligibility, Result, SourceDefinition, SourceOperation,
@@ -1042,15 +1043,172 @@ impl Lower<'_> {
             vec![child],
         )
     }
+    fn inverse(&mut self, child: usize) -> Result<usize> {
+        self.graph.add(
+            self.graph.nodes[child].after.clone(),
+            self.graph.nodes[child].before.clone(),
+            tagged("inverse", &[("definition", child.to_string())]),
+            tagged("inverse", &[("child", child.to_string())]),
+            "inverse",
+            vec![child],
+        )
+    }
+    // Bind the complete ordered interface, retaining a changed output tree.
+    // This is proposal construction; native checking still owns acceptance.
+    fn bind_operation(&mut self, child: usize, before: Vec<Port>) -> Result<(usize, Vec<Port>)> {
+        let first = self.graph.nodes[child].before.clone();
+        let last = self.graph.nodes[child].after.clone();
+        let bindings: BTreeMap<_, _> = axes(&first).into_iter().zip(axes(&before)).collect();
+        let after = last
+            .iter()
+            .map(|port| {
+                let wires = port
+                    .axes
+                    .iter()
+                    .map(|axis| {
+                        bindings
+                            .get(axis)
+                            .copied()
+                            .ok_or_else(|| fail("pure operation introduced an axis"))
+                    })
+                    .collect::<Result<Vec<_>>>()?;
+                self.fresh_basis(&port.basis, wires)
+            })
+            .collect::<Result<Vec<_>>>()?;
+        let enter = self.graph.rename(before, first)?;
+        let leave = self.graph.rename(last, after.clone())?;
+        Ok((self.graph.sequence(vec![enter, child, leave])?, after))
+    }
+    fn constructed_operation(
+        &mut self,
+        kind: OperationConstructor,
+        children: &[SourceOperation],
+    ) -> Result<usize> {
+        let a = self.operation(&children[0])?;
+        match kind {
+            OperationConstructor::Adjoint => self.inverse(a),
+            OperationConstructor::Then | OperationConstructor::Conjugate => {
+                let b = self.operation(&children[1])?;
+                let first = if kind == OperationConstructor::Conjugate {
+                    self.inverse(a)?
+                } else {
+                    a
+                };
+                let bridge = self.graph.rename(
+                    self.graph.nodes[first].after.clone(),
+                    self.graph.nodes[b].before.clone(),
+                )?;
+                let mut parts = vec![first, bridge, b];
+                if kind == OperationConstructor::Conjugate {
+                    let bridge = self.graph.rename(
+                        self.graph.nodes[b].after.clone(),
+                        self.graph.nodes[a].before.clone(),
+                    )?;
+                    parts.extend([bridge, a]);
+                }
+                self.graph.sequence(parts)
+            }
+            OperationConstructor::Tensor | OperationConstructor::Controlled => {
+                let first = self.graph.nodes[a].before.clone();
+                let [left] = first.as_slice() else {
+                    return Err(fail("constructed operation requires unary quantum factors"));
+                };
+                let (left_basis, right_basis, left_width, right_width, second) =
+                    if kind == OperationConstructor::Tensor {
+                        let b = self.operation(&children[1])?;
+                        let [right] = self.graph.nodes[b].before.as_slice() else {
+                            return Err(fail("tensor factor requires a unary quantum arrow"));
+                        };
+                        (
+                            left.basis.clone(),
+                            right.basis.clone(),
+                            left.axes.len(),
+                            right.axes.len(),
+                            Some(b),
+                        )
+                    } else {
+                        (
+                            SourceType::bit(),
+                            left.basis.clone(),
+                            1,
+                            left.axes.len(),
+                            None,
+                        )
+                    };
+                let width = left_width + right_width;
+                let packed = self.fresh_basis(
+                    &SourceType::pair(left_basis.clone(), right_basis.clone()),
+                    (0..width as u32).collect(),
+                )?;
+                let left = self.fresh_basis(&left_basis, packed.axes[..left_width].to_vec())?;
+                let right = self.fresh_basis(&right_basis, packed.axes[left_width..].to_vec())?;
+                let split = self.graph.structural(
+                    vec![packed],
+                    vec![left.clone(), right.clone()],
+                    "split_tuple",
+                    &[],
+                )?;
+                let (body, output) = if let Some(b) = second {
+                    let (a, mut left_output) = self.bind_operation(a, vec![left])?;
+                    let (b, right_output) = self.bind_operation(b, vec![right])?;
+                    left_output.extend(right_output);
+                    (self.graph.tensor(a, b)?, left_output)
+                } else {
+                    let (child, output) = self.bind_operation(a, vec![right.clone()])?;
+                    let rename = self.graph.rename(output, vec![right.clone()])?;
+                    let closed = self.graph.sequence(vec![child, rename])?;
+                    (
+                        self.control(vec![left.clone(), right.clone()], closed)?,
+                        vec![left, right],
+                    )
+                };
+                let [left, right] = output.as_slice() else {
+                    return Err(fail(
+                        "constructed packed output requires two quantum owners",
+                    ));
+                };
+                let packed = self.fresh_basis(
+                    &SourceType::pair(left.basis.clone(), right.basis.clone()),
+                    axes(&output),
+                )?;
+                let join = self
+                    .graph
+                    .structural(output, vec![packed], "join_tuple", &[])?;
+                self.graph.sequence(vec![split, body, join])
+            }
+        }
+    }
     fn operation(&mut self, op: &SourceOperation) -> Result<usize> {
         let key = op.key();
         if let Some(native) = self.native_operations.iter().find(|entry| entry.key == key) {
             return self.native_operation(native.leaf);
         }
+        if let Some((kind, children, ports)) = op.constructed() {
+            if ports.effect != Effect::Unitary {
+                return Err(fail(
+                    "forward isometry constructor requires source-body materialization",
+                ));
+            }
+            let child = self.constructed_operation(kind, children)?;
+            if ports.input == ports.output {
+                let before = self.graph.nodes[child].before.clone();
+                let after = self.graph.nodes[child].after.clone();
+                let rename = self.graph.rename(after, before)?;
+                return self.graph.sequence(vec![child, rename]);
+            }
+            return Ok(child);
+        }
         if let Some(id) = op.definition() {
             let child = self.pure_definition(id)?;
             let before = self.graph.nodes[child].before.clone();
             let after = self.graph.nodes[child].after.clone();
+            if before
+                .iter()
+                .map(|p| &p.basis)
+                .ne(after.iter().map(|p| &p.basis))
+            {
+                return self.factor_fourier(child);
+            }
             let enter = self.graph.identity(before.clone())?;
             let rename = self.graph.rename(after, before)?;
             let closed = self.graph.sequence(vec![enter, child, rename])?;
@@ -1107,15 +1265,7 @@ impl Lower<'_> {
         if let Some(op) = step.operation() {
             let mut child = self.operation(op)?;
             if step.kind() == "adjoint" {
-                let ports = self.graph.nodes[child].before.clone();
-                child = self.graph.add(
-                    ports.clone(),
-                    ports,
-                    tagged("inverse", &[("definition", child.to_string())]),
-                    tagged("inverse", &[("child", child.to_string())]),
-                    "inverse",
-                    vec![child],
-                )?;
+                child = self.inverse(child)?;
             }
             let target = if step.kind() == "controlled" {
                 before[1..].to_vec()
@@ -1123,19 +1273,34 @@ impl Lower<'_> {
                 before.clone()
             };
             let canonical = self.graph.nodes[child].before.clone();
+            let result = self.graph.nodes[child].after.clone();
             let a = self.graph.rename(target.clone(), canonical.clone())?;
-            let after = self.output_ports(
-                step.output(),
-                before.iter().map(|p| p.axes.clone()).collect(),
-            )?;
+            let bindings: BTreeMap<_, _> =
+                axes(&canonical).into_iter().zip(axes(&target)).collect();
+            let groups = if step.kind() == "controlled" {
+                before.iter().map(|p| p.axes.clone()).collect()
+            } else {
+                result
+                    .iter()
+                    .map(|port| {
+                        port.axes
+                            .iter()
+                            .map(|axis| {
+                                bindings
+                                    .get(axis)
+                                    .copied()
+                                    .ok_or_else(|| fail("pure operation introduced an axis"))
+                            })
+                            .collect::<Result<Vec<_>>>()
+                    })
+                    .collect::<Result<Vec<_>>>()?
+            };
+            let after = self.output_ports(step.output(), groups)?;
             if step.kind() != "controlled" {
-                // The operation is closed at its canonical frame. Return
-                // directly to the checked source's actual result ports rather
-                // than routing through the consumed argument owners first.
-                let b = self.graph.rename(canonical, after.clone())?;
+                let b = self.graph.rename(result, after.clone())?;
                 return Ok((self.graph.sequence(vec![a, child, b])?, after));
             }
-            let b = self.graph.rename(canonical, target.clone())?;
+            let b = self.graph.rename(result, target.clone())?;
             child = self.graph.sequence(vec![a, child, b])?;
             let node = self.control(before.clone(), child)?;
             let rename = self.graph.rename(before, after.clone())?;
@@ -1297,6 +1462,180 @@ struct Instrument {
     trace_cells: usize,
 }
 impl Lower<'_> {
+    fn invoke_pure_operation(
+        &mut self,
+        child: usize,
+        arguments: Vec<Item>,
+        state: &mut Instrument,
+        origin: (usize, usize, &SourceStep),
+    ) -> Result<Vec<Item>> {
+        let before = arguments
+            .iter()
+            .map(|item| match item {
+                Item::Quantum(port) => Ok(port.clone()),
+                _ => Err(fail("pure operation requires quantum arguments")),
+            })
+            .collect::<Result<Vec<_>>>()?;
+        let (node, after) = self.bind_operation(child, before)?;
+        let output: Vec<_> = after.into_iter().map(Item::Quantum).collect();
+        state.pure_steps.push(node);
+        preservation::record(
+            state,
+            origin.0,
+            origin.1,
+            origin.2,
+            arguments,
+            output.clone(),
+            Some(node),
+        )?;
+        Ok(output)
+    }
+    fn invoke_operation(
+        &mut self,
+        operation: &SourceOperation,
+        arguments: Vec<Item>,
+        state: &mut Instrument,
+        depth: usize,
+        origin: (usize, usize, &SourceStep),
+    ) -> Result<Vec<Item>> {
+        self.inline_visits += 1;
+        if self.inline_visits > 1024 || depth > 16 {
+            return Err(limit("observing operation inline-call limit exceeded"));
+        }
+        if let Some(id) = operation.definition() {
+            return self.invoke(id, arguments, state, depth + 1);
+        }
+        if let Some(child) = operation.child() {
+            let mut output = arguments;
+            for iteration in 0..operation
+                .repeat_count()
+                .ok_or_else(|| fail("missing repeat count"))?
+            {
+                state.call_path.push(iteration as usize);
+                let next = self.invoke_operation(child, output, state, depth + 1, origin);
+                state.call_path.pop();
+                output = next?;
+            }
+            return Ok(output);
+        }
+        let (kind, children, ports) = operation
+            .constructed()
+            .ok_or_else(|| fail("missing operation constructor"))?;
+        if ports.effect == Effect::Unitary {
+            let child = self.operation(operation)?;
+            return self.invoke_pure_operation(child, arguments, state, origin);
+        }
+        match kind {
+            OperationConstructor::Then => {
+                state.call_path.push(0);
+                let middle =
+                    self.invoke_operation(&children[0], arguments, state, depth + 1, origin);
+                state.call_path.pop();
+                state.call_path.push(1);
+                let output = self.invoke_operation(&children[1], middle?, state, depth + 1, origin);
+                state.call_path.pop();
+                output
+            }
+            OperationConstructor::Conjugate => {
+                let a = self.operation(&children[0])?;
+                let inverse = self.inverse(a)?;
+                state.call_path.push(0);
+                let first = self.invoke_pure_operation(inverse, arguments, state, origin);
+                state.call_path.pop();
+                state.call_path.push(1);
+                let middle = self.invoke_operation(&children[1], first?, state, depth + 1, origin);
+                state.call_path.pop();
+                state.call_path.push(2);
+                let output = self.invoke_operation(&children[0], middle?, state, depth + 1, origin);
+                state.call_path.pop();
+                output
+            }
+            OperationConstructor::Tensor => {
+                let [Item::Quantum(input)] = arguments.as_slice() else {
+                    return Err(fail("tensor operation requires one packaged quantum owner"));
+                };
+                let fields = input
+                    .basis
+                    .tuple_fields()
+                    .filter(|fields| fields.len() == 2)
+                    .ok_or_else(|| fail("tensor input requires an exact binary basis"))?;
+                let width = fields[0]
+                    .basis_width()
+                    .ok_or_else(|| fail("invalid tensor input basis"))?
+                    as usize;
+                let left = self.fresh_basis(&fields[0], input.axes[..width].to_vec())?;
+                let right = self.fresh_basis(&fields[1], input.axes[width..].to_vec())?;
+                let split = self.graph.structural(
+                    vec![input.clone()],
+                    vec![left.clone(), right.clone()],
+                    "split_tuple",
+                    &[],
+                )?;
+                state.pure_steps.push(split);
+                state.call_path.push(0);
+                let recorded = preservation::record(
+                    state,
+                    origin.0,
+                    origin.1,
+                    origin.2,
+                    arguments,
+                    vec![Item::Quantum(left.clone()), Item::Quantum(right.clone())],
+                    Some(split),
+                );
+                state.call_path.pop();
+                recorded?;
+                state.call_path.push(1);
+                let left = self.invoke_operation(
+                    &children[0],
+                    vec![Item::Quantum(left)],
+                    state,
+                    depth + 1,
+                    origin,
+                );
+                state.call_path.pop();
+                state.call_path.push(2);
+                let right = self.invoke_operation(
+                    &children[1],
+                    vec![Item::Quantum(right)],
+                    state,
+                    depth + 1,
+                    origin,
+                );
+                state.call_path.pop();
+                let mut operands = left?;
+                operands.extend(right?);
+                let [Item::Quantum(left), Item::Quantum(right)] = operands.as_slice() else {
+                    return Err(fail("tensor output requires two quantum owners"));
+                };
+                let output = self.fresh_basis(
+                    &SourceType::pair(left.basis.clone(), right.basis.clone()),
+                    [left.axes.clone(), right.axes.clone()].concat(),
+                )?;
+                let join = self.graph.structural(
+                    vec![left.clone(), right.clone()],
+                    vec![output.clone()],
+                    "join_tuple",
+                    &[],
+                )?;
+                state.pure_steps.push(join);
+                let outputs = vec![Item::Quantum(output)];
+                state.call_path.push(3);
+                let recorded = preservation::record(
+                    state,
+                    origin.0,
+                    origin.1,
+                    origin.2,
+                    operands,
+                    outputs.clone(),
+                    Some(join),
+                );
+                state.call_path.pop();
+                recorded?;
+                Ok(outputs)
+            }
+            _ => Err(fail("non-unitary transformed operation is unsupported")),
+        }
+    }
     fn invoke(
         &mut self,
         id: usize,
@@ -1342,6 +1681,20 @@ impl Lower<'_> {
                     node = Some(reference);
                     output
                 }
+            } else if let Some(operation) = step.operation().filter(|op| {
+                step.kind() == "apply" && step.effect() != "unitary" && op.has_constructed()
+            }) {
+                inlined = true;
+                instrument.call_path.push(step_index);
+                let output = self.invoke_operation(
+                    operation,
+                    items,
+                    instrument,
+                    depth + 1,
+                    (id, step_index, step),
+                );
+                instrument.call_path.pop();
+                output?
             } else if let Some(child) =
                 step.operation()
                     .and_then(|op| op.definition())

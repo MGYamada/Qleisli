@@ -3365,7 +3365,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "324175cfc2946f6e84862b984bbde384e79cc188335b4857d2b0b58f9ddf72df",
+      "sha256": "28f263ac82e76d020ac3c232184a13f46479793194db5b2cd6e45ce091e84d30",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3994,7 +3994,7 @@
     },
     {
       "path": "src/frontend/specialize/ast.rs",
-      "sha256": "ee76b84d0d316a32b2315add24463db7a717f0f2acba96595643b12d5afd1be1",
+      "sha256": "1f6a2c84a42d0bb2abd152beaea92fcb20cd319921ee7084a754a707b68b8538",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4021,7 +4021,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "7fa0dd0330576992c9ec34f948a5c5c513697508013e76bf46e272e1460a5986",
+      "sha256": "f1e590d477d5c0ada94ca6ffaa849ed2e985713afda49935e83073a776838459",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4132,7 +4132,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "419a5577b3b7259f5a1bba5538c1edfa2b1060b5bd328673fb35f91bcbebd910",
+      "sha256": "4f36b4259ec918c0f66861434fdf38d227ff54e56bb75ef068cf6a06ad8c3a84",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4155,7 +4155,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "df10a6456682a15289799925976254e63ba94372d161e3001e701423a1c3d59e",
+      "sha256": "a6a3a172a09cc05e135a578c58564a326a6e078f12f88ebdca73d86686f0edba",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4189,7 +4189,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
-      "sha256": "9d14d26ad55b57bf59e01366d45f8b73173f08269cb50bab272b79230c8f6f65",
+      "sha256": "b44d61b900d0b97f9282f34d7b975f19490691636f88f40c490da185fab3ea3b",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4209,7 +4209,7 @@
     },
     {
       "path": "src/frontend/specialize/projection.rs",
-      "sha256": "da1741e3390bc430ac15527f6ccf48e23436b2db21778a2e8da048f4a70fc095",
+      "sha256": "abcbbf2c0085161f9d453f9911054971f5b25af23ee9f9d75e508e2fb44ec235",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4250,7 +4250,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "91d75a13c6638cfcaf26e367ddd96b4754adbb0f14415629692c07dd54848241",
+      "sha256": "41369474f6da88fdce5d9b77b005c944cf8a3c130d0c76ed73c7762362d6df6b",
       "group": "sized-source",
       "surface": {
         "declarations": [

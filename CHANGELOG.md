@@ -6,11 +6,20 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retain ordered operation constructor trees through selected hierarchy lowering,
+  including preparation composition/tensor and principal-Unitary differing-tree
+  adjoints. Preserve packed-control phase, exact middle types and conjugation
+  order, the existing nested repetition product limit and complete runtime
+  endomorphism checks even in unused declarations. Independently replay tensor
+  boundaries during initialization movement;
+  broader source preservation, refined constructor materialization and rectangular
+  Meanings remain pending under #83/#46. No acceptance protocol is changed.
+
 - Add explicit `Op<A -> B>` pure-arrow formals while retaining `Op<A>` and its
   Meaning comma slot. Check both exact ports, ordered substitution, principal
   effect bounds and endomorphic control/repetition rules. Forward transparent
   providers reach selected native lowering; finite general-arrow lowering,
-  general composite/transform materialization and rectangular Meanings remain
+  refined constructor materialization and rectangular Meanings remain
   unsupported. Small independent exact requests and complex executions cover
   preparation, differing-tree unitors and a native-valid wrong-gate substitution;
   they do not establish general source preservation or complete #83/#46.

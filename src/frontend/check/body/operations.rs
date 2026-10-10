@@ -394,6 +394,14 @@ impl Checker<'_, '_> {
                     arg.span,
                     &self.program.budget,
                 )?;
+            } else if operation.codomain.is_some() {
+                normalize::expect(
+                    operation.output(),
+                    &basis,
+                    &scope.context,
+                    arg.span,
+                    &self.program.budget,
+                )?;
             }
             for capability in [Access::Apply, Access::Adjoint, Access::Controlled] {
                 if required[super::super::super::formals::access_index(capability)] {
@@ -958,7 +966,15 @@ impl Checker<'_, '_> {
                 }
                 let ports = crate::frontend::types::UnaryInterface::new(&inputs, &result)
                     .expect("checked unary provider arity");
-                if !mode.arrows {
+                let endomorphic = if mode.arrows {
+                    normalize::equivalent(
+                        ports.input,
+                        ports.output,
+                        &scope.context,
+                        name.span,
+                        &self.program.budget,
+                    )?
+                } else {
                     normalize::expect(
                         ports.input,
                         ports.output,
@@ -966,7 +982,8 @@ impl Checker<'_, '_> {
                         name.span,
                         &self.program.budget,
                     )?;
-                }
+                    true
+                };
                 self.tick(name.span)?;
                 self.effects.require_effect(id, mode.ceiling, name.span);
                 self.obligation(
@@ -980,7 +997,7 @@ impl Checker<'_, '_> {
                 let Kind::Q(basis) = result.kind else {
                     unreachable!("checked owner result");
                 };
-                let (basis, codomain) = if mode.arrows {
+                let (basis, codomain) = if mode.arrows && !endomorphic {
                     let Kind::Q(input) =
                         inputs.into_iter().next().expect("checked unary input").kind
                     else {
@@ -990,18 +1007,8 @@ impl Checker<'_, '_> {
                 } else {
                     (*basis, None)
                 };
-                if let Some(codomain) = &codomain {
-                    match normalize::expect(
-                        codomain,
-                        &basis,
-                        &scope.context,
-                        name.span,
-                        &self.program.budget,
-                    ) {
-                        Ok(()) => {}
-                        Err(error) if error.code == "type" => access[2] = false,
-                        Err(error) => return Err(error),
-                    }
+                if codomain.is_some() {
+                    access[2] = false;
                 }
                 Ok(Operation {
                     basis,
@@ -1032,7 +1039,17 @@ impl Checker<'_, '_> {
         result
     }
     fn operation_inner(&mut self, op: &StaticOp, scope: &Scope) -> Result<Operation> {
-        self.operation_inner_with(op, scope, OperationMode::ENDO)
+        let operation = self.operation_inner_with(op, scope, OperationMode::ENDO)?;
+        if let Some(output) = &operation.codomain {
+            normalize::expect(
+                output,
+                &operation.basis,
+                &scope.context,
+                op.span,
+                &self.program.budget,
+            )?;
+        }
+        Ok(operation)
     }
     fn operation_inner_with(
         &mut self,
@@ -1134,19 +1151,38 @@ impl Checker<'_, '_> {
             | StaticOpKind::Tensor(a, b)
             | StaticOpKind::Conjugate(a, b) => {
                 let conjugate = matches!(op.kind, StaticOpKind::Conjugate(..));
-                let a =
-                    self.operation_with(a, scope, if conjugate { mode.unitary() } else { mode })?;
-                let b = self.operation_with(b, scope, mode)?;
+                // An endomorphic composite may have differing-tree factors.
+                // Its complete output is checked against the formal above.
+                let factors = OperationMode {
+                    arrows: true,
+                    ..mode
+                };
+                let a = self.operation_with(
+                    a,
+                    scope,
+                    if conjugate {
+                        factors.unitary()
+                    } else {
+                        factors
+                    },
+                )?;
+                let b = self.operation_with(b, scope, factors)?;
                 let tensor = matches!(op.kind, StaticOpKind::Tensor(..));
                 if !tensor {
                     normalize::expect(
-                        a.output(),
+                        if conjugate { &a.basis } else { a.output() },
                         &b.basis,
                         &scope.context,
                         op.span,
                         &self.program.budget,
                     )
-                    .map_err(|error| operation_mismatch(error, &b.basis, a.output()))?;
+                    .map_err(|error| {
+                        operation_mismatch(
+                            error,
+                            &b.basis,
+                            if conjugate { &a.basis } else { a.output() },
+                        )
+                    })?;
                     if conjugate {
                         normalize::expect(
                             b.output(),
@@ -1176,7 +1212,11 @@ impl Checker<'_, '_> {
                 let basis = if tensor {
                     Ty::pair(a.basis, b.basis)
                 } else {
-                    a.basis
+                    if conjugate {
+                        self.program.budget.copy_ty(op.span, a.output())?
+                    } else {
+                        a.basis
+                    }
                 };
                 self.program.budget.ty(op.span, &basis)?;
                 if let Some(codomain) = &codomain {

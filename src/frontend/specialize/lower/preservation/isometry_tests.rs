@@ -667,3 +667,34 @@ fn isometry_two_moved_initializations_keep_reversed_axes_and_reference() {
     }
     close(&output.branches[0], &expected);
 }
+
+#[test]
+fn constructor_sequence_matches_independent_exact_equation_and_rejects_gate_substitution() {
+    let source = include_str!("../../../../../tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-01/sequence.qli")
+        .replace("finish,init0,h,split", "finish,init0,h,x,split");
+    let valid = lower(&source);
+    // The existing independently authored Unit elimination / H equation fixes
+    // +1 structural action, both complex H columns and reviewed port placement.
+    // No constructor-produced comparison request defines this expectation.
+    let expected = request(&valid, "general-superposition", false);
+    let checked = kernel()
+        .check_instrument_native(valid.payload(), &expected)
+        .unwrap();
+    valid
+        .validate_initialization_moves_native(&checked)
+        .unwrap();
+    let mut wrong = lower(&source.replace("{h(q)}", "{x(q)}"));
+    wrong.source = valid.source.clone();
+    let accepted = kernel()
+        .check_instrument_native(wrong.payload(), wrong.comparison_request())
+        .unwrap();
+    // Stable initialization extraction alone intentionally does not check H/X.
+    wrong
+        .validate_initialization_moves_native(&accepted)
+        .unwrap();
+    assert!(
+        kernel()
+            .check_instrument_native(wrong.payload(), &expected)
+            .is_err()
+    );
+}

@@ -170,7 +170,7 @@ impl SourceValue {
     }
 }
 
-/// A shared transparent provider, optionally wrapped in retained repetitions.
+/// A retained transparent provider or immutable ordered operation tree.
 #[derive(Clone, Debug)]
 pub struct SourceOperation {
     kind: OperationKind,
@@ -178,6 +178,9 @@ pub struct SourceOperation {
     module: String,
     span: Span,
     repetitions: u32,
+    // Expanded constructor cells bound key/replay traversal even when the
+    // immutable representation shares a subtree through multiple arguments.
+    constructor_cells: usize,
 }
 #[derive(Clone, Debug)]
 pub(super) struct ExplicitMeaning {
@@ -189,11 +192,26 @@ pub(super) struct ExplicitMeaning {
 enum OperationKind {
     Definition(usize),
     Repeat(u32, Box<SourceOperation>),
+    Constructed(Arc<ConstructedOperation>),
+}
+#[derive(Clone, Debug)]
+pub(super) struct OperationPorts {
+    pub input: SourceType,
+    pub output: SourceType,
+    pub effect: Effect,
+    pub peak: usize,
+}
+#[derive(Clone, Debug)]
+struct ConstructedOperation {
+    constructor: OperationConstructor,
+    children: Vec<SourceOperation>,
+    ports: OperationPorts,
 }
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub(super) enum OperationKey {
     Definition(usize),
     Repeat(u32, Box<OperationKey>),
+    Constructed(OperationConstructor, Vec<OperationKey>),
     Requested(Vec<DefId>, Box<OperationKey>),
 }
 impl SourceOperation {
@@ -221,16 +239,58 @@ impl SourceOperation {
     pub fn span(&self) -> Span {
         self.span
     }
-    fn target(&self) -> usize {
+    fn target(&self) -> Option<usize> {
         match &self.kind {
-            OperationKind::Definition(id) => *id,
+            OperationKind::Definition(id) => Some(*id),
             OperationKind::Repeat(_, child) => child.target(),
+            OperationKind::Constructed(_) => None,
         }
+    }
+    pub(super) fn constructed(
+        &self,
+    ) -> Option<(OperationConstructor, &[SourceOperation], &OperationPorts)> {
+        match &self.kind {
+            OperationKind::Constructed(op) => Some((op.constructor, &op.children, &op.ports)),
+            _ => None,
+        }
+    }
+    pub(super) fn children(&self) -> &[SourceOperation] {
+        match &self.kind {
+            OperationKind::Definition(_) => &[],
+            OperationKind::Repeat(_, child) => std::slice::from_ref(child),
+            OperationKind::Constructed(op) => &op.children,
+        }
+    }
+    pub(super) fn has_constructed(&self) -> bool {
+        self.constructed().is_some() || self.children().iter().any(Self::has_constructed)
+    }
+    fn expanded_key_cells(&self) -> usize {
+        let action = if self.constructor_cells != 0 {
+            self.constructor_cells
+        } else {
+            match &self.kind {
+                OperationKind::Definition(_) => 1,
+                OperationKind::Repeat(_, child) => 1 + child.expanded_key_cells(),
+                OperationKind::Constructed(_) => {
+                    unreachable!("constructor has retained cell count")
+                }
+            }
+        };
+        action
+            + if self.meanings.is_empty() {
+                0
+            } else {
+                self.meanings.len() + 1
+            }
     }
     pub(super) fn key(&self) -> OperationKey {
         let action = match &self.kind {
             OperationKind::Definition(id) => OperationKey::Definition(*id),
             OperationKind::Repeat(n, child) => OperationKey::Repeat(*n, Box::new(child.key())),
+            OperationKind::Constructed(op) => OperationKey::Constructed(
+                op.constructor,
+                op.children.iter().map(Self::key).collect(),
+            ),
         };
         if self.meanings.is_empty() {
             action
@@ -242,8 +302,58 @@ impl SourceOperation {
         }
     }
     fn has_meanings(&self) -> bool {
-        !self.meanings.is_empty() || self.child().is_some_and(Self::has_meanings)
+        !self.meanings.is_empty() || self.children().iter().any(Self::has_meanings)
     }
+}
+
+fn operation_signature<'a>(
+    operation: &'a SourceOperation,
+    definitions: &'a [SourceDefinition],
+    span: Span,
+) -> Result<(
+    crate::frontend::types::UnaryInterface<'a, u32>,
+    Effect,
+    usize,
+)> {
+    if let Some((_, _, ports)) = operation.constructed() {
+        return Ok((
+            crate::frontend::types::UnaryInterface {
+                input: &ports.input,
+                output: &ports.output,
+            },
+            ports.effect,
+            ports.peak,
+        ));
+    }
+    if let Some(child) = operation.child() {
+        return operation_signature(child, definitions, span);
+    }
+    let definition = &definitions[operation.definition().expect("retained operation leaf")];
+    let [input] = definition.inputs.as_slice() else {
+        return Err(error(
+            "type",
+            span,
+            "pure operation requires one quantum input",
+        ));
+    };
+    if !input.ty.is_quantum_owner()
+        || !definition.output.ty.is_quantum_owner()
+        || definition.effect > Effect::Iso
+    {
+        return Err(error(
+            "type",
+            span,
+            "pure operation requires quantum ports and effect at most Iso",
+        ));
+    }
+    Ok((
+        crate::frontend::types::UnaryInterface {
+            input: &input.ty,
+            output: &definition.output.ty,
+        },
+        definition.effect,
+        definition.peak_quantum,
+    ))
 }
 
 /// One ordered source operation. Names are exact primitive identities or step
@@ -515,6 +625,42 @@ impl ElaboratedProgram {
                         )
                     })
         })
+    }
+    pub(super) fn require_raw_operation_trees(&self) -> Result<()> {
+        for definition in self.definitions.iter() {
+            for operation in definition
+                .operations
+                .values()
+                .chain(definition.steps.iter().filter_map(SourceStep::operation))
+            {
+                if operation.has_constructed() {
+                    return Err(error(
+                        "unsupported", operation.span,
+                        "Raw operation materialization does not yet support retained operation constructors",
+                    ).in_module(operation.module()));
+                }
+            }
+        }
+        Ok(())
+    }
+    pub(super) fn require_supported_constructor_meanings(&self) -> Result<()> {
+        for definition in self.definitions.iter() {
+            for operation in definition
+                .operations
+                .values()
+                .chain(definition.steps.iter().filter_map(SourceStep::operation))
+            {
+                if operation.has_constructed() && operation.has_meanings() {
+                    return Err(error(
+                        "unsupported",
+                        operation.span,
+                        "Meaning checking of retained operation constructors is not yet supported",
+                    )
+                    .in_module(operation.module()));
+                }
+            }
+        }
+        Ok(())
     }
     pub(super) fn require_unrefined(&self) -> Result<()> {
         if self.has_operation_meanings() {
@@ -809,6 +955,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
                     .clone(),
                 span: Span::default(),
                 repetitions: 1,
+                constructor_cells: 0,
             },
         );
     }
@@ -1240,13 +1387,10 @@ impl Builder<'_> {
             let resolved_naturals = closed.naturals;
             let resolved_bases = closed.bases;
             for (key, required) in &closed.operations {
-                let target_id = operations[&key.name].target();
-                let ports = if required.codomain.is_some() {
-                    self.pure_provider_interface(target_id, function.span)?
-                } else {
-                    self.provider_interface(target_id, function.span)?
-                };
-                if self.definitions[target_id].effect > required.ceiling
+                let operation = &operations[&key.name];
+                let (ports, effect, _) =
+                    operation_signature(operation, &self.definitions, function.span)?;
+                if effect > required.ceiling
                     || ports.input != &required.input
                     || ports.output != required.output()
                 {
@@ -1270,9 +1414,10 @@ impl Builder<'_> {
                     self.charge_cells(target.cells(), function.span)?;
                     // The provider check above retained both exact ports. No
                     // owned output-only type stands in for this signature.
-                    let provider = &self.definitions[target_id];
-                    if provider.inputs[0].ty.quantum_basis() != Some(&target.basis)
-                        || provider.output.ty.quantum_basis() != Some(&target.basis)
+                    let (ports, _, _) =
+                        operation_signature(operation, &self.definitions, function.span)?;
+                    if ports.input.quantum_basis() != Some(&target.basis)
+                        || ports.output.quantum_basis() != Some(&target.basis)
                     {
                         return Err(error(
                             "type",
@@ -1389,32 +1534,6 @@ impl Builder<'_> {
             input: &input.ty,
             output: &definition.output.ty,
         })
-    }
-    fn provider_interface(
-        &self,
-        id: usize,
-        span: Span,
-    ) -> Result<crate::frontend::types::UnaryInterface<'_, u32>> {
-        let definition = &self.definitions[id];
-        let ports = match definition.inputs.as_slice() {
-            [input] => Some(crate::frontend::types::UnaryInterface {
-                input: &input.ty,
-                output: &definition.output.ty,
-            }),
-            _ => None,
-        };
-        if definition.effect != Effect::Unitary
-            || ports
-                .as_ref()
-                .is_none_or(|ports| !ports.input.is_quantum_owner() || ports.input != ports.output)
-        {
-            return Err(error(
-                "type",
-                span,
-                "provider must be unitary and preserve one exact quantum input owner",
-            ));
-        }
-        Ok(ports.expect("checked unary quantum provider"))
     }
     fn runtime_provider_type(&mut self, id: usize, span: Span) -> Result<SourceType> {
         fn preflight(ty: &SourceType, cells: &mut usize, span: Span) -> Result<(usize, usize)> {
@@ -1604,7 +1723,11 @@ impl Builder<'_> {
                 kind: NatKind::Name(name),
                 ..
             }) if name.get(&scope.operations).is_some() => {
-                Ok(name.get(&scope.operations).unwrap().clone())
+                let operation = name.get(&scope.operations).unwrap();
+                if operation.constructor_cells != 0 {
+                    self.charge_cells(operation.expanded_key_cells() * 2, span)?;
+                }
+                Ok(operation.clone())
             }
             Argument::Natural(Natural {
                 kind: NatKind::Name(name),
@@ -1634,7 +1757,14 @@ impl Builder<'_> {
                         "checked_op requires an original finite Meaning",
                     )
                 })?;
-                let ports = self.provider_interface(operation.target(), *span)?;
+                let (ports, effect, _) = operation_signature(&operation, &self.definitions, *span)?;
+                if effect != Effect::Unitary {
+                    return Err(error(
+                        "effect",
+                        *span,
+                        "checked_op requires a principal-Unitary provider",
+                    ));
+                }
                 if ports.input.quantum_basis() != Some(&target.basis)
                     || ports.output.quantum_basis() != Some(&target.basis)
                 {
@@ -1659,12 +1789,12 @@ impl Builder<'_> {
             }
             Argument::Repeat(count, child, span) => {
                 let child = self.operation(child, scope, frame, depth, *span)?;
-                let definition = &self.definitions[child.target()];
-                if definition.inputs.len() == 1
-                    && definition.inputs[0].ty.is_quantum_owner()
-                    && definition.output.ty.is_quantum_owner()
-                {
-                    let ports = self.pure_provider_interface(child.target(), *span)?;
+                if child.target().is_none_or(|id| {
+                    self.definitions[id].inputs.len() == 1
+                        && self.definitions[id].inputs[0].ty.is_quantum_owner()
+                        && self.definitions[id].output.ty.is_quantum_owner()
+                }) {
+                    let (ports, _, _) = operation_signature(&child, &self.definitions, *span)?;
                     if ports.input != ports.output {
                         return Err(error(
                             "type",
@@ -1691,7 +1821,14 @@ impl Builder<'_> {
                 if count > 256 || repetitions > 256 {
                     return Err(error("limit", *span, "repeat count/product exceeds 256"));
                 }
+                let constructor_cells = if child.constructor_cells == 0 {
+                    0
+                } else {
+                    self.charge_cells(2, *span)?;
+                    child.expanded_key_cells() + 1
+                };
                 Ok(SourceOperation {
+                    constructor_cells,
                     kind: OperationKind::Repeat(count, Box::new(child)),
                     meanings: Arc::from([]),
                     module: frame.module.clone(),
@@ -1699,12 +1836,184 @@ impl Builder<'_> {
                     repetitions,
                 })
             }
+            Argument::Constructed(constructor, arguments, span) => {
+                self.construct_operation(*constructor, arguments, scope, frame, depth, *span)
+            }
             _ => Err(error(
                 "static",
                 span,
                 "expected concrete operation provider",
             )),
         }
+    }
+    fn construct_operation(
+        &mut self,
+        constructor: OperationConstructor,
+        arguments: &[Argument],
+        scope: &Scope,
+        frame: &Frame,
+        depth: usize,
+        span: Span,
+    ) -> Result<SourceOperation> {
+        let arity = if matches!(
+            constructor,
+            OperationConstructor::Adjoint | OperationConstructor::Controlled
+        ) {
+            1
+        } else {
+            2
+        };
+        if arguments.len() != arity {
+            return Err(error(
+                "static",
+                span,
+                "operation constructor arity mismatch",
+            ));
+        }
+        self.charge_cells(arity + 8, span)?;
+        let children = arguments
+            .iter()
+            .map(|argument| self.operation(argument, scope, frame, depth, span))
+            .collect::<Result<Vec<_>>>()?;
+        let signatures = children
+            .iter()
+            .map(|operation| operation_signature(operation, &self.definitions, span))
+            .collect::<Result<Vec<_>>>()?;
+        // Precharge every exact tree before constructing or cloning any new
+        // interface. All old leaf/repetition paths retain their accounting.
+        for (ports, _, _) in &signatures {
+            for ty in [ports.input, ports.output] {
+                crate::frontend::check::type_size_budgeted(
+                    ty,
+                    4096,
+                    64,
+                    false,
+                    span,
+                    &mut |span, cells| {
+                        charge_retained_cells(&mut self.cells, cells, span)
+                            .map_err(crate::frontend::check::SourceError::from)
+                    },
+                )
+                .map_err(Error::from)?;
+            }
+        }
+        let (a, effect, peak) = &signatures[0];
+        let (input, output, effect, peak) = match constructor {
+            OperationConstructor::Adjoint => {
+                if *effect != Effect::Unitary {
+                    return Err(error(
+                        "effect",
+                        span,
+                        "adjoint requires a two-sided principal-Unitary operation",
+                    ));
+                }
+                (a.output.clone(), a.input.clone(), *effect, *peak)
+            }
+            OperationConstructor::Controlled => {
+                if *effect != Effect::Unitary || a.input != a.output {
+                    return Err(error(
+                        "type",
+                        span,
+                        "controlled operation requires an exact unitary endomorphism",
+                    ));
+                }
+                let input = SourceType::quantum(SourceType::pair(
+                    SourceType::bit(),
+                    a.input
+                        .quantum_basis()
+                        .expect("checked quantum arrow")
+                        .clone(),
+                ));
+                (input.clone(), input, *effect, peak + 1)
+            }
+            OperationConstructor::Then | OperationConstructor::Conjugate => {
+                let (b, b_effect, b_peak) = &signatures[1];
+                let conjugate = constructor == OperationConstructor::Conjugate;
+                if (if conjugate { a.input } else { a.output }) != b.input {
+                    return Err(error(
+                        "type",
+                        span,
+                        "operation sequence middle type trees differ",
+                    ));
+                }
+                if conjugate && (*effect != Effect::Unitary || b.input != b.output) {
+                    return Err(error(
+                        "type",
+                        span,
+                        "conjugation requires a two-sided outer arrow and endomorphic middle",
+                    ));
+                }
+                (
+                    if conjugate {
+                        a.output.clone()
+                    } else {
+                        a.input.clone()
+                    },
+                    if conjugate {
+                        a.output.clone()
+                    } else {
+                        b.output.clone()
+                    },
+                    (*effect).max(*b_effect),
+                    (*peak).max(*b_peak),
+                )
+            }
+            OperationConstructor::Tensor => {
+                let (b, b_effect, b_peak) = &signatures[1];
+                let basis =
+                    |ty: &SourceType| ty.quantum_basis().expect("checked quantum arrow").clone();
+                let input = SourceType::quantum(SourceType::pair(basis(a.input), basis(b.input)));
+                let output =
+                    SourceType::quantum(SourceType::pair(basis(a.output), basis(b.output)));
+                let width = |ty: &SourceType| {
+                    ty.quantum_basis()
+                        .and_then(SourceType::basis_width)
+                        .map(|n| n as usize)
+                        .ok_or_else(|| {
+                            error("limit", span, "operation basis width exceeds capacity")
+                        })
+                };
+                let peak = (peak + width(b.input)?).max(b_peak + width(a.output)?);
+                (input, output, (*effect).max(*b_effect), peak)
+            }
+        };
+        if peak > 16 {
+            return Err(error(
+                "limit",
+                span,
+                "operation constructor exceeds existing live-qubit capacity",
+            ));
+        }
+        let constructor_cells = 1 + children
+            .iter()
+            .map(SourceOperation::expanded_key_cells)
+            .sum::<usize>();
+        // A constructor does not reset the nested repetition product of a
+        // child. Keep the largest path so a subsequent power observes the
+        // same existing per-path bound as directly nested repetitions.
+        let repetitions = children
+            .iter()
+            .map(|operation| operation.repetitions)
+            .max()
+            .expect("operation constructor has checked nonzero arity");
+        self.charge_cells(constructor_cells * 2, span)?;
+        Ok(SourceOperation {
+            constructor_cells,
+            kind: OperationKind::Constructed(Arc::new(ConstructedOperation {
+                constructor,
+                children,
+                ports: OperationPorts {
+                    input,
+                    output,
+                    effect,
+                    peak,
+                },
+            })),
+            meanings: Arc::from([]),
+            module: frame.module.clone(),
+            span,
+            repetitions,
+        })
     }
     fn provider(
         &mut self,
@@ -1754,6 +2063,7 @@ impl Builder<'_> {
             module: frame.module.clone(),
             span,
             repetitions: 1,
+            constructor_cells: 0,
         })
     }
     fn block(
@@ -2204,13 +2514,65 @@ impl Builder<'_> {
             StepKind::Controlled(op) => (op, true),
             _ => unreachable!(),
         };
-        let definition = &self.definitions[op.target()];
+        if op.target().is_none() {
+            let (ports, effect, peak) = operation_signature(op, &self.definitions, span)?;
+            if !matches!(kind, StepKind::Apply(_)) && effect != Effect::Unitary {
+                return Err(error(
+                    "effect",
+                    span,
+                    "operation transform requires principal Unitary effect",
+                ));
+            }
+            if controlled && ports.input != ports.output {
+                return Err(error(
+                    "type",
+                    span,
+                    "controlled operation requires an exact endomorphism",
+                ));
+            }
+            for ty in [ports.input, ports.output] {
+                crate::frontend::check::type_size_budgeted(
+                    ty,
+                    4096,
+                    64,
+                    false,
+                    span,
+                    &mut |span, cells| {
+                        charge_retained_cells(&mut self.cells, cells, span)
+                            .map_err(crate::frontend::check::SourceError::from)
+                    },
+                )
+                .map_err(Error::from)?;
+            }
+            let (input, output) = if matches!(kind, StepKind::Adjoint(_)) {
+                (ports.output.clone(), ports.input.clone())
+            } else {
+                (ports.input.clone(), ports.output.clone())
+            };
+            let (types, output) = if controlled {
+                (vec![bit(), input], tuple(vec![bit(), output]))
+            } else {
+                (vec![input], output)
+            };
+            return self.step(
+                kind,
+                types,
+                output,
+                effect,
+                inputs,
+                frame,
+                span,
+                peak + usize::from(controlled),
+            );
+        }
+        let target_id = op.target().expect("checked original leaf provider");
+        let definition = &self.definitions[target_id];
         if matches!(kind, StepKind::Apply(_))
             && definition.inputs.len() == 1
             && (definition.effect != Effect::Unitary
                 || definition.inputs[0].ty != definition.output.ty)
         {
-            self.pure_provider_interface(op.target(), span)?;
+            self.pure_provider_interface(target_id, span)?;
             let effect = definition.effect;
             let peak = definition.peak_quantum;
             for ty in [&definition.inputs[0].ty, &definition.output.ty] {
@@ -2231,13 +2593,13 @@ impl Builder<'_> {
             let output = definition.output.ty.clone();
             return self.step(kind, vec![input], output, effect, inputs, frame, span, peak);
         }
-        let target = self.runtime_provider_type(op.target(), span)?;
+        let target = self.runtime_provider_type(target_id, span)?;
         let (types, output) = if controlled {
             (vec![bit(), target.clone()], tuple(vec![bit(), target]))
         } else {
             (vec![target.clone()], target)
         };
-        let peak = self.definitions[op.target()].peak_quantum + usize::from(controlled);
+        let peak = self.definitions[target_id].peak_quantum + usize::from(controlled);
         self.step(
             kind,
             types,

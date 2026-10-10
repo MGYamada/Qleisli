@@ -74,6 +74,7 @@ pub(super) fn check_operation_meanings<'a>(
     kernel: &native::Kernel,
     budget: &mut Budget,
 ) -> Result<CheckedSourceMeanings<'a>> {
+    source.require_supported_constructor_meanings()?;
     if budget.remaining() > DEFAULT_EXACT_WORK {
         return Err(Error::new(
             "limit",
@@ -465,6 +466,7 @@ fn check_profile(
     selected: Option<&BTreeSet<usize>>,
     checking_control: bool,
 ) -> Result<()> {
+    source.require_raw_operation_trees()?;
     if !checking_control {
         source.require_control_evidence()?;
     }
@@ -1455,6 +1457,7 @@ fn lower_operation_site(
     site: OperationSite,
     operation_depth: usize,
 ) -> Result<RawSourceProposal> {
+    source.require_raw_operation_trees()?;
     let caller_id = site.caller();
     let caller = source.definitions().get(caller_id).ok_or_else(|| {
         invalid(

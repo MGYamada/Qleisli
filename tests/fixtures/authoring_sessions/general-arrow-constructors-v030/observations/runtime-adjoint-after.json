@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "type or tuple/size shape mismatch: expected `(Unit,Bit)`, found `Bit`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli",
+          "start": 206,
+          "end": 223
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type\",\"severity\":\"error\",\"message\":\"type or tuple/size shape mismatch: expected `(Unit,Bit)`, found `Bit`\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-constructors-v030/attempt-02/runtime-adjoint.qli\",\"start\":206,\"end\":223},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "recorded_utc": "2026-10-10T13:02:41.345258+00:00",
+  "binary_sha256": "3ea2c49dc35dd057978097eb96d10d0f2d80c31eaa4cafcbdba80211a7c21bd5",
+  "kernel_sha256": "1b604c58e48827872de7e8179a5092d4deced42e3eb401ebb5b3285648378731",
+  "source_sha256": "d8664e3324a116b4f8b967eacb74d2a3e0ec870b3dd87decf835b398b2bab2be"
+}

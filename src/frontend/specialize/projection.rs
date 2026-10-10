@@ -312,11 +312,30 @@ impl Projection<'_, '_> {
                 self.ident(meaning)?,
                 operation.span,
             ),
-            _ => {
-                return Err(unsupported(
+            source::StaticOpKind::Then(a, b)
+            | source::StaticOpKind::Tensor(a, b)
+            | source::StaticOpKind::Conjugate(a, b) => {
+                let constructor = match operation.kind {
+                    source::StaticOpKind::Then(..) => OperationConstructor::Then,
+                    source::StaticOpKind::Tensor(..) => OperationConstructor::Tensor,
+                    _ => OperationConstructor::Conjugate,
+                };
+                Argument::Constructed(
+                    constructor,
+                    vec![self.argument(a)?, self.argument(b)?],
                     operation.span,
-                    "unsupported static operation constructor",
-                ));
+                )
+            }
+            source::StaticOpKind::Inverse(child) | source::StaticOpKind::Controlled(child) => {
+                Argument::Constructed(
+                    if matches!(operation.kind, source::StaticOpKind::Inverse(_)) {
+                        OperationConstructor::Adjoint
+                    } else {
+                        OperationConstructor::Controlled
+                    },
+                    vec![self.argument(child)?],
+                    operation.span,
+                )
             }
         })
     }
