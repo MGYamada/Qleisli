@@ -301,6 +301,34 @@ fn load_measured_sources() -> Result<ParsedProgram, qleisli::frontend::compile::
     let (files, _translated) = measured_sources();
     ParsedProgram::load(files)
 }
+
+#[test]
+fn corpus_qpe_controlled_powers_require_the_ordinary_provider_capability() {
+    let (files, _translated) = measured_sources();
+    let original: BTreeMap<String, String> = files
+        .into_iter()
+        .map(|(name, path)| (name, std::fs::read_to_string(path).unwrap()))
+        .collect();
+    ParsedProgram::parse(original.clone()).unwrap();
+    // An in-memory counterexample to the current corpus source: retain the
+    // controlled powers and all module identities, but grant only application.
+    // No corpus snapshot or upstream pin is changed, and no QFT is instantiated.
+    let estimation = &original["estimation"];
+    assert_eq!(estimation.matches("Controllable(U)").count(), 1);
+    assert!(estimation.contains("controlled(power(U,"));
+    let changed = estimation.replace("Controllable(U)", "Applicable(U)");
+    let mut counterexample = original;
+    counterexample.insert("estimation".into(), changed.clone());
+    let error = ParsedProgram::parse(counterexample).unwrap_err();
+    assert_eq!(error.code(), "access", "{error}");
+    assert_eq!(error.module(), Some("estimation"));
+    assert!(error.message().contains("Controllable"), "{error}");
+    assert!(
+        changed[error.span().start..error.span().end].contains("controlled"),
+        "{error}"
+    );
+}
+
 fn naturals(values: &[(&str, u32)]) -> BTreeMap<String, u32> {
     values
         .iter()

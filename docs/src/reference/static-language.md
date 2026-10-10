@@ -251,6 +251,67 @@ The former predicates `Apply(U)`, `Adjoint(U)` and `Controlled(U)` reject with
 located migration diagnostics. The adjective names are contextual in this
 clause; they do not construct operators or grant access by annotation alone.
 
+### Capability derivation for enabled descriptions
+
+For a well-kinded operation description `U`, write its available paths as
+`caps(U) = (A_U, J_U, C_U)`: Applicable, Adjointable and Controllable,
+respectively. These are untrusted source-checking facts about implementation
+paths, not proofs of mathematical unitarity or native acceptance. An opaque
+operation formal has exactly the paths declared in its `requires` premises;
+neither its `Op<A>` type nor a Meaning refinement adds a path.
+
+The current endomorphic constructor rules are:
+
+| Description | Basis | Derived paths `(Applicable, Adjointable, Controllable)` |
+| --- | --- | --- |
+| `adjoint(U)` | U's exact basis | `(J_U, A_U, C_U)`; constructing it additionally requires `J_U`, even if unused |
+| `controlled(U)` | `(Bit, U's basis)` | `(C_U, C_U, C_U)` |
+| `power(U,n)` | U's exact basis | `(A_U, J_U, C_U)`, including `n = 0` |
+| `then_op(U,V)` | The same exact basis for U and V | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
+| `tensor_op(U,V)` | Ordered pair of U's and V's bases | `(A_U ∧ A_V, J_U ∧ J_V, C_U ∧ C_V)` |
+| `conjugate_op(U,V)` | The same exact basis for U and V | `(A_U ∧ J_U ∧ A_V, A_U ∧ J_U ∧ J_V, A_U ∧ J_U ∧ C_V)` |
+| `checked_op(U,M)` | U's exact basis, matching M | U's paths unchanged; retain the separate exact Meaning-equality obligation |
+
+Every operand and count is checked before using these rules. There is no
+short circuit that erases a missing provider, invalid count, false Meaning or
+missing requested path because a power is zero or a declaration is unused.
+A description may have no available execution path; forwarding it to a formal
+that requires one rejects. In particular, forming `controlled(U)` does not
+give direct application or adjoint access to the original opaque `U`.
+
+The controlled rule reflects the supported construction of a transparent
+controlled circuit: its retained circuit can itself be applied, reversed or
+controlled. This is a capability of that constructed object, not a rule that
+every mathematically unitary black box supplies those implementations.
+`conjugate_op(U,V)` denotes `U V U†` in column-vector order. Its controlled
+path uses U's forward/adjoint paths around V's controlled path; it does not
+require a controlled U. Exact phase and the inactive-branch identity are
+retained, rather than inferred from channel equality.
+
+A transparent ordinary source provider must have the exact quantum interface,
+a principal Unitary body and all its instantiated premises checked. For a
+specialized source provider with operation actuals `U_i`, the conservative
+common rule is `(true, ∧_i(A_i ∧ J_i), ∧_i(A_i ∧ J_i ∧ C_i))`. This includes
+unused operation actuals and makes no claim of maximal inference. With no such
+actuals it gives all three source paths. The provider's own declared premises
+still apply before this rule; `true` cannot bypass a missing required path.
+
+Sealed gates use their existing exact interface and materializable circuit
+paths where the direct application grammar permits them. Static provider
+arguments retain their ordinary-function restriction described below; a gate
+name is not silently wrapped into a new source provider. External artifacts
+cannot declare their own trusted capability set. Closed materialization still
+needs the supported retained implementation, exact source/dependency identity
+and fresh native evidence; unsupported external providers reject.
+
+These rules do not enlarge a concrete projection's support. Finite and selected
+lowering retain their separate capacities and explicit unsupported results.
+An inferred path, a successful original-source judgment or a named Meaning is
+never an executable receipt. General arrows and additional Meaning forms in
+the [operations candidate](../design/operations.md) remain proposed.
+
+### Application and repetition profiles
+
 The canonical controlled application is `controlled(U)(c, q)`. The runtime
 arguments are evaluated once in control-then-target order. The control has
 exact type `Q<Bit>`; the target has the operation's exact `Q<A>` type. The result

@@ -78,6 +78,172 @@ fn missing_path(source: &str, capability: &str, supplied_wrapper: &str) {
 }
 
 #[test]
+fn constructor_paths_are_checked_independently_through_opaque_forwarding() {
+    // Curated source-contract cases, not a copy of the implementation's mask
+    // functions. The demand's opaque basis deliberately stops finite lowering
+    // after original checking; every case uses an absent native executable.
+    // A true row is source-valid, not executable evidence for an opaque U.
+    for (description, basis, premises, requested, available) in [
+        ("power(U,0)", "Bit", "Applicable(U)", "Applicable", true),
+        ("power(U,0)", "Bit", "Applicable(U)", "Adjointable", false),
+        ("power(U,0)", "Bit", "Adjointable(U)", "Applicable", false),
+        ("power(U,2)", "Bit", "Controllable(U)", "Controllable", true),
+        ("adjoint(U)", "Bit", "Adjointable(U)", "Applicable", true),
+        ("adjoint(U)", "Bit", "Adjointable(U)", "Adjointable", false),
+        ("adjoint(U)", "Bit", "Applicable(U)", "Applicable", false),
+        (
+            "controlled(U)",
+            "(Bit,Bit)",
+            "Controllable(U)",
+            "Applicable",
+            true,
+        ),
+        (
+            "controlled(U)",
+            "(Bit,Bit)",
+            "Controllable(U)",
+            "Adjointable",
+            true,
+        ),
+        (
+            "controlled(U)",
+            "(Bit,Bit)",
+            "Controllable(U)",
+            "Controllable",
+            true,
+        ),
+        (
+            "controlled(U)",
+            "(Bit,Bit)",
+            "Applicable(U)",
+            "Applicable",
+            false,
+        ),
+        (
+            "then_op(U,V)",
+            "Bit",
+            "Applicable(U),Applicable(V)",
+            "Applicable",
+            true,
+        ),
+        (
+            "then_op(U,V)",
+            "Bit",
+            "Applicable(U),Adjointable(V)",
+            "Applicable",
+            false,
+        ),
+        (
+            "tensor_op(U,V)",
+            "(Bit,Bit)",
+            "Adjointable(U),Adjointable(V)",
+            "Adjointable",
+            true,
+        ),
+        (
+            "tensor_op(U,V)",
+            "(Bit,Bit)",
+            "Adjointable(U),Applicable(V)",
+            "Adjointable",
+            false,
+        ),
+        (
+            "conjugate_op(U,V)",
+            "Bit",
+            "Applicable(U),Adjointable(U),Controllable(V)",
+            "Controllable",
+            true,
+        ),
+        (
+            "conjugate_op(U,V)",
+            "Bit",
+            "Applicable(U),Controllable(V)",
+            "Controllable",
+            false,
+        ),
+        (
+            "conjugate_op(U,V)",
+            "Bit",
+            "Adjointable(U),Controllable(V)",
+            "Controllable",
+            false,
+        ),
+        (
+            "conjugate_op(U,V)",
+            "Bit",
+            "Applicable(U),Adjointable(U),Adjointable(V)",
+            "Adjointable",
+            true,
+        ),
+        (
+            "checked_op(U,Identity)",
+            "Bit",
+            "Applicable(U)",
+            "Applicable",
+            true,
+        ),
+        (
+            "checked_op(U,Identity)",
+            "Bit",
+            "Applicable(U)",
+            "Adjointable",
+            false,
+        ),
+        ("wrap[U]", "Bit", "Applicable(U)", "Applicable", true),
+        ("wrap[U]", "Bit", "Applicable(U)", "Adjointable", false),
+        (
+            "wrap[U]",
+            "Bit",
+            "Applicable(U),Adjointable(U)",
+            "Adjointable",
+            true,
+        ),
+        (
+            "wrap[U]",
+            "Bit",
+            "Applicable(U),Adjointable(U)",
+            "Controllable",
+            false,
+        ),
+        (
+            "wrap[U]",
+            "Bit",
+            "Applicable(U),Adjointable(U),Controllable(U)",
+            "Controllable",
+            true,
+        ),
+    ] {
+        let text = format!(
+            "// π\r\nclassical fn identity(b:Bit)->Bit{{b}}
+            meaning Identity:Bit=permutation_by(identity);
+            unitary fn demand[const B:Basis,const W:Op<B>](q:Q<B>)->Q<B>
+                requires {requested}(W){{q}}
+            unitary fn wrap[const W:Op<Bit>](q:Q<Bit>)->Q<Bit>
+                requires Applicable(W){{W(q)}}
+            pub unitary fn probe[const U:Op<Bit>,const V:Op<Bit>](q:Q<{basis}>)->Q<{basis}>
+                requires {premises}{{demand[type({basis}),{description}](q)}}"
+        );
+        if available {
+            common_source_valid(
+                &text,
+                "finite profile does not support opaque Basis parameters",
+                "B",
+            );
+        } else {
+            let selected = selected(&text).unwrap_err();
+            assert_eq!(selected.code(), "access", "{text}\n{selected}");
+            let finite = finite(&text);
+            assert_eq!(finite.code, "capability", "{text}\n{finite:?}");
+            assert_eq!(finite.message, selected.message(), "{text}");
+            assert_eq!(finite.primary.unwrap().span, selected.span(), "{text}");
+            // In particular adjoint(U) may fail its construction premise
+            // before the enclosing demand. Keep that genuine original site.
+            assert!(description.contains(&text[selected.span().start..selected.span().end]));
+        }
+    }
+}
+
+#[test]
 fn apply_only_wrapper_retains_forward_use_without_inverse_or_control() {
     common_source_valid(
         &source!("apply-only-forward"),

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Publish the existing static operation capability derivations and check
+  opaque forwarding of each enabled constructor through both source paths.
+  Meaning refinements and zero powers grant no additional provider access.
+
 - Diagnose forbidden quantum-containing assignment and mutable bindings using
   original lexical identities and transitive types. Distinguish unsupported
   ordinary/static mutation, preserve consuming `let` rebinding and contextual
