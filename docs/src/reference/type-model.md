@@ -381,6 +381,13 @@ generic assumption is not evidence for an arbitrary external provider.
 
 ### General pure operation arrows
 
+Further general-arrow implementation is outside the current goal and
+v0.3.0-alpha implementation scope under the
+[maintainer's scope decision](https://github.com/MGYamada/Qleisli/issues/83#issuecomment-6103225809).
+The following records the existing bounded support and its limitations;
+ordinary-project integration is not an active completion requirement. The
+decision does not remove existing syntax or change ordinary function returns.
+
 `Op<A -> B>` retains separate exact input and output basis trees. `Op<A>`
 abbreviates `Op<A -> A>`; the existing comma slot remains a Meaning refinement,
 so `Op<A -> B, M>` is unambiguous. Both ports use only preceding static binders
