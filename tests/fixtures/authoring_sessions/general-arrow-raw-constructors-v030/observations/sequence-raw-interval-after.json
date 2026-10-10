@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-01/sequence.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--ir-profile=raw"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-10T22:00:45.829761+00:00",
+  "cli_sha256_before": "674a41034c904d1129ca22db363bbb40382c8b050808baf2dda38a4faacb996d",
+  "cli_sha256_after": "674a41034c904d1129ca22db363bbb40382c8b050808baf2dda38a4faacb996d",
+  "source_sha256": "f81c71fc4df3762399e10f10e5ab5071ee52fcce15923d4eab2ecd7dc65d6853",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "verification": {
+        "scope": "native-validity",
+        "request_origin": "none",
+        "source_steps_checked": true,
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::main",
+      "ir_profile": "raw",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": ""
+}

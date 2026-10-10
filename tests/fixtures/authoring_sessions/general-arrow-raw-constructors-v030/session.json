@@ -28,7 +28,13 @@
         "observations/wrong-tensor-before.json",
         "observations/sequence-after.json",
         "observations/adjoint-after.json",
-        "observations/zero-bad-child-after.json"
+        "observations/zero-bad-child-after.json",
+        "observations/sequence-raw-interval-before.json",
+        "observations/sequence-raw-interval-after.json",
+        "observations/adjoint-raw-interval-before.json",
+        "observations/adjoint-raw-interval-after.json",
+        "observations/zero-bad-child-raw-interval-before.json",
+        "observations/zero-bad-child-raw-interval-after.json"
       ]
     },
     {
@@ -45,7 +51,11 @@
         "observations/tensor-repaired-before.json",
         "observations/wrong-tensor-repaired-before.json",
         "observations/tensor-after.json",
-        "observations/wrong-tensor-after.json"
+        "observations/wrong-tensor-after.json",
+        "observations/tensor-raw-interval-before.json",
+        "observations/tensor-raw-interval-after.json",
+        "observations/wrong-tensor-raw-interval-before.json",
+        "observations/wrong-tensor-raw-interval-after.json"
       ]
     }
   ]

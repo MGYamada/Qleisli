@@ -70,7 +70,7 @@ impl OperationSite {
 #[derive(Debug)]
 pub struct CheckedSourceMeanings<'a> {
     source: &'a ElaboratedProgram,
-    pub(super) leaves: Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>,
+    pub(super) leaves: Arc<Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>>,
 }
 impl CheckedSourceMeanings<'_> {
     pub fn checked_bindings(&self) -> usize {
@@ -83,6 +83,44 @@ impl CheckedSourceMeanings<'_> {
     /// fresh native decision; this is not an AST preservation theorem.
     pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal> {
         super::lower::lower_with_checked_meanings(self)
+    }
+    /// Emit Raw only after independently checking the actual instruction
+    /// intervals against the original finite requests. No accepted root is
+    /// returned; the caller must still obtain a fresh whole-artifact decision.
+    pub fn lower_raw(
+        &self,
+        kernel: &native::Kernel,
+        budget: &mut Budget,
+    ) -> Result<RawSourceProposal> {
+        self.source.require_control_evidence()?;
+        if budget.remaining() > DEFAULT_EXACT_WORK {
+            return Err(Error::new(
+                "limit",
+                Span::default(),
+                "source Meaning budget exceeds the shared exact-work ceiling",
+            ));
+        }
+        let mut proposal = lower_inner(self.source, self.source.root(), None, None, None)?;
+        budget
+            .charge(proposal.payload().len())
+            .map_err(|error| Error::new("limit", Span::default(), error.to_string()))?;
+        let accepted = kernel
+            .accept(proposal.proposal())
+            .map_err(|error| Error::new(error.code, Span::default(), error.to_string()))?;
+        budget
+            .charge(accepted.native_exact_work())
+            .map_err(|error| Error::new("limit", Span::default(), error.to_string()))?;
+        preservation::validate_subject_with_meanings(
+            self.source,
+            self.source.root(),
+            None,
+            accepted.raw(),
+            Some(kernel),
+            budget,
+            &self.leaves,
+        )?;
+        proposal.meanings = Some(self.leaves.clone());
+        Ok(proposal)
     }
 }
 
@@ -125,7 +163,7 @@ pub(super) fn check_operation_meanings<'a>(
     }
     Ok(CheckedSourceMeanings {
         source,
-        leaves: collector.leaves,
+        leaves: Arc::new(collector.leaves),
     })
 }
 
@@ -247,6 +285,7 @@ pub struct RawSourceProposal {
     operation_depth: usize,
     proposal: native::Proposal,
     finite_boundary: Option<UnitaryBoundary>,
+    meanings: Option<Arc<Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>>>,
 }
 
 /// A fresh native finite equation with replay of these retained source steps.
@@ -384,6 +423,17 @@ impl RawSourceProposal {
         } else {
             None
         };
+        if let Some(meanings) = &self.meanings {
+            return preservation::validate_subject_with_meanings(
+                &self.source,
+                self.subject,
+                operation,
+                accepted.raw(),
+                Some(&accepted.kernel()),
+                &mut Budget::new(DEFAULT_EXACT_WORK),
+                meanings,
+            );
+        }
         validate_source_with_kernel(
             &self.source,
             self.subject,
@@ -2016,6 +2066,7 @@ fn lower_inner(
         binding: binding.map(|(site, _)| site),
         proposal,
         finite_boundary,
+        meanings: None,
     })
 }
 
@@ -2024,6 +2075,61 @@ mod tests {
     use super::*;
     use crate::frontend::compile::ParsedProgram;
     use crate::ir::RawOp;
+
+    #[test]
+    fn raw_meaning_intervals_reject_a_fresh_valid_leaf_for_another_action() {
+        let elaborate = |text: &str| {
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+                .unwrap()
+                .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                .unwrap()
+                .elaborate()
+                .unwrap()
+        };
+        let source = elaborate(
+            "use std::quantum::x; classical fn flip(b:Bit)->Bit{not b}
+            meaning X:Bit=permutation_by(flip); fn direct(q:Q<Bit>)->Q<Bit>{x(q)}
+            fn apply[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+            pub fn main(q:Q<Bit>)->Q<Bit>{apply[checked_op(direct,X)](q)}",
+        );
+        let checker = native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+        let checked = source
+            .check_operation_meanings(&checker, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let raw = lower_inner(&source, source.root(), None, None, None).unwrap();
+        let accepted = checker.accept(raw.proposal()).unwrap();
+        // Both source replay and ordinary native validity succeed for the X
+        // artifact. The substituted identity leaves also have genuine fresh
+        // native equations, but cannot establish the actual X intervals.
+        raw.validate_source_steps(&accepted).unwrap();
+        let identity = elaborate("pub fn main(q:Q<Bit>)->Q<Bit>{q}")
+            .lower_raw()
+            .unwrap();
+        let required = FiniteMeaning::permutation(BasisType::Bit, vec![0, 1]).unwrap();
+        let foreign = checked
+            .leaves
+            .iter()
+            .map(|(key, _)| {
+                let check = identity
+                    .check_finite_meaning(&checker, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .unwrap();
+                (key.clone(), check.leaf)
+            })
+            .collect::<Vec<_>>();
+        assert!(!foreign.is_empty());
+        let error = preservation::validate_subject_with_meanings(
+            &source,
+            source.root(),
+            None,
+            accepted.raw(),
+            Some(&checker),
+            &mut Budget::new(DEFAULT_EXACT_WORK),
+            &foreign,
+        )
+        .unwrap_err();
+        assert_eq!(error.code(), "contract", "{error}");
+        assert!(error.message().contains("actual Raw operation interval"));
+    }
 
     #[test]
     fn checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy() {

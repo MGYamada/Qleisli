@@ -3163,7 +3163,7 @@
     {
       "path": "src/bin/qleisli/source_plan.rs",
       "group": "sized-source",
-      "sha256": "8eb75dbcb07b4dd130f35d5d9f4715533a35bda279c443eadffd14025239a093",
+      "sha256": "cfa3fcf0b95212501ea8458e81a09225d258af80d9f9b852418123ef2c4fc169",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -4065,7 +4065,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "2f6ef65b90d8739e641154e854567e773e626627a6aaccae015634d2572dc53f",
+      "sha256": "e6b5fd4016a0e1077bbc6742578dfd22a31799fc7569235ee7919ac7a94aa227",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4294,7 +4294,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "d381f2a390d468bde8c596cc9986ce06bef9f18cc08affc1c13f4d2c7c896858",
+      "sha256": "cc4af81cc42344d3ffab4930abd58dd8186290f58c804d5301e7afce23960d7c",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4310,6 +4310,7 @@
           "pub fn leaf(&self) -> &CheckedUnitaryLeaf",
           "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
           "pub fn lower_hierarchy(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw( &self, kernel: &native::Kernel, budget: &mut Budget, ) -> Result<RawSourceProposal>",
           "pub fn operation(&self) -> Option<&super::SourceOperation>",
           "pub fn operation_binding(&self) -> Option<(usize, &str)>",
           "pub fn operation_depth(&self) -> usize",
@@ -4343,7 +4344,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "3c5b8d27eb8cbc0cfbf700469b44c873486966328a93fb37e75172d260bcf403",
+      "sha256": "e15a6770548a9e02cb98028013d7193ccfc29461d157fa24af34215edfa05a4b",
       "group": "sized-source",
       "surface": {
         "declarations": [],

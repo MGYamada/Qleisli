@@ -423,7 +423,9 @@ zero-width logical owners without allocating or discarding a physical qubit.
 Original finite endomorphic Meaning requests on whole constructor trees and
 their annotated descendants are checked against their actual materialized Raw
 bodies before checked hierarchy construction, including descendants under zero
-repetition. This does not enable Meaning-refined Raw root emission.
+repetition. The checked collection additionally supports refined Raw direct,
+sequential and tensor application with actual instruction-interval checks;
+refined Raw inverse/controlled access remains unsupported.
 The finite adapter still explicitly refuses general-arrow lowering, and
 rectangular Meaning evidence remains unsupported. Unsupported paths reject
 rather than omit a child, codomain or Meaning obligation.
@@ -576,9 +578,14 @@ equal names or a native-valid replacement do not substitute another subject.
 Only the private `CheckedSourceMeanings` collection can lower a refined caller
 hierarchy. Its finite nodes embed the checked provider bytes and matrices;
 the complete output graph still requires fresh native hierarchy acceptance.
-Plain hierarchy lowering, single-leaf hierarchy lowering and Raw root lowering
-refuse refined callers. Raw refined emission is unsupported. The selected CLI
-uses the same all-binding gate for its hierarchy route; native failure cannot
+Plain hierarchy lowering, single-leaf hierarchy lowering and unchecked Raw root
+lowering refuse refined callers. `CheckedSourceMeanings::lower_raw` independently
+replays actual direct-application intervals, retaining their real owner IDs,
+scalar events and ordered axes, and freshly checks each interval against the
+original requested matrix. The complete Raw proposal still requires fresh
+native validity and source replay. Refined Raw inverse/controlled access and
+source `ctrl` obligations remain unsupported. The selected CLI
+uses the same all-binding gate for its selected route; native failure cannot
 select another profile. `emit-proposal` for a
 refined source needs the checker selected by `QLEISLI_KERNEL` to perform these
 binding checks, while its output remains an untrusted proposal.
@@ -741,9 +748,10 @@ and controlled-phase primitives still reject. Closed Definition/Repeat providers
 forward, adjoint and controlled access through ordinary calls within the exact
 pure-circuit profile; this includes conditional scalar action on a Unit owner.
 Their original Meaning requests remain mandatory, including unused bindings
-and zero repetitions. Refined Raw root emission still rejects; the checked
-all-binding collection embeds actual finite leaves into a hierarchy that needs
-fresh native acceptance. Checked open runtime
+and zero repetitions. The checked all-binding collection supports direct,
+sequential and tensor Raw application with fresh exact interval checks, or embeds
+actual finite leaves into a hierarchy that needs fresh native acceptance.
+Refined Raw inverse/controlled access remains unsupported. Checked open runtime
 invocation and runtime branches remain unfinished. The existing
 hierarchy `lower()` path retains its quantum and ordered-readout contracts and
 rejects Boolean steps at their source locations; a failed native hierarchy

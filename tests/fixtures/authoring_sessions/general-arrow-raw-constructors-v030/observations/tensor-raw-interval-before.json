@@ -1,0 +1,33 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-msrv-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrow-raw-constructors-v030/attempt-02/tensor.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--ir-profile=raw"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T21:58:20.867532+00:00",
+  "cli_sha256_before": "84b5224eff63ed9b2b46c0fc537f9642b740320dd52588de5cccb32f7e9e1c87",
+  "cli_sha256_after": "84b5224eff63ed9b2b46c0fc537f9642b740320dd52588de5cccb32f7e9e1c87",
+  "source_sha256": "a3be4431f7d10a86999af60a1652d4655ab3e1fce99c46de2a628f770ce1f604",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "meaning",
+        "severity": "error",
+        "message": "original operation Meanings require checking every binding before hierarchy lowering; Raw lowering is unsupported",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

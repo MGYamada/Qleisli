@@ -68,8 +68,15 @@ Meaning request. Within the supported closed-provider profile,
 and annotated constructor descendants through the native finite gate on their
 actual materialized Raw bodies before the checked collection can produce a hierarchy
 proposal. That proposal still needs fresh hierarchy acceptance. Direct
-unchecked hierarchy lowering rejects when original Meaning obligations remain;
-refined Raw root emission remains unsupported. A provider outside its concrete
+unchecked hierarchy or Raw lowering rejects when original Meaning obligations remain.
+The checked collection can also emit Raw for direct application, sequential and
+tensor composition: independent source replay checks the actual instruction
+interval, owner boundary and ordered axes against each original finite request
+through a fresh native decision. Unexecuted and zero-repeat child requests are
+still checked before emission. Refined Raw inverse/controlled access and source
+`ctrl` obligations remain unsupported; failure does not select another profile.
+The complete emitted artifact still requires fresh native validity and source
+replay before execution. A provider outside its concrete
 profile also rejects, rather than losing its Meaning request. Other static
 constructors retain their explicit projection restrictions.
 The rename changes no AST meaning, primitive, protocol/schema, checker or

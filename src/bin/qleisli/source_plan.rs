@@ -316,7 +316,14 @@ fn prepare(options: &Options) -> Result<PreparedIr> {
             ));
         }
         // Full Raw capability checking is mandatory. A failure is final.
-        let proposal = if options.command == "emit-proposal" || !source.has_control_obligations() {
+        let proposal = if source.has_operation_meanings() {
+            let kernel = native::Kernel::new(kernel_path(options)?);
+            let mut budget =
+                qleisli::contract::exact::Budget::new(qleisli::contract::DEFAULT_EXACT_WORK);
+            source
+                .check_operation_meanings(&kernel, &mut budget)?
+                .lower_raw(&kernel, &mut budget)?
+        } else if options.command == "emit-proposal" || !source.has_control_obligations() {
             // Untrusted emission cannot request or imply native sector evidence.
             source.lower_raw()?
         } else {

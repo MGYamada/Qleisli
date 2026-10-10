@@ -344,6 +344,70 @@ fn raw_constructors_check_refined_children_even_under_zero_repetition() {
     // carry this child annotation and must both be checked.
     assert_eq!(checked.checked_bindings(), 2);
     checked.lower_hierarchy().unwrap();
+    let raw = checked
+        .lower_raw(&kernel, &mut qleisli::contract::exact::Budget::new(100_000))
+        .unwrap();
+    let accepted = kernel.accept(raw.proposal()).unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+}
+
+#[test]
+fn refined_raw_intervals_preserve_phase_and_axes_with_a_suspended_owner() {
+    let source = "use std::quantum::{x,phase,split,join};
+        classical fn flip(b:Bit)->Bit{not b}
+        meaning X:Bit=permutation_by(flip);
+        fn direct(q:Q<Bit>)->Q<Bit>{x(q)}
+        fn apply[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub fn main(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{let(a,b)=split(q);let a=apply[checked_op(direct,X)](a);let b=phase[1,3](b);join(a,b)}";
+    let source = parsed(source)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let kernel =
+        qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    assert_eq!(source.lower_raw().unwrap_err().code(), "meaning");
+    let mut budget = qleisli::contract::exact::Budget::new(100_000);
+    let checked = source
+        .check_operation_meanings(&kernel, &mut budget)
+        .unwrap();
+    let raw = checked.lower_raw(&kernel, &mut budget).unwrap();
+    let accepted = kernel.accept(raw.proposal()).unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    assert!(budget.remaining() < 100_000);
+    // Independent joint action: X on the low axis and omega on high-axis 1.
+    // The expected coefficients are not read from the producer or its request.
+    use qleisli::contract::BasisType;
+    use qleisli::contract::exact::{Exact, Matrix};
+    use qleisli::interchange::finite_leaf::{UnitaryBoundary, check_unitary};
+    let boundary = UnitaryBoundary::new(
+        BasisType::Pair(Box::new(BasisType::Bit), Box::new(BasisType::Bit)),
+        accepted.raw().quantum_inputs[0].clone(),
+        accepted.output_ports()[0].clone(),
+    )
+    .unwrap();
+    let mut entries = vec![Exact::zero(); 16];
+    for column in 0..4 {
+        entries[(column ^ 1) * 4 + column] = if column & 2 == 0 {
+            Exact::one()
+        } else {
+            Exact::phase(1)
+        };
+    }
+    check_unitary(
+        raw.payload(),
+        &boundary,
+        &Matrix::new(4, 4, entries).unwrap(),
+        &mut qleisli::contract::exact::Budget::new(100_000),
+    )
+    .unwrap();
+    assert_eq!(
+        checked
+            .lower_raw(&kernel, &mut qleisli::contract::exact::Budget::new(0))
+            .unwrap_err()
+            .code(),
+        "limit"
+    );
 }
 
 #[test]
@@ -428,6 +492,53 @@ fn whole_constructor_meanings_preserve_phase_axes_and_reject_false_descendants()
     );
     let kernel =
         qleisli::interchange::native::Kernel::new(std::env::var_os("QLEISLI_KERNEL").unwrap());
+    for (attempt, name) in [("attempt-01", "sequence"), ("attempt-02", "tensor")] {
+        let source = parsed(&read(attempt, name))
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let mut budget = qleisli::contract::exact::Budget::new(100_000);
+        let checked = source
+            .check_operation_meanings(&kernel, &mut budget)
+            .unwrap();
+        let raw = checked.lower_raw(&kernel, &mut budget).unwrap();
+        raw.validate_source_steps(&kernel.accept(raw.proposal()).unwrap())
+            .unwrap();
+        let root = SourceRoot::new(&read(attempt, name));
+        let result = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .args([
+                "check",
+                "--format=json",
+                "--entry=main::main",
+                "--ir-profile=raw",
+            ])
+            .arg(format!(
+                "--module=main={}",
+                root.0.join("main.qli").display()
+            ))
+            .output()
+            .unwrap();
+        assert!(result.status.success(), "{name}: {result:?}");
+        assert!(
+            String::from_utf8(result.stdout)
+                .unwrap()
+                .contains("\"source_meaning_verified\":false")
+        );
+    }
+    let adjoint = parsed(&read("attempt-01", "adjoint"))
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let mut budget = qleisli::contract::exact::Budget::new(100_000);
+    let checked = adjoint
+        .check_operation_meanings(&kernel, &mut budget)
+        .unwrap();
+    assert_eq!(
+        checked.lower_raw(&kernel, &mut budget).unwrap_err().code(),
+        "unsupported"
+    );
     for (attempt, name) in [
         ("attempt-01", "zero-bad-child"),
         ("attempt-02", "wrong-tensor"),

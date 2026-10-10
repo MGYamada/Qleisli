@@ -134,6 +134,10 @@ struct Replay<'a, 'b> {
     tokens: BTreeSet<TokenId>,
     wires: BTreeSet<WireId>,
     live: BTreeMap<TokenId, Arc<[WireId]>>,
+    meanings: &'a [(
+        super::super::elaborate::OperationKey,
+        crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+    )],
 }
 
 impl Replay<'_, '_> {
@@ -238,6 +242,15 @@ impl Replay<'_, '_> {
         controlled: bool,
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
+        // A transformed definition can reach refinements absent from its
+        // immediate operation tree. Keep the full refined Raw access boundary
+        // closed until transformed interval requests are implemented.
+        if !self.meanings.is_empty() {
+            return Err(site.error(
+                "unsupported",
+                "Raw Meaning interval checking for inverse or controlled access is not yet supported",
+            ));
+        }
         if inputs.len() != 1 + usize::from(controlled) {
             return Err(site.invalid("source access changes argument arity"));
         }
@@ -1190,6 +1203,110 @@ impl Replay<'_, '_> {
         depth: usize,
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
+        let first = self.cursor;
+        let outputs = self.operation_inner(operation, arguments, depth, site)?;
+        let meanings = self.meanings;
+        self.charge(meanings.len(), site)?;
+        for (_, leaf) in meanings.iter().filter(|(key, _)| *key == operation.key()) {
+            self.meaning_interval(operation, arguments, &outputs, first, leaf, site)?;
+        }
+        Ok(outputs)
+    }
+
+    fn meaning_interval(
+        &mut self,
+        operation: &SourceOperation,
+        arguments: &[Argument<'_>],
+        outputs: &[Atom],
+        first: usize,
+        leaf: &crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+        site: Site<'_>,
+    ) -> Result<()> {
+        use crate::interchange::{RootInterface, Version, finite_leaf, native};
+        let kernel = self
+            .kernel
+            .ok_or_else(|| site.invalid("Meaning replay needs a native checker"))?;
+        let (ports, principal, _) =
+            super::operation_signature(operation, self.source.definitions(), site.span)?;
+        let signature = ports
+            .input
+            .quantum_basis()
+            .and_then(super::finite_basis)
+            .ok_or_else(|| site.invalid("Meaning interval loses its exact input basis"))?;
+        if ports.input != ports.output
+            || principal != Effect::Unitary
+            || &signature != leaf.boundary().signature()
+        {
+            return Err(
+                site.invalid("Meaning interval changes its original exact interface or effect")
+            );
+        }
+        let [argument] = arguments else {
+            return Err(site.invalid("Meaning interval needs one whole argument"));
+        };
+        let ([Atom::Quantum(input, wires)], [Atom::Quantum(output, returned)]) =
+            (argument.atoms.as_slice(), outputs)
+        else {
+            return Err(site.invalid("Meaning interval changes its unary quantum owner boundary"));
+        };
+        self.charge(self.cursor - first + wires.len() + returned.len(), site)?;
+        let port = |token, wires: &Arc<[WireId]>| crate::ir::QuantumPort {
+            token,
+            wires: wires.to_vec(),
+            shape: crate::ir::BasisShape {
+                bits: wires.len() as u8,
+            },
+        };
+        let boundary = finite_leaf::UnitaryBoundary::new(
+            signature.clone(),
+            port(*input, wires),
+            port(*output, returned),
+        )
+        .map_err(|error| site.invalid(error.to_string()))?;
+        // These bytes describe the actual interval consumed by independent
+        // replay, including its real owner IDs, scalar events and ordered axes.
+        // The request comes from the previously checked original binding, never
+        // from this candidate's output or a producer-generated comparison.
+        let raw = RawProgram {
+            quantum_inputs: vec![port(*input, wires)],
+            classical_inputs: vec![],
+            operations: self.raw.operations[first..self.cursor].to_vec(),
+            quantum_outputs: vec![*output],
+            classical_outputs: vec![],
+            declared_effect: Effect::Unitary,
+        };
+        let interface = RootInterface {
+            input: signature.clone(),
+            output: signature,
+        };
+        let proposal = native::Proposal::from_raw(&raw, Some(&interface), Version::V2, None)
+            .map_err(|error| site.invalid(error.to_string()))?;
+        self.control_work
+            .charge(proposal.artifact().len())
+            .map_err(|error| site.error("limit", error.to_string()))?;
+        finite_leaf::check_with_kernel(
+            kernel,
+            proposal.artifact(),
+            &boundary,
+            leaf.meaning(),
+            self.control_work,
+        )
+        .map_err(|error| {
+            site.error(
+                error.code,
+                format!("actual Raw operation interval violates its original Meaning: {error}"),
+            )
+        })?;
+        Ok(())
+    }
+
+    fn operation_inner(
+        &mut self,
+        operation: &SourceOperation,
+        arguments: &[Argument<'_>],
+        depth: usize,
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
         if let Some(id) = operation.definition() {
             let definition =
                 self.source.definitions().get(id).ok_or_else(|| {
@@ -1608,6 +1725,21 @@ pub(super) fn validate_subject_with_control_work(
     kernel: Option<&crate::interchange::native::Kernel>,
     control_work: &mut crate::contract::exact::Budget,
 ) -> Result<()> {
+    validate_subject_with_meanings(source, subject, operation, raw, kernel, control_work, &[])
+}
+
+pub(super) fn validate_subject_with_meanings(
+    source: &ElaboratedProgram,
+    subject: usize,
+    operation: Option<&SourceOperation>,
+    raw: &RawProgram,
+    kernel: Option<&crate::interchange::native::Kernel>,
+    control_work: &mut crate::contract::exact::Budget,
+    meanings: &[(
+        super::super::elaborate::OperationKey,
+        crate::interchange::finite_leaf::CheckedUnitaryLeaf,
+    )],
+) -> Result<()> {
     let definition = source
         .definitions()
         .get(subject)
@@ -1660,6 +1792,7 @@ pub(super) fn validate_subject_with_control_work(
         tokens: BTreeSet::new(),
         wires: BTreeSet::new(),
         live: BTreeMap::new(),
+        meanings,
     };
     replay.charge(raw.classical_inputs.len(), site)?;
     for id in &raw.classical_inputs {

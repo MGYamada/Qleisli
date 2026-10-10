@@ -631,7 +631,7 @@ impl ElaboratedProgram {
             return Err(error(
                 "meaning",
                 self.definitions[self.root].span,
-                "original operation Meanings require checking every binding before hierarchy lowering; Raw lowering is unsupported",
+                "original operation Meanings require checking every binding before lowering; use the checked Meaning collection",
             ));
         }
         Ok(())

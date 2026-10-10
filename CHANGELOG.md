@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect checked finite operation Meanings to Raw direct, sequential and tensor
+  application. Independently replay and freshly check actual emitted instruction
+  intervals against original requests, preserving owners, phase and axes.
+  Keep zero-repeat/unused requests mandatory and reject unsupported refined Raw
+  inverse/control access. Broader #83/#46 and source preservation remain open.
+
 - Rename the public Rust effect, function-kind and token-kind variants from
   `Iso` to `Isometry`, including body-effect diagnostics. Callers migrate their
   variant references; no Rust alias is added. Keep the effect order, all checking
