@@ -997,6 +997,190 @@ fn joint_places_reassemble_updated_values_in_original_axis_order() {
 }
 
 #[test]
+fn selected_slices_apply_nontrivial_actions_in_half_open_axis_order() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    let kernel = Kernel::selected().unwrap();
+    for start in 0..3 {
+        for end in start + 1..=3 {
+            for phase in [false, true] {
+                let (gate, access, index) = if phase {
+                    ("z", "ctrl", "N-1")
+                } else {
+                    ("x", "excl", "0")
+                };
+                let text = format!(
+                    "use std::quantum::{{x,z}};fn update[const N:Nat](r:Q<Bits<N>>)->Q<Bits<N>> requires 0<N {{{gate}({access} r[{index}]);r}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{update[{}](excl q[{start}..{end}]);q}}",
+                    end - start
+                );
+                let source = selected(&text)
+                    .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+                    .unwrap()
+                    .elaborate()
+                    .unwrap();
+                let proposal = source
+                    .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .unwrap();
+                let meaning = if phase {
+                    FiniteMeaning::phase(
+                        BasisType::Bits(3),
+                        (0..8)
+                            .map(|i| if i & (1 << (end - 1)) != 0 { 4 } else { 0 })
+                            .collect(),
+                    )
+                } else {
+                    FiniteMeaning::permutation(
+                        BasisType::Bits(3),
+                        (0..8).map(|i| i ^ (1 << start)).collect(),
+                    )
+                }
+                .unwrap();
+                proposal
+                    .check_finite_meaning(&kernel, &meaning, &mut Budget::new(DEFAULT_EXACT_WORK))
+                    .unwrap();
+                let accepted = kernel.accept(proposal.proposal()).unwrap();
+                proposal.validate_source_steps(&accepted).unwrap();
+            }
+        }
+    }
+}
+
+#[test]
+fn selected_place_control_rechecks_bound_provider_and_shared_work() {
+    use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
+    let text = "use std::quantum::{z,h};fn provider(q:Q<Bit>)->Q<Bit>{z(q)}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){U(ctrl q[1]);q}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{apply[provider](q)}";
+    let source = selected(text)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let kernel = Kernel::selected().unwrap();
+    let mut budget = Budget::new(DEFAULT_EXACT_WORK);
+    source.lower_raw_with_kernel(&kernel, &mut budget).unwrap();
+    let spent = DEFAULT_EXACT_WORK - budget.remaining();
+    assert!(spent > 1);
+    assert_eq!(
+        source
+            .lower_raw_with_kernel(&kernel, &mut Budget::new(spent - 1))
+            .unwrap_err()
+            .code(),
+        "limit"
+    );
+    let unavailable = Kernel::new(env!("CARGO_MANIFEST_DIR"));
+    assert_eq!(
+        source
+            .lower_raw_with_kernel(&unavailable, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap_err()
+            .code(),
+        "io"
+    );
+    assert_eq!(source.lower_raw().unwrap_err().code(), "unsupported");
+    let bad = text.replace("{z(q)}", "{h(q)}");
+    let source = selected(&bad)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let error = source
+        .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap_err();
+    assert_eq!(error.code(), "contract");
+    assert_eq!(&bad[error.span().start..error.span().end], "U(ctrl q[1])");
+}
+
+#[test]
+fn selected_places_thread_updated_parents_through_static_branches_and_folds() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    let text = "use std::quantum::x;pub unitary fn main[const R:Nat](q:Q<Bits<3>>)->Q<Bits<3>> requires R<=3 {x(excl q[2]);qfor static k in 0..R carry r=q {x(excl r[k]);let u=if static k==0 {x(excl r[2]);()}else{()};yield r;}}";
+    let parsed = selected(text);
+    let kernel = Kernel::selected().unwrap();
+    for rounds in 0..=3 {
+        let source = parsed
+            .instantiate(
+                "main::main",
+                BTreeMap::from([("R".into(), rounds)]),
+                BTreeMap::new(),
+            )
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let proposal = source.lower_raw().unwrap();
+        let mask = if rounds == 0 { 4 } else { (1 << rounds) - 1 };
+        let meaning =
+            FiniteMeaning::permutation(BasisType::Bits(3), (0..8).map(|i| i ^ mask).collect())
+                .unwrap();
+        proposal
+            .check_finite_meaning(&kernel, &meaning, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+    }
+}
+
+#[test]
+fn selected_places_mix_distinct_whole_parents_and_selected_owners() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    let text = "use std::quantum::{split,join,cnot};pub unitary fn main(input:Q<(Bits<3>,Bit)>)->Q<(Bits<3>,Bit)>{let(q,r)=split(input);cnot(ctrl q[1],excl r);cnot(ctrl r,excl q[2]);join(q,r)}";
+    let source = selected(text)
+        .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    let kernel = Kernel::selected().unwrap();
+    let proposal = source
+        .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
+    let meaning = FiniteMeaning::permutation(
+        BasisType::Pair(Box::new(BasisType::Bits(3)), Box::new(BasisType::Bit)),
+        (0..16)
+            .map(|i| {
+                let j = if i & 2 != 0 { i ^ 8 } else { i };
+                if j & 8 != 0 { j ^ 4 } else { j }
+            })
+            .collect(),
+    )
+    .unwrap();
+    proposal
+        .check_finite_meaning(&kernel, &meaning, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
+    let accepted = kernel.accept(proposal.proposal()).unwrap();
+    proposal.validate_source_steps(&accepted).unwrap();
+}
+
+#[test]
+fn selected_places_apply_original_bound_operations_and_check_actual_ctrl_body() {
+    use qleisli::contract::{BasisType, DEFAULT_EXACT_WORK, exact::Budget, meaning::FiniteMeaning};
+    for (gate, access, phases) in [("x", "excl", false), ("z", "ctrl", true)] {
+        // Static providers require an ordinary function, not a primitive name.
+        let text = format!(
+            "use std::quantum::{{x,z}};fn provider(q:Q<Bit>)->Q<Bit>{{{gate}(q)}}unitary fn apply[const U:Op<Bit>](q:Q<Bits<3>>)->Q<Bits<3>> requires Applicable(U){{U({access} q[1]);q}}pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{apply[provider](q)}}"
+        );
+        let source = selected(&text)
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let kernel = Kernel::selected().unwrap();
+        let proposal = source
+            .lower_raw_with_kernel(&kernel, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let meaning = if phases {
+            FiniteMeaning::phase(
+                BasisType::Bits(3),
+                (0..8).map(|i| if i & 2 != 0 { 4 } else { 0 }).collect(),
+            )
+        } else {
+            FiniteMeaning::permutation(BasisType::Bits(3), (0..8).map(|i| i ^ 2).collect())
+        }
+        .unwrap();
+        proposal
+            .check_finite_meaning(&kernel, &meaning, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        proposal.validate_source_steps(&accepted).unwrap();
+    }
+}
+
+#[test]
 fn selected_place_replay_rejects_native_valid_paired_partition_faults() {
     use qleisli::ir::RawOp;
     let kernel = Kernel::selected().unwrap();

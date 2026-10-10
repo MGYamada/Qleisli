@@ -2454,6 +2454,26 @@
           "test": "slices_keep_empty_views_and_scalar_phase_during_joint_access"
         },
         {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_slices_apply_nontrivial_actions_in_half_open_axis_order"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_place_control_rechecks_bound_provider_and_shared_work"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_places_thread_updated_parents_through_static_branches_and_folds"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_places_mix_distinct_whole_parents_and_selected_owners"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_places_apply_original_bound_operations_and_check_actual_ctrl_body"
+        },
+        {
           "path": "tests/selected_source_cli.rs",
           "test": "selected_static_places_choose_raw_before_native_acceptance"
         },

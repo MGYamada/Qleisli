@@ -45,6 +45,7 @@ An implementation detail or Issue candidate does not enlarge this list.
 | --- | --- |
 | Runtime products, patterns and ordinary calls | Exact value-tree binding and checked call-body expansion |
 | Whole-owner `excl` calls | One checked consuming call and retention of returned values on the same lexical binders |
+| Static indexed/slice access | Ordered partition, one checked call, and reconstruction from updated selected owners |
 | Ordinary Boolean expressions and `classical fn` calls | Eager ordinary-value operations |
 | Runtime classical `if` | Classical branches with complete result/frame joins |
 | Static naturals, aliases and bounded helpers | Exact checked substitution; no runtime instruction |
@@ -84,7 +85,7 @@ and [functional abstraction](functional-boundary.md).
 | Owners | Keep the same lexical owner identities with returned values. Require actual inferred Unitary effect and the exact original owner interface. Subsequent consuming calls still make their binders spent; shadows cannot restore them. |
 | Exact phase | Preserve the complete callee action, including entanglement, ordered axes and zero-width phase. Insert no inverse or cleanup. |
 | Source spans | Retain original callee and argument identifiers, byte spans and callee-body origins. Contextual marker spans do not replace owner-identifier spans. |
-| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, indexed/mixed/escaping access, failed native control-sector check or unavailable concrete projection rejects. Checker-free Raw and hierarchical `ctrl` remain unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
+| Refusal | Overlap, spent/hidden/nonquantum argument, changed owner partition/tree, nonunitary body, mixed ordinary/access arguments, escaping access, failed native control-sector check or unavailable concrete projection rejects. Static selections follow the separate rule below. Checker-free Raw and hierarchical `ctrl` remain unsupported. Native-checked Raw also checks unused closed functions leading to control obligations; it invents no static bindings and refuses original obligations without a concrete interval in each retained specialization. |
 | Remaining obligations | Check emitted artifacts and requests independently. The lookup-level scope-update model has finite-map, type-embedding and update-provenance premises; it is not a source-preservation proof or quantitative resource certificate. General footprints, lifetimes and access declarations remain pending. |
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
