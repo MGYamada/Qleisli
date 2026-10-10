@@ -793,7 +793,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
             BTreeMap::new(),
             0,
         )?;
-        builder.provider_interface(id, Span::default())?;
+        builder.pure_provider_interface(id, Span::default())?;
         operations.insert(
             name.clone(),
             SourceOperation {
@@ -1241,8 +1241,15 @@ impl Builder<'_> {
             let resolved_bases = closed.bases;
             for (key, required) in &closed.operations {
                 let target_id = operations[&key.name].target();
-                let ports = self.provider_interface(target_id, function.span)?;
-                if ports.input != required || ports.output != required {
+                let ports = if required.codomain.is_some() {
+                    self.pure_provider_interface(target_id, function.span)?
+                } else {
+                    self.provider_interface(target_id, function.span)?
+                };
+                if self.definitions[target_id].effect > required.ceiling
+                    || ports.input != &required.input
+                    || ports.output != required.output()
+                {
                     return Err(error(
                         "type",
                         function.span,
@@ -1354,6 +1361,34 @@ impl Builder<'_> {
         })();
         self.active.remove(&key);
         result.map_err(|e| e.in_module(&module))
+    }
+    fn pure_provider_interface(
+        &self,
+        id: usize,
+        span: Span,
+    ) -> Result<crate::frontend::types::UnaryInterface<'_, u32>> {
+        let definition = &self.definitions[id];
+        let [input] = definition.inputs.as_slice() else {
+            return Err(error(
+                "type",
+                span,
+                "pure operation provider requires exactly one quantum input",
+            ));
+        };
+        if definition.effect > Effect::Iso
+            || !input.ty.is_quantum_owner()
+            || !definition.output.ty.is_quantum_owner()
+        {
+            return Err(error(
+                "type",
+                span,
+                "pure operation provider requires quantum input/output and inferred effect at most Iso",
+            ));
+        }
+        Ok(crate::frontend::types::UnaryInterface {
+            input: &input.ty,
+            output: &definition.output.ty,
+        })
     }
     fn provider_interface(
         &self,
@@ -1624,6 +1659,20 @@ impl Builder<'_> {
             }
             Argument::Repeat(count, child, span) => {
                 let child = self.operation(child, scope, frame, depth, *span)?;
+                let definition = &self.definitions[child.target()];
+                if definition.inputs.len() == 1
+                    && definition.inputs[0].ty.is_quantum_owner()
+                    && definition.output.ty.is_quantum_owner()
+                {
+                    let ports = self.pure_provider_interface(child.target(), *span)?;
+                    if ports.input != ports.output {
+                        return Err(error(
+                            "type",
+                            *span,
+                            "operation repetition requires identical input and output type trees, including for zero repetitions",
+                        ));
+                    }
+                }
                 let count = match count {
                     Count::Natural(n) => {
                         natural(n, &scope.naturals, &mut self.cells, &mut self.calls)?
@@ -1690,7 +1739,15 @@ impl Builder<'_> {
         let (types, naturals, operations) =
             self.arguments(definition, arguments, scope, frame, depth, span)?;
         let id = self.function(definition, types, naturals, operations, depth + 1)?;
-        self.runtime_provider_type(id, span)?;
+        let definition = &self.definitions[id];
+        if definition.inputs.len() == 1
+            && definition.inputs[0].ty.is_quantum_owner()
+            && definition.output.ty.is_quantum_owner()
+        {
+            self.pure_provider_interface(id, span)?;
+        } else {
+            self.runtime_provider_type(id, span)?;
+        }
         Ok(SourceOperation {
             kind: OperationKind::Definition(id),
             meanings: Arc::from([]),
@@ -2147,6 +2204,33 @@ impl Builder<'_> {
             StepKind::Controlled(op) => (op, true),
             _ => unreachable!(),
         };
+        let definition = &self.definitions[op.target()];
+        if matches!(kind, StepKind::Apply(_))
+            && definition.inputs.len() == 1
+            && (definition.effect != Effect::Unitary
+                || definition.inputs[0].ty != definition.output.ty)
+        {
+            self.pure_provider_interface(op.target(), span)?;
+            let effect = definition.effect;
+            let peak = definition.peak_quantum;
+            for ty in [&definition.inputs[0].ty, &definition.output.ty] {
+                crate::frontend::check::type_size_budgeted(
+                    ty,
+                    4096,
+                    64,
+                    false,
+                    span,
+                    &mut |span, cells| {
+                        charge_retained_cells(&mut self.cells, cells, span)
+                            .map_err(crate::frontend::check::SourceError::from)
+                    },
+                )
+                .map_err(Error::from)?;
+            }
+            let input = definition.inputs[0].ty.clone();
+            let output = definition.output.ty.clone();
+            return self.step(kind, vec![input], output, effect, inputs, frame, span, peak);
+        }
         let target = self.runtime_provider_type(op.target(), span)?;
         let (types, output) = if controlled {
             (vec![bit(), target.clone()], tuple(vec![bit(), target]))

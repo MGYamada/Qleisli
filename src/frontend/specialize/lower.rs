@@ -1342,6 +1342,25 @@ impl Lower<'_> {
                     node = Some(reference);
                     output
                 }
+            } else if let Some(child) =
+                step.operation()
+                    .and_then(|op| op.definition())
+                    .filter(|&child| {
+                        let definition = &self.source.definitions()[child];
+                        step.kind() == "apply"
+                            && definition.inputs().len() == 1
+                            && (definition.effect() != "unitary"
+                                || definition.inputs()[0].ty() != definition.output().ty())
+                    })
+            {
+                // A transparent forward arrow can allocate axes or change its
+                // owner tree. Inline its actual body, just like an ordinary
+                // call; do not close its codomain back to its domain.
+                inlined = true;
+                instrument.call_path.push(step_index);
+                let output = self.invoke(child, items, instrument, depth + 1);
+                instrument.call_path.pop();
+                output?
             } else {
                 match step.primitive_kind() {
                     Some(Primitive::Init0) => {

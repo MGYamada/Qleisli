@@ -376,6 +376,42 @@ A mathematical Meaning refinement or Unitary effect is not an access grant.
 Concrete providers still require their checked implementation paths; a
 generic assumption is not evidence for an arbitrary external provider.
 
+### General pure operation arrows
+
+`Op<A -> B>` retains separate exact input and output basis trees. `Op<A>`
+abbreviates `Op<A -> A>`; the existing comma slot remains a Meaning refinement,
+so `Op<A -> B, M>` is unambiguous. Both ports use only preceding static binders
+and undergo ordered substitution. Equal width does not identify distinct trees.
+
+Given `U: Op<A -> B>` and `requires Applicable(U)`, applying `U` consumes one
+`Q<A>` owner and returns one `Q<B>` owner, with an Iso upper effect bound for
+general ports. When the common exact-tree judgment establishes `A = B`, the
+explicit form retains the same Unitary bound as its endomorphic abbreviation.
+Preparation is the ordinary `Unit -> A` case; `Q<Unit>` remains a logical
+owner. A concrete provider must be an ordinary unary quantum function whose
+independently inferred principal effect is at most Iso. An annotation cannot
+make an Observe body pure or make an Iso body Unitary.
+
+`Adjointable(U)` requires a principal-Unitary provider and a supported reverse
+implementation; an adjoint exchanges the ports. `Controllable(U)` additionally
+requires the exact endomorphism `A = B`. Repetition also requires `A = B`,
+including a zero count. Sequential construction matches the exact middle tree;
+tensor construction retains ordered pairs of both input and output trees.
+Generic bodies use their declared capability and effect bounds, never a more
+fortunate later concrete provider. Existing monomial Meaning refinements are
+endomorphic: both ports must match their exact declared basis.
+
+The current selected profile materializes forward application of a transparent
+ordinary provider by lowering its actual body, retaining both ports and obtaining
+fresh native acceptance of the resulting artifact. The finite adapter reports
+explicit unsupported general-arrow lowering. General composite and transformed
+operation materialization and rectangular Meaning evidence remain unsupported;
+the common judgment checks their port and access rules before profile selection.
+Native acceptance of produced IR does not establish source preservation; public
+results retain `source_meaning_verified: false`. Bounded independent exact
+requests and small complex executions are regression evidence, not a general
+QS or PR theorem.
+
 ### Direct runtime transforms and opaque operations
 
 A direct `adjoint`/`controlled`/`power` target given by an ordinary function name,

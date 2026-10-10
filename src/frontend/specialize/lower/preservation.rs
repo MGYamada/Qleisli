@@ -575,7 +575,14 @@ impl Replay<'_> {
                 .events
                 .get(self.next)
                 .is_some_and(|e| e.definition == id && e.step == i && e.call_path == *path);
-            let outputs = if let Some(child) = step.called_definition().filter(|_| !atomic) {
+            let transparent = step.called_definition().or_else(|| {
+                if step.kind() == "apply" {
+                    step.operation().and_then(|op| op.definition())
+                } else {
+                    None
+                }
+            });
+            let outputs = if let Some(child) = transparent.filter(|_| !atomic) {
                 path.push(i);
                 let output = self.function(child, args, path);
                 path.pop();

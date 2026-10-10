@@ -95,6 +95,7 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
             for formal in &interface.statics {
                 if let StaticKind::Operation {
                     basis,
+                    codomain,
                     meaning: Some(meaning),
                     ..
                 } = &formal.kind
@@ -107,6 +108,16 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
                             "expected a declared finite meaning",
                         )
                         .in_module(&interface.module));
+                    }
+                    if let Some(codomain) = codomain {
+                        normalize::expect(
+                            codomain,
+                            &target.result,
+                            &interface.premises,
+                            declaration.span,
+                            &p.budget,
+                        )
+                        .map_err(|e| e.in_module(&interface.module))?;
                     }
                     normalize::expect(
                         basis,
@@ -204,16 +215,25 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             formal,
             budget.key(formal.name.span, key)?,
             |prefix| {
-                let StaticParamKind::Operation { basis, meaning } = &formal.kind else {
+                let StaticParamKind::Operation {
+                    basis,
+                    codomain,
+                    meaning,
+                } = &formal.kind
+                else {
                     unreachable!("Op callback");
                 };
                 let basis =
                     normalize::ty(basis, index, &scope, Stage::Basis, Some(prefix), budget)?;
+                let codomain = codomain
+                    .as_ref()
+                    .map(|ty| normalize::ty(ty, index, &scope, Stage::Basis, Some(prefix), budget))
+                    .transpose()?;
                 let meaning = meaning
                     .as_ref()
                     .map(|name| meaning_identity(p, id, name))
                     .transpose()?;
-                Ok::<_, SourceError>((basis, meaning))
+                Ok::<_, SourceError>((basis, codomain, meaning))
             },
         )?;
         if matches!(formal.kind, StaticParamKind::Basis) {
@@ -262,18 +282,50 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             StaticParamKind::Natural => StaticKind::Natural,
             StaticParamKind::Basis => StaticKind::Basis,
             StaticParamKind::Operation { .. } => {
-                let op = checked.remove(key).expect("complete checked Op formal");
+                let mut op = checked.remove(key).expect("complete checked Op formal");
+                if let Some(codomain) = &op.codomain {
+                    // The explicit endomorphism and its abbreviation have the
+                    // same law/effect bound. Retain two ports unless the shared
+                    // exact-tree judgment establishes their equality.
+                    if normalize::equivalent(
+                        codomain,
+                        &op.basis,
+                        &scope.context,
+                        formal.name.span,
+                        budget,
+                    )? {
+                        op.codomain = None;
+                    }
+                }
+                if op.access[2] {
+                    if let Some(codomain) = &op.codomain {
+                        normalize::expect(
+                            codomain,
+                            &op.basis,
+                            &scope.context,
+                            formal.name.span,
+                            budget,
+                        )?;
+                    }
+                }
                 budget.ty(formal.name.span, &op.basis)?;
                 scope.operations.insert(
                     budget.key(formal.name.span, key)?,
                     Operation {
                         basis: budget.copy_ty(formal.name.span, &op.basis)?,
+                        codomain: op
+                            .codomain
+                            .as_ref()
+                            .map(|ty| budget.copy_ty(formal.name.span, ty))
+                            .transpose()?,
+                        effect: formal_effect(&op.codomain, &op.access),
                         meaning: op.meaning,
                         access: op.access,
                     },
                 );
                 StaticKind::Operation {
                     basis: op.basis,
+                    codomain: op.codomain,
                     meaning: op.meaning,
                     access: op.access,
                 }
@@ -374,6 +426,7 @@ pub(super) fn scope(
             }
             StaticKind::Operation {
                 basis,
+                codomain,
                 meaning,
                 access,
             } => {
@@ -381,6 +434,11 @@ pub(super) fn scope(
                     budget.key(span, &formal.key)?,
                     Operation {
                         basis: budget.copy_ty(span, basis)?,
+                        codomain: codomain
+                            .as_ref()
+                            .map(|ty| budget.copy_ty(span, ty))
+                            .transpose()?,
+                        effect: formal_effect(codomain, access),
                         meaning: *meaning,
                         access: *access,
                     },

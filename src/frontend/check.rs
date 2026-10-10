@@ -292,6 +292,7 @@ pub(super) enum StaticKind {
     Basis,
     Operation {
         basis: Ty,
+        codomain: Option<Ty>,
         meaning: Option<DefId>,
         access: [bool; 3],
     },
@@ -322,6 +323,7 @@ pub(super) enum ObligationKind {
     },
     Provider {
         provider: DefId,
+        ceiling: crate::ir::Effect,
         meaning: Option<DefId>,
     },
     RuntimeGroupProvider {
@@ -368,8 +370,39 @@ impl CheckedProgram {
 #[derive(Clone)]
 struct Operation {
     basis: Ty,
+    codomain: Option<Ty>,
+    effect: crate::ir::Effect,
     meaning: Option<DefId>,
     access: [bool; 3],
+}
+impl Operation {
+    fn output(&self) -> &Ty {
+        self.codomain.as_ref().unwrap_or(&self.basis)
+    }
+}
+#[derive(Clone, Copy)]
+struct OperationMode {
+    arrows: bool,
+    ceiling: crate::ir::Effect,
+}
+impl OperationMode {
+    const ENDO: Self = Self {
+        arrows: false,
+        ceiling: crate::ir::Effect::Unitary,
+    };
+    fn unitary(self) -> Self {
+        Self {
+            ceiling: crate::ir::Effect::Unitary,
+            ..self
+        }
+    }
+}
+fn formal_effect(codomain: &Option<Ty>, access: &[bool; 3]) -> crate::ir::Effect {
+    if codomain.is_some() && !access[1] && !access[2] {
+        crate::ir::Effect::Iso
+    } else {
+        crate::ir::Effect::Unitary
+    }
 }
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Binding {
@@ -416,6 +449,12 @@ impl Scope {
                 budget.key(span, key)?,
                 Operation {
                     basis: budget.copy_ty(span, &value.basis)?,
+                    codomain: value
+                        .codomain
+                        .as_ref()
+                        .map(|ty| budget.copy_ty(span, ty))
+                        .transpose()?,
+                    effect: value.effect,
                     meaning: value.meaning,
                     access: value.access,
                 },
@@ -518,15 +557,16 @@ impl<'a> Program<'a> {
                 }
                 Ok(())
             };
-            let provider = |id: DefId| -> Result<()> {
+            let provider = |id: DefId, ceiling: crate::ir::Effect| -> Result<()> {
                 self.budget.charge(span, 1)?;
                 let target = self.interfaces.get(&id).ok_or_else(failure)?;
                 if matches!(target.kind, FnKind::Classical | FnKind::Meaning)
                     || target.params.len() != 1
                     || !target.params[0].is_quantum_owner()
                     || !target.result.is_quantum_owner()
-                    || effects.get(&id).map(|fact| fact.inferred())
-                        != Some(crate::ir::Effect::Unitary)
+                    || effects
+                        .get(&id)
+                        .is_none_or(|fact| fact.inferred() > ceiling)
                 {
                     return Err(failure().in_module(&interface.module));
                 }
@@ -535,9 +575,10 @@ impl<'a> Program<'a> {
             match &obligation.kind {
                 ObligationKind::Provider {
                     provider: id,
+                    ceiling,
                     meaning: required,
                 } => {
-                    provider(*id)?;
+                    provider(*id, *ceiling)?;
                     if let Some(id) = required {
                         meaning(*id)?;
                     }
@@ -583,7 +624,7 @@ impl<'a> Program<'a> {
                     implementation,
                     specification,
                 } => {
-                    provider(*implementation)?;
+                    provider(*implementation, crate::ir::Effect::Unitary)?;
                     self.budget.charge(span, 1)?;
                     if !self.interfaces[implementation].statics.is_empty() {
                         return Err(failure().in_module(&interface.module));
@@ -591,7 +632,7 @@ impl<'a> Program<'a> {
                     if self.interfaces[specification].kind == FnKind::Meaning {
                         meaning(*specification)?;
                     } else {
-                        provider(*specification)?;
+                        provider(*specification, crate::ir::Effect::Unitary)?;
                         self.budget.charge(span, 1)?;
                         if !self.interfaces[specification].statics.is_empty() {
                             return Err(failure().in_module(&interface.module));
@@ -601,7 +642,9 @@ impl<'a> Program<'a> {
                     // require independent exact semantic evidence.
                 }
                 ObligationKind::CertifiedClean { logical } => match logical {
-                    OperationIdentity::Global(resolve::Target::Declaration(id)) => provider(*id)?,
+                    OperationIdentity::Global(resolve::Target::Declaration(id)) => {
+                        provider(*id, crate::ir::Effect::Unitary)?
+                    }
                     OperationIdentity::Global(resolve::Target::Primitive(id)) => {
                         self.budget
                             .charge(span, id.module.len() + id.name.len() + 2)?;

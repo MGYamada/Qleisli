@@ -28,6 +28,7 @@ pub(super) struct Prefix<'a> {
 
 pub(super) struct Operation<N, M> {
     pub basis: Type<N>,
+    pub codomain: Option<Type<N>>,
     pub meaning: Option<M>,
     pub access: [bool; 3],
 }
@@ -61,7 +62,7 @@ impl<N, M> Formals<N, M> {
         ordinal: usize,
         source: &StaticParam,
         key: BinderKey,
-        check: impl FnOnce(Prefix<'_>) -> Result<(Type<N>, Option<M>), E>,
+        check: impl FnOnce(Prefix<'_>) -> Result<(Type<N>, Option<Type<N>>, Option<M>), E>,
     ) -> Result<(), E> {
         assert_eq!(ordinal, self.next, "complete ordered static formals");
         assert_eq!(key.name, source.name.text, "paired static spelling");
@@ -73,7 +74,7 @@ impl<N, M> Formals<N, M> {
                 assert!(self.bases.insert(key), "unique Basis formal key");
             }
             StaticParamKind::Operation { .. } => {
-                let (basis, meaning) = check(Prefix {
+                let (basis, codomain, meaning) = check(Prefix {
                     naturals: &self.naturals,
                     bases: &self.bases,
                 })?;
@@ -83,6 +84,7 @@ impl<N, M> Formals<N, M> {
                             key,
                             Operation {
                                 basis,
+                                codomain,
                                 meaning,
                                 access: [false; 3],
                             },

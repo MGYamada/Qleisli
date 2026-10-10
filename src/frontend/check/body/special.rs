@@ -281,6 +281,8 @@ impl Checker<'_, '_> {
             }
             return Ok(Operation {
                 basis: self.program.budget.copy_ty(name.span, basis)?,
+                codomain: None,
+                effect: Effect::Unitary,
                 meaning: None,
                 access: [true; 3],
             });

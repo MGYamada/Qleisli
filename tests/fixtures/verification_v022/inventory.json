@@ -1986,7 +1986,7 @@
           "group": "source"
         },
         "Operation": {
-          "declaration": "Operation { basis: Type, meaning: Option<Ident> }",
+          "declaration": "Operation { basis: Type, codomain: Option<Box<Type>>, meaning: Option<Ident>, }",
           "group": "source"
         },
         "Basis": {
@@ -3288,7 +3288,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "5d617bde0e22842133e6f7f592cea93cfcdba7efc2b6f8001c9b1c6567da5fa0",
+      "sha256": "4afdcd78cea1408856d50f567201a363d8b0a24ded0786b3e5f055817de29ca6",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3337,7 +3337,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "6a1b88942c7a45c60cc79ded846edd4e6543fec1a6f9fd57acfc4c98182badbd",
+      "sha256": "8582916872f58b50130ffbde70591322b285bc567cc8d8d6fab83cd58d58505c",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3365,7 +3365,7 @@
     },
     {
       "path": "src/frontend/check/body/operations.rs",
-      "sha256": "d79ac3e84d10a822a9098f438d6de1d2fe25c2b4cb2602a9f6e5f6a1d341f7c8",
+      "sha256": "324175cfc2946f6e84862b984bbde384e79cc188335b4857d2b0b58f9ddf72df",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3375,7 +3375,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "f6d58d39a05a6b4c67ad150c3db2966c0ddde87d2b2e53583c98f3588952ffda",
+      "sha256": "e459e23d04377a20dd7cc3b03f616a4752934787bdcbbb517e52b0c394132171",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3385,7 +3385,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "e9ecbfe612fafa7a56a0c38e522db55430a3ea74e9c68b16037063ddff17d80e",
+      "sha256": "647c4d0920c809f9e76176348060f545b10a883a86ace7f328b58396d38889d7",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3590,7 +3590,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "a61c8660be8836d8741505d89895205ebbcfff53c524fd3e6a040684786a12b3",
+      "sha256": "22f9a386acdfe2230a873c17db4991745041d2bb98561057e99a51a28482c808",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3600,7 +3600,7 @@
     },
     {
       "path": "src/frontend/compile/profile.rs",
-      "sha256": "8f85e3cd68eb9ad1dc386a2c784efb48666e1c2672196e4e345a5937e8f58cf2",
+      "sha256": "df06432cfc4a46ebc211581540a11704fcca5e8610663ee5f5a3f4a8f5472109",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3696,12 +3696,12 @@
     },
     {
       "path": "src/frontend/formals.rs",
-      "sha256": "ee2cbbfe1472572e22d00a045a921abc6d630d00652a2e4e7ec2ebcf1bb94205",
+      "sha256": "3daa302b5153e36186350caac11fa1970eb81f233e2938f0ded12a7a2b11a33a",
       "group": "source",
       "surface": {
         "declarations": [],
         "functions": [
-          "pub fn advance<E>( &mut self, ordinal: usize, source: &StaticParam, key: BinderKey, check: impl FnOnce(Prefix<'_>) -> Result<(Type<N>, Option<M>), E>, ) -> Result<(), E>",
+          "pub fn advance<E>( &mut self, ordinal: usize, source: &StaticParam, key: BinderKey, check: impl FnOnce(Prefix<'_>) -> Result<(Type<N>, Option<Type<N>>, Option<M>), E>, ) -> Result<(), E>",
           "pub fn grant(&mut self, key: Option<&BinderKey>, access: Access) -> Result<(), AccessError>",
           "pub fn into_operations(self, count: usize) -> BTreeMap<BinderKey, Operation<N, M>>",
           "pub fn new() -> Self"
@@ -3768,7 +3768,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "29734e807f4dee6f1a481986782196694e1841dbeb0d6a47d97a81f0a471ec47",
+      "sha256": "8f195354268b9d94a31d3127a09c6d5c5778b235aed72b4b8a3516f40d0cc0e7",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3909,7 +3909,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "37268b0cfc8e1430e168cecc4f075166925f988858866f57236abb2ad74ee631",
+      "sha256": "61dd3776fd35289157bc815922d5fcabbd2fe06dc6603d4b9a19bdce07b32d58",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4009,17 +4009,19 @@
     },
     {
       "path": "src/frontend/specialize/bindings.rs",
-      "sha256": "ca9db1ba05166ff53fb7257894ffa2edbd34623104a1c18a85d0124253b92b5f",
+      "sha256": "5b611e8ce653d25271ad261718641b54b2b86c34fe5a88439af442511bc00c30",
       "group": "sized-source",
       "surface": {
         "declarations": [],
-        "functions": [],
+        "functions": [
+          "pub fn output(&self) -> &SourceType"
+        ],
         "capacity_constants": []
       }
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "4d917f1ab00dd3a0371fded3e41976ed1c9cc4b558bede6d65e47b45abff1b17",
+      "sha256": "7fa0dd0330576992c9ec34f948a5c5c513697508013e76bf46e272e1460a5986",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4130,7 +4132,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "6c0c0e0e59013c1256868a7ae85ee3d5f0ec62b6815b8841ade6f00ae06e2a57",
+      "sha256": "419a5577b3b7259f5a1bba5538c1edfa2b1060b5bd328673fb35f91bcbebd910",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4153,7 +4155,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation.rs",
-      "sha256": "11aec84c20fe36eb231ee94d10958cd65282d43a0fd5ed3dd51a4e6b5fdc267b",
+      "sha256": "df10a6456682a15289799925976254e63ba94372d161e3001e701423a1c3d59e",
       "surface": {
         "declarations": [
           "FramePort",
@@ -4187,7 +4189,7 @@
     },
     {
       "path": "src/frontend/specialize/lower/preservation/isometry_tests.rs",
-      "sha256": "b85c0252be3f22b36649a1e55e913e0c70bf3977c97447c5a3ce857cbb5e974c",
+      "sha256": "9d14d26ad55b57bf59e01366d45f8b73173f08269cb50bab272b79230c8f6f65",
       "group": "sized-source",
       "surface": {
         "declarations": [],

@@ -14,7 +14,18 @@ pub(super) struct ClosedInterface {
     pub bases: BTreeMap<BinderKey, SourceType>,
     pub parameters: Vec<SourceType>,
     pub result: SourceType,
-    pub operations: BTreeMap<BinderKey, SourceType>,
+    pub operations: BTreeMap<BinderKey, ClosedOperation>,
+}
+
+pub(super) struct ClosedOperation {
+    pub input: SourceType,
+    pub codomain: Option<SourceType>,
+    pub ceiling: crate::ir::Effect,
+}
+impl ClosedOperation {
+    pub fn output(&self) -> &SourceType {
+        self.codomain.as_ref().unwrap_or(&self.input)
+    }
 }
 
 fn check_bindings<V>(
@@ -246,9 +257,31 @@ pub(super) fn closed_interface_budgeted(
         .statics
         .iter()
         .filter_map(|formal| match &formal.kind {
-            StaticKind::Operation { basis, .. } => {
-                Some(close(basis).map(|basis| (formal.key.clone(), SourceType::quantum(basis))))
-            }
+            StaticKind::Operation {
+                basis,
+                codomain,
+                access,
+                ..
+            } => Some((|| {
+                let input = SourceType::quantum(close(basis)?);
+                let output = codomain
+                    .as_ref()
+                    .map(|ty| close(ty).map(SourceType::quantum))
+                    .transpose()?;
+                let ceiling = if codomain.is_some() && !access[1] && !access[2] {
+                    crate::ir::Effect::Iso
+                } else {
+                    crate::ir::Effect::Unitary
+                };
+                Ok((
+                    formal.key.clone(),
+                    ClosedOperation {
+                        input,
+                        codomain: output,
+                        ceiling,
+                    },
+                ))
+            })()),
             _ => None,
         })
         .collect::<Result<_>>()?;
@@ -342,18 +375,26 @@ pub(super) fn instantiate(
                     &mut charge,
                 )?;
                 let effect = program.checked.effects[&provider_id].inferred();
-                if effect != crate::ir::Effect::Unitary {
+                let required = &closed.operations[&formal.key];
+                if effect > required.ceiling {
                     return Err(Error::new(
                         "effect",
                         span,
-                        crate::frontend::effects::unitary_required(&format!(
-                            "operation provider {} has inferred body effect `{effect:?}`; Unitary is required",
-                            resolution.path(provider_id)
-                        )),
+                        if required.ceiling == crate::ir::Effect::Unitary {
+                            crate::frontend::effects::unitary_required(&format!(
+                                "operation provider {} has inferred body effect `{effect:?}`; Unitary is required",
+                                resolution.path(provider_id)
+                            ))
+                        } else {
+                            format!(
+                                "pure operation provider {} has inferred body effect `{effect:?}`; at most Iso is required",
+                                resolution.path(provider_id)
+                            )
+                        },
                     ));
                 }
                 if provider_closed.parameters.len() != 1
-                    || provider_closed.parameters[0] != provider_closed.result
+                    || !provider_closed.parameters[0].is_quantum_owner()
                     || !provider_closed.result.is_quantum_owner()
                 {
                     return Err(Error::new(
@@ -362,7 +403,9 @@ pub(super) fn instantiate(
                         "concrete provider must have one quantum input with the exact output type",
                     ));
                 }
-                if provider_closed.result != closed.operations[&formal.key] {
+                if provider_closed.parameters[0] != required.input
+                    || &provider_closed.result != required.output()
+                {
                     return Err(Error::new(
                         "type",
                         span,
@@ -382,7 +425,9 @@ pub(super) fn instantiate(
                     else {
                         unreachable!("quantum provider checked above")
                     };
-                    if **basis != target.basis {
+                    if **basis != target.basis
+                        || provider_closed.parameters[0].quantum_basis() != Some(&target.basis)
+                    {
                         return Err(Error::new(
                             "type",
                             span,

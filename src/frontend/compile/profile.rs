@@ -18,7 +18,18 @@ pub(super) fn check(declaration: &Decl) -> Result<(), Failure> {
                     "finite profile does not support static Nat parameters",
                 ));
             }
-            StaticParamKind::Operation { basis, .. } => ty(basis)?,
+            StaticParamKind::Operation {
+                basis, codomain, ..
+            } => {
+                ty(basis)?;
+                if let Some(codomain) = codomain {
+                    ty(codomain)?;
+                    return Err((
+                        parameter.name.span,
+                        "general operation arrows require the selected lowering profile",
+                    ));
+                }
+            }
         }
     }
     for requirement in &declaration.requires {

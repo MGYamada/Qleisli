@@ -344,6 +344,7 @@ impl Checker<'_, '_> {
             let formal = &self.program.interfaces[&id].statics[ordinal];
             let StaticKind::Operation {
                 basis,
+                codomain,
                 meaning,
                 access: required,
             } = &formal.kind
@@ -357,10 +358,26 @@ impl Checker<'_, '_> {
                 span,
                 &self.program.budget,
             )?;
+            let codomain = codomain
+                .as_ref()
+                .map(|ty| {
+                    normalize::substitute(
+                        ty,
+                        &target.naturals,
+                        &target.bases,
+                        span,
+                        &self.program.budget,
+                    )
+                })
+                .transpose()?;
+            let mode = OperationMode {
+                arrows: codomain.is_some(),
+                ceiling: formal_effect(&codomain, required),
+            };
             let meaning = *meaning;
             let required = *required;
             let key = self.program.budget.key(arg.span, &formal.key)?;
-            let operation = self.operation(arg, scope)?;
+            let operation = self.operation_with(arg, scope, mode)?;
             normalize::expect(
                 &operation.basis,
                 &basis,
@@ -369,6 +386,15 @@ impl Checker<'_, '_> {
                 &self.program.budget,
             )
             .map_err(|error| operation_mismatch(error, &operation.basis, &basis))?;
+            if let Some(codomain) = &codomain {
+                normalize::expect(
+                    operation.output(),
+                    codomain,
+                    &scope.context,
+                    arg.span,
+                    &self.program.budget,
+                )?;
+            }
             for capability in [Access::Apply, Access::Adjoint, Access::Controlled] {
                 if required[super::super::super::formals::access_index(capability)] {
                     access(&operation, capability, arg.span)?;
@@ -523,8 +549,15 @@ impl Checker<'_, '_> {
             }
             access(operation, Access::Apply, span)?;
             let ty = Ty::quantum(self.program.budget.copy_ty(span, &operation.basis)?);
+            let output = operation
+                .codomain
+                .as_ref()
+                .map(|ty| self.program.budget.copy_ty(span, ty))
+                .transpose()?;
+            let effect = operation.effect;
             self.call_argument(runtime, 0, scope, Some(&ty))?;
-            return Ok(ty);
+            self.effects.add(effect, span);
+            return Ok(output.map(Ty::quantum).unwrap_or(ty));
         }
         match self.resolve(name)? {
             Target::Primitive(primitive) => {
@@ -790,6 +823,16 @@ impl Checker<'_, '_> {
         scope: &Scope,
         allow_primitive: bool,
     ) -> Result<Operation> {
+        self.named_operation_with(name, args, scope, allow_primitive, OperationMode::ENDO)
+    }
+    fn named_operation_with(
+        &mut self,
+        name: &Ident,
+        args: &[StaticOp],
+        scope: &Scope,
+        allow_primitive: bool,
+        mode: OperationMode,
+    ) -> Result<Operation> {
         if let Some(operation) = self.local(name).and_then(|key| scope.operations.get(key)) {
             if !args.is_empty() {
                 return Err(SourceError::new(
@@ -799,6 +842,27 @@ impl Checker<'_, '_> {
                 ));
             }
             self.program.budget.ty(name.span, &operation.basis)?;
+            if let Some(codomain) = &operation.codomain {
+                self.program.budget.ty(name.span, codomain)?;
+                if !mode.arrows {
+                    normalize::expect(
+                        codomain,
+                        &operation.basis,
+                        &scope.context,
+                        name.span,
+                        &self.program.budget,
+                    )?;
+                }
+            }
+            if operation.effect > mode.ceiling {
+                return Err(SourceError::new(
+                    "effect",
+                    name.span,
+                    crate::frontend::effects::unitary_required(
+                        "opaque operation effect exceeds required Unitary ceiling",
+                    ),
+                ));
+            }
             return Ok(operation.clone());
         }
         if self.local(name).is_some() {
@@ -850,6 +914,8 @@ impl Checker<'_, '_> {
                 };
                 Ok(Operation {
                     basis: *basis,
+                    codomain: None,
+                    effect: Effect::Unitary,
                     meaning: None,
                     access: [true; 3],
                 })
@@ -880,9 +946,10 @@ impl Checker<'_, '_> {
                         "static provider requires an ordinary runtime function",
                     ));
                 }
-                let (inputs, result, access) =
+                let (inputs, result, mut access) =
                     self.specialize(id, args, scope, name.span, false)?;
-                if inputs.len() != 1 || !result.is_quantum_owner() {
+                if inputs.len() != 1 || !inputs[0].is_quantum_owner() || !result.is_quantum_owner()
+                {
                     return Err(SourceError::new(
                         "type",
                         name.span,
@@ -891,34 +958,67 @@ impl Checker<'_, '_> {
                 }
                 let ports = crate::frontend::types::UnaryInterface::new(&inputs, &result)
                     .expect("checked unary provider arity");
-                normalize::expect(
-                    ports.input,
-                    ports.output,
-                    &scope.context,
-                    name.span,
-                    &self.program.budget,
-                )?;
+                if !mode.arrows {
+                    normalize::expect(
+                        ports.input,
+                        ports.output,
+                        &scope.context,
+                        name.span,
+                        &self.program.budget,
+                    )?;
+                }
                 self.tick(name.span)?;
-                self.effects.require_unitary(id, name.span);
+                self.effects.require_effect(id, mode.ceiling, name.span);
                 self.obligation(
                     name.span,
                     ObligationKind::Provider {
                         provider: id,
+                        ceiling: mode.ceiling,
                         meaning: None,
                     },
                 )?;
                 let Kind::Q(basis) = result.kind else {
                     unreachable!("checked owner result");
                 };
+                let (basis, codomain) = if mode.arrows {
+                    let Kind::Q(input) =
+                        inputs.into_iter().next().expect("checked unary input").kind
+                    else {
+                        unreachable!("checked owner input")
+                    };
+                    (*input, Some(*basis))
+                } else {
+                    (*basis, None)
+                };
+                if let Some(codomain) = &codomain {
+                    match normalize::expect(
+                        codomain,
+                        &basis,
+                        &scope.context,
+                        name.span,
+                        &self.program.budget,
+                    ) {
+                        Ok(()) => {}
+                        Err(error) if error.code == "type" => access[2] = false,
+                        Err(error) => return Err(error),
+                    }
+                }
                 Ok(Operation {
-                    basis: *basis,
+                    basis,
+                    codomain,
+                    effect: mode.ceiling,
                     meaning: None,
                     access,
                 })
             }
         }
     }
-    pub(super) fn operation(&mut self, op: &StaticOp, scope: &Scope) -> Result<Operation> {
+    fn operation_with(
+        &mut self,
+        op: &StaticOp,
+        scope: &Scope,
+        mode: OperationMode,
+    ) -> Result<Operation> {
         if self.depth >= 64 {
             return Err(SourceError::new(
                 "limit",
@@ -927,22 +1027,31 @@ impl Checker<'_, '_> {
             ));
         }
         self.depth += 1;
-        let result = self.operation_inner(op, scope);
+        let result = self.operation_inner_with(op, scope, mode);
         self.depth -= 1;
         result
     }
     fn operation_inner(&mut self, op: &StaticOp, scope: &Scope) -> Result<Operation> {
+        self.operation_inner_with(op, scope, OperationMode::ENDO)
+    }
+    fn operation_inner_with(
+        &mut self,
+        op: &StaticOp,
+        scope: &Scope,
+        mode: OperationMode,
+    ) -> Result<Operation> {
         self.tick(op.span)?;
         match &op.kind {
-            StaticOpKind::Name(name) => self.named_operation(name, &[], scope, false),
+            StaticOpKind::Name(name) => self.named_operation_with(name, &[], scope, false, mode),
             StaticOpKind::Specialize { name, arguments } => {
-                self.named_operation(name, arguments, scope, false)
+                self.named_operation_with(name, arguments, scope, false, mode)
             }
             StaticOpKind::Bind {
                 implementation,
                 meaning,
             } => {
-                let mut operation = self.named_operation(implementation, &[], scope, false)?;
+                let mut operation =
+                    self.named_operation_with(implementation, &[], scope, false, mode)?;
                 let meaning =
                     declarations::meaning_identity(self.program, self.definition, meaning)?;
                 self.edge(meaning, op.span)?;
@@ -953,6 +1062,15 @@ impl Checker<'_, '_> {
                     op.span,
                     &self.program.budget,
                 )?;
+                if operation.codomain.is_some() {
+                    normalize::expect(
+                        operation.output(),
+                        &self.program.interfaces[&meaning].result,
+                        &scope.context,
+                        op.span,
+                        &self.program.budget,
+                    )?;
+                }
                 self.obligation(
                     op.span,
                     ObligationKind::MeaningEquality {
@@ -964,7 +1082,10 @@ impl Checker<'_, '_> {
                 Ok(operation)
             }
             StaticOpKind::Inverse(child) => {
-                let mut child = self.operation(child, scope)?;
+                let mut child = self.operation_with(child, scope, mode.unitary())?;
+                if let Some(codomain) = child.codomain.take() {
+                    child.codomain = Some(std::mem::replace(&mut child.basis, codomain));
+                }
                 // Description construction itself requires the operand's
                 // verified adjoint path, even when an outer use masks Apply.
                 access(&child, Access::Adjoint, op.span)?;
@@ -973,11 +1094,22 @@ impl Checker<'_, '_> {
                 Ok(child)
             }
             StaticOpKind::Controlled(child) => {
-                let child = self.operation(child, scope)?;
+                let child = self.operation_with(child, scope, mode.unitary())?;
+                if let Some(codomain) = &child.codomain {
+                    normalize::expect(
+                        codomain,
+                        &child.basis,
+                        &scope.context,
+                        op.span,
+                        &self.program.budget,
+                    )?;
+                }
                 let basis = Ty::pair(Ty::bit(), child.basis);
                 self.program.budget.ty(op.span, &basis)?;
                 Ok(Operation {
                     basis,
+                    codomain: None,
+                    effect: Effect::Unitary,
                     meaning: None,
                     access: [child.access[2]; 3],
                 })
@@ -985,30 +1117,61 @@ impl Checker<'_, '_> {
             StaticOpKind::Repeat(count, child) => {
                 let (Count::Natural(n) | Count::Power(n)) = count;
                 normalize::natural(n, self.index(), scope, None, &self.program.budget)?;
-                let mut child = self.operation(child, scope)?;
+                let mut child = self.operation_with(child, scope, mode)?;
+                if let Some(codomain) = &child.codomain {
+                    normalize::expect(
+                        codomain,
+                        &child.basis,
+                        &scope.context,
+                        op.span,
+                        &self.program.budget,
+                    )?;
+                }
                 child.meaning = None;
                 Ok(child)
             }
             StaticOpKind::Then(a, b)
             | StaticOpKind::Tensor(a, b)
             | StaticOpKind::Conjugate(a, b) => {
-                let a = self.operation(a, scope)?;
-                let b = self.operation(b, scope)?;
+                let conjugate = matches!(op.kind, StaticOpKind::Conjugate(..));
+                let a =
+                    self.operation_with(a, scope, if conjugate { mode.unitary() } else { mode })?;
+                let b = self.operation_with(b, scope, mode)?;
                 let tensor = matches!(op.kind, StaticOpKind::Tensor(..));
                 if !tensor {
                     normalize::expect(
-                        &a.basis,
+                        a.output(),
                         &b.basis,
                         &scope.context,
                         op.span,
                         &self.program.budget,
                     )
-                    .map_err(|error| operation_mismatch(error, &b.basis, &a.basis))?;
+                    .map_err(|error| operation_mismatch(error, &b.basis, a.output()))?;
+                    if conjugate {
+                        normalize::expect(
+                            b.output(),
+                            &b.basis,
+                            &scope.context,
+                            op.span,
+                            &self.program.budget,
+                        )?;
+                    }
                 }
-                let access = if matches!(op.kind, StaticOpKind::Conjugate(..)) {
+                let access = if conjugate {
                     std::array::from_fn(|i| a.access[0] && a.access[1] && b.access[i])
                 } else {
                     std::array::from_fn(|i| a.access[i] && b.access[i])
+                };
+                let effect = a.effect.max(b.effect);
+                let codomain = if conjugate || (a.codomain.is_none() && b.codomain.is_none()) {
+                    None
+                } else if tensor {
+                    Some(Ty::pair(
+                        self.program.budget.copy_ty(op.span, a.output())?,
+                        self.program.budget.copy_ty(op.span, b.output())?,
+                    ))
+                } else {
+                    Some(self.program.budget.copy_ty(op.span, b.output())?)
                 };
                 let basis = if tensor {
                     Ty::pair(a.basis, b.basis)
@@ -1016,8 +1179,13 @@ impl Checker<'_, '_> {
                     a.basis
                 };
                 self.program.budget.ty(op.span, &basis)?;
+                if let Some(codomain) = &codomain {
+                    self.program.budget.ty(op.span, codomain)?;
+                }
                 Ok(Operation {
                     basis,
+                    codomain,
+                    effect,
                     meaning: None,
                     access,
                 })

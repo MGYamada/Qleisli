@@ -33,7 +33,10 @@ here remains supported.
 
 `Nat` denotes a nonnegative static integer. It is not a runtime integer or an
 ordinary `Bit`. `Basis` denotes an exact finite type tree, and `Op<A>` denotes
-a static operation description over that tree. None is a live `Q<A>` owner.
+a static operation description over that tree. The explicit
+[`Op<A -> B>` form](type-model.md#general-pure-operation-arrows) retains separate
+exact input/output trees; its comma slot remains a Meaning refinement.
+None is a live `Q<A>` owner.
 Runtime values, measurement results and quantum owners cannot determine a
 static size, operation provider, static condition or loop bound.
 

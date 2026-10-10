@@ -195,6 +195,34 @@ fn circuit_request(name: &str, wrong: bool) -> Vec<u8> {
             let root = e.rewire(&ports, &ports, &[0, 1], &[0]);
             (ports.clone(), ports, root)
         }
+        "general-superposition" => {
+            let before = vec![unit(101), bit(102, 0)];
+            let middle = vec![bit(102, 0)];
+            let after = vec![bit(103, 0)];
+            let epsilon = e.structural(&[unit(101)], &[], "unpack_unit");
+            let idle = e.rewire(&middle, &middle, &[0], &[0]);
+            let finish = e.tensor(&before, &middle, epsilon, idle);
+            let h = Matrix::new(
+                2,
+                2,
+                [1, 1, 1, -1]
+                    .into_iter()
+                    .map(|n| Exact::new([0, n, 0, 0], 1).unwrap())
+                    .collect(),
+            )
+            .unwrap();
+            let description = String::from_utf8(finite_matrix::encode(&h).unwrap()).unwrap();
+            let h = e.add(
+                &middle,
+                &after,
+                &format!(
+                    r#"{{"tag":"finite","description":{}}}"#,
+                    super::super::quote(&description)
+                ),
+            );
+            let root = e.sequence(&before, &after, &[finish, h]);
+            (before, after, root)
+        }
         "unit-zero" => {
             let before = vec![unit(101), bit(102, 0)];
             let after = vec![bit(102, 0)];
@@ -340,7 +368,9 @@ fn request(proposal: &HierarchyProposal, name: &str, wrong: bool) -> Vec<u8> {
     let (expected_initial, expected_fresh) = match name {
         "closed-zero" | "empty-classical" => (vec![], vec![bit(101, 0)]),
         "fresh-unit-phase" => (vec![], vec![bit(105, 0)]),
-        "unit-zero" | "retained-unit" => (vec![unit(101)], vec![bit(102, 0)]),
+        "unit-zero" | "retained-unit" | "general-superposition" => {
+            (vec![unit(101)], vec![bit(102, 0)])
+        }
         "unit-phase" => (vec![unit(101)], vec![bit(105, 0)]),
         "caller-frame" => (vec![unit(101), bit(102, 0)], vec![bit(103, 1)]),
         "helper-phase" => (vec![unit(101), bit(102, 0)], vec![bit(106, 1)]),
@@ -447,6 +477,62 @@ fn isometry_roots_match_independently_authored_exact_composition_requests() {
             );
         }
     }
+}
+
+#[test]
+fn general_preparation_arrow_matches_independent_exact_request_and_reference() {
+    let proposal = lower(
+        "use std::quantum::{finish,init0};
+        fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+        fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}",
+    );
+    // Reuse the independently authored +1 Unit-elimination equation, with
+    // fixed reviewed port placement; do not derive a target from this arrow.
+    let checked = kernel()
+        .check_instrument_native(proposal.payload(), &request(&proposal, "unit-zero", false))
+        .unwrap();
+    proposal
+        .validate_initialization_moves_native(&checked)
+        .unwrap();
+    let input = [[0.2, 0.3], [-0.6, 0.4]];
+    let output = checked.execute_instrument(&input, 2, limits()).unwrap();
+    close(
+        &output.branches[0],
+        &[input[0], [0.0; 2], input[1], [0.0; 2]],
+    );
+}
+
+#[test]
+fn general_arrow_native_valid_gate_substitution_fails_independent_exact_request() {
+    let text = "use std::quantum::{finish,init0,h,x};
+        fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);h(init0())}
+        fn invoke[const U:Op<Unit -> Bit>](q:Q<Unit>)->Q<Bit> requires Applicable(U){U(q)}
+        pub fn entry(q:Q<Unit>)->Q<Bit>{invoke[prepare](q)}";
+    let valid = lower(text);
+    let mut wrong = lower(&text.replace("h(init0())", "x(init0())"));
+    assert_eq!(valid.events.len(), wrong.events.len());
+    wrong.source = valid.source.clone();
+    // The substituted X program is independently native-valid for its own
+    // producer request; that fact cannot establish correspondence to H.
+    let accepted = kernel()
+        .check_instrument_native(wrong.payload(), wrong.comparison_request())
+        .unwrap();
+    // Initialization movement alone intentionally does not check H versus X.
+    // The retained failed experiment exposed that scope; require the separate
+    // independently authored exact equation for the actual operation.
+    wrong
+        .validate_initialization_moves_native(&accepted)
+        .unwrap();
+    let expected = request(&valid, "general-superposition", false);
+    kernel()
+        .check_instrument_native(valid.payload(), &expected)
+        .unwrap();
+    assert!(
+        kernel()
+            .check_instrument_native(wrong.payload(), &expected)
+            .is_err()
+    );
 }
 
 fn close(actual: &[[f64; 2]], expected: &[[f64; 2]]) {

@@ -50,7 +50,19 @@
         "observations/false-unitary-manifest-repaired.json",
         "observations/wrong-input-manifest-repaired.json",
         "observations/zero-power-manifest-repaired.json",
-        "observations/controlled-manifest-repaired.json"
+        "observations/controlled-manifest-repaired.json",
+        "observations/preparation-arrow-common-01.json",
+        "observations/unitor-arrow-common-01.json",
+        "observations/false-unitary-arrow-common-01.json",
+        "observations/wrong-input-arrow-common-01.json",
+        "observations/zero-power-arrow-common-01.json",
+        "observations/controlled-arrow-common-01.json",
+        "observations/preparation-arrow-native-01.json",
+        "observations/unitor-arrow-native-01.json",
+        "observations/false-unitary-arrow-native-01.json",
+        "observations/wrong-input-arrow-native-01.json",
+        "observations/zero-power-arrow-native-01.json",
+        "observations/controlled-arrow-native-01.json"
       ]
     }
   ]

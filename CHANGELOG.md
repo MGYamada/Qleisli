@@ -6,6 +6,15 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add explicit `Op<A -> B>` pure-arrow formals while retaining `Op<A>` and its
+  Meaning comma slot. Check both exact ports, ordered substitution, principal
+  effect bounds and endomorphic control/repetition rules. Forward transparent
+  providers reach selected native lowering; finite general-arrow lowering,
+  general composite/transform materialization and rectangular Meanings remain
+  unsupported. Small independent exact requests and complex executions cover
+  preparation, differing-tree unitors and a native-valid wrong-gate substitution;
+  they do not establish general source preservation or complete #83/#46.
+
 - Separate provider effect ceilings from principal body-effect inference in the
   common checker. Repeated demands keep the strictest ceiling and its original
   location; existing Unitary diagnostics and work accounting are preserved.

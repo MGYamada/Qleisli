@@ -28,7 +28,7 @@ The unchanged quantum-capturing closure now rejects at the resolved owner's
 use with an ownership diagnostic, rather than a parser failure. A false
 `unitary` assertion on preparation still rejects with inferred Iso effect and
 the explicit unsupported-external-unitarity explanation. No historical source
-or observation has been rewritten. The proposed domain/codomain syntax,
+or observation has been rewritten. The older comma-form domain/codomain syntax,
 rectangular Meaning evidence and complete instrument requests below remain
 unimplemented; these bounded repairs do not settle #83 or complete #46.
 
@@ -97,12 +97,30 @@ Before changing the normative contract, implement these candidate rules:
   clients separately after the selected grammar is implemented.
 
 These are implementation requirements for this nonnormative candidate, not a
-new binding interpretation or an assertion that the corresponding rules are
-already executable. The present common checker still requires each concrete
-static source provider to be a unary principal-Unitary endomorphism. The tests
+new binding interpretation or a claim of complete implementation. The current
+common checker distinguishes general arrows from legacy endomorphic providers.
+The tests
 in `tests/operation_parameters.rs` retain the direct/control effect distinction
 and both public source entry points' wrong-tree refusal without making desired
 future syntax rejection a permanent regression requirement.
+
+**General arrow implementation (2026-10-10):** the ordinary implementation
+contract in [#83](https://github.com/MGYamada/Qleisli/issues/83#issuecomment-6096747939)
+selects `Op<A -> B>` with `Op<A>` as the endomorphic abbreviation. This supersedes
+the proposed comma-form arrow spelling below; the comma still introduces a
+Meaning refinement. The [Reference](../reference/type-model.md#general-pure-operation-arrows)
+specifies both exact ports, conservative effect bounds and capability rules.
+Forward selected application of transparent ordinary providers now reaches fresh
+native acceptance for preparation and a differing-tree unitor. Common checking
+rejects false Unitary claims, Observe providers, wrong trees and rectangular
+control/repetition even at count zero. Finite general-arrow materialization,
+general composite/transform lowering and rectangular Meanings remain unsupported.
+The [retained study](https://github.com/MGYamada/Qleisli/tree/codex/v0.3.0-foundation/tests/fixtures/authoring_sessions/general-arrows-v030)
+keeps manifest/parser failures and pre-repair lowering failures beside the actual
+subsequent checks. Independently authored exact requests check small preparations
+and reject a native-valid wrong gate. Initialization-movement validation alone
+does not check the gate's complete meaning. No general source-preservation,
+QS/PR discharge or completion of #83/#46 is claimed.
 
 ## Recommended decisions
 

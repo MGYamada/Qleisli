@@ -350,7 +350,11 @@ pub struct StaticParam {
 pub enum StaticParamKind {
     Natural,
     Basis,
-    Operation { basis: Type, meaning: Option<Ident> },
+    Operation {
+        basis: Type,
+        codomain: Option<Box<Type>>,
+        meaning: Option<Ident>,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]

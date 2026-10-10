@@ -604,10 +604,19 @@ where
             });
         }
         for parameter in declaration.static_params.iter().rev() {
-            if let StaticParamKind::Operation { basis, meaning } = &parameter.kind {
+            if let StaticParamKind::Operation {
+                basis,
+                codomain,
+                meaning,
+            } = &parameter.kind
+            {
                 if let Some(meaning) = meaning {
                     (self.charge)(meaning.span, 1)?;
                     tasks.push(Task::Reference(meaning));
+                }
+                if let Some(codomain) = codomain {
+                    (self.charge)(codomain.span, 1)?;
+                    tasks.push(Task::Type(codomain));
                 }
                 (self.charge)(basis.span, 1)?;
                 tasks.push(Task::Type(basis));

@@ -253,6 +253,7 @@ impl Compiler<'_> {
         for (ordinal, parameter) in decl.static_params.iter().enumerate() {
             let StaticParamKind::Operation {
                 basis: original_basis,
+                codomain: _,
                 meaning: original_meaning,
             } = &parameter.kind
             else {
@@ -266,6 +267,7 @@ impl Compiler<'_> {
             let formal = &self.interfaces[key].statics[ordinal];
             let StaticKind::Operation {
                 basis: checked_basis,
+                codomain: _,
                 meaning: checked_meaning,
                 access,
             } = &formal.kind

@@ -23,7 +23,11 @@ record its pending Meaning-equality obligation. Finite materialization retains
 the separate requirement for closed, principal-Unitary source declarations;
 it rejects an abstract formal as this constructor's provider. Attaching a
 Meaning in the common judgment does not create evidence that bypasses that
-downstream refusal.
+downstream refusal. A general `Op<A -> B, M>` formal checks both ports against
+the declared basis of the existing endomorphic Meaning; a rectangular arrow
+cannot acquire Meaning evidence by dropping its output type. General pure
+arrow typing and the current materialization limits are specified in the
+[type model](type-model.md#general-pure-operation-arrows).
 
 For example, the following fragment uses the current endomorphic Meaning and
 operation-parameter grammar:

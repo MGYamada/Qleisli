@@ -357,13 +357,22 @@ impl Parser {
                     self.expect(&TokenKind::Op)?;
                     self.expect(&TokenKind::LAngle)?;
                     let basis = self.basis_type()?;
+                    let codomain = if self.consume(&TokenKind::Arrow).is_some() {
+                        Some(Box::new(self.basis_type()?))
+                    } else {
+                        None
+                    };
                     let meaning = if self.consume(&TokenKind::Comma).is_some() {
                         Some(self.ident()?)
                     } else {
                         None
                     };
                     self.expect(&TokenKind::RAngle)?;
-                    StaticParamKind::Operation { basis, meaning }
+                    StaticParamKind::Operation {
+                        basis,
+                        codomain,
+                        meaning,
+                    }
                 };
                 static_params.push(StaticParam { name, kind });
                 if self.consume(&TokenKind::Comma).is_none() {
