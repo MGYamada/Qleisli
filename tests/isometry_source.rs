@@ -250,19 +250,10 @@ fn isometry_cli_explicit_raw_retains_its_actual_support_boundary() {
             .arg(format!("--lean-kernel={}", kernel().display()))
             .output()
             .unwrap();
-        let text = result(output, "check", json, false);
-        // The Unit owner is supported now; this source still needs the
-        // unsupported finish primitive. Do not expect a type rejection.
-        assert!(
-            text.contains(
-                "finite source lowering does not yet support this primitive or operation capability"
-            ),
-            "{text}"
-        );
+        let text = result(output, "check", json, true);
+        assert!(text.contains("\"ir_profile\":\"raw\""), "{text}");
+        assert!(text.contains("\"source_steps_checked\":true"), "{text}");
         assert!(!text.contains("github.com"), "{text}");
-        if json {
-            assert!(text.contains("\"code\":\"unsupported\""), "{text}");
-        }
         let output = selected("check", "closed-zero", json)
             .arg("--ir-profile=raw")
             .arg(format!("--lean-kernel={}", kernel().display()))

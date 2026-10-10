@@ -547,6 +547,8 @@ fn check_profile(
                     | Primitive::Z
                     | Primitive::Cnot
                     | Primitive::Init0
+                    | Primitive::Unit
+                    | Primitive::Finish
                     | Primitive::MeasureZ
                     | Primitive::PhaseEighth
                     | Primitive::Split
@@ -1355,6 +1357,45 @@ impl Emitter<'_> {
                     } else {
                         use Primitive::*;
                         match step.primitive_kind().expect("preflighted finite primitive") {
+                            Unit => {
+                                if inputs.len() != 1 || !inputs[0].is_empty() {
+                                    return Err(invalid(
+                                        span,
+                                        "Unit map requires one ordinary Unit argument",
+                                    ));
+                                }
+                                self.reserve_operations(1, span)?;
+                                let slot = self.raw.register(SourceType::unit(), vec![]);
+                                self.raw.operations.push(crate::ir::RawOp::PackUnit {
+                                    output: self.raw.registers[&slot].token,
+                                });
+                                vec![Atom::Quantum(slot)]
+                            }
+                            Finish => {
+                                let [input] = inputs.as_slice() else {
+                                    return Err(invalid(
+                                        span,
+                                        "finish requires one zero-axis owner",
+                                    ));
+                                };
+                                let slot = quantum(input, span)?;
+                                self.reserve_operations(1, span)?;
+                                let owner = self
+                                    .raw
+                                    .registers
+                                    .remove(&slot)
+                                    .ok_or_else(|| invalid(span, "finish owner is absent"))?;
+                                if owner.basis != SourceType::unit() || !owner.wires.is_empty() {
+                                    return Err(invalid(
+                                        span,
+                                        "finish changes the exact Unit basis",
+                                    ));
+                                }
+                                self.raw
+                                    .operations
+                                    .push(crate::ir::RawOp::UnpackUnit { input: owner.token });
+                                vec![]
+                            }
                             TakeBit | PutBit => self.register_bit(
                                 step.primitive_kind() == Some(TakeBit),
                                 step,

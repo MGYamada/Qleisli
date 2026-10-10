@@ -71,6 +71,8 @@ inductive Op where
       (useSteps logicalSteps : List Step)
   | computeUseUncompute (input output : Nat) (targets : List Target)
       (ancilla function : List Nat) (uses : List Use)
+  | packUnit (output : Nat)
+  | unpackUnit (input : Nat)
   deriving BEq, DecidableEq, Repr
 
 structure Program where

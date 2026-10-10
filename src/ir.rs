@@ -205,6 +205,14 @@ pub struct ClassicalPhi {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum RawOp {
+    /// Structural Unit maps create/consume a logical owner with no axes.
+    /// They preserve the physical state, including any accumulated scalar.
+    PackUnit {
+        output: TokenId,
+    },
+    UnpackUnit {
+        input: TokenId,
+    },
     /// Exact finite semantic contract for compute/use/uncompute. The data
     /// occupy the low axes and one fresh computed bit the highest axis.
     /// Independent verification checks W E_f = E_f u, including phase and

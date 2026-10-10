@@ -876,6 +876,7 @@ impl Replay<'_, '_> {
             | Primitive::PutBit
             | Primitive::EmptyBits
             | Primitive::PrependBit => Effect::Unitary,
+            Primitive::Unit | Primitive::Finish => Effect::Unitary,
             Primitive::Init0 => Effect::Iso,
             Primitive::MeasureZ => Effect::Observe,
             _ => {
@@ -896,6 +897,39 @@ impl Replay<'_, '_> {
             ));
         }
         match (kind, inputs) {
+            (Primitive::Unit, [input])
+                if matches!(input.ty.kind, Kind::Unit)
+                    && input.atoms.is_empty()
+                    && step.output().ty() == &SourceType::quantum(SourceType::unit()) =>
+            {
+                let Some(RawOp::PackUnit { output }) = self.raw.operations.get(self.cursor) else {
+                    return Err(site.invalid("Raw program omits the source Unit introduction"));
+                };
+                let atom = self.introduce_owner(*output, &[], false, site)?;
+                self.cursor += 1;
+                Ok(vec![atom])
+            }
+            (Primitive::Finish, [input])
+                if input.ty == &SourceType::quantum(SourceType::unit())
+                    && matches!(step.output().ty().kind, Kind::Unit) =>
+            {
+                let [Atom::Quantum(token, wires)] = input.atoms.as_slice() else {
+                    return Err(site.invalid("finish source argument is not one quantum owner"));
+                };
+                let Some(RawOp::UnpackUnit { input: actual }) =
+                    self.raw.operations.get(self.cursor)
+                else {
+                    return Err(site.invalid("Raw program omits the source Unit consumption"));
+                };
+                if actual != token
+                    || !wires.is_empty()
+                    || self.live.remove(token).as_deref() != Some(&[])
+                {
+                    return Err(site.invalid("Raw finish changes or reuses its source owner"));
+                }
+                self.cursor += 1;
+                Ok(vec![])
+            }
             (Primitive::TakeBit | Primitive::PutBit, _) => {
                 self.register_bit(kind, step, inputs, site)
             }

@@ -23,6 +23,20 @@ pub struct Primitive {
 pub const PRIMITIVES: &[Primitive] = &[
     Primitive {
         module: "std::quantum",
+        name: "unit",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Unit) -> Q<Unit>",
+    },
+    Primitive {
+        module: "std::quantum",
+        name: "finish",
+        kind: FnKind::Unitary,
+        arity: 1,
+        signature: "(Q<Unit>) -> Unit",
+    },
+    Primitive {
+        module: "std::quantum",
         name: "init0",
         kind: FnKind::Iso,
         arity: 0,

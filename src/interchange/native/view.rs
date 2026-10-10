@@ -21,6 +21,12 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
         let mut effect = Effect::Unitary;
         for op in ops {
             match op {
+                RawOp::PackUnit { output } => {
+                    map.insert(*output, vec![]);
+                }
+                RawOp::UnpackUnit { input } => {
+                    wires(map, *input)?;
+                }
                 RawOp::ApplyUnitary { input, output, .. } | RawOp::Gate { input, output, .. } => {
                     map.insert(*output, wires(map, *input)?);
                 }

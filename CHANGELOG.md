@@ -6,6 +6,13 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Materialize explicit `unit(Unit)` and `finish(Q<Unit>)` through finite and
+  shared Raw lowering, strict opcode decoding and native dispatch. Prove the
+  dispatch's independent trace and ownership correspondence, preserving fresh
+  logical identities, the physical frame and prior scalar work. Retain source
+  step checks and controlled-scalar interference regressions. These maps do not
+  widen the unary source Meaning interface or discharge broader QS/PR/RS.
+
 - Connect the checked historical Raw embedding to a fixed continuity profile
   with fresh typed proof reviews, original-byte/root binding checks and
   negative regression tests. Retain the identity and Basis-only profiles.
@@ -13,13 +20,13 @@ development milestones from the scope of their evidence.
 
 - Prove an injective embedding of the pre-Unit Raw representation, preserving
   whole literal traces, original-root selection, and both ownership and
-  classical-scope judgments in both directions. This transport groundwork does
-  not enable Unit opcodes or replace the current constitutional verifier profile.
+  classical-scope judgments in both directions. The transport supports current
+  evidence continuity; it does not by itself authorize a new opcode.
 
 - Prove executable structural Raw Unit-map building blocks against independent
   owner/interface rules and exact event meaning. Preserve suspended owners,
-  issued identities and prior scalar work. Public Raw opcode decoding, dispatch
-  and historical semantic transport remain pending; no Raw support is enabled.
+  issued identities and prior scalar work. The building blocks are now used by
+  actual Raw dispatch, with separate decoding and historical transport checks.
 
 - Bound every constructor child before operation-key comparison in independent
   Raw access replay, including zero-count children. Preserve Repeat-chain

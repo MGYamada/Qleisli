@@ -53,6 +53,8 @@ def outputs : Raw.Op → List Nat
   | .cnot _ _ a b | .quantumIf _ _ a b _ _ | .split _ a b _ => [a,b]
   | .toffoli _ _ _ a b c => [a,b,c]
   | .computeUseUncompute _ out targets _ _ _ => out :: targets.map (·.output)
+  | .packUnit output => [output]
+  | .unpackUnit _ => []
 
 /-- Scratch identities remain issued after their scoped operation. Fresh axes
 of a lift are the suffix after its original operand, not inferred separability. -/
@@ -109,6 +111,8 @@ def Access (state : State) : Raw.Op → Prop
     Circuit (port.bits + scratch.length) physical ∧ Circuit port.bits logical
   | .computeUseUncompute input _ targets scratch _ uses => ∃ port, PortAt state input port ∧
     (∀ target ∈ targets, BitOwner state target.input) ∧ Uses port.bits scratch.length targets.length uses
+  | .packUnit _ => True
+  | .unpackUnit input => ∃ port, PortAt state input port ∧ port.bits = 0 ∧ port.wires = []
 
 /-- Literal consumption/return is fixed by the independent original-operation
 reader. Exact issued lists plus Valid rule out every reuse, including scratch. -/

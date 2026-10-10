@@ -691,6 +691,16 @@ impl Extraction<'_> {
         for op in operations {
             self.budget.charge(1)?;
             match op {
+                RawOp::PackUnit { output } => {
+                    if self.registers.insert(*output, vec![]).is_some() {
+                        return Err(invalid("Unit map reuses a live owner"));
+                    }
+                }
+                RawOp::UnpackUnit { input } => {
+                    if !self.take(*input)?.is_empty() {
+                        return Err(invalid("Unit map consumes a nonempty owner"));
+                    }
+                }
                 RawOp::Gate {
                     gate,
                     input,

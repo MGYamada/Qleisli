@@ -5,6 +5,7 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 import check_production_coverage as coverage
+from check_verification_inventory import variants
 
 
 class ProductionCoverage(unittest.TestCase):
@@ -25,7 +26,10 @@ class ProductionCoverage(unittest.TestCase):
         self.assertEqual(result['development_version'], '0.3.0-alpha')
         self.assertEqual(result['development_status'], 'unpublished')
         raw = next(row for row in self.inventory['enums'] if row['name'] == 'RawOp')
-        self.assertEqual(len(raw['members']), 19)
+        self.assertEqual(
+            set(raw['members']),
+            set(variants((coverage.ROOT / raw['path']).read_text(), raw['name'])),
+        )
 
     def test_removed_duplicated_or_unjustified_rows_reject(self):
         for change in [lambda d: d['groups'].pop(), lambda d: d['boundaries'].append(d['boundaries'][0]),

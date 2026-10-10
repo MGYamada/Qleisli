@@ -6,6 +6,14 @@ impl Codec for RawOp {
     fn write(&self, c: &mut Encoder) -> Result<Value> {
         c.charge(1)?;
         match self {
+            Self::PackUnit { output } => Ok(Value::object([
+                ("tag", Value::String("pack_unit".into())),
+                ("output", output.write(c)?),
+            ])),
+            Self::UnpackUnit { input } => Ok(Value::object([
+                ("tag", Value::String("unpack_unit".into())),
+                ("input", input.write(c)?),
+            ])),
             Self::CertifiedCompute {
                 source,
                 source_out,
@@ -208,6 +216,18 @@ impl Codec for RawOp {
     }
     fn read(v: &Value, c: &Decoder<'_>) -> Result<Self> {
         match v.field("tag")?.text()? {
+            "pack_unit" => {
+                v.fields(&["tag", "output"])?;
+                Ok(Self::PackUnit {
+                    output: Codec::read(v.field("output")?, c)?,
+                })
+            }
+            "unpack_unit" => {
+                v.fields(&["tag", "input"])?;
+                Ok(Self::UnpackUnit {
+                    input: Codec::read(v.field("input")?, c)?,
+                })
+            }
             "certified_compute" => {
                 v.fields(&[
                     "tag",

@@ -103,6 +103,16 @@ pub(super) fn flatten(
     for operation in operations {
         let before = steps.len();
         match operation {
+            RawOp::PackUnit { output } => {
+                if owners.insert(*output, vec![]).is_some() {
+                    return Err(fail());
+                }
+            }
+            RawOp::UnpackUnit { input } => {
+                if !owners.remove(input).ok_or_else(fail)?.is_empty() {
+                    return Err(fail());
+                }
+            }
             RawOp::Gate {
                 gate: kind,
                 input,

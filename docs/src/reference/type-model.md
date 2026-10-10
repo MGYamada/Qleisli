@@ -176,7 +176,7 @@ basis. Adjoint conjugates the scalar, eight repetitions give identity, and
 coherent control of four repetitions gives Z on the control. Removing a Unit
 factor cannot remove the scalar.
 
-The common selected-source hierarchy path exposes two explicit structural maps:
+The common source catalog exposes two explicit structural maps:
 
 - `std::quantum::unit(u)` takes exactly one ordinary `Unit` argument and returns
   one fresh `Q<Unit>` owner.
@@ -198,10 +198,13 @@ binding, and preserves the phase and any retained reference. An observing
 argument still makes its caller observing.
 
 These maps can form explicit left/right maps on separate-owner products, such
-as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. Both names belong to the common source catalog, but finite concrete lowering
-does not materialize them and the shared Raw profile rejects these structural
-map operations; it supports retained Unit owners and scalar phases. No observing discard or retry after native failure supplies a
-substitute.
+as `(Q<Unit>, Q<Bit>)` to `Q<Bit>`. Hierarchy, finite concrete and shared Raw
+lowering retain the explicit maps. Raw `pack_unit` creates a fresh zero-axis
+owner; `unpack_unit` consumes an existing zero-axis owner. The native checker
+retains issued identities after consumption and rejects their reuse. These
+operations do not widen source Meaning checking beyond its supported unary
+quantum endomorphism interface. No observing discard or retry after native
+failure supplies a substitute.
 
 The selected hierarchy also admits packaged quantum bases built recursively
 from `Unit`, `Bit`, `Bits<n>` and ordered tuples, including `Op<A>` for those

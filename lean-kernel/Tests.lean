@@ -26,6 +26,20 @@ example : ((Unit.pack frame 9).bind (fun t => Unit.unpack t.state 9)).map (·.st
 -- An empty wire list never justifies an invalid recorded bit count.
 example : Unit.unpack ⟨[⟨0,[],1⟩],[0],[],[],false⟩ 0 = .error .invalid := by rfl
 
+-- The real dispatcher, including globally issued empty owners.
+example : (Raw.dispatch [] frame (.packUnit 9)).map (fun t => (t.state,t.events)) =
+    .ok (⟨[⟨7,[3],1⟩,⟨8,[],0⟩,⟨9,[],0⟩],[7,8,5,9],[3],[3],true⟩,[]) := by cbv
+example : Raw.dispatch [] frame (.packUnit 5) = .error .invalid := by rfl
+example : Raw.dispatch [] frame (.unpackUnit 7) = .error .invalid := by rfl
+example : (Raw.dispatch [] frame (.unpackUnit 8)).map (·.state) =
+    .ok (⟨[⟨7,[3],1⟩],[7,8,5],[3],[3],true⟩) := by cbv
+example : (Raw.prepare [] ⟨[],[.packUnit 0,.unpackUnit 0],[],.unitary⟩).map (·.state.iso) =
+    .ok false := by cbv
+example : Raw.prepare [] ⟨[],[.packUnit 0,.unpackUnit 0,.packUnit 0],[0],.unitary⟩ =
+    .error .invalid := by rfl
+example : Raw.prepare [] ⟨[],[.packUnit 0,.unpackUnit 0,.unpackUnit 0],[],.unitary⟩ =
+    .error .invalid := by rfl
+
 end RawUnitTests
 
 namespace ExactTests

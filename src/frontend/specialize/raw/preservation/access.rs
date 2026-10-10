@@ -431,6 +431,30 @@ impl Trace<'_, '_, '_> {
                     .primitive_kind()
                     .ok_or_else(|| self.site.invalid("source access has no primitive"))?
                 {
+                    Primitive::Unit => {
+                        if inputs.len() != 1
+                            || !inputs[0].is_empty()
+                            || step.inputs()[0].ty() != &SourceType::unit()
+                            || step.output().ty() != &SourceType::quantum(SourceType::unit())
+                        {
+                            return Err(self
+                                .site
+                                .invalid("source Unit introduction changes its exact interface"));
+                        }
+                        vec![Logical::Quantum(vec![])]
+                    }
+                    Primitive::Finish => {
+                        if inputs.len() != 1
+                            || step.inputs()[0].ty() != &SourceType::quantum(SourceType::unit())
+                            || step.output().ty() != &SourceType::unit()
+                            || !self.owner(&inputs[0])?.is_empty()
+                        {
+                            return Err(self
+                                .site
+                                .invalid("source Unit consumption changes its exact interface"));
+                        }
+                        vec![]
+                    }
                     Primitive::H | Primitive::X | Primitive::Z => {
                         let a = self.single(&inputs[0])?;
                         if step.primitive_kind() == Some(Primitive::H) {

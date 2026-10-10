@@ -41,6 +41,14 @@ fn elaborate(text: &str, entry: &str) -> ElaboratedProgram {
         .elaborate()
         .unwrap()
 }
+fn check_raw_steps(graph: &ElaboratedProgram) {
+    let raw = graph.lower_raw().unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+}
 fn kernel() -> Kernel {
     Kernel::new(std::env::var_os("QLEISLI_KERNEL").expect("explicit native checker"))
 }
@@ -384,8 +392,21 @@ fn exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients() {
                 .amplitudes,
             &input(0),
         );
-        let error = graph.lower_raw().unwrap_err();
-        assert_eq!(error.code(), "unsupported", "{name}: {error}");
+        let raw = graph.lower_raw().unwrap();
+        let native = native::Kernel::selected().unwrap();
+        let accepted = native.accept(raw.proposal()).unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+        let identity =
+            qleisli::contract::meaning::FiniteMeaning::phase(BasisType::Unit, vec![0]).unwrap();
+        let equation =
+            raw.check_finite_meaning(&native, &identity, &mut Budget::new(DEFAULT_EXACT_WORK));
+        if name == "quantum-roundtrip" {
+            equation.unwrap();
+        } else {
+            // Ordinary Unit ports are not unary quantum endomorphisms. Raw
+            // acceptance does not widen the source Meaning interface.
+            assert_eq!(equation.unwrap_err().code(), "unsupported");
+        }
     }
 }
 
@@ -427,6 +448,7 @@ fn scalar_arguments_execute_once_and_finish_does_not_erase_phase() {
         ("double-scalar-result", 2, true, [0.0, 1.0]),
     ] {
         let graph = elaborate(&source(name), "main::f");
+        check_raw_steps(&graph);
         let root = &graph.definitions()[graph.root()];
         let expected_steps = if count == 2 {
             vec![
@@ -520,6 +542,7 @@ fn left_and_right_owner_product_maps_preserve_order_and_entangled_references() {
         ("right-separate-owner", false, "remove", false),
     ] {
         let graph = elaborate(&study(name), &format!("main::{entry}"));
+        check_raw_steps(&graph);
         let proposal = graph.lower().unwrap();
         let required = framed_request(left, introduce);
         let checked = kernel()
@@ -536,6 +559,7 @@ fn left_and_right_owner_product_maps_preserve_order_and_entangled_references() {
     // The additional two-bit case has a Unit owner between distinct physical
     // owners. Its independently fixed action is identity on system x reference.
     let graph = elaborate(&source("separate-middle-owner"), "main::f");
+    check_raw_steps(&graph);
     let proposal = graph.lower().unwrap();
     let mut e = Equation::default();
     let before = [bit(101, 0), unit(102), bit(103, 1)];
@@ -726,6 +750,7 @@ fn effects_are_not_hidden_by_the_ordinary_unit_argument_or_result() {
 #[test]
 fn unit_maps_after_observation_retain_actual_source_events_and_native_action() {
     let graph = elaborate(&source("maps-after-observation"), "main::f");
+    check_raw_steps(&graph);
     let proposal = graph.lower().unwrap();
     assert!(proposal.is_instrument());
     assert_eq!(
@@ -806,5 +831,107 @@ fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
             .unwrap_err();
         located(&error, &text, "unsupported");
+    }
+}
+
+#[test]
+fn raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories() {
+    use qleisli::contract::meaning::FiniteMeaning;
+    use qleisli::frontend::compile::compile_project;
+    use qleisli::ir::{Effect, TokenId};
+    let text = "use std::quantum::{unit,finish,phase_eighth}; pub unitary fn main()->Q<Unit>{finish(phase_eighth(unit(())));unit(())}";
+    let graph = elaborate(text, "main::main");
+    let raw = graph.lower_raw().unwrap();
+    let native = native::Kernel::selected().unwrap();
+    let accepted = native.accept(raw.proposal()).unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    assert_eq!(accepted.raw().declared_effect, Effect::Unitary);
+    assert!(accepted.raw().quantum_inputs.is_empty());
+    // Check the retained scalar on the supported unary quantum interface,
+    // independently of the closed source and its separate finite adapter.
+    let scalar = elaborate(
+        "use std::quantum::{unit,finish,phase_eighth};pub unitary fn f(q:Q<Unit>)->Q<Unit>{finish(phase_eighth(q));unit(())}",
+        "main::f",
+    );
+    let scalar = scalar.lower_raw().unwrap();
+    let target = FiniteMeaning::phase(BasisType::Unit, vec![1]).unwrap();
+    scalar
+        .check_finite_meaning(&native, &target, &mut Budget::new(DEFAULT_EXACT_WORK))
+        .unwrap();
+    let identity = FiniteMeaning::phase(BasisType::Unit, vec![0]).unwrap();
+    assert!(
+        scalar
+            .check_finite_meaning(&native, &identity, &mut Budget::new(DEFAULT_EXACT_WORK))
+            .is_err()
+    );
+    // The finite source adapter invokes the same native boundary, separately.
+    let finite_source = "use std::quantum::{unit,finish,phase_eighth};fn main()->Unit{finish(phase_eighth(unit(())));finish(unit(()))}";
+    let finite = compile_project(&common::SourceRoot::new(finite_source).0).unwrap();
+    assert_eq!(finite.raw().declared_effect, Effect::Unitary);
+    let [
+        RawOp::PackUnit { output: first },
+        RawOp::ApplyUnitary { output: phased, .. },
+        RawOp::UnpackUnit { input },
+        RawOp::PackUnit { output: fresh },
+    ] = accepted.raw().operations.as_slice()
+    else {
+        panic!("retained Unit/scalar transitions")
+    };
+    assert_eq!(input, phased);
+    assert_ne!(first, fresh);
+    let first = *first;
+    let phased = *phased;
+    let interface = RootInterface {
+        input: BasisType::Unit,
+        output: BasisType::Unit,
+    };
+    for wrong in [
+        RawOp::PackUnit { output: first },
+        RawOp::UnpackUnit { input: phased },
+        RawOp::UnpackUnit {
+            input: TokenId(u32::MAX),
+        },
+    ] {
+        let mut changed = accepted.raw().clone();
+        changed.operations.insert(3, wrong);
+        let proposal =
+            native::Proposal::from_raw(&changed, Some(&interface), Version::V2, None).unwrap();
+        assert!(native.accept(&proposal).is_err());
+    }
+    // Physically indistinguishable empty owners are still different owners.
+    let graph = elaborate(
+        "use std::quantum::finish;pub unitary fn f(a:Q<Unit>,b:Q<Unit>)->Q<Unit>{finish(a);b}",
+        "main::f",
+    );
+    let raw = graph.lower_raw().unwrap();
+    let accepted = native.accept(raw.proposal()).unwrap();
+    let mut changed = accepted.raw().clone();
+    let a = changed.quantum_inputs[0].token;
+    let b = changed.quantum_inputs[1].token;
+    changed.operations[0] = RawOp::UnpackUnit { input: b };
+    changed.quantum_outputs[0] = a;
+    let proposal = native::Proposal::from_raw(&changed, None, Version::V2, None).unwrap();
+    let different = native.accept(&proposal).unwrap();
+    assert!(raw.validate_source_steps(&different).is_err());
+}
+
+#[test]
+fn raw_unit_maps_preserve_controlled_scalar_interference_in_both_source_paths() {
+    use qleisli::frontend::compile::compile_project;
+    use qleisli::sim::{SimulationLimits, run_closed};
+    let text = "use std::quantum::{unit,finish,phase_eighth,h,init0};use std::observe::measure_z;unitary fn scalar(q:Q<Unit>)->Q<Unit>{unit(finish(phase_eighth(q)))}pub observe fn main()->Bit{let(c,u)=controlled(power(scalar,4))(h(init0()),unit(()));finish(u);measure_z(h(c))}";
+    let finite = compile_project(&common::SourceRoot::new(text).0).unwrap();
+    let raw = elaborate(text, "main::main").lower_raw().unwrap();
+    let accepted = native::Kernel::selected()
+        .unwrap()
+        .accept(raw.proposal())
+        .unwrap();
+    raw.validate_source_steps(&accepted).unwrap();
+    // Four retained eighth phases give Z on the coherent control. Erasing the
+    // scalar while consuming its Unit owner would instead return false.
+    for program in [&finite, &accepted] {
+        let distribution = run_closed(program, SimulationLimits::default()).unwrap();
+        assert!((distribution[&vec![true]] - 1.0).abs() < 1e-12);
+        assert!(distribution.get(&vec![false]).copied().unwrap_or(0.0) < 1e-12);
     }
 }

@@ -142,6 +142,40 @@ impl Lowerer<'_, '_> {
             },
         );
         match name {
+            "unit" => {
+                if args.pop() != Some(Value::Unit) {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "unit requires ordinary Unit",
+                    ));
+                }
+                let value = self.register(Ty::unit(), vec![]);
+                let slot = self.quantum(module, span, &value, false)?;
+                self.raw.operations.push(RawOp::PackUnit {
+                    output: self.raw.registers[&slot].token,
+                });
+                Ok(value)
+            }
+            "finish" => {
+                let value = args.pop().expect("one input");
+                if value.ty() != Ty::quantum(Ty::unit()) {
+                    return Err(self.error(
+                        module,
+                        span,
+                        ErrorCode::TypeMismatch,
+                        "finish requires Q<Unit>",
+                    ));
+                }
+                let slot =
+                    self.quantum_argument(module, span, &value, false, source_args.first())?;
+                let owner = self.raw.registers.remove(&slot).expect("owned register");
+                self.raw
+                    .operations
+                    .push(RawOp::UnpackUnit { input: owner.token });
+                Ok(Value::Unit)
+            }
             "init0" => {
                 let slot = self.raw.init0();
                 Ok(Value::quantum(slot, Ty::bit()))

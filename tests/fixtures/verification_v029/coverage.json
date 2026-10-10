@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "17164e88db9de84dcd4e590a49ee357c9c6106c490aec3bac0abdbaa88bcfffe",
+  "surface_sha256": "bbb80005bba9d64c6e6611dbac0afd9eb0702e77d66c70ab4b46582e916c95a0",
   "groups": [
     {
       "id": "raw-core",
@@ -853,6 +853,56 @@
         "lean/Qleisli/ExclusiveScope.lean",
         "docs/src/reference/elaboration.md",
         "docs/src/reference/rust-boundary.md"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-PackUnit",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/quantum_unit_maps.rs",
+        "lean-kernel/QleisliKernel/Raw/Unit.lean",
+        "lean-kernel/QleisliKernel/Raw/Trace.lean",
+        "lean-kernel/QleisliKernel/Raw/Ownership.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-UnpackUnit",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/quantum_unit_maps.rs",
+        "lean-kernel/QleisliKernel/Raw/Unit.lean",
+        "lean-kernel/QleisliKernel/Raw/Trace.lean",
+        "lean-kernel/QleisliKernel/Raw/Ownership.lean"
       ],
       "proof_gates": [
         "S05-C1",

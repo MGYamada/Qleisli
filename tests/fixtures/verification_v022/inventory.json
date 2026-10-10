@@ -698,6 +698,42 @@
         "path": "tests/exclusive_access.rs",
         "test": "exact_owner_shape_and_actual_body_effect_are_required"
       }
+    },
+    {
+      "id": "raw-PackUnit",
+      "producer": "source/raw",
+      "consumer": "native Raw dispatch; extraction; simulation",
+      "obligation": "Create a fresh zero-axis logical owner with exact +1 action; retain consumed identities and the complete physical frame",
+      "reference": "docs/src/reference/type-model.md; docs/src/reference/primitive-boundary.md",
+      "replacement": [
+        "VM-25"
+      ],
+      "positive": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      },
+      "negative": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      }
+    },
+    {
+      "id": "raw-UnpackUnit",
+      "producer": "source/raw",
+      "consumer": "native Raw dispatch; extraction; simulation",
+      "obligation": "Consume exactly one live zero-axis owner with exact +1 action; retain its issued identity and preceding scalar work",
+      "reference": "docs/src/reference/type-model.md; docs/src/reference/primitive-boundary.md",
+      "replacement": [
+        "VM-25"
+      ],
+      "positive": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      },
+      "negative": {
+        "path": "tests/quantum_unit_maps.rs",
+        "test": "raw_unit_maps_keep_scalar_work_and_reject_changed_owner_histories"
+      }
     }
   ],
   "enums": [
@@ -906,6 +942,14 @@
         "ComputeUseUncompute": {
           "declaration": "ComputeUseUncompute { source: TokenId, source_out: TokenId, targets: Vec<TargetTransition>, ancilla_wires: Vec<WireId>, function: Vec<u16>, use_ops: Vec<ProtectedUse>, }",
           "group": "raw-ComputeUseUncompute"
+        },
+        "PackUnit": {
+          "declaration": "PackUnit { output: TokenId, }",
+          "group": "raw-PackUnit"
+        },
+        "UnpackUnit": {
+          "declaration": "UnpackUnit { input: TokenId, }",
+          "group": "raw-UnpackUnit"
         }
       }
     },
@@ -2231,7 +2275,7 @@
     },
     {
       "path": "lean-kernel/Protocol/Raw.lean",
-      "sha256": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417",
+      "sha256": "d0a717c30c83b9d87999c7673e75dfa9e2789459d9616721fabe9340f33d596d",
       "group": "raw-core",
       "surface": null
     },
@@ -2645,7 +2689,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Ownership.lean",
-      "sha256": "c49d9c96da479356a9c057f5a51b2f7718badbb277ee5f0a9e9175aa7ab00d8b",
+      "sha256": "158dab643f29f802ab04ac0d7d723c48239a64cdee295c62693aacbaba2d6965",
       "group": "raw-core",
       "surface": null
     },
@@ -2675,13 +2719,13 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Structure.lean",
-      "sha256": "643844c3bceb8bb3416ef14480cc164918ff2ac40370f70b5819eeef59b79a04",
+      "sha256": "2145c7614a3e79f40ada3bd5af6a272445a6c68e8ce249ccd112c5fe0dd554b3",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Trace.lean",
-      "sha256": "3b7bcd3a206932ebdf84eb67c03f595515433ba2564b5cdac738c210fbb9208d",
+      "sha256": "ec2c28a6523a0c4270c8ab27b419afa8c4227dc85ede3e2a68972deceee55077",
       "group": "raw-core",
       "surface": null
     },
@@ -2735,7 +2779,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Ownership.lean",
-      "sha256": "ad6db263fa43f9290e0d4d2b0c5a1883b367b14ca260e9717a8c2893a2f37b95",
+      "sha256": "192b6dcd64d7aee526f71cbab1bc0aa5aa474fd4cf0b40f90396fc93d10af88e",
       "group": "raw-core",
       "surface": null
     },
@@ -2771,13 +2815,13 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Raw.lean",
-      "sha256": "e2af2ae0379f5a4f22e19170fd0d3ef532da2dd7d0e636202e5e77d38ce990cf",
+      "sha256": "fbb92200cfef5886e63812df40a094d12a581fc0cf0cae066f6ca021ded5eb41",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/RawTrace.lean",
-      "sha256": "56c9dafe6f581b17449f3040303b88f036696f6591c024584be7bd2b2bed3eab",
+      "sha256": "be103d9604fdc6efdc726b5a1c81ec2628b9c93acb1b228e56cef933df6732c2",
       "group": "raw-core",
       "surface": null
     },
@@ -2795,7 +2839,7 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "a8f436dbbd360de9147a8a8e4ff7d52e4cdb954c6d9f9865bb48fcd6933912e0",
+      "sha256": "04f86607d480db3fad7d60dc04037c981865c685674203f5fe8c6ea3496a996f",
       "group": "hierarchy",
       "surface": null
     },
@@ -3180,7 +3224,7 @@
     },
     {
       "path": "src/contract/function.rs",
-      "sha256": "dd8bc84054cb830d55702f5102c531d93df3432969b56072bcf88561f0d91ee8",
+      "sha256": "d4b1a4fd8bc25f86fc012e0e098a8d2c91803abc74dfbf043ea3b741567ba080",
       "group": "function-evidence",
       "surface": {
         "declarations": [
@@ -3514,7 +3558,7 @@
     },
     {
       "path": "src/frontend/compile/lower/primitives.rs",
-      "sha256": "0a93f69c8d3379ffbd31c2edbf3112a28a33e28a3a069f4bbbcbf92de11f1c9e",
+      "sha256": "6b066107469e2ce256a5630d81c6048896cb91af95334a7da247d1824d18af9f",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3610,7 +3654,7 @@
     },
     {
       "path": "src/frontend/core.rs",
-      "sha256": "a5b5793259b45cb20f586708aba9c96f5b4085f517654c8bb8964a522208ca90",
+      "sha256": "9fa1ac841ae54ae103d6f04ad0f759f287d7fc943201c5082a83a8f81db9d677",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4250,7 +4294,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "b61ce0ec87880bb90157a7ad522da1cdcaed2c10b24a4162447d45c1b46df208",
+      "sha256": "455d82cd651751b83d6332280ffe35bd7d4a8ea3b7ad0584c69abac6a7d0c897",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4289,7 +4333,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/circuit.rs",
-      "sha256": "2462cc356be12501b4068c0d0fa53c8ce5120645d575c697a34371e2d116531c",
+      "sha256": "1e04318ef653e17a17b2ec356e70bed9607db96003f842de977e68d92da84f17",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4299,7 +4343,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "6ba2321ae8737a54d0a333df9888702d84a77412fd839f91fc66dff13e1883c9",
+      "sha256": "1199dc65c18715b9da6b2d367a993065a367b27965303b835b9651fd3b38ba5e",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4315,7 +4359,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access.rs",
-      "sha256": "e40901e8b35d043e14a0c3006bddc2f09e72e39605049a60fcabd41fb3046cee",
+      "sha256": "c020d79bf4247d99b98367b7c9b8693dfd16a80066e44418337764439ef51f96",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4408,7 +4452,7 @@
     },
     {
       "path": "src/interchange/codec.rs",
-      "sha256": "3bffe2f15708c60ec03f674bafbf7f7a207f235ce977c617bebcd090a706fd2e",
+      "sha256": "1ec5892bd13cdfd5051cad03ffef8575fdb838c43961eb98863ba6642335186d",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -4428,7 +4472,7 @@
     },
     {
       "path": "src/interchange/codec/operations.rs",
-      "sha256": "588ce5bcce81b8c77eebbd30511c373a17bd430abed6e45f6a197f997a1d38ec",
+      "sha256": "206994136f8fb6af1e5565ae7a239d6c95feb8d46d1b686f79eee171e4045a0e",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -4734,7 +4778,7 @@
     },
     {
       "path": "src/interchange/native/view.rs",
-      "sha256": "c10cf04a4b938fd152b42cacd567d2faf9fbdaee9c50176725f207f75745908d",
+      "sha256": "e7a6e86aa455414737a16c3e405c356831559e55dcb6d19e3c2fdf55b39b13a4",
       "group": "transport",
       "surface": {
         "declarations": [],
@@ -4799,7 +4843,7 @@
     },
     {
       "path": "src/interop/profile.rs",
-      "sha256": "2c95c01b949a883e00cd9e2d09ecf14cb5eb414ecd7879d06ff7ce983b50ef3f",
+      "sha256": "dd50b77a2fefa0a98f6247e22bfd04f2435900a237066078cf2bb0fabbbe3ae9",
       "group": "foreign",
       "surface": {
         "declarations": [],
@@ -4826,7 +4870,7 @@
     },
     {
       "path": "src/ir.rs",
-      "sha256": "91b05cb7ac6b9a1493d3f5e8aa3d71f5b8fd703e0b8e7576508f6e9338d83a4c",
+      "sha256": "f5d7b170fd0a3b5cc5155b9d5eec37eed6010f94059f1e6c0e0dec61a0ce3034",
       "group": "raw-core",
       "surface": {
         "declarations": [
@@ -4886,7 +4930,7 @@
     },
     {
       "path": "src/sim.rs",
-      "sha256": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
+      "sha256": "3e64ab42a749d79ba84f0b0236ae28e9698f3af656b8c945c253bafaa659d8fb",
       "group": "execution",
       "surface": {
         "declarations": [
@@ -5028,13 +5072,13 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Raw/Unit.lean",
-      "sha256": "2da4d2a82ba3dbe39f9dfb35a153c4f59b120d947ee219ef0c43374df9bd687f",
+      "sha256": "95c45c93a6c55eb0bc94a641c0e7edd0baa44741a85619930df5bf03d7dd138d",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/RawUnit.lean",
-      "sha256": "62f98e2b255b53a78a62bae557894b32d3a917ed6412a92f616322d958d6220f",
+      "sha256": "49404a157e8166b80f6f87ab8156d62011ba11033a057e176f858a6f88821e40",
       "group": "raw-core",
       "surface": null
     },

@@ -107,6 +107,11 @@ def step (state : Interface) (op : Op) : Option (Interface × List Event) := do
     return (next,[.protectedComputed bits (axes state (source.wires ++ ports.flatMap (·.wires)))
       source.bits ancilla.length function uses])
 
+  | .packUnit output => pure (insert state output [],[])
+  | .unpackUnit input =>
+    let (port,next) ← take state input
+    if port.bits == 0 && port.wires.isEmpty then pure (next,[]) else none
+
 structure Prepared where
   state : Interface
   events : List Event := []

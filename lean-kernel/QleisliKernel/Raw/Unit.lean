@@ -1,28 +1,19 @@
 import QleisliKernel.Raw.Ownership
 import QleisliKernel.Semantics.RawUnit
 
-/-! Executable building blocks for structural Raw Unit maps. They are not yet
-reachable through opcode decoding or production dispatch. Extending that path
-requires original-operation ownership proofs and historical semantic transport;
-these local results do not supply those missing connections.
+/-! Executable structural Raw Unit maps used by the real dispatcher. The
+original-operation ownership/trace proofs and historical semantic transport
+connect their structural rules; these local results alone do not establish
+source, decoder or runtime preservation.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Raw.Unit
 open Semantics.Raw Finite
 
 /-- Introduce one globally fresh empty owner without allocating a wire. -/
-def pack (state : State) (output : Nat) : Check Transition := do
-  require (stateValid state)
-  let next ← insert state output []
-  require (stateValid next)
-  return ⟨next,[]⟩
+abbrev pack := Raw.packUnit
 
 /-- Consume exactly a live zero-axis owner, retaining all issuance history. -/
-def unpack (state : State) (input : Nat) : Check Transition := do
-  require (stateValid state)
-  let (port,next) ← take state input
-  require (port.bits == 0 && port.wires.isEmpty)
-  require (stateValid next)
-  return ⟨next,[]⟩
+abbrev unpack := Raw.unpackUnit
 
 theorem pack_conditions (state : State) (output : Nat) (result : Transition)
     (ok : pack state output = .ok result) :
