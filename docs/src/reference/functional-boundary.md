@@ -25,6 +25,25 @@ A local runtime value is not callable; failed local lookup cannot fall back to a
 function with the same name. Returning or packaging a live owner does not make
 that package a reusable function.
 
+The parser recognizes bounded closure-shaped expressions only to diagnose
+unsupported input; it does not admit a callable value. For `|| body`,
+`|pattern, ...| body` and their contextual `move` forms, common checking uses
+resolved lexical identities and the enclosing checked types to identify a
+captured live quantum owner at its actual use. Products containing an owner,
+`Q<Unit>` and `Q<Bits<0>>` are linear too. A previously consumed owner retains
+its ownership error. Parameter or body-local shadowing is distinct from a
+capture; a name or closure type annotation cannot supply quantum type evidence.
+Checking remains bounded by the existing parser and source-work limits.
+
+When no live quantum capture is found, the expression still rejects as an
+unsupported runtime closure. Ordinary classical captures do not grant a
+callable implementation in this profile. Both source lowering paths explicitly
+refuse these diagnostic forms, so no hidden environment can reach an accepted
+artifact. A future linear, one-shot or higher-order quantum callable requires
+its own specified type, usage, effect and access contracts; this refusal does
+not infer such a type. Existing bounded static operation composition below
+remains available without storing live owners.
+
 Runtime arguments and right-hand sides evaluate completely, once, from left
 to right before binding. Effects of argument evaluation remain part of the
 caller even when an ordinary result is ignored. Function bodies, unused
