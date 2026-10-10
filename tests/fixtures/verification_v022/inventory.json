@@ -2341,7 +2341,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Hierarchical/Artifact.lean",
-      "sha256": "d00cc81b1540183bde439efe946c4b044b42f2b587d6b58e89bf5d8c05114b5b",
+      "sha256": "1c383bde9009714739bd0fc52b7511e0e6bb24d55c6de8faabe4516ad3527f6e",
       "group": "hierarchy",
       "surface": null
     },
@@ -2599,7 +2599,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/QftGraph.lean",
-      "sha256": "737b23fb404cc08df4b955e2eb876fa8ecca2cbe273d6971868f26d9126157d3",
+      "sha256": "2b9304776c4961e719f73b43a024a753de50badf17ffb16b1c6542150106ca47",
       "group": "hierarchy",
       "surface": null
     },
@@ -2815,7 +2815,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel/Semantics/Raw.lean",
-      "sha256": "fbb92200cfef5886e63812df40a094d12a581fc0cf0cae066f6ca021ded5eb41",
+      "sha256": "b4c3eef60e15b742e9c76ab2c19e81cc8b8fed554ba2ec07e20eb1d98d4406fa",
       "group": "raw-core",
       "surface": null
     },
@@ -2839,7 +2839,7 @@
     },
     {
       "path": "lean-kernel/Tests.lean",
-      "sha256": "04f86607d480db3fad7d60dc04037c981865c685674203f5fe8c6ea3496a996f",
+      "sha256": "690cc954938684c4b474b0adfc74015b3d1f4baf0c32754e915203f0d86ddb8a",
       "group": "hierarchy",
       "surface": null
     },

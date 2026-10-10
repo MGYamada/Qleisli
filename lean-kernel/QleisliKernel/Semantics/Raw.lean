@@ -11,6 +11,10 @@ inductive Effect where
   | unitary | iso | observe
   deriving BEq, DecidableEq, Repr
 
+/-- Canonical public effect name. Keep the historical constructor identity for
+formal representation and versioned transport compatibility. -/
+@[match_pattern] abbrev Effect.isometry : Effect := Effect.iso
+
 inductive Gate where
   | h | x | z | t
   deriving BEq, DecidableEq, Repr

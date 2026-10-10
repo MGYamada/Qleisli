@@ -5,6 +5,51 @@ import QleisliKernel.Qirf.ControlAccess
 
 open QleisliKernel
 
+namespace IsometryVocabularyTests
+
+-- Use the real public aliases in exhaustive patterns. Historical constructor
+-- spellings below test compatibility; they are not a second canonical name.
+namespace Raw
+open QleisliKernel.Semantics.Raw
+private def classify : Effect → Nat
+  | .unitary => 0
+  | .isometry => 1
+  | .observe => 2
+example : Effect.isometry = Effect.iso := rfl
+example : classify .iso = 1 := rfl
+example : classify .isometry = 1 := rfl
+example : classify .unitary = 0 := rfl
+example : classify .observe = 2 := rfl
+end Raw
+
+namespace Hierarchical
+open QleisliKernel.Hierarchical.Artifact
+private def classify : Effect → Nat
+  | .unitary => 0
+  | .isometry => 1
+  | .observe => 2
+example : Effect.isometry = Effect.iso := rfl
+example : classify .iso = 1 := rfl
+example : classify .isometry = 1 := rfl
+example : classify .unitary = 0 := rfl
+example : classify .observe = 2 := rfl
+end Hierarchical
+
+namespace QftGraph
+open QleisliKernel.QftGraph
+private def classify : Effect → Nat
+  | .unitary => 0
+  | .isometry => 1
+  | .observe => 2
+example : Effect.isometry = Effect.iso := rfl
+example : classify .iso = 1 := rfl
+example : classify .isometry = 1 := rfl
+example : classify .unitary = 0 := rfl
+example : classify .observe = 2 := rfl
+end QftGraph
+
+end IsometryVocabularyTests
+
 namespace RawUnitTests
 open QleisliKernel.Raw
 

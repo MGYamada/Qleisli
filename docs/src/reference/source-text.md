@@ -178,14 +178,38 @@ original token before native checking. It remains reserved for that error,
 not an accepted alias or an ordinary identifier. Comments and longer ordinary
 identifiers such as `isotope` and `iso_value` are unaffected.
 
-Public Rust effect, function-kind and token-kind variants use `Isometry`, and
-body-effect diagnostics use that spelling too. Rust callers migrate
-`Effect::Iso`, `FnKind::Iso` and `TokenKind::Iso` to their `Isometry` variants;
-there is no Rust compatibility alias. Existing versioned QIRF effect tags retain
-the spelling `"iso"`; source vocabulary does not silently change that transport
-format. The checked source graph's effect tag and its native hierarchy adapters
-also retain their existing transport spelling. Those tags do not introduce a
-second source effect or grant inverse/control access.
+The canonical names are:
+
+| Surface | Canonical spelling |
+| --- | --- |
+| Source effect assertion | `isometry fn` |
+| Rust effect | `qleisli::ir::Effect::Isometry` |
+| Rust function and token kinds | `frontend::ast::FnKind::Isometry`, `frontend::lexer::TokenKind::Isometry` |
+| Lean Raw effect | `QleisliKernel.Semantics.Raw.Effect.isometry` |
+| Lean hierarchy effect | `QleisliKernel.Hierarchical.Artifact.Effect.isometry` |
+| Lean retained bounded QFT graph effect | `QleisliKernel.QftGraph.Effect.isometry` |
+
+Rust callers migrate `Effect::Iso`, `FnKind::Iso` and `TokenKind::Iso` to their
+`Isometry` variants; there is no Rust compatibility alias. Body-effect
+diagnostics also use `Isometry`.
+
+The three Lean names are reducible aliases for their existing `Effect.iso`
+constructors. They provide the canonical spelling for new Lean expressions
+without changing constructor identity, generated recursors, existing `.iso`
+case names or derived `Repr` output. Historical formal statements and callers
+using the constructor retain that compatibility. The QFT graph alias changes
+only an existing public type's vocabulary; it adds no QFT implementation.
+
+Versioned JSON/QIRF effect tags, the checked source graph's effect tag and
+native hierarchy adapters retain `"iso"`; the binary hierarchy effect tag
+remains `1`. These explicit transport exceptions neither introduce a second
+source effect nor grant inverse/control access.
+
+`QleisliKernel.Raw.State.iso` is an internal allocation-tracking Boolean, not
+an effect assertion or evidence of the isometry law. Local proof witnesses
+named `iso` likewise are not public effect vocabulary. These implementation
+names and the compatibility constructors remain unchanged; naming alone
+establishes no semantic property or constitutional guarantee.
 
 Both arms and the body of a zero-iteration static fold participate in common
 checking and effect inference. A decreasing runtime self-call uses the least

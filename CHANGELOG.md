@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add canonical Lean `Effect.isometry` aliases in Raw semantics, hierarchy
+  artifacts and the retained bounded QFT graph. Preserve historical `iso`
+  constructor identity, cases, reflection and versioned transport tags. Document
+  the source/Rust/Lean vocabulary and internal-name exceptions; this adds no
+  semantic acceptance, QFT implementation or constitutional guarantee.
+
 - Retire the temporary `iso fn` source prefix with a located migration error
   directing authors to `isometry fn`. Migrate active tests and source selection
   without rewriting historical inputs or versioned `"iso"` transport tags.
