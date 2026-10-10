@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Extend the independent rational Raw and Kraus oracles to structural Unit
+  maps, with literal phase, reference-axis and readout-history regressions and
+  fresh native rejection checks for invalid owner reuse. Derive constructor
+  report counts from exercised cases or the actual Raw enum; record oracle
+  source identities. Align the operation Reference with the bounded Raw profile.
+
 - Materialize explicit `unit(Unit)` and `finish(Q<Unit>)` through finite and
   shared Raw lowering, strict opcode decoding and native dispatch. Prove the
   dispatch's independent trace and ownership correspondence, preserving fresh

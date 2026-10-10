@@ -416,10 +416,17 @@ condition even at zero. Conjugation preserves the existing order `C† -> U -> C
 for `C: A -> B`, the middle operation is over A and the result is over B.
 All proposals require fresh native acceptance under existing capacity bounds.
 
-The finite adapter still explicitly refuses general-arrow lowering. Raw
-materialization of retained constructor trees, constructor trees containing
-attached Meaning requests, and rectangular Meaning evidence remain unsupported;
-these paths reject rather than omit a child, codomain or Meaning obligation.
+The selected Raw profile also materializes retained sequential, tensor, adjoint,
+control, repetition and conjugation trees under their checked port, capability
+and capacity restrictions. Its structural `unit` and `finish` maps retain
+zero-width logical owners without allocating or discarding a physical qubit.
+Original finite endomorphic Meaning requests on whole constructor trees and
+their annotated descendants are checked against their actual materialized Raw
+bodies before checked hierarchy construction, including descendants under zero
+repetition. This does not enable Meaning-refined Raw root emission.
+The finite adapter still explicitly refuses general-arrow lowering, and
+rectangular Meaning evidence remains unsupported. Unsupported paths reject
+rather than omit a child, codomain or Meaning obligation.
 The common judgment checks their port and access rules before profile selection.
 Native acceptance of produced IR does not establish source preservation; public
 results retain `source_meaning_verified: false`. Bounded independent exact

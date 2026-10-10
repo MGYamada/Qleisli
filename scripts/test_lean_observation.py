@@ -21,6 +21,7 @@ import test_lean_finite as finite
 import test_lean_raw as raw
 import observation_sources
 from check_input_corpus import current_project as current_corpus_project
+from check_verification_inventory import variants
 
 ROOT = Path(__file__).resolve().parents[1]
 ZERO, ONE = finite.ZERO, finite.ONE
@@ -58,7 +59,14 @@ def route(frame, ordered):
 def pure_live(live, op):
     live = copy.deepcopy(live)
     tag = op['tag']
-    if tag == 'init0':
+    if tag == 'pack_unit':
+        if op['output'] in live:
+            raise ValueError('Unit output already live')
+        live[op['output']] = []
+    elif tag == 'unpack_unit':
+        if live.pop(op['input']):
+            raise ValueError('Unit input has physical wires')
+    elif tag == 'init0':
         live[op['output']] = [op['wire']]
     elif tag in {'gate', 'apply_unitary'}:
         live[op['output']] = live.pop(op['input'])
@@ -170,7 +178,7 @@ def cases():
             budget=kw.pop('budget', 10000000),
             artifact=dict(format='qleisli.raw-observing-component', version=1, dependencies=[],
                           bindings=[], program=copy.deepcopy(program)), **kw))
-    # All eleven existing pure constructors now travel through the new boundary.
+    # Every accepted dependency-free pure case also crosses the observing boundary.
     for c in raw.cases():
         if c['expected'] and 'oracle' in c and not c['artifact']['evidence']:
             add('pure_'+c['name'], c['artifact']['program'])
@@ -181,6 +189,20 @@ def cases():
             operations=[raw.op('reset', input=0, output=1, fresh_wire=1)], outputs=[1], effect=effect), effect=='observe')
         add('discard_effect_'+effect, p([raw.port(0,[0])],
             operations=[raw.op('discard', input=0)], effect=effect), effect=='observe')
+    add('unit_after_measurement', p([raw.port(0,[0]),raw.port(1,[1])],
+        operations=[raw.op('measure_z',input=0,output=0),raw.op('pack_unit',output=2),
+                    raw.op('unpack_unit',input=2)], outputs=[1],results=[0]))
+    add('unit_after_discard', p([raw.port(0,[0]),raw.port(1,[1])],
+        operations=[raw.op('discard',input=0),raw.op('pack_unit',output=2),
+                    raw.op('unpack_unit',input=2)], outputs=[1]))
+    add('pack_measured_owner', p([raw.port(0,[0])],
+        operations=[raw.op('measure_z',input=0,output=0),raw.op('pack_unit',output=0)],
+        outputs=[0],results=[0]),False)
+    for choice in [False,True]:
+        add('unit_in_branch_'+str(choice), p(classical=[0],
+            operations=[branch(0,[raw.op('pack_unit',output=1)],
+                [raw.op('pack_unit',output=2)],quantum=[qphi(1,2,3,[])]),
+                raw.op('unpack_unit',input=3)],effect='unitary'),classical=[choice])
     add('discard_unit', p([raw.port(0,[])], operations=[raw.op('discard',input=0)]))
     add('discard_two_bits', p([raw.port(0,[4,2])], operations=[raw.op('discard',input=0)]))
     add('measure_unit_rejected', p([raw.port(0,[])], operations=[raw.op('measure_z',input=0,output=0)],results=[0]),False)
@@ -295,9 +317,11 @@ def cases():
         if c['name'] in {'pure_gate_h','classical_phi_True','adaptive_measurement_reversed_results'}:
             bad=copy.deepcopy(c);bad.update(name='work_limit_'+c['name'],budget=0,expected=False,rust=False)
             records.append(bad)
-    bad=copy.deepcopy(records[0]);bad.update(name='producer_success_flag',expected=False,rust=False)
+    bad=copy.deepcopy(next(c for c in records if c['name']=='pure_gate_h'))
+    bad.update(name='producer_success_flag',expected=False,rust=False)
     bad['artifact']['program']['accepted']=True;records.append(bad)
-    bad=copy.deepcopy(records[0]);bad.update(name='unknown_profile',expected=False,rust=False)
+    bad=copy.deepcopy(next(c for c in records if c['name']=='pure_gate_h'))
+    bad.update(name='unknown_profile',expected=False,rust=False)
     bad['artifact']['format']='qleisli.raw-observing-component.future';records.append(bad)
     return records
 
@@ -474,9 +498,11 @@ def main():
            ROOT/'lean-kernel/QleisliKernel/Raw/Instrument.lean',
            ROOT/'lean-kernel/Protocol/Observation.lean',ROOT/'lean/Qleisli/RawInstrument.lean',
         ROOT/'lean/Qleisli/RawInstrumentDenotation.lean',ROOT/'lean/Qleisli/Semantics/RawInstrument.lean',
-        Path(observation_sources.__file__),Path(__file__)]
+        Path(observation_sources.__file__),Path(raw.__file__),Path(finite.__file__),Path(exact.__file__),
+        ROOT/'scripts/check_verification_inventory.py',ROOT/'src/ir.rs',Path(__file__)]
     comparisons=sum(name!='classical_missing_values' for name in rust)
-    report=dict(native_cases=len(records),rust_checks=len(rust),rust_comparisons=comparisons,original_constructors=19,
+    report=dict(native_cases=len(records),rust_checks=len(rust),rust_comparisons=comparisons,
+        original_constructors=len(variants((ROOT/'src/ir.rs').read_text(),'RawOp')),
         independent_operators=operators,hidden_histories=histories,complete_observing_sources=5,
         max_semantic_qubits=3,native_bindings=bindings,commands=log,
         source_sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in paths},

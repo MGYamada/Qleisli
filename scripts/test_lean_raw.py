@@ -82,7 +82,14 @@ def raw_oracle(p, dependencies=()):
         return gate_steps('x',u['target_index'],[(a,True) for a in cs])
     for command in p['operations']:
         tag = command['tag']
-        if tag == 'init0':
+        if tag == 'pack_unit':
+            if command['output'] in live:
+                raise ValueError('Unit output already live')
+            live[command['output']] = []
+        elif tag == 'unpack_unit':
+            if live.pop(command['input']):
+                raise ValueError('Unit input has physical wires')
+        elif tag == 'init0':
             mapping(list(range(2**len(frame))),len(frame)+1)
             frame.append(command['wire']);live[command['output']]=[command['wire']]
         elif tag == 'gate':
@@ -152,6 +159,25 @@ def cases():
     def add(name,p,accepted=True,evidence=(),**kw):
         artifact=dict(format='qleisli.raw-pure-component',version=1,evidence=list(evidence),program=p)
         result.append(dict(name=name,artifact=artifact,expected=accepted,budget=kw.pop('budget',10000000),**kw))
+    def closed(operations, outputs=()):
+        return dict(quantum_inputs=[],classical_inputs=[],operations=operations,
+                    quantum_outputs=list(outputs),classical_outputs=[],declared_effect='unitary')
+    add('pack_unit',closed([op('pack_unit',output=0)],[0]))
+    unpack=closed([op('unpack_unit',input=0)])
+    unpack['quantum_inputs']=[port(0,[])]
+    add('unpack_unit',unpack)
+    add('unit_roundtrip',closed([op('pack_unit',output=0),op('unpack_unit',input=0)]))
+    add('unit_roundtrip_phase',closed([op('pack_unit',output=0),
+        op('apply_unitary',input=0,output=1,steps=[finite.mono([], [0],[1])]),
+        op('unpack_unit',input=1)]))
+    add('unit_with_reference',program(2,[op('pack_unit',output=1),op('unpack_unit',input=1)]))
+    add('pack_live_owner',program(0,[op('pack_unit',output=0)]),False)
+    add('pack_consumed_owner',closed([op('pack_unit',output=0),op('unpack_unit',input=0),
+        op('pack_unit',output=0)],[0]),False)
+    add('unpack_nonempty_owner',program(1,[op('unpack_unit',input=0)]),False)
+    add('unpack_missing_owner',closed([op('unpack_unit',input=0)]),False)
+    add('unpack_twice',closed([op('pack_unit',output=0),op('unpack_unit',input=0),
+        op('unpack_unit',input=0)]),False)
     for gate in ['h','x','z','t']:
         add('gate_'+gate,program(1,[op('gate',gate=gate,input=0,output=1)],1))
     add('unit_scalar_phase',program(0,[op('apply_unitary',input=0,output=1,steps=[finite.mono([], [0],[7])])],1))
@@ -266,8 +292,13 @@ def cases():
             case['oracle']=raw_oracle(case['artifact']['program'],deps)
             case['required']=finite.description(case['oracle'])
         else:case.setdefault('required',finite.description(finite.identity(1)))
+    wrong_phase=copy.deepcopy(next(c for c in result if c['name']=='unit_roundtrip_phase'))
+    wrong_phase.update(name='request_fault_unit_phase',expected=False,
+                       required=finite.description(finite.identity(1)))
+    result.append(wrong_phase)
     for budget in [0,1,23]:
-        case=copy.deepcopy(result[0]);case.update(name='exhausted_work_'+str(budget),expected=False,budget=budget);result.append(case)
+        case=copy.deepcopy(next(c for c in result if c['name']=='gate_h'))
+        case.update(name='exhausted_work_'+str(budget),expected=False,budget=budget);result.append(case)
     for name,mutate in [
         ('producer_accepted_flag',lambda a:a.update(accepted=True)),
         ('producer_matrix_cache',lambda a:a['evidence'][0].update(meaning=finite.description(finite.identity(2)))),
@@ -407,7 +438,7 @@ def rust_program(p, receipts='receipts'):
         if u['tag']=='protected_gate':return f'ProtectedUse::ProtectedGate{{bit:{pb(u["bit"])},gate:SingleGate::{u["gate"].upper()}}}'
         if u['tag']=='controlled_target_gate':return f'ProtectedUse::ControlledTargetGate{{controls:{cs()},target_index:{u["target_index"]},gate:SingleGate::{u["gate"].upper()}}}'
         return f'ProtectedUse::ControlledPhase{{controls:{cs()},phase:ScalarPhase::'+('MinusOne' if u['phase']=='minus_one' else 'EighthTurn')+'}'
-    tags={'init0':'Init0','gate':'Gate','cnot':'Cnot','toffoli':'Toffoli','quantum_if':'QuantumIf','split':'Split','join':'Join','lift_basis':'LiftBasis','apply_unitary':'ApplyUnitary','certified_compute':'CertifiedCompute','compute_use_uncompute':'ComputeUseUncompute','discard':'Discard'}
+    tags={'pack_unit':'PackUnit','unpack_unit':'UnpackUnit','init0':'Init0','gate':'Gate','cnot':'Cnot','toffoli':'Toffoli','quantum_if':'QuantumIf','split':'Split','join':'Join','lift_basis':'LiftBasis','apply_unitary':'ApplyUnitary','certified_compute':'CertifiedCompute','compute_use_uncompute':'ComputeUseUncompute','discard':'Discard'}
     commands=[]
     for o in p['operations']:
         fields=[]
@@ -507,16 +538,19 @@ def main():
             values=[[[v['numerator'],v['denominator_bits']] for v in s] for s in other['matrix']['entries']]
             assert values==m['entries'],case['name']
         matrices+=1
+    pure_tags=sorted({o['tag'] for c in all_cases if c['expected']
+                      for o in c['artifact']['program']['operations']})
     report=dict(native_cases=len(all_cases),rust_comparisons=len(rust),independent_matrices=matrices,
         independent_raw_trace_programs=sum(r['reference_programs'] for r in lean),
-        pure_constructors=11,max_semantic_qubits=3,rust_source_prefixes=6,original_qirf_checks=6,
+        pure_constructors=len(pure_tags),pure_constructor_tags=pure_tags,max_semantic_qubits=3,rust_source_prefixes=6,original_qirf_checks=6,
         commands=log,native_bindings=bindings,
         remaining=['VM-26 classical control/observation',
                    'VM-27 hierarchy closure','native packaging and byte/decoder refinement'],
         source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
             ROOT/'lean-kernel/QleisliKernel/Semantics/Raw.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Structure.lean',
             ROOT/'lean-kernel/QleisliKernel/Raw/Finite.lean',ROOT/'lean-kernel/Protocol/Raw.lean',ROOT/'lean/Qleisli/Raw.lean',
-            Path(observation_sources.__file__),ROOT/'scripts/check_input_corpus.py',Path(__file__).resolve()]})
+            Path(observation_sources.__file__),Path(finite.__file__),Path(exact.__file__),
+            ROOT/'scripts/check_input_corpus.py',Path(__file__).resolve()]})
     report['source_sha256'].update({str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
         ROOT/'lean-kernel/QleisliKernel/Semantics/RawTrace.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Trace.lean']})
     if args.record:

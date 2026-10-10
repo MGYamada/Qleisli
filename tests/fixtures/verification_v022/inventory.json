@@ -3061,13 +3061,13 @@
     },
     {
       "path": "scripts/test_lean_observation.py",
-      "sha256": "1c6a96366396a01321c38e1732367b069a9a001cf6b7399042e194e7c8651e88",
+      "sha256": "19a1016f46d19cbb251b613b84bb287a0bc7f46a9c3342d448d2da88c85a172f",
       "group": "raw-core",
       "surface": null
     },
     {
       "path": "scripts/test_lean_raw.py",
-      "sha256": "a1b358ab00091b9ad8196d6f2e2323a0c80bd916bfdc49cf2ecb5e00ea1dfa45",
+      "sha256": "4f86f2c1abf908ca31007bc50d3200c14ac2c901dc717274e9512dfd8d6a6256",
       "group": "raw-core",
       "surface": null
     },
@@ -3079,7 +3079,7 @@
     },
     {
       "path": "scripts/test_lean_streamed_instrument.py",
-      "sha256": "5f6e8ab733b8becac8008458a4170126845a7c99c73db7d510d3fa8fe7c61f7d",
+      "sha256": "4c9475bed0589738415c9b23605e4095b5bb09f2bf4313e68aa68c2528bfb96e",
       "group": "raw-core",
       "surface": null
     },

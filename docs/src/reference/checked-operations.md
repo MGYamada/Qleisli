@@ -64,8 +64,9 @@ separable states, and zero-width owners retain their phase and ownership rules.
 
 The selected concrete projection retains this constructor and its original
 Meaning request. Within the supported closed-provider profile,
-`ElaboratedProgram::check_operation_meanings` checks every binding through
-the native finite gate before the checked collection can produce a hierarchy
+`ElaboratedProgram::check_operation_meanings` checks original binding requests
+and annotated constructor descendants through the native finite gate on their
+actual materialized Raw bodies before the checked collection can produce a hierarchy
 proposal. That proposal still needs fresh hierarchy acceptance. Direct
 unchecked hierarchy lowering rejects when original Meaning obligations remain;
 refined Raw root emission remains unsupported. A provider outside its concrete

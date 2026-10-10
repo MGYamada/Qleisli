@@ -122,6 +122,18 @@ and reject a native-valid wrong gate. Initialization-movement validation alone
 does not check the gate's complete meaning. No general source-preservation,
 QS/PR discharge or completion of #83/#46 is claimed.
 
+**Bounded implementation update (2026-10-11):** the selected Raw profile now
+materializes ordered constructor trees, including preparation composition and
+tensor, under the existing port, capability and work limits. Original finite
+endomorphic Meaning requests on whole trees and annotated descendants are
+checked against actual Raw bodies before checked hierarchy construction, even
+under zero repetition. Explicit `unit` and `finish` now create and consume
+zero-width logical owners in the actual native Raw checker. Finite general-arrow
+lowering, Meaning-refined Raw root emission and rectangular Meaning evidence
+remain unsupported. The current [Reference](../reference/type-model.md#general-pure-operation-arrows)
+states that bounded profile; the earlier study and its failed attempts remain
+historical evidence, not a claim of general source/runtime preservation.
+
 ## Recommended decisions
 
 1. Use general pure arrows `Op<A,B>` and `Meaning<A,B>` internally and publicly.

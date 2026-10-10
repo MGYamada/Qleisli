@@ -3,6 +3,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import copy
+from fractions import Fraction
 import json
 from pathlib import Path
 import tempfile
@@ -12,7 +13,61 @@ from unittest.mock import patch
 from observation_sources import basis, component
 import test_lean_finite as finite
 import test_lean_raw as raw
-from test_lean_observation import component_oracle
+from test_lean_observation import component_oracle, oracle, p, pure_live, cases as observing_cases
+
+
+class UnitOracleTests(unittest.TestCase):
+    def test_work_boundaries_keep_the_original_hadamard_subject(self):
+        cases=raw.cases()
+        original=next(c for c in cases if c['name']=='gate_h')
+        for budget in [0,1,23]:
+            case=next(c for c in cases if c['name']=='exhausted_work_'+str(budget))
+            self.assertEqual(case['artifact'],original['artifact'])
+            self.assertEqual(case['required'],original['required'])
+            self.assertEqual(case['budget'],budget)
+            self.assertFalse(case['expected'])
+        cases=observing_cases()
+        original=next(c for c in cases if c['name']=='pure_gate_h')
+        for name in ['producer_success_flag','unknown_profile']:
+            case=next(c for c in cases if c['name']==name)
+            expected=original['artifact']['program']
+            if name=='producer_success_flag': expected=dict(expected,accepted=True)
+            self.assertEqual(case['artifact']['program'],expected)
+            self.assertFalse(case['expected'])
+
+    def test_closed_unit_roundtrip_keeps_exact_scalar_phase(self):
+        phase=[Fraction(0),Fraction(1,2),Fraction(0),Fraction(1,2)]
+        for steps,wanted in [([],finite.ONE),([finite.mono([], [0],[1])],phase)]:
+            operations=[raw.op('pack_unit',output=0),
+                raw.op('apply_unitary',input=0,output=1,steps=steps),
+                raw.op('unpack_unit',input=1)]
+            program=p(operations=operations,effect='unitary')
+            self.assertEqual(raw.raw_oracle(program),[[wanted]])
+            self.assertEqual(oracle(program),[dict(hidden=[],results=[],operator=[[wanted]])])
+
+    def test_unit_maps_keep_reference_axes_and_readout_histories(self):
+        operations=[raw.op('pack_unit',output=2),raw.op('unpack_unit',input=2)]
+        inputs=[raw.port(0,[7]),raw.port(1,[3])]
+        program=p(inputs,operations=operations,outputs=[1,0],effect='unitary')
+        z,o=finite.ZERO,finite.ONE
+        swapped=[[o,z,z,z],[z,z,o,z],[z,o,z,z],[z,z,z,o]]
+        self.assertEqual(raw.raw_oracle(program),swapped)
+        self.assertEqual(oracle(program)[0]['operator'],swapped)
+        program=p(inputs,operations=[raw.op('measure_z',input=0,output=0)]+operations,
+                  outputs=[1],results=[0])
+        self.assertEqual(oracle(program),[
+            dict(hidden=[0],results=[False],operator=[[o,z,z,z],[z,z,o,z]]),
+            dict(hidden=[1],results=[True],operator=[[z,o,z,z],[z,z,z,o]])])
+
+    def test_unit_maps_do_not_coerce_or_overwrite_live_owners(self):
+        for operation in [raw.op('pack_unit',output=0),raw.op('unpack_unit',input=0)]:
+            with self.subTest(operation=operation):
+                original={0:[7]}
+                with self.assertRaises(ValueError): pure_live(original,operation)
+                self.assertEqual(original,{0:[7]})
+                with self.assertRaises(ValueError):
+                    raw.raw_oracle(p([raw.port(0,[7])],operations=[operation]))
+        with self.assertRaises(KeyError): pure_live({},raw.op('unpack_unit',input=0))
 
 
 def artifact():

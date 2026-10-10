@@ -13,6 +13,7 @@ import test_lean_exact as exact
 import test_lean_finite as finite
 import test_lean_raw as raw
 import test_lean_raw_completion as completion
+from check_verification_inventory import variants
 ROOT = observation.ROOT
 
 LEAN = observation.finite.LEAN[:observation.finite.LEAN.index('def execute')] + '''
@@ -101,9 +102,12 @@ def main():
     paths=[ROOT/'lean-kernel/QleisliKernel/Raw/Coefficient.lean',ROOT/'lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean',
         ROOT/'lean-kernel/Protocol/StreamedObservation.lean',ROOT/'lean/Qleisli/RawCoefficient.lean',
         ROOT/'lean/Qleisli/RawStreamedInstrument.lean',ROOT/'lean/Qleisli/Semantics/ObservingAction.lean',Path(__file__),
-        ROOT/'scripts/test_lean_observation.py',ROOT/'scripts/observation_sources.py']
+        ROOT/'scripts/test_lean_observation.py',ROOT/'scripts/observation_sources.py',
+        Path(raw.__file__),Path(finite.__file__),Path(exact.__file__),
+        ROOT/'scripts/check_verification_inventory.py',ROOT/'src/ir.rs']
     report=dict(status='passed',native_cases=len(records),rust_comparisons=sum(name!='classical_missing_values' for name in rust),
-        independent_operators=operators,hidden_histories=operators,original_constructors=19,max_semantic_qubits=3,
+        independent_operators=operators,hidden_histories=operators,
+        original_constructors=len(variants((ROOT/'src/ir.rs').read_text(),'RawOp')),max_semantic_qubits=3,
         complete_observing_sources=5,retained_branch_dependency_cases=4,native_bindings=bindings,commands=log,
         source_sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in paths},
         scope='actual matrix-free coefficient checker; post-acceptance small operator display; exponential budgeted verification',
