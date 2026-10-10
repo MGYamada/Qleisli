@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Connect the adopted `isometry fn` spelling to the common source judgment,
+  actual inferred effects, both concrete consumers and fresh native checking.
+  Migrate current examples without changing versioned QIRF `"iso"` tags. Legacy
+  source-prefix retirement and public effect-name migration remain unfinished
+  under #57; the temporary old prefix grants no different semantics or access.
+
 - Extend the independent rational Raw and Kraus oracles to structural Unit
   maps, with literal phase, reference-axis and readout-history regressions and
   fresh native rejection checks for invalid owner reuse. Derive constructor

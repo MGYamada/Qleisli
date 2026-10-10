@@ -296,7 +296,7 @@ execution. Exhausting a checking or elaboration budget rejects and establishes
 neither a quantitative resource guarantee nor impossibility of the requested
 mathematical property. Instance success is not a proof of an entire family.
 
-Quantum effects remain `Unitary <= Iso <= Observe`, with body/callee/argument
+Quantum effects remain `Unitary <= Isometry <= Observe`, with body/callee/argument
 effects retained. An annotation cannot downgrade observation, reset or discard.
 There is no generic quantum-core Monad interface or accepted `do/pure` syntax.
 The Kleisli origin of the name does not supply one. Host filesystem, network,
@@ -321,7 +321,7 @@ acceptance checks or the broader feature Issues are complete.
 | Traits and laws | Current capability requirements and concrete evidence are separate; general trait/class syntax is not introduced. |
 | Laziness, bottom and recursion | Eager calls, explicit finite Core and documented checked Nat decrease; no hidden deferred quantum work. |
 | Currying and partial application | Full call arity; no reusable callable obtained by capturing an argument or owner. |
-| Monad and effects | No general quantum Monad/do; principal Unitary/Iso/Observe boundaries stay explicit. |
+| Monad and effects | No general quantum Monad/do; principal Unitary/Isometry/Observe boundaries stay explicit. |
 | Host I/O | Outside the current quantum effect lattice and accepted source surface. |
 | False friends | Actual Qleisli diagnostics plus the explanations below; external qlippy integration is excluded. |
 | Surface convenience | Finite explicit proposals, retained identity and actual independent checking; no fallback acceptance. |

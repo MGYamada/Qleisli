@@ -116,6 +116,107 @@ fn amplitudes(text: &str, expected: &[[f64; 2]]) {
 }
 
 #[test]
+fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
+    use qleisli::frontend::compile::{check_project, compile_project};
+    let canonical = include_str!(
+        "fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli"
+    );
+    let mut bodies = Vec::new();
+    // The legacy control is explicit migration evidence, not a second effect.
+    for text in [
+        canonical.to_owned(),
+        canonical.replace("isometry fn", "iso fn"),
+    ] {
+        let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
+        let fact = parsed.function_effect("main::main").unwrap();
+        assert_eq!(fact.inferred(), Effect::Iso);
+        assert_eq!(fact.asserted(), Some(Effect::Iso));
+        let raw = parsed
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap()
+            .lower_raw()
+            .unwrap();
+        let checker = qleisli::interchange::native::Kernel::new(kernel());
+        let accepted = checker.accept(raw.proposal()).unwrap();
+        raw.validate_source_steps(&accepted).unwrap();
+        assert_eq!(accepted.raw().declared_effect, Effect::Iso);
+        assert!(accepted.raw().quantum_inputs.is_empty());
+        assert_eq!(accepted.raw().quantum_outputs.len(), 1);
+        assert!(matches!(
+            accepted.raw().operations.as_slice(),
+            [qleisli::ir::RawOp::Init0 { .. }]
+        ));
+        for version in [
+            qleisli::interchange::Version::V1,
+            qleisli::interchange::Version::V2,
+        ] {
+            let bytes = qleisli::interchange::export(&accepted, None, version).unwrap();
+            // Existing versioned transport retains its original spelling.
+            assert!(String::from_utf8_lossy(&bytes).contains("\"declared_effect\":\"iso\""));
+            checker.check(&bytes, None).unwrap();
+        }
+        bodies.push(accepted.raw().clone());
+        // The finite entry contract is a closed classical result. Keep that
+        // explicit adapter separate from the original quantum-result source.
+        let adapter = format!(
+            "use std::observe::measure_z;{} pub observe fn main()->Bit{{measure_z(prepare())}}",
+            text.replace("fn main()", "fn prepare()")
+        );
+        let root = SourceRoot::new(&adapter);
+        check_project(&root.0).unwrap();
+        let observed = compile_project(&root.0).unwrap();
+        let distribution =
+            qleisli::sim::run_closed(&observed, qleisli::sim::SimulationLimits::default()).unwrap();
+        assert_eq!(distribution[&vec![false]], 1.0);
+    }
+    assert_eq!(bodies[0], bodies[1]);
+}
+
+#[test]
+fn adopted_isometry_assertion_does_not_override_observation_or_seed_inference() {
+    use qleisli::frontend::compile::{ErrorCode, check_project};
+    let observing = include_str!(
+        "fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/observing-assertion.qli"
+    );
+    let error =
+        ParsedProgram::parse(BTreeMap::from([("main".into(), observing.into())])).unwrap_err();
+    assert_eq!(error.code(), "effect");
+    assert!(error.message().contains("body effect `Observe`"));
+    assert_eq!(
+        check_project(&SourceRoot::new(observing).0)
+            .unwrap_err()
+            .code,
+        ErrorCode::Effect
+    );
+    let pure = "pub isometry fn main(q:Q<Bit>)->Q<Bit>{q}";
+    let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), pure.into())])).unwrap();
+    let fact = parsed.function_effect("main::main").unwrap();
+    assert_eq!(fact.inferred(), Effect::Unitary);
+    assert_eq!(fact.asserted(), Some(Effect::Iso));
+}
+
+#[test]
+fn adopted_isometry_cli_retains_scalar_phase_and_the_actual_scope() {
+    let text = "use std::quantum::{init0,phase_eighth};pub isometry fn main()->Q<Bit>{phase_eighth(init0())}";
+    let root = SourceRoot::new(text);
+    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .args(["--format=json", "run", "--entry=main::main"])
+        .arg(format!(
+            "--module=main={}",
+            root.0.join("main.qli").display()
+        ))
+        .arg(format!("--lean-kernel={}", kernel().display()))
+        .output()
+        .unwrap();
+    let text = result(output, "run", true, true);
+    assert!(text.contains("\"source_meaning_verified\":false"));
+    assert!(text.contains("\"execution_authority\":\"checked-produced-ir\""));
+    amplitudes(&text, &[[std::f64::consts::FRAC_1_SQRT_2; 2], [0.0, 0.0]]);
+}
+
+#[test]
 fn isometry_cli_check_preserves_inferred_effect_and_actual_verification_scope() {
     for name in [
         "closed-zero",

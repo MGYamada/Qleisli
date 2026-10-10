@@ -5,7 +5,7 @@ use std::quantum::cnot;
 use std::observe::measure_z;
 
 /// Prepare (|00> + |11>)/sqrt(2), returning both distinct owners.
-pub iso fn prepare() -> (Q<Bit>, Q<Bit>) {
+pub isometry fn prepare() -> (Q<Bit>, Q<Bit>) {
     cnot(h(init0()), init0())
 }
 

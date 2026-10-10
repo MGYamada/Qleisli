@@ -66,7 +66,7 @@ and runtime preservation links are already proved.
 
 | Entry | Current signature; effect | Meaning, owners and lowering provenance |
 | --- | --- | --- |
-| `std::quantum::init0` | `() -> Q<Bit>`; Iso | Introduces a fresh owner/wire in zero. Emits `RawOp::Init0`; no input-state promise about other owners. |
+| `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Introduces a fresh owner/wire in zero. Emits `RawOp::Init0`; no input-state promise about other owners. |
 | `std::quantum::h` | `Q<Bit> -> Q<Bit>`; Unitary | Exact Hadamard, `H|b> = (|0> + (-1)^b|1>)/√2`; emits `Gate(H)` and a fresh output token on the same wire. |
 | `std::quantum::x` | `Q<Bit> -> Q<Bit>`; Unitary | `|b> ↦ |b xor 1>` with amplitude +1; emits `Gate(X)`. |
 | `std::quantum::z` | `Q<Bit> -> Q<Bit>`; Unitary | `|b> ↦ (-1)^b|b>`; emits `Gate(Z)`. |
@@ -113,7 +113,7 @@ parameters below are static natural arguments.
 | `std::quantum::split` | `Q<(A,B)> -> (Q<A>,Q<B>)`; Unitary | Exact coefficient +1 via existing structural `split_tuple`. Consumes one binary-product owner and returns two fresh ordered owners, retaining each complete basis tree and its axes. |
 | `std::quantum::join` | Two arguments `(Q<A>,Q<B>) -> Q<(A,B)>`; Unitary | Exact coefficient +1 via existing structural `join_tuple`. Consumes two distinct owners and returns a fresh owner over their ordered concatenated axes. Neither argument need be separable from the other or from a retained reference. |
 | `std::quantum::controlled_phase` | Static `[j,k]`; `(Q<Bit>, Q<Bit>) -> (Q<Bit>, Q<Bit>)`; Unitary | Controlled application of that exact phase, with the first owner as control; both owners return in order. |
-| `std::quantum::init0` | `() -> Q<Bit>`; Iso | Fresh-zero preparation in the instrument profile. The current lowerer rejects initialization after observation where the needed preservation is unavailable. |
+| `std::quantum::init0` | `() -> Q<Bit>`; Isometry | Fresh-zero preparation in the instrument profile. The current lowerer rejects initialization after observation where the needed preservation is unavailable. |
 | `std::observe::measure_z` | `Q<Bit> -> Bit`; Observe | Consumes the owner and appends the ordered readout result to the instrument proposal. |
 | `std::registers::take_bit` | Static `[n,k]`; `Q<Bits<n>> -> (Q<Bit>, Q<Bits<n-1>>)`; Unitary | Removes axis `k` into the first returned owner; the remaining axes keep their order. Requires `k < n`. Emits a structural `take_bit` proposal. |
 | `std::registers::put_bit` | Static `[n,k]`; `(Q<Bit>, Q<Bits<n-1>>) -> Q<Bits<n>>`; Unitary | Inserts the first owner's axis at position `k` in the remaining ordered axes. Requires `k < n`; emits structural `put_bit`. |

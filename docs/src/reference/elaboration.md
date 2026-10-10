@@ -362,7 +362,7 @@ partition and reconstruction under the
 `take_bit`/`put_bit` call or infer an access mode.
 
 Ordinary literals do not prepare quantum states. `init0` retains its explicit
-Iso primitive contract; `basis` is a coherent map, not arbitrary state-preparation
+Isometry primitive contract; `basis` is a coherent map, not arbitrary state-preparation
 sugar. Beyond explicit selected-place access, no implicit view partition or
 reassembly is admitted. No excl/ctrl insertion, arbitrary wire permutation or
 cleanup is admitted here. Add conveniences only after their

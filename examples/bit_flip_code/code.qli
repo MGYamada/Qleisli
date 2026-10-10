@@ -4,7 +4,7 @@ use std::quantum::split;
 use std::quantum::join;
 use std::measurement::parity_zz;
 
-pub iso fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
+pub isometry fn encode(q: Q<Bit>) -> Q<((Bit, Bit), Bit)> {
     basis q as a { ((a, a), a) }
 }
 

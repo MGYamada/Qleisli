@@ -198,13 +198,13 @@ source-step comparison nor general lowering preservation follows merely from
 an accepted proposal. See [selected-source execution](type-model.md#selected-source-execution)
 for the remaining invocation and checking-profile boundaries.
 
-Principal Iso source roots in the selected hierarchy use the existing
+Principal Isometry source roots in the selected hierarchy use the existing
 `check_instrument_native` boundary for fresh-zero preparation, checked unitary
 evolution and a readout with zero measurements. The quantum entry/result trees,
 zero-width owners and complete live frame remain part of the proposal and its
 initialization-move comparison. At most one ordinary `Bits<0>` result may
 accompany the quantum results; the transport's empty outcome does not create
-a source Observe effect. Iso execution returns its single unnormalized branch
+a source Observe effect. Isometry execution returns its single unnormalized branch
 with scalar phase retained. Sampling requires a principal Observe source root,
 independently of the chosen native transport or optional source annotation.
 

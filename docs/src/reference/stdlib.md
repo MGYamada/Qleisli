@@ -87,7 +87,7 @@ of zero physical routing cost.
 
 These rows are interface descriptions, not declaration syntax or new function
 types. Runtime principal effects are derived from checked bodies under
-`Unitary <= Iso <= Observe`, separately from optional effect assertions.
+`Unitary <= Isometry <= Observe`, separately from optional effect assertions.
 Classical functions have total ordinary meaning and may also receive ordinary
 runtime values, including already measured Bits. They preserve the effects of
 their evaluated arguments and cannot inspect live quantum owners. Their truth

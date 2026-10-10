@@ -70,7 +70,7 @@ the output labels and axis order. No implicit reassociation, flattening,
 same-width conversion or axis permutation is inserted.
 
 Injectivity makes this an isometry. A bijection between equal finite domains
-is unitary; a map into a larger basis space contributes Iso effect. The
+is unitary; a map into a larger basis space contributes Isometry effect. The
 common source checker records an injectivity obligation and determines its
 effect conservatively from the available exact basis/width premises. Equal
 width is an effect fact, not injectivity evidence. An unresolved check cannot

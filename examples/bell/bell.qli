@@ -1,3 +1,3 @@
-pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
+pub isometry fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
     basis q as x { (x, x) }
 }

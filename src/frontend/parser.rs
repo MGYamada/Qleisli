@@ -311,7 +311,7 @@ impl Parser {
             FnKind::Inferred
         } else {
             return Err(self.error(
-                "expected `fn`, `classical fn`, `iso`, `unitary`, `observe`, or `meaning` after `pub`",
+                "expected `fn`, `classical fn`, `isometry`, `unitary`, `observe`, or `meaning` after `pub`",
             ));
         };
         self.expect(&TokenKind::Fn)?;

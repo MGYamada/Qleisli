@@ -1,0 +1,3 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::init0;
+pub isometry fn main() -> Q<Bit> { init0() }

@@ -75,7 +75,7 @@ can discard, release, reset or uncompute a live owner implicitly.
 
 Early `return q`, residual propagation `q?`, runtime `panic!`, `assert!` and
 `unreachable!` macro edges, unwinding, hidden abort and partial quantum
-functions are not admitted. This applies to Unitary, Iso and Observe bodies;
+functions are not admitted. This applies to Unitary, Isometry and Observe bodies;
 an observing effect does not authorize a hidden exit. Syntax refusals explain
 the final-expression alternative and retain the original token's byte span.
 Use explicit ordinary branches, admitted coherent control and finite folds
@@ -99,7 +99,7 @@ checker/transport's fail-closed refusal is likewise not a source-level exit.
 ## Checking failures and quantum execution
 
 Within the declared finite model, a supported verified quantum-core operation
-has no implicit exceptional execution edge. This applies to Unitary, Iso and
+has no implicit exceptional execution edge. This applies to Unitary, Isometry and
 Observe: measurement supplies its specified ordinary outcome and instrument,
 not permission to panic, unwind, abort, partially return or abandon an owner.
 This totality requirement is the adopted failure contract; it is not a claim
@@ -152,18 +152,34 @@ assumptions; the core failure contract does not prove host panic freedom.
 
 ## Ordinary function effects and assertions
 
-An ordinary body-bearing function may use `fn`, `unitary fn`, `iso fn` or
+An ordinary body-bearing function may use `fn`, `unitary fn`, `isometry fn` or
 `observe fn`. Its principal quantum effect is derived from the completely
 checked body and checked callees at fixed ordinary inputs. The order is
-`Unitary <= Iso <= Observe`; composition takes the least upper bound. Copying
+`Unitary <= Isometry <= Observe`; composition takes the least upper bound. Copying
 an ordinary Bit does not copy a quantum owner or add a quantum effect.
 
 An optional prefix is a checked upper-bound assertion, never an inference
-seed. A body inferred as Observe cannot assert Unitary or Iso. A body inferred
-as Unitary may carry an Iso or Observe assertion, but its principal effect
+seed. A body inferred as Observe cannot assert Unitary or Isometry. A body inferred
+as Unitary may carry an Isometry or Observe assertion, but its principal effect
 remains Unitary for calls, provider eligibility and checked interface metadata.
 Type, ownership, access and termination checks still apply independently;
 an annotation cannot supply a missing check or arbitrary mathematical Meaning.
+
+The selected vocabulary in [#57](https://github.com/MGYamada/Qleisli/issues/57)
+is **isometry**: `V†V = I_input`, without a claim of surjectivity or executable
+inverse/control access. Zero-state preparation is an isometry but not a unitary
+between its different input/output dimensions. A unitary additionally satisfies
+`VV† = I_output`. In categorical terminology these are a dagger-monomorphism
+and a dagger-isomorphism, respectively.
+
+The unpublished migration currently accepts the old source prefix `iso` through
+the same checked assertion. It is a temporary migration route, not the final
+0.3.0 compatibility contract; new source uses `isometry`. Retirement of the old
+prefix and migration of public effect identifiers/diagnostics remain required
+under #57. Existing versioned QIRF effect tags retain the spelling `"iso"`;
+source vocabulary does not silently change that transport format. During this
+stage the public Rust effect variant and Debug-based effect diagnostics still
+use `Iso`; the Reference's `Isometry` names the selected semantic class.
 
 Both arms and the body of a zero-iteration static fold participate in common
 checking and effect inference. A decreasing runtime self-call uses the least
@@ -195,7 +211,7 @@ source-only `doc` command and `render_markdown` keep their explicit lack of
 semantic checking and do not manufacture inferred facts.
 
 An operation provider selected by the host has the same principal-Unitarity
-requirement as a source-selected provider. An Observe or Iso body rejects with
+requirement as a source-selected provider. An Observe or Isometry body rejects with
 an effect/semantic error and the unsupported external-justification explanation.
 A principal-Unitary body with a broader assertion remains eligible, subject to
 its separate type, ownership, access and native checks. A provider input/output
@@ -261,7 +277,7 @@ The existing finite keywords are reserved in the common grammar, including
 identifier positions formerly treated contextually by the sized parser:
 `use`, `meaning`, `static`, `Op`, `requires`, `Apply`, `Adjoint`, `Controlled`,
 `permutation_by`, `phase_by`, `checked_op`, `bind_op`, `inverse_op`, `then_op`, `tensor_op`,
-`controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `classical`, `basis`, `iso`, `unitary`,
+`controlled_op`, `repeat_op`, `conjugate_op`, `pub`, `classical`, `basis`, `isometry`, `iso`, `unitary`,
 `observe`, `fn`, `let`, `if`, `else`, `qfor`, `do`, `pure`, `with_computed`,
 `apply_contract`, `adjoint`, `repeat_static`, `qif`, `true`, `false`, `not`,
 `xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits

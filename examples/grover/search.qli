@@ -9,7 +9,7 @@ pub unitary fn step(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {
 }
 
 // N = 4, one marked input: exactly one amplification step.
-pub iso fn search_one() -> Q<(Bit, Bit)> {
+pub isometry fn search_one() -> Q<(Bit, Bit)> {
     let prepared = hadamard2(join(init0(), init0()));
     step(prepared)
 }

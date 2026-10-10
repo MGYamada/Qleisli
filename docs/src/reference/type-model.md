@@ -387,13 +387,13 @@ so `Op<A -> B, M>` is unambiguous. Both ports use only preceding static binders
 and undergo ordered substitution. Equal width does not identify distinct trees.
 
 Given `U: Op<A -> B>` and `requires Applicable(U)`, applying `U` consumes one
-`Q<A>` owner and returns one `Q<B>` owner, with an Iso upper effect bound for
+`Q<A>` owner and returns one `Q<B>` owner, with an Isometry upper effect bound for
 general ports. When the common exact-tree judgment establishes `A = B`, the
 explicit form retains the same Unitary bound as its endomorphic abbreviation.
 Preparation is the ordinary `Unit -> A` case; `Q<Unit>` remains a logical
 owner. A concrete provider must be an ordinary unary quantum function whose
-independently inferred principal effect is at most Iso. An annotation cannot
-make an Observe body pure or make an Iso body Unitary.
+independently inferred principal effect is at most Isometry. An annotation cannot
+make an Observe body pure or make an Isometry body Unitary.
 
 `Adjointable(U)` requires a principal-Unitary provider and a supported reverse
 implementation; an adjoint exchanges the ports. `Controllable(U)` additionally
@@ -796,7 +796,7 @@ request or named-QPE provider fixes the hierarchy route; combining one with
 explicit Raw rejects before native checking. After a route is selected, its
 lowering or native failure propagates without retrying a weaker route.
 
-The selected hierarchy admits a principal Iso root with quantum entry values
+The selected hierarchy admits a principal Isometry root with quantum entry values
 and quantum results, optionally accompanied by one ordinary `Bits<0>` result.
 Ordinary Unit result ports remain omitted as described above. The body must
 fit the existing preparation and pure-operation profile: fresh zero
@@ -804,20 +804,23 @@ initialization, followed by checked unitary hierarchy operations, with no
 observation. Lowering uses the existing initialization/evolution/readout
 transport with zero measurements. Its single empty outcome is a transport
 carrier; it introduces no source Observe effect, measurement or conversion
-between `Unit` and `Bits<0>`. The source effect remains Iso even when an
+between `Unit` and `Bits<0>`. The source effect remains Isometry even when an
 optional prefix asserts the broader Observe bound.
 
-Iso `check` reports the `sized-isometry` profile. Iso `run` returns the residual
+Isometry `check` reports the `sized-isometry` profile. Isometry `run` returns the residual
 quantum width and the single branch's unnormalized complex coefficients,
 without removing scalar phase. A retained `Q<Unit>` owner, explicit
 `unit`/`finish` work and every live caller frame retain their original
 ownership and phase obligations. `sample` and named-QPE selection require a
-principal Observe entry; a broader annotation does not turn Iso into Observe.
+principal Observe entry; a broader annotation does not turn Isometry into Observe.
 This adapter introduces no native primitive or new theorem. Raw supports
-retained quantum Unit inputs/returns and exact `phase_eighth`, but still rejects
-the structural Unit introduction/elimination maps; selecting Raw does not
-supply a second implementation of these maps. The existing source, native
-and execution proof limits continue to apply.
+retained quantum Unit inputs/returns, exact `phase_eighth` and the explicit
+structural Unit introduction/elimination maps. The latter lower to
+`RawOp::PackUnit` and `RawOp::UnpackUnit`: their zero-axis owner transitions
+retain the complete live caller frame and scalar phase, with fresh native
+checking. Raw execution still has the root-signature restrictions below;
+acceptance of these maps does not make quantum-result Raw execution available.
+The existing source, native and execution proof limits continue to apply.
 
 Raw checking retains the original source signature. Raw `run` and `sample`
 require zero declared runtime parameters and no quantum result. A Unit

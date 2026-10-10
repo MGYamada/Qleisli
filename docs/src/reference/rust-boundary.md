@@ -76,7 +76,7 @@ Current generic Basis bodies undergo the same complete source checks as other
 bodies, including declarations that the selected entry does not call.
 
 Preparation is an explicit operation with its individual contract. `init0()`
-creates a fresh zero qubit with Iso action. `unit(())` creates one fresh
+creates a fresh zero qubit with Isometry action. `unit(())` creates one fresh
 zero-axis `Q<Unit>` owner with exact coefficient `+1` and Unitary action;
 it allocates no physical wire. `empty()` introduces the separately typed
 `Q<Bits<0>>` owner. Neither zero physical width nor an ordinary Unit argument
@@ -87,7 +87,7 @@ General clean/dirty facilities and quantitative resource certification retain
 their separate pending obligations; a source effect is not a resource bound.
 
 An ordinary function may be named `default`. For example, this checked function
-fragment has explicit preparation and principal Iso effect:
+fragment has explicit preparation and principal Isometry effect:
 
 ```qli
 use std::quantum::init0;

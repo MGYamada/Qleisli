@@ -5,6 +5,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [isometry vocabulary study](isometry-vocabulary-v030/session.json) retains
+two desired sources and real parser refusals before implementing #57's adopted
+spelling. Later checks distinguish preparation from a false observing-body
+assertion; source spelling, transport tags and full terminology migration are
+separate boundaries.
+
 The [general pure arrow study](general-arrows-v030/README.md) retains six first
 sources, a manifest-only repair and twelve actual refusals. The repaired
 manifest exposes the unsupported Arrow token; downstream laws remain untested.
