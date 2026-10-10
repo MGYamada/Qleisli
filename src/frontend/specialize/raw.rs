@@ -501,7 +501,7 @@ fn check_profile(
                     "finite source lowering requires supported intermediate value types",
                 ));
             }
-            if step.boolean().is_some() {
+            if step.boolean().is_some() || step.partition().is_some() {
                 continue;
             }
             if step.called_definition().is_some()
@@ -883,19 +883,53 @@ impl Emitter<'_> {
         step: &super::SourceStep,
         inputs: &[Vec<Atom>],
     ) -> Result<Vec<Atom>> {
-        use crate::ir::RawOp;
-        let span = step.span();
         let [n, k] = step.natural_arguments() else {
             return Err(invalid(
-                span,
+                step.span(),
                 "register repartition loses its exact Nat arguments",
             ));
         };
         if *n > 8 || k >= n {
-            return Err(invalid(span, "register repartition requires k < n <= 8"));
+            return Err(invalid(
+                step.span(),
+                "register repartition requires k < n <= 8",
+            ));
         }
-        let width = *n as usize;
-        let position = *k as usize;
+        self.partition_register(
+            super::elaborate::PlacePartition {
+                taking: take,
+                width: *n,
+                start: *k,
+                end: k + 1,
+                bit: true,
+            },
+            step,
+            inputs,
+        )
+    }
+    fn partition_register(
+        &mut self,
+        p: super::elaborate::PlacePartition,
+        step: &super::SourceStep,
+        inputs: &[Vec<Atom>],
+    ) -> Result<Vec<Atom>> {
+        use crate::ir::RawOp;
+        let span = step.span();
+        if p.start > p.end || p.end > p.width || p.width > 8 || (p.bit && p.end - p.start != 1) {
+            return Err(invalid(
+                span,
+                "place repartition loses its exact ordered bounds",
+            ));
+        }
+        let n = p.width;
+        let selected_width = p.end - p.start;
+        let selected_basis = if p.bit {
+            SourceType::bit()
+        } else {
+            SourceType::bits(selected_width)
+        };
+        let width = n as usize;
+        let position = p.start as usize;
         self.reserve_operations(3, span)?;
         self.cells = self.cells.saturating_add(12 + width * 3);
         if self.cells > MAX_CELLS {
@@ -905,7 +939,7 @@ impl Emitter<'_> {
                 "register repartition exceeds value-cell bounds",
             ));
         }
-        if take {
+        if p.taking {
             let [input] = inputs else {
                 return Err(invalid(span, "take_bit requires one original owner"));
             };
@@ -915,22 +949,23 @@ impl Emitter<'_> {
                 .registers
                 .remove(&slot)
                 .ok_or_else(|| invalid(span, "take_bit source owner is absent"))?;
-            if register.basis != SourceType::bits(*n) || register.wires.len() != width {
+            if register.basis != SourceType::bits(n) || register.wires.len() != width {
                 return Err(invalid(span, "take_bit changes its original register type"));
             }
             let prefix = self.raw.token();
             let tail = self.raw.token();
             let suffix = self.raw.token();
-            let bit = self
-                .raw
-                .register(SourceType::bit(), vec![register.wires[position]]);
+            let bit = self.raw.register(
+                selected_basis.clone(),
+                register.wires[position..p.end as usize].to_vec(),
+            );
             let rest = self.raw.register(
-                SourceType::bits(n - 1),
+                SourceType::bits(n - selected_width),
                 register
                     .wires
                     .iter()
                     .enumerate()
-                    .filter_map(|(i, w)| (i != position).then_some(*w))
+                    .filter_map(|(i, w)| (i < position || i >= p.end as usize).then_some(*w))
                     .collect(),
             );
             self.raw.operations.extend([
@@ -938,13 +973,13 @@ impl Emitter<'_> {
                     input: register.token,
                     left: prefix,
                     right: tail,
-                    left_bits: *k as u8,
+                    left_bits: p.start as u8,
                 },
                 RawOp::Split {
                     input: tail,
                     left: self.raw.registers[&bit].token,
                     right: suffix,
-                    left_bits: 1,
+                    left_bits: selected_width as u8,
                 },
                 RawOp::Join {
                     left: prefix,
@@ -972,16 +1007,16 @@ impl Emitter<'_> {
                 .registers
                 .remove(&rest)
                 .ok_or_else(|| invalid(span, "put_bit register owner is absent"))?;
-            if bit.basis != SourceType::bit()
-                || bit.wires.len() != 1
-                || rest.basis != SourceType::bits(n - 1)
-                || rest.wires.len() != width - 1
+            if bit.basis != selected_basis
+                || bit.wires.len() != selected_width as usize
+                || rest.basis != SourceType::bits(n - selected_width)
+                || rest.wires.len() != width - selected_width as usize
             {
                 return Err(invalid(span, "put_bit changes its original owner types"));
             }
             let mut wires = rest.wires;
-            wires.insert(position, bit.wires[0]);
-            let output = self.raw.register(SourceType::bits(*n), wires);
+            wires.splice(position..position, bit.wires);
+            let output = self.raw.register(SourceType::bits(n), wires);
             let prefix = self.raw.token();
             let suffix = self.raw.token();
             let head = self.raw.token();
@@ -990,7 +1025,7 @@ impl Emitter<'_> {
                     input: rest.token,
                     left: prefix,
                     right: suffix,
-                    left_bits: *k as u8,
+                    left_bits: p.start as u8,
                 },
                 RawOp::Join {
                     left: prefix,
@@ -1116,6 +1151,8 @@ impl Emitter<'_> {
                                 .boolean(operation, &operands)
                                 .map_err(state_error)?,
                         )]
+                    } else if let Some(partition) = step.partition() {
+                        self.partition_register(partition, step, &inputs)?
                     } else if let Some(child) = step.called_definition() {
                         self.invoke(child, inputs, depth + 1, span)?
                     } else if let Some(operation) = step.operation() {

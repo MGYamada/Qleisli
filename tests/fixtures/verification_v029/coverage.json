@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "de02ecf21403dcee43a50b0ea6973c0eede72c7c018dc92ac73f7292906f15b5",
+  "surface_sha256": "7f630dd4b2912a8390809bf5338861048903b65b8a509330fd4460b9b575f35f",
   "groups": [
     {
       "id": "raw-core",
@@ -2301,9 +2301,12 @@
           ]
         },
         {
-          "path": "src/frontend/specialize/projection.rs",
+          "path": "src/frontend/specialize/elaborate/places.rs",
           "markers": [
-            "indexed quantum access lowering is not yet implemented"
+            "fn partition_step(",
+            "fn place_call(",
+            "RuntimeInputs::Values(values)",
+            "records.into_iter().zip(returned).rev()"
           ]
         },
         {
@@ -2428,7 +2431,31 @@
         },
         {
           "path": "tests/exclusive_access.rs",
-          "test": "indexed_place_profiles_refuse_unconnected_lowering_explicitly"
+          "test": "indexed_place_profiles_preserve_the_common_judgment_before_transport"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_place_replay_rejects_native_valid_paired_partition_faults"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_place_inverse_keeps_original_phase_axis"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_indexed_places_preserve_exact_axis_phase_and_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "joint_places_reassemble_updated_values_in_original_axis_order"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "slices_keep_empty_views_and_scalar_phase_during_joint_access"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_static_places_choose_raw_before_native_acceptance"
         },
         {
           "path": "tests/exclusive_access.rs",

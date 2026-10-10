@@ -363,25 +363,32 @@ impl Projection<'_, '_> {
                 callee,
                 static_args,
                 args,
-            } => {
-                if let Some(arg) = args.iter().find(|arg| arg.selection.is_some()) {
-                    return Err(unsupported(
-                        arg.value.span,
-                        "indexed quantum access lowering is not yet implemented",
-                    ));
-                }
-                ExprKind::AccessCall(
-                    self.ident(callee)?,
-                    static_args
-                        .iter()
-                        .map(|value| self.argument(value))
-                        .collect::<Result<_>>()?,
-                    args.iter()
-                        .map(|arg| self.expr(&arg.value))
-                        .collect::<Result<_>>()?,
-                    args.iter().map(|arg| arg.access).collect(),
-                )
-            }
+            } => ExprKind::AccessCall(
+                self.ident(callee)?,
+                static_args
+                    .iter()
+                    .map(|value| self.argument(value))
+                    .collect::<Result<_>>()?,
+                args.iter()
+                    .map(|arg| self.expr(&arg.value))
+                    .collect::<Result<_>>()?,
+                args.iter().map(|arg| arg.access).collect(),
+                args.iter()
+                    .map(|arg| {
+                        arg.selection
+                            .as_ref()
+                            .map(|selection| match selection {
+                                source::AxisSelection::Index(index) => {
+                                    self.natural(index).map(AxisSelection::Index)
+                                }
+                                source::AxisSelection::Range { start, end } => Ok(
+                                    AxisSelection::Range(self.natural(start)?, self.natural(end)?),
+                                ),
+                            })
+                            .transpose()
+                    })
+                    .collect::<Result<_>>()?,
+            ),
             source::ExprKind::ApplyStatic { operation, input } => {
                 ExprKind::Apply(self.argument(operation)?, Box::new(self.expr(input)?))
             }

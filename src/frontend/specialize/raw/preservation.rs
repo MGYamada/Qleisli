@@ -771,8 +771,41 @@ impl Replay<'_, '_> {
         if k >= n || *n > 8 {
             return Err(site.invalid("register repartition loses its static bounds"));
         }
-        self.charge(12 + *n as usize * 3, site)?;
-        if kind == Primitive::TakeBit {
+        self.partition_register(
+            super::super::elaborate::PlacePartition {
+                taking: kind == Primitive::TakeBit,
+                width: *n,
+                start: *k,
+                end: k + 1,
+                bit: true,
+            },
+            step,
+            inputs,
+            site,
+        )
+    }
+    fn partition_register(
+        &mut self,
+        p: super::super::elaborate::PlacePartition,
+        step: &SourceStep,
+        inputs: &[Argument<'_>],
+        site: Site<'_>,
+    ) -> Result<Vec<Atom>> {
+        let n = p.width;
+        let size = p
+            .end
+            .checked_sub(p.start)
+            .ok_or_else(|| site.invalid("place partition reverses its ordered bounds"))?;
+        if p.end > n || n > 8 || (p.bit && size != 1) {
+            return Err(site.invalid("place partition loses its exact static bounds"));
+        }
+        let selected = SourceType::quantum(if p.bit {
+            SourceType::bit()
+        } else {
+            SourceType::bits(size)
+        });
+        self.charge(12 + n as usize * 3, site)?;
+        if p.taking {
             let [input] = inputs else {
                 return Err(site.invalid("take_bit changes source arity"));
             };
@@ -780,22 +813,23 @@ impl Replay<'_, '_> {
                 return Err(site.invalid("take_bit requires one original quantum owner"));
             };
             let output = SourceType::tuple(vec![
-                SourceType::quantum(SourceType::bit()),
-                SourceType::quantum(SourceType::bits(n - 1)),
+                selected.clone(),
+                SourceType::quantum(SourceType::bits(n - size)),
             ]);
-            if input.ty != &SourceType::quantum(SourceType::bits(*n))
+            if input.ty != &SourceType::quantum(SourceType::bits(n))
                 || step.output().ty() != &output
-                || wires.len() != *n as usize
+                || wires.len() != n as usize
             {
                 return Err(
                     site.invalid("take_bit changes its exact original input or result tree")
                 );
             }
-            let (prefix, tail) = self.split_register(*token, wires, *k as usize, site)?;
+            let (prefix, tail) = self.split_register(*token, wires, p.start as usize, site)?;
             let Atom::Quantum(tail_token, tail_wires) = tail else {
                 unreachable!()
             };
-            let (bit, suffix) = self.split_register(tail_token, &tail_wires, 1, site)?;
+            let (bit, suffix) =
+                self.split_register(tail_token, &tail_wires, size as usize, site)?;
             let rest = self.join_register(prefix, suffix, site)?;
             Ok(vec![bit, rest])
         } else {
@@ -807,16 +841,16 @@ impl Replay<'_, '_> {
             else {
                 return Err(site.invalid("put_bit requires two original quantum owners"));
             };
-            if bit.ty != &SourceType::quantum(SourceType::bit())
-                || bit_wires.len() != 1
-                || rest.ty != &SourceType::quantum(SourceType::bits(n - 1))
-                || wires.len() != (n - 1) as usize
-                || step.output().ty() != &SourceType::quantum(SourceType::bits(*n))
+            if bit.ty != &selected
+                || bit_wires.len() != size as usize
+                || rest.ty != &SourceType::quantum(SourceType::bits(n - size))
+                || wires.len() != (n - size) as usize
+                || step.output().ty() != &SourceType::quantum(SourceType::bits(n))
             {
                 return Err(site.invalid("put_bit changes its exact original input or result tree"));
             }
             self.charge(1, site)?;
-            let (prefix, suffix) = self.split_register(*token, wires, *k as usize, site)?;
+            let (prefix, suffix) = self.split_register(*token, wires, p.start as usize, site)?;
             let head = self.join_register(prefix, bit.atoms[0].clone(), site)?;
             Ok(vec![self.join_register(head, suffix, site)?])
         }
@@ -1229,6 +1263,11 @@ impl Replay<'_, '_> {
                     return Err(site.invalid("Boolean source result or effect differs"));
                 }
                 vec![self.boolean(operation, &inputs, site)?]
+            } else if let Some(partition) = step.partition() {
+                if step_effect != Effect::Unitary {
+                    return Err(site.invalid("place partition changes its structural effect"));
+                }
+                self.partition_register(partition, step, &inputs, site)?
             } else if let Some(kind) = step.primitive_kind() {
                 self.primitive(kind, step, &inputs, site)?
             } else if let Some(child) = step.called_definition() {

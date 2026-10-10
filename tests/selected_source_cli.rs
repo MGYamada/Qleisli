@@ -737,6 +737,43 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
 }
 
 #[test]
+fn selected_static_places_choose_raw_before_native_acceptance() {
+    for call in [
+        "x(excl q[1]);",
+        "z(ctrl q[1]);",
+        "phase_eighth(ctrl q[0..0]);",
+    ] {
+        let files = SourceRoot::new(&format!(
+            "use std::quantum::{{x,z,phase_eighth}};pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{{{call}q}}"
+        ));
+        for explicit in [false, true] {
+            let mut command = selected("check", &files.0.join("main.qli"), "main::main");
+            command.arg(format!("--lean-kernel={}", kernel().display()));
+            if explicit {
+                command.arg("--ir-profile=raw");
+            }
+            let text = result(command.output().unwrap(), "check", true);
+            scope(&text, "main::main", "raw");
+        }
+        let mut command = selected("check", &files.0.join("main.qli"), "main::main");
+        command.args([
+            "--ir-profile=hierarchy",
+            "--lean-kernel=/missing/place-checker",
+        ]);
+        let text = result(command.output().unwrap(), "check", false);
+        assert!(
+            text.contains(if call.starts_with("x(") {
+                "static place partitions"
+            } else {
+                "ctrl source access requires independently bound basis-sector evidence"
+            }),
+            "{text}"
+        );
+        assert!(text.contains("\"code\":\"unsupported\""), "{text}");
+    }
+}
+
+#[test]
 fn selected_raw_control_checks_without_weakening_emission() {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("tests/fixtures/authoring_sessions/quantum-access-v030/attempt-04");

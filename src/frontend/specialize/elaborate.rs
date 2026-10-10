@@ -14,8 +14,58 @@ const MAX_CELLS: usize = 100_000;
 struct RuntimeCall<'a> {
     name: &'a Reference,
     arguments: &'a [Argument],
-    inputs: &'a [Expr],
+    inputs: RuntimeInputs<'a>,
     span: Span,
+}
+
+enum RuntimeInputs<'a> {
+    Expressions(&'a [Expr]),
+    Values(Vec<SourceValue>),
+}
+impl RuntimeInputs<'_> {
+    fn len(&self) -> usize {
+        match self {
+            Self::Expressions(v) => v.len(),
+            Self::Values(v) => v.len(),
+        }
+    }
+    fn evaluate(
+        self,
+        builder: &mut Builder<'_>,
+        scope: &mut Scope,
+        frame: &mut Frame,
+        depth: usize,
+    ) -> Result<Vec<SourceValue>> {
+        match self {
+            Self::Expressions(inputs) => inputs
+                .iter()
+                .map(|e| builder.expr(e, scope, frame, depth))
+                .collect(),
+            Self::Values(values) => Ok(values),
+        }
+    }
+}
+
+mod places;
+
+/// A typed untrusted adapter step, implemented only by existing structural IR.
+/// `start..end` refers to the current ordered parent, not physical addresses.
+#[derive(Clone, Copy, Debug)]
+pub(super) struct PlacePartition {
+    pub(super) taking: bool,
+    pub(super) width: u32,
+    pub(super) start: u32,
+    pub(super) end: u32,
+    pub(super) bit: bool,
+}
+impl PlacePartition {
+    fn selected_type(self) -> SourceType {
+        SourceType::quantum(if self.bit {
+            SourceType::bit()
+        } else {
+            SourceType::bits(self.end - self.start)
+        })
+    }
 }
 
 use crate::frontend::resolve::{DefId, Target};
@@ -211,6 +261,7 @@ pub struct SourceStep {
 }
 #[derive(Clone, Debug)]
 enum StepKind {
+    Partition(PlacePartition),
     Boolean(Boolean),
     Primitive(Primitive, Vec<u32>),
     Call {
@@ -278,12 +329,19 @@ impl SourceStep {
 
     pub fn kind(&self) -> &'static str {
         match self.kind {
+            StepKind::Partition(_) => "partition",
             StepKind::Boolean(_) => "boolean",
             StepKind::Primitive(..) => "primitive",
             StepKind::Call { .. } => "call",
             StepKind::Apply(_) => "apply",
             StepKind::Adjoint(_) => "adjoint",
             StepKind::Controlled(_) => "controlled",
+        }
+    }
+    pub(super) fn partition(&self) -> Option<PlacePartition> {
+        match self.kind {
+            StepKind::Partition(partition) => Some(partition),
+            _ => None,
         }
     }
     pub fn primitive(&self) -> Option<&str> {
@@ -1729,10 +1787,7 @@ impl Builder<'_> {
             span,
         } = call;
         if let Some(op) = name.get(&scope.operations).cloned() {
-            let values = inputs
-                .iter()
-                .map(|e| self.expr(e, scope, frame, depth))
-                .collect::<Result<_>>()?;
+            let values = inputs.evaluate(self, scope, frame, depth)?;
             return self.operation_step(StepKind::Apply(op), values, frame, span);
         }
         let target = self.resolve(name, scope, frame, span)?;
@@ -1773,10 +1828,7 @@ impl Builder<'_> {
                     natural(n, &scope.naturals, &mut self.cells, &mut self.calls)
                 })
                 .collect::<Result<Vec<_>>>()?;
-            let values: Vec<SourceValue> = inputs
-                .iter()
-                .map(|e| self.expr(e, scope, frame, depth))
-                .collect::<Result<_>>()?;
+            let values = inputs.evaluate(self, scope, frame, depth)?;
             let (types, output, effect) = primitive(
                 kind,
                 &naturals,
@@ -1805,10 +1857,7 @@ impl Builder<'_> {
             let output = definition.output.ty.clone();
             let effect = definition.effect;
             let peak = definition.peak_quantum;
-            let values = inputs
-                .iter()
-                .map(|e| self.expr(e, scope, frame, depth))
-                .collect::<Result<_>>()?;
+            let values = inputs.evaluate(self, scope, frame, depth)?;
             self.step(
                 StepKind::Call {
                     definition: id,
@@ -1907,7 +1956,12 @@ impl Builder<'_> {
                 }
                 Ok(SourceValue::tuple(values))
             }
-            ExprKind::AccessCall(name, arguments, inputs, accesses) => {
+            ExprKind::AccessCall(name, arguments, inputs, accesses, selections) => {
+                if selections.iter().any(Option::is_some) {
+                    return self.place_call(
+                        name, arguments, inputs, accesses, selections, scope, frame, depth, span,
+                    );
+                }
                 self.charge_cells(inputs.len().saturating_mul(3), span)?;
                 let mut owners = Vec::new();
                 let mut seen = BTreeSet::new();
@@ -1942,7 +1996,7 @@ impl Builder<'_> {
                     RuntimeCall {
                         name,
                         arguments,
-                        inputs,
+                        inputs: RuntimeInputs::Expressions(inputs),
                         span,
                     },
                     scope,
@@ -1987,7 +2041,7 @@ impl Builder<'_> {
                 RuntimeCall {
                     name,
                     arguments,
-                    inputs,
+                    inputs: RuntimeInputs::Expressions(inputs),
                     span,
                 },
                 scope,

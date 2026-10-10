@@ -270,6 +270,46 @@ impl Trace<'_, '_, '_> {
             }
             let output = if step.boolean().is_some() {
                 vec![Logical::Classical]
+            } else if let Some(p) = step.partition() {
+                let size = p.end.checked_sub(p.start).ok_or_else(|| {
+                    self.site
+                        .invalid("source place reverses its ordered interval")
+                })?;
+                if p.end > p.width || p.width > 8 || (p.bit && size != 1) {
+                    return Err(self.site.invalid("source place loses its static bounds"));
+                }
+                self.charge(4 + p.width as usize * 2)?;
+                if p.taking {
+                    let [input] = inputs.as_slice() else {
+                        return Err(self.site.invalid("source place changes extraction arity"));
+                    };
+                    let mut axes = self.owner(input)?;
+                    if axes.len() != p.width as usize {
+                        return Err(self
+                            .site
+                            .invalid("source place changes original parent width"));
+                    }
+                    let selected = axes.drain(p.start as usize..p.end as usize).collect();
+                    vec![Logical::Quantum(selected), Logical::Quantum(axes)]
+                } else {
+                    let [selected, rest] = inputs.as_slice() else {
+                        return Err(self
+                            .site
+                            .invalid("source place changes reconstruction arity"));
+                    };
+                    let selected = self.owner(selected)?;
+                    let mut axes = self.owner(rest)?;
+                    if selected.len() != size as usize
+                        || axes.len() + selected.len() != p.width as usize
+                        || selected.iter().any(|axis| axes.contains(axis))
+                    {
+                        return Err(self.site.invalid(
+                            "source place reconstruction changes or aliases ordered axes",
+                        ));
+                    }
+                    axes.splice(p.start as usize..p.start as usize, selected);
+                    vec![Logical::Quantum(axes)]
+                }
             } else if let Some(child) = step.called_definition() {
                 let callee = source
                     .definitions()

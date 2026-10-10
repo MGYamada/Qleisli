@@ -281,8 +281,9 @@ Names `excl` and `ctrl` remain ordinary identifiers outside argument markers.
 The current call form requires every runtime argument to use an access marker;
 mixed ordinary/access arguments, escaping handles and access-parameter
 declarations remain unimplemented. Indexed selections have a common AST and
-static bounds/disjointness judgment, but their concrete lowering is still
-unimplemented; see [static places](elaboration.md#static-ordered-axis-places-common-checking-stage).
+static bounds/disjointness judgment. Selected Raw lowering partitions and
+reassembles their updated owners; finite-project and hierarchical lowering
+remain unsupported. See [static places](elaboration.md#static-ordered-axis-places).
 Selected-source preparation
 retains `ctrl` roles as obligations with original source identities and spans.
 `ElaboratedProgram::lower_raw_with_kernel` and selected CLI Raw checking require

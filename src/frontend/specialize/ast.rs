@@ -124,7 +124,13 @@ pub(super) enum ExprKind {
     Name(Reference),
     Tuple(Vec<Expr>),
     Call(Reference, Vec<Argument>, Vec<Expr>),
-    AccessCall(Reference, Vec<Argument>, Vec<Expr>, Vec<QuantumAccess>),
+    AccessCall(
+        Reference,
+        Vec<Argument>,
+        Vec<Expr>,
+        Vec<QuantumAccess>,
+        Vec<Option<AxisSelection>>,
+    ),
     Apply(Argument, Box<Expr>),
     Adjoint(Argument, Box<Expr>),
     Controlled(Argument, Vec<Expr>),
@@ -137,6 +143,12 @@ pub(super) enum ExprKind {
         initial: Box<Expr>,
         body: Block,
     },
+}
+
+#[derive(Clone, Debug)]
+pub(super) enum AxisSelection {
+    Index(Natural),
+    Range(Natural, Natural),
 }
 #[derive(Clone, Debug)]
 pub(super) enum Statement {

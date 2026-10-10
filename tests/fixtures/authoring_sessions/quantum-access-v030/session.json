@@ -216,7 +216,11 @@
         "indexed-common-check/indexed-check.json",
         "indexed-common-check/slice-check.json",
         "indexed-common-check/explicit-roundtrip-check.json",
-        "indexed-common-check/explicit-control-check.json"
+        "indexed-common-check/explicit-control-check.json",
+        "indexed-selected-raw/indexed-check.json",
+        "indexed-selected-raw/slice-check.json",
+        "indexed-selected-raw/explicit-roundtrip-check.json",
+        "indexed-selected-raw/explicit-control-check.json"
       ]
     }
   ]

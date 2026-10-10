@@ -9,14 +9,16 @@ development milestones from the scope of their evidence.
 - Represent explicit indexed/slice quantum access in the common source AST.
   Check original static bounds, same-parent disjointness and exact selected
   callee interfaces without moving or duplicating the parent owner. Keep
-  control-sector obligations and refuse unconnected concrete lowering;
-  these places are not yet executable source support.
+  control-sector obligations. Selected Raw lowering partitions ordered axes,
+  applies the callee once and reconstructs parents from updated values using
+  existing Split/Join instructions. Independent replay rejects native-valid
+  wrong partitions, including identity round trips. Hierarchical and finite
+  project lowering of these places remain unsupported.
 
 - Lower explicit register `take_bit`/`put_bit` to existing Raw Split/Join
   instructions, preserving ordered axes and zero-width remainder owners.
   Independently replay their source partitions and reject native-valid
   substitutions, including a wrong partition whose round trip is identity.
-  Indexed and slice access lowering remains pending.
 
 - Center routine development on the shared local checks. Run hosted validation
   at explicit Issue-completion checkpoints instead of ordinary pushes/PR

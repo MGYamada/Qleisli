@@ -1547,6 +1547,13 @@ pub(super) fn hierarchy_eligibility(source: &ElaboratedProgram) -> Result<Hierar
     }
     for definition in source.definitions() {
         for step in definition.steps() {
+            if step.partition().is_some() {
+                return Ok(HierarchyEligibility::Ineligible(Error::new(
+                    "unsupported",
+                    step.span(),
+                    "hierarchical transport does not support static place partitions; select the Raw profile",
+                ).in_module(step.module())));
+            }
             if step.boolean().is_some() {
                 return Ok(HierarchyEligibility::Ineligible(Error::new(
                     "unsupported",

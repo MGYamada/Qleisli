@@ -89,7 +89,7 @@ and [functional abstraction](functional-boundary.md).
 
 See [whole-owner exclusive calls](rust-boundary.md#whole-owner-exclusive-calls).
 
-### Static ordered-axis places: common checking stage
+### Static ordered-axis places
 
 The common AST represents `excl q[i]`, `ctrl q[i]` and explicit half-open
 `q[a..b]` selections as a parent-owner occurrence and static selector, with
@@ -115,13 +115,22 @@ effects and ownership are still checked in unexecuted code. Runtime indices,
 unproved bounds/disjointness, overflow and budget exhaustion fail at compile
 time; there is no runtime bounds panic.
 
-**Lowering remains incomplete.** Selected-source instantiation explicitly
-refuses an indexed-access body; finite lowering also refuses this profile.
-No selector is silently treated as whole-owner access. Connecting checked
-places to exact partition/application/reassembly, source-step replay and fresh
-native control checking remains required before these programs are executable.
-This stage supplies neither native acceptance nor a general source/phase,
-reference-preservation or quantitative-resource proof.
+Selected Raw lowering supports concrete places within its existing finite
+profile. It partitions each parent into ordered selected and remainder owners,
+calls the callee once with all selected arguments, then reconstructs each
+parent in reverse extraction order using the updated returned values. Empty
+selected and remainder owners retain their logical identities and scalar phase.
+Existing Split/Join instructions perform these partitions without physical
+SWAPs, preparation, measurement or cleanup. Independent source-step replay
+checks the actual partitions and reassembly; native validity alone cannot
+establish the original place, even when a wrong round trip denotes identity.
+`ctrl` additionally requires fresh native sector checking of the retained
+concrete callee. Checker-free control emission remains unsupported.
+
+Auto profile selection chooses Raw for partition steps before native checking.
+Explicit hierarchical and finite-project lowering refuse this profile; no
+selector is silently treated as whole-owner access. These bounded checks are
+not a general source/phase, reference-preservation or quantitative-resource proof.
 
 ### Ordinary expressions and classical functions
 
