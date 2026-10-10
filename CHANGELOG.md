@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Explain unsupported Rust reference notation and the distinction between
+  arbitrary coherent `excl` access and basis-sector-preserving `ctrl` access.
+  Share the control explanation across native source adapters; preserve refusal
+  categories, original spans, phase-kickback permission and native decisions.
+
 - Represent explicit indexed/slice quantum access in the common source AST.
   Check original static bounds, same-parent disjointness and exact selected
   callee interfaces without moving or duplicating the parent owner. Keep

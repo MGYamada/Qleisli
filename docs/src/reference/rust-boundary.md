@@ -308,6 +308,14 @@ success substitutes for those checks. Diagnostics retain the original call's
 module and location. This limited implementation does not complete the general
 access Issues or establish a Lean source-preservation theorem.
 
+Unsupported Rust reference notation receives a syntax explanation: for quantum
+access, `excl` grants arbitrary coherent access, while `ctrl` requires the
+computational-basis sector condition. The lexer does not infer that the
+expression is quantum and does not rewrite `&` into `ctrl`. Native control
+refusals explain that control is not read-only, phase kickback is permitted,
+and arbitrary coherent access requires `excl`; this guidance does not bypass
+effect, alias or interface checks.
+
 ### Whole-owner coherent control
 
 The finite project checker/compiler admits `cnot(ctrl c, excl t)` using the

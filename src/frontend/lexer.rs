@@ -271,6 +271,10 @@ fn scan(
             message: match error.kind {
                 ErrorKind::Forbidden(message) => message.into(),
                 ErrorKind::Unexpected('?') => "`?` residual propagation is unsupported in the verified quantum core; use a final expression and explicit branches that preserve every quantum owner".into(),
+                ErrorKind::Unexpected('&') => format!(
+                    "unexpected character `&`; {}",
+                    super::diagnostic::UNSUPPORTED_REFERENCE_EXPLANATION
+                ),
                 ErrorKind::Unexpected(ch) => format!("unexpected character `{ch}`"),
                 ErrorKind::UnterminatedComment => "unterminated block comment".into(),
                 ErrorKind::CommentDepth(limit) => format!("comment nesting exceeds {limit}"),

@@ -221,7 +221,10 @@ impl Replay<'_, '_> {
             .map_err(|error| {
                 site.error(
                     error.code,
-                    format!("ctrl requires exact computational-basis sector preservation: {error}"),
+                    format!(
+                        "ctrl requires exact computational-basis sector preservation: {error}; {}",
+                        crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
+                    ),
                 )
             })?;
         Ok(())

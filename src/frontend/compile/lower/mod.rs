@@ -780,19 +780,26 @@ impl Lowerer<'_, '_> {
                 classical_outputs: vec![],
                 declared_effect: Effect::Unitary,
             };
-            self.compiler.kernel.check_control_owners(
-                &call, &signatures, &axes, &mut self.compiler.exact_work,
-            ).map_err(|failure| {
-                let code = match failure.code {
-                    "contract" => ErrorCode::Contract,
-                    "limit" => ErrorCode::Limit,
-                    "io" | "kernel" => ErrorCode::Project,
-                    _ => ErrorCode::InvalidIr,
-                };
-                self.error(module, span, code, format!(
-                    "{failure}; ctrl requires computational-basis sector preservation, not read-only access; phase kickback is permitted; use excl for arbitrary coherent access"
-                ))
-            })?;
+            self.compiler
+                .kernel
+                .check_control_owners(&call, &signatures, &axes, &mut self.compiler.exact_work)
+                .map_err(|failure| {
+                    let code = match failure.code {
+                        "contract" => ErrorCode::Contract,
+                        "limit" => ErrorCode::Limit,
+                        "io" | "kernel" => ErrorCode::Project,
+                        _ => ErrorCode::InvalidIr,
+                    };
+                    self.error(
+                        module,
+                        span,
+                        code,
+                        format!(
+                            "{failure}; {}",
+                            crate::frontend::diagnostic::CONTROL_ACCESS_EXPLANATION
+                        ),
+                    )
+                })?;
         }
         for ((key, _), value) in owners.into_iter().zip(returned) {
             self.access_updates

@@ -737,6 +737,63 @@ fn retired_sized_prefix_reports_migration_without_source_or_native_work() {
 }
 
 #[test]
+fn control_access_recovery_keeps_text_json_categories_and_original_spans() {
+    for call in ["h(&q)", "h(&mut q)", "h(&ctrl q)", "h(ctrl q)"] {
+        let source = format!(
+            "// π\r\nuse std::quantum::h;pub unitary fn main(q:Q<Bit>)->Q<Bit>{{{call};q}}"
+        );
+        let files = SourceRoot::new(&source);
+        for json in [false, true] {
+            let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+            command
+                .args(["check", "--entry=main::main", "--ir-profile=raw"])
+                .arg(format!(
+                    "--module=main={}",
+                    files.0.join("main.qli").display()
+                ))
+                .arg(format!("--lean-kernel={}", kernel().display()));
+            if json {
+                command.arg("--format=json");
+            }
+            let output = command.output().unwrap();
+            assert!(!output.status.success(), "{output:?}");
+            let text = if json {
+                result(output, "check", false)
+            } else {
+                assert!(output.stdout.is_empty(), "{output:?}");
+                String::from_utf8(output.stderr).unwrap()
+            };
+            let (code, start, end) = if call.contains('&') {
+                assert!(text.contains("for quantum access"), "{text}");
+                assert!(
+                    text.contains("do not mechanically replace & with ctrl"),
+                    "{text}"
+                );
+                let at = source.rfind('&').unwrap();
+                ("parse", at, at + 1)
+            } else {
+                assert!(text.contains("not read-only access"), "{text}");
+                assert!(text.contains("phase kickback is permitted"), "{text}");
+                assert!(
+                    text.contains("use excl for arbitrary coherent access"),
+                    "{text}"
+                );
+                let at = source.rfind(call).unwrap();
+                ("contract", at, at + call.len())
+            };
+            assert!(!text.contains("https://github.com"), "{text}");
+            if json {
+                assert!(text.contains(&format!("\"code\":\"{code}\"")), "{text}");
+                assert!(
+                    text.contains(&format!("\"start\":{start},\"end\":{end}")),
+                    "{text}"
+                );
+            }
+        }
+    }
+}
+
+#[test]
 fn selected_static_places_choose_raw_before_native_acceptance() {
     for call in [
         "x(excl q[1]);",

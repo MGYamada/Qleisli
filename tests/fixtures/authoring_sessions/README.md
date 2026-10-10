@@ -5,6 +5,13 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [control-diagnostic replay](control-diagnostics-v030/session.json) preserves
+five unchanged sources and ten actual CLI observations. Four refusals retain
+their categories and original spans while adding the reference/control
+distinction; valid Z control retains its complete result. Earlier temporary
+missing-manifest failures and their manifest-only correction are retained as
+untimestamped reports, not counted as syntax or native-sector observations.
+
 The [structured-exit probes](structured-exit-v030/README.md) preserve five
 forbidden exit forms, one accepted ordinary-name control, the initial manifest
 refusals and a manifest-only repair before the #37 diagnostic change.

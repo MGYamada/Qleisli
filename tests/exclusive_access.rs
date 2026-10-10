@@ -495,6 +495,13 @@ fn finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls() {
             .unwrap_err();
         assert_eq!(error.code(), "contract");
         assert!(error.message().contains("sector preservation"));
+        assert!(error.message().contains("not read-only access"));
+        assert!(error.message().contains("phase kickback is permitted"));
+        assert!(
+            error
+                .message()
+                .contains("use excl for arbitrary coherent access")
+        );
     }
     let source = format!(
         "{IMPORTS} unitary fn bad(q:Q<Bit>)->Q<Bit>{{h(ctrl q);q}} pub observe fn main()->Bit{{0}}"

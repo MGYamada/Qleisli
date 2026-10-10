@@ -43,7 +43,15 @@ fn shared_rejection(
     let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
         .unwrap_err();
     assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
-    assert_eq!(finite.message, common.message(), "{source}");
+    if common_code == "parse" {
+        assert_eq!(
+            finite.message,
+            format!("parse error: {}", common.message()),
+            "{source}"
+        );
+    } else {
+        assert_eq!(finite.message, common.message(), "{source}");
+    }
     let location = finite.primary.unwrap();
     assert_eq!(
         location.path,
@@ -93,6 +101,27 @@ fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
         assert!((got - want).abs() < 1e-12, "{source}\n{actual:?}");
     }
     common
+}
+
+#[test]
+fn unsupported_references_explain_control_without_guessing_the_expression_type() {
+    for ty in ["Q<Bit>", "Bit"] {
+        for argument in ["&q", "&mut q", "&ctrl q"] {
+            let source = format!("// π &q\r\npub fn main(q:{ty})->{ty}{{identity({argument});q}}");
+            let span = at(&source, argument, 0, 1);
+            let message =
+                shared_rejection(&source, "parse", "parse", span, "unexpected character `&`");
+            assert!(message.contains("Rust-style references are not supported"));
+            assert!(message.contains("for quantum access"));
+            assert!(message.contains("excl grants arbitrary coherent access"));
+            assert!(message.contains("computational-basis sector preservation"));
+            assert!(message.contains("Phase kickback and entanglement are permitted"));
+            assert!(message.contains("do not mechanically replace & with ctrl"));
+            assert!(!message.contains("https://"));
+        }
+    }
+    let source = "// &q is only comment text\npub fn main()->Bit{0}";
+    common_and_finite(source);
 }
 
 #[test]

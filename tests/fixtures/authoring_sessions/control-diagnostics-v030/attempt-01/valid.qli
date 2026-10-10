@@ -1,0 +1,1 @@
+use std::quantum::z;pub unitary fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);q}

@@ -3473,7 +3473,7 @@
     },
     {
       "path": "src/frontend/compile/lower/mod.rs",
-      "sha256": "b1f08424b98eec28b053b94abf437a3cbff4e4702feff3164f38dfe71e53fac9",
+      "sha256": "9dedb033e19a9ed58f14b22d1db2c81676235d4bd90416af30d09f9d789d0353",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3603,7 +3603,7 @@
     },
     {
       "path": "src/frontend/diagnostic.rs",
-      "sha256": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+      "sha256": "6dc493549ea758c25e11f77184d6cb04c35fbd493dbcf3ced841a954cb93ca68",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3690,7 +3690,7 @@
     },
     {
       "path": "src/frontend/lexer.rs",
-      "sha256": "14012df9a30c95b48908b0d1c628ab9472ff94f7cfb65d1c35159d502e18e9f2",
+      "sha256": "082ee2fcaf52ac489a910cf27e3e6b8661e6d902814b10ca4cbca4078ed6cc78",
       "group": "source",
       "surface": {
         "declarations": [
@@ -4276,7 +4276,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "490b88cba1d1ad2f56841fb4f757a015874c02800d77045698f25b466ea5a3e7",
+      "sha256": "8bc555484deea07a7c45842c4861d6976ef510203606fbda9caaa510073ee166",
       "group": "sized-source",
       "surface": {
         "declarations": [],
