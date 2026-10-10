@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Prove executable structural Raw Unit-map building blocks against independent
+  owner/interface rules and exact event meaning. Preserve suspended owners,
+  issued identities and prior scalar work. Public Raw opcode decoding, dispatch
+  and historical semantic transport remain pending; no Raw support is enabled.
+
 - Bound every constructor child before operation-key comparison in independent
   Raw access replay, including zero-count children. Preserve Repeat-chain
   accounting and existing caps; reject excessive depth or value cells before

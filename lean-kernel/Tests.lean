@@ -5,6 +5,29 @@ import QleisliKernel.Qirf.ControlAccess
 
 open QleisliKernel
 
+namespace RawUnitTests
+open QleisliKernel.Raw
+
+-- One suspended physical owner, one empty owner and a consumed identity.
+private def frame : Raw.State :=
+  ⟨[⟨7,[3],1⟩,⟨8,[],0⟩],[7,8,5],[3],[3],true⟩
+
+example : (Unit.pack {} 0).map (fun t => (t.state,t.events)) =
+    .ok (⟨[⟨0,[],0⟩],[0],[],[],false⟩,[]) := by cbv
+example : Unit.pack frame 5 = .error .invalid := by rfl
+example : Unit.pack frame 7 = .error .invalid := by rfl
+example : Unit.pack frame 4294967296 = .error .invalid := by rfl
+example : Unit.unpack frame 7 = .error .invalid := by rfl
+example : Unit.unpack frame 5 = .error .invalid := by rfl
+example : (Unit.unpack frame 8).map (fun t => (t.state,t.events)) =
+    .ok (⟨[⟨7,[3],1⟩],[7,8,5],[3],[3],true⟩,[]) := by cbv
+example : ((Unit.pack frame 9).bind (fun t => Unit.unpack t.state 9)).map (·.state) =
+    .ok {frame with seenTokens := [7,8,5,9]} := by cbv
+-- An empty wire list never justifies an invalid recorded bit count.
+example : Unit.unpack ⟨[⟨0,[],1⟩],[0],[],[],false⟩ 0 = .error .invalid := by rfl
+
+end RawUnitTests
+
 namespace ExactTests
 open QleisliKernel.Semantics.Exact QleisliKernel.Exact
 
