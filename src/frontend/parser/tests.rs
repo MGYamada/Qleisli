@@ -55,7 +55,7 @@ fn missing_compile_time_marker_teaches_const_without_reserving_ordinary_names() 
 
 #[test]
 fn runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans() {
-    for kind in ["classical", "iso", "unitary", "observe"] {
+    for kind in ["classical", "isometry", "unitary", "observe"] {
         let source = format!(
             "{kind} fn f(((a,_),()): ((Bit,Bit),Unit), _: Unit, (): Unit) -> Unit {{ () }}"
         );

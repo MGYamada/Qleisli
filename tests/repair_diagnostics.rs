@@ -44,28 +44,28 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
         (
             "use std::quantum::init0; use std::observe::measure_z;
              fn strong()->Unit{let b=measure_z(init0());()} fn weak()->Unit{()}
-             iso fn bad()->Unit{strong(); weak()}",
+             isometry fn bad()->Unit{strong(); weak()}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
             "use std::quantum::init0; use std::observe::measure_z;
-             fn strong()->Unit{let b=measure_z(init0());()} iso fn bad()->Unit{if 0 {strong()} else {()}}",
+             fn strong()->Unit{let b=measure_z(init0());()} isometry fn bad()->Unit{if 0 {strong()} else {()}}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
             "use std::quantum::init0; use std::observe::measure_z;
-             fn strong()->Unit{let b=measure_z(init0());()} iso fn bad()->Unit{if 1 {()} else {strong()}}",
+             fn strong()->Unit{let b=measure_z(init0());()} isometry fn bad()->Unit{if 1 {()} else {strong()}}",
             "strong()",
             "Observe",
             "Isometry",
         ),
         (
             "use std::quantum::init0; use std::observe::measure_z;
-             fn strong()->Bit{measure_z(init0())} iso fn bad()->Unit{if strong() {()} else {()}}",
+             fn strong()->Bit{measure_z(init0())} isometry fn bad()->Unit{if strong() {()} else {()}}",
             "strong()",
             "Observe",
             "Isometry",
@@ -96,7 +96,7 @@ fn effect_errors_locate_the_strongest_cause_and_name_both_effects() {
 
 #[test]
 fn imported_effects_point_to_the_callers_call_in_text_and_json() {
-    let source = "// 日本語\r\nuse helper::strong;\r\niso fn bad()->Unit{strong()}";
+    let source = "// 日本語\r\nuse helper::strong;\r\nisometry fn bad()->Unit{strong()}";
     let root = SourceRoot::new(source);
     root.write(
         "helper.qli",
@@ -110,7 +110,7 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
         root.0.join("main.qli").canonicalize().unwrap()
     );
     assert_eq!(location.span.start, source.rfind("strong()").unwrap());
-    assert_eq!((location.line, location.column), (3, 20));
+    assert_eq!((location.line, location.column), (3, 25));
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
         command.arg("check").arg(&root.0);
@@ -126,10 +126,10 @@ fn imported_effects_point_to_the_callers_call_in_text_and_json() {
         );
         if json {
             assert!(text.contains("\"path\":\"main.qli\""), "{text}");
-            assert!(text.contains("\"line\":3,\"column\":20"), "{text}");
+            assert!(text.contains("\"line\":3,\"column\":25"), "{text}");
         }
     }
-    root.write("main.qli", &source.replace("iso fn", "observe fn"));
+    root.write("main.qli", &source.replace("isometry fn", "observe fn"));
     check_project(&root.0).unwrap();
 }
 

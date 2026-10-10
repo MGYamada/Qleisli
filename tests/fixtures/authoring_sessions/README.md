@@ -5,6 +5,12 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [isometry-prefix retirement study](isometry-retirement-v030/README.md)
+preserves both spellings before the cutover and eight actual CLI observations.
+The old prefix gains a located migration refusal; the canonical program keeps
+its checked preparation and classical-zero distribution. Transport vocabulary
+and Lean compatibility remain separate from the source cutover.
+
 The [direct general-arrow adjoint study](direct-arrow-adjoint-v030/README.md)
 preserves a manifest repair, the actual wrong-port refusal and later unchanged
 source checks/runs. Independent phase/reference and false-Meaning regressions

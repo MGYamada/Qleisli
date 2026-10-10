@@ -31,6 +31,8 @@ class SourceFixtureIdentity(unittest.TestCase):
         self.client_const_manifest = self.root / "const-client-source-map.json"
         self.naming_manifest = self.root / "capability-naming-source-map.json"
         self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
+        self.isometry_manifest = self.root / "isometry-vocabulary-source-map.json"
+        self.isometry_manifest.write_text(json.dumps(dict(format="qleisli.isometry-vocabulary-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
         self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
@@ -65,7 +67,8 @@ class SourceFixtureIdentity(unittest.TestCase):
                             ("APPLICATION_MAP", self.application_manifest.name),
                             ("CLIENT_CONST_MAP", self.client_const_manifest.name),
                             ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
-                            ("CAPABILITY_NAMING_MAP", self.naming_manifest.name)):
+                            ("CAPABILITY_NAMING_MAP", self.naming_manifest.name),
+                            ("ISOMETRY_MAP", self.isometry_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -413,6 +416,8 @@ class SourceFileIdentity(unittest.TestCase):
         self.client_const_manifest = self.root / "const-client-source-map.json"
         self.naming_manifest = self.root / "capability-naming-source-map.json"
         self.naming_manifest.write_text(json.dumps(dict(format="qleisli.capability-naming-source-map", version=1, files=[], projects=[])))
+        self.isometry_manifest = self.root / "isometry-vocabulary-source-map.json"
+        self.isometry_manifest.write_text(json.dumps(dict(format="qleisli.isometry-vocabulary-source-map", version=1, files=[], projects=[])))
         self.retired_manifest = self.root / "retired-operation-source-map.json"
         self.retired_manifest.write_text(json.dumps(dict(format="qleisli.retired-operation-source-map", version=1, files=[], projects=[])))
         self.client_const_manifest.write_text(json.dumps(dict(format="qleisli.const-client-source-map", version=1, files=[], projects=[])))
@@ -436,7 +441,8 @@ class SourceFileIdentity(unittest.TestCase):
                             ("APPLICATION_MAP", self.application_manifest.name),
                             ("CLIENT_CONST_MAP", self.client_const_manifest.name),
                             ("RETIRED_OPERATION_MAP", self.retired_manifest.name),
-                            ("CAPABILITY_NAMING_MAP", self.naming_manifest.name)):
+                            ("CAPABILITY_NAMING_MAP", self.naming_manifest.name),
+                            ("ISOMETRY_MAP", self.isometry_manifest.name)):
             patched = patch.object(fixtures, name, value)
             patched.start()
             self.addCleanup(patched.stop)
@@ -472,6 +478,31 @@ class SourceFileIdentity(unittest.TestCase):
     def test_missing_const_client_stage_has_no_previous_source_fallback(self):
         self.client_const_manifest.unlink()
         with self.assertRaisesRegex(ValueError, "missing const client source map"):
+            fixtures.current_source_file(self.original)
+
+    def test_isometry_stage_preserves_history_and_rejects_stale_sources(self):
+        predecessors = {path: path.read_bytes() for path in
+                        (self.original, self.namespace, self.coherent, self.current)}
+        selected = self.root / "isometry-current.qli"
+        selected.write_text("isometry fn prepare()->Q<Bit>{init0()}")
+        self.isometry_manifest.write_text(json.dumps(dict(
+            format="qleisli.isometry-vocabulary-source-map", version=1,
+            files=[self.entry(self.current, selected)], projects=[])))
+        self.assertEqual(fixtures.current_source_file(self.original), selected)
+        self.assertEqual({path: path.read_bytes() for path in predecessors}, predecessors)
+        for source in (self.current, selected):
+            with self.subTest(source=source.name):
+                original = source.read_bytes()
+                source.write_text("changed isometry migration input")
+                try:
+                    with self.assertRaisesRegex(ValueError, "identity changed"):
+                        fixtures.current_source_file(self.original)
+                finally:
+                    source.write_bytes(original)
+
+    def test_missing_isometry_stage_has_no_legacy_source_fallback(self):
+        self.isometry_manifest.unlink()
+        with self.assertRaisesRegex(ValueError, "missing isometry vocabulary source map"):
             fixtures.current_source_file(self.original)
 
     def test_unmapped_file_is_returned_unchanged(self):
@@ -694,6 +725,33 @@ class SourceFileIdentity(unittest.TestCase):
 
 
 class RepositoryMigrationTests(unittest.TestCase):
+    def test_isometry_map_covers_selected_clients_and_changes_only_effect_prefixes(self):
+        import re
+        prior = fixtures._migration_maps(stop_before=fixtures.ISOMETRY_MAP)
+        candidates = {name for files, _ in prior for name in files}
+        candidates.update(path.relative_to(fixtures.ROOT).as_posix() for path in
+                          (fixtures.ROOT / 'tests/fixtures/frontend_v030/ordinary-type-cutover/current').rglob('*.qli'))
+        marker = re.compile(rb'\biso(?=\s+fn\b)')
+        expected = set()
+        for candidate in candidates:
+            selected = candidate
+            for files, _ in prior:
+                if selected in files:
+                    selected = files[selected]['current_path']
+            if marker.search((fixtures.ROOT / selected).read_bytes()):
+                expected.add(selected)
+        data = fixtures._read_map(fixtures.ROOT / fixtures.ISOMETRY_MAP)
+        entries = fixtures._file_entries(data, 'isometry vocabulary')
+        self.assertEqual(set(entries), expected)
+        self.assertEqual(data['projects'], [])
+        for entry in entries.values():
+            before, current = (fixtures.ROOT / entry[key] for key in ('before_path', 'current_path'))
+            transformed, count = marker.subn(b'isometry', before.read_bytes())
+            self.assertGreater(count, 0)
+            self.assertEqual(current.read_bytes(), transformed)
+            self.assertEqual(fixtures.current_source_file(before), current)
+            self.assertEqual(fixtures.current_source_file(current), current)
+
     def test_selected_current_file_inventory_has_no_unmapped_operation_names(self):
         from operation_naming import canonical_operation_names
         prior = fixtures._migration_maps(stop_before=fixtures.CAPABILITY_NAMING_MAP)

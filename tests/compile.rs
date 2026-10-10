@@ -116,7 +116,7 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::Ownership,
         ),
         (
-            "iso fn bad(q: Q<Bit>) -> Bit { measure_z(q) } observe fn main() -> Unit { () }",
+            "isometry fn bad(q: Q<Bit>) -> Bit { measure_z(q) } observe fn main() -> Unit { () }",
             ErrorCode::Effect,
         ),
         (
@@ -152,7 +152,7 @@ fn invalid_source_is_rejected_before_execution() {
             ErrorCode::UnknownName,
         ),
         (
-            "iso fn f(q: Q<Bit>) -> Q<Bit> { g(q) } iso fn g(q: Q<Bit>) -> Q<Bit> { f(q) } observe fn main() -> Unit { () }",
+            "isometry fn f(q: Q<Bit>) -> Q<Bit> { g(q) } isometry fn g(q: Q<Bit>) -> Q<Bit> { f(q) } observe fn main() -> Unit { () }",
             ErrorCode::RecursiveCall,
         ),
         (
@@ -520,7 +520,7 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
         .0,
     )
     .unwrap();
-    for (callee_kind, caller_kind) in [("iso", "unitary"), ("observe", "iso")] {
+    for (callee_kind, caller_kind) in [("isometry", "unitary"), ("observe", "isometry")] {
         let source = format!(
             "{callee_kind} fn id(q: Q<Bit>) -> Q<Bit> {{ q }}
              {caller_kind} fn caller(q: Q<Bit>) -> Q<Bit> {{ id(q) }}"
@@ -530,10 +530,10 @@ fn finite_v0_effects_classify_quantum_maps_and_respect_declarations() {
         check_project(&SourceRoot::new(&source).0).unwrap();
     }
     for source in [
-        "use std::quantum::init0; iso fn prepare()->Q<Bit>{init0()}
+        "use std::quantum::init0; isometry fn prepare()->Q<Bit>{init0()}
          unitary fn caller()->Q<Bit>{prepare()}",
         "use std::observe::measure_z; observe fn measure(q:Q<Bit>)->Bit{measure_z(q)}
-         iso fn caller(q:Q<Bit>)->Bit{measure(q)}",
+         isometry fn caller(q:Q<Bit>)->Bit{measure(q)}",
     ] {
         let error = check_project(&SourceRoot::new(source).0).unwrap_err();
         assert_eq!(error.code, ErrorCode::Effect, "{error}");
@@ -566,7 +566,7 @@ fn finite_v0_mixed_values_move_as_a_whole() {
 fn finite_v0_basis_lifts_are_injective_and_closed() {
     check_project(
         &SourceRoot::new(
-            "iso fn prepare(q: Q<Unit>) -> Q<Bit> { basis q as x { 0 } }
+            "isometry fn prepare(q: Q<Unit>) -> Q<Bit> { basis q as x { 0 } }
              unitary fn swap_label(q: Q<Bit>) -> Q<Bit> { basis q as x { not x } }",
         )
         .0,

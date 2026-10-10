@@ -56,8 +56,8 @@ def qpe(source, n=1, m=2, j=1, d=3):
 def source_rejections(base):
     changes = [
         ('unitary-wrapper', 'measurement', 'pub observe fn', 'pub unitary fn'),
-        ('unitary-initializer', 'initialization', 'pub iso fn', 'pub unitary fn'),
-        ('iso-readout', 'readout', 'pub observe fn', 'pub iso fn'),
+        ('unitary-initializer', 'initialization', 'pub isometry fn', 'pub unitary fn'),
+        ('iso-readout', 'readout', 'pub observe fn', 'pub isometry fn'),
         ('missing-access', 'measurement', ', Controllable(U)', ''),
         ('wrong-classical-width', 'measurement', 'Bits<m>', 'Bits<m+1>'),
         ('drop-empty-owner', 'readout', 'let () = consume_empty(q);', ''),

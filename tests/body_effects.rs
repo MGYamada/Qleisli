@@ -42,7 +42,7 @@ fn false_annotations_reject_direct_and_transitive_effects_in_both_profiles() {
             "Unitary",
         ),
         (
-            "iso fn f(q:Q<Bit>)->Bit{measure_z(q)}",
+            "isometry fn f(q:Q<Bit>)->Bit{measure_z(q)}",
             "Observe",
             "Isometry",
         ),
@@ -70,7 +70,7 @@ fn false_annotations_reject_direct_and_transitive_effects_in_both_profiles() {
 
 #[test]
 fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
-    for prefix in ["", "unitary ", "iso ", "observe "] {
+    for prefix in ["", "unitary ", "isometry ", "observe "] {
         let source = format!(
             "{prefix}fn g(q:Q<Bit>)->Q<Bit>{{q}} pub unitary fn f(q:Q<Bit>)->Q<Bit>{{g(q)}}"
         );
@@ -82,7 +82,7 @@ fn broad_assertions_do_not_inflate_caller_or_interface_effects() {
             fact.asserted(),
             match prefix {
                 "unitary " => Some(Effect::Unitary),
-                "iso " => Some(Effect::Isometry),
+                "isometry " => Some(Effect::Isometry),
                 "observe " => Some(Effect::Observe),
                 _ => None,
             }

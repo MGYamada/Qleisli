@@ -122,15 +122,15 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
         "fixtures/authoring_sessions/isometry-vocabulary-v030/attempt-01/preparation.qli"
     );
     let mut bodies = Vec::new();
-    // The legacy control is explicit migration evidence, not a second effect.
-    for text in [
-        canonical.to_owned(),
-        canonical.replace("isometry fn", "iso fn"),
+    // An assertion does not seed inference or change the emitted isometry.
+    for (text, asserted) in [
+        (canonical.to_owned(), Some(Effect::Isometry)),
+        (canonical.replace("isometry fn", "fn"), None),
     ] {
         let parsed = ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap();
         let fact = parsed.function_effect("main::main").unwrap();
         assert_eq!(fact.inferred(), Effect::Isometry);
-        assert_eq!(fact.asserted(), Some(Effect::Isometry));
+        assert_eq!(fact.asserted(), asserted);
         let raw = parsed
             .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
             .unwrap()
@@ -172,6 +172,36 @@ fn adopted_isometry_spelling_reaches_both_consumers_and_native_raw() {
         assert_eq!(distribution[&vec![false]], 1.0);
     }
     assert_eq!(bodies[0], bodies[1]);
+}
+
+#[test]
+fn retired_iso_reports_one_exact_migration_span_before_native_checking() {
+    use qleisli::frontend::compile::check_project_with_kernel;
+    use qleisli::frontend::project::SourcePolicy;
+    use qleisli::interchange::native::Kernel;
+    let source = "// λ\r\niso fn f() -> Unit { () }";
+    let error = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap_err();
+    assert_eq!(error.code(), "parse");
+    assert_eq!(&source[error.span().start..error.span().end], "iso");
+    assert!(error.message().contains("was renamed to `isometry`"));
+    let root = SourceRoot::new(source);
+    let missing = Kernel::new(root.0.join("absent-kernel"));
+    let diagnostic =
+        check_project_with_kernel(&root.0, SourcePolicy::default(), &missing).unwrap_err();
+    assert_eq!(diagnostic.code, "parse");
+    let location = diagnostic.primary.unwrap();
+    assert_eq!((location.line, location.column), (2, 1));
+    assert_eq!(&source[location.span.start..location.span.end], "iso");
+    assert_eq!(
+        diagnostic.message,
+        format!("parse error: {}", error.message())
+    );
+    // Trivia and longer ordinary identifiers are not retired source tokens.
+    ParsedProgram::parse(BTreeMap::from([(
+        "main".into(),
+        "/* iso fn */ fn isotope(iso_value: Bit) -> Bit { iso_value }".into(),
+    )]))
+    .unwrap();
 }
 
 #[test]

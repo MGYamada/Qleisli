@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-retirement-v030/attempt-01",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T23:22:56.770637+00:00",
+  "cli_sha256_before": "b953029ab8c721adbdae2a45b3da444783c46aa8a0545fbad421177a60278407",
+  "cli_sha256_after": "b953029ab8c721adbdae2a45b3da444783c46aa8a0545fbad421177a60278407",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: `iso` was renamed to `isometry` in Qleisli 0.3.0; use `isometry fn` for an isometry effect assertion.",
+        "primary": {
+          "path": "main.qli",
+          "start": 90,
+          "end": 93,
+          "line": 4,
+          "column": 1
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

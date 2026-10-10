@@ -23,7 +23,7 @@ fn cli(root: &SourceRoot) -> Command {
 fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     for (source, reason) in [
         (
-            "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
+            "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
             "at most one ordinary Bits<0> result",
         ),
         (
@@ -51,7 +51,7 @@ fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     // The original preparation example is now eligible. Its missing checker
     // must still reject instead of bypassing the native acceptance boundary.
     let root = SourceRoot::new(
-        "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
     );
     let output = cli(&root)
         .arg("--ir-profile=hierarchy")

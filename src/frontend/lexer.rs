@@ -107,9 +107,8 @@ pub(crate) fn keyword_kind(name: &str) -> Option<TokenKind> {
         "pub" => TokenKind::Pub,
         "classical" => TokenKind::Classical,
         "basis" => TokenKind::Basis,
-        // #57 migration: the adopted source spelling uses the same checked
-        // effect assertion. Retire the legacy spelling after active sources
-        // migrate; the internal token name does not change versioned IR tags.
+        // Keep the old word reserved for the located migration error below.
+        // The canonical token does not rename versioned IR effect tags.
         "isometry" | "iso" => TokenKind::Isometry,
         "unitary" => TokenKind::Unitary,
         "observe" => TokenKind::Observe,
@@ -372,6 +371,12 @@ fn scan(
                 span: token.span,
             });
         }
+        if token.kind == Kind::Word && text == "iso" {
+            return Err(LexError {
+                message: "`iso` was renamed to `isometry` in Qleisli 0.3.0; use `isometry fn` for an isometry effect assertion.".into(),
+                span: token.span,
+            });
+        }
         if let TokenKind::Ident(value) | TokenKind::Natural(value) = &mut kind {
             *value = text.to_owned();
         }
@@ -392,15 +397,21 @@ mod common_token_tests {
 
     #[test]
     fn capacity_precedes_retired_word_diagnostics_with_a_small_allowance() {
-        let source = "/* λ */ x bind_op";
-        let start = source.find("bind_op").unwrap();
-        let span = Span::new(start, start + "bind_op".len());
-        let capacity = lex_documented_bounded(source, 1, 2).unwrap_err();
-        assert_eq!(capacity.span, span);
-        assert_eq!(capacity.message, "source exceeds 1 tokens");
-        let retirement = lex_documented_bounded(source, 2, 2).unwrap_err();
-        assert_eq!(retirement.span, span);
-        assert!(retirement.message.contains("was renamed to `checked_op`"));
+        for (old, new) in [("bind_op", "checked_op"), ("iso", "isometry")] {
+            let source = format!("/* λ */ x {old}");
+            let start = source.find(old).unwrap();
+            let span = Span::new(start, start + old.len());
+            let capacity = lex_documented_bounded(&source, 1, 2).unwrap_err();
+            assert_eq!(capacity.span, span);
+            assert_eq!(capacity.message, "source exceeds 1 tokens");
+            let retirement = lex_documented_bounded(&source, 2, 2).unwrap_err();
+            assert_eq!(retirement.span, span);
+            assert!(
+                retirement
+                    .message
+                    .contains(&format!("was renamed to `{new}`"))
+            );
+        }
     }
 
     #[test]

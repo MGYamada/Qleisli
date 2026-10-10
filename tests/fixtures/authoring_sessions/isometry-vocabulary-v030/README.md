@@ -32,3 +32,14 @@ by this stage.
 The adopted QS/PR/RS and EXACT interpretations and two scoped QLV1 guarantees
 are unchanged. This lexer connection adds no semantic primitive or trusted
 acceptance path and discharges no new constitutional obligation.
+
+## Subsequent source-prefix retirement
+
+The temporary acceptance described above records the first implementation
+stage. Current source rejects the reserved `iso` token with a located migration
+error directing authors to `isometry fn`; comments and longer ordinary
+identifiers are unaffected. The original sources and observations here remain
+unchanged. The active test comparison now checks `isometry fn` against an
+unannotated `fn`, preserving the assertion-versus-inference distinction.
+Versioned transport tags retain `"iso"`. Public Rust variants now use `Isometry`;
+Lean-side vocabulary compatibility remains pending under #57.

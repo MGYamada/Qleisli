@@ -249,7 +249,7 @@ fn growing_lift_matches_joint_pauli_statistics_with_two_reference_wires() {
     for axes in settings(5) {
         let source = format!(
             "
-iso fn grow(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
+isometry fn grow(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
     basis q as (a,b) {{ ((a,b),a xor b) }}
 }}
 observe fn main() -> (((Bit,Bit),Bit),(Bit,Bit)) {{

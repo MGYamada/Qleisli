@@ -175,7 +175,7 @@ The finite-core v0 specification and normative grammar align with Stage 0 module
 
 - Formalize effectful transformations of classical values and quantum resources from the design philosophy using input/output contexts and composition. Investigate the precise structure of Kleisli-inspired composition and its relationship/limits with free-vector-space `bind`.
 - Specify grammar and name resolution for all examples.
-- Give inferable type/effect rules for `basis`, `iso`, `unitary`, and `observe`, and ownership rules for classical branches and `qif`.
+- Give inferable type/effect rules for `basis`, `isometry`, `unitary`, and `observe`, and ownership rules for classical branches and `qif`.
 - Specify `split/join`, restricted `with_computed` protection, measurement's termination of logical ownership, and auxiliary evidence. General borrowing syntax/signatures belong to a later specification.
 - Address the central open problem: separate ownership contexts from global-state correlations and specify function-boundary checks for local operations, partial measurement, discard, and pure release. Initial support does not require general entanglement inference.
 - Specify pure isometries, measurement-bearing instruments, and translation to typed IR.

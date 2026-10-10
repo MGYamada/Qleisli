@@ -220,7 +220,7 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     let declaration = if matches!(fault, Fault::EffectUnderdeclaration) {
         "unitary"
     } else {
-        ["unitary", "iso", "observe"][effect + random.choose(3 - effect)]
+        ["unitary", "isometry", "observe"][effect + random.choose(3 - effect)]
     };
     Case {
         fault,

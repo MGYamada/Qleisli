@@ -24,7 +24,7 @@ fn source(kind: &str, body: &str) -> String {
 
 #[test]
 fn forbidden_exits_have_original_locations_and_structured_alternatives() {
-    for kind in ["unitary", "iso", "observe"] {
+    for kind in ["unitary", "isometry", "observe"] {
         for (body, token, reason) in EXITS {
             for body in [body.to_string(), format!("if 1 {{{body}}} else {{q}}")] {
                 let text = source(kind, &body);
@@ -72,7 +72,7 @@ fn ordinary_names_comments_and_inequality_never_become_runtime_exits() {
         &Kernel::selected().unwrap(),
     )
     .unwrap();
-    for kind in ["unitary", "iso", "observe"] {
+    for kind in ["unitary", "isometry", "observe"] {
         parse_module(&source(kind, "let return=q;return")).unwrap();
     }
 }

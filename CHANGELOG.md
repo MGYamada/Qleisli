@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Retire the temporary `iso fn` source prefix with a located migration error
+  directing authors to `isometry fn`. Migrate active tests and source selection
+  without rewriting historical inputs or versioned `"iso"` transport tags.
+  Keep inference, effect assertions and native acceptance unchanged. Lean-side
+  vocabulary compatibility work under #57 remains pending.
+
 - Reverse both exact ports for direct adjoints of opaque general operation
   parameters. Reuse the checked inverse constructor in selected lowering,
   preserving provider/Meaning bindings and named runtime-group restrictions.

@@ -76,7 +76,7 @@ fn bell_module_and_bundled_imports_resolve() {
     let root = TempRoot::new();
     root.write(
         "bell.qli",
-        "pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> { basis q as x { (x, x) } }",
+        "pub isometry fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> { basis q as x { (x, x) } }",
     );
     root.write(
         "main.qli",

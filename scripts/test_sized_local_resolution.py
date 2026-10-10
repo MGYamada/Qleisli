@@ -3,6 +3,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 from pathlib import Path
+import hashlib
 import unittest
 from unittest.mock import patch
 
@@ -78,6 +79,23 @@ class LocalResolution(unittest.TestCase):
         for parser_class in (Parser, InstrumentParser):
             with self.subTest(parser=parser_class.__name__), self.assertRaisesRegex(SourceError, "expected 'const'"):
                 parser_class(source, module='register_tools').parse()
+
+    def test_isometry_vocabulary_preserves_historical_effect_and_proposal(self):
+        historical = 'use std::quantum::init0; pub iso fn fresh() -> Q<Bit> { init0() }'
+        canonical = historical.replace('iso fn', 'isometry fn')
+        old = InstrumentParser(historical, module='initialization')
+        new = InstrumentParser(canonical, module='initialization')
+        self.assertEqual(old.parse(), new.parse())
+        self.assertEqual((old.effect, new.effect), ('iso', 'iso'))
+        proposals = []
+        for source in (historical, canonical):
+            producer = InstrumentProducer({'initialization': source})
+            proposal = producer.compile_instrument('initialization::fresh', {}, {})
+            self.assertEqual(proposal.pop('source_sha256'), {
+                'initialization': hashlib.sha256(source.encode()).hexdigest()})
+            proposals.append(proposal)
+        self.assertEqual(proposals[0], proposals[1])
+        self.assertEqual(proposals[0]['initialization'][0]['effect'], 'iso')
 
     def parse(self, body, *, module='register_tools', imports='', parameters=None):
         source = IDENTITY.replace('{ q }', '{ '+body+' }')

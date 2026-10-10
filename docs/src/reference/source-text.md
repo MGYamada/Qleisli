@@ -172,10 +172,12 @@ between its different input/output dimensions. A unitary additionally satisfies
 `VV† = I_output`. In categorical terminology these are a dagger-monomorphism
 and a dagger-isomorphism, respectively.
 
-The unpublished migration currently accepts the old source prefix `iso` through
-the same checked assertion. It is a temporary migration route, not the final
-0.3.0 compatibility contract; new source uses `isometry`. Retirement of the old
-prefix and migration of remaining active sources remain required under #57.
+The old source prefix `iso` is retired in 0.3.0. Replace `iso fn` with
+`isometry fn`; the old word produces a lexical migration error located at its
+original token before native checking. It remains reserved for that error,
+not an accepted alias or an ordinary identifier. Comments and longer ordinary
+identifiers such as `isotope` and `iso_value` are unaffected.
+
 Public Rust effect, function-kind and token-kind variants use `Isometry`, and
 body-effect diagnostics use that spelling too. Rust callers migrate
 `Effect::Iso`, `FnKind::Iso` and `TokenKind::Iso` to their `Isometry` variants;
@@ -286,6 +288,9 @@ identifier positions formerly treated contextually by the sized parser:
 `apply_contract`, `adjoint`, `repeat_static`, `qif`, `true`, `false`, `not`,
 `xor`, `and`, `Unit`, `Bit`, `CBit` and `Q`. The existing import exception admits
 `basis`, `observe` and `classical` immediately after `std::` as module names.
+
+`iso` remains reserved solely for the effect-prefix migration error described
+above; it does not introduce an accepted declaration or identifier.
 
 `do` and `pure` remain reserved tokens solely to reject the removed coherent
 notation with a migration diagnostic. They introduce no accepted expression,

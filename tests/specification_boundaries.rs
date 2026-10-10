@@ -35,7 +35,7 @@ fn deterministic(source: &str, expected: &[bool]) {
 fn basis_lifts_destructure_exact_product_patterns() {
     accepted(
         r#"
-iso fn duplicate(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),(Bit,Bit))> {
+isometry fn duplicate(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),(Bit,Bit))> {
     basis q as x { (x,x) }
 }
 unitary fn collapse_units(q: Q<(Unit,Unit)>) -> Q<Unit> {
@@ -385,7 +385,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
         );
         accepted(&format!(
             "{import}
-            iso fn retain_inputs(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
+            isometry fn retain_inputs(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
                 basis q as (a,b) {{ ((a,b),{name}(a,b)) }}
             }}"
         ));

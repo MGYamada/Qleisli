@@ -24,9 +24,13 @@ class InstrumentParser(Parser):
     primitive_imports = ADAPTERS
 
     def function_effect(self):
-        self.effect = self.peek()
+        spelling = self.peek()
+        # This untrusted comparison reader also reads frozen pre-0.3.0 input.
+        # Canonical source vocabulary maps to the unchanged transport tag; the
+        # production Rust parser owns legacy-source migration diagnostics.
+        self.effect = 'iso' if spelling == 'isometry' else spelling
         if self.effect not in EFFECTS:
-            raise SourceError('expected unitary, iso or observe function effect')
+            raise SourceError('expected unitary, isometry or observe function effect')
         self.index += 1
 
     def ty(self):

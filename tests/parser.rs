@@ -73,7 +73,7 @@ fn example_and_stdlib_token_prefixes_parse_without_panicking() {
 #[test]
 fn parses_bell_modules_and_keeps_owned_resource_syntax_distinct() {
     let bell = r#"
-pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
+pub isometry fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
     basis q as x {
         (x, x)
     }
@@ -204,16 +204,16 @@ fn basis_operators_have_documented_precedence_and_left_associativity() {
 
 #[test]
 fn accepts_comments_and_reports_utf8_byte_offsets() {
-    let source = "// λ\niso fn f(q: Q<Bit>) -> Q<Bit> { q }";
+    let source = "// λ\nisometry fn f(q: Q<Bit>) -> Q<Bit> { q }";
     let module = parse_module(source).unwrap();
-    let offset = source.find("iso").unwrap();
+    let offset = source.find("isometry").unwrap();
     assert_eq!(offset, 6);
     assert_eq!(module.decls[0].span.start, offset);
     assert_eq!(
         &source[module.decls[0].name.span.start..module.decls[0].name.span.end],
         "f"
     );
-    let bad = "// λ\niso fn f(q: Q<Bit>) -> Q<Bit> { @ }";
+    let bad = "// λ\nisometry fn f(q: Q<Bit>) -> Q<Bit> { @ }";
     let error = parse_module(bad).unwrap_err();
     assert_eq!(error.span.start, bad.find('@').unwrap());
     assert_eq!(error.span.end, error.span.start + 1);
@@ -225,7 +225,7 @@ fn malformed_syntax_has_precise_error_spans() {
     let cases = [
         ("use oracle::*;", "*", "expected an identifier"),
         (
-            "iso fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { let y = x; y } }",
+            "isometry fn f(q: Q<Bit>) -> Q<Bit> { basis q as x { let y = x; y } }",
             "let",
             "expected",
         ),
@@ -251,7 +251,7 @@ fn deep_syntax_is_rejected_without_exhausting_the_stack() {
 
 fn check_deep_syntax_on_bounded_stack() {
     let parentheses = format!(
-        "iso fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
+        "isometry fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
         "(".repeat(10_000),
         ")".repeat(10_000)
     );
@@ -276,7 +276,7 @@ fn check_deep_syntax_on_bounded_stack() {
     }
 
     let below_limit = format!(
-        "iso fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
+        "isometry fn f(q: Q<Bit>) -> Q<Bit> {{ {}q{} }}",
         "(".repeat(62),
         ")".repeat(62)
     );
@@ -329,7 +329,7 @@ fn nested_operator_chains_share_the_ast_depth_limit() {
 fn invisible_separators_and_bad_bit_literals_have_precise_errors() {
     let cases = [
         (
-            "// note\u{2028}iso fn hidden() -> Unit { () }",
+            "// note\u{2028}isometry fn hidden() -> Unit { () }",
             "unsupported line separator",
             "\u{2028}",
         ),
@@ -476,7 +476,7 @@ fn coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans() {
     );
     assert_eq!(&source[basis.span.start..basis.span.end], "(a,b)");
 
-    parse_module("iso fn f(q: Q<Unit>) -> Q<Bit> { basis q as _ { 0 } }").unwrap();
+    parse_module("isometry fn f(q: Q<Unit>) -> Q<Bit> { basis q as _ { 0 } }").unwrap();
     // Duplicate names are syntactically valid; the basis pattern checker must
     // reject them. Empty tuple patterns are shared syntax for the sized profile;
     // singleton patterns and trailing commas remain invalid.
@@ -689,7 +689,7 @@ fn coherent_basis_token_prefixes_parse_without_panicking() {
         "basis basis q as a { a } as b { b }",
         "basis as(q) as as { as }",
     ] {
-        let source = format!("iso fn f(q: Q<Bit>) -> Q<Bit> {{ {expression} }}");
+        let source = format!("isometry fn f(q: Q<Bit>) -> Q<Bit> {{ {expression} }}");
         check_token_prefixes(&source, expression);
     }
 }

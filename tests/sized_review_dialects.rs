@@ -104,7 +104,7 @@ fn python_static_comparisons_keep_type_angles_separate_in_both_dialects() {
 #[test]
 fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
     for source in [
-        "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
         "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
         "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
     ] {
@@ -122,7 +122,8 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
         assert!(profile.message().contains("lowering"), "{profile}");
         assert_eq!(profile, elaborated.lower().unwrap_err());
     }
-    let source = "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}";
+    let source =
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}";
     let preparation = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
         .unwrap()
         .instantiate("main::f", BTreeMap::new(), BTreeMap::new())

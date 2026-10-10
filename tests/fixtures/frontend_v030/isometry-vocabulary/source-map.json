@@ -1,0 +1,19 @@
+{
+  "format": "qleisli.isometry-vocabulary-source-map",
+  "version": 1,
+  "projects": [],
+  "files": [
+    {
+      "before_path": "tests/fixtures/frontend_v030/classical-functions/current/017-wildcard_not_injective.qli",
+      "current_path": "tests/fixtures/frontend_v030/isometry-vocabulary/current/wildcard_not_injective.qli",
+      "before_sha256": "68eea79c08c98f21df765c6376fe3ddfe6eb543677a0e2c0e8c800c227c1830f",
+      "current_sha256": "ada253b865f93b51a45bcc8ddf5fb4b8981f5cedf64ab8e397b913861a418ee7"
+    },
+    {
+      "before_path": "tests/fixtures/frontend_v030/const-parameters/current/corpus/sized/measured_qpe/initialization.qli",
+      "current_path": "tests/fixtures/frontend_v030/isometry-vocabulary/current/initialization.qli",
+      "before_sha256": "5a72ca447d72a4d5b82e9b68b61bf1226d817a18110acebda89d644109356672",
+      "current_sha256": "e300786a9e63ba96051811d5a8b9e1c0202082ef5ce7cf7e18744918aad733bd"
+    }
+  ]
+}

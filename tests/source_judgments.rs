@@ -107,7 +107,7 @@ unitary fn keep(v: Unit) -> Unit { v }
         "if b { () } else { strong(()) }",
     ] {
         rejected(
-            &format!("{declarations} iso fn caller(b: Bit) -> Unit {{ {body} }}"),
+            &format!("{declarations} isometry fn caller(b: Bit) -> Unit {{ {body} }}"),
             ErrorCode::Effect,
         );
         accepted(&format!(
@@ -224,7 +224,7 @@ use std::quantum::z;
 classical fn p(x: Bit) -> Bit { x }
 unitary fn forget(b: Bit) -> Unit { () }
 "#;
-    for classification in ["unitary", "iso", "observe"] {
+    for classification in ["unitary", "isometry", "observe"] {
         let source = format!(
             "{prefix}
             {classification} fn phase(a: Q<Bit>) -> Q<Bit> {{ z(a) }}

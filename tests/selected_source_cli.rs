@@ -264,7 +264,7 @@ fn selected_raw_preflight_rejects_open_arguments_and_unsupported_work_before_nat
     // argument; its zero wire count does not turn it into a closed entry.
     let quantum_unit = SourceRoot::new("pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }");
     let returned_quantum =
-        SourceRoot::new("use std::quantum::init0; pub iso fn f() -> Q<Bit> { init0() }");
+        SourceRoot::new("use std::quantum::init0; pub isometry fn f() -> Q<Bit> { init0() }");
     let paths = [
         unit,
         bit.0.join("main.qli"),

@@ -1503,7 +1503,7 @@ fn noninjective_and_is_ordinary_total_but_is_not_a_coherent_isometry() {
         );
     }
     let source = "classical fn both((a,b): (Bit,Bit)) -> Bit { a and b }
-        pub iso fn collapse(q: Q<(Bit,Bit)>) -> Q<Bit> { basis q as p { both(p) } }
+        pub isometry fn collapse(q: Q<(Bit,Bit)>) -> Q<Bit> { basis q as p { both(p) } }
         pub fn main() -> Bit { 0 }";
     let root = SourceRoot::new(source);
     let error = check_project_with_kernel(&root.0, SourcePolicy::default(), &kernel()).unwrap_err();

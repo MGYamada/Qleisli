@@ -244,7 +244,8 @@ fn primitive_signatures_agree_through_symbolic_and_concrete_preparation() {
         ),
     ];
     for (path, inputs, output, body, effect) in cases {
-        let source = format!("use {path}; pub {effect} fn f({inputs}) -> {output} {{ {body} }}");
+        let assertion = if effect == "iso" { "isometry" } else { effect };
+        let source = format!("use {path}; pub {assertion} fn f({inputs}) -> {output} {{ {body} }}");
         let prepared = ParsedProgram::parse(sources(&source))
             .unwrap()
             .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1249,7 +1250,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     // Preparation now has an explicit hierarchy path with empty readout; the
     // source remains Isometry rather than acquiring an observation effect.
     let preparation = ParsedProgram::parse(sources(
-        "use std::quantum::init0; pub iso fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
     ))
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
@@ -1268,7 +1269,7 @@ fn lowering_profile_preflight_identifies_unsupported_root_signatures() {
     assert!(preparation.lower().unwrap().is_instrument());
     // A broader assertion on H does not make its body an Isometry root.
     ParsedProgram::parse(sources(
-        "use std::quantum::h; pub iso fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
+        "use std::quantum::h; pub isometry fn f(q:Q<Bit>)->Q<Bit>{h(q)}",
     ))
     .unwrap()
     .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
