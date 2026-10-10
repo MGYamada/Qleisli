@@ -6,6 +6,11 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Clarify existing source-order evaluation and quantum temporary/access exit
+  rules. Check effectful Unit arguments and tuple fields through both source
+  paths; reject implicit quantum destruction and native-valid noncommuting
+  gate substitutions through independent source replay.
+
 - Explain unsupported Rust reference notation and the distinction between
   arbitrary coherent `excl` access and basis-sector-preserving `ctrl` access.
   Share the control explanation across native source adapters; preserve refusal

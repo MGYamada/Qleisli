@@ -4227,7 +4227,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "d080cdf73f0a8cc5d517765a54397bc132114b76b4545d16f9a229cac0f368f0",
+      "sha256": "91d75a13c6638cfcaf26e367ddd96b4754adbb0f14415629692c07dd54848241",
       "group": "sized-source",
       "surface": {
         "declarations": [

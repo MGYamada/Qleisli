@@ -75,6 +75,48 @@ the detailed grammar, capabilities and profile limits.
 See [exact trees](type-model.md#structural-equality-coherence-and-physical-maps)
 and [functional abstraction](functional-boundary.md).
 
+### Evaluation and owner lifetime boundaries
+
+For the currently supported expressions, statements execute in source order.
+A call evaluates its actual arguments completely, once, from left to right
+before entering the callee. Tuple fields follow the same rule; nesting evaluates
+the inner expression before its enclosing operation. Ordinary Unit results do
+not suppress argument effects. For example, `(h(excl q), z(excl q));` finishes
+H before starting Z, just as `h(excl q); z(excl q);` does. Ignoring the product
+of ordinary Unit values inserts no quantum destruction.
+
+A temporary may own a quantum value while that value flows to an explicit
+consumer, binding or result: `measure_z(h(init0()))` is such a chain. Ending an
+expression statement, wildcard binding, shadowed binding or local block cannot
+silently destroy a live quantum owner. Unreturned local owners reject at their
+binding; a discarded quantum expression rejects at that expression. Ordinary
+Bit/Unit/product values may instead be ignored. There are no observable
+classical destructors or quantum drop glue in this profile. Scope exit cannot
+choose measurement, discard, reset or clean discharge for the programmer.
+
+The supported access forms are call-formed places, not reference values with
+inferred lifetimes. An access call supplies its owners in argument order,
+executes the callee once, and restores the lexical operation rights only after
+retaining its returned values and completing any selected-parent reassembly.
+This happens before the next argument, tuple field or statement starts. A call
+inside the callee body completes before that enclosing call returns. Ending a
+surrounding block preserves the updated outer owner; it does not restore an
+earlier state. Stored or escaping views, nested place projections, implicit
+method autoref and arbitrary reference lifetimes are unsupported. Static axis
+selectors use the original resolved static context and have no runtime effect.
+
+No lifetime shortening grants a control capability, restores dirty workspace
+or proves clean release. The distinct effect, sector and exact workspace
+obligations still apply. These rules supply no new workspace syntax or evidence.
+Elaboration retains ordered source steps, call boundaries, original owners and
+source locations; Raw instructions retain their ordered owner-token edges.
+Neither scheduling convenience nor apparently separate names permits a
+noncommuting reorder. Any proposed reordering needs a separately justified
+transformation preserving exact phase, reference behavior and all applicable
+contracts. Current independent source replay rejects an altered gate chain
+even when its type/effect/ownership interface remains native-valid. It is not a
+general source-preservation theorem or a proof of an optimizer.
+
 ### Whole-owner exclusive calls
 
 | Field | Contract |

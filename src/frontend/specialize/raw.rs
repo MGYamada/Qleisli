@@ -1992,6 +1992,46 @@ mod tests {
         assert_eq!(error.code(), "preservation", "{error}");
     }
 
+    #[test]
+    fn raw_source_replay_rejects_noncommuting_gate_reordering() {
+        use crate::ir::SingleGate;
+        let text =
+            "use std::quantum::{h,z};pub unitary fn main(q:Q<Bit>)->Q<Bit>{h(excl q);z(excl q);q}";
+        let source = ParsedProgram::parse(BTreeMap::from([("main".into(), text.into())]))
+            .unwrap()
+            .instantiate("main::main", BTreeMap::new(), BTreeMap::new())
+            .unwrap()
+            .elaborate()
+            .unwrap();
+        let proposal = source.lower_raw().unwrap();
+        let kernel = native::Kernel::selected().unwrap();
+        let accepted = kernel.accept(proposal.proposal()).unwrap();
+        preservation::validate(&source, accepted.raw()).unwrap();
+        let mut wrong = accepted.raw().clone();
+        assert_eq!(wrong.operations.len(), 2);
+        // Keep every token edge and the exact type/effect interface valid,
+        // while exchanging only the gate actions on that ordered chain.
+        for (op, replacement) in wrong
+            .operations
+            .iter_mut()
+            .zip([SingleGate::Z, SingleGate::H])
+        {
+            let RawOp::Gate { gate, .. } = op else {
+                panic!("gate chain")
+            };
+            *gate = replacement;
+        }
+        let wrong = kernel.accept_raw(wrong).unwrap();
+        // Direct opcode replay must reject, independently of the enclosing
+        // proposal's artifact-identity comparison and ordinary native validity.
+        assert_eq!(
+            preservation::validate(&source, wrong.raw())
+                .unwrap_err()
+                .code(),
+            "preservation"
+        );
+    }
+
     fn example() -> ElaboratedProgram {
         ParsedProgram::parse(BTreeMap::from([(
             "main".into(),

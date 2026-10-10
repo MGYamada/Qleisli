@@ -340,7 +340,9 @@ This path uses the existing bounded exact native profile (at most six physical
 input bits for a control decision), with cumulative exact work charged to the
 existing compiler budget. It does not establish a general source-preservation
 theorem, quantitative resource correspondence or scheduling permission.
-Selected-source lowering and general access lifetimes remain unfinished.
+General access lifetimes, stored views and declared access interfaces remain
+unfinished. The supported call-formed exit points follow the
+[evaluation and owner lifetime rules](elaboration.md#evaluation-and-owner-lifetime-boundaries).
 
 ## Acceptance and evidence
 

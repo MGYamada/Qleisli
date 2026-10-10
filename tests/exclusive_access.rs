@@ -67,6 +67,89 @@ fn checked_raw(source: &str, entry: &str) -> qleisli::interchange::native::Accep
 }
 
 #[test]
+fn access_unit_arguments_and_tuple_fields_finish_left_to_right() {
+    use qleisli::ir::{RawOp, SingleGate};
+    let mut baselines: [Option<qleisli::ir::RawProgram>; 2] = [None, None];
+    // H; Z; H is X, whereas moving Z before the first H gives Z. The
+    // deterministic outcome distinguishes operation order without sampling.
+    for expression in [
+        "done(h(excl q), z(excl q));",
+        "(h(excl q), z(excl q));",
+        "h(excl q); z(excl q);",
+    ] {
+        let text = format!(
+            "{IMPORTS} use std::quantum::z;
+             fn done(a:Unit,b:Unit)->Unit{{()}}
+             pub observe fn main()->Bit{{let q=init0();{expression}h(excl q);measure_z(q)}}"
+        );
+        let finite = compile_project(&SourceRoot::new(&text).0).unwrap();
+        let concrete = checked_raw(&text, "main::main");
+        for (index, accepted) in [&finite, &concrete].into_iter().enumerate() {
+            if let Some(baseline) = &baselines[index] {
+                assert_eq!(accepted.raw(), baseline, "equivalent surface form: {text}");
+            } else {
+                baselines[index] = Some(accepted.raw().clone());
+            }
+            let gates: Vec<_> = accepted
+                .raw()
+                .operations
+                .iter()
+                .filter_map(|op| {
+                    if let RawOp::Gate { gate, .. } = op {
+                        Some(*gate)
+                    } else {
+                        None
+                    }
+                })
+                .collect();
+            assert_eq!(
+                gates,
+                [SingleGate::H, SingleGate::Z, SingleGate::H],
+                "{text}"
+            );
+            let distribution = run_closed(accepted, SimulationLimits::default()).unwrap();
+            assert_eq!(distribution.len(), 1, "{text}: {distribution:?}");
+            assert!((distribution[&vec![true]] - 1.0).abs() < 1e-12, "{text}");
+        }
+    }
+}
+
+#[test]
+fn quantum_temporaries_and_block_locals_cannot_end_by_implicit_destruction() {
+    for body in [
+        "init0(); 0",
+        "h(init0()); 0",
+        "let _=init0(); 0",
+        "let q=init0(); let q=init0(); measure_z(q)",
+    ] {
+        let text = format!("{IMPORTS}pub observe fn main()->Bit{{{body}}}");
+        let error =
+            ParsedProgram::parse(BTreeMap::from([("main".into(), text.clone())])).unwrap_err();
+        assert_eq!(error.code(), "ownership", "{text}: {error}");
+        assert!(
+            error
+                .to_string()
+                .contains("implicit quantum destruction is forbidden")
+        );
+        assert_eq!(error.module(), Some("main"));
+        assert!(error.span().end > error.span().start);
+        let finite = check_project(&SourceRoot::new(&text).0).unwrap_err();
+        assert_eq!(finite.code, ErrorCode::Ownership, "{text}: {finite}");
+    }
+    // An unnamed live owner may flow directly to an explicit consumer;
+    // ordinary Bit and Unit temporaries require no quantum destruction.
+    let text = format!("{IMPORTS}pub observe fn main()->Bit{{0;();measure_z(h(init0()))}}");
+    for accepted in [
+        compile_project(&SourceRoot::new(&text).0).unwrap(),
+        checked_raw(&text, "main::main"),
+    ] {
+        let distribution = run_closed(&accepted, SimulationLimits::default()).unwrap();
+        assert!((distribution[&vec![false]] - 0.5).abs() < 1e-12);
+        assert!((distribution[&vec![true]] - 0.5).abs() < 1e-12);
+    }
+}
+
+#[test]
 fn selected_control_checks_unused_closed_bodies_without_changing_the_entry() {
     use qleisli::contract::{DEFAULT_EXACT_WORK, exact::Budget};
     let kernel = Kernel::selected().unwrap();
