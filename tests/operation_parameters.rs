@@ -689,3 +689,75 @@ fn composed_meanings_reject_unused_wrong_trees_categories_and_cycles() {
         assert_ne!(selected.code(), "parse");
     }
 }
+
+#[test]
+fn explicit_endomorphisms_match_abbreviations_in_the_project_adapter() {
+    let first =
+        include_str!("fixtures/authoring_sessions/explicit-endomorphism-v030/attempt-01/main.qli");
+    let scalar = "use std::quantum::{unit,finish,phase_eighth};
+        unitary fn minus(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}
+        unitary fn scalar_control[const U:Op<Unit>](q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>
+            requires Controllable(U){let(c,u)=split(q);let(c,u)=controlled(U)(c,u);join(c,u)}
+        pub observe fn main()->Bit{let(c,u)=split(scalar_control[minus](join(h(init0()),unit(()))));finish(u);measure_z(h(c))}";
+    let tensor = "unitary fn pair[const U:Op<(Bit,Bit)>](q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>
+        requires Applicable(U){U(q)}
+        pub observe fn main()->(Bit,Bit){let(a,b)=split(pair[tensor_op(flip,ident)](join(init0(),init0())));(measure_z(a),measure_z(b))}";
+    let inverse = "pub observe fn main()->Bit{measure_z(h(use_op[then_op(phase,adjoint(phase))](h(init0()))))}";
+    for (source, expected) in [
+        (first.to_owned(), vec![true]),
+        (format!("{PRELUDE}{scalar}"), vec![true]),
+        (format!("{PRELUDE}{tensor}"), vec![true, false]),
+        (format!("{PRELUDE}{inverse}"), vec![false]),
+    ] {
+        let abbreviated = source.replace("Op<Bit -> Bit>", "Op<Bit>");
+        let explicit = abbreviated
+            .replace("Op<Bit>", "Op<Bit -> Bit>")
+            .replace("Op<Unit>", "Op<Unit -> Unit>")
+            .replace("Op<(Bit,Bit)>", "Op<(Bit,Bit) -> (Bit,Bit)>");
+        for text in [&abbreviated, &explicit] {
+            let root = SourceRoot::new(text);
+            check_project(&root.0).unwrap_or_else(|e| panic!("{e}\n{text}"));
+            let accepted = compile_project(&root.0).unwrap();
+            let actual = run_closed(&accepted, SimulationLimits::default()).unwrap();
+            assert!(
+                (actual[&expected] - 1.0).abs() < 1e-12,
+                "{actual:?}\n{text}"
+            );
+        }
+    }
+}
+
+#[test]
+fn explicit_project_arrows_keep_meaning_and_exact_codomain_rejections() {
+    for honest in [true, false] {
+        let provider = if honest { "direct_z" } else { "ident" };
+        let source = format!(
+            "{PRELUDE}
+            unitary fn refined[const U:Op<Bit -> Bit,ZMeaning>](q:Q<Bit>)->Q<Bit>
+                requires Applicable(U){{U(q)}}
+            pub observe fn main()->Bit{{measure_z(refined[{provider}](init0()))}}"
+        );
+        let result = check_project(&SourceRoot::new(&source).0);
+        if honest {
+            result.unwrap();
+        } else {
+            assert_eq!(result.unwrap_err().code, ErrorCode::Contract);
+        }
+    }
+    // Identical width is not exact-tree equality; unused declarations still
+    // retain their general-arrow profile requirement before native checking.
+    for (input, output) in [("(Unit,Bit)", "Bit"), ("Unit", "Bit")] {
+        let source = format!(
+            "{PRELUDE}
+            fn unused[const U:Op<{input} -> {output}>](q:Q<{input}>)->Q<{output}>
+                requires Applicable(U){{U(q)}}
+            pub observe fn main()->Bit{{measure_z(init0())}}"
+        );
+        let error = check_project(&SourceRoot::new(&source).0).unwrap_err();
+        assert_eq!(error.code, ErrorCode::Unsupported);
+        assert!(
+            error.message.contains("general operation arrows"),
+            "{error}"
+        );
+    }
+}

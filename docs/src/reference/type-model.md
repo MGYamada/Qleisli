@@ -426,7 +426,9 @@ bodies before checked hierarchy construction, including descendants under zero
 repetition. The checked collection additionally supports refined Raw direct,
 sequential, tensor, inverse and controlled application with actual instruction-
 interval and transformed-substep checks under the existing finite bounds.
-The finite adapter still explicitly refuses general-arrow lowering, and
+The finite project adapter admits both `Op<A>` and explicit `Op<A -> A>`
+when the common judgment establishes exact equality of both ports. It still
+refuses lowering arrows with different ports, and
 rectangular Meaning evidence remains unsupported. Unsupported paths reject
 rather than omit a child, codomain or Meaning obligation.
 The common judgment checks their port and access rules before profile selection.

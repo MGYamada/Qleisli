@@ -1,0 +1,26 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Preserve explicit endomorphism abbreviation equivalence in the ordinary project adapter under #83",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "9fcec2b66aa06632db6294f3669aaf8739cb0b53",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Record the ordinary project refusal before making equal checked ports eligible for the existing endomorphic finite adapter.",
+      "sha256": {
+        "main.qli": "4c213c18ddd7b8199ffd82d4b17541c2dd313f6dc0ddbcd3da6c1bd094fb3cba"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/before.json",
+        "observations/check-after.json",
+        "observations/run-after.json"
+      ]
+    }
+  ]
+}

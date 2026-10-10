@@ -733,7 +733,7 @@ fn process_loaded_project_details(
         if declaration.kind == FnKind::Static {
             continue;
         }
-        if let Err((span, message)) = profile::check(declaration) {
+        if let Err((span, message)) = profile::check(declaration, &source.interfaces[id]) {
             return Err(source_error(
                 project,
                 root,

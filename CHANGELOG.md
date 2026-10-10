@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Preserve `Op<A>` / `Op<A -> A>` equivalence in the ordinary finite project
+  adapter using the common checker's exact port equality. Keep different-port
+  restrictions, original Meaning checks and native acceptance unchanged.
+
 - Join refined Raw source `ctrl` sector checks with original Meaning checks,
   including added closed audit bodies and control-bearing providers. Recheck
   bindings in the expanded graph and charge finite-equation replay to the caller's

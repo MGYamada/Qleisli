@@ -5,6 +5,11 @@ refusal and the three bounded phase/entanglement distributions.
 
 # Authoring and repair observations
 
+The [explicit endomorphism study](explicit-endomorphism-v030/README.md) preserves
+an ordinary project's rejected `Op<Bit -> Bit>` source before the adapter repair.
+Its later execution and independent phase/product regressions distinguish exact
+abbreviation equivalence from general-arrow or rectangular Meaning support.
+
 The [isometry vocabulary study](isometry-vocabulary-v030/session.json) retains
 two desired sources and real parser refusals before implementing #57's adopted
 spelling. Later checks distinguish preparation from a false observing-body
