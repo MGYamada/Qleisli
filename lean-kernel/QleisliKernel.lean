@@ -16,6 +16,7 @@ import QleisliKernel.Raw.Unit
 import QleisliKernel.Raw.ObservationScope
 import QleisliKernel.Semantics.OwnershipLaws
 import QleisliKernel.Raw.Instrument
+import QleisliKernel.Raw.InstrumentEquality
 import QleisliKernel.Hierarchy
 import QleisliKernel.Layout
 import QleisliKernel.LayoutDag

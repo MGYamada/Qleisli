@@ -134,9 +134,69 @@ def comparisons(histories):
     return result
 
 
+COMPARE_LEAN = 'import QleisliKernel.Raw.InstrumentEquality\n' + observation.LEAN[:observation.LEAN.index('def execute')].replace(
+    'set_option maxRecDepth 20000\n', '').replace('set_option maxHeartbeats 4000000\n', '') + '''
+def inspectOriginal (value : Json) : WorkM
+    (QleisliKernel.Semantics.Observation.Program × QleisliKernel.Raw.Instrument.Checked) := do
+  let artifact ← adapt (QleisliKernel.Protocol.Observation.artifact value)
+  let checked ← QleisliKernel.Raw.Instrument.inspect artifact.dependencies artifact.bindings artifact.program []
+  return (artifact.program,checked)
+def execute (value : Json) : WorkM Json := do
+  let (leftProgram,left) ← inspectOriginal (← adapt (value.getObjVal? "actual"))
+  let (rightProgram,right) ← inspectOriginal (← adapt (value.getObjVal? "expected"))
+  guard (left.structureCheck.prepared.inputBits == right.structureCheck.prepared.inputBits)
+  guard (left.structureCheck.state.quantum.frame.length == right.structureCheck.state.quantum.frame.length)
+  guard (leftProgram.classicalOutputs.length == rightProgram.classicalOutputs.length)
+  let actual ← QleisliKernel.Raw.InstrumentEquality.prepare leftProgram.classicalOutputs left.histories
+  let expected ← QleisliKernel.Raw.InstrumentEquality.prepare rightProgram.classicalOutputs right.histories
+  QleisliKernel.Raw.InstrumentEquality.compare
+    (2^left.structureCheck.state.quantum.frame.length) (2^left.structureCheck.prepared.inputBits)
+    leftProgram.classicalOutputs.length actual expected
+  return Json.mkObj [("equal",toJson true)]
+''' + observation.LEAN[observation.LEAN.index('def main'):]
+
+
+def native_comparisons(cases, results, log):
+    kernel_before = native_harness.source_identity()
+    def artifact(name):
+        return dict(format='qleisli.raw-observing-component', version=1,
+                    program=cases[name], dependencies=[], bindings=[])
+    inputs = [dict(actual=artifact(pair['left']), expected=artifact(pair['right']), budget=10000000)
+              for pair in results]
+    # The earlier low-budget control is independent of semantic disagreement.
+    inputs.append(dict(inputs[0], budget=0))
+    payload = '\n'.join(finite.dumps(value) for value in inputs) + '\n'
+    with tempfile.TemporaryDirectory(prefix='qleisli-instrument-comparison-') as directory:
+        project = Path(directory)
+        (project / 'Main.lean').write_text(COMPARE_LEAN)
+        binary = native_harness.build(project, log)
+        started = time.monotonic()
+        run = subprocess.run([str(binary)], input=payload, text=True, capture_output=True,
+                             timeout=60, check=True)
+        log.append(dict(command=[str(binary)], cwd=str(Path.cwd()), exit=run.returncode,
+                        seconds=time.monotonic() - started, stderr=run.stderr))
+        observed = [json.loads(line) for line in run.stdout.splitlines()]
+        assert len(observed) == len(inputs)
+        for pair, actual in zip(results, observed):
+            assert actual['accepted'] == pair['expected'], (pair, actual)
+            if not pair['expected']:
+                assert actual['error'] == 'QleisliKernel.Finite.Error.equation', (pair, actual)
+        assert not observed[-1]['accepted'] and 'workLimit' in observed[-1]['error']
+        assert native_harness.source_identity() == kernel_before, 'kernel source changed'
+        return dict(driver_sha256=hashlib.sha256(COMPARE_LEAN.encode()).hexdigest(),
+            binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
+            input_sha256=hashlib.sha256(payload.encode()).hexdigest(),
+            stdout_sha256=hashlib.sha256(run.stdout.encode()).hexdigest(),
+            kernel_source_sha256=hashlib.sha256(json.dumps(kernel_before, sort_keys=True).encode()).hexdigest(),
+            kernel_library_sha256=native_harness.digest(native_harness.LIBRARY),
+            comparisons=len(results), observed=observed,
+            scope='unwired exact coefficient component; no production signature/source gate')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--native', action='store_true')
+    parser.add_argument('--native-compare', action='store_true')
     parser.add_argument('--record', type=Path, required=True)
     args = parser.parse_args()
     cases = programs()
@@ -179,15 +239,17 @@ def main():
                 kernel_library_sha256=native_harness.digest(native_harness.LIBRARY),
                 lean_toolchain=subprocess.check_output(['lake', 'env', 'lean', '--version'],
                     cwd=native_harness.PACKAGE, text=True).strip())
+    compared = native_comparisons(cases, results, log) if args.native_compare else None
     report = dict(format=1, kind='untrusted-instrument-meaning-design-experiment',
         baseline_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
         command=[sys.executable, *sys.argv],
         recorded_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(), max_live_qubits=2,
-        comparisons=results, native=binding, commands=log,
+        comparisons=results, native=binding, native_comparison=compared, commands=log,
         programs=cases, histories=histories,
         source_sha256={str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
             for path in [Path(__file__), Path(observation.__file__), Path(exact.__file__),
-                         Path(finite.__file__), Path(raw.__file__), Path(native_harness.__file__)]},
+                         Path(finite.__file__), Path(raw.__file__), Path(native_harness.__file__),
+                         ROOT / 'lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean']},
         limits=['not a production requested-instrument gate',
                 'no source preservation or full QS/PR/RS proof',
                 'no signature/type-tree/effect admission is inferred from CP equality',
@@ -195,7 +257,9 @@ def main():
     args.record.parent.mkdir(parents=True, exist_ok=True)
     args.record.write_text(json.dumps(report, indent=2, default=str) + '\n')
     print(f'{len(results)} exact CP comparisons; native original-history matches: '
-          f'{binding["exact_history_matches"] if binding else "not run"}; max 2 live qubits')
+          f'{binding["exact_history_matches"] if binding else "not run"}; '
+          f'native coefficient comparisons: {compared["comparisons"] if compared else "not run"}; '
+          'max 2 live qubits')
 
 
 if __name__ == '__main__':

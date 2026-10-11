@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add an unwired Mathlib-free exact instrument-coefficient comparator for the
+  adopted observing `apply_contract` design. Stream complete outcome-indexed
+  Choi coefficients under existing limits; prove its complex/reference meaning
+  and ordered projection in a bounded experiment. Preserve all public request
+  modes and pure Meaning phase rules; source integration remains unfinished.
+
 - Add the adopted bounded `meaning M: A = reference(f)` form for closed
   principal-Unitary endomorphisms. Mix reference and monomial targets through
   compose/tensor, retaining original artifacts, dependencies and source-bound

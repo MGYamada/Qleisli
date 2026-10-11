@@ -2297,7 +2297,7 @@
     },
     {
       "path": "lean-kernel/QleisliKernel.lean",
-      "sha256": "7b4ffbaa275698294e758d66938434e08245d8089dca05bdea6b93df0be32052",
+      "sha256": "0abb6f68771e2a9c132f94acb2ca773ae4d28cf58f9b46872a13f7834fdb6557",
       "group": "hierarchy",
       "surface": null
     },
@@ -2670,6 +2670,12 @@
     {
       "path": "lean-kernel/QleisliKernel/Raw/Instrument.lean",
       "sha256": "656f22b1dff185caa726a62282842ac04534a1b035805406f90c419c93ed1fa1",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean",
+      "sha256": "0037f8a95d0461eb5c42966500e652a8ac4a052c95a2528b8e4712b5b1fe962a",
       "group": "raw-core",
       "surface": null
     },
