@@ -1,0 +1,112 @@
+[
+  {
+    "label": "version",
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:18.074338+00:00",
+    "seconds": 0.020613916974980384,
+    "exit_code": 0,
+    "stdout": "version.stdout.txt",
+    "stderr": "version.stderr.txt"
+  },
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:18.095072+00:00",
+    "seconds": 0.09948362497380003,
+    "exit_code": 0,
+    "stdout": "build.stdout.txt",
+    "stderr": "build.stderr.txt"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/Observe.rs",
+      "--extern",
+      "qleisli=/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:18.194854+00:00",
+    "seconds": 0.3883622079738416,
+    "exit_code": 0,
+    "stdout": "observer-build.stdout.txt",
+    "stderr": "observer-build.stderr.txt"
+  },
+  {
+    "label": "bit-boolean-keywords",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/bit-boolean-keywords",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/before-follow-up/bit-boolean-keywords",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:19.110762+00:00",
+    "seconds": 0.2702325830468908,
+    "exit_code": 0,
+    "stdout": "bit-boolean-keywords.stdout.txt",
+    "stderr": "bit-boolean-keywords.stderr.txt"
+  },
+  {
+    "label": "canonical-actions-keywords",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions-keywords",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/before-follow-up/canonical-actions-keywords",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:19.381879+00:00",
+    "seconds": 0.008454791037365794,
+    "exit_code": 0,
+    "stdout": "canonical-actions-keywords.stdout.txt",
+    "stderr": "canonical-actions-keywords.stderr.txt"
+  },
+  {
+    "label": "legacy-actions-keywords",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-actions-keywords",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/before-follow-up/legacy-actions-keywords",
+      "main::main"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:19.390896+00:00",
+    "seconds": 0.8588991250144318,
+    "exit_code": 0,
+    "stdout": "legacy-actions-keywords.stdout.txt",
+    "stderr": "legacy-actions-keywords.stderr.txt"
+  },
+  {
+    "label": "legacy-unit-drain-readout",
+    "argv": [
+      "/private/tmp/qleisli-ordinary-types-before-20261005/ordinary-types-observer-before",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/legacy-unit-drain-readout",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/before-follow-up/legacy-unit-drain-readout",
+      "main::f"
+    ],
+    "cwd": "/private/tmp/qleisli-ordinary-types-before-20261005",
+    "started_at": "2026-10-04T15:47:20.250298+00:00",
+    "seconds": 0.05254983302438632,
+    "exit_code": 0,
+    "stdout": "legacy-unit-drain-readout.stdout.txt",
+    "stderr": "legacy-unit-drain-readout.stderr.txt"
+  }
+]

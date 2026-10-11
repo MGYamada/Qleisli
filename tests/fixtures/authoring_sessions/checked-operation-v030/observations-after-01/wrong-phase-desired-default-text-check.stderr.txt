@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/wrong-phase-desired/main.qli:17:27: contract: exact equation U E_in = E_out u does not hold

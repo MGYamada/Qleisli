@@ -1,0 +1,79 @@
+{
+  "format": "qleisli.test-only-observed-profile-ordering-repair",
+  "version": 1,
+  "recorded_at_utc": "2026-10-05T22:37:48.742694+00:00",
+  "status": "repair prepared; revised target not executed by this author",
+  "authorization": "Root released this test-only mutation after its reported constitutional continuity pass at trusted base faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2. This is not a new constitutional act.",
+  "original_test": {
+    "historical_path": "tests/common_source_provider_access.rs",
+    "preserved_path": "tests/fixtures/authoring_sessions/common-provider-access-v030/test-authoring-attempt-02/original-test.rs.txt",
+    "sha256": "c192e148a05e9c13fc10a738818fe0b29c7298c3825764627a5782c776568fde",
+    "bytes": 4266
+  },
+  "revised_test": {
+    "path": "tests/common_source_provider_access.rs",
+    "sha256": "8f7ee5d4ce9a29fbadd88e4632874a11c40a6b4eb69f3f468976fa9a3538ea49",
+    "bytes": 4801
+  },
+  "actual_failed_validation": {
+    "executed_by": "root",
+    "directory": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-04",
+    "results_sha256": "534f47a1122a3a0acf143e22476559f178cd3f63c7af41095940d0d4c16df66a",
+    "focused_stage_exit_code": 101,
+    "provider_test_target": {
+      "passed": 3,
+      "failed": 2,
+      "ignored": 0
+    },
+    "source_inputs_unchanged": true,
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-04/05-focused-integration-tests.stdout.txt",
+      "sha256": "3281af09ab46f5cb5184beeeaedecf567b79bf5e017ab52606f1d69e26bd86df",
+      "bytes": 28827
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/common-original-ast-design/implementation-01/validation/latest-attempt-04/05-focused-integration-tests.stderr.txt",
+      "sha256": "f551bc0c40487ff3b46cb5a8dea6484aff80b41a3f5c08f0045dfb27ca9a4b73",
+      "bytes": 604050
+    }
+  },
+  "failure_interpretation": "Both source-positive control cases passed selected parse and inferred-Unitary assertions, then received finite Unsupported at the exact controlled expression before the opaque-Basis sibling under canonical DefId profile ordering. The failed assertion overspecified which honest finite eligibility barrier came first. No permission bug is established by this failure.",
+  "exact_positive_finite_expectations": [
+    {
+      "cases": [
+        "apply-only-forward",
+        "adjoint-only-backwards-forward",
+        "all-paths-inverse"
+      ],
+      "code": "unsupported",
+      "message": "finite profile does not support opaque Basis parameters",
+      "original_source_slice": "A"
+    },
+    {
+      "cases": [
+        "all-paths-controlled",
+        "closed-provider-controlled"
+      ],
+      "code": "unsupported",
+      "message": "expression is outside the finite lowering profile",
+      "original_source_slice": "controlled(W)(c,q)"
+    }
+  ],
+  "unchanged_assertions": "Selected preparation and inferred Unitary positives; all five negative source access/capability categories, missing paths and original wrapper spans; absent native executable. No any-Unsupported oracle was introduced.",
+  "historical_first_map": {
+    "path": "tests/fixtures/authoring_sessions/common-provider-access-v030/first-files.json",
+    "sha256": "5ec2ae43cb6db6ec9fc359e9599363f856e06e227423d300a8de49cc33a7150f",
+    "preserved_mapped_files": 25,
+    "active_test_binding_note": "The unchanged FIRST map remains a historical binding to c192 original test bytes, preserved above. It is not a claim that the revised active test still has that hash."
+  },
+  "source_changes": 0,
+  "manifest_changes": 0,
+  "executions_by_repair_author": {
+    "cargo": 0,
+    "tests": 0,
+    "cli": 0,
+    "native": 0,
+    "builds": 0
+  },
+  "limitations": "Actual root tests are evidence of the checked source paths and reported eligibility limits only; no source-preservation proof, native contract rejection, certificate, Issue completion or release readiness."
+}

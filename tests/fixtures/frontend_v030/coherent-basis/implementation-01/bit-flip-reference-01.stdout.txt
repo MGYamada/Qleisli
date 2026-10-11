@@ -1,0 +1,7 @@
+
+running 2 tests
+test bit_flip_code_does_not_claim_to_correct_phase_or_double_bit_errors ... ok
+test single_bit_flip_recovery_preserves_entanglement_with_a_reference ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 2.43s
+

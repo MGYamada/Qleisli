@@ -3,7 +3,72 @@ use super::super::operations::{Bindings, Operation};
 use super::*;
 
 impl Lowerer<'_, '_> {
-    fn operation(
+    pub(super) fn constructed_inverse(
+        &mut self,
+        module: &str,
+        span: Span,
+        operation: &StaticOp,
+        input: &Expr,
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let value = self.expr(module, input, env)?;
+        let slot = self.quantum(module, input.span, &value, false)?;
+        let op = self.operation(module, operation, env)?;
+        if op.basis != self.raw.registers[&slot].basis {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "inverse operation and input have different exact basis trees",
+            ));
+        }
+        let steps = op.steps(module, span, Access::Adjoint, self.compiler)?;
+        self.apply_circuit(slot, steps);
+        Ok(value)
+    }
+
+    pub(super) fn controlled_application(
+        &mut self,
+        module: &str,
+        span: Span,
+        operation: &StaticOp,
+        args: &[Expr],
+        env: &mut Env,
+    ) -> Result<Value, CompileError> {
+        let [control, target] = args else {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "controlled application requires a control and a target",
+            ));
+        };
+        let c = self.expr(module, control, env)?;
+        self.quantum(module, control.span, &c, true)?;
+        let q = self.expr(module, target, env)?;
+        let slot = self.quantum(module, target.span, &q, false)?;
+        let op = self.operation(module, operation, env)?;
+        if op.basis != self.raw.registers[&slot].basis {
+            return Err(self.error(
+                module,
+                span,
+                ErrorCode::TypeMismatch,
+                "controlled operation and target have different exact basis trees",
+            ));
+        }
+        let steps = op.steps(module, span, Access::Controlled, self.compiler)?;
+        let joined = self.sealed(module, span, "std::quantum", "join", vec![c, q])?;
+        let slot = self.quantum(module, span, &joined, false)?;
+        self.apply_circuit(slot, steps);
+        self.sealed(module, span, "std::quantum", "split", vec![joined])
+    }
+
+    pub(super) fn bound_operation(&self, name: &Ident) -> Option<&Operation> {
+        let id = self.compiler.locals.usage(name).static_parameter?;
+        self.bindings.get(self.compiler.locals.key(id))
+    }
+
+    pub(super) fn operation(
         &mut self,
         module: &str,
         expr: &StaticOp,
@@ -12,11 +77,23 @@ impl Lowerer<'_, '_> {
         self.compiler.tick(module, expr.span)?;
         // Parser and each constructed description bound recursive depth.
         match &expr.kind {
+            StaticOpKind::Type(_) | StaticOpKind::Natural(_) | StaticOpKind::Specialize { .. } => {
+                Err(self.error(
+                    module,
+                    expr.span,
+                    ErrorCode::Unsupported,
+                    "static argument is outside the finite lowering profile",
+                ))
+            }
             StaticOpKind::Name(name) => {
                 self.static_name(module, name, env)?;
-                if let Some(op) = self.bindings.get(&name.text) {
-                    self.compiler.charge(module, name.span, op.copy_size())?;
-                    return Ok(op.clone());
+                if let Some(op) = self.bound_operation(name) {
+                    let cost = op.copy_size();
+                    self.compiler.charge(module, name.span, cost)?;
+                    return Ok(self
+                        .bound_operation(name)
+                        .expect("retained static binding")
+                        .clone());
                 }
                 self.compiler.provider(module, name, None)
             }
@@ -26,12 +103,12 @@ impl Lowerer<'_, '_> {
             } => {
                 for name in [implementation, meaning] {
                     self.static_name(module, name, env)?;
-                    if self.bindings.contains_key(&name.text) {
+                    if self.bound_operation(name).is_some() {
                         return Err(self.error(
                             module,
                             name.span,
                             ErrorCode::TypeMismatch,
-                            "bind_op requires closed declarations",
+                            "checked_op requires closed declarations",
                         ));
                     }
                 }
@@ -60,7 +137,12 @@ impl Lowerer<'_, '_> {
         name: &Ident,
         env: &Env,
     ) -> Result<(), CompileError> {
-        if env.contains_key(&name.text) {
+        if self
+            .compiler
+            .locals
+            .local_key(name)
+            .is_some_and(|key| env.contains_key(key))
+        {
             return Err(self.error(
                 module,
                 name.span,
@@ -90,12 +172,13 @@ impl Lowerer<'_, '_> {
         if args.is_empty() {
             return Ok(Bindings::new());
         }
-        let expected = self.compiler.abstract_bindings(key)?;
+        let expected = self.compiler.required_bindings(key)?;
         let mut bindings = Bindings::new();
         let mut identity = Vec::new();
         for (param, arg) in decl.static_params.iter().zip(args) {
             let actual = self.operation(site.module, arg, env)?;
-            let required = &expected[&param.name.text];
+            let binding = self.compiler.locals.binder(&param.name);
+            let required = &expected[self.compiler.locals.key(binding)];
             if actual.basis != required.basis {
                 return Err(self.error(
                     site.module,
@@ -125,10 +208,9 @@ impl Lowerer<'_, '_> {
             self.compiler
                 .charge(site.module, arg.span, actual.copy_size().saturating_mul(2))?;
             identity.push(actual.clone());
-            bindings.insert(param.name.text.clone(), actual);
+            bindings.insert(self.compiler.locals.key(binding).clone(), actual);
         }
         if !identity.is_empty()
-            && !self.abstract_check
             && !self
                 .compiler
                 .instances
@@ -143,7 +225,7 @@ impl Lowerer<'_, '_> {
                     "project exceeds 256 distinct operation specializations",
                 ));
             }
-            self.compiler.instances.push((key.clone(), identity));
+            self.compiler.instances.push((*key, identity));
         }
         Ok(bindings)
     }
@@ -156,11 +238,15 @@ impl Lowerer<'_, '_> {
         env: &Env,
         access: Access,
     ) -> Result<Option<Vec<CircuitStep>>, CompileError> {
-        let Some(op) = self.bindings.get(&name.text) else {
+        let Some(op) = self.bound_operation(name) else {
             return Ok(None);
         };
-        self.compiler.charge(module, name.span, op.copy_size())?;
-        let op = op.clone();
+        let cost = op.copy_size();
+        self.compiler.charge(module, name.span, cost)?;
+        let op = self
+            .bound_operation(name)
+            .expect("retained static binding")
+            .clone();
         self.static_name(module, name, env)?;
         if op.basis != *basis {
             return Err(self.error(
@@ -185,15 +271,4 @@ impl Lowerer<'_, '_> {
         self.bindings = previous;
         result
     }
-}
-
-/// Check types, linear ownership and declared access with abstract operations.
-/// Identity placeholders are discarded here and can never authorize execution.
-/// Exact computed obligations are checked afresh for every concrete expansion.
-pub(in crate::frontend::compile) fn check_generic(
-    compiler: &mut Compiler<'_>,
-    key: &Key,
-    bindings: Bindings,
-) -> Result<(), CompileError> {
-    lower_function_inner(compiler, key, bindings, true).map(|_| ())
 }

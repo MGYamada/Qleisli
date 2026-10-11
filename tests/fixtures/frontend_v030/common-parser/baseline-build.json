@@ -1,0 +1,23 @@
+{
+  "source_commit": "061636d76a5f502a80ab33deacca9ca548298d82",
+  "archive_argv": [
+    "git",
+    "archive",
+    "061636d76a5f502a80ab33deacca9ca548298d82",
+    "Cargo.toml",
+    "Cargo.lock",
+    "src",
+    "stdlib"
+  ],
+  "build_argv": [
+    "cargo",
+    "build",
+    "--offline",
+    "--bin",
+    "qleisli"
+  ],
+  "cwd": "/private/tmp/qleisli-parser-061636-7zg3drst",
+  "exit_code": 0,
+  "stdout": "baseline-build.stdout.txt",
+  "stderr": "baseline-build.stderr.txt"
+}

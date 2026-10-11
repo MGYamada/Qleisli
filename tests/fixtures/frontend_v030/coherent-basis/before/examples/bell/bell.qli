@@ -1,0 +1,4 @@
+pub iso fn entangle(q: Q<Bit>) -> Q<(Bit, Bit)> {
+    do x <- q;
+    pure (x, x)
+}

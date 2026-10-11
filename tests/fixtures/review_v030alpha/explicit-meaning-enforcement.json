@@ -1,0 +1,66 @@
+{
+  "format": "qleisli.explicit-meaning-enforcement-review",
+  "version": 1,
+  "issues": [
+    44,
+    32,
+    27
+  ],
+  "base_commit": "a94d3be3ffc09540e219fd256e45ed0c44913928",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6022652469",
+  "status": "bounded selected checked_op adapter implemented and locally verified; full Issue acceptance remains open",
+  "source_sha256": {
+    "src/frontend/sized/ast.rs": "59f6f9ebb86036327d2a724ad917d971c78573277e2cff213ce11c0da523e65f",
+    "src/frontend/sized/parser.rs": "dbe792be18afb96f4299fc808c3dfae87b4e20c9a39d6e84daf3f5c1f97ff742",
+    "src/frontend/sized/elaborate.rs": "3f236d858bb92fd38c87d8b8512905a0075b501aa81e120ac28ce9fd0e86a3e5",
+    "src/frontend/sized/raw.rs": "bfd1a57c03b929b25e04ccd9708662003a3d9eae344554437622df22e2e56bcf",
+    "tests/classical_functions.rs": "a1d2686e5e6410e970422c0b98f6f85e2e28ef94f0328d14399fadfefc66788d",
+    "scripts/check_production_coverage.py": "da18e24665ac15aedee243f639a6a2f30fa1a2e6ada6f866b7c54d97cd18926b",
+    "docs/src/reference/type-model.md": "96eb7680b155fca8e15652a03fb784a9069dd35d49d096072aef36ff84b47af5"
+  },
+  "behavior": {
+    "request": "Explicit checked_op requests retain original resolved Meaning IDs, spans and modules. Forwarded requests accumulate; operation keys distinguish the requested identities.",
+    "subject": "Immutable caller binding or direct operation step plus exact Repeat child depth selects actual source action. Zero-count outer repetitions do not erase inner requirements.",
+    "native": "Same private all-requirements bank checks native finite equations and ordered source replay before emitting actual checked leaf bytes/matrices in the hierarchy. Final graph still needs fresh native acceptance.",
+    "barriers": "Plain/single-leaf hierarchy lowering and Raw root routes detect explicit requests even without refined formals. No failed-route fallback.",
+    "limits": "Existing shared exact-work, 1024 checks, 100000 aggregate provider bytes and existing depth/storage ceilings retained. No new native mode or capacity."
+  },
+  "checks": {
+    "latest_rust": "70 integration tests passed across classical_functions (29), basis_polymorphism (10), quantum_unit_source (16), operation_parameters (15); 4 private Raw tests passed. The final forwarded-request counterexample was additionally rerun.",
+    "actual_msrv": "Same 74 distinct tests passed using actual Rust/Cargo 1.85.0 via scripts/run_msrv.py; final forwarded-request counterexample additionally rerun.",
+    "clippy": "Latest and actual MSRV all-target Clippy passed -D warnings after final test edit.",
+    "python": "31 inventory/production coverage policy tests passed (17+14).",
+    "inventory": "Reviewed four changed source snapshots and two immutable proposal accessors. 275 constructors,265 source snapshots,20 boundaries,22 paths,9 unchanged native modes.",
+    "book": "Pinned mdBook 0.5.4 build;29 HTML,1224 links,471 anchors passed.",
+    "docs": "2191 local links,30 anchors,206 Lean roots passed after authoring record update.",
+    "constitution": "Identity and continuity against trusted 38baae7d19535602b21270e11e97617d45205b37 passed; no fresh Lean replay.",
+    "format": "cargo fmt --all -- --check and git diff --check passed.",
+    "fixture_budget": "17880 working fixture files including ignored;133600348 bytes; within unchanged 18000-file/150MiB limits."
+  },
+  "counterexamples": [
+    "Unused identity-for-Flip rejected",
+    "Inner identity-for-Flip rejected under zero repetition",
+    "Direct adjoint checked against original provider Meaning before transformation",
+    "Forwarded conflicting requests rejected in both orders; neither replaced the other",
+    "Both CLI spellings enforce honest/lying requests on auto/hierarchy routes; explicit Raw bypass rejected"
+  ],
+  "independent_observations": "Unused accepted action remains identity on joint complex amplitudes with an external reference; direct Bit adjoint performs X; scalar Unit adjoint retains omega^-1 on each reference slice. New cases use <=1 system qubit.",
+  "authoring_packet": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/explicit-attempt-01/before.json and after.json retain actual same-byte pre-code refusal and post-code acceptance.",
+  "development_failures": [
+    "Initial test command used nonexistent basis_types/quantum_unit target names and executed no tests; corrected to actual targets.",
+    "Initial scalar reference test passed reference dimension 1 with two amplitudes and was correctly refused. Corrected to dimension 2 without changing source/checker."
+  ],
+  "protected": "Ratified Constitution, adopted QS/PR/RS/EXACT interpretations and two scoped QLV1 guarantees unchanged. AST-to-step/table, runtime/target correspondence and quantitative RS remain pending obligations; no new discharge or human act.",
+  "not_performed": [
+    "Full all-target Rust tests for this head",
+    "Fresh Lean build/audit/replay",
+    "Package/install/release validation",
+    "New maximum-size cases"
+  ],
+  "hosted_ci": {
+    "run": 37508346409,
+    "commit": "98edfbf3c3d4a8882d1528123af68b364b493a27",
+    "observed": "in_progress; native/macOS/Lean/docs/interop passed, Rust/MSRV/distribution still live. This new component is not covered; hold push."
+  },
+  "completion": "22/111 (19.82%); no Issue closed on partial profile evidence; #63 deferred for 0.3.0-alpha."
+}

@@ -1,0 +1,1 @@
+use dep::helper;pub unitary fn f(q:Q<Bit>)->Q<Bit>{helper(q)}

@@ -3,6 +3,9 @@ import QleisliKernel.Semantics.Observation
 /-! Independent linear ownership judgments for all original observing raw ops.
 No checker, work limit, effect decision, evidence receipt or matrix is imported.
 Quantum owners are exclusive operation rights, not separable quantum states.
+Ownership safety belongs to QS. Exact clean-workspace discharge is a separate
+QS obligation (https://github.com/MGYamada/Qleisli/issues/157); quantitative
+resource bounds belong to RS (https://github.com/MGYamada/Qleisli/issues/280).
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Ownership
 open Raw Observation
@@ -50,6 +53,8 @@ def outputs : Raw.Op → List Nat
   | .cnot _ _ a b | .quantumIf _ _ a b _ _ | .split _ a b _ => [a,b]
   | .toffoli _ _ _ a b c => [a,b,c]
   | .computeUseUncompute _ out targets _ _ _ => out :: targets.map (·.output)
+  | .packUnit output => [output]
+  | .unpackUnit _ => []
 
 /-- Scratch identities remain issued after their scoped operation. Fresh axes
 of a lift are the suffix after its original operand, not inferred separability. -/
@@ -106,6 +111,8 @@ def Access (state : State) : Raw.Op → Prop
     Circuit (port.bits + scratch.length) physical ∧ Circuit port.bits logical
   | .computeUseUncompute input _ targets scratch _ uses => ∃ port, PortAt state input port ∧
     (∀ target ∈ targets, BitOwner state target.input) ∧ Uses port.bits scratch.length targets.length uses
+  | .packUnit _ => True
+  | .unpackUnit input => ∃ port, PortAt state input port ∧ port.bits = 0 ∧ port.wires = []
 
 /-- Literal consumption/return is fixed by the independent original-operation
 reader. Exact issued lists plus Valid rule out every reuse, including scratch. -/
@@ -181,7 +188,7 @@ structure Returned (state : State) (outputs : List Nat) : Prop where
 
 /-- Linear ownership safety for a complete ordinary raw program. Classical
 SSA/effect correctness, quantum cleanup meaning, costs and hierarchy are separate. -/
-def ResourceSafe (program : Observation.Program) : Prop :=
+def OwnershipSafe (program : Observation.Program) : Prop :=
   ∃ initial final, Inputs {} program.inputs initial ∧
     Run initial program.operations final ∧ Returned final program.outputs
 

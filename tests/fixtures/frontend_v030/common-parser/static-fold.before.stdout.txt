@@ -1,0 +1,2 @@
+finite: error 96..97 unexpected character `.`
+sized: ok

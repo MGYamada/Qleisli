@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.ordinary-before-code-readback-files",
+  "version": 1,
+  "files": {
+    "issue-317-after.json": "bdd218622d69b50382f957194ce386d2eb017900f431a381f4228fef32b06b7e",
+    "issue-317-before.json": "488f2eb45161ac1ec5b8aee4b290a6923208d644fffd2addea53381952e1041f",
+    "issue-32-after.json": "682c7c7fe6cf34903bd5b4c46658dfc3ba836a50b2c3046ab5a494cf5a506729",
+    "issue-32-before.json": "5fe4c29a72b4318d757b21fade41027c7ecdb2b5c7c529e096ae7627c4eadbfa",
+    "record.json": "927efbfe7ac8379ac230615489dfe32d13be6fd9e4cf3975069a91fe27ab678a"
+  },
+  "self_excluded": "files.json"
+}

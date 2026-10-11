@@ -1,0 +1,2 @@
+use rotation::a_phase;use ports::m_swap;
+pub unitary fn z_entry(q:Q<Bit>,r:Q<Bit>)->(Q<Bit>,Q<Bit>){let q=a_phase(q);m_swap(q,r)}

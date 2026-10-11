@@ -1,0 +1,4 @@
+//! Teleport a prepared state and undo its preparation; the last bit must be zero.
+use checks::teleport_prepared;
+use states::one;
+observe fn main() -> ((Bit,Bit),Bit) { teleport_prepared[one]() }

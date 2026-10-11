@@ -12,6 +12,7 @@ import itertools
 import json
 import math
 from pathlib import Path
+from current_source_fixtures import current_source_fixture
 import random
 import subprocess
 import tempfile
@@ -116,7 +117,7 @@ def oracle(nodes):
 
 def check_source(binary):
     """Separate finite source experiment; no source-to-new-IR proof is implied."""
-    source = ROOT / "tests/fixtures/lean_phase_layout/interference_client"
+    source = current_source_fixture(ROOT / "tests/fixtures/lean_phase_layout/interference_client")
     result = subprocess.run([str(binary), "run", str(source), "--format=json"],
                             capture_output=True, text=True, timeout=15, check=False)
     assert result.returncode == 0, result

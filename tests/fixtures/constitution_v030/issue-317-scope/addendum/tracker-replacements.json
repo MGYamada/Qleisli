@@ -1,0 +1,37 @@
+{
+  "format": "qleisli.issue-scope-replacement-proposal",
+  "version": 1,
+  "issue": 142,
+  "status": "draft-not-applied",
+  "replacements": [
+    {
+      "section": "Current completion accounting — 2026-10-06 (Asia/Tokyo)",
+      "old": "its twenty original criteria require semantic namespace admission rules, retiring fixed-instance arithmetic/catch-all APIs, singular `std::transform`, preserved useful circuits and atomic active-client migration.",
+      "new": "its **24 criteria (the twenty original criteria plus four subsequently added generic-QFT criteria)** require semantic namespace admission rules, retiring fixed-instance arithmetic/catch-all APIs, singular `std::transform`, preserved useful circuits, atomic active-client migration, canonical `std::transform::qft<N>` identity and exact correspondence for every retained fixed-size QFT specialization.",
+      "matches_in_captured_body": 1,
+      "classification": "current scope or active verification contract, not a performed-results report"
+    },
+    {
+      "section": "Current state and scope",
+      "old": "This tracker covers **110 Issues**: the original 108 whose titles begin with `0.3.0` in the 2026-10-04 planning snapshot, plus #311 and #315, explicitly included by the maintainer's 2026-10-05 instructions.",
+      "new": "This tracker covers **111 Issues**: the original 108 whose titles begin with `0.3.0` in the 2026-10-04 planning snapshot, plus #311, #315 and #317, explicitly included by the maintainer's later scope-expansion instructions.",
+      "matches_in_captured_body": 1,
+      "classification": "current scope or active verification contract, not a performed-results report"
+    },
+    {
+      "section": "Executable scoped release-readiness gate contract — Verification inputs",
+      "old": "the exact 110 selected Issue IDs and 13 groups from the maintainer-corrected tracker (all original 108 plus #311 and #315)",
+      "new": "the exact 111 selected Issue IDs and 13 groups from the maintainer-corrected tracker (all original 108 plus #311, #315 and #317; #317 retains all twenty original criteria and all four subsequent generic-QFT criteria, 24 total)",
+      "matches_in_captured_body": 1,
+      "classification": "current scope or active verification contract, not a performed-results report"
+    },
+    {
+      "section": "Executable scoped release-readiness gate contract — CI placement and provenance",
+      "old": "ordinary development PRs/full validation do not require all 110 issues to be finished.",
+      "new": "ordinary development PRs/full validation do not require all 111 issues to be finished.",
+      "matches_in_captured_body": 1,
+      "classification": "current scope or active verification contract, not a performed-results report"
+    }
+  ],
+  "preserve": "All performed-results reports and historical 108/109/110 counts, original twenty-criterion snapshots, guarantee/adoption records and the exact old API snapshots remain unchanged."
+}

@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::{init0,h,x,cnot}; use std::observe::measure_z;
+unitary fn keep(q: Q<Bit>, b: Bit) -> (Q<Bit>,Bit) { (x(q),b) }
+pub observe fn f() -> (Bit,Bit) {
+    let (q,r) = cnot(h(init0()),init0());
+    let (q,b) = keep(q,measure_z(r)); (measure_z(q),b)
+}
+pub observe fn main() -> (Bit,Bit) { f() }

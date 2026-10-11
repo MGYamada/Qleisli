@@ -1,0 +1,101 @@
+{
+  "format": "qleisli.formal-slot-postimplementation-control-preparation",
+  "version": 1,
+  "author": "/root/isometry_cli_tests",
+  "recorded_utc": "2026-10-05T18:37:34.792379+00:00",
+  "status": "unexecuted-post-implementation-controls",
+  "boundaries": {
+    "first40_changed": false,
+    "production_edited": false,
+    "build_test_cli_native_executed": false,
+    "compiled_head_attestation": false,
+    "issue_credit": false
+  },
+  "inspected_subset": [
+    {
+      "path": "tests/sized_declarations.rs",
+      "bytes": 19016,
+      "sha256": "8c6aa8e197283d30c587f7605369d47b91ec84f16e1a914ffa102a22579e45a4"
+    },
+    {
+      "path": "tests/common/mod.rs",
+      "bytes": 1685,
+      "sha256": "7a1a2e24f960a091877e55ea5725a429c2cac106234aadd32240a56f93781743"
+    },
+    {
+      "path": "tests/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "src/frontend/formals.rs",
+      "bytes": 3523,
+      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d"
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 33453,
+      "sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1"
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "bytes": 8339,
+      "sha256": "a7033fd313d0f69227a1acce76fba47d376dedc18ff995b88a48f925a72a7bbc"
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "bytes": 56352,
+      "sha256": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4764,
+      "sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15670,
+      "sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 56513,
+      "sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17"
+    },
+    {
+      "path": "src/frontend/sized/primitive.rs",
+      "bytes": 8169,
+      "sha256": "0e70474274063528868b99a43eeea6ad6b856de0f1a2a5d2e4eac0a5c393d700"
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "bytes": 64151,
+      "sha256": "9def83629b1d194c47f43a47055c8211fd5b45845a3d86cde9979e4789c6e028"
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28842,
+      "sha256": "f588c1324754dbfe6b6e157093a72c8e079722d1eaa185c6e4ffefe51cf1ef97"
+    },
+    {
+      "path": "docs/src/reference/primitive-boundary.md",
+      "bytes": 28267,
+      "sha256": "da733ddbb8f920bc417b318718e772fe60e0bb883f5eb05377bcd4840287b36f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/formal-slot-postimplementation-controls-01.md",
+      "bytes": 4609,
+      "sha256": "70ef83cb786fd1a5211d991fc10b517191bab7ae848a8075f37af4b7da60014f"
+    }
+  ]
+}

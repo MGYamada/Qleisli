@@ -1,0 +1,360 @@
+{
+  "format": "qleisli.ordinary-classical-type-study",
+  "version": 1,
+  "status": "sources-preserved-before-execution",
+  "head": "18f55693e31585dde67eeddeb064e77c138f9a57",
+  "cases": [
+    {
+      "name": "ordinary-bit-desired",
+      "desired_property": "An ordinary Bit is copyable and is not a Q owner.",
+      "legacy_control": false,
+      "sources": {
+        "ordinary-bit-desired/main.qli": "b3de9ea45299f6049f597396d7e8773f757c3ccd7ffe2e65481fcb3580a97110",
+        "ordinary-bit-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "ordinary-bit-legacy",
+      "desired_property": "Legacy control for An ordinary Bit is copyable and is not a Q owner.",
+      "legacy_control": true,
+      "sources": {
+        "ordinary-bit-legacy/main.qli": "de241fe0f662c336e8d43035905359064b111e93da71f32e87b34a23bbe53b01",
+        "ordinary-bit-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "ordinary-word-desired",
+      "desired_property": "Ordinary word type is Bits<2>; profile lowering may remain explicitly unsupported.",
+      "legacy_control": false,
+      "sources": {
+        "ordinary-word-desired/main.qli": "652ee3303142dd25973b57f9ad91b07258c026562ee95612b35aa3e759b3617c",
+        "ordinary-word-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "ordinary-word-legacy",
+      "desired_property": "Legacy control for Ordinary word type is Bits<2>; profile lowering may remain explicitly unsupported.",
+      "legacy_control": true,
+      "sources": {
+        "ordinary-word-legacy/main.qli": "1d7f9f0f64840e6df13525ef5a4b28656981b18763d9fd65808b6f9ada06fd7d",
+        "ordinary-word-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "unit-desired",
+      "desired_property": "Ordinary Unit is one common exact type; legacy empty tuple type syntax migrates.",
+      "legacy_control": false,
+      "sources": {
+        "unit-desired/main.qli": "7e473e54ce3408e19281b4cd733f1e8212ea9dac3fbfbb88bfab70a1fb618919",
+        "unit-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "unit-legacy",
+      "desired_property": "Legacy control for Ordinary Unit is one common exact type; legacy empty tuple type syntax migrates.",
+      "legacy_control": true,
+      "sources": {
+        "unit-legacy/main.qli": "adbb913ae686630443507c6899c79f178ce682e881f3c86a95e3d37b5913236b",
+        "unit-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "literal-desired",
+      "desired_property": "One 0/1 Bit literal spelling; no preparation or readout implied.",
+      "legacy_control": false,
+      "sources": {
+        "literal-desired/main.qli": "e0afad8930e2d4cc5a34c6989ba6fb3952f73e9e4e1df0721bf022964356b2f4",
+        "literal-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "literal-legacy",
+      "desired_property": "Legacy control for One 0/1 Bit literal spelling; no preparation or readout implied.",
+      "legacy_control": true,
+      "sources": {
+        "literal-legacy/main.qli": "b0c51e20a54663c6fa644abde4f7cca24c5d24b73a45f1fb486f350951fa4833",
+        "literal-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "boolean-flow-desired",
+      "desired_property": "Runtime Boolean operations and branching over ordinary values retain effects and evaluation order.",
+      "legacy_control": false,
+      "sources": {
+        "boolean-flow-desired/main.qli": "4afd58c52adb24cb3f3a4b68cf81973daacf770aaff5a702cf8dad4aea184a07",
+        "boolean-flow-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "boolean-flow-legacy",
+      "desired_property": "Legacy control for Runtime Boolean operations and branching over ordinary values retain effects and evaluation order.",
+      "legacy_control": true,
+      "sources": {
+        "boolean-flow-legacy/main.qli": "974a4f146b27e70ab3570a79506c634ce8659d2da0439568af2fa536b867a0f3",
+        "boolean-flow-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "measure-bit-desired",
+      "desired_property": "Measurement consumes the Q owner and explicitly returns an ordinary Bit with Observe effect.",
+      "legacy_control": false,
+      "sources": {
+        "measure-bit-desired/main.qli": "ecb834d8183df7ef42b0f9bab3ef66dfc99dd7f04335e383ef3472c7cdd5910d",
+        "measure-bit-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "measure-bit-legacy",
+      "desired_property": "Legacy control for Measurement consumes the Q owner and explicitly returns an ordinary Bit with Observe effect.",
+      "legacy_control": true,
+      "sources": {
+        "measure-bit-legacy/main.qli": "205802f7d9d2aba64ae4c9a10e88d879be7b97d61c9da144feee0792cbcd6d96",
+        "measure-bit-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "measure-word-desired",
+      "desired_property": "Retain the already implemented one-bit hierarchy readout packing and low-axis-first order.",
+      "legacy_control": false,
+      "sources": {
+        "measure-word-desired/main.qli": "ddea5d5b826227a026d33922bb6894851701df41afc4a280e9440c4ff42ec5d6",
+        "measure-word-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "measure-word-legacy",
+      "desired_property": "Legacy control for Retain the already implemented one-bit hierarchy readout packing and low-axis-first order.",
+      "legacy_control": true,
+      "sources": {
+        "measure-word-legacy/main.qli": "6a3bb7949ced70439a7c041d9599fe9e311a96284b84285e81a29826b03616b0",
+        "measure-word-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "copy-word-desired",
+      "desired_property": "Ordinary word copy is allowed independently of quantum owner uniqueness.",
+      "legacy_control": false,
+      "sources": {
+        "copy-word-desired/main.qli": "0aa1f95752a4c25ade2fbe9061fd18ade197f79491b64d81c8018cf038433905",
+        "copy-word-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "copy-word-legacy",
+      "desired_property": "Legacy control for Ordinary word copy is allowed independently of quantum owner uniqueness.",
+      "legacy_control": true,
+      "sources": {
+        "copy-word-legacy/main.qli": "8736926766451820ca5a58a8868ee4b459da0e01a6c748a379ffd824a65adeff",
+        "copy-word-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "drop-bit-desired",
+      "desired_property": "Ordinary drop is legal; the value () denotes Unit.",
+      "legacy_control": false,
+      "sources": {
+        "drop-bit-desired/main.qli": "4e5c2a8da51bbdfa4e39f2d2163f5f88a24e2e2ff07feb471e5f3a437acbbc21",
+        "drop-bit-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "drop-bit-legacy",
+      "desired_property": "Legacy control for Ordinary drop is legal; the value () denotes Unit.",
+      "legacy_control": true,
+      "sources": {
+        "drop-bit-legacy/main.qli": "e089ba91df5f200b842e98751188f4a341a084b9087acb958679d6a27e8aa98a",
+        "drop-bit-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "read-coercion-desired",
+      "desired_property": "Reject implicit readout rather than inferring measurement from the return type.",
+      "legacy_control": false,
+      "sources": {
+        "read-coercion-desired/main.qli": "6ee8e2d105bc956efd588dad88fb2bc68ea2fbf428acd3e0ff964f1605b1b32e",
+        "read-coercion-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "read-coercion-legacy",
+      "desired_property": "Legacy control for Reject implicit readout rather than inferring measurement from the return type.",
+      "legacy_control": true,
+      "sources": {
+        "read-coercion-legacy/main.qli": "e75ca3d4e87b4fd0b7d9c2c312b5b8bbd1e7845ce115fe8b05a6fc6a0d7798c9",
+        "read-coercion-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "prepare-coercion-desired",
+      "desired_property": "Reject implicit preparation rather than inferring it from the return type.",
+      "legacy_control": false,
+      "sources": {
+        "prepare-coercion-desired/main.qli": "a8f4390aa53f63e5627454516d34cacf33e61cbf72a5e5c288f4adb71475aa0f",
+        "prepare-coercion-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "prepare-coercion-legacy",
+      "desired_property": "Legacy control for Reject implicit preparation rather than inferring it from the return type.",
+      "legacy_control": true,
+      "sources": {
+        "prepare-coercion-legacy/main.qli": "51b11abfa3e5e8aebc7de70c4c62566331e49af967aaeda78b27082b705cf38b",
+        "prepare-coercion-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "runtime-natural-desired",
+      "desired_property": "Runtime values cannot supply static sizes even when names and widths match.",
+      "legacy_control": false,
+      "sources": {
+        "runtime-natural-desired/main.qli": "491e13881203a2e618638160c63df30524b3adde7c02d4ea351ca30cf88ac75c",
+        "runtime-natural-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "runtime-natural-legacy",
+      "desired_property": "Legacy control for Runtime values cannot supply static sizes even when names and widths match.",
+      "legacy_control": true,
+      "sources": {
+        "runtime-natural-legacy/main.qli": "2cc2d92387219f1a47e78bc390b83c4aab7a4ffe6de1548a78d1dc0409a13a28",
+        "runtime-natural-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "quantum-unit-identity",
+      "desired_property": "Q<Unit> remains an owner; no sized support is assumed.",
+      "legacy_control": false,
+      "sources": {
+        "quantum-unit-identity/main.qli": "ed104a17867bfeb573805fa92bb6d32e72820f727a7e8f74c9da2a6a2b6280be",
+        "quantum-unit-identity/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "quantum-unit-copy",
+      "desired_property": "Reject duplicate zero-wire quantum owner.",
+      "legacy_control": false,
+      "sources": {
+        "quantum-unit-copy/main.qli": "0a5d5c4946feb33553aa589f93b83587712a17fbbc17a138a7e178e98cd32c8e",
+        "quantum-unit-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "quantum-unit-drop",
+      "desired_property": "Reject implicit loss of zero-wire quantum owner.",
+      "legacy_control": false,
+      "sources": {
+        "quantum-unit-drop/main.qli": "e1bc4532c23e9f7f6214af89fc9535f1da5719119bc4714b9356a808c873466b",
+        "quantum-unit-drop/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "quantum-bit-copy",
+      "desired_property": "Reject duplicate quantum owner in both existing profiles.",
+      "legacy_control": false,
+      "sources": {
+        "quantum-bit-copy/main.qli": "77d556f6a3fe6730986501a1b028cd75636d6ace3f1c999aceef6a1759c6889c",
+        "quantum-bit-copy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "quantum-width-equality",
+      "desired_property": "Bit and Bits<1> retain exact constructor identity despite equal widths.",
+      "legacy_control": false,
+      "sources": {
+        "quantum-width-equality/main.qli": "099dde9bbfc70aa6fff19c6af11f0ab840c82415b9b9b422eaafd54641ecbe42",
+        "quantum-width-equality/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "ordinary-width-equality",
+      "desired_property": "Legacy control: ordinary Bit and Bits<1> retain exact constructor identity.",
+      "legacy_control": true,
+      "sources": {
+        "ordinary-width-equality/main.qli": "95523cc4a99f41ddc82c3d6d638579b71ffa5ced86c0f9d86573718d02f910f4",
+        "ordinary-width-equality/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "empty-word-vs-unit",
+      "desired_property": "Legacy control: zero-bit word does not equal empty tuple/Unit.",
+      "legacy_control": true,
+      "sources": {
+        "empty-word-vs-unit/main.qli": "4e75e61c265f002acbe1c7c70793fde7d969cb2b7625152b10f51689cb19e701",
+        "empty-word-vs-unit/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "nested-owner",
+      "desired_property": "Basis of Q cannot itself contain Q.",
+      "legacy_control": false,
+      "sources": {
+        "nested-owner/main.qli": "b77e74fec6919e321f1c01271564d8df929e23bac7023c134219714b5871f927",
+        "nested-owner/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "bit-numeral-two",
+      "desired_property": "Reject non-Bit numeral rather than expected-type coercion or modulo conversion.",
+      "legacy_control": false,
+      "sources": {
+        "bit-numeral-two/main.qli": "f241c227202fb14158deaca27312e29489e1ee1bfcde0a4696d0aafd4b6a8383",
+        "bit-numeral-two/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    },
+    {
+      "name": "basis-runtime-reuse",
+      "desired_property": "Observe current staging restriction; do not assume general cross-stage basis reuse for this cutover.",
+      "legacy_control": true,
+      "sources": {
+        "basis-runtime-reuse/main.qli": "b8773eab49900cbfbd0719bf211abd6f61602884b9202ed365f32b1721f02182",
+        "basis-runtime-reuse/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      }
+    }
+  ],
+  "source_identity": {
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080",
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "src/frontend/ast.rs": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+    "src/frontend/compile/basis.rs": "b3cecb102484ea1f562c82f89c81838696afa4ce67556db2fb7c30b93bda0dd2",
+    "src/frontend/compile/circuit.rs": "8572a05414751e5d030d597a0426252bf7ba863593a3ea62fe0ae6770fc9d835",
+    "src/frontend/compile/lower/branch.rs": "44ac4d45b6379d09b9f336fe98c4abc924757dab73a5000c891909b26ac94959",
+    "src/frontend/compile/lower/certified.rs": "be81a25690eac259b7d750af972e1465ba26ede3dbb7c70f2d1724d56b72b80f",
+    "src/frontend/compile/lower/function_contract.rs": "333e9eaffb1851f1c71d563a367ac5ffbad8075c51d8296024c74a1cd18ea301",
+    "src/frontend/compile/lower/mod.rs": "46e9fc2318ce2f44a7423af77ca7bd845d30a0b45d69021315270eec72cf1f57",
+    "src/frontend/compile/lower/operations.rs": "4114b12febadd0baae3928584344ebd876a95f0bbc4a53738ff9cfdb9e0272dc",
+    "src/frontend/compile/lower/primitives.rs": "80f3919157a62823de3bf0b271f4f9af0710a53b68a75db6960233449b07bf48",
+    "src/frontend/compile/lower/scope.rs": "1c27d0f3b4d84c03b2bd091857a99815fdebca4225d83f2290c1c43911205359",
+    "src/frontend/compile/lower/transforms.rs": "09b5a680ee2bfba06eb1cf8d8e2e0b8d1cc96d7e00c98eda65eac32847df6681",
+    "src/frontend/compile/lower/value.rs": "8d72d9349ab3d43ca5c43dc1e452c1da7ede71cf5ddcb77dbdb0339be49b6453",
+    "src/frontend/compile/mod.rs": "baf3b6fc5b70b73ee67b6cbf675c2aba4a017ba64f57b2e9ceb7713a2d597305",
+    "src/frontend/compile/operations.rs": "db999b2ad531781e4dae54d97c8d25069aff23687c2c24b846aa05d10f5c756b",
+    "src/frontend/compile/profile.rs": "8916be769b047b70eb3ed9adf58350f6137db3f0850dbbd77b0668f93e08360f",
+    "src/frontend/core.rs": "34e596e5c2d6e7e354c0439bce5ec7cd7adb2f6f5fb55e684d1d0bea5ae363c3",
+    "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf",
+    "src/frontend/documentation.rs": "d7339ec4f511db1114999cdab79a29c5bb2bc98fbe1dd8117aaf696e2f064cd9",
+    "src/frontend/lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "src/frontend/mod.rs": "c7b00487d60e4dd63bc4f7738a9f91bf905fbdfa44b185892da5784118663004",
+    "src/frontend/parser/tests.rs": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+    "src/frontend/parser.rs": "9ed6b4f1938f9ecf29f9f81afb11b60c47544c35d559d268742c1c64e72cbfcf",
+    "src/frontend/project/edition.rs": "3fbd7cdad9343d5a48baee2bf6fe49651dc5925eaefa43fcdedd1ae0e6fcdc18",
+    "src/frontend/project/manifest.rs": "8614136fba9798fcf6bb911ddc301acd6f9d4059ae5a74e18e8ed5a53be0e043",
+    "src/frontend/project/source_file.rs": "428d370c00507c5beec8b64d1fb87e0f74cc069b90452eb33987c0ab5a37a741",
+    "src/frontend/project.rs": "193c285db6ad84df996c86c75965a1a6aa88334755c9c1e7906fb2ca2f6854c9",
+    "src/frontend/resolve/locals.rs": "7132b78dff038887df51a5431cb3b6e2d1e1b326ac7ab73634be37925a29bbfd",
+    "src/frontend/resolve.rs": "c4663a03199703c984de792b98c1c0897ee57312689fa1a04424b91569a91c1a",
+    "src/frontend/scanner.rs": "5ab4ec962c6390d60cc01323cbb6be46c0eaf32728ab67280fabeb62af02adf4",
+    "src/frontend/sized/ast.rs": "71a944c9df4a2d125fb87b33d7c0c0a2b08d505a7619a23bedd4262b688b5d75",
+    "src/frontend/sized/check.rs": "dbc35aa8970e68722e5e8e224229e20cbcb9c390d07acb08939bfd81091f9986",
+    "src/frontend/sized/elaborate.rs": "2cd2ca2d7da2943826e08a107cc33acd85c7fe9133c8c7b697dc20a5d0dffe76",
+    "src/frontend/sized/fourier.rs": "5601777215b5ceef2b0d2530e17f790ac8aa0d88b2e92c34e422532e73ae1622",
+    "src/frontend/sized/linear.rs": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
+    "src/frontend/sized/lower/preservation.rs": "28dc95b0f91968bf61c73a0aa5404f22e3e3ca9ce4a73f632950666ff9db4157",
+    "src/frontend/sized/lower.rs": "4edbcf115c9756713317056b9eeefadef42543cf97e8710fd94f3346e1d89e68",
+    "src/frontend/sized/parser.rs": "25fc2251f393e830540a5cd63bb0dedfc1354c1e791d32ef8222c425898facd4",
+    "src/frontend/sized/primitive.rs": "9180608372278883f9fc35f7731853187be3800935a002982cef7b5c9a23c118",
+    "src/frontend/sized/qpe.rs": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+    "src/frontend/sized.rs": "e2928779d30d4b45e7227a77f5bb013fa827e5ed62af112803de747fdf9a10a7",
+    "src/frontend/types.rs": "a64ee4ce2737e91bd26e9efb74745d1da67fbb4d6322d36728fc652ba0f1ac57"
+  },
+  "scope": "34 bounded syntax/type/owner/profile cases; no native acceptance or source-preservation assertion; at most two declared qubits; no source edits."
+}

@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Separate direct pure arrows from static endomorphic provider restrictions before #83/#46 implementation",
+  "author": "Codex assistant; informed development; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "9101c409b2bb374a9618be5e864e21eb37021f89",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze direct controls, the exact-tree negative, and desired general-arrow sources before changing production rules.",
+      "sha256": {
+        "desired-preparation-arrow.qli": "0daf79c444650396a4b8eac7bedfc1afbd35cb016fa278024c138f3052daf31d",
+        "desired-unitor-arrow.qli": "4e48fa92aafbe0654b356d2c8653c983be22cb4e79586ddc39e7cce397b91e5c",
+        "direct-preparation.qli": "b127a54201d9a6c24946c7e61d0a90aaf2cbd9cec51de27a88457af12b81a0a2",
+        "direct-unitor.qli": "92e5c41feb60fe230009bcd70b2beeac5a318f30c5e7a0a1435a3b822985dce8",
+        "endomorphic-control.qli": "9fe160ecb965d7c6f29416f8e103002f4aeeb9d9b74296db089d4d29ebc29487",
+        "endomorphic-unitor-refusal.qli": "8322c8b757c68c5c1a25a39f5033fb0ec8ddf33e041436f68413b5072fa08e20"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/desired-preparation-arrow.json",
+        "observations/desired-unitor-arrow.json",
+        "observations/direct-preparation.json",
+        "observations/direct-unitor.json",
+        "observations/endomorphic-control.json",
+        "observations/endomorphic-unitor-refusal.json"
+      ]
+    }
+  ]
+}

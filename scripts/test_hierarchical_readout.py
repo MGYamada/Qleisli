@@ -11,8 +11,11 @@ import json
 from pathlib import Path
 import struct
 import subprocess
+import tomllib
 
 from test_hierarchical_artifact import ROOT, build_and_run
+
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def base(width, order=None):
@@ -250,7 +253,7 @@ def bridge(request, packet, budget=2000000):
 
 
 def inspect(kernel, payload):
-    run = subprocess.run([str(kernel), '--readout-check'], input=payload,
+    run = subprocess.run([str(kernel), '--readout-check', PRODUCT_VERSION], input=payload,
                          capture_output=True, timeout=60)
     fields = run.stdout.decode('ascii').splitlines()
     assert len(fields) == 3 and fields[0] == 'qleisli.readout-result 1', (fields, run.stderr)

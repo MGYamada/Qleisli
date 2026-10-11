@@ -1,0 +1,14 @@
+    Checking qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+error: this boolean expression can be simplified
+  --> src/frontend/effects.rs:32:9
+   |
+32 |         (!asserted.is_some_and(|bound| inferred > bound)).then_some(Self { inferred, asserted })
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try: `asserted.is_none_or(|bound| inferred <= bound)`
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#nonminimal_bool
+   = note: `-D clippy::nonminimal-bool` implied by `-D warnings`
+   = help: to override `-D warnings` add `#[allow(clippy::nonminimal_bool)]`
+
+error: could not compile `qleisli` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `qleisli` (lib test) due to 1 previous error

@@ -1,0 +1,45 @@
+{
+  "format": "qleisli.issue-checkpoint-readback",
+  "version": 1,
+  "local_implementation_commit": "6d95189960f78e51ea13db2ce85822b8ccabbd55",
+  "observed_at_utc": "2026-10-05T17:28:48.104822+00:00",
+  "selected": 111,
+  "confirmed_complete": 14,
+  "percent": 12.61,
+  "issues": [
+    {
+      "number": 32,
+      "state_before": "open",
+      "state_after": "open",
+      "milestone_before": 1,
+      "milestone_after": 1,
+      "before_body_sha256": "26d7c9c7c9240ce79dd58886e99a0e6e99c2b64a156eb47feea18a7acdc62875",
+      "after_body_sha256": "f6a162e516dc7a64ca263ac87f9b7003775a2966f420ace7bf94fcbb0d61968a",
+      "updated_at": "2026-10-05T17:27:57Z",
+      "scope": "Full fresh connector readback matched the authored body exactly; criteria/state/milestone preserved. This compact record does not authenticate authorship or archive the complete remote body."
+    },
+    {
+      "number": 317,
+      "state_before": "open",
+      "state_after": "open",
+      "milestone_before": 1,
+      "milestone_after": 1,
+      "before_body_sha256": "b295c9228091a4c6a8a6189a4b7a4d821c0450be5f5e726d663eeaae0f095141",
+      "after_body_sha256": "4deb0f3af7503813b5d7a5f6439f2b19bd778c92aae7ab83fbd6eb1abcd9c2e1",
+      "updated_at": "2026-10-05T17:27:59Z",
+      "scope": "Full fresh connector readback matched the authored body exactly; criteria/state/milestone preserved. This compact record does not authenticate authorship or archive the complete remote body."
+    },
+    {
+      "number": 142,
+      "state_before": "open",
+      "state_after": "open",
+      "milestone_before": 1,
+      "milestone_after": 1,
+      "before_body_sha256": "f4da288064386934d09272b10b1899c08bb0314a691b383da72721f26cd6ddaf",
+      "after_body_sha256": "2530959303ae359a48d78212d11a4226e7b6cf805eb967f4fdba62d136bc6e64",
+      "updated_at": "2026-10-05T17:28:01Z",
+      "scope": "Full fresh connector readback matched the authored body exactly; criteria/state/milestone preserved. This compact record does not authenticate authorship or archive the complete remote body."
+    }
+  ],
+  "no_issue_closed": true
+}

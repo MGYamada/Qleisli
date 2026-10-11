@@ -1,0 +1,25 @@
+{
+  "id": "02.rendered-book",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_book.py",
+    "--root",
+    "/private/tmp/qleisli-parameter-policy-book-ss7y7n7_/book"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T17:24:24.541696+00:00",
+  "elapsed_seconds": 0.24292629095725715,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "02.rendered-book.stdout.txt",
+    "sha256": "791c4c5ed2b41e868c3af3c7e0378e1b55e00e72d2f9ca867bd9674ca549e4d2",
+    "bytes": 67
+  },
+  "stderr": {
+    "path": "02.rendered-book.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

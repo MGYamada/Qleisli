@@ -1,0 +1,2 @@
+unitary fn apply[const A: BasisType, const U: Op<A>](q: Q<A>) -> Q<A>
+requires Applicable(U) { U(q) }

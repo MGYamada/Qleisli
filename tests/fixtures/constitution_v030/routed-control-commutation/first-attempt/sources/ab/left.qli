@@ -1,0 +1,2 @@
+use std::quantum::h;
+pub unitary fn ua(q:Q<Bit>) -> Q<Bit> { h(q) }

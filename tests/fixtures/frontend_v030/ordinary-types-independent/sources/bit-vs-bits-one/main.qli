@@ -1,0 +1,1 @@
+pub unitary fn f(b: Bits<1>) -> Bit { b }

@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "ordinary_types",
+    "--",
+    "--nocapture"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at": "2026-10-04T15:51:30.068263+00:00",
+  "seconds": 10.555666291969828,
+  "exit_code": 0,
+  "test_source_sha256": "f3a0d0fbac2a82a20daa20ca5eca87a0ea064cdb497bac0dff88de5defd38a08"
+}

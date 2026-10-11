@@ -1,0 +1,729 @@
+{
+  "format": "qleisli.checked-operation-before-code-results",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:24:45.098044+00:00",
+  "issue": 82,
+  "decision": "https://github.com/MGYamada/Qleisli/issues/82#issuecomment-6009162442",
+  "baseline_checkout": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "cli_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "first_sources_sha256": "4b61f2321d9a54c87bc45782039cbb6fed0ea530de3e331c1585a2f0aa3a238d",
+  "pending_session_sha256": "aac15b788ce9643b2402e304acaf463fafc4acbf6ef88efb838f5b07f980b9fe",
+  "current_session_sha256": "1ad55eef4120806a7058ac550987223717b1c88f9278d8155c0a2d5c6761b410",
+  "actual_observations": {
+    "total": 30,
+    "first_capture": 26,
+    "default_text_supplement": 4,
+    "succeeded": 7,
+    "refused": 23,
+    "preserved_observer_usage_errors": 4,
+    "meaningful_source_commands": 26
+  },
+  "assertions": [
+    {
+      "name": "wrong-phase-legacy-actual-semantic-refusal",
+      "passed": true,
+      "observation": "observations-before/wrong-phase-legacy-finite-check-json.json",
+      "actual_code": "contract",
+      "actual_message": "exact equation U E_in = E_out u does not hold"
+    },
+    {
+      "name": "wrong-tree-legacy-actual-semantic-refusal",
+      "passed": true,
+      "observation": "observations-before/wrong-tree-legacy-finite-check-json.json",
+      "actual_code": "type_mismatch",
+      "actual_message": "type or tuple/size shape mismatch: expected `(Bit,Bit,Bit)`, found `((Bit,Bit),Bit)`"
+    },
+    {
+      "name": "runtime-provider-capture-legacy-actual-semantic-refusal",
+      "passed": true,
+      "observation": "observations-before/runtime-provider-capture-legacy-finite-check-json.json",
+      "actual_code": "type_mismatch",
+      "actual_message": "a local or spent runtime value cannot be a static operation"
+    },
+    {
+      "name": "quantum-provider-capture-legacy-actual-semantic-refusal",
+      "passed": true,
+      "observation": "observations-before/quantum-provider-capture-legacy-finite-check-json.json",
+      "actual_code": "type_mismatch",
+      "actual_message": "a local or spent runtime value cannot be a static operation"
+    },
+    {
+      "name": "formal-provider-capture-legacy-actual-semantic-refusal",
+      "passed": true,
+      "observation": "observations-before/formal-provider-capture-legacy-finite-check-json.json",
+      "actual_code": "type_mismatch",
+      "actual_message": "bind_op requires closed declarations"
+    },
+    {
+      "name": "spent-owner-reuse-legacy-actual-semantic-refusal",
+      "passed": true,
+      "observation": "observations-before/spent-owner-reuse-legacy-finite-check-json.json",
+      "actual_code": "ownership",
+      "actual_message": "quantum ownership `q` has already been consumed"
+    },
+    {
+      "name": "providers-reference-control-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "providers-reference-control-desired-public-selected-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-desired-public-selected-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "wrong-phase-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/wrong-phase-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "wrong-tree-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/wrong-tree-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "runtime-provider-capture-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/runtime-provider-capture-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "quantum-provider-capture-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/quantum-provider-capture-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "formal-provider-capture-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/formal-provider-capture-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "spent-owner-reuse-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/spent-owner-reuse-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "nested-constructors-desired-finite-check-json-parse-unavailability",
+      "passed": true,
+      "observation": "observations-before/nested-constructors-desired-finite-check-json.json",
+      "limit": "Earlier syntax refusal does not validate any downstream semantic expectation."
+    },
+    {
+      "name": "providers-reference-control-legacy-finite-check-json",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-legacy-finite-check-json.json"
+    },
+    {
+      "name": "providers-reference-control-legacy-finite-run-json",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-legacy-finite-run-json.json"
+    },
+    {
+      "name": "providers-reference-control-legacy-finite-emit-ir-json",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-legacy-finite-emit-ir-json.json"
+    },
+    {
+      "name": "providers-reference-control-literal-predicted-distribution",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-legacy-finite-run-json.json",
+      "limit": "Comparison to prewritten literal expected distribution, not an independently executed numerical oracle or source-preservation theorem."
+    },
+    {
+      "name": "nested-constructors-legacy-finite-check-json",
+      "passed": true,
+      "observation": "observations-before/nested-constructors-legacy-finite-check-json.json"
+    },
+    {
+      "name": "nested-constructors-legacy-finite-run-json",
+      "passed": true,
+      "observation": "observations-before/nested-constructors-legacy-finite-run-json.json"
+    },
+    {
+      "name": "nested-constructors-legacy-finite-emit-ir-json",
+      "passed": true,
+      "observation": "observations-before/nested-constructors-legacy-finite-emit-ir-json.json"
+    },
+    {
+      "name": "nested-constructors-literal-predicted-distribution",
+      "passed": true,
+      "observation": "observations-before/nested-constructors-legacy-finite-run-json.json",
+      "limit": "Comparison to prewritten literal expected distribution, not an independently executed numerical oracle or source-preservation theorem."
+    },
+    {
+      "name": "public-selected-existing-static-Bind-concrete-restriction",
+      "passed": true,
+      "observation": "observations-before/providers-reference-control-legacy-public-selected-check-json.json",
+      "actual_message": "sized preparation profile: unsupported static operation constructor",
+      "limit": "Public main::probe eliminates private-entry visibility confusion; common pending obligations are not selected concrete acceptance."
+    }
+  ],
+  "passed_assertions": 24,
+  "failed_assertions": [],
+  "observations": [
+    {
+      "path": "observations-before/providers-reference-control-desired-finite-check-json.json",
+      "sha256": "77a856bf90710487412b727b0569ecf7f6dd3d32d38aa9aad544a69afbafb3aa",
+      "case": "providers-reference-control-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 690,
+            "end": 691,
+            "line": 16,
+            "column": 26
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/providers-reference-control-desired-finite-check-text.json",
+      "sha256": "43ae5925c9bb58233b6c6bfc4304691487d5f5c2830438721a7ebb962d8d33d8",
+      "case": "providers-reference-control-desired",
+      "action": "finite-check-text",
+      "exit_code": 2,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/providers-reference-control-desired-public-selected-check-json.json",
+      "sha256": "c36c6a741e876cae606ccd08a503fdd369d19f45f08eb59df75e2962b574c852",
+      "case": "providers-reference-control-desired",
+      "action": "public-selected-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `]`, found `(`",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-desired/main.qli",
+            "start": 690,
+            "end": 691
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/providers-reference-control-legacy-finite-check-json.json",
+      "sha256": "a6fb42c13334b811907214c164501558987362f037af14e3aa43c55571ff2ffb",
+      "case": "providers-reference-control-legacy",
+      "action": "finite-check-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    },
+    {
+      "path": "observations-before/providers-reference-control-legacy-finite-check-text.json",
+      "sha256": "1071140c9bbd77d7b14a22cc71ced5e6038a859058fe18dfb30ef82adb521358",
+      "case": "providers-reference-control-legacy",
+      "action": "finite-check-text",
+      "exit_code": 2,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/providers-reference-control-legacy-public-selected-check-json.json",
+      "sha256": "ca1ff530b32a48953272eeb1afc30cc98779b97d76f543d2348d6e13ff4b46e6",
+      "case": "providers-reference-control-legacy",
+      "action": "public-selected-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: unsupported static operation constructor",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-legacy/main.qli",
+            "start": 680,
+            "end": 706
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/providers-reference-control-legacy-finite-run-json.json",
+      "sha256": "874ff09693d1b365c298ab5d082e3a331da401309bd76c20cedde84f5d50889b",
+      "case": "providers-reference-control-legacy",
+      "action": "finite-run-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "distribution": [
+          {
+            "bits": [
+              false,
+              false,
+              false
+            ],
+            "probability": 1
+          }
+        ]
+      }
+    },
+    {
+      "path": "observations-before/providers-reference-control-legacy-finite-emit-ir-json.json",
+      "sha256": "538974d525d42e4daa128e6721835f97903d5fe47e1f8e1777fb02967cb96b62",
+      "case": "providers-reference-control-legacy",
+      "action": "finite-emit-ir-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-before/artifacts/providers-reference-control-legacy.qirf"
+      }
+    },
+    {
+      "path": "observations-before/wrong-phase-desired-finite-check-json.json",
+      "sha256": "78d0a2a8b80d968a9a4422499134e9dbfb47d31d7d62e1a0af94fbe7fa5460b0",
+      "case": "wrong-phase-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 745,
+            "end": 746,
+            "line": 17,
+            "column": 26
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-phase-desired-finite-check-text.json",
+      "sha256": "1e8dd811d4ac326b1477f8dade95e632325e96100bf6f63cb42cbcf4668ce4e3",
+      "case": "wrong-phase-desired",
+      "action": "finite-check-text",
+      "exit_code": 2,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-phase-legacy-finite-check-json.json",
+      "sha256": "a22637ee8ae2f8b07bc7fba8a91b76532776b810ee25197f16b0e389934c8a68",
+      "case": "wrong-phase-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "contract",
+          "severity": "error",
+          "message": "exact equation U E_in = E_out u does not hold",
+          "primary": {
+            "path": "main.qli",
+            "start": 743,
+            "end": 750,
+            "line": 17,
+            "column": 24
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-phase-legacy-finite-check-text.json",
+      "sha256": "972b6059c8acadec747598de0abe17e584eccb39fb0f10616df6018606290947",
+      "case": "wrong-phase-legacy",
+      "action": "finite-check-text",
+      "exit_code": 2,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-tree-desired-finite-check-json.json",
+      "sha256": "2329fefbe315d921459f6582902ffb3e0fa15444c6e0dd9e47315ad5051d302c",
+      "case": "wrong-tree-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 1039,
+            "end": 1040,
+            "line": 21,
+            "column": 26
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-tree-legacy-finite-check-json.json",
+      "sha256": "00a57d1b9fba8e571970c1329a6c0b3d8e0756f6d1367733ab719930f1102514",
+      "case": "wrong-tree-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "type or tuple/size shape mismatch: expected `(Bit,Bit,Bit)`, found `((Bit,Bit),Bit)`",
+          "primary": {
+            "path": "main.qli",
+            "start": 1029,
+            "end": 1065,
+            "line": 21,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/runtime-provider-capture-desired-finite-check-json.json",
+      "sha256": "b8a83beb804f74580e58184b233dd6ca077269a9b3fffa6456243b1b275dbd62",
+      "case": "runtime-provider-capture-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 705,
+            "end": 706,
+            "line": 16,
+            "column": 26
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/runtime-provider-capture-legacy-finite-check-json.json",
+      "sha256": "a1d0af4b531acb9f9af0aec23ae617ac4fad25f5863fdb55acd653d83d62520d",
+      "case": "runtime-provider-capture-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "a local or spent runtime value cannot be a static operation",
+          "primary": {
+            "path": "main.qli",
+            "start": 703,
+            "end": 711,
+            "line": 16,
+            "column": 24
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/quantum-provider-capture-desired-finite-check-json.json",
+      "sha256": "5b64e45045abd5d5c976730acd29af33e9a097f76c37b5571e2d11d703789496",
+      "case": "quantum-provider-capture-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 708,
+            "end": 709,
+            "line": 16,
+            "column": 26
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/quantum-provider-capture-legacy-finite-check-json.json",
+      "sha256": "23e0a94bd8b5e0e214fc92882645a7008b7a13f5d79f364b25464fdeefcbaf9f",
+      "case": "quantum-provider-capture-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "a local or spent runtime value cannot be a static operation",
+          "primary": {
+            "path": "main.qli",
+            "start": 706,
+            "end": 714,
+            "line": 16,
+            "column": 24
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/formal-provider-capture-desired-finite-check-json.json",
+      "sha256": "0c088bb1859bd1553694314303af4bad5c9b0a01ad9892c891c0f7f24cf8490c",
+      "case": "formal-provider-capture-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 723,
+            "end": 724,
+            "line": 16,
+            "column": 42
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/formal-provider-capture-legacy-finite-check-json.json",
+      "sha256": "b2aa382e9bffd22bfaad64ceff58cbb041e58d8f6cb323c3c184489ca02e3c7e",
+      "case": "formal-provider-capture-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "bind_op requires closed declarations",
+          "primary": {
+            "path": "main.qli",
+            "start": 721,
+            "end": 722,
+            "line": 16,
+            "column": 40
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/spent-owner-reuse-desired-finite-check-json.json",
+      "sha256": "2595ceb219c47b259f946ee82d6e5853bff9a1a3ead479d5cf295a9fad8c91ef",
+      "case": "spent-owner-reuse-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `]`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 714,
+            "end": 715,
+            "line": 17,
+            "column": 39
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/spent-owner-reuse-legacy-finite-check-json.json",
+      "sha256": "b405f28d0ad7f115f48552c48a2271b2d747c071b5e61b58f9e91ac8af90fa9c",
+      "case": "spent-owner-reuse-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "quantum ownership `q` has already been consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 773,
+            "end": 774,
+            "line": 18,
+            "column": 38
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/nested-constructors-desired-finite-check-json.json",
+      "sha256": "6813a402e45b9c0baba0cfe9a5a63f48b527c9b3228b604a7045b75a233746f8",
+      "case": "nested-constructors-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: expected `,`, found `(`",
+          "primary": {
+            "path": "main.qli",
+            "start": 735,
+            "end": 736,
+            "line": 16,
+            "column": 59
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-before/nested-constructors-legacy-finite-check-json.json",
+      "sha256": "775ae24c84e7693bf0937f969bbb5583191624d3a104018abec72d41e45920d4",
+      "case": "nested-constructors-legacy",
+      "action": "finite-check-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    },
+    {
+      "path": "observations-before/nested-constructors-legacy-finite-run-json.json",
+      "sha256": "1a229ba580411dd18ec1cd7de95f5adb3645c498fb56ab3f7fef128a2be50178",
+      "case": "nested-constructors-legacy",
+      "action": "finite-run-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "distribution": [
+          {
+            "bits": [
+              false,
+              false
+            ],
+            "probability": 1
+          }
+        ]
+      }
+    },
+    {
+      "path": "observations-before/nested-constructors-legacy-finite-emit-ir-json.json",
+      "sha256": "2484a80374c38156268ecf6b46681c7ee7aacfe2781db8a699335b73f323fe53",
+      "case": "nested-constructors-legacy",
+      "action": "finite-emit-ir-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-before/artifacts/nested-constructors-legacy.qirf"
+      }
+    },
+    {
+      "path": "observations-before/providers-reference-control-desired-default-text-02.json",
+      "sha256": "63967f04473b762ce377a06964b55838e151f83c148b16f58302308c7cd8995d",
+      "case": "providers-reference-control-desired",
+      "action": "default-text-check-02",
+      "exit_code": 1,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/providers-reference-control-legacy-default-text-02.json",
+      "sha256": "a2e7d016db76cd0d45d35a1125be3ac94be0c1c9b6d56591edd3f85974261d25",
+      "case": "providers-reference-control-legacy",
+      "action": "default-text-check-02",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-phase-desired-default-text-02.json",
+      "sha256": "816903a6b0735da4718d3627acd571fdfe637d0d0f158ba703ef3fd44a5148c8",
+      "case": "wrong-phase-desired",
+      "action": "default-text-check-02",
+      "exit_code": 1,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-before/wrong-phase-legacy-default-text-02.json",
+      "sha256": "708e09dd5ed6382704769164e4fc323f2cf778ece9fc5f83417ed41e2d08b0c5",
+      "case": "wrong-phase-legacy",
+      "action": "default-text-check-02",
+      "exit_code": 1,
+      "diagnostics": [],
+      "result": null
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "observations-before/artifacts/nested-constructors-legacy.qirf",
+      "sha256": "66ab00461bba159eade17b719c59fc5d4a436bb2de3f2f64af51521e2b75fadf",
+      "bytes": 10127,
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": 5,
+      "evidence": 2,
+      "sources": 5,
+      "root_interface": null,
+      "limit": "Future spelling migration legitimately changes retained source identities. Compare exact meaning and ordered interfaces; whole source-bearing QIRF byte equality is not required."
+    },
+    {
+      "path": "observations-before/artifacts/providers-reference-control-legacy.qirf",
+      "sha256": "f1c0940ba6fd530e3ca9214eb13f917db3dbd1853aa32146f478f767eb44a4cb",
+      "bytes": 10805,
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": 5,
+      "evidence": 2,
+      "sources": 5,
+      "root_interface": null,
+      "limit": "Future spelling migration legitimately changes retained source identities. Compare exact meaning and ordered interfaces; whole source-bearing QIRF byte equality is not required."
+    }
+  ],
+  "preserved_failures": {
+    "usage_error": "Four first authored --format=text calls returned real usage exit2; default text is omission of that flag. Original drivers/observations/raw outputs remain unchanged.",
+    "metadata_error": "metadata-check-first-03.json preserves missing observation output; transcript companions and the original registered session archive are explicitly mapped by metadata-correction-03.json.",
+    "metadata_after": "metadata-check-after-03.json passes this one session:1 snapshot,30 actual observations."
+  },
+  "source_and_executable_identities_preserved": true,
+  "scope": "Eight informed desired/legacy pairs with no more than three declared/prepared qubits. Existing exact provider/capture/phase/tree/ownership and selected boundaries are recorded before parser changes. No source repair, new accepted spelling, compiler/Lean build or replay, native child-start/exit attestation, independently executed numerical oracle, general source/runtime theorem, Guardian act, guarantee/Issue/release completion."
+}

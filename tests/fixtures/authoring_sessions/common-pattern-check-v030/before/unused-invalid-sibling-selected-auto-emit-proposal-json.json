@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-proposal",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/unused-invalid-sibling/main.qli",
+    "--ir-profile=auto",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/before/unused-invalid-sibling-selected-auto-emit-proposal-json.proposal.json",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.005027875013183802,
+  "recorded_utc": "2026-10-05T16:34:01.137860+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 0,
+  "stdout_raw": "unused-invalid-sibling-selected-auto-emit-proposal-json.stdout.txt",
+  "stderr_raw": "unused-invalid-sibling-selected-auto-emit-proposal-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-proposal",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "unbound or consumed value q",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/unused-invalid-sibling/main.qli",
+          "start": 172,
+          "end": 173
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

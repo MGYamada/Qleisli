@@ -1,0 +1,29 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+// Local bounded probe clients; the imported QFT translation preserves its notices.
+use transform::qft;
+use std::quantum::h;
+use std::quantum::cnot;
+use std::quantum::phase;
+use std::quantum::phase_eighth;
+use std::registers::take_bit;
+use std::registers::put_bit;
+
+/// Prepare an entangled low-axis/reference pair, then transform only q.
+/// Input basis zero has independent expected amplitudes F_n[y,r]/sqrt(2).
+pub fn entangled[static n: Nat](q: Q<Bits<n>>, r: Q<Bit>) -> (Q<Bits<n>>, Q<Bit>)
+requires n >= 1 {
+    let (low,rest) = take_bit[n,0](q);
+    let low = h(low);
+    let (low,r) = cnot(low,r);
+    let q = put_bit[n,0](low,rest);
+    (qft[n](q),r)
+}
+
+/// Retain a scalar-bearing empty owner beside a coherent complex reference.
+/// The QFT zero instance must not erase omega or the reference phase.
+pub fn zero_reference(q: Q<Bits<0>>, r: Q<Bit>) -> (Q<Bits<0>>, Q<Bit>) {
+    let q = phase_eighth(q);
+    let r = h(r);
+    let r = phase[1,2](r);
+    (qft[0](q),r)
+}

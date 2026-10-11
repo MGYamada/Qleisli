@@ -4,14 +4,13 @@ use std::quantum::x;
 use std::quantum::z;
 use std::observe::measure_z;
 
-basis fn copy_bit(value: Bit) -> Bit { value }
+classical fn copy_bit(value: Bit) -> Bit { value }
 
 // The logical meanings are specified independently of the auxiliary bodies.
 unitary fn logical_identity(q: Q<Bit>) -> Q<Bit> { q }
 unitary fn logical_phase(q: Q<Bit>) -> Q<Bit> { z(q) }
 unitary fn logical_flip(q: Q<Bit>) -> Q<Bit> {
-    do value <- q;
-    pure not value
+    basis q as value { not value }
 }
 
 unitary fn phase_oracle(q: Q<Bit>) -> Q<Bit> {
@@ -32,7 +31,7 @@ unitary fn correlated_flip(q: Q<Bit>) -> Q<Bit> {
     }
 }
 
-observe fn main() -> ((CBit, CBit), CBit) {
+observe fn main() -> ((Bit, Bit), Bit) {
     let phase = measure_z(h(phase_oracle(h(init0()))));
     let identity = measure_z(h(auxiliary_identity(h(init0()))));
     let flip = measure_z(correlated_flip(init0()));

@@ -1,0 +1,1 @@
+main:0..25: project: Qargo.toml requires schema-version = 2

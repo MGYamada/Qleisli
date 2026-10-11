@@ -1,0 +1,91 @@
+{
+  "status": "ordinary-policy-and-docs-checks-passed",
+  "actual_command_count": 13,
+  "actual_regression_counts": {
+    "03.book-regression": 12,
+    "05.authoring-regression": 7,
+    "07.edition-regression": 11,
+    "09.docs-regression": 36
+  },
+  "actual_regression_total": 66,
+  "actual_rendered_book_counts": {
+    "html_files": 23,
+    "local_links": 920,
+    "anchors": 343
+  },
+  "generated_bytes": 3858305,
+  "selected_input_count": 1147,
+  "source_mismatches": {},
+  "reviewed_input_map_sha256": "8e067dc5774423707fc603cae104d187c26e97a5261585fab39115128d76894d",
+  "pinned_mdbook_verified": true,
+  "separate_root_packets": {
+    "metadata": {
+      "record": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/metadata-review/attempt-01/results.json",
+      "record_sha256": "d98fdf8d076d8293975da2380e3c071072ab6e19ad73fc2800256b0eb6213a40",
+      "source_count": 254,
+      "actual_guard_exits": [
+        1,
+        0,
+        0,
+        0,
+        0
+      ],
+      "commands_executed_by_policy": false
+    },
+    "root_after": {
+      "summary": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/summary.json",
+      "summary_sha256": "41ccc86663b8d11065fb011a03e6cba843979f275a9f392209c2a414acc5ff99",
+      "files_sha256": "b04f3792ab02a6ad4ea15e7562274b92cb2c6f1f6ac3b13af35556c1eb54a86b",
+      "terminal_receipt_sha256": "e218f0e9ced5bb7aef5daf51937e780845440bd82f4e7696dcc2d1f6d9edf7bd",
+      "actual_observations": 40,
+      "successes": 6,
+      "refusals": 34,
+      "pre_execv_forwarded_attempts": 46,
+      "output_normalizations": 0,
+      "cli_sha256": "2209c0528e4f25dc46498bbbe8cc3ca3df31201e0fa7bed41130bff593e233c9",
+      "native_count_limit": "Actual pre-execv forwarder rows, not independent native starts/exits.",
+      "scope": "Same bounded raw check observations; source preservation remains unproved."
+    },
+    "root_rust": {
+      "latest": {
+        "record": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/results.json",
+        "record_sha256": "552714804303102dfb344b12aeb82ed0050b221ff4497a170f38bd4c3dd3358f",
+        "stages": 8,
+        "cli_sha256": "2209c0528e4f25dc46498bbbe8cc3ca3df31201e0fa7bed41130bff593e233c9",
+        "actual_test_counts": {
+          "passed": 147,
+          "failed": 0,
+          "ignored": 3
+        }
+      },
+      "msrv": {
+        "record": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/results.json",
+        "record_sha256": "52d39b3fcb9f3ce618910ede307a944a5d903930ef1e2f655cec585ae8102551",
+        "stages": 8,
+        "cli_sha256": "d219e3cb0e546c8173ab1215ffd94cacc7c032ce9abd145b98949bbb2c4d089e",
+        "actual_test_counts": {
+          "passed": 147,
+          "failed": 0,
+          "ignored": 3
+        }
+      }
+    },
+    "scope": "Separately performed root records; no stored command executed."
+  },
+  "raw_failures_preserved": true,
+  "scope": "Private shared checked formals/access and current documentation/policy only.",
+  "not_run": [
+    "Rust/Lean builds, tests or native/CLI replay",
+    "unchanged metadata/constitutional mutation suites",
+    "full CI/release-ready validation"
+  ],
+  "no_claim": [
+    "complete common checker",
+    "source/runtime preservation",
+    "new guarantee/adoption",
+    "general-family proof",
+    "canonical std/QFT exposure",
+    "Issue closure",
+    "release approval"
+  ]
+}

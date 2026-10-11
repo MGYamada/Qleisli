@@ -1,0 +1,144 @@
+{
+  "status": "informed-authoring-before-execution",
+  "maximum_system_qubits": 2,
+  "reference_law": "Each intended map is the declared exact linear action tensored with identity on arbitrary external references; no separability or normalization premise. These are expectations, not observed results.",
+  "cases": [
+    {
+      "name": "left-remove",
+      "kind": "desired",
+      "expected": "+1 left unitor, preserves every Bit/reference coefficient",
+      "entry": "main::f"
+    },
+    {
+      "name": "left-insert",
+      "kind": "desired",
+      "expected": "+1 inverse left unitor, preserves every Bit/reference coefficient",
+      "entry": "main::f"
+    },
+    {
+      "name": "right-remove",
+      "kind": "desired",
+      "expected": "+1 right unitor on two ordered Bits axes",
+      "entry": "main::f"
+    },
+    {
+      "name": "right-insert",
+      "kind": "desired",
+      "expected": "+1 inverse right unitor on two ordered Bits axes",
+      "entry": "main::f"
+    },
+    {
+      "name": "roundtrips",
+      "kind": "desired-multiple-declarations",
+      "expected": "Both packaged and unpackaged round trips are exact identity; g also exercises Bits0",
+      "entry": "main::f"
+    },
+    {
+      "name": "zero-unit-pair",
+      "kind": "desired",
+      "expected": "Zero physical axes retain the exact binary basis tree and both logical owners",
+      "entry": "main::f"
+    },
+    {
+      "name": "nested-product",
+      "kind": "desired",
+      "expected": "One retained inner (Bit,Unit) owner; no implicit flattening or nested split",
+      "entry": "main::f"
+    },
+    {
+      "name": "tuple-provider",
+      "kind": "desired",
+      "expected": "Closed Op<(Unit,Bit)> binds the complete tree and the explicit Apply capability",
+      "entry": "main::f"
+    },
+    {
+      "name": "removed-unit-phase",
+      "kind": "desired",
+      "expected": "Removing a separately phased Unit factor contributes omega on all Bit/reference coefficients",
+      "entry": "main::f"
+    },
+    {
+      "name": "controlled-four",
+      "kind": "desired",
+      "expected": "Four omega factors on packaged target become Z on control, target Bit/reference untouched",
+      "entry": "main::f"
+    },
+    {
+      "name": "ordered-axes",
+      "kind": "desired-existing-finite-control",
+      "expected": "X acts on the first/low ordered axis only: basis index j maps to j xor 1",
+      "entry": "main::f"
+    },
+    {
+      "name": "same-width-wrong-tree",
+      "kind": "deliberate-counterexample",
+      "expected": "Must reject a same-width left-nested to right-nested implicit conversion",
+      "entry": "main::f"
+    },
+    {
+      "name": "bits0-is-not-unit",
+      "kind": "deliberate-counterexample",
+      "expected": "finish cannot consume Q<Bits0> even when it came from a packaged product",
+      "entry": "main::f"
+    },
+    {
+      "name": "implicit-destructure",
+      "kind": "deliberate-counterexample",
+      "expected": "Runtime tuple patterns must not split a packaged quantum owner",
+      "entry": "main::f"
+    },
+    {
+      "name": "aliased-zero-owner",
+      "kind": "deliberate-counterexample",
+      "expected": "join must reject using one Q<Unit> owner twice",
+      "entry": "main::f"
+    },
+    {
+      "name": "lost-revived-owners",
+      "kind": "deliberate-counterexamples-grouped",
+      "expected": "Lost, revived and wildcard Unit owners reject; earliest error may mask later declarations",
+      "entry": "main::f"
+    },
+    {
+      "name": "wrong-arities",
+      "kind": "deliberate-counterexamples-grouped",
+      "expected": "Split unary/join binary/zero statics and immediate binary shape; errors may mask siblings",
+      "entry": "main::f"
+    },
+    {
+      "name": "effectful-argument",
+      "kind": "deliberate-counterexample",
+      "expected": "Complete effectful argument evaluation must not become Unitary through packaging",
+      "entry": "main::f"
+    },
+    {
+      "name": "unused-zero-fold",
+      "kind": "deliberate-counterexamples-grouped",
+      "expected": "All bodies are checked; zero iterations cannot hide duplicate consumption, unused cannot hide loss",
+      "entry": "main::f"
+    },
+    {
+      "name": "finite-coherent-unitors",
+      "kind": "existing-finite-control",
+      "expected": "Existing coherent basis unitor +1 consumes/returns an owner; selected coherent do still unsupported",
+      "entry": "main::f"
+    },
+    {
+      "name": "finite-split-join",
+      "kind": "existing-finite-control",
+      "expected": "Existing binary split/join round trip is identity, preserving order and exact nested metadata",
+      "entry": "main::f"
+    },
+    {
+      "name": "existing-atom-control",
+      "kind": "existing-selected-and-finite-control",
+      "expected": "Unchanged Bit H-H identity control, independent of new tuple support",
+      "entry": "main::f"
+    }
+  ],
+  "limits": [
+    "Grouped invalid declarations require isolated follow-up tests; first rejection proves nothing about masked siblings.",
+    "No direct phase_eighth(Q<Tuple>) expansion; phase is on the explicitly separated Unit factor.",
+    "Existing finite controls do not imply new unit/finish parity or selected coherent lifts."
+  ]
+}

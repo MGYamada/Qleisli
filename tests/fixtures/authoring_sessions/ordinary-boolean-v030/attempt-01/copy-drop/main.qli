@@ -1,0 +1,3 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn f((a,_): (Bit,Bit)) -> (Bit,Bit) { (a,a) }
+observe fn main() -> (Bit,Bit) { f((0,1)) }

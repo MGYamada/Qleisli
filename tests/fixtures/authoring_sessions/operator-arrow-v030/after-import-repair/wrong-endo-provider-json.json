@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-03/wrong-endo-provider/main.qli",
+    "--operation=U=main::provider",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "stderr": "",
+  "native_invocations": 0,
+  "seconds": 0.004656792036257684,
+  "recorded_utc": "2026-10-05T12:10:35.371127+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type",
+        "severity": "error",
+        "message": "type or tuple/size shape mismatch: expected Q(Bit), found Q(Tuple([Unit, Bit]))",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-03/wrong-endo-provider/main.qli",
+          "start": 124,
+          "end": 217
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

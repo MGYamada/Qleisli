@@ -1,0 +1,295 @@
+{
+  "format": "qleisli.instrument-finite-source-validation",
+  "version": 1,
+  "date": "2026-10-11",
+  "base_commit": "2bf301a53e7ec6b2327f32ca02a45880c1474132",
+  "proposal_sha256": "5bd33aa0c2064a61b195ab4f692e5bd15d31af7c44bf2807dfdb1cc1e0f80052",
+  "scope": "Private paired original-artifact evidence and ordinary concrete source call integration only. Explicit specialization and its source replay remain unsupported and pending; Issue #46 remains open.",
+  "source_sha256": {
+    "src/contract/function.rs": "6682668286a75f43fb8ffec51e6ff4517af26b250c35c408ca2443bdbd2842ff",
+    "src/contract/instrument.rs": "7513db51c51ba9c9d76f52f35779c758261fc1a8974d4b4867cc84518f1237cb",
+    "src/contract/mod.rs": "e75ac9d3684aea6ba1216be24db6ff6502cdcef154098b03e8354a487f655969",
+    "src/frontend/check.rs": "c9347d58f15776ffd8428d0872675d815b149e02b76e707b0fc27fe0402dfd6f",
+    "src/frontend/check/body/special.rs": "cdd84f01a9a4dfbc193571de789ca8ad202aa2a39ddf7e778287c699ec29f1eb",
+    "src/frontend/compile/lower/certified.rs": "e24d2040312abb6ffb10e7b3cac364988789fe4ae85c84f8968dd18b8cbca7a7",
+    "src/frontend/compile/lower/function_contract.rs": "bb586e7023b9e7cc5c1c883b307077ecc2936536cb9c8a2b1d57c273b4a78a79",
+    "src/frontend/compile/lower/mod.rs": "383846975c23aa103c3e8b1763be262e09b5f1d8c74e6816f8bb58b8958ba6f8",
+    "src/frontend/compile/lower/value.rs": "5fe243278e0d7f7fb06ef9bb241f0cb350dce5d9a25e79c93e6238861c34a84d",
+    "src/frontend/compile/mod.rs": "a1a941234b6e009d3ee15a251651cfe174234fdc19214d138bfb292c1259292b",
+    "src/frontend/instrument.rs": "3fe4e9889870ee47a08cf14a85d52d87fc4b2ece8e53beb28b6e7db4becf1dec",
+    "src/frontend/mod.rs": "114ef681c244cf03fcaa4594f79661ac176301a78dd8de641ea604ff0507bb3b",
+    "src/frontend/specialize/elaborate.rs": "b484455e000f9b6fa67d193fd57ea7385c92d7bfa2c28d4cede1e8c7985a5aee",
+    "src/frontend/specialize/raw/contracts.rs": "47e3af0d013724041c1f7e69f7fc00f1028d5fe06611c5f25ecd652bf225910a",
+    "src/interchange/native.rs": "be278d2ca440eded4f8d61417b7c23a9259ae5a6b7ac2c5c533497625547918f",
+    "src/interchange/native/contracts.rs": "6b2a9b3183a5b76c832446eb766928673bc6d197f58784340a5061f53a40b5bd",
+    "tests/function_contracts.rs": "ea0ca091caab7c14b9291cf6ce00f214a61fb320337984732bca2718e1d7b769",
+    "tests/selected_function_contracts.rs": "5da609ed65fecfaa1fff8849e04dcfaf0010540f1f038417be564c72f08bbd14"
+  },
+  "checks": [
+    {
+      "source_unchanged": true,
+      "toolchain": "rustc 1.99.0 (b940084d7 2026-09-28)",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bits-meaning-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "RUSTC": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "RUSTDOC": "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustdoc"
+      },
+      "commands": [
+        {
+          "name": "private",
+          "command": [
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--lib",
+            "instrument"
+          ],
+          "returncode": 0,
+          "seconds": 7.614,
+          "log": "/private/tmp/qleisli-instrument-finite-stable-checked-private.log"
+        },
+        {
+          "name": "source",
+          "command": [
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--test",
+            "function_contracts",
+            "--test",
+            "selected_function_contracts",
+            "--test",
+            "reference_meanings",
+            "--test",
+            "source_judgments",
+            "--test",
+            "native_acceptance",
+            "--test",
+            "native_paths"
+          ],
+          "returncode": 0,
+          "seconds": 23.232,
+          "log": "/private/tmp/qleisli-instrument-finite-stable-checked-source.log"
+        },
+        {
+          "name": "native",
+          "command": [
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "test",
+            "--locked",
+            "--test",
+            "native_acceptance",
+            "--test",
+            "native_paths",
+            "--",
+            "--ignored"
+          ],
+          "returncode": 0,
+          "seconds": 0.451,
+          "log": "/private/tmp/qleisli-instrument-finite-stable-checked-native.log"
+        },
+        {
+          "name": "clippy",
+          "command": [
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 8.965,
+          "log": "/private/tmp/qleisli-instrument-finite-stable-checked-clippy.log"
+        },
+        {
+          "name": "replay-build",
+          "command": [
+            "/Users/masa/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+            "build",
+            "--locked",
+            "--example",
+            "native_acceptance"
+          ],
+          "returncode": 0,
+          "seconds": 0.763,
+          "log": "/private/tmp/qleisli-instrument-finite-stable-checked-replay-build.log"
+        }
+      ],
+      "passed_tests": 64,
+      "test_counts": {
+        "private_instrument": 3,
+        "function_contracts": 24,
+        "reference_meanings": 10,
+        "selected_function_contracts": 12,
+        "source_judgments": 8,
+        "native_acceptance": 4,
+        "native_paths": 3
+      },
+      "ignored_tests": "Five native tests initially ignored were separately executed and passed; none remain unexecuted in this focused set."
+    },
+    {
+      "source_unchanged": true,
+      "toolchain": "1.85.0 through scripts/run_msrv.py",
+      "environment": {
+        "CARGO_TARGET_DIR": "/private/tmp/qleisli-bits-meaning-msrv-target",
+        "CARGO_INCREMENTAL": "0",
+        "CARGO_PROFILE_DEV_DEBUG": "0",
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "commands": [
+        {
+          "name": "private",
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "test",
+            "--locked",
+            "--lib",
+            "instrument"
+          ],
+          "returncode": 0,
+          "seconds": 7.395,
+          "log": "/private/tmp/qleisli-instrument-finite-msrv-checked-private.log"
+        },
+        {
+          "name": "source",
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "test",
+            "--locked",
+            "--test",
+            "function_contracts",
+            "--test",
+            "selected_function_contracts",
+            "--test",
+            "reference_meanings",
+            "--test",
+            "source_judgments",
+            "--test",
+            "native_acceptance",
+            "--test",
+            "native_paths"
+          ],
+          "returncode": 0,
+          "seconds": 22.595,
+          "log": "/private/tmp/qleisli-instrument-finite-msrv-checked-source.log"
+        },
+        {
+          "name": "native",
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "test",
+            "--locked",
+            "--test",
+            "native_acceptance",
+            "--test",
+            "native_paths",
+            "--",
+            "--ignored"
+          ],
+          "returncode": 0,
+          "seconds": 0.485,
+          "log": "/private/tmp/qleisli-instrument-finite-msrv-checked-native.log"
+        },
+        {
+          "name": "clippy",
+          "command": [
+            "python3",
+            "scripts/run_msrv.py",
+            "clippy",
+            "--locked",
+            "--all-targets",
+            "--",
+            "-D",
+            "warnings"
+          ],
+          "returncode": 0,
+          "seconds": 10.878,
+          "log": "/private/tmp/qleisli-instrument-finite-msrv-checked-clippy.log"
+        }
+      ],
+      "passed_tests": 64,
+      "test_counts": {
+        "private_instrument": 3,
+        "function_contracts": 24,
+        "reference_meanings": 10,
+        "selected_function_contracts": 12,
+        "source_judgments": 8,
+        "native_acceptance": 4,
+        "native_paths": 3
+      },
+      "ignored_tests": "Five native tests initially ignored were separately executed and passed; none remain unexecuted in this focused set."
+    }
+  ],
+  "fixed_799": {
+    "status": "passed",
+    "baseline_sha256": "3b5f3bf8d5d7311114b302bfe78e3eb0ec76ef4700af6b8fe4cf339bf6d1c699",
+    "binary_sha256": {
+      "kernel": "98b8a224a35ab83e7017fc34534f1f32e91ff59bc1db34029710dec7932951dc",
+      "runner": "65a7ec0e35e5d8f6dada04607197717cf79a64bc4384dfff211e8c0433621e9f"
+    },
+    "summary": {
+      "pairs": 799,
+      "accepted": 263,
+      "rejected": 536,
+      "proposal_bound_rejections": 1,
+      "failures": 0
+    }
+  },
+  "ownership": {
+    "command": [
+      "cargo",
+      "test",
+      "--locked",
+      "--test",
+      "frontend_ownership_differential"
+    ],
+    "returncode": 0,
+    "test_seconds": 427.62,
+    "cases": 4000,
+    "expected_accepts": 1000,
+    "expected_rejects": 3000,
+    "seed": "0x514c4549534c4932",
+    "public_calls": {
+      "check_project": 4000,
+      "ParsedProgram_parse": 4000
+    },
+    "source_generation": "Unchanged seed, order, source generator and expected results. No acceptance cache. Native child-call count was not instrumented.",
+    "timing_scope": "Executed before the final contract-only pure-endomorphism and retained-call source-origin guards. Ownership cases do not contain these contracts; this is not a claim of all checks on one final commit."
+  },
+  "regressions": [
+    "Exact HH and branch-phase readout equality",
+    "Public result relabeling and changed residual channels reject",
+    "Nested result trees, zero-width quantum owners and entangled external references",
+    "Hidden discard histories, nested observing calls and both classical branch arms",
+    "False unused closed obligations reject",
+    "Reference source replacement obtains a fresh equation",
+    "Pure equal-width non-endomorphic basis trees remain unsupported",
+    "Original artifact bytes, complete signatures, source position, missing checker and work/structural bounds"
+  ],
+  "resource_observations": {
+    "fixture_preflight": {
+      "scope": "all-working-fixture-files-including-ignored",
+      "files": 17786,
+      "bytes": 124566495
+    },
+    "reused_target_bytes": "Existing stable and MSRV targets were approximately 12 GiB and 10 GiB at end of unit; no pre-unit baseline was measured, so this is not measured growth. No new maximum-size cases or large fixture generation."
+  },
+  "warnings": [
+    "Stable test linking reports a local rust-objcopy missing libLLVM.dylib warning. Tests exit zero; all-target Clippy passes. This unit does not repair the local toolchain installation."
+  ],
+  "not_run": [
+    "Fresh Lean build/audit/replay in this Rust-only unit; the unchanged production Lean source and prior native-wire proof validation remain separately recorded.",
+    "Hosted Issue-completion CI",
+    "Full Rust test suite on both toolchains",
+    "Package, fresh installation and full release checks"
+  ],
+  "proof_limits": "Native equation checking does not establish complete source, decoder, native compiler/runtime, host simulation or target realization preservation. No QS/PR/quantitative RS discharge or new guarantee ledger entry."
+}

@@ -1,0 +1,20 @@
+{
+  "format": "qleisli.checked-operation-independent-review",
+  "reviewer": "/root/next_common_frontend_audit",
+  "kind": "AI advisory, read-only technical review; not Guardian authority or mathematical proof",
+  "observed_files": {
+    "src/frontend/lexer.rs": "1cc1c470d921fbe8536959f55cfad56dfa779bfa10fb4a5713299bca3b129985",
+    "src/frontend/compile/lower/operations.rs": "c71bd144ebedab0ef1b27c0d0f28385816a341a6c94597c31f4023fa576468d1",
+    "tests/checked_operations.rs": "f819ba144a9bbfcd3df05f79c1ce3457fdffe32a6c74c37b31d7c24e38529e18",
+    "docs/src/reference/checked-operations.md": "fa141577dd4acce209d75bbcb280bc013712849d534e7e6779b8e926b90e9f4a",
+    "docs/src/reference/source-text.md": "c540633c34b8b88c461ba645117670c23de606a317af2a58adcff96c49da958f",
+    "docs/src/design/operations.md": "25146ed969877572b5185c8ac7d6c1503dc910eeff6ddde1a325699b2dcc51c0",
+    "scripts/current_source_fixtures.py": "24cf06e43651e079518b859be9961b49d2448bddd5246eb187f7571c053d07ce",
+    "scripts/test_current_source_fixtures.py": "e36bbe4afb43e9188f5ce2414b6c954f4619a6641822613bb48a5df861de845d",
+    "tests/fixtures/frontend_v030/checked-operation/source-map.json": "3f5f823dc73752dccb3e8924d4bdae608eec89fbee3c8cd02672b7c884c98699",
+    "tests/fixtures/verification_v022/inventory.json": "03d0d971f9a00f647b0e92268e5ff2cd8a4326cbdc542130d707685e45fb7006",
+    "tests/fixtures/verification_v029/coverage.json": "458c0832b23d6bf4da1f79e43bccb2098c2bed380237cf9a24f1ccf654eb55c6"
+  },
+  "findings": "No actionable remaining defect. Lexer reuses BindOp with exact retired-word refusal after budget charging. Pending common-formal Meaning obligations, finite closed-provider native evidence, exact source invalidation and selected projection refusal retain their limits. Eight append-only file links preserve all predecessors; no whole-client/corpus migration is needed. VM22/VM29 refresh identities only. Initial candidate naming and lexical-coverage concerns were corrected and inspected.",
+  "performed": "Source/map/Reference and inventory/coverage review; no compiler/test invocation in the final review."
+}

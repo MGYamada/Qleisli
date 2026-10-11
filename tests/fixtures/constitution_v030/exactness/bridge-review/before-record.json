@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.release-ledger-bridge-review",
+  "version": 1,
+  "status": "pre-fix-counterexample-observed",
+  "scope": "Explicit mocked constitutional service, version plan, hosted context and successful job receipts in the existing SyntheticRelease fixture. Actual release checker and artifact/Git/provenance logic run. This is not genuine hosted provenance, a Lean replay, human approval, or release readiness.",
+  "command": [
+    "python3",
+    "/private/tmp/qleisli-release-ledger-substitution.py"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "finding": "Stable outer ledger omits supplemental row while mocked inner result reports three base obligations plus one supplement and a distinct validated ledger SHA; release checker nevertheless reports ready-scoped-candidate and pending=3.",
+  "constitutional_source_note": "Snapshot was taken after platform added ledger_sha256 to the constitutional return. The release checker and release fixture are the exact unfixed 70f687... / 057408... versions. The counterexample explicitly mocks the constitutional service, so it does not depend on that concurrent return-field addition.",
+  "files": {
+    "reproduce.py": "d28877cb224454745d2c046031d2746cb26c90a8673a25a3d1e2833183c793f9",
+    "before.stdout.json": "279db8aa6e13f83025a9e4a5dd2afb71fb4fdf6e69f082f3c44e34aa8290ea60",
+    "check_release_ready.before.py.txt": "70f687dcc99c816882e58b22e4f50ca2131660ad3f70e18fa981551d5ebc3351",
+    "test_check_release_ready.before.py.txt": "057408833cf226384971a7b76e61fc3ebc72dd9f2fd5d1daa000066876b4dc58",
+    "source-identities-at-before-run.json": "e80b7f641d86072273fe7f8a6ba719ab360b61c276fdaa98c13316ae8f521e37"
+  }
+}

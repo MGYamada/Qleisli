@@ -1,0 +1,17 @@
+
+running 12 tests
+test raw_finite_circuit_validation_rejects_forged_certificates ... ok
+test static_forms_reject_bad_names_effects_types_and_ownership ... ok
+test static_syntax_has_bounded_numbers_and_precise_failures ... ok
+test inverse_reverses_noncommuting_gates_and_output_axis_reordering ... ok
+test computed_zero_width_phase_survives_inverse_and_control ... ok
+test grover_reflection_and_its_negative_are_distinguished_under_control ... ok
+test control_preserves_reflection_sign_including_inverse_and_nested_control ... ok
+test repetition_zero_one_and_many_have_explicit_semantics ... ok
+test qpe_preserves_degenerate_coherence_and_correlates_with_a_reference ... ok
+test qpe_off_grid_phases_match_the_finite_fourier_distribution ... ok
+test nested_static_expansion_is_bounded_in_work_and_depth ... ok
+test qpe_resolves_all_eighth_turns_in_little_endian_order ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 20.34s
+

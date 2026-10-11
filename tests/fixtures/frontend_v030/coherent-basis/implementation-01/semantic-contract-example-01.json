@@ -1,0 +1,29 @@
+{
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "examples/semantic_contracts",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "seconds": 1.2518433340010233,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/semantic-contract-example-01.stdout.txt",
+      "sha256": "5f52c45adf6c495634be0d4a702aecbb31d7a16fab1edf074c2819b2dc4a117f"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/semantic-contract-example-01.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

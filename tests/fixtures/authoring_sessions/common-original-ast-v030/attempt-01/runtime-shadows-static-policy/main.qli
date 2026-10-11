@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+fn generic[static U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Apply(U) { let U=q; U }
+pub fn main() -> Unit { () }

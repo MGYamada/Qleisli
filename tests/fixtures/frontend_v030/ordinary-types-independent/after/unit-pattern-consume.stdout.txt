@@ -1,0 +1,9 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "project", message: "missing module `std::registers`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/unit-pattern-consume/main.qli", span: Span { start: 0, end: 34 }, line: 1, column: 1 }) }
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Q(Type { kind: Bits(0) }) }, identity: Some(0), fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Q(Type { kind: Bits(0) }) }, identity: Some(1), fields: [] }
+sized.lower: proposed instrument=false
+sized.native: pure accepted

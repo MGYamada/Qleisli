@@ -1,0 +1,1 @@
+fn entry(q:Q<(Unit,Bit)>)->Q<Bit>{let (u,b)=split(q);finish(u);b}

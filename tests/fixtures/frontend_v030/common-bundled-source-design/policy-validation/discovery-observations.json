@@ -1,0 +1,43 @@
+{
+  "format": "qleisli.policy-discovery-observations",
+  "version": 1,
+  "observed_at_utc": "2026-10-05T16:27:57.295989+00:00",
+  "status": "transcribed-tool-discovery-observations-not-driver-validation-results",
+  "observations": [
+    {
+      "cmd": "command -v mdbook",
+      "exit_code": 1,
+      "combined_output": "",
+      "kind": "tool-discovery-probe"
+    },
+    {
+      "cmd": "ls -l /Users/masa/.cargo/bin/mdbook /opt/homebrew/bin/mdbook /Users/masa/git/Qleisli/target/tools/mdbook",
+      "exit_code": 1,
+      "combined_output": "ls: /Users/masa/.cargo/bin/mdbook: No such file or directory\nls: /Users/masa/git/Qleisli/target/tools/mdbook: No such file or directory\nls: /opt/homebrew/bin/mdbook: No such file or directory\n",
+      "kind": "tool-discovery-probe"
+    },
+    {
+      "cmd": "rg -n 'MDBOOK_VERSION|mdbook|book_links|rendered' .github/workflows/docs.yml .github/ci/README.md docs/book.toml scripts/check_docs.py scripts/check_book.py",
+      "exit_code": 2,
+      "reported_missing_path": ".github/workflows/docs.yml",
+      "kind": "entrypoint-discovery-probe",
+      "output_limit": "Other matching stdout existed; no full original raw separate stream was retained. Missing path is transcribed from tool output, not a validation failure."
+    },
+    {
+      "cmd": "rg -n 'MDBOOK_VERSION|mdbook' .github docs/README.md scripts/check_ci.py scripts/ci_profile.py",
+      "exit_code": 2,
+      "reported_missing_paths": [
+        "docs/README.md",
+        "scripts/check_ci.py",
+        "scripts/ci_profile.py"
+      ],
+      "kind": "entrypoint-discovery-probe",
+      "output_limit": "Other matching stdout identified .github/workflows/ci.yml. No full original raw separate stream was retained."
+    }
+  ],
+  "resolution": "Inspected actual .github/workflows/ci.yml, check_book entrypoint and existing /private/tmp/qleisli-mdbook-0.5.4-bin/mdbook; fixed new authored driver independently verified version before build.",
+  "validation_command_count": 13,
+  "all_actual_validation_commands_exit_zero": true,
+  "record_provided_commands_executed": false,
+  "limit": "The initial lookups failed honestly. These probes did not mutate code or constitute book/policy validation. Transcript fields are labelled rather than invented original raw logs."
+}

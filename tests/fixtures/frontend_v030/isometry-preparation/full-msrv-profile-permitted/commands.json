@@ -1,0 +1,30 @@
+[
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--all-targets"
+    ],
+    "exit_code": 0,
+    "seconds": 1007.7934628750081,
+    "recorded_utc": "2026-10-05T15:43:17.943764+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt",
+    "timed_out": false
+  },
+  {
+    "command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--doc"
+    ],
+    "exit_code": 0,
+    "seconds": 1.5977134160348214,
+    "recorded_utc": "2026-10-05T15:43:19.544689+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt",
+    "timed_out": false
+  }
+]

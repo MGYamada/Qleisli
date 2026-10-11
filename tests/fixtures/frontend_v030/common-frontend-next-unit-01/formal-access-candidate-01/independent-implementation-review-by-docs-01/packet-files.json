@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.additive-independent-review-packet",
+  "version": 1,
+  "files": [
+    {
+      "path": "final-identity-check.json",
+      "bytes": 381,
+      "sha256": "94606ef5aa9bf61250b2df67082e93518d878570991993fb41b8d13777378bf0"
+    },
+    {
+      "path": "inputs-and-audit.json",
+      "bytes": 18449,
+      "sha256": "218602d99caea7ebfebb9c6d65939368f7b830a68689096b1b4dc5cf6d27c9a8"
+    },
+    {
+      "path": "review.md",
+      "bytes": 11465,
+      "sha256": "cc927f3a8d51c491a4493c5d7bb223f12d5e855918bd95c72d6ead9585a8853f"
+    },
+    {
+      "path": "reviewer-discovery.json",
+      "bytes": 1641,
+      "sha256": "f0f02c83af68e2e0a77d9135034ac22cf1a6e6ade96ea8f18aca8ad86bf51cd2"
+    },
+    {
+      "path": "startup-continuity.json",
+      "bytes": 641,
+      "sha256": "3d515b0df81f08bb40b52c600bffa4688e3ce5539361a5001f9921b2746ea4ff"
+    },
+    {
+      "path": "startup-continuity.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "startup-continuity.stdout.txt",
+      "bytes": 420,
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35"
+    }
+  ],
+  "limits": "Selected actual-code review and data audit only; immutable historical originals remain outside this packet. The map does not include itself."
+}

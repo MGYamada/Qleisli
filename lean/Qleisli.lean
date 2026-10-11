@@ -6,13 +6,17 @@ import Qleisli.Exact
 import Qleisli.ExactMatrix
 import Qleisli.Finite
 import Qleisli.Raw
+import Qleisli.RawUnit
+import Qleisli.RawRepresentationTransport
 import Qleisli.RawDenotation
 import Qleisli.RawProtected
 import Qleisli.RawProtectedEvaluation
+import Qleisli.RawProtectedCommutation
 import Qleisli.RawFunction
 import Qleisli.RawPure
 import Qleisli.RawInstrument
 import Qleisli.Scope
+import Qleisli.ExclusiveScope
 import Qleisli.Transition
 import Qleisli.Phi
 import Qleisli.Examples
@@ -36,6 +40,7 @@ import Qleisli.HierarchicalFiniteUnitary
 import Qleisli.Qirf
 import Qleisli.QirfValidity
 import Qleisli.NativeValidity
+import Qleisli.NativeContract
 import Qleisli.NativeHierarchy
 import Qleisli.HierarchicalDiagonal
 import Qleisli.HierarchicalGradient
@@ -60,6 +65,7 @@ import Qleisli.HierarchicalRoutedPower
 import Qleisli.HierarchicalQpeCircuit
 import Qleisli.Semantics.CoordinateOperators
 import Qleisli.CoordinateOperators
+import Qleisli.SharedControlCommutation
 import Qleisli.HierarchicalTensorCoordinates
 import Qleisli.HierarchicalCircuitTrace
 import Qleisli.HierarchicalCircuitTraceEvaluation
@@ -71,3 +77,6 @@ import Qleisli.HierarchicalProvider
 import Qleisli.HierarchicalQpeLayout
 import Qleisli.HierarchicalQpeRoot
 import Qleisli.HierarchicalQpeInstrument
+import Qleisli.RoutedControlCommutation
+import Qleisli.FiniteBasisTransport
+import Qleisli.ControlAccess

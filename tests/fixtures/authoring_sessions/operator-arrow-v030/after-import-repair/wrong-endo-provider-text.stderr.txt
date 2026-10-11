@@ -1,0 +1,1 @@
+main:124..217: type: type or tuple/size shape mismatch: expected Q(Bit), found Q(Tuple([Unit, Bit]))

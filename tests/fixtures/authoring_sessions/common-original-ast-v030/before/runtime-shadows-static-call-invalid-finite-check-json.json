@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-original-ast-v030/attempt-01/runtime-shadows-static-call-invalid",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T19:25:07.348266+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.00548141699982807,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "runtime-shadows-static-call-invalid-finite-check-json.native.jsonl",
+  "native_count_scope": "Forwarder JSONL rows immediately before execv; no independent native-start/exit attestation.",
+  "stdout_raw": "runtime-shadows-static-call-invalid-finite-check-json.stdout.bin",
+  "stderr_raw": "runtime-shadows-static-call-invalid-finite-check-json.stderr.bin",
+  "stdout_sha256": "3f374c64edbda82e0f076f11c74d0740c2bdd779491b4160ade3d030e5d9d156",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"a local or spent runtime value cannot be a static operation\",\"primary\":{\"path\":\"main.qli\",\"start\":155,\"end\":156,\"line\":3,\"column\":30},\"related\":[]}],\"result\":null}\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact bounded captured raw prefixes retained separately.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "a local or spent runtime value cannot be a static operation",
+        "primary": {
+          "path": "main.qli",
+          "start": 155,
+          "end": 156,
+          "line": 3,
+          "column": 30
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

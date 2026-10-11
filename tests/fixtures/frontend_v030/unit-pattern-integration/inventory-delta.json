@@ -1,0 +1,49 @@
+{
+  "sources": [
+    {
+      "path": "src/frontend/compile/basis.rs",
+      "before": "b3cecb102484ea1f562c82f89c81838696afa4ce67556db2fb7c30b93bda0dd2",
+      "after": "302b8c13d53af4d1a65d8a418599ff44933774ca12dab7f93e712a928adfd86a",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "before": "54d3ddf9d7c8b41e9adc7e10d867f6fb3f6de8e526f0a6f4209ad3244f9f627c",
+      "after": "79d47195a752f803be7945e3bdd147a1de123eda721fde69d5ec061d1a9f4b89",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "before": "ce80213cfda91622bf5e5f308964426cf17de827b0691f02cf96c758933aa600",
+      "after": "a8556edf08cc8caa528027c34f8cdbddfbb24d5432cf611c726c0b78e32d9618",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "before": "62d7817d59d2425d73c48bd5a9c123ebacba7851da1cf5c0ea0a249ce857d7de",
+      "after": "dfb9427d236eab2f0ff3465499f864858dfe394ec18ffec7708b5de9c010fe85",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before": "52722d53aa6dde6746dadefaf93d3b0f21ab700983de539019186d50b680cedd",
+      "after": "e759d8626606dbe7885954385aceff51103870a634bf6fa468c76b711b68ad26",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "before": "ca9aed2642cfe2600b3155fa76ed0408db62ca0df3ff6e246093751a3b5302a9",
+      "after": "a06c1c226f4463248c89816ad7b8f172c877141f61b5c94a131893ed87f0e3c0",
+      "surface_changed": false
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "before": "3217e86016c514b65510809e2dc19848eb3db29437ea9c915fdc3758701abe48",
+      "after": "c2cc8ab3dea54e33a8e3f0a11fefda827654c2db6ae9359e0d00ac7f5691316a",
+      "surface_changed": false
+    }
+  ],
+  "surface_before": "f6b59a20b2ef7b9114380c98b294f716c775e0183d06dbb9fa2cb8ee89928368",
+  "surface_after": "5db0b91666aefbe1ad72597e4ac478958401c2dcddb9cd7a1dce97d9cd84d876",
+  "historical_pins": "Unchanged; only current source rows and public surface identity refreshed"
+}

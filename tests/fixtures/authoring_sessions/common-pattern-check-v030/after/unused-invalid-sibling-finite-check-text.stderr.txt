@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/unused-invalid-sibling/main.qli:7:9: ownership: quantum ownership `q` has already been consumed

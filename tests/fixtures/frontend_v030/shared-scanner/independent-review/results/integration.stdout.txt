@@ -1,0 +1,76 @@
+
+running 11 tests
+test all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics ... ok
+test ordinary_and_nested_comment_delimiters_follow_rust_distinctions ... ok
+test doc_text_normalizes_crlf_but_preserves_utf8_source_spans ... ok
+test rust_style_docs_attach_to_modules_imports_and_functions_in_source_order ... ok
+test misplaced_documentation_is_rejected_in_both_parse_entry_points ... ok
+test markdown_includes_private_docs_and_uses_safe_signature_fences ... ok
+test unfinished_comment_blocks_cannot_swallow_later_declarations ... ok
+test deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax ... ok
+test every_bundled_module_and_public_or_private_definition_has_documentation ... ok
+test shared_scanner_retains_docs_without_adding_a_second_attachment_rule ... ok
+test documentation_neither_changes_ir_nor_authorizes_invalid_ownership ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.01s
+
+
+running 18 tests
+test invisible_separators_and_bad_bit_literals_have_precise_errors ... ok
+test accepts_comments_and_reports_utf8_byte_offsets ... ok
+test basis_operators_have_documented_precedence_and_left_associativity ... ok
+test classical_boolean_operators_have_precedence_and_left_associativity ... ok
+test coherent_lifts_parse_nested_basis_patterns_and_keep_their_spans ... ok
+test classical_literals_are_reserved_and_distinct_from_basis_bits ... ok
+test malformed_syntax_has_precise_error_spans ... ok
+test shared_scanner_preserves_the_finite_public_token_projection ... ok
+test parses_bell_modules_and_keeps_owned_resource_syntax_distinct ... ok
+test reserved_std_module_keywords_allow_further_identifier_components ... ok
+test static_operation_errors_point_to_the_unconsumed_token_or_eof ... ok
+test parses_phase_oracle_and_measurement_feedback ... ok
+test unicode_format_characters_are_comment_text_but_not_source_tokens ... ok
+test nested_operator_chains_share_the_ast_depth_limit ... ok
+test all_static_constructor_token_prefixes_parse_without_panicking ... ok
+test classical_operator_chains_and_basis_patterns_obey_depth_limits ... ok
+test deep_syntax_is_rejected_without_exhausting_the_stack ... ok
+test example_and_stdlib_token_prefixes_parse_without_panicking ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.70s
+
+
+running 32 tests
+test direct_finite_source_gates_preserve_entangled_h_x_references ... ignored, requires the separately built and audited Lean kernel
+test common_scanner_applies_the_finite_character_policy_to_sized_source ... ok
+test classical_shadows_restore_outer_bindings_in_branches_and_folds ... ok
+test duplicate_declarations_and_inconsistent_premises_reject ... ok
+test every_import_resolves_and_mutual_cycles_are_rejected ... ok
+test concrete_unused_call_providers_are_checked_and_zero_repeat_is_retained ... ok
+test file_loader_reuses_regular_file_and_byte_guards ... ok
+test grouping_semicolons_and_count_precedence_match_the_source_contract ... ok
+test forwarding_checks_callee_size_and_access_premises ... ok
+test lexical_binding_identity_prevents_shadowed_owner_escape ... ok
+test lowering_profile_preflight_identifies_unsupported_root_signatures ... ok
+test guarded_subtraction_index_and_linear_normalization ... ok
+test original_bytes_and_contextual_identifiers_are_retained ... ok
+test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ignored, requires the separately built and audited Lean kernel
+test primitive_signatures_agree_through_symbolic_and_concrete_preparation ... ok
+test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ignored, requires the separately built and audited Lean kernel
+test shadowing_moves_tuple_shape_and_effects ... ok
+test shared_scanner_keeps_sized_contextual_words_and_numeral_diagnostics ... ok
+test sized_host_bindings_respect_module_visibility ... ok
+test substituted_size_overflow_points_to_the_caller_module ... ok
+test preparation_limits_and_utf8_diagnostics_are_explicit ... ok
+test unreachable_branch_and_empty_fold_still_check_names_access_and_ownership ... ok
+test concrete_phase_and_repeat_limits_check_zero_and_unused_providers ... ok
+test concrete_shared_call_budget_and_recursion_depth_are_enforced ... ok
+test concrete_retiming_proposal_preserves_measure_init_gate_pack_source_order ... ok
+test concrete_bindings_preserve_provider_type_and_premises ... ok
+test concrete_shared_qpe_clients_retain_calls_counts_and_ordered_readout ... ok
+test concrete_elaboration_limits_are_aggregate_and_keep_empty_owners ... ok
+test measured_qpe_dependency_closure_and_concrete_entry_bindings ... ok
+test symbolic_capacity_errors_keep_obligation_spans_and_causes ... ok
+test root_fourier_factoring_accepts_commuting_stage_reordering_and_retains_source ... ok
+test untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming ... ok
+
+test result: ok. 29 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.29s
+

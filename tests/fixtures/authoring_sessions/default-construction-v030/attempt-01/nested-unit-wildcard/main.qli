@@ -1,0 +1,11 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::unit;
+
+unitary fn default() -> Q<Unit> { unit(()) }
+
+pub unitary fn entry() -> Unit {
+    let env = (0, (default(), ()));
+    // Deliberate loss of a nested zero-axis owner.
+    let _ = env;
+    ()
+}

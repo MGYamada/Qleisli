@@ -1,0 +1,1 @@
+pub unitary fn f[const n: Nat, const U: Op<Bits<n>>](c: Q<Bit>, q: Q<Bits<n>>) -> (Q<Bit>,Q<Bits<n>>) requires Controlled(U) { controlled(power(U,2^(n+1)))(c,q) }

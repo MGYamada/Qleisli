@@ -1,0 +1,2 @@
+pub unitary fn f(q: Q<Bit>) -> Q<Bit> { q }
+pub unitary fn g(q: Q<Bit>) -> Q<Bit> { q }

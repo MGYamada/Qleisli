@@ -1,0 +1,44 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+    "--ir-profile=hierarchy",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+    "--nat=m=0",
+    "--nat=n=1"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-05T04:04:34.308217+00:00",
+  "recorded_time_note": "Result record written after this bounded observation batch; not independently authenticated invocation time.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "status": "checked",
+      "profile": "sized-unitary",
+      "contract": "composition",
+      "verification": {
+        "scope": "producer-consistency",
+        "request_origin": "producer",
+        "source_meaning_verified": false
+      },
+      "execution_authority": "checked-produced-ir",
+      "entry": "main::f",
+      "ir_profile": "hierarchy",
+      "source_check_scope": "all-supplied-module-declarations",
+      "native_check_scope": "selected-specialization"
+    }
+  },
+  "stderr": "",
+  "elapsed_seconds": 0.06981837499188259,
+  "native_invocations": 1,
+  "cli_sha256_before": "66a429665fbe818bbb28d93d2eb2f98757a04a0899115d3a77760618bfc747a9",
+  "cli_sha256_after": "66a429665fbe818bbb28d93d2eb2f98757a04a0899115d3a77760618bfc747a9",
+  "raw_record": "after-repair/natural-exact-reversed.json"
+}

@@ -1,0 +1,2 @@
+unitary fn prep(x: CBit) -> Q<Bit> { x }
+observe fn main() -> Unit { () }

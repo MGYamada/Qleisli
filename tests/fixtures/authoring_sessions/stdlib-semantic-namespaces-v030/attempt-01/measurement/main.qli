@@ -1,0 +1,21 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+//! Informed desired namespace client; unexecuted before-source snapshot.
+//! A check outcome is separate from the mathematical contract and proof.
+use std::measurement::measure_x;
+use std::measurement::measure_z2;
+use std::measurement::parity_zz;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::join;
+
+/// Consume destructive measurement inputs; explicitly consume both retained
+/// parity data owners afterwards. The internal parity meter is not a data owner.
+/// This client checks API discovery only, not the complete reference instrument.
+fn main() -> (Bit, (Bit, Bit), Bit, (Bit, Bit)) {
+    let single = measure_x(h(init0()));
+    let pair = measure_z2(join(init0(), x(init0())));
+    let ((a, b), parity) = parity_zz(h(init0()), init0());
+    let data = measure_z2(join(a, b));
+    (single, pair, parity, data)
+}

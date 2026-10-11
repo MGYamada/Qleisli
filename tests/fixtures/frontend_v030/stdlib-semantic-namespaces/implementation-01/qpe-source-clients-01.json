@@ -1,0 +1,57 @@
+{
+  "source_probabilities": 32,
+  "off_grid_residual_coherence": true,
+  "commands": [
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/first_source",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.2408470869120798},{\"bits\":[false,false,false,true],\"probability\":0.1158470869120797},{\"bits\":[false,false,true,false],\"probability\":0.1158470869120797},{\"bits\":[false,false,true,true],\"probability\":0.2408470869120798},{\"bits\":[false,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,true],\"probability\":0.009152913087920394},{\"bits\":[true,false,false,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,false,true],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,true],\"probability\":0.053347086912079664},{\"bits\":[true,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,true],\"probability\":0.009152913087920394}]}}\n",
+      "stderr": "",
+      "historical_source_sha256": {
+        "estimation.qli": "5c44bbb8713398da6d31b65fb150c961968d9a816cc6281d8db06b1cbf8c6650",
+        "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+        "main.qli": "a66905f0c5f9d6887080ec183a6b119c8d349bb51a6c4b887fc8d681fe29f01e"
+      },
+      "executed_source_sha256": {
+        "estimation.qli": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827",
+        "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+        "main.qli": "b142274d5e97691689acc0079a36ed1899f2394e7846b371f1f91131e67311cb"
+      }
+    },
+    {
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/current/native-clients/lean_qpe_instrument/dephased",
+        "--format=json"
+      ],
+      "exit": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false,false,false],\"probability\":0.17834708691207973},{\"bits\":[false,false,false,true],\"probability\":0.17834708691207973},{\"bits\":[false,false,true,false],\"probability\":0.17834708691207973},{\"bits\":[false,false,true,true],\"probability\":0.17834708691207973},{\"bits\":[false,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[false,true,true,true],\"probability\":0.009152913087920394},{\"bits\":[true,false,false,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,false,true],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,false],\"probability\":0.053347086912079664},{\"bits\":[true,false,true,true],\"probability\":0.053347086912079664},{\"bits\":[true,true,false,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,false,true],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,false],\"probability\":0.009152913087920394},{\"bits\":[true,true,true,true],\"probability\":0.009152913087920394}]}}\n",
+      "stderr": "",
+      "historical_source_sha256": {
+        "estimation.qli": "5c44bbb8713398da6d31b65fb150c961968d9a816cc6281d8db06b1cbf8c6650",
+        "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+        "main.qli": "5ab5aaf3859d4e9080b65796815bb24fb8705fff46fca00a510f0a8864744b9a"
+      },
+      "executed_source_sha256": {
+        "estimation.qli": "2cfc69e277bc911484f2869e7747c0e31fa5be82657bd0024511040d431fc827",
+        "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+        "main.qli": "072709319fc35677e5e7add69a098e692165ddb707d260e296104f0ebf8730a1"
+      }
+    }
+  ],
+  "source_sha256": {
+    "lean-kernel/QleisliKernel/ControlledPowers.lean": "177f68975a739c93cbd096d9d7b677627b57286225a61513dcac38dc94516515",
+    "lean-kernel/QleisliKernel/Uniform.lean": "bae0adb29de3b9d56ef2271a5ff140c26176fb940d279a9cc8fb2300a8b18397",
+    "lean-kernel/QleisliKernel/Qpe.lean": "03996ac5888e8a65744145a2b7c6aec255085c93202aea7192507121baea037d",
+    "lean/Qleisli/Qpe.lean": "dd2d6049ca1e3a4db607ac7b72b728dcf62eb1d386ec9039bd6d149d25a47711",
+    "lean-kernel/QleisliKernel/Schema.lean": "6b473e76c2ed817b7bc088d1c7e497fe1ebd19064717aae369715e7c76816592",
+    "lean/Qleisli/QpeComplete.lean": "c8465edcaaa46ccf2d738326c69ed3890168e2f0d7e2309776f1baf9dcbee1e2",
+    "scripts/test_lean_qpe.py": "f19b1be90a671bbcbb9d071e7e404a71523d6576c2075afaef1bc2b171c52c46"
+  }
+}

@@ -1,0 +1,867 @@
+{
+  "reviewed_source_deltas": [
+    {
+      "path": "src/bin/qleisli/options.rs",
+      "group": "foreign",
+      "previous_sha256": "c24c079a7f52976d7e935a7d917e4e5ef89872fbe3279db02b9275a1f2d16694",
+      "current_sha256": "90e3ff0f76ff498ca541180f063e5a0c054e862ad9fc9502c05cb869856176c3",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn parse(args: &[OsString], json: bool) -> Option<Self>"
+        ],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn parse(args: &[OsString], json: bool) -> Option<Self>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "group": "source",
+      "previous_sha256": "20a42f9c0ad7c8d85f4904bea1aa7e0b3ca1ee8dc691a8903c6622ebf9a22d2b",
+      "current_sha256": "5060ebab86fb5ec8e7346097727e429444703ab7f6d1b5b8694564debad32276",
+      "previous_surface": {
+        "declarations": [
+          "Access",
+          "AccessConstraint",
+          "BasisExpr",
+          "BasisExprKind",
+          "Block",
+          "Compare",
+          "Count",
+          "Decl",
+          "Expr",
+          "ExprKind",
+          "FnBody",
+          "FnKind",
+          "Ident",
+          "Module",
+          "NatKind",
+          "Natural",
+          "Param",
+          "Pattern",
+          "PatternKind",
+          "Predicate",
+          "Requirement",
+          "Span",
+          "StaticOp",
+          "StaticOpKind",
+          "StaticParam",
+          "StaticParamKind",
+          "Stmt",
+          "StmtKind",
+          "Type",
+          "TypeKind",
+          "UseDecl"
+        ],
+        "functions": [
+          "pub const fn cover(self, other: Self) -> Self",
+          "pub const fn new(start: usize, end: usize) -> Self"
+        ],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [
+          "Access",
+          "AccessConstraint",
+          "BasisExpr",
+          "BasisExprKind",
+          "Block",
+          "Compare",
+          "Count",
+          "Decl",
+          "Expr",
+          "ExprKind",
+          "FnBody",
+          "FnKind",
+          "Ident",
+          "Module",
+          "NatKind",
+          "Natural",
+          "Param",
+          "Pattern",
+          "PatternKind",
+          "Predicate",
+          "Requirement",
+          "Span",
+          "StaticOp",
+          "StaticOpKind",
+          "StaticParam",
+          "StaticParamKind",
+          "Stmt",
+          "StmtKind",
+          "Type",
+          "TypeKind",
+          "UseDecl"
+        ],
+        "functions": [
+          "pub const fn cover(self, other: Self) -> Self",
+          "pub const fn new(start: usize, end: usize) -> Self"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/mod.rs",
+      "group": "source",
+      "previous_sha256": "cd4e8186d77d46642817dc4485bd5b3c5537a2e03541f9f2932741f1aace1414",
+      "current_sha256": "29e4e861cbb78798b9266ea0fcdd685a4cb117f96d09473ab76d2a471b268a5d",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "group": "source",
+      "previous_sha256": "4114b12febadd0baae3928584344ebd876a95f0bbc4a53738ff9cfdb9e0272dc",
+      "current_sha256": "a7033fd313d0f69227a1acce76fba47d376dedc18ff995b88a48f925a72a7bbc",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "group": "source",
+      "previous_sha256": "83bea0f04833006e25c1cba0a9ca356cf523ff51f5b47a7939ce961d5be5bd7d",
+      "current_sha256": "f82b7f8747dfc3879446a253f6dff90bfbcb830794cbb45eb7a6e68129b34df8",
+      "previous_surface": {
+        "declarations": [
+          "CompileError",
+          "ErrorCode"
+        ],
+        "functions": [
+          "pub fn check_project(root: &Path) -> Result<(), CompileError>",
+          "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
+          "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn compile_project(root: &Path) -> Result<AcceptedProgram, CompileError>",
+          "pub fn compile_project_diagnostic(root: &Path) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic>"
+        ],
+        "capacity_constants": [
+          "const MAX_BITS: usize = 12;",
+          "const MAX_DEPTH: usize = 64;",
+          "const MAX_TREE_DEPTH: usize = 64;",
+          "const MAX_TREE_NODES: usize = 4096;",
+          "const MAX_WORK: usize = 1_000_000;"
+        ]
+      },
+      "current_surface": {
+        "declarations": [
+          "CompileError",
+          "ErrorCode"
+        ],
+        "functions": [
+          "pub fn check_project(root: &Path) -> Result<(), CompileError>",
+          "pub fn check_project_diagnostic(root: &Path) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
+          "pub fn check_project_with_policy(root: &Path, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn check_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<(), Diagnostic>",
+          "pub fn check_with_policy(&self, policy: SourcePolicy) -> Result<(), Diagnostic>",
+          "pub fn compile_project(root: &Path) -> Result<AcceptedProgram, CompileError>",
+          "pub fn compile_project_diagnostic(root: &Path) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_project_with_kernel( root: &Path, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_project_with_policy( root: &Path, policy: SourcePolicy, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_with_kernel( &self, policy: SourcePolicy, kernel: &crate::interchange::native::Kernel, ) -> Result<AcceptedProgram, Diagnostic>",
+          "pub fn compile_with_policy(&self, policy: SourcePolicy) -> Result<AcceptedProgram, Diagnostic>"
+        ],
+        "capacity_constants": [
+          "const MAX_BITS: usize = 12;",
+          "const MAX_DEPTH: usize = 64;",
+          "const MAX_TREE_DEPTH: usize = 64;",
+          "const MAX_TREE_NODES: usize = 4096;",
+          "const MAX_WORK: usize = 1_000_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "group": "source",
+      "previous_sha256": "db999b2ad531781e4dae54d97c8d25069aff23687c2c24b846aa05d10f5c756b",
+      "current_sha256": "a57f6fe4163ffc8b4635fca04fb96c332b8e09a2c89db511694f19503d9ece1f",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "group": "source",
+      "previous_sha256": "886473517bf31a37ddb87bfe469967882351f5f5abe163e923691de2f5923748",
+      "current_sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "group": "source",
+      "previous_sha256": "fd68ff0147e10432fbb6d17b9313a94789a6fa83ebed4bef4c4860802854f05a",
+      "current_sha256": "c4a151147f16540598430b66635deddc5135d10279772804a74bcabf33800dc6",
+      "previous_surface": {
+        "declarations": [
+          "ParseError"
+        ],
+        "functions": [
+          "pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseError>",
+          "pub fn parse_module(source: &str) -> Result<Module, ParseError>"
+        ],
+        "capacity_constants": [
+          "const MAX_IMPORT_PREFIX_BYTES: usize = 1_048_576;",
+          "const MAX_IMPORT_PREFIX_IDENTIFIERS: usize = 65_536;",
+          "const MAX_NESTING: usize = 64;",
+          "const MAX_TUPLE_FIELDS: usize = 64;"
+        ]
+      },
+      "current_surface": {
+        "declarations": [
+          "ParseError"
+        ],
+        "functions": [
+          "pub fn parse_documented_module(source: &str) -> Result<DocumentedModule, ParseError>",
+          "pub fn parse_module(source: &str) -> Result<Module, ParseError>"
+        ],
+        "capacity_constants": [
+          "const MAX_IMPORT_PREFIX_BYTES: usize = 1_048_576;",
+          "const MAX_IMPORT_PREFIX_IDENTIFIERS: usize = 65_536;",
+          "const MAX_NESTING: usize = 64;",
+          "const MAX_TUPLE_FIELDS: usize = 64;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "group": "source",
+      "previous_sha256": "9a0575f82bea44d8cecefa1c360ecdb34eecb0b6240e2c834ed0f955bf03fa90",
+      "current_sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>)",
+          "pub fn binder(&self, id: BinderId) -> &BinderInfo",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn info(&self, id: BinderId) -> &BinderInfo",
+          "pub fn insert(&mut self, index: Index<'ast>)",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn local_key(&self, name: &Ident) -> Option<&BinderKey>",
+          "pub fn natural_usage(&self, natural: &Natural) -> UseSiteId",
+          "pub fn new( definition: DefId, declaration: &'ast Decl, global: impl Fn(&str) -> Option<Target>, ) -> Self",
+          "pub fn resolve(&self, name: &Ident) -> ResolvedUse",
+          "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> UseSiteId"
+        ],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>)",
+          "pub fn binder(&self, id: BinderId) -> &BinderInfo",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn binder(&self, name: &Ident) -> BinderId",
+          "pub fn info(&self, id: BinderId) -> &BinderInfo",
+          "pub fn insert(&mut self, index: Index<'ast>)",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn key(&self, id: BinderId) -> &BinderKey",
+          "pub fn local_key(&self, name: &Ident) -> Option<&BinderKey>",
+          "pub fn natural_usage(&self, natural: &Natural) -> UseSiteId",
+          "pub fn new( definition: DefId, declaration: &'ast Decl, global: impl Fn(&str) -> Option<Target>, ) -> Self",
+          "pub fn resolve(&self, name: &Ident) -> ResolvedUse",
+          "pub fn usage(&self, id: UseSiteId) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> &UseInfo",
+          "pub fn usage(&self, name: &Ident) -> UseSiteId"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "group": "sized-source",
+      "previous_sha256": "c9af379e3b919c3913a92645085e6aa245c6c4299ca09d54ba83c7cff398e871",
+      "current_sha256": "150e317c0f90a9cf56f0ebf8969312c5c8bbf557a74dca75b8e430e23c6a7959",
+      "previous_surface": {
+        "declarations": [
+          "Error",
+          "Instantiation",
+          "OperationBinding",
+          "ParsedProgram"
+        ],
+        "functions": [
+          "pub fn code(&self) -> &str",
+          "pub fn definition(&self) -> &str",
+          "pub fn elaborate(&self) -> Result<ElaboratedProgram>",
+          "pub fn entry(&self) -> &str",
+          "pub fn instantiate( &self, entry: &str, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
+          "pub fn load(files: BTreeMap<String, PathBuf>) -> Result<Self>",
+          "pub fn message(&self) -> &str",
+          "pub fn module(&self) -> Option<&str>",
+          "pub fn module_names(&self) -> impl Iterator<Item = &str>",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn new(definition: impl Into<String>, naturals: BTreeMap<String, u32>) -> Self",
+          "pub fn operations(&self) -> &BTreeMap<String, OperationBinding>",
+          "pub fn parse(sources: BTreeMap<String, String>) -> Result<Self>",
+          "pub fn program(&self) -> &ParsedProgram",
+          "pub fn source(&self, module: &str) -> Option<&str>",
+          "pub fn span(&self) -> Span",
+          "pub fn syntax(&self, module: &str) -> Option<&super::ast::Module>"
+        ],
+        "capacity_constants": [
+          "const MAX_MODULES: usize = 64;",
+          "const MAX_SOURCE_BYTES: usize = 65_536;",
+          "const MAX_TOTAL_BYTES: usize = 1_048_576;"
+        ]
+      },
+      "current_surface": {
+        "declarations": [
+          "BasisBinding",
+          "Error",
+          "Instantiation",
+          "OperationBinding",
+          "ParsedProgram"
+        ],
+        "functions": [
+          "pub fn code(&self) -> &str",
+          "pub fn definition(&self) -> &str",
+          "pub fn elaborate(&self) -> Result<ElaboratedProgram>",
+          "pub fn entry(&self) -> &str",
+          "pub fn instantiate( &self, entry: &str, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
+          "pub fn instantiate_with_types( &self, entry: &str, types: BTreeMap<String, BasisBinding>, naturals: BTreeMap<String, u32>, operations: BTreeMap<String, OperationBinding>, ) -> Result<Instantiation>",
+          "pub fn load(files: BTreeMap<String, PathBuf>) -> Result<Self>",
+          "pub fn message(&self) -> &str",
+          "pub fn module(&self) -> Option<&str>",
+          "pub fn module_names(&self) -> impl Iterator<Item = &str>",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn new(definition: impl Into<String>, naturals: BTreeMap<String, u32>) -> Self",
+          "pub fn operations(&self) -> &BTreeMap<String, OperationBinding>",
+          "pub fn parse(source: &str) -> Result<Self>",
+          "pub fn parse(sources: BTreeMap<String, String>) -> Result<Self>",
+          "pub fn program(&self) -> &ParsedProgram",
+          "pub fn source(&self, module: &str) -> Option<&str>",
+          "pub fn span(&self) -> Span",
+          "pub fn syntax(&self, module: &str) -> Option<&super::ast::Module>",
+          "pub fn ty(&self) -> &SourceType",
+          "pub fn types(&self) -> &BTreeMap<String, BasisBinding>",
+          "pub fn types(&self) -> &BTreeMap<String, BasisBinding>",
+          "pub fn with_types( definition: impl Into<String>, types: BTreeMap<String, BasisBinding>, naturals: BTreeMap<String, u32>, ) -> Self"
+        ],
+        "capacity_constants": [
+          "const MAX_MODULES: usize = 64;",
+          "const MAX_SOURCE_BYTES: usize = 65_536;",
+          "const MAX_TOTAL_BYTES: usize = 1_048_576;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "group": "sized-source",
+      "previous_sha256": "3a167ba29926929bd46759f29de08a3b230114bd79f434402135097854fc5763",
+      "current_sha256": "7cffd4d5275e3a42b88e31d51caa8b6ce720d63b279074590c3faf940fdf28fa",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn get<'a, T>( &self, bindings: &'a std::collections::BTreeMap<BinderKey, T>, ) -> Option<&'a T>",
+          "pub fn key(&self) -> &BinderKey",
+          "pub fn target(&self, table: &Table) -> ResolvedUse"
+        ],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn get<'a, T>( &self, bindings: &'a std::collections::BTreeMap<BinderKey, T>, ) -> Option<&'a T>",
+          "pub fn key(&self) -> &BinderKey",
+          "pub fn target(&self, table: &Table) -> ResolvedUse"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "group": "sized-source",
+      "previous_sha256": "fe04914f5cb9a1540691f45a9da2b93c56a01a559b4368a20c9c24311f2dc044",
+      "current_sha256": "65aff9a9afe5506c888ac3229ccf88a72078309df58bfe516b7e83067fb0496e",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "group": "sized-source",
+      "previous_sha256": "17e892946f9b44bbbc15bffd9bbe2580843467bb00f2586540ea9196bfb4ce2b",
+      "current_sha256": "c6f513fac6e9f410948792044999d399dda792120aad3c802cd76e449a3108a7",
+      "previous_surface": {
+        "declarations": [
+          "ElaboratedProgram",
+          "HierarchyEligibility",
+          "SourceDefinition",
+          "SourceOperation",
+          "SourceStep",
+          "SourceType",
+          "SourceValue"
+        ],
+        "functions": [
+          "pub fn boolean_literal(&self) -> Option<bool>",
+          "pub fn boolean_operator(&self) -> Option<&'static str>",
+          "pub fn call_instances(&self) -> usize",
+          "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_lowering_profile(&self) -> Result<()>",
+          "pub fn child(&self) -> Option<&Self>",
+          "pub fn definition(&self) -> Option<usize>",
+          "pub fn definitions(&self) -> &[SourceDefinition]",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn fields(&self) -> &[SourceType]",
+          "pub fn fields(&self) -> &[SourceValue]",
+          "pub fn fold_iterations(&self) -> usize",
+          "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
+          "pub fn identity(&self) -> Option<u32>",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn instantiation(&self) -> &Instantiation",
+          "pub fn is_quantum(&self) -> bool",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn lower(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
+          "pub fn module(&self) -> &str",
+          "pub fn module(&self) -> &str",
+          "pub fn natural_arguments(&self) -> &[u32]",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn operation(&self) -> Option<&SourceOperation>",
+          "pub fn operation_bindings(&self) -> Option<&BTreeMap<String, SourceOperation>>",
+          "pub fn operations(&self) -> &BTreeMap<String, SourceOperation>",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn path(&self) -> &str",
+          "pub fn peak_quantum_width(&self) -> usize",
+          "pub fn primitive(&self) -> Option<&str>",
+          "pub fn repeat_count(&self) -> Option<u32>",
+          "pub fn root(&self) -> usize",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn steps(&self) -> &[SourceStep]",
+          "pub fn ty(&self) -> &SourceType",
+          "pub fn width(&self) -> Option<u32>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_FOLDS: usize = 1_024;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      },
+      "current_surface": {
+        "declarations": [
+          "ElaboratedProgram",
+          "HierarchyEligibility",
+          "SourceDefinition",
+          "SourceOperation",
+          "SourceStep",
+          "SourceType",
+          "SourceValue"
+        ],
+        "functions": [
+          "pub fn boolean_literal(&self) -> Option<bool>",
+          "pub fn boolean_operator(&self) -> Option<&'static str>",
+          "pub fn call_instances(&self) -> usize",
+          "pub fn called_definition(&self) -> Option<usize>",
+          "pub fn check_lowering_profile(&self) -> Result<()>",
+          "pub fn child(&self) -> Option<&Self>",
+          "pub fn definition(&self) -> Option<usize>",
+          "pub fn definitions(&self) -> &[SourceDefinition]",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn effect(&self) -> &'static str",
+          "pub fn fields(&self) -> &[SourceType]",
+          "pub fn fields(&self) -> &[SourceValue]",
+          "pub fn fold_iterations(&self) -> usize",
+          "pub fn hierarchy_eligibility(&self) -> Result<HierarchyEligibility>",
+          "pub fn identity(&self) -> Option<u32>",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn inputs(&self) -> &[SourceValue]",
+          "pub fn instantiation(&self) -> &Instantiation",
+          "pub fn is_quantum(&self) -> bool",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn kind(&self) -> &'static str",
+          "pub fn lower(&self) -> Result<super::HierarchyProposal>",
+          "pub fn lower_raw(&self) -> Result<super::RawSourceProposal>",
+          "pub fn module(&self) -> &str",
+          "pub fn module(&self) -> &str",
+          "pub fn natural_arguments(&self) -> &[u32]",
+          "pub fn naturals(&self) -> &BTreeMap<String, u32>",
+          "pub fn operation(&self) -> Option<&SourceOperation>",
+          "pub fn operation_bindings(&self) -> Option<&BTreeMap<String, SourceOperation>>",
+          "pub fn operations(&self) -> &BTreeMap<String, SourceOperation>",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn output(&self) -> &SourceValue",
+          "pub fn path(&self) -> &str",
+          "pub fn peak_quantum_width(&self) -> usize",
+          "pub fn primitive(&self) -> Option<&str>",
+          "pub fn repeat_count(&self) -> Option<u32>",
+          "pub fn root(&self) -> usize",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn span(&self) -> Span",
+          "pub fn steps(&self) -> &[SourceStep]",
+          "pub fn ty(&self) -> &SourceType",
+          "pub fn types(&self) -> &BTreeMap<String, BasisBinding>",
+          "pub fn width(&self) -> Option<u32>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_FOLDS: usize = 1_024;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/lower.rs",
+      "group": "sized-source",
+      "previous_sha256": "211cc20c96a5edbc9530b67a00a192f92e302a5a5c50ad4f3b008c6a126a9fb8",
+      "current_sha256": "1bb7eaac8a908467888faf2840affa74d42559afaac200e4995b093161603893",
+      "previous_surface": {
+        "declarations": [
+          "HierarchyProposal"
+        ],
+        "functions": [
+          "pub fn comparison_request(&self) -> &[u8]",
+          "pub fn initialization_moves(&self) -> &[InitializationMove]",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn lowering_precursor(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn pure_graph(&self) -> &[u8]",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
+          "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
+        ],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [
+          "HierarchyProposal"
+        ],
+        "functions": [
+          "pub fn comparison_request(&self) -> &[u8]",
+          "pub fn initialization_moves(&self) -> &[InitializationMove]",
+          "pub fn is_instrument(&self) -> bool",
+          "pub fn lowering_precursor(&self) -> &[u8]",
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn pure_graph(&self) -> &[u8]",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn source_events(&self) -> &[SourceEvent]",
+          "pub fn validate_initialization_moves( &self, checked: &crate::interchange::hierarchical::CheckedInstrument, ) -> Result<PreparationValidation>",
+          "pub fn validate_initialization_moves_native( &self, checked: &crate::interchange::hierarchical::NativeChecked, ) -> Result<PreparationValidation>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "group": "sized-source",
+      "previous_sha256": "a86610fdceafe7fe18c7dbb06bd29f3147056a4007ed4d57207eab8d5da866f8",
+      "current_sha256": "401b885afaef73f2dc37ef2a3095daec48df1a79acd458aa94186173cdab2340",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/raw.rs",
+      "group": "sized-source",
+      "previous_sha256": "c5f077928213413dce2caa88969b68956ba976cacd4cbf68612cc13cfe608459",
+      "current_sha256": "28d2d849c5cc93d626ed0156073f31cad289724f3d199c6d277991002fa0a233",
+      "previous_surface": {
+        "declarations": [
+          "RawSourceProposal"
+        ],
+        "functions": [
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn proposal(&self) -> &native::Proposal",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE_QUBITS: usize = 16;",
+          "const MAX_OPERATIONS: usize = 10_000;"
+        ]
+      },
+      "current_surface": {
+        "declarations": [
+          "RawSourceProposal"
+        ],
+        "functions": [
+          "pub fn payload(&self) -> &[u8]",
+          "pub fn proposal(&self) -> &native::Proposal",
+          "pub fn source(&self) -> &ElaboratedProgram",
+          "pub fn validate_source_steps(&self, accepted: &native::AcceptedProgram) -> Result<()>"
+        ],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1_024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE_QUBITS: usize = 16;",
+          "const MAX_OPERATIONS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/sized/raw/preservation.rs",
+      "group": "sized-source",
+      "previous_sha256": "e3e1a8d799b9c67fd27d1fb8bcff3b086fc59b48351a370c8c25ef9d4e7c54e6",
+      "current_sha256": "06ad8186d8f00e612aea9d02d7874b9612172803b633a51f617f8b128b7ec5cf",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE: usize = 16;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": [
+          "const MAX_CALLS: usize = 1024;",
+          "const MAX_CELLS: usize = 100_000;",
+          "const MAX_DEPTH: usize = 16;",
+          "const MAX_LIVE: usize = 16;",
+          "const MAX_STEPS: usize = 10_000;"
+        ]
+      }
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "group": "source",
+      "previous_sha256": "e9ec86f24af79c1873a0a39e1b3cbd845617b2456bcb2692e596ceef124fd566",
+      "current_sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+      "previous_surface": {
+        "declarations": [
+          "Type"
+        ],
+        "functions": [
+          "pub fn quantum_basis(&self) -> Option<&Self>"
+        ],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [
+          "Type"
+        ],
+        "functions": [
+          "pub fn quantum_basis(&self) -> Option<&Self>"
+        ],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/source_plan.rs",
+      "group": "sized-source",
+      "previous_sha256": "25d60db1bd50d91f671db43234b471f8a35a2460640f80f35583e737a6a00a90",
+      "current_sha256": "3ef62ca05c821d055abd3cd4329c12e6840e356f058050280251beaf04173856",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/bin/qleisli/source_plan/options.rs",
+      "group": "sized-source",
+      "previous_sha256": "6cbd784522b0338491769eeea5a23c40f3c17468ad857ba65fd19adbe88dc167",
+      "current_sha256": "ba8f88a9188bf9e275e832b3ee161718099569c76a20b7d0c0aae1ab53591c43",
+      "previous_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "current_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    }
+  ],
+  "corpus_and_fault_pins_unchanged": true,
+  "boundary_before": {
+    "id": "sized-source-proposal",
+    "group": "sized-source",
+    "entry_points": [
+      "ParsedProgram::parse",
+      "ParsedProgram::load",
+      "ParsedProgram::instantiate",
+      "Instantiation::elaborate",
+      "ElaboratedProgram::lower",
+      "HierarchyProposal::validate_initialization_moves",
+      "HierarchyProposal::qpe_binding",
+      "qleisli sized check/run/sample/emit-proposal",
+      "HierarchyProposal::validate_initialization_moves_native",
+      "sized check/run/sample through native-only reports",
+      "ElaboratedProgram::lower_raw",
+      "RawSourceProposal::validate_source_steps",
+      "ElaboratedProgram::hierarchy_eligibility",
+      "qleisli check/run/sample/emit-proposal with explicit module/entry bindings"
+    ],
+    "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
+    "request": "Original module bytes, selected public entry and complete natural/operation bindings",
+    "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope. Selected packaged tuple maps additionally retain complete basis trees, fresh owners and ordered axes; independent event replay binds the actual canonical split_tuple/join_tuple constructor, not just its endpoints or a producer equation.",
+    "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
+    "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished. The selected hierarchy admits recursive Unit/Bit/Bits/tuple bases, exact Op<tuple> binding and binary split/join with explicit unit/finish composition; direct phase_eighth remains atom-only. Finite unit/finish and selected coherent lifts are still unsupported, with no implicit profile retry.",
+    "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged. Recursive quantum bases retain 4096 nodes/depth64, at most eight axes per owner and sixteen in a frame. Actual retained basis nodes, including idle zero-width trees, are charged before event snapshot cloning; old atom costs are unchanged.",
+    "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
+    "replacement": [
+      "VM-28"
+    ]
+  },
+  "boundary_after": {
+    "id": "sized-source-proposal",
+    "group": "sized-source",
+    "entry_points": [
+      "ParsedProgram::parse",
+      "ParsedProgram::load",
+      "ParsedProgram::instantiate",
+      "Instantiation::elaborate",
+      "ElaboratedProgram::lower",
+      "HierarchyProposal::validate_initialization_moves",
+      "HierarchyProposal::qpe_binding",
+      "qleisli sized check/run/sample/emit-proposal",
+      "HierarchyProposal::validate_initialization_moves_native",
+      "sized check/run/sample through native-only reports",
+      "ElaboratedProgram::lower_raw",
+      "RawSourceProposal::validate_source_steps",
+      "ElaboratedProgram::hierarchy_eligibility",
+      "qleisli check/run/sample/emit-proposal with explicit module/entry bindings",
+      "BasisBinding::parse",
+      "ParsedProgram::instantiate_with_types",
+      "OperationBinding::with_types",
+      "selected --type/--operation-type explicit closed Basis bindings"
+    ],
+    "status": "Untrusted source preparation and proposals; actual execution requires fresh native acceptance; full Soundness remains pending",
+    "request": "Original module bytes, selected public entry and complete explicit Basis/Nat/operation bindings; provider Basis substitutions belong to the provider declaration and do not select runtime input",
+    "binding": "Original module bytes, lexical identities, source call paths and complete frames are retained. A separate pass validates fresh-init extraction on disjoint unitary frames; named QPE candidates retain independently supplied provider meaning and exact phase/layout. Producer proposals and hints issue no evidence. Finite mixed proposals retain original specialized source and exact argument/result trees; independent opcode replay binds accepted Raw to the source-step graph without proving AST elaboration. Shared physical Raw state retains suspended caller owners and globally fresh IDs; independent mixed replay checks owner transitions and ordered measurement/Boolean output. One private CLI plan fixes the IR profile and caller/provider request before native invocation; native/lowering failure never retries another profile. Project all-concrete checks remain distinct from explicit-module all-generic/selected-native scope. Selected packaged tuple maps additionally retain complete basis trees, fresh owners and ordered axes; independent event replay binds the actual canonical split_tuple/join_tuple constructor, not just its endpoints or a producer equation. Opaque Basis substitutions retain resolved lexical identity, exact closed tags/tuple tree and provider-local bindings; cache keys include the complete exact type tree, not only width. Generic declarations are checked before any concrete binding or specialization.",
+    "encoding": "Canonical Unit/Bit/Bits<n>/Q<A> with exact product/owner trees; selected hierarchy profile and explicit finite Unit/Bit/Q<Bit>/product Raw adapter; no implicit same-width coercions",
+    "domain": "Bounded nonnegative linear sizes with constant multiplication and guarded subtraction; exact implication failure rejects rather than granting evidence; selected dyadic hierarchy profile. Raw proposals support Unit/Bit/Q<Bit>/products, ordinary calls, init0/H/X/CNOT/measure_z and exactly representable eighth-turn phases. The common selected CLI supports closed Raw run/sample and rejects any runtime parameter, including Unit, or quantum result. Explicit basis remains hierarchy-only. General basis/primitive/provider/branch capabilities, checked open invocation and final loader/checker/CLI convergence remain unfinished. The selected hierarchy admits recursive Unit/Bit/Bits/tuple bases, exact Op<tuple> binding and binary split/join with explicit unit/finish composition; direct phase_eighth remains atom-only. Finite unit/finish and selected coherent lifts are still unsupported, with no implicit profile retry. The selected preparation profile implements ordered static A:Basis, contextual type(T) call arguments and resolved type forwarding, with no reflection, decomposition or preparation of opaque bases. General Meaning refinements and final common project-profile convergence remain pending.",
+    "limits": "64 modules; 65536 source bytes/module and 1MiB total; 10000 tokens/module; bounded syntax/type/scope, 1024 concrete calls/fold iterations, depth16/combined traversal64, 10000 ordered steps, 100000 value cells; existing downstream capacities independent Mixed Raw emission checks 16 globally live quantum wires across suspended calls and 10000 actual operations including expanded T gates before allocation/emission. Selected CLI samples1..1024; project samples1..1000000; Raw sample aggregate execution budget10000000, separate hierarchy execution limits unchanged. Recursive quantum bases retain 4096 nodes/depth64, at most eight axes per owner and sixteen in a frame. Actual retained basis nodes, including idle zero-width trees, are charged before event snapshot cloning; old atom costs are unchanged. Every type substitution is checked against the expanded 4096-node/depth-64 tree before cloning; specialization type metadata is charged to the existing aggregate cell budget. Host Basis bindings retain the same eight-bit selected-profile limit.",
+    "failure": "Located syntax/name/type/ownership/effect/limit or preservation errors; observations cannot be retimed. CLI rejects ambiguous options, absent kernel and inconsistent bindings. Proposal-derived comparison requests are consistency fixtures, not independent algorithm contracts. Only an explicit typed hierarchy profile mismatch selects Raw under Auto; caller requests lock hierarchy, and unsupported whole-graph capabilities reject before native checking.",
+    "replacement": [
+      "VM-28"
+    ]
+  },
+  "coverage_surface_sha256": "ba6bbc94c1d385fe05590c51081ddcd42ed078fdacb6987a19a221ad49e094f9",
+  "scope": "Current source/API and route inventory update for opaque Basis preparation only. Native constructors/modes, actual human adoptions, scoped meanings and every proof gate remain unchanged. No proof or release certification is created.",
+  "constructor_deltas": [
+    {
+      "path": "src/frontend/ast.rs",
+      "enum": "TypeKind",
+      "added_members": {
+        "Named": {
+          "declaration": "Named(Ident)",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "enum": "StaticOpKind",
+      "added_members": {
+        "Type": {
+          "declaration": "Type(Type)",
+          "group": "source"
+        }
+      }
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "enum": "StaticParamKind",
+      "added_members": {
+        "Basis": {
+          "declaration": "Basis",
+          "group": "source"
+        }
+      }
+    }
+  ],
+  "final_source_deltas": [
+    {
+      "path": "src/frontend/sized.rs",
+      "previous_sha256": "150e317c0f90a9cf56f0ebf8969312c5c8bbf557a74dca75b8e430e23c6a7959",
+      "current_sha256": "db81bfc927846ce07150a2223533cc59a1b6b5d3cf3f5c3a8920ee7be0bb54d9",
+      "reason": "Apply the same closed Basis capacity to source type arguments, including unused parameters."
+    },
+    {
+      "path": "src/frontend/sized/elaborate.rs",
+      "previous_sha256": "c6f513fac6e9f410948792044999d399dda792120aad3c802cd76e449a3108a7",
+      "current_sha256": "2c5bc3b41d2b9095ff867bea17a69a33ef4ffc0c0cdcb72b8a2297f31961d947",
+      "reason": "Apply the same closed Basis capacity to source type arguments, including unused parameters."
+    }
+  ]
+}

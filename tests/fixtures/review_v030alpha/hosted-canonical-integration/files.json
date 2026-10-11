@@ -1,0 +1,8 @@
+{
+  "scope": "Exact excerpts from the initial failed hosted jobs; no successful rerun implied.",
+  "files": {
+    "README.md": "e6f81246ce6286db5dcb9724466d23b032b0d511a77cc481d38037b371599ae8",
+    "interop-failure.txt": "b6303306b164eb04d90047bb16365da4a55242ddd6c8aeaf9b8c9f33893d7bbf",
+    "release-test-failure.txt": "ad3d7986c73e9fc6f66fbb55b3e0683b2b0c1040fa6ba7e85564b3216b996073"
+  }
+}

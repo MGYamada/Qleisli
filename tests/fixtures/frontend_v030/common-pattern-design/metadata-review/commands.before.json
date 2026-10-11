@@ -1,0 +1,22 @@
+[
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 1,
+    "seconds": 0.21795283298706636,
+    "stdout": "before.inventory.stdout.txt",
+    "stderr": "before.inventory.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.13116162503138185,
+    "stdout": "before.coverage.stdout.txt",
+    "stderr": "before.coverage.stderr.txt"
+  }
+]

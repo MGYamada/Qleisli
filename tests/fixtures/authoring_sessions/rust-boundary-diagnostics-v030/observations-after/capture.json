@@ -1,0 +1,54 @@
+{
+  "format": "qleisli.informed-public-source-capture",
+  "version": 1,
+  "phase": "after",
+  "recorded_utc": "2026-10-06T05:17:08.828958+00:00",
+  "actual_observations": [
+    "observations-after/classical-drop-controls-check-json.json",
+    "observations-after/classical-drop-controls-check-text.json",
+    "observations-after/unresolved-classical-drop-check-json.json",
+    "observations-after/unresolved-classical-drop-check-text.json",
+    "observations-after/unresolved-quantum-drop-check-json.json",
+    "observations-after/unresolved-quantum-drop-check-text.json",
+    "observations-after/user-quantum-drop-check-json.json",
+    "observations-after/user-quantum-drop-check-text.json",
+    "observations-after/local-drop-category-check-json.json",
+    "observations-after/local-drop-category-check-text.json",
+    "observations-after/nested-unit-wildcard-check-json.json",
+    "observations-after/nested-unit-wildcard-check-text.json",
+    "observations-after/nested-unit-scope-check-json.json",
+    "observations-after/nested-unit-scope-check-text.json",
+    "observations-after/reset-result-discarded-check-json.json",
+    "observations-after/reset-result-discarded-check-text.json",
+    "observations-after/reset-result-returned-check-json.json",
+    "observations-after/reset-result-returned-check-text.json",
+    "observations-after/classical-drop-controls-run-json.json",
+    "observations-after/user-quantum-drop-run-json.json",
+    "observations-after/reset-result-returned-run-json.json"
+  ],
+  "first_inventory_sha256": "816ee682f0cff8c8e569216b2807fb80da4102593e573edf12ec8ad4389f0568",
+  "prediction_sha256": "82cfed05570c42298b5194f13e199dfb9ae8c18024d9cf2719bbc22fd5576f48",
+  "pending_session_sha256": "c8fdd9168330d2e372a58ceb49897be03fef5504a39aa5ed1302d8842d8b208f",
+  "observer_sha256": "2aa54c3231dde37cc7fd36bca3a384c431f4e9a6fe58d0470ab3fba04f5d8f0d",
+  "binary_first": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_final": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "scope": "First sources/results unchanged; no commands taken from records, no source repairs, builds, maximum-size cases or generic QFT."
+}

@@ -1,0 +1,25 @@
+{
+  "archive": "tests/fixtures/frontend_v030/sized-declarations-independent/validation.tar.gz",
+  "archive_sha256": "66a68fb8110bb8e03e0fcd35561fd73d228533a7e20a94df6eab57d43db3cd20",
+  "entries": {
+    "tests/fixtures/frontend_v030/sized-declarations-independent/validation/commands.json": {
+      "bytes": 481,
+      "mode": "100644",
+      "sha256": "dc157abcb23bc0615b58c93bf90c12f11795e5879aef81380732474aa10c9edb"
+    },
+    "tests/fixtures/frontend_v030/sized-declarations-independent/validation/sized-declarations.stderr": {
+      "bytes": 230,
+      "mode": "100644",
+      "sha256": "e9dded4c7112686c139a1386b27e9c509b27ea2c50831a2595059bf30f2e314c"
+    },
+    "tests/fixtures/frontend_v030/sized-declarations-independent/validation/sized-declarations.stdout": {
+      "bytes": 600,
+      "mode": "100644",
+      "sha256": "ce7987d4fe509aa476bf692e0636a92cb6a4460ebb984866dee46872acfaeac1"
+    }
+  },
+  "format": "qleisli.historical-fixture-archive",
+  "prefix": "tests/fixtures/frontend_v030/sized-declarations-independent/validation",
+  "source_commit": "f73551fdb8257fd06d5d6fc615095a54962df40d",
+  "version": 1
+}

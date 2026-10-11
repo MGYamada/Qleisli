@@ -33,23 +33,26 @@ impl Lowerer<'_, '_> {
         name: &Ident,
         basis: &Ty,
     ) -> Result<Option<Matrix>, CompileError> {
-        if self.abstract_check || basis.basis_bits().expect("basis") > MAX_CONTRACT_BITS {
+        if basis.basis_bits().expect("basis") > MAX_CONTRACT_BITS {
             return Ok(None);
         }
-        if let Some(op) = self.bindings.get(&name.text) {
-            self.compiler.charge(
-                module,
-                name.span,
-                op.meaning.as_ref().map_or(0, |m| m.entries().len()),
-            )?;
-            return Ok(op.meaning.clone());
+        if let Some(op) = self.bound_operation(name) {
+            let cost = op.meaning.as_ref().map_or(0, |m| m.entries().len());
+            self.compiler.charge(module, name.span, cost)?;
+            return Ok(self
+                .bound_operation(name)
+                .expect("retained static binding")
+                .meaning
+                .clone());
         }
         let target = self.compiler.resolve(module, name)?;
         let key = match &target {
-            Callee::User(key) => key.clone(),
+            Callee::User(key) => super::super::MeaningCacheKey::Declaration(*key),
             // The polymorphic sealed aliases have a different dimension for
             // each exact basis tree. Never reuse a Bit matrix for Unit/product.
-            Callee::Sealed(namespace, gate) => (namespace.clone(), format!("{gate}:{basis}")),
+            Callee::Sealed(namespace, gate) => {
+                super::super::MeaningCacheKey::Sealed(namespace.clone(), format!("{gate}:{basis}"))
+            }
         };
         if let Some(matrix) = self.compiler.closed_meanings.get(&key) {
             let cost = matrix.entries().len();

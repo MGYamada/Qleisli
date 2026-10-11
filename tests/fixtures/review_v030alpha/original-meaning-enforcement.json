@@ -1,0 +1,73 @@
+{
+  "format": "qleisli.original-meaning-enforcement-review",
+  "version": 1,
+  "issues": [
+    44,
+    32,
+    27
+  ],
+  "base_commit": "98edfbf3c3d4a8882d1528123af68b364b493a27",
+  "before_code_contract": "https://github.com/MGYamada/Qleisli/issues/44#issuecomment-6022410807",
+  "status": "locally checked enforcement in the bounded exact Unit/Bit hierarchy provider profile; Issue acceptance/integration review remains",
+  "source_sha256": {
+    "src/frontend/sized.rs": "17516ec07ac2b43e3e471469e3d0fd5e98239bcedc0747e7dc9f6cf52fefef95",
+    "src/frontend/sized/elaborate.rs": "aec83ec0d34eedfdbfc1262cecd04c2c35b32f62b098bda4c6bf55bd06cffc86",
+    "src/frontend/sized/check.rs": "ca9db1ba05166ff53fb7257894ffa2edbd34623104a1c18a85d0124253b92b5f",
+    "src/frontend/sized/parser.rs": "c10ce3ab63738faf9ee5279bca6f084441c29d94d14fa13286a1f54af43b829d",
+    "src/frontend/sized/raw.rs": "7278cff3f3b56afa7704f598b4373ff75be013903ba5b94c034e8b60490734a3",
+    "src/frontend/sized/lower.rs": "554894787bf6783faa0c861189952556388b678c382b2158924607ad219f85dc",
+    "src/frontend/sized/meaning.rs": "59fa763151abfa105172d9b63d25a6cea675164d168c7203a29a1581bd89e19f",
+    "src/bin/qleisli/source_plan.rs": "c03191eebebfeda386e397aa503a13edcd046c3c1c268b6b3bd86985088353b5",
+    "tests/classical_functions.rs": "42eb27c4b4896081b6753a76bfadaf971eaa558b388fbffd330ff3333b296f09",
+    "scripts/check_production_coverage.py": "09ec11ab0b7648bb845e0572384f61e2374955b59b8b55abbb002c3f9e294862",
+    "docs/src/reference/type-model.md": "6e8784a678e7aff15460cf36052b85b50a78a232c12c830354fabcf7601d6ce8"
+  },
+  "behavior": {
+    "original_request": "Every retained concrete SourceDefinition keeps its original resolved DefId. Original formal Meaning IDs select fixed targets; every actual caller checks exact basis identity, unused and nested bindings included.",
+    "enforcement": "Private CheckedSourceMeanings checks complete provider operations through existing fresh native finite gates and retained ordered source replay. Its hierarchy nodes carry those exact checked bytes/matrices and final graph needs fresh native acceptance.",
+    "barriers": "Plain hierarchy lowering, single-leaf bridge and Raw root lowering refuse Meaning-refined sources. Selected CLI and sized alias use the same all-binding hierarchy path. A failed check cannot fall back or choose another profile.",
+    "limits": "One exact-work budget, including reported native exact work and actual provider bytes; <=1024 binding checks and <=100000 cumulative retained provider bytes. Original formal lookup work is charged to existing concrete cells. No ceiling increased.",
+    "unsupported": "Distinct unsupported quantum Basis interfaces, unsupported provider capabilities and Raw refined emission reject explicitly. No width-based substitution."
+  },
+  "checks": {
+    "latest_rust": "66 integration tests passed: classical_functions 25, basis_polymorphism 10, quantum_unit_source 16, operation_parameters 15; private Meaning 3 and Raw 4 passed. Zero failed/ignored in these targeted groups.",
+    "actual_msrv": "Same targeted 73 tests passed using actual Rust/Cargo 1.85.0 via scripts/run_msrv.py.",
+    "clippy": "Latest and actual-MSRV all-target Clippy passed -D warnings.",
+    "python_checkers": "31 production coverage/inventory tests passed.",
+    "inventories": "275 constructors, 265 source snapshots, 20 boundaries; production coverage 22 paths/9 existing native modes.",
+    "docs": "2189 links, 30 anchors, 206 Lean roots; pinned mdBook 0.5.4 build and rendered 29 HTML/1224 links/471 anchors passed.",
+    "constitution": "Current identity/continuity passed against trusted 38baae7d19535602b21270e11e97617d45205b37, not fresh Lean replay.",
+    "format": "cargo fmt --all -- --check and git diff --check passed."
+  },
+  "observations": {
+    "counterexamples": "Unused identity-for-Flip and identity-for-scalar-minus reject. Nested X^2 against inner Flip rejects original inner binding, not its base X. Same-named Meaning in distinct modules retains different fixed equations. Shared budget cannot reset for second binding; missing checker rejects.",
+    "action": "Final Bit/Unit graphs match independent joint complex amplitudes with an external reference. Unused providers are checked without applying their action to caller output; at most one system qubit in new cases.",
+    "cli": "Both spellings and auto/hierarchy routes enforce requirements; explicit Raw route rejects. Authoring packet retains first sources and actual raw stdout/stderr; initial missing-checker invocations are preserved separately from explicit selection repairs.",
+    "authoring_packet": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/README.md"
+  },
+  "development_failures": [
+    "Initial private lying-provider test expected meaning; actual native refusal is contract. Test expectation corrected while retaining native error semantics.",
+    "First Rust test command selected only the Meaning filter, so classical_functions had zero tests; separately reran the entire target and relevant integrations.",
+    "An earlier actual-MSRV command inadvertently selected all 132 library tests: 128 passed, 1 process-test sandbox PermissionDenied (src/interchange/process.rs:229), 3 existing ignored. The exact failed test passed outside sandbox. This was not a clean full library/all-target run; final targeted groups were verified separately.",
+    "Initial coverage marker required source.check_operation_meanings contiguous text; rustfmt splits the method chain. Review marker corrected to the actual call and strict checker/tests pass.",
+    "Four captured CLI invocations lacked native selection and all exited 1; identical sources with explicit --lean-kernel pass three positives and reject the lying negative. No source repair or before-implementation baseline claimed."
+  ],
+  "constitutional_impact": {
+    "QS": "All original bounded provider annotations now checked against actual native leaf bodies with immutable caller/request binding; AST-to-table/step and general runtime preservation remain separate proof obligations.",
+    "PR": "No target/export correspondence discharge.",
+    "RS": "Host checking/storage limits retained; no quantitative resource theorem.",
+    "protected": "Ratified Constitution, human interpretations and two scoped QLV1 guarantee scopes/evidence unchanged. No new native mode, primitive, proof admission or human act."
+  },
+  "not_performed": [
+    "Full Rust all-target tests for this head",
+    "Fresh Lean build/audit/replay",
+    "Package/install/release validation or publication",
+    "New maximum-size cases"
+  ],
+  "hosted_ci": {
+    "preceding_run": 37508346409,
+    "commit": "98edfbf3c3d4a8882d1528123af68b364b493a27",
+    "last_observed": "in_progress; new enforcement is not covered; hold further push while preceding run is live"
+  },
+  "completion": "22/111 (19.82%); original Issue criteria unchanged; #63 deferred only for 0.3.0-alpha"
+}

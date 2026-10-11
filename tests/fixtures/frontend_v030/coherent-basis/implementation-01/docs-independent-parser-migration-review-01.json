@@ -1,0 +1,210 @@
+{
+  "format": "qleisli.coherent-basis-independent-parser-migration-review",
+  "version": 1,
+  "issue": 81,
+  "recorded_utc": "2026-10-06T04:04:08.877217+00:00",
+  "reviewer": "basis_reference subagent",
+  "checkout_head": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "scope": "Read-only review of actual parser, parent-authored inline/live-source/fixture/corpus migration and current consumers against the before-code #81 contract and final Reference. This command only reads source/evidence and writes this review; it does not run compiler, tests, native, Lean, GitHub or release commands.",
+  "independence_limit": "Reviewer did not author parser/tests/parser.rs, active spelling migration, derivative generation, direct consumer rewiring, tuple diagnostic repair or parser comparison. Reviewer authored new Reference prose and file-selector wiring; their conformance is context, not an independent review or oracle for those self-authored components. Reviewed supplied test/oracle evidence is not independently rerun.",
+  "contract": {
+    "before_code_comment": "https://github.com/MGYamada/Qleisli/issues/81#issuecomment-6008907660",
+    "grammar": "basis Expr as Pattern { BasisExpr }",
+    "constitutional_edition": "2026",
+    "qlippy_decision": "Human explicitly excluded the external qlippy diagnostics component; #81 comment-6008953407. No external product integration completion is claimed."
+  },
+  "checks": [
+    {
+      "id": "parser-and-contextual-as",
+      "result": "conforms",
+      "evidence": "expr_primary dispatches reserved Basis to coherent_lift; input uses existing expr parser and expect_word(\"as\") requires Ident(\"as\"). Lexer is unchanged, so as remains an identifier for function/module/parameter/static positions. Nested ordinary input works; separate-owner tuple input is parsed then rejected by the existing quantum_basis check. Parser tests preserve call, conditional, nested-lift, tuple and ordinary Boolean precedence."
+    },
+    {
+      "id": "restricted-body-and-locations",
+      "result": "conforms",
+      "evidence": "basis_block reuses basis_expr and requires the immediate closing brace. Existing pattern and basis recursion/depth budgets remain. Statements/let/semicolon/ordinary blocks/nested coherent body reject; calls syntactically remain BasisExpr and semantic checking requires a declared basis function. CoherentLift span now includes the closing brace; binder and basis subspans remain independently located. Tests cover these boundaries and partial token prefixes."
+    },
+    {
+      "id": "removed-token-diagnostics",
+      "result": "conforms",
+      "evidence": "Reserved Do/Pure have no accepting expression path. Ordinary expr_primary and BasisExpr atom positions call the same located migration diagnostic. Its message teaches basis q as p { e }, coherent basis mapping, no monadic bind/measurement and no pure preparation. Tests verify token span and diagnostic content; no parser alias is retained."
+    },
+    {
+      "id": "unchanged-semantic-and-acceptance-route",
+      "result": "conforms within existing obligations",
+      "evidence": "AST, lexer, common judgment, lowering, selected projection, native raw definitions, IR and simulator listed below match HEAD byte identities. Common coherent() evaluates input once, requires exactly Q<A>, creates an isolated ordinary-value scope with only static premises retained, binds exact pattern, adds conservative Iso and an Injectivity obligation. Owner lookup consumes linear values and rejects reuse. Lowerer consumes the input expression once and enumerates the complete supported bounded domain, rejects variable output type and collisions, preserves the wire list and constructs the existing LiftBasis proposal. This is visible unchanged implementation, not a source-preservation proof."
+    },
+    {
+      "id": "phase-axes-reference-action",
+      "result": "consistent with unchanged implementation and bounded evidence",
+      "evidence": "Finite lowering retains ordered input wires, extending only added output axes. Existing simulator copies each complex amplitude into the table-selected output without a phase factor and leaves reference axes intact. Existing Lean Raw.mapping uses Scalar.one/Scalar.zero and eventMatrix gather/scatter over specified axes. The two/three-qubit supplied oracle and exact artifact comparisons support the bounded cases. No universal phase/reference/source-preservation theorem was proved or replayed by this review."
+    },
+    {
+      "id": "fixture-and-direct-consumer-migration",
+      "result": "conforms",
+      "evidence": "All 48 explicitly recorded before/current byte identities match; projects[] preserves prior project-selection policy. Actual old/current parser comparison erases only complete Span values and reports 48 equal ASTs; record binds the current map/parser. Reviewed current include_str consumers point to explicit derivatives; read helpers route unit, predicate, ergonomics, repair, sampling and QLI consumers through the file selector. The one exact mapped-old-path string in quantum_unit_source.rs is passed to the routed read() helper. Inline/live example diffs preserve inputs/patterns/bodies and semantic expectations; only tuple_shapes stale Debug-string assertions are separately repaired to canonical expected/found syntax."
+    },
+    {
+      "id": "quick-reference",
+      "result": "conforms",
+      "evidence": "All four frozen original programs have no do/pure tokens. Current QLI corpus test selects existing type/namespace derivatives through the same helper and retains its independent output distributions. README accurately states that no new coherent derivative is needed for those originals."
+    },
+    {
+      "id": "honest-profile-and-guarantee-limit",
+      "result": "conforms",
+      "evidence": "Selected concrete projection has no CoherentLift branch and refuses through unsupported runtime expression; corresponding public tests retain rejection. Unit source semantics and source-only phase_eighth packaged-Q admission are distinguished from existing finite/selected concrete restrictions. Reference/CHANGELOG explicitly record qlippy exclusion, pending broad QS/PR/RS/source preservation, and no schema, primitive, guarantee or Guardian act."
+    }
+  ],
+  "fixture_identity_audit": {
+    "files": 48,
+    "projects": 0,
+    "bad_byte_identities": [],
+    "actual_parser_comparison_equal_except_spans": 48,
+    "source_map_and_parser_binding_current": true
+  },
+  "quick_reference_originals": [
+    {
+      "path": "tests/fixtures/quick_reference/exact_phase.qli",
+      "sha256": "815e75fadcfade51bb635e06b4bbde99195eec554fc1b3ed0a3f4e1f32d1cba0",
+      "retired_token_occurrences": 0
+    },
+    {
+      "path": "tests/fixtures/quick_reference/operation_round_trip.qli",
+      "sha256": "6c5a7b66b0fba084d69fef8b4037cf3b79705ef1ce097cab7a0adccee2f6df95",
+      "retired_token_occurrences": 0
+    },
+    {
+      "path": "tests/fixtures/quick_reference/phase_kickback.qli",
+      "sha256": "9449cba4d4e6b484abdd79fa85173f55fe0e8624f237f77d3c45af90c7bbcc80",
+      "retired_token_occurrences": 0
+    },
+    {
+      "path": "tests/fixtures/quick_reference/teleport_minus.qli",
+      "sha256": "469e8c44599738fc437016d557090fb6e0f9166387cfe2493897981b8b9826a9",
+      "retired_token_occurrences": 0
+    }
+  ],
+  "completed_command_records_reviewed": [
+    {
+      "record": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/build-latest-01.json",
+      "exit_code": 0,
+      "disposition": "Recorded completed command; streams match recorded hashes."
+    },
+    {
+      "record": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.json",
+      "exit_code": 101,
+      "disposition": "First failure preserved: one stale internal Debug-string diagnostic expectation; repair changes only canonical expected/found text and subsequent targeted run passes."
+    },
+    {
+      "record": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.json",
+      "exit_code": 0,
+      "disposition": "Recorded completed command; streams match recorded hashes."
+    },
+    {
+      "record": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.json",
+      "exit_code": 0,
+      "disposition": "Recorded completed command; streams match recorded hashes."
+    },
+    {
+      "record": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-01.json",
+      "exit_code": 0,
+      "disposition": "Recorded completed command; streams match recorded hashes."
+    },
+    {
+      "record": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-01.json",
+      "exit_code": 0,
+      "disposition": "Recorded completed command; streams match recorded hashes."
+    }
+  ],
+  "bounded_oracle_disposition": "analysis-after-01 preserves its real missing join support failure (64 successful assertions, one failure); analysis-after-02 preserves the separate 7/7 corrected literal permutation supplement. Original first sources and commands are not rewritten. Three exact old/current IR comparisons are bounded observations, not full certification.",
+  "pending_at_snapshot": [
+    "Two exhaustive corpus-selection reports were still pending in parent status; do not infer completion from the completed default bounded corpus migration comparison.",
+    "MSRV Clippy final result was still pending in parent status.",
+    "No full CI, fresh Lean audit/replay, general source-preservation proof, constitutional guarantee admission, Issue close or release approval is established by this review."
+  ],
+  "unchanged_production_source_matches_head": {
+    "src/frontend/ast.rs": true,
+    "src/frontend/lexer.rs": true,
+    "src/frontend/check.rs": true,
+    "src/frontend/check/body.rs": true,
+    "src/frontend/check/body/special.rs": true,
+    "src/frontend/check/primitive.rs": true,
+    "src/frontend/compile/lower/mod.rs": true,
+    "src/frontend/compile/mod.rs": true,
+    "src/frontend/sized.rs": true,
+    "src/frontend/sized/parser.rs": true,
+    "src/frontend/sized/primitive.rs": true,
+    "src/sim.rs": true,
+    "src/ir.rs": true,
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": true,
+    "lean-kernel/Protocol/Raw.lean": true
+  },
+  "source_sha256": {
+    "src/frontend/parser.rs": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
+    "src/frontend/ast.rs": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+    "src/frontend/lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "src/frontend/check.rs": "f0060cecd778ff199ada98d24776244427c0309f4637004ac46a21dff0f9b6e5",
+    "src/frontend/check/body.rs": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+    "src/frontend/check/body/special.rs": "116245387985c10b013c46cf8dbadbd255c4ea59bab726461006ebd2208b3079",
+    "src/frontend/check/primitive.rs": "38caedf63ce840caccfabd94f522fef79f9e408c3eb139f22d5df25b3f195c11",
+    "src/frontend/compile/lower/mod.rs": "c75920f6961ee5ee590880ee00f28dc0dd254247a36ac234fa2fee3487cb7848",
+    "src/frontend/compile/mod.rs": "cc70a9c5a9fa5fe445cf7299c08f454dc624bec36a3f07561675075aa45e64bd",
+    "src/frontend/sized.rs": "366007e2fe05a4877c9baf954b8034a95fdaa70857d644dbee6949d6758cbd99",
+    "src/frontend/sized/parser.rs": "9bd9baffd118a4850c068df06e104a0077f32c8303d4b701c81f7e53e6ae754f",
+    "src/frontend/sized/primitive.rs": "60456760d69d05a438456dd98baaa54de49a8b9f4edd111a7f22744c55f424e4",
+    "src/sim.rs": "3367219a77708751fe30c995142c52dd139dc6889475cf657656cf608d3129cc",
+    "src/ir.rs": "91b05cb7ac6b9a1493d3f5e8aa3d71f5b8fd703e0b8e7576508f6e9338d83a4c",
+    "lean-kernel/QleisliKernel/Raw/Finite.lean": "2aae8ebc80ec1d87b553a1cb85107ab22eae0587409634fa6b33c0c375d1ed55",
+    "lean-kernel/Protocol/Raw.lean": "155909e4c351bc711130c4d879de0a1c555d94fa2be0dca399544dc063f2c417",
+    "docs/src/reference/coherent-basis.md": "0a604988dccddbcd4156a5faf78523cc42233cbe8e26e31288f7c4cdd99b9c7e",
+    "docs/src/reference/source-text.md": "754ec6a4a74c194b3b517631b627d7e8d9bee52613442c9f04089d11f4691e74",
+    "docs/src/reference/type-model.md": "3f81cb813878414f7433e6c2899e869dd42530e3b57d3ff83c282d1521a25ef5",
+    "tests/parser.rs": "de0d807b9b4efa4aade2b734f967505a03e856130e8e0d43c267dc7361cf5e8b",
+    "tests/body_effects.rs": "3d37c7bc8a75dd52eaccc155dbf3356be4176cc9b35c8e6816f94f5b276aac0f",
+    "tests/unit_patterns.rs": "0e7b6ce04fd284bf2ea9ac213d2e624d9319c3dca96accf0c7c0e1ab01deca45",
+    "tests/quantum_unit_source.rs": "92f7e75994e33338268e4d95e93fd95b56d9ff6f51a4f0f8bed83c2351b7076a",
+    "tests/predicate_domain.rs": "c76efe8834d6a69b67c07bda306a095f05bb113d25dbb243bcedd71b3f721852",
+    "tests/static_semantics.rs": "e66b2cfdb273d8f16d89316036be585496492e2e4ec90aa3aa3fc31ba6187b08",
+    "tests/tuple_shapes.rs": "ea3262dbd43643586ae8303291ea07a05f0268b13f049abd3482023f6c9a09e2",
+    "tests/qli_corpus.rs": "2908d8e0448826dca4c4d08179b005d0866c0c4164932b9bb03796cab818a7dc",
+    "tests/authoring_ergonomics.rs": "81fbbce5404cbf6aeb100e1b0135d740e3151921cdddb0199a08a54f71d68e54",
+    "tests/repair_diagnostics.rs": "d2fff41217e9c05ab776d1bae7ce3ce040765432412d1a369a61890bf90826af",
+    "tests/sampling.rs": "eaecbe1e4b73e298ec409bf302cd4f35bfe0b92338096246cd7737aa22f14c19",
+    "tests/common/mod.rs": "e077e152199e54c577a529d9413c8850484928a4c9806103ccc3694848cbe9b0",
+    "tests/source_ir_correspondence.rs": "db33c9a8bc4966bf8dd0131a8132a03ad4d2f8044cc28a4c6d86c20a32ad88cd",
+    "tests/specification_boundaries.rs": "7f7e8774c93ccf8e1acf504c2a692f51d4cd27ac05fa7c12239dafe86b6fa84e",
+    "tests/compile.rs": "d207264e562d73eceb01ab04d1ea5aafe8aa77b0510d30e75dcb11a73b62e033",
+    "tests/quantum_unit_maps.rs": "e1772ed10410b5a08b638c4896ac0ed1f696aa3e58823d57298043f8a0e66c4e",
+    "tests/frontend_types.rs": "fb5d5604afd483e4beff0ef2973943d69586a814d15e92128b64880cb020de33",
+    "tests/source_judgments.rs": "196063a34cc58b3f1f5ba59dd60817b49dc6ebf0657e2b0ca7db9d0af4bcd6a2",
+    "scripts/current_source_fixtures.py": "c7f753204c9dc8ffa45425c5ad716d3afe8a38a844de2c23dd65c98bde72f760",
+    "tests/fixtures/quick_reference/README.md": "066e74c6215cd36c57a1e7aa70529cd38082efc2859f71d4a8e4ce0d93b15595",
+    "CHANGELOG.md": "2b977b12f7edc6f6163f36ec2cb3633763045f6aeb50b46bea5827416239072a",
+    "examples/bell/bell.qli": "6d51d7f1ea4823255d73e560c9ea27d8880f6cdabf6c82811a2f9d303dd41476",
+    "examples/bit_flip_code/code.qli": "ce187a38d9e0edb0d1f7aa7b4ef2ac0be528cb24103518629d40b3b70edc6a5c",
+    "examples/semantic_contracts/main.qli": "bb2f4e0f44a0c5fba19683afc1c684a0aabc6ac52ca59bb02b0fbb26a6ba04ae",
+    "corpus/manifest.json": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+    "corpus/migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb",
+    "tests/fixtures/frontend_v030/coherent-basis/source-map.json": "b5ad765ca5e4517851c13742eec9a8ada4d9766a1090eff42851495719eda2f3"
+  },
+  "evidence_sha256": {
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/parser-ast-comparison-01.json": "02912738166fea2cadb643c0979d26297400e6ba29e2aaf5b08fdad6a89e07f6",
+    "tests/fixtures/frontend_v030/coherent-basis/generation-before-validation.json": "789efaa0789c0415fe3060bbec8b468ddf93eebf9a0b1f3f08dcf6c43d396414",
+    "tests/fixtures/frontend_v030/coherent-basis/generation-direct-consumers-01.json": "091e8c00ca5b3271e3ae853a7418d5b9b57161f17cbb2078b74a86cb512ebdbe",
+    "tests/fixtures/authoring_sessions/coherent-basis-v030/first-files.json": "e1b9a175b4221bf2eb52ebbec0f84c6d725fa21398c905e1f73cda262133f755",
+    "tests/fixtures/authoring_sessions/coherent-basis-v030/consumer-inventory-01.json": "e762f4e3b877b7c2deb89f0a1453521a5e92ddc72b65e8ffa703f82f57b97de6",
+    "tests/fixtures/authoring_sessions/coherent-basis-v030/active-source-migration-01.json": "e9ea55190a6ceff1b535ca1202efa7ee6fa8544cb2280458d4d1f8cf60757d47",
+    "tests/fixtures/authoring_sessions/coherent-basis-v030/analysis-after-01.json": "4b381f638281b14588129be8755c346433cd43071a9516c220e8d3030c84b8b5",
+    "tests/fixtures/authoring_sessions/coherent-basis-v030/analysis-after-02.json": "c74e2422f30d1a1a61c4d1f3f05b4b36fdc52c02e8901b5106adc6814ef6db97",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/build-latest-01.json": "f5d2f5cf633b01fb70561a12126c857aa53c01272870f18950467ca452761499",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-01.json": "5b18be0c3d09debf17682e0e2ed0071f34c5bbe7ead1fb903c46c83c7c653a6c",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-latest-repair-02.json": "69f005c8810ed299c26ceb86959d4484a7fb8da281b7d5e5558eb5dca260f287",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/rust-msrv-01.json": "5a0130b7ce2f134ab9ec65ff4ee95463e08f4a5e4366f34642643a96d9ac1e37",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/clippy-latest-01.json": "b84c56eb6b7432d5ac27ac823c96cc2f6bcaa3f98d782769da6cf3d7880bfa5e",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/format-latest-01.json": "e862805366ee190097861fe77b8b725ccfb577fed912fb52710c0e6acffec99c",
+    "tests/fixtures/frontend_v030/coherent-basis/implementation-01/docs-validation-02.json": "96bcfb6b0f42c938b82e5bcfde69501308dba59ed6f929e81c9d063feb6ba9fb"
+  },
+  "actionable_findings": [],
+  "conclusion": "No actionable parser/migration/consumer defect identified in this bounded review. Completion credit must separately wait for outstanding validation and explicit Issue acceptance conditions.",
+  "notice": "Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0."
+}

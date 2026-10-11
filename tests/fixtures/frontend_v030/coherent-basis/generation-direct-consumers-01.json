@@ -1,0 +1,53 @@
+{
+  "format": "qleisli.coherent-basis-fixture-generation-supplement",
+  "version": 1,
+  "before_commit": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "method": "Exact old-parser byte spans; the input, pattern and basis-expression slices remain unchanged. Six directly consumed authoring first sources are preserved; separate syntax derivatives are selected for current conformance tests.",
+  "files": [
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+      "before_sha256": "cb1a4e90644996fe78d2250f999781e7cd1fc1f28d4f65196e676dd7f04ac009",
+      "current_sha256": "c6a0f119e37346a62a05fdcba3f4bbeaef2e0b5abcd0487fdefd9151dba4fbfb",
+      "lifts": 1
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli",
+      "before_sha256": "16cf0b06d3dc535be20c1a86fdda2921cd39a1f059a562a7523e3b376b362880",
+      "current_sha256": "d25a0438ebd907b94458ccd31abe66304cd79af4fa8090d83345683abf9041d4",
+      "lifts": 1
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/coherent-unit-product/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/counterexamples/coherent-unit-product/main.qli",
+      "before_sha256": "be44bf455a77b9d945d8f9bec732be9d82b6728488c850a84eca6657d58e2b28",
+      "current_sha256": "7f5baf4c2f54cf16d49fd0e58de0c34d8137a29e0a93be1f4592749c6cea1fa9",
+      "lifts": 1
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-contract/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-contract/main.qli",
+      "before_sha256": "19abda964324199ef3e3d8e1b0696a0404bc6540160912291571642db49bb768",
+      "current_sha256": "1d2602f5ec2a2cb56e49832b5f68298c6b46a1649667fdc4d3861001716b20db",
+      "lifts": 2
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli",
+      "before_sha256": "c64bfd2353604b7eda35efb966976827fcbd5dfb4298fd2545087c7ee2bd44c6",
+      "current_sha256": "451e2ee0031d27ae223db52c835b3babde1b1ffc9adbef347b6bc1ed2df74ec7",
+      "lifts": 2
+    },
+    {
+      "before_path": "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/computed-control/main.qli",
+      "current_path": "tests/fixtures/frontend_v030/coherent-basis/current/authoring_sessions/finite-unit-pattern-v030/validation-sources/computed-control/main.qli",
+      "before_sha256": "38c914c9f5c35ea018048b6181812c7f2aa1cc9435e291e21498ac7d73149e75",
+      "current_sha256": "d54568627efcc803c6bd7d0ac1ac984f316a287ff4f32fb1d24c74bb8148ed73",
+      "lifts": 1
+    }
+  ],
+  "source_map_sha256": "b5ad765ca5e4517851c13742eec9a8ada4d9766a1090eff42851495719eda2f3",
+  "validation": "pending",
+  "notice": "Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0."
+}

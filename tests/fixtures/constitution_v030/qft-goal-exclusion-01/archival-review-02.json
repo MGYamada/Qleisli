@@ -1,0 +1,25 @@
+{
+  "format": "qleisli.qft-exclusion-archive-independent-review",
+  "version": 1,
+  "reviewer": "/root/review_isometry_adapter",
+  "mode": "read-only, archives read as data; no extraction, compiler/native invocation or recorded-command replay",
+  "result": "no blocker",
+  "checked": {
+    "archives": 3,
+    "members": 621,
+    "family_members": 180,
+    "exact_request_members": 317,
+    "design_members": 124,
+    "live_attempt_files": 5,
+    "member_identity": "exact root-relative inventory, SHA-256, byte size and mode; regular files, no duplicates/symlinks/traversal",
+    "old_directories": "all three absent",
+    "attribution": "Google LLC, Masahiko G. Yamada and Apache-2.0 notices preserved",
+    "active_dependencies": "No old-directory dependency in production source, scripts, CI, docs, stdlib, corpus, Lean, Rust integration tests or other active authoring sessions"
+  },
+  "scope": "v0.3.0-wide and current-goal exclusion;111 selected Issues/14 complete,21 applicable #317 criteria,3 excluded, no completion credit/future target/proof-status change",
+  "observed_review_correction": "Initial original-body suffix assertion for142 failed; actual diff reviewed as intentional current accounting/scope/progress/historical heading/Verification-input prose. No original checkbox or performed-result change; other three original bodies remain exact suffixes.",
+  "verified_maps": {
+    "relocation_sha256": "2b63e7e1c0c19a62b7d771963bf3dd073f51636b53d655c110b8989ce6c9b1a4",
+    "retention_02_sha256": "3de26f77fb6c7a324903ed1e62804f74d562d62a8ec2e15c1267ad5a11e62bfe"
+  }
+}

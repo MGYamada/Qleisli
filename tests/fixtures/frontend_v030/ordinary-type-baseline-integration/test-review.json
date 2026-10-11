@@ -1,0 +1,12 @@
+{
+  "kind": "Read-only test inspection; no compile or test execution",
+  "reviewed_test_files": {
+    "tests/compile.rs": "97b6e25b745972c601309ae11fb2cf8d22a2b75943be7795266bc39ad11d8710",
+    "tests/operation_parameters.rs": "b5efe6329dcf33f81612b35f8bf7700fd157563dfd80fe9d746cc969ec53a38c"
+  },
+  "findings": [],
+  "pending": [
+    "cargo test --offline --test compile",
+    "cargo test --offline --test operation_parameters"
+  ]
+}

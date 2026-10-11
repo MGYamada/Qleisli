@@ -21,6 +21,9 @@ def basis (fuel : Nat) : Json → Except String Basis :=
     match ← (← field value "tag").getStr? with
     | "unit" => fields value ["tag"]; pure [.unit]
     | "bit" => fields value ["tag"]; pure [.bit]
+    | "bits" =>
+      fields value ["tag","width"]
+      return [.bits (← number (← field value "width"))]
     | "pair" =>
       fields value ["tag","left","right"]
       return .pair :: ((← recurse (← field value "left")) ++ (← recurse (← field value "right")))

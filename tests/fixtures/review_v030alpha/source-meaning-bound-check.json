@@ -1,0 +1,60 @@
+{
+  "format": "qleisli.local-review",
+  "version": 1,
+  "issue": 44,
+  "status": "source-bound finite native check component; generic annotation admission remains unsupported",
+  "source_sha256": {
+    "src/frontend/sized.rs": "fcdee89c9d9218cac4218b6ab1aa3d13d45dffb9ec30d4cb14ed0ef441cfb2b0",
+    "src/frontend/sized/raw.rs": "c1cd4b22ea61620d17998d45107dd93b12f264096c85175fa794881f605c8b50",
+    "src/interchange/finite_leaf.rs": "e481d08849423de1601440206e48af5e604eb730c25347ae31b57a15b83f6b65",
+    "tests/classical_functions.rs": "2157990f6d6b141608cdb6e3a63b557370924534ffd5f3a5462b272d4a714407",
+    "scripts/check_production_coverage.py": "65f06a0e78e8328e785d9e008b9a952facddb5e63818f8fa64b3d6d999688bce",
+    "scripts/test_check_production_coverage.py": "3c3317bc9e241d285c8f3aa47a8c4142c627b567284fc26bc233145016116eb0"
+  },
+  "contract": "RawSourceProposal::check_finite_meaning borrows immutable source and externally required FiniteMeaning, invokes existing fresh native finite-leaf checking on the actual proposal bytes, independently replays retained source steps, and returns a private-field SourceMeaningCheck retaining that native leaf and both original references.",
+  "scope": [
+    "Exact unary Q<Unit>/Q<Bit> Unitary endomorphisms supported by the existing native finite leaf",
+    "Original AST-to-step preservation and generic Op<A,M> binding are not proved or enabled",
+    "All applicable bindings, including unused providers, must still become mandatory checks before removing the generic projection guard"
+  ],
+  "implementation_review": [
+    "The stored finite boundary comes from the exact source root interface and actual returned register wires/tokens, with explicit unary input/output/live-frame checks; width alone cannot select a signature",
+    "Same-width basis mismatch, unsupported effect/interface and invalid initial budget reject before native IO; exact arithmetic capacity errors remain limit errors",
+    "check_with_kernel becomes crate-visible only. Existing native checker, packet, semantic/proof definitions, accepted handles, all ceilings and two scoped guarantees remain unchanged",
+    "SourceMeaningCheck has no public constructor or authority flag. Borrowing protects original source/request host identities; it supplies no new constitutional guarantee"
+  ],
+  "adversarial_evidence": [
+    "Correct X and Unit-minus requests use the actual provider bytes, pass the native equation and ordered-source replay, and retain the original borrowed identities",
+    "Wrong identity/X and wrong Unit scalar phase fail the unchanged requested operator",
+    "A privately substituted identity proposal is independently native-valid and satisfies its own identity request, yet the new source gate rejects it as preservation failure against retained X steps",
+    "A nonexistent native path demonstrates exact same-width tree mismatch, zero/oversized work budget and non-Unitary profile refusal without starting native IO"
+  ],
+  "tests": {
+    "latest": "Rust1.98.1: classical_functions18 and quantum_unit_source16 plus2 Raw library tests pass, no ignored",
+    "msrv": "Explicit scripts/run_msrv.py Rust1.85.0: same34 integration tests and2 Raw library tests pass, no ignored; separate target directory",
+    "clippy": "All-target latest and actual MSRV Clippy pass with -D warnings",
+    "inventory": "VM22 reviews one source-bound check type/factory/getters; VM29 adds a delegated existing --qirf-contract native-acceptance path.22 paths,9 native modes; source/acceptance/transport proof gaps remain explicit",
+    "policy_tests": "14 production-coverage tests pass after new path scope and boundary mapping were supplied; exact expected route count changes21 to22, no policy weakening",
+    "constitution": "Continuity passes against38baae7d19535602b21270e11e97617d45205b37; identity/evidence only",
+    "docs": "2186 links,30 anchors,206 Lean roots; pinned mdBook0.5.4 and29HTML/1224links/471anchors pass after markup repair",
+    "format_and_whitespace": "passed"
+  },
+  "actual_intermediate_results": [
+    "One combined MSRV test command used a library-name filter and ran only2 library tests;18/16 integration cases were filtered, then separately run without that filter and passed",
+    "Initial VM29 path lacked required scope fields, then omitted derived boundary paths; the strict verifier and policy tests rejected both states",
+    "After adding the path, a policy test correctly reported22 !=21; its exact reviewed count was updated to22",
+    "mdBook initially warned about bare Q<Unit>/Q<Bit> markup; code spans fixed it and warning-free build passed"
+  ],
+  "hosted": {
+    "run": 37474896654,
+    "head": "b4de1252733f248411fec62442c91116cc41aaa4",
+    "last_observed": "in progress; changes/docs/interop success, other producers running",
+    "scope": "Does not validate these unpushed local changes. Hold additional push until this run is terminal."
+  },
+  "not_performed_or_claimed": [
+    "Fresh local Lean build/audit/replay",
+    "Package/install/full exact-head CI",
+    "General source theorem, generic binding completion, guarantee admission or release"
+  ],
+  "completion": "22/111 (19.82%)"
+}

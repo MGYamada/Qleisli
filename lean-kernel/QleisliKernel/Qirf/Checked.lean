@@ -14,7 +14,7 @@ def rootBasis (basis : Basis) : Bool :=
     let depth :: rest ← pending | none
     if depth > 64 then none else
     match atom with
-    | .unit | .bit => some rest
+    | .unit | .bit | .bits _ => some rest
     | .pair => some ((depth+1) :: (depth+1) :: rest)
     | .tuple n =>
       if n < 3 || n > 4096 then none else some (List.replicate n (depth+1) ++ rest))

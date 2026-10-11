@@ -1,0 +1,15 @@
+{
+  "format": "qleisli.coherent-basis-scope-decision",
+  "version": 1,
+  "issue": 81,
+  "adopter": "Masahiko G. Yamada, project maintainer",
+  "provenance": {
+    "kind": "direct-user-message",
+    "answer": "qlippy diagnosticsの無視・省略を許可します",
+    "issue_record": "https://github.com/MGYamada/Qleisli/issues/81#issuecomment-6008953407",
+    "progress_record": "https://github.com/MGYamada/Qleisli/issues/142#issuecomment-6008955721"
+  },
+  "excluded": "External qargo/qlippy diagnostic updates and integration validation for acceptance criterion 12. Excluded, not implemented or verified.",
+  "retained": "Language Reference, quick reference, current examples, actual Qleisli frontend/CLI text and JSON diagnostics, Cargo Clippy and every other acceptance criterion remain in scope.",
+  "authority_limit": "Ordinary maintainer scope decision, not a Guardian interpretation, guarantee discharge, constitutional waiver or release approval."
+}

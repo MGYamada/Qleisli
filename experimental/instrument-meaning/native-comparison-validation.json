@@ -1,0 +1,304 @@
+{
+  "format": 1,
+  "kind": "untrusted-instrument-meaning-design-experiment",
+  "baseline_commit": "bd31f1fa6cbf8b5cc8a34ff60788e60487920295",
+  "command": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "experimental/instrument-meaning/check.py",
+    "--native-compare",
+    "--record",
+    "/private/tmp/qleisli-instrument-native-comparison.json"
+  ],
+  "recorded_utc": "2026-10-11T03:04:27.154661+00:00",
+  "max_live_qubits": 2,
+  "comparisons": [
+    {
+      "name": "redundant_HH_readout",
+      "left": "z",
+      "right": "hh",
+      "equal": true,
+      "expected": true
+    },
+    {
+      "name": "unobservable_branch_phase",
+      "left": "z",
+      "right": "tz",
+      "equal": true,
+      "expected": true
+    },
+    {
+      "name": "public_result_relabeling",
+      "left": "z",
+      "right": "flipped",
+      "equal": false,
+      "expected": false
+    },
+    {
+      "name": "different_hidden_Kraus_basis",
+      "left": "discard",
+      "right": "discard_h",
+      "equal": true,
+      "expected": true
+    },
+    {
+      "name": "same_probabilities_wrong_residual",
+      "left": "nondestructive",
+      "right": "replacement",
+      "equal": false,
+      "expected": false
+    },
+    {
+      "name": "global_phase_in_CP_family_only",
+      "left": "identity",
+      "right": "negative_identity",
+      "equal": true,
+      "expected": true
+    },
+    {
+      "name": "same_branch_probability_wrong_channel",
+      "left": "identity",
+      "right": "phase",
+      "equal": false,
+      "expected": false
+    },
+    {
+      "name": "ordered_public_results",
+      "left": "ordered",
+      "right": "reversed_results",
+      "equal": false,
+      "expected": false
+    }
+  ],
+  "native_comparison": {
+    "driver_sha256": "49cd0fa54c98fbd5779ca86df2b1f5c114411b06609a4fd39d7460202cf07037",
+    "binary_sha256": "3b3865e65a485a5507dbd6e4e72294ceec77cc454843a9be18217bd8136e2c59",
+    "input_sha256": "a9b810c29cb5649893181d1f1ef2244612310f0b01a691d778ccf4bd3305cef8",
+    "stdout_sha256": "bacaa84d6167d46fe31781d4af3d806870b3125f4c1279bc8aa815f635277fa9",
+    "kernel_source_sha256": "57615369c7e57aca0ac9a15c5097a1c93088d5c227610395c53794a040470127",
+    "kernel_library_sha256": "244e649612285860b22e774a7f127950a559762c73b5d7c611b24a62eedb3eb3",
+    "comparisons": 8,
+    "observed": [
+      {
+        "accepted": true,
+        "remaining": 9998988,
+        "result": {
+          "equal": true
+        }
+      },
+      {
+        "accepted": true,
+        "remaining": 9999031,
+        "result": {
+          "equal": true
+        }
+      },
+      {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999689
+      },
+      {
+        "accepted": true,
+        "remaining": 9999113,
+        "result": {
+          "equal": true
+        }
+      },
+      {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9997394
+      },
+      {
+        "accepted": true,
+        "remaining": 9998364,
+        "result": {
+          "equal": true
+        }
+      },
+      {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999477
+      },
+      {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.equation",
+        "remaining": 9999646
+      },
+      {
+        "accepted": false,
+        "error": "QleisliKernel.Finite.Error.arithmetic (QleisliKernel.Exact.Error.workLimit)",
+        "remaining": 0
+      }
+    ],
+    "scope": "unwired exact coefficient component; no production signature/source gate"
+  },
+  "commands": [
+    {
+      "command": [
+        "lake",
+        "build",
+        "QleisliKernel:static"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "Build completed successfully (230 jobs).\n",
+      "stderr": "",
+      "seconds": 0.15739266702439636
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "--root=/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-rfc0ujw4",
+        "-c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-rfc0ujw4/Main.c",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-rfc0ujw4/Main.lean"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 5.865406000055373
+    },
+    {
+      "command": [
+        "lake",
+        "env",
+        "leanc",
+        "-O3",
+        "-o",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-rfc0ujw4/native-test",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-rfc0ujw4/Main.c",
+        "/Users/masa/git/Qleisli/lean-kernel/.lake/build/lib/libqleisli__kernel_QleisliKernel.a"
+      ],
+      "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+      "exit": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 1.8332849170546979
+    },
+    {
+      "driver_source_sha256": "49cd0fa54c98fbd5779ca86df2b1f5c114411b06609a4fd39d7460202cf07037",
+      "executable_sha256": "3b3865e65a485a5507dbd6e4e72294ceec77cc454843a9be18217bd8136e2c59"
+    },
+    {
+      "command": [
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-instrument-comparison-rfc0ujw4/native-test"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit": 0,
+      "seconds": 0.8532379160169512,
+      "stderr": ""
+    }
+  ],
+  "source_sha256": {
+    "experimental/instrument-meaning/check.py": "4a1f35a0621ca5a0289e3fe0ce350cae88f59c4afac2e01f4e3dfec8f858f014",
+    "scripts/test_lean_observation.py": "19a1016f46d19cbb251b613b84bb287a0bc7f46a9c3342d448d2da88c85a172f",
+    "scripts/test_lean_exact.py": "ff1181cb30a6abad05ecd36037c87afa75e99ddc8e2df60de6aa256716a9346d",
+    "scripts/test_lean_finite.py": "df9ad348c9b24c5ca0d0ba4e3a96e679d883ffbcf046e72682af98500eaefcbd",
+    "scripts/test_lean_raw.py": "df78a1f3801501b13de0d2c510603341035f41d12a95ec5f7ca64f36a4835614",
+    "scripts/native_harness.py": "e4f71e179c0e0f2bcb9d4b0ccb1b026cc49e72f07cae1c09ddbb055d712c00ee",
+    "lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean": "0037f8a95d0461eb5c42966500e652a8ac4a052c95a2528b8e4712b5b1fe962a"
+  },
+  "limits": [
+    "not a production requested-instrument gate",
+    "no source preservation or full QS/PR/RS proof",
+    "no signature/type-tree/effect admission is inferred from CP equality",
+    "pure operation Meaning remains phase-sensitive and Unitary-only"
+  ],
+  "evidence_refresh": {
+    "status": "passed",
+    "source_revision": "f37fa9ab44a74e24705e15d44dc54b5a0325e7a2eaadad372aa6958780fcdf98",
+    "commands": [
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees/Review.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 24.90102516603656,
+        "stdout_sha256": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "leanchecker",
+          "--fresh",
+          "Main"
+        ],
+        "cwd": "lean-kernel",
+        "exit_code": 0,
+        "seconds": 68.84249741700478,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 11.03913004102651,
+        "stdout_sha256": "b9ed648c89e0f255b8251fb40dd8d6f11eb1e0ac5f1884edcf24ceb74835879a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 3.830060000065714,
+        "stdout_sha256": "b9c89e48a5afbe82cde1fd1ae948331e9fe7ed405f5106308850e757d101d336",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawTransportReview.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 3.699572875048034,
+        "stdout_sha256": "3d8928a7f0b9ddf58e67687be42e25f21e407503968fb35090a6946e4c1107e4",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "argv": [
+          "lake",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "../tests/fixtures/constitution_v030/initial-guarantees-continuity/RawExtract.lean"
+        ],
+        "cwd": "lean",
+        "exit_code": 0,
+        "seconds": 4.220873250043951,
+        "stdout_sha256": "bcd75d57d9f100a17704128a2ee2bf91ec810478dbc1f351a50941a19566e81a",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ],
+    "scope": "Fresh current type/axiom review, native Main replay and fixed Raw/Basis expression continuity for two existing guarantees. No new admission or source/runtime/full QS/PR/RS proof."
+  }
+}

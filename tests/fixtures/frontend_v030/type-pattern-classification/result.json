@@ -1,0 +1,10 @@
+{
+  "head": "9a1ecef79f2f1e42f94093b6f4822f282f6e9129",
+  "source_count": 108,
+  "source_manifest_sha256": "84f8478af17a35fd4f84fc5dc895dc508b168d4482f07c72b282e9a526b069b0",
+  "sources_stable": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "passed_per_toolchain": 5,
+  "scope": "Five existing bounded classification/evidence checks, not full suites, new large cases, new proof or full CI."
+}

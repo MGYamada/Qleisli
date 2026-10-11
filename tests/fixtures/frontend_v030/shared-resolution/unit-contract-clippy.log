@@ -1,0 +1,82 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running unittests src/lib.rs (target/debug/deps/qleisli-5f3236acbbcb948f)
+
+running 38 tests
+test frontend::compile::lower::transforms::tests::repeated_candidates_reject_changed_phase_control_axis_and_copy_count ... ok
+test frontend::lexer::common_token_tests::comment_bound_and_doc_recognition_are_independent_of_tokens ... ok
+test frontend::lexer::common_token_tests::bounded_common_tokens_count_pairs_before_owning_spellings ... ok
+test frontend::compile::operations::review_tests::transformed_circuit_check_rejects_phase_control_and_axis_mutations ... ok
+test frontend::compile::snapshot_tests::ir_narrowing_reports_overflow_at_the_original_source_without_wrapping ... ok
+test frontend::compile::snapshot_tests::the_initial_snapshot_is_bounded_before_copying_even_at_the_work_boundary ... ok
+test frontend::project::source_file::tests::macos_nofollow_any_is_gated_by_runtime_version ... ok
+test frontend::compile::snapshot_tests::metadata_storage_limits_are_preflighted_before_the_source_copy ... ok
+test frontend::compile::operations::review_tests::powers_preserve_exact_phase_with_logarithmic_matrix_work ... ok
+test frontend::compile::snapshot_tests::retained_source_bytes_are_charged_once_for_256_receipts ... ok
+test frontend::resolve::tests::all_declarations_have_canonical_collection_local_identities ... ok
+test frontend::resolve::tests::constructed_empty_import_is_a_located_error ... ok
+test frontend::resolve::tests::sealed_identity_does_not_expand_either_primitive_profile ... ok
+test frontend::sized::check::visibility_tests::private_definitions_remain_visible_in_their_own_module ... ok
+test frontend::project::source_file::tests::unavailable_linux_procfs_has_a_targeted_diagnostic ... ok
+test frontend::project::source_file::tests::macos_openat_retains_parent_identity_after_path_replacement ... ok
+test frontend::project::source_file::tests::source_replacement_between_discovery_and_open_cannot_follow_links ... ok
+test frontend::sized::lower::fourier::tests::fourier_trace_matching_preserves_h_barriers_and_commutes_diagonal_gates ... ok
+test frontend::project::manifest::tests::a_transient_root_replacement_between_identity_checks_is_rejected ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_aliases_incomplete_frames_and_wrong_values ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_reads_actual_transport_and_rejects_root_changes ... ok
+test frontend::sized::primitive::tests::catalog_has_unique_resolvable_paths_and_well_scoped_sizes ... ok
+test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ignored, requires freshly built native kernel; CI runs explicitly
+test frontend::project::edition::tests::a_load_parses_each_manifest_once_even_with_many_empty_sources ... ok
+test frontend::types::tests::equal_width_does_not_identify_type_or_owner_trees ... ok
+test frontend::types::tests::linearity_retains_zero_width_owners_inside_mixed_products ... ok
+test frontend::types::tests::size_obligations_keep_order_and_errors_after_a_sibling_mismatch ... ok
+test frontend::types::tests::size_solver_cannot_equate_different_tuple_or_quantum_shapes ... ok
+test frontend::sized::lower::preservation::tests::initialization_certificate_rejects_missing_crossings_and_source_events ... ok
+test frontend::compile::lower::scope::tests::scope_projection_matches_a_finite_lexical_identity_model ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_rejects_phase_order_and_reversal_changes ... ok
+test frontend::sized::lower::fourier::tests::direct_finite_gates_bind_actual_ports_and_reuse_identical_headers ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_commuting_variant_preserves_complete_trace ... ok
+test frontend::sized::lower::fourier::tests::actual_source_fourier_factoring_preserves_complete_phase_trace ... ok
+test frontend::sized::qpe::tests::qpe_candidate_retains_a_separate_caller_request_and_actual_h_roles ... ok
+test frontend::project::source_file::tests::macos_fifo_source_replacement_is_rejected_without_a_writer ... ok
+test frontend::project::source_file::tests::macos_legacy_walk_rejects_links_and_retains_read_requirement ... ok
+
+test result: ok. 36 passed; 0 failed; 2 ignored; 0 measured; 51 filtered out; finished in 0.35s
+
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.66s
+     Running tests/function_contracts.rs (target/debug/deps/function_contracts-51773bbf3e613e4d)
+
+running 17 tests
+test apply_contract_is_reserved_and_has_exact_static_name_syntax ... ok
+test names_remain_shadowed_after_input_evaluation_and_dependencies_are_acyclic ... ok
+test exact_source_types_declared_effects_and_ordinary_targets_are_required ... ok
+test incorrect_implementations_cannot_change_the_clients_meaning ... ok
+test repeated_calls_reuse_one_immutable_evidence_object ... ok
+test input_ownership_is_consumed_once_and_quantum_frames_remain_owned ... ok
+test repeated_contract_calls_do_not_recompare_frozen_source_snapshots ... ok
+test dependency_source_changes_invalidate_the_previous_compilation ... ok
+test ordered_function_outputs_are_part_of_the_contract ... ok
+test classical_branches_and_ensemble_components_share_execution_budget ... ok
+test adjoint_control_and_repetition_keep_evidence_and_relative_phase ... ok
+test repeated_nested_contracts_share_one_execution_budget ... ok
+test retained_contract_preserves_phase_with_an_entangled_reference ... ok
+test nested_function_evidence_survives_external_inverse_and_control ... ok
+test zero_width_contract_phase_survives_coherent_control ... ok
+test unrelated_source_comments_do_not_multiply_contract_reuse_work ... ok
+test unchanged_client_requires_one_specification_across_private_layouts ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.17s
+
+     Running tests/meaning_evidence.rs (target/debug/deps/meaning_evidence-f6747fbaac7d6c7b)
+
+running 3 tests
+test malformed_meanings_and_budget_exhaustion_cannot_issue_receipts ... ok
+test complete_target_columns_include_unit_nested_trees_and_low_bit_control ... ok
+test retained_target_rejects_stale_source_raw_axes_phase_and_exact_tree ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+
+    Checking qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 4.99s
+

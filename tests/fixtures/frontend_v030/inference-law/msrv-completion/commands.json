@@ -1,0 +1,76 @@
+[
+  {
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.010370791016612202,
+    "stdout": "0.stdout.txt",
+    "stderr": "0.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "--version"
+    ],
+    "exit_code": 0,
+    "seconds": 0.009176584018860012,
+    "stdout": "1.stdout.txt",
+    "stderr": "1.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--locked",
+      "--test",
+      "sized_source",
+      "--",
+      "--skip",
+      "lowering_profile_preflight_identifies_unsupported_root_signatures",
+      "--skip",
+      "hierarchy_eligibility_retains_boolean_location_and_body_checks",
+      "--skip",
+      "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference",
+      "--skip",
+      "direct_finite_source_gates_preserve_entangled_h_x_references",
+      "--skip",
+      "rust_source_proposals_check_natively_and_preserve_small_system_coefficients",
+      "--skip",
+      "matrix_free_original_routed_qpe_preserves_order_and_phase"
+    ],
+    "exit_code": 0,
+    "seconds": 1.460125915997196,
+    "stdout": "2.stdout.txt",
+    "stderr": "2.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--locked",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 0,
+    "seconds": 5.161456124973483,
+    "stdout": "3.stdout.txt",
+    "stderr": "3.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "fmt",
+      "--check"
+    ],
+    "exit_code": 0,
+    "seconds": 0.44752216699998826,
+    "stdout": "4.stdout.txt",
+    "stderr": "4.stderr.txt"
+  }
+]

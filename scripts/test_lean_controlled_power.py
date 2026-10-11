@@ -8,6 +8,7 @@ import hashlib
 import json
 import subprocess
 from pathlib import Path
+from current_source_fixtures import current_source_fixture, source_hashes
 from test_hierarchical_artifact import ROOT, build_and_run
 
 PRELUDE = r'''
@@ -121,9 +122,11 @@ def source_check(binary,record):
     baseline=json.loads((folder.parent/'coherent-phase-baseline.json').read_text())
     for path,digest in baseline['source_sha256'].items():
         assert hashlib.sha256((folder/path).read_bytes()).hexdigest()==digest
-    commands=[]
+    commands=[];current_hashes={}
     for name,expected in baseline['first_outcomes'].items():
-        argv=[str(binary.resolve()),'run','--format=json',str(folder/name)]
+        project=current_source_fixture(folder/name)
+        current_hashes.update({str(Path(name)/p):v for p,v in source_hashes(project).items()})
+        argv=[str(binary.resolve()),'run','--format=json',str(project)]
         run=subprocess.run(argv,text=True,capture_output=True,timeout=30)
         commands.append(dict(argv=argv,exit_code=run.returncode,stdout=run.stdout,stderr=run.stderr))
         assert run.returncode==0,(name,run.stderr)
@@ -134,7 +137,8 @@ def source_check(binary,record):
         assert any(row['bits']==expected and abs(row['probability']-1)<2e-12 for row in distribution)
     report=dict(format='qleisli.coherent-power-source-validation',version=1,status='passed',
         source_cases=2,control_reference_phase_counterexample=True,commands=commands,
-        binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),source_sha256=baseline['source_sha256'])
+        binary_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),historical_source_sha256=baseline['source_sha256'],
+        executed_source_sha256=current_hashes)
     if record: record.write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({k:v for k,v in report.items() if k!='commands'}))
 

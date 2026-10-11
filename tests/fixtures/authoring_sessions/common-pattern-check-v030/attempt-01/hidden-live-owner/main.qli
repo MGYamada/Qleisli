@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+pub fn entry(q: Q<Bit>, p: Q<Bit>) -> Q<Bit> {
+    let q = p;
+    q
+}

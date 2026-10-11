@@ -1,0 +1,231 @@
+# Checked operations
+
+The current edition-2026 grammar uses
+`checked_op(implementation, Meaning)` to request an exact-meaning check for a
+source operation. It is a static constructor, used inside the existing
+explicit operation arguments. It is not monadic bind, a runtime function value
+or constitutional certification. The ordinary naming decision is recorded in
+[#82](https://github.com/MGYamada/Qleisli/issues/82).
+
+```text
+CheckedOperation ::= checked_op ( Identifier , Identifier )
+```
+
+The first identifier names an existing operation; the second resolves to an
+existing finite Meaning declaration. Visibility, lexical shadowing, static
+premises and exact basis-tree checks apply. Neither argument accepts a runtime
+value, a constructed operation expression or an explicitly specialized
+provider expression through this form. Existing outer static constructors may
+contain the checked operation without changing their own rules.
+
+The common judgment can resolve an in-scope abstract operation formal and
+record its pending Meaning-equality obligation. Finite materialization retains
+the separate requirement for closed, principal-Unitary source declarations;
+it rejects an abstract formal as this constructor's provider. Attaching a
+Meaning in the common judgment does not create evidence that bypasses that
+downstream refusal. A general `Op<A -> B, M>` formal checks both ports against
+the declared basis of the existing endomorphic Meaning; a rectangular arrow
+cannot acquire Meaning evidence by dropping its output type. General pure
+arrow typing and the current materialization limits are specified in the
+[type model](type-model.md#general-pure-operation-arrows).
+
+For example, the following fragment uses the current endomorphic Meaning and
+operation-parameter grammar:
+
+```qli
+use std::quantum::z;
+
+classical fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
+meaning ZMeaning: Bit = phase_by(z_phase);
+unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
+
+unitary fn apply_z[const U: Op<Bit, ZMeaning>](q: Q<Bit>) -> Q<Bit>
+requires Applicable(U) { U(q) }
+
+unitary fn client(q: Q<Bit>) -> Q<Bit> {
+    apply_z[checked_op(direct, ZMeaning)](q)
+}
+```
+
+The common original-source judgment resolves the operation and Meaning, checks
+their exact interface bases and records a pending exact Meaning-equality
+obligation. It does not discharge that equality merely by attaching a name.
+Finite materialization retains the implementation and its source dependencies
+and checks their phase-fixed meaning through the selected native checker before
+producing executable evidence. Equal probabilities, equal bit width or equality
+up to global phase cannot replace that check. Capability requirements remain
+separate: an abstract parameter does not acquire inverse or controlled access
+from a Meaning name.
+
+Static descriptions contain no live quantum owner. Applying an operation still
+consumes and returns the specified owners; a runtime local, spent value or
+captured owner cannot be used as its provider. Separate owners do not imply
+separable states, and zero-width owners retain their phase and ownership rules.
+
+The selected concrete projection retains this constructor and its original
+Meaning request. Within the supported closed-provider profile,
+`ElaboratedProgram::check_operation_meanings` checks original binding requests
+and annotated constructor descendants through the native finite gate on their
+actual materialized Raw bodies before the checked collection can produce a hierarchy
+proposal. That proposal still needs fresh hierarchy acceptance. Direct
+unchecked hierarchy or Raw lowering rejects when original Meaning obligations remain.
+The checked collection can also emit Raw for direct application, sequential and
+tensor composition, adjoints and controlled access: independent source replay checks the actual instruction
+interval, owner boundary and ordered axes against each original finite request
+through a fresh native decision. Unexecuted and zero-repeat child requests are
+still checked before emission. For inverse and controlled access, independent
+source traversal retains each original subtree's actual substep range and axis
+boundary, including requests hidden inside called definitions. Inversion reverses
+that range and its boundary; coherent control retains the inactive identity
+sector and the exact active-sector matrix. Coordinate reconstruction follows
+the same surrounding controls, preserving metadata-only axis changes and Unit
+phase. These fresh finite equations retain the existing six-bit bound, shared
+work budget and final whole-artifact acceptance. Refined Raw source `ctrl` uses
+the existing exact sector gate as well as the Meaning gate. Closed audit roots
+are re-elaborated and all their original Meaning requests are checked in that
+expanded graph; earlier leaf keys are not transplanted. Every original control
+obligation still requires a retained concrete call interval, including unused
+bodies and specializations. Unclosed generic or erased intervals reject. All
+finite equations and sector replay consume the same caller budget. Symbolic
+inverse/control transformation of a body containing source `ctrl` remains
+unsupported; failure does not select another profile.
+The complete emitted artifact still requires fresh native validity and source
+replay before execution. A provider outside its concrete
+profile also rejects, rather than losing its Meaning request. Other static
+constructors retain their explicit projection restrictions.
+The rename changes no AST meaning, primitive, protocol/schema, checker or
+constitutional edition; the later bounded implementation retains the existing
+independent evidence gates.
+
+## Bounded exact Meaning composition
+
+A finite endomorphic Meaning declaration has one of these bodies:
+
+```text
+MeaningBody ::= permutation_by ( Identifier )
+              | phase_by ( Identifier )
+              | reference ( Identifier )
+              | compose ( Identifier , Identifier )
+              | tensor ( Identifier , Identifier )
+```
+
+`reference`, `compose` and `tensor` are contextual identifiers in this position,
+not reserved words. The operands of `compose` and `tensor` resolve to declared
+Meanings through ordinary visibility rules; `reference` instead resolves its
+function as described below. Forward references are allowed, while dependency
+cycles reject. Every declared Meaning is checked, including unused declarations.
+A runtime value or classical function name is not a Meaning operand.
+
+If `First` and `Second` both have the exact basis tree `A`,
+`meaning M: A = compose(First, Second);` applies First and then Second.
+Writing their actions as
+`First|x> = zeta_8^a[x] |p[x]>` and
+`Second|y> = zeta_8^b[y] |q[y]>`, the result sends `x` to `q[p[x]]`
+with phase `(a[x] + b[p[x]]) mod 8`. Composition requires identical trees;
+equal physical dimension does not admit an implicit conversion.
+
+If `Left` has basis `A` and `Right` has basis `B`,
+`meaning T: (A, B) = tensor(Left, Right);` requires that exact ordered pair.
+The first field occupies the low-order axes. For dimensions `dA` and `dB`,
+column `x + dA*y` goes to `p[x] + dA*q[y]` with phase
+`(a[x] + b[y]) mod 8`. Nested products and zero-width fields retain their type
+identity; in particular a scalar phase on `Unit` is not discarded.
+
+For example:
+
+```qli
+classical fn flip(b: Bit) -> Bit { not b }
+classical fn z_phase(b: Bit) -> (Bit, (Bit, Bit)) { (0, (0, b)) }
+meaning X: Bit = permutation_by(flip);
+meaning Z: Bit = phase_by(z_phase);
+meaning ZX: Bit = compose(Z, X);
+meaning Ordered: (Bit, Bit) = tensor(Z, X);
+```
+
+For monomial operands, these constructors normalize targets within the existing six-bit
+finite bound and work limits. Equality retains every column, exact phase and
+axis order; it is not probability equality or equality up to global phase.
+For example, `compose(X, Z)` differs from `ZX` by a minus sign. Target formation
+does not prove a provider correct: `checked_op` and refined parameters still
+require the existing fresh native comparison against the independently formed
+request, with original source/dependency and provider identities retained.
+
+### Reference programs
+
+`meaning H: Bit = reference(reference_h);` names one closed ordinary function
+whose principal effect is Unitary and whose exact interface is
+`Q<Bit> -> Q<Bit>`. The general rule uses the same exact basis `A` on both
+sides. The argument is a single resolved function identifier; static arguments,
+constructed operations, classical/static functions and other Meaning names
+are not accepted. Visibility and all-declaration dependency-cycle checks apply,
+including cycles through `apply_contract` and `checked_op`. A declared effect
+assertion cannot replace inference of the actual principal effect.
+
+```qli
+use std::quantum::h;
+
+fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }
+meaning H: Bit = reference(reference_h);
+meaning HH: Bit = compose(H, H);
+```
+
+The reference contributes its independently checked original Raw artifact and
+dependencies. A fresh native exact equation compares the implementation with
+that request. In both concrete adapters, emitted contract receipts retain both
+artifacts, their dependencies and the original source snapshot. A matching
+matrix, function name or source annotation cannot substitute another receipt.
+Unused targets, unused generic equality obligations and zero-repeat child
+requests are checked before emission. This remains bounded implementation and
+artifact-attachment checking, not a proof that source elaboration preserves its
+intended meaning or that a reference program is an adequate specification.
+
+Composition applies the first operand and then the second; tensor assigns
+the left operand to low-order axes. Either operand may contain references or
+monomial targets. Exact complex phase, ordered basis trees and zero-axis
+`Q<Unit>` scalar action remain observable in equality. A reference graph is
+retained even when its denotation happens to be monomial, such as a reference
+to identity or `compose(H, H)`. The public monomial-only `FiniteMeaning`
+accessor explicitly rejects every reference-containing graph.
+
+The existing exact carrier, six-bit bound, arithmetic/work limits and native
+acceptance profiles remain in force. Reference expression graphs have at most
+4,096 cells and depth 64, with at most 100,000 aggregate materialized artifact
+bytes. The selected adapter additionally retains its existing call/dependency
+depth, operation, source-snapshot and aggregate provider limits; an in-limit
+expression is not a promise that every concrete profile can materialize it.
+Exhaustion or unsupported equality rejects without approximation. Formation
+creates no live owner or inverse/control capability. Existing capability and
+source-control checks still govern those uses.
+
+The finite source route supports its existing closed observing entry. The
+selected hierarchy route supports its existing pure input/output entry for
+these refined operations; a readout entry outside its existing profile still
+rejects. No readout/instrument rule is broadened by Meaning composition.
+General arrows and rectangular Meanings are deferred beyond all of v0.3.0
+under [#83](https://github.com/MGYamada/Qleisli/issues/83), with no future release
+target assigned. Instrument Meaning and general same-basis
+matrix-versus-composite hierarchy equality remain unfinished under
+[#46](https://github.com/MGYamada/Qleisli/issues/46). These bounded constructors
+do not complete that Issue or establish source-to-request preservation; its
+remaining work must not reintroduce deferred general-arrow support.
+
+## Migration and evidence identity
+
+Replace `bind_op(implementation, Meaning)` with the identical arguments to
+`checked_op(implementation, Meaning)`. The old exact word is reserved only for
+a located retirement error. It is never accepted as an alias, including in
+nested constructors. The [lexical boundary](source-text.md) specifies reserved
+identifier collisions, comments, byte spans and diagnostic order.
+
+Retained evidence includes exact source snapshots. Changing this spelling may
+therefore change a receipt or QIRF source identity even when its requested
+mathematical meaning and ordered interface are unchanged. Reconstruct and
+independently check evidence for the migrated source; do not reuse stale
+receipts or remove source bindings to force byte equality. Historical first
+sources and diagnostics stay unchanged beside explicit current derivatives.
+
+The [operations design candidate](../design/operations.md) proposes broader
+arrow and Meaning forms and constructed provider inputs. This naming decision
+does not adopt them. The adopted QS, PR, RS and EXACT interpretations, both
+scoped QLV1 guarantees and their remaining proof duties retain their recorded
+status; this chapter reports no new guarantee or source-preservation theorem.

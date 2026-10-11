@@ -1,0 +1,81 @@
+{
+  "baseline_commit": "6daea68fe7efb75df0b627f2d20bd7b409f0cfd3",
+  "source_archive_sha256": "e87d811bec37f3151d007ae2f20e44d6fcf5bbff9aee296a07ea379257c00e24",
+  "change": "Only quote Bit and Q<Bit> in the module rustdoc; no resolver or in-progress changes.",
+  "source_path": "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/source",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "package",
+        "--offline",
+        "--no-verify",
+        "--target-dir",
+        "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/target"
+      ],
+      "cwd": "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/source",
+      "exit_code": 0,
+      "seconds": 2.94290641596308,
+      "stdout": "package-0.stdout.txt",
+      "stderr": "package-0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "rustdoc",
+        "--offline",
+        "--locked",
+        "--lib",
+        "--target-dir",
+        "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/doc-target",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/unpacked/qleisli-0.3.0-alpha",
+      "exit_code": 0,
+      "seconds": 3.5539473749813624,
+      "stdout": "package-1.stdout.txt",
+      "stderr": "package-1.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--doc",
+        "--target-dir",
+        "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/doc-target"
+      ],
+      "cwd": "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/unpacked/qleisli-0.3.0-alpha",
+      "exit_code": 101,
+      "seconds": 8.918462083034683,
+      "stdout": "package-2.stdout.txt",
+      "stderr": "package-2.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--locked",
+        "--doc",
+        "--target-dir",
+        "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/doc-target"
+      ],
+      "cwd": "/private/tmp/qleisli-rustdoc-distribution-kqwbuzx_/unpacked/qleisli-0.3.0-alpha",
+      "environment": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+      "exit_code": 0,
+      "seconds": 1.9588402090012096,
+      "stdout": "package-3.stdout.txt",
+      "stderr": "package-3.stderr.txt",
+      "reason": "Retry the unchanged installed package doctests with the required native checker selected, as hosted CI does. Previous missing-selection failure retained."
+    }
+  ],
+  "scope": "Isolated package documentation and doctest validation, not complete distribution or hosted CI.",
+  "crate_sha256": "4116a4e63383601e3430763a91af7f4b00ab91ba2baefbc981c8b97eb0ae9b13"
+}

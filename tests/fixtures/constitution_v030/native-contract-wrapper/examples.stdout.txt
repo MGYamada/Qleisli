@@ -1,0 +1,9 @@
+PASS: unit-minus/reconstruct
+PASS: t/reconstruct
+PASS: two-bit-asymmetric/reconstruct
+PASS: unit-minus/contract
+PASS: t/contract
+PASS: two-bit-asymmetric/contract
+PASS: unit-minus/reject-plus-one
+PASS: t/reject-inverse
+PASS: two-bit-asymmetric/reject-transpose

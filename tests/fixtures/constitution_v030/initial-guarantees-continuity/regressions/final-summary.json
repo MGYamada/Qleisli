@@ -1,0 +1,44 @@
+{
+  "extractor_sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+  "baseline_sha256": "b188c3290182fea743b35aa1e79c1a6815fbfcbfbe7223c063bd7395786c7ad0",
+  "historical_expression_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+  "results": [
+    {
+      "case": "packet-binding-true",
+      "path": "/private/tmp/qleisli-continuity-independent-regressions/packet-binding-true/final-evidence/result.json",
+      "result_sha256": "473faa74b517deca09950691cad6703aa894f2c7fe3699e5df7fcbd1112488c1",
+      "status": "identity-rejected",
+      "expression_sha256": "849bbcdfa3825890a492923c1a113edcd8e0231cee47070574243c756648f0d7",
+      "changed_declarations": [
+        "QleisliKernel.Protocol.Validity.Acceptance.mk"
+      ]
+    },
+    {
+      "case": "private-u32-offset",
+      "path": "/private/tmp/qleisli-continuity-independent-regressions/private-u32-offset/final-evidence/result.json",
+      "result_sha256": "56c1b703145db30546d632b2f07d67d52fbe3c86e8023eb947f489b502410827",
+      "status": "identity-rejected",
+      "expression_sha256": "f7e8f6e909ca4d761f54b93dc20f8fd6ed9f94f09b59271fdf3b290ba73e309b",
+      "changed_declarations": [
+        "_private.Protocol.Validity.0.QleisliKernel.Protocol.Validity.u32"
+      ]
+    },
+    {
+      "case": "proof-maintenance",
+      "path": "/private/tmp/qleisli-continuity-independent-regressions/proof-maintenance/final-evidence/result.json",
+      "result_sha256": "a5bb4f3b0bc72ac7bc406608da06b901d5bf621c6b6ae268d9c93be2ae62bea5",
+      "status": "identity-accepted",
+      "expression_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+      "changed_declarations": []
+    },
+    {
+      "case": "unknown-origin",
+      "path": "/private/tmp/qleisli-continuity-independent-regressions/unknown-origin/final-evidence/result.json",
+      "result_sha256": "a5daf8ebbddd93f519f7b8b03ba43834f0961f41490bf6a64f08360beae2155b",
+      "status": "extractor-rejected-unknown-origin",
+      "expression_sha256": null,
+      "changed_declarations": null
+    }
+  ],
+  "original_historical_sources_still_unchanged": true
+}

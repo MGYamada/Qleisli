@@ -12,9 +12,11 @@ import importlib
 import json
 from pathlib import Path
 import subprocess
+import tomllib
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def sha(data):
@@ -63,11 +65,12 @@ def compare(before, after):
         # Exercise command dispatch, IO errors and stdin framing for every bridge mode.
         for args in [[], ['--unknown'], ['missing.qpk', 'missing.qpr']]:
             checked([str(after), *args], capture_output=True, timeout=5)
-        for mode in ['--hierarchy-pending', '--hierarchy-request-pending',
+        for mode in ['--qirf-native', '--qirf-contract',
+                     '--hierarchy-pending', '--hierarchy-request-pending',
                      '--hierarchy-fourier-pending', '--readout-check',
                      '--preparation-check', '--instrument-pending', '--qpe-instrument-pending']:
             for payload in [b'', b'BAD1', b'\xff\x00\x00\x00']:
-                checked([str(after), mode], input=payload, capture_output=True, timeout=5)
+                checked([str(after), mode, PRODUCT_VERSION], input=payload, capture_output=True, timeout=5)
     finally:
         subprocess.run = run
     return dict(format='qleisli.kernel-transport-compatibility', version=1, status='passed',

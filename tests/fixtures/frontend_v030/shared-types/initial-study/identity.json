@@ -1,0 +1,24 @@
+{
+  "scope": "Informed read-only investigation; target/debug artifacts from final common-parser validation, not fresh build or formal proof. No maximum-size cases.",
+  "observer_compile": [
+    "rustc",
+    "--edition=2024",
+    "/private/tmp/qleisli-next-type-unit/observe.rs",
+    "--extern",
+    "qleisli=target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=target/debug/deps",
+    "-o",
+    "/private/tmp/qleisli-next-type-unit/observe"
+  ],
+  "files": {
+    "target/debug/qleisli": "ae77e1a6b54a5e0459042d0f9e7fbab55f68957d6a7ece6601c826bcbdf58e88",
+    "target/debug/libqleisli.rlib": "1602a3fdf3e11e69eae5605fdcd641321d4aaa504dc9ee7181258eec0e7571d8",
+    "src/frontend/parser.rs": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d",
+    "src/frontend/ast.rs": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+    "src/frontend/compile/mod.rs": "02200d5197275124faaa14d84f15fa8ea71dac4c7f284b1a45f69dcdbe53a668",
+    "src/frontend/sized/check.rs": "18d1642dc7bc080d308199b06db579c6d29ad7a0433d27976db9557c2978f2a7",
+    "src/frontend/sized/elaborate.rs": "8a9aae3a567cb780fedb5308eb4b3be388a147eed54a21ec3e4e32d780b732d1",
+    "docs/src/reference/type-model.md": "e98e5d98eacc5adcae47e858bcfff3249f9af76d7a0100aeb0821a92a1854065"
+  }
+}

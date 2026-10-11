@@ -1,0 +1,116 @@
+{
+  "format": "qleisli.multi-declaration-study-comparison",
+  "version": 1,
+  "historical_observations": "initial-study/observations.json",
+  "current_observations": "after/observations.json",
+  "normalization": "Only the two absolute study-root directory prefixes are replaced. All raw observations remain saved.",
+  "cases": [
+    {
+      "case": "private-forward-sibling",
+      "expected_sized_outcome": "ok",
+      "actual_sized_outcome": "ok",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:46..84: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: ok",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "public-sibling-provider",
+      "expected_sized_outcome": "ok",
+      "actual_sized_outcome": "ok",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:77..117: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: ok",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "same-name-separate-modules",
+      "expected_sized_outcome": "ok",
+      "actual_sized_outcome": "ok",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: a:49..87: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: ok",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "import-terminal-bindings",
+      "expected_sized_outcome": "ok",
+      "actual_sized_outcome": "ok",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:72..122: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: ok",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "unused-bad-function",
+      "expected_sized_outcome": "ownership",
+      "actual_sized_outcome": "ownership",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:38..73: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: main:69..73: ownership: function leaves live quantum arguments unconsumed",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "mutual-siblings",
+      "expected_sized_outcome": "cycle",
+      "actual_sized_outcome": "cycle",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:41..77: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "duplicate-siblings",
+      "expected_sized_outcome": "name",
+      "actual_sized_outcome": "name",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:38..71: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: main:49..50: name: duplicate declaration f",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "private-imported-sibling",
+      "expected_sized_outcome": "visibility",
+      "actual_sized_outcome": "visibility",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: dep:51..89: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: main:0..16: visibility: dependency dep::helper is private",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "import-rename-still-unsupported",
+      "expected_sized_outcome": "parse",
+      "actual_sized_outcome": "parse",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:14..16: parse: expected `;`, found identifier",
+      "after_sized": "sized.parse: main:14..16: parse: expected `;`, found identifier",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    },
+    {
+      "case": "import-collides-sibling",
+      "expected_sized_outcome": "name",
+      "actual_sized_outcome": "name",
+      "sized_outcome_matches": true,
+      "before_sized": "sized.parse: main:58..94: unsupported: sized preparation profile: permits one function per module until declaration-identity cycle checking is available",
+      "after_sized": "sized.parse: main:0..14: name: import shadows the local function",
+      "finite_observations_equal_after_path_normalization": true,
+      "exit_and_stderr_equal": true
+    }
+  ],
+  "summary": {
+    "cases": 10,
+    "sized_accepted": 4,
+    "sized_rejected": 6,
+    "finite_observations_unchanged": 10
+  },
+  "scope": "This checks the explicit source/checking outcomes, not semantic preservation or universal acceptance."
+}

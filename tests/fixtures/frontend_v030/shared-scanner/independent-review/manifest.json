@@ -1,0 +1,59 @@
+{
+  "kind": "bounded lexical differential review; not a semantic preservation proof",
+  "baseline_commit": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+  "inputs": [
+    {
+      "label": "finite-before",
+      "source": "src/frontend/lexer.rs",
+      "revision": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+      "snapshot": "inputs/finite-before.rs.txt",
+      "sha256": "ec0260843907a15231277da77cc9a1b5fc13667f8a455826ca558e188a9a99cd"
+    },
+    {
+      "label": "finite-after",
+      "source": "src/frontend/lexer.rs",
+      "revision": "reviewed uncommitted working tree",
+      "snapshot": "inputs/finite-after.rs.txt",
+      "sha256": "099548ff59e2555dc5a4509b962f78c2dd9d87a18afd07dd85c2662d5f0c4231"
+    },
+    {
+      "label": "sized-before",
+      "source": "src/frontend/sized/parser.rs",
+      "revision": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+      "snapshot": "inputs/sized-before.rs.txt",
+      "sha256": "f1c0e07bfa66512cac3b8cbfb0f0d4d63d66c19cd215108a3200833429a21c13"
+    },
+    {
+      "label": "sized-after",
+      "source": "src/frontend/sized/parser.rs",
+      "revision": "reviewed uncommitted working tree",
+      "snapshot": "inputs/sized-after.rs.txt",
+      "sha256": "c468cf3604f8ec13275ac1f73c3ec368dcdefd5efc35f043e3187dbb7b21f34d"
+    },
+    {
+      "label": "scanner-after",
+      "source": "src/frontend/scanner.rs",
+      "revision": "reviewed uncommitted working tree",
+      "snapshot": "inputs/scanner-after.rs.txt",
+      "sha256": "320aaa0972a2aec5fd76b80a0313810e1143b377dbcf77530eca955edfac57b2"
+    }
+  ],
+  "harness_sha256": "da9681495a390d01ceef99228f1a931db2c5ada6051716190314ebf5df0e404a",
+  "cases_sha256": "23270cc7aa4d8d8fb14246c8bf370b63339bc22964905f874b63bd980bddbd71",
+  "comparison": {
+    "finite_inputs": 165576,
+    "sized_inputs": 165536,
+    "exhaustive_four_atom_inputs": 65536,
+    "deterministic_fragment_inputs": 100000,
+    "finite_only_forbidden_character_inputs": 40,
+    "seed_hex": "0123456789abcdef",
+    "fragments_per_random_input": 12,
+    "required_pointer_width": 64,
+    "result": "exact Debug-formatted equality of tokens, spans, errors and finite retained docs"
+  },
+  "intentional_exclusions": [
+    "The 40 explicit forbidden-character inputs compare finite old/new only. Sized intentionally adopts the finite policy for bare CR, control characters, unsupported whitespace and line separators, including inside comments.",
+    "Random sized inputs omit those deliberately tightened characters. Sized tests separately check their new rejection and byte spans.",
+    "No AST attachment, parsing equivalence theorem, native acceptance, semantic/source preservation, full corpus replay or maximum-size quantum validation is claimed."
+  ]
+}

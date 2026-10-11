@@ -1,0 +1,43 @@
+{
+  "scope": "Historical and current CLI source identity; test expectation changes do not alter frontend production sources.",
+  "baseline_commit": "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+  "baseline_tree": "/private/tmp/qleisli-roundtrip-0605d71-1691w56s",
+  "baseline_verified_source_files": 92,
+  "baseline_check_argv": [
+    "git",
+    "ls-tree",
+    "-r",
+    "--name-only",
+    "0605d716c2a79e2b6776476981c3e25cdfa1709b",
+    "--",
+    "src",
+    "Cargo.toml",
+    "Cargo.lock",
+    "stdlib"
+  ],
+  "baseline_check": "Every listed file equals its git-show blob byte for byte.",
+  "current_commit": "af21dd5d3e4373083edcf207ef9890967d4c7dab",
+  "current_production_diff": [],
+  "source_sha256": {
+    "src/frontend/ast.rs": "76196002742ef78a0c99826feadc5cb336983551080560c46c40779c529652ad",
+    "src/frontend/parser.rs": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d",
+    "src/frontend/compile/mod.rs": "9ec24dd5722796d0d089eb3f213e5b21a22c4b462b7e7d920d99e603a5f242f1",
+    "src/frontend/compile/profile.rs": "8916be769b047b70eb3ed9adf58350f6137db3f0850dbbd77b0668f93e08360f",
+    "src/frontend/diagnostic.rs": "548418dd2c0562768b3df8d33e44db8289b2b97cbae71ef06ad39b21a99a5daf"
+  },
+  "original_fixture_sha256": {
+    "aliased_owner.qli": "9bbc8d4e98d0ee507600d0122e6e7d6134058cdb762afed91a9803d53fb3aa83",
+    "auxiliary_hh.qli": "eabb33555e8b370433471d305aa028bc77cc47c40c345fe8be3ad506c7478cd1",
+    "basis_type_parameter.qli": "dcaa8f5977ca87f396dc97fe028acf5d42d4c9c43ad1c2001ad8c72254416035",
+    "controlled_is_not_apply.qli": "bca5006ba5e520f0421b537113ab3cb8dc5640a5fd85ee0ce01d48f1c53058be",
+    "dropped_owner.qli": "64b1a71b36894d98258ced7ca015b650ce90e37c32c78097311176f5a3c4aea5",
+    "meaning_pair_predicate.qli": "ab1a09aa5947fc1fdc490a314f1042bc935b5037905cc1eec497c9aabe46ddc2",
+    "missing_adjoint.qli": "b10bddd08cbc205fb4dfc513fa72652b8cd77112295c21727a0fd3d0a897d069",
+    "missing_import.qli": "f31003fb0707694b213defc97b85cff1c84519b62c13427dc84c51935fbe91b4",
+    "product_association.qli": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf",
+    "sealed_provider.qli": "b472cbc74b4332b8261aafce6e9673fe09d06885f10b458cb04e16c86618c336",
+    "spent_owner.qli": "877dae7260de9380fb5a19c059a337c0c04a9d90b904d08403d12a64e673785e",
+    "static_nat.qli": "53ab5e74f42dc31892b854ad7039a0910084b6e98b948156644b940661e6b2b3"
+  },
+  "baseline_rejection_sources_match": true
+}

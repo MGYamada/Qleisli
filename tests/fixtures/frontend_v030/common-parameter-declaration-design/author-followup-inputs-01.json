@@ -1,0 +1,274 @@
+{
+  "format": "qleisli.author-followup-inspected-inputs",
+  "version": 1,
+  "observer": "/root/isometry_cli_tests",
+  "authorship": "Same agent authored candidate-01.md; this record is author follow-up, not independent candidate review.",
+  "observed_utc": "2026-10-05T17:09:18.849352+00:00",
+  "observed_head": "7e2bf08cb2a9367e1d5fefe8ced451c3e6f57149",
+  "scope": "Fixed 39-file inspected/identity subset with per-file role. Not full source/runtime closure or compiled HEAD attestation.",
+  "original_first_member_count": 5,
+  "original_first_member_sizes_hashes_unchanged": true,
+  "first_map_sha256": "c631c7ae5adc3c42220af2580318d68a6df3e95071beb954d23dde1d3762a999",
+  "prior_40_source_member_hashes_still_match": true,
+  "files": [
+    {
+      "path": "CONSTITUTION.md",
+      "bytes": 20257,
+      "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "bytes": 6573,
+      "sha256": "19dd4542270d00de773eb146612dadcb8786466580ce34f67dcb065fbe4ae469",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "README.md",
+      "bytes": 23908,
+      "sha256": "aa8c27f700034d57d84a11879b12701526514b34d5c02f1ff2fbcb4fc3fef132",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "ROADMAP.md",
+      "bytes": 16778,
+      "sha256": "6d534728109e7559ceae8cdc7f650ecc2805892779347f9a23d0ea9419eef09c",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "TRUSTBOUNDARY.md",
+      "bytes": 7211,
+      "sha256": "9c1f06836fffb60cea8875e81f520f803e359ebbf36d7a7bc2f47a1969794f32",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "docs/src/imaginary-v1/index.md",
+      "bytes": 1987,
+      "sha256": "6c1d07f8ca1e97c6b11977cef060c24f4a31b92319b8e5d9c2f315cd1dc25f9a",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "docs/src/reference/authority.md",
+      "bytes": 16091,
+      "sha256": "6650e470e826fb0147ee92e582e49caef0603de8290b70e1d1a4497f013f36d9",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 18041,
+      "sha256": "4b6100cfd4030648701114923f8ce33840d89e28c3f9f39475f1a3bdef4590d5",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28181,
+      "sha256": "a202266d4336921e6b2232201312418e3c12aa0f7c6f69dc55bcc710f839a608",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/README.md",
+      "bytes": 7009,
+      "sha256": "457c42a5f3564d074593968b1a2aeafbf9683c145b11cc47e9166e8f678c0e62",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/guarantees.json",
+      "bytes": 5535,
+      "sha256": "35e5c279a264382c8c243300c5d9bfb6c1b60670d21b60cd3577ecf1d0e1537d",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/guarantees/current-evidence.json",
+      "bytes": 32694,
+      "sha256": "fe4baf74699b14a30a7b70d02171a069bd60836cd1674af2ef922d83a59e3575",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/guarantees/initial-2026-admission.json",
+      "bytes": 4124,
+      "sha256": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/interpretations/exactness-2026-adoption.json",
+      "bytes": 2877,
+      "sha256": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/interpretations/initial-2026-adoption.json",
+      "bytes": 2713,
+      "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/interpretations/initial-2026-reviewed.txt",
+      "bytes": 17631,
+      "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/proposals/exactness-2026.md",
+      "bytes": 11721,
+      "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/proposals/initial-guarantees.json",
+      "bytes": 15180,
+      "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "governance/ratification-2026.json",
+      "bytes": 2478,
+      "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 42146,
+      "sha256": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 32732,
+      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/pattern.rs",
+      "bytes": 3459,
+      "sha256": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/resolve.rs",
+      "bytes": 15766,
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4754,
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 52146,
+      "sha256": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15956,
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "src/interchange/native.rs",
+      "bytes": 18198,
+      "sha256": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/contract-v2.md",
+      "bytes": 14462,
+      "sha256": "e178b5f0ca7c465eaed0e01cc48879c963b674c2ec6db032c7fb4f9fcf4ad0ae",
+      "role": "read-only inspected original; source sections as identified in audit"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/README.md",
+      "bytes": 981,
+      "sha256": "f18bad865242795ac2cde82ff56ba7015f137fa44a47d3b06bc887f1c4d21e00",
+      "role": "unchanged first candidate packet; issue32 remains prior retained readback"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/candidate-01.md",
+      "bytes": 16142,
+      "sha256": "477bc835331e8aa46c85e267408a24ada18403ca2cb3ebcbff5ea5c6e028f3b4",
+      "role": "unchanged first candidate packet; issue32 remains prior retained readback"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/context.json",
+      "bytes": 3460,
+      "sha256": "07b35732e5ff00e94fcd804a22a935401a71a4fd4e9b6dcf51f05a4154e6bb51",
+      "role": "unchanged first candidate packet; issue32 remains prior retained readback"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/first-files.json",
+      "bytes": 1025,
+      "sha256": "c631c7ae5adc3c42220af2580318d68a6df3e95071beb954d23dde1d3762a999",
+      "role": "unchanged first candidate packet; issue32 remains prior retained readback"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/issue-32.connector.json",
+      "bytes": 93221,
+      "sha256": "69f3924259aa33f2a2642416fa65414ca8057038697ef0a0d8279e6db9e2c02e",
+      "role": "unchanged first candidate packet; issue32 remains prior retained readback"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/source-inputs.json",
+      "bytes": 7576,
+      "sha256": "fd48c72e6b89472d7b9d071d8925e5cf67dc5b37841e852e9306d23e9b98419d",
+      "role": "unchanged first candidate packet; issue32 remains prior retained readback"
+    },
+    {
+      "path": "scripts/check_constitution.py",
+      "bytes": 37412,
+      "sha256": "424f8e9b9bedbc5cbbd49915b600026e5db8ad933460aa24e2f7a7c8c7cba8e1",
+      "role": "executed constitutional guard; guard result is distinct from code review or Lean replay"
+    }
+  ],
+  "new_audit_outputs": [
+    {
+      "path": "author-followup-audit-01.md",
+      "bytes": 9044,
+      "sha256": "e6703042bb2bdd641e6e5093d1c03525a93f24de6b2896b6488b16ff5458796e"
+    },
+    {
+      "path": "author-followup-guard-01.json",
+      "bytes": 1008,
+      "sha256": "30d3e737fb231a19dd941bb404ec6be3af1ffbe5427f31f5a00257e783443ed4"
+    }
+  ],
+  "excluded": [
+    "author-followup-inputs-01.json"
+  ],
+  "not_performed": [
+    "Cargo/Lean builds",
+    "tests",
+    "qleisli/native calls",
+    "new source experiments",
+    "production changes",
+    "old packet edits",
+    "Git/Issue mutations",
+    "policy/guarantee admission"
+  ]
+}

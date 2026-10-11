@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "Audit.lean"
+  ],
+  "cwd": "lean",
+  "started_at": "2026-10-04T13:48:42.335790+00:00",
+  "elapsed_seconds": 23.779,
+  "exit_code": 0,
+  "stdout": "audit.stdout.txt",
+  "stderr": "audit.stderr.txt"
+}

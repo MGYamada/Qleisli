@@ -8,7 +8,7 @@ use qleisli::frontend::compile::{check_project_diagnostic, compile_project_diagn
 
 const IMPORTS: &str = "use std::quantum::x;
 use std::quantum::z;
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
 
@@ -80,11 +80,11 @@ fn invalid_computed_contract_points_to_its_expression_including_nested_branches(
     for body in [
         dirty.to_owned(),
         format!("if flag {{ q }} else {{\n        {dirty}\n    }}"),
-        format!("if flag {{ if false {{ q }} else {{\n        {dirty}\n    }} }} else {{ q }}"),
+        format!("if flag {{ if 0 {{ q }} else {{\n        {dirty}\n    }} }} else {{ q }}"),
         format!("let q = with_computed(q, predicate) {{ |a| z(z(a)) }};\n    {dirty}"),
     ] {
         let source = format!(
-            "{IMPORTS}pub unitary fn candidate(flag: CBit, q: Q<Bit>) -> Q<Bit> {{\n    {body}\n}}"
+            "{IMPORTS}pub unitary fn candidate(flag: Bit, q: Q<Bit>) -> Q<Bit> {{\n    {body}\n}}"
         );
         let root = SourceRoot::new("use candidate::candidate;\n");
         root.write("candidate.qli", &source);
@@ -132,7 +132,7 @@ unitary fn candidate(q: Q<Bit>) -> Q<Bit> {{
 
 #[test]
 fn parser_failure_remains_project_category_with_explicit_parse_context() {
-    let root = SourceRoot::new("observe fn main() -> CBit {\n    @\n}");
+    let root = SourceRoot::new("observe fn main() -> Bit {\n    @\n}");
     let failure = check_project(&root.0).unwrap_err();
     assert_eq!(failure.code, ErrorCode::Project);
     assert_eq!((failure.line, failure.column), (2, 5));

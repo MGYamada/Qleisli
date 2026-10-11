@@ -32,7 +32,7 @@ def treeStep (stack : Option (List Nat)) (atom : Atom) : Option (List Nat) := do
   let depth :: rest ← stack | none
   if depth > 32 then none else
   match atom with
-  | .unit | .bit => some rest
+  | .unit | .bit | .bits _ => some rest
   | .pair => some ((depth+1) :: (depth+1) :: rest)
   | .tuple arity =>
     if arity < 3 || arity > 128 then none

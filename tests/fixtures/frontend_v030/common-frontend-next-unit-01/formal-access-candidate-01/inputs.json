@@ -1,0 +1,229 @@
+{
+  "format": "qleisli.unexecuted-formal-access-before-code-candidate",
+  "version": 1,
+  "author": "/root/review_isometry_adapter",
+  "recorded_utc": "2026-10-05T18:06:48.158046+00:00",
+  "status": "first-candidate-frozen-unexecuted",
+  "inspected": [
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "bytes": 17970,
+      "sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 32732,
+      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "bytes": 8339,
+      "sha256": "a7033fd313d0f69227a1acce76fba47d376dedc18ff995b88a48f925a72a7bbc",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4754,
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15956,
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 52569,
+      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "bytes": 12083,
+      "sha256": "8adb79de4cf9b326509d66e3cafb7ca537f8ac4fea8812c6dd253b373a6f4889",
+      "mode": 420
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b",
+      "mode": 420
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28181,
+      "sha256": "a202266d4336921e6b2232201312418e3c12aa0f7c6f69dc55bcc710f839a608",
+      "mode": 420
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449",
+      "mode": 420
+    },
+    {
+      "path": "tests/basis_polymorphism.rs",
+      "bytes": 14174,
+      "sha256": "6b8ef7cddeb8a8312ec2da66a7a417f24c26440a9a23d555d4db181bef6a1c76",
+      "mode": 420
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "bytes": 19631,
+      "sha256": "2862444c8d92dfcab9fa05b6ab13bef6cde411400ac9d3e0d9582e13d268de6e",
+      "mode": 420
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "bytes": 82412,
+      "sha256": "974b97a3f1dcae425ded45d29ad9212351187fa5c5b54edc8b697918eae0c4c2",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/next-unit.md",
+      "bytes": 9975,
+      "sha256": "1e8e80ad3195a07c6ac8537326734dcd41ea1b848e9b32831b701e6febdb006b",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/inputs.json",
+      "bytes": 5566,
+      "sha256": "37a1799b2e31f2dbbcf22961313e31f11a91a1f95d7a90731a5a17547fa04555",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/contract-before-code.md",
+      "bytes": 5501,
+      "sha256": "558ec3f68f6c7f84a248ed30039eb8655625a08fe61a48d3c32f975100bd1ad1",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/static-operation-collision.qli",
+      "bytes": 162,
+      "sha256": "8e85acfcb1df1d58c13b950fa34502fca34d32063d96964c33ccc403acd44d89",
+      "mode": 420
+    }
+  ],
+  "candidate": [
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/Qargo.toml",
+      "bytes": 45,
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/candidate.md",
+      "bytes": 9384,
+      "sha256": "da6bacfbc13fbaa4a7a80ab93afb52a9c1be7d223e1e3ad7b507ff171b0eeb02",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/basis-scan-priority.qli",
+      "bytes": 204,
+      "sha256": "83a6bcb284c22fd4dd7cd5f6223baa87147153c32c2a1bfe2132286a81a9d806",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/duplicate-access.qli",
+      "bytes": 189,
+      "sha256": "8123bb2740ec219abfc5962992f82799c5f3288cf5d69ff4fdf86edbd1a5ae92",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/forward-basis.qli",
+      "bytes": 200,
+      "sha256": "463ea4bcc07e3ddcc8323c2993a35fd409d3305b9dd24f3e0df19becca5ee5cc",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/forward-natural.qli",
+      "bytes": 216,
+      "sha256": "50407680955bcfdb616dc472596729e66590fe383a973f7ebb21918e055e6380",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/natural-priority.qli",
+      "bytes": 200,
+      "sha256": "a8fefad1fb6b12b36ca64f242e44465f25ee865a56cb7a87ca221e85a20694d5",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/static-runtime-collision.qli",
+      "bytes": 196,
+      "sha256": "d3ab8356c010d97b042ce0d59d2ddb9b664c3ed0c8aecd29868fd0b9aebe7dff",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/unused-missing-access.qli",
+      "bytes": 166,
+      "sha256": "6c1a62d498f39be483c6d4dab793b273120b98e80712ec87c2a06f540cf63d31",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/valid-dependent-basis.qli",
+      "bytes": 245,
+      "sha256": "5ecd2979bb39a54c22cfa55c86fbb9a4d2813275a985e0566cebd0312a358c72",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/valid-operation.qli",
+      "bytes": 188,
+      "sha256": "9b7ccca394a09f4161b8a1721da6c36c6a56b639c29153fa67848eabd4b17fa7",
+      "mode": 420
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/sources/wrong-kind-access.qli",
+      "bytes": 216,
+      "sha256": "453b0dc9265f89d991ceeec7cf6ce0bd8c9d041d6286b8222fcfa7bea24a4ae0",
+      "mode": 420
+    }
+  ],
+  "prior_next_unit_input_map_matches": true,
+  "source_files": 10,
+  "scope": "Selected actual source/API/Reference/test-source read and exact file data hashes only. The original next-unit note/map and all listed prior identities remain unchanged. New .qli candidates were not parsed or run; this is not an observed acceptance/result oracle or compiled-source attestation.",
+  "performed": [
+    "Read-only inspection",
+    "New candidate prose/source files and hash map serialization"
+  ],
+  "not_performed": [
+    "Production/shared source edits",
+    "CLI/native/script execution",
+    "Cargo/Lean build or tests",
+    "Git/GitHub mutation",
+    "Constitutional interpretation or guarantee adoption",
+    "Issue completion"
+  ],
+  "excluded": [
+    "this map itself",
+    "later experiment drivers/commands/outputs",
+    "future independent reviews"
+  ]
+}

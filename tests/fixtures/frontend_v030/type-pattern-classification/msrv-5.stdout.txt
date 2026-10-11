@@ -1,0 +1,6 @@
+
+running 1 test
+test meanings_reject_wrong_phase_wrong_tree_and_nonpermutations ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 14 filtered out; finished in 0.59s
+

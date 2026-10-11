@@ -1,0 +1,2 @@
+usage: check_book.py [-h] [--root ROOT]
+check_book.py: error: unrecognized arguments: /private/tmp/qleisli-ci-repair-book

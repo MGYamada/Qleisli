@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "ordinary_types",
+    "sized_unit_patterns_consume_only_actual_unit_values",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 4.43183349998435,
+  "source_sha256": {
+    "src/frontend/sized/check.rs": "52722d53aa6dde6746dadefaf93d3b0f21ab700983de539019186d50b680cedd",
+    "src/frontend/sized/elaborate.rs": "7f80139e63316d44c647466eaaf05773ac1287fbeec279db36ebe0fc5f0c434c",
+    "tests/ordinary_types.rs": "919e936281d70198287782c14450002b14c26bb0d02857d54c657f18b153a739"
+  }
+}

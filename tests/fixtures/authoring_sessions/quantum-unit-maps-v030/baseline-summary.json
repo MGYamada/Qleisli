@@ -1,0 +1,542 @@
+{
+  "observations": [
+    {
+      "project": "introduce",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "introduce",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "eliminate",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "eliminate",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "ordinary-roundtrip",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "ordinary-roundtrip",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "quantum-roundtrip",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "quantum-roundtrip",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "scalar-argument",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "scalar-argument",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "controlled-four",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "controlled-four",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "left-separate-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "left-separate-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "right-separate-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "right-separate-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "observing-argument",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "observing-argument",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-ordinary-types",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-ordinary-types",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-quantum-types",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-quantum-types",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-runtime-arity",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-runtime-arity",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-static-arity",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wrong-static-arity",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "duplicate-revived-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "duplicate-revived-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "lost-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "lost-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wildcard-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "wildcard-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "effect-violation",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "effect-violation",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "unused-invalid-body",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "unused-invalid-body",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "zero-fold-invalid-body",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "module",
+          "message": "missing dependency module std::quantum"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "zero-fold-invalid-body",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "message": "sealed module `std::quantum` has no public name `unit`"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "packaged-tree-boundary",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>"
+        }
+      ],
+      "result": null
+    },
+    {
+      "project": "packaged-tree-boundary",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    },
+    {
+      "project": "existing-scalar-control",
+      "route": "selected",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "status": "checked",
+        "profile": "sized-unitary",
+        "contract": "composition",
+        "verification": {
+          "scope": "producer-consistency",
+          "request_origin": "producer",
+          "source_meaning_verified": false
+        },
+        "execution_authority": "checked-produced-ir",
+        "entry": "main::f",
+        "ir_profile": "hierarchy",
+        "source_check_scope": "all-supplied-module-declarations",
+        "native_check_scope": "selected-specialization"
+      }
+    },
+    {
+      "project": "existing-scalar-control",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    },
+    {
+      "project": "existing-ordinary-control",
+      "route": "selected",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "status": "checked",
+        "profile": "sized-unitary",
+        "contract": "composition",
+        "verification": {
+          "scope": "producer-consistency",
+          "request_origin": "producer",
+          "source_meaning_verified": false
+        },
+        "execution_authority": "checked-produced-ir",
+        "entry": "main::f",
+        "ir_profile": "hierarchy",
+        "source_check_scope": "all-supplied-module-declarations",
+        "native_check_scope": "selected-specialization"
+      }
+    },
+    {
+      "project": "existing-ordinary-control",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    }
+  ],
+  "scope": "Actual diagnostic checks only. Unknown import or earlier rejection may mask intended downstream judgments. Finite empty-main checks do not execute open f."
+}

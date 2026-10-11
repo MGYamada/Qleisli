@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 
 from test_sized_qft import probes
+from current_source_fixtures import current_source_file
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -65,10 +66,15 @@ def main():
         widths=[1,2,3],phase_sensitive=True,frontend_adequacy_proved=False,
         kernel_sha256=hashlib.sha256(args.kernel.read_bytes()).hexdigest(),
         implementation_sha256={p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in
-            ('src/frontend/sized/fourier.rs','src/frontend/sized/lower.rs',
+            ('src/frontend/specialize/fourier.rs','src/frontend/specialize/lower.rs',
              'corpus/sized/qualtran_qft/fourier.qli',
-             'tests/fixtures/sized_clients/delayed_fourier.qli',
+             'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli',
              'scripts/test_rust_fourier_factoring.py')},
+        current_sources={p:dict(path=current_source_file(ROOT/p).relative_to(ROOT).as_posix(),
+            sha256=hashlib.sha256(current_source_file(ROOT/p).read_bytes()).hexdigest()) for p in
+            ('corpus/sized/qualtran_qft/fourier.qli',
+             'tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli')},
+        source_map_sha256=hashlib.sha256((ROOT/'tests/fixtures/frontend_v030/qfor/source-map.json').read_bytes()).hexdigest(),
         artifacts=artifacts,semantic=semantic,commands=commands)
     if args.record:
         args.record.write_text(json.dumps(report,indent=2)+'\n')

@@ -1,0 +1,16 @@
+
+running 11 tests
+test all_comment_forms_keep_unicode_rejection_and_unclosed_block_diagnostics ... ok
+test deeply_nested_comments_are_iterative_and_do_not_hide_following_syntax ... ok
+test doc_text_normalizes_crlf_but_preserves_utf8_source_spans ... ok
+test common_parser_shares_documentation_attachment_with_sized_source ... ok
+test every_bundled_module_and_public_or_private_definition_has_documentation ... ok
+test markdown_includes_private_docs_and_uses_safe_signature_fences ... ok
+test misplaced_documentation_is_rejected_in_both_parse_entry_points ... ok
+test ordinary_and_nested_comment_delimiters_follow_rust_distinctions ... ok
+test rust_style_docs_attach_to_modules_imports_and_functions_in_source_order ... ok
+test unfinished_comment_blocks_cannot_swallow_later_declarations ... ok
+test documentation_neither_changes_ir_nor_authorizes_invalid_ownership ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.81s
+

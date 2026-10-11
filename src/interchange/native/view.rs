@@ -21,6 +21,12 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
         let mut effect = Effect::Unitary;
         for op in ops {
             match op {
+                RawOp::PackUnit { output } => {
+                    map.insert(*output, vec![]);
+                }
+                RawOp::UnpackUnit { input } => {
+                    wires(map, *input)?;
+                }
                 RawOp::ApplyUnitary { input, output, .. } | RawOp::Gate { input, output, .. } => {
                     map.insert(*output, wires(map, *input)?);
                 }
@@ -31,7 +37,7 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
                 }
                 RawOp::Init0 { output, wire } => {
                     map.insert(*output, vec![*wire]);
-                    effect = effect.max(Effect::Iso);
+                    effect = effect.max(Effect::Isometry);
                 }
                 RawOp::Reset {
                     output, fresh_wire, ..
@@ -106,7 +112,7 @@ pub(super) fn metadata(program: &RawProgram) -> Result<(Effect, Vec<QuantumPort>
                     ..
                 } => {
                     if wires(map, *input)?.len() != output_wires.len() {
-                        effect = effect.max(Effect::Iso);
+                        effect = effect.max(Effect::Isometry);
                     }
                     map.insert(*output, output_wires.clone());
                 }

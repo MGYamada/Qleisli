@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::outer",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/opaque-forward/main.qli",
+    "--format=json",
+    "--module=provider=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/main.qli",
+    "--type=A=Bit",
+    "--operation=U=provider::identity",
+    "--operation-type=U.B=Bit"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T06:46:50.698499+00:00",
+  "timestamp_note": "Clock observation after command completion, not authenticated provenance.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "project",
+        "severity": "error",
+        "message": "Qargo.toml requires schema-version = 2",
+        "primary": {
+          "module": "provider",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/providers/main.qli",
+          "start": 0,
+          "end": 80
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "native_invocations": 0,
+  "seconds": 0.003878124989569187
+}

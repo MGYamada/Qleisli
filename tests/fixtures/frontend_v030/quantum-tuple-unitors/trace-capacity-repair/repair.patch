@@ -1,0 +1,184 @@
+--- a/src/frontend/sized/lower/preservation.rs
++++ b/src/frontend/sized/lower/preservation.rs
+@@ -316,6 +316,23 @@
+     }
+ }
+ 
++// The original trace budget already charges one cell per logical atom. Add
++// every retained non-root basis node without changing Unit/Bit/Bits costs.
++fn basis_trace_extra<'a>(mut ports: impl Iterator<Item = &'a Port>) -> Result<usize> {
++    ports.try_fold(0usize, |total, port| {
++        let size = port.basis.storage_size(4096, 64)
++            .ok_or_else(|| invalid("trace basis exceeds type capacity"))?;
++        total.checked_add(size.nodes - 1)
++            .ok_or_else(|| invalid("trace accounting overflow"))
++    })
++}
++fn quantum_ref(item: &Item) -> Option<&Port> {
++    match item {
++        Item::Quantum(port) => Some(port),
++        Item::Classical(_) => None,
++    }
++}
++
+ pub(super) fn record(
+     state: &mut Instrument,
+     definition: usize,
+@@ -329,17 +346,31 @@
+     if (kind == "pure") != node.is_some() {
+         return Err(invalid("trace kind differs from actual primitive"));
+     }
+-    let cost = state
+-        .current
+-        .len()
+-        .checked_mul(2)
+-        .and_then(|n| n.checked_add(inputs.len() + outputs.len() + 16))
++    // Count the actual retained frame trees while still borrowing them. An
++    // untouched zero-wire owner can be large even when the operation itself
++    // has only a Bit operand. No recursive Port is cloned before this check.
++    let selected_ids: BTreeSet<_> = inputs.iter().filter_map(quantum_ref).map(|p| p.owner).collect();
++    let before_extra = basis_trace_extra(state.current.iter())?;
++    let output_extra = basis_trace_extra(outputs.iter().filter_map(quantum_ref))?;
++    let after_extra = match kind {
++        "init0" => before_extra.checked_add(output_extra),
++        "pure" => basis_trace_extra(state.current.iter().filter(|p| !selected_ids.contains(&p.owner)))?.checked_add(output_extra),
++        "observe" => Some(basis_trace_extra(state.current.iter().filter(|p| !selected_ids.contains(&p.owner)))?),
++        _ => Some(before_extra),
++    }.ok_or_else(|| invalid("trace accounting overflow"))?;
++    let input_extra = basis_trace_extra(inputs.iter().filter_map(quantum_ref))?;
++    let cost = state.current.len().checked_mul(2)
++        .and_then(|n| n.checked_add(inputs.len()))
++        .and_then(|n| n.checked_add(outputs.len()))
++        .and_then(|n| n.checked_add(16))
++        .and_then(|n| n.checked_add(before_extra))
++        .and_then(|n| n.checked_add(after_extra))
++        .and_then(|n| n.checked_add(input_extra))
++        .and_then(|n| n.checked_add(output_extra))
+         .ok_or_else(|| invalid("trace accounting overflow"))?;
+-    state.trace_cells = state
+-        .trace_cells
+-        .checked_add(cost)
++    let total = state.trace_cells.checked_add(cost)
+         .ok_or_else(|| invalid("trace accounting overflow"))?;
+-    if state.trace_cells > 100_000 || state.events.len() >= 10_000 {
++    if total > 100_000 || state.events.len() >= 10_000 {
+         return Err(Error::new(
+             "limit",
+             step.span(),
+@@ -347,9 +378,8 @@
+         )
+         .in_module(step.module()));
+     }
++    state.trace_cells = total;
+     let before = state.current.clone();
+-    let selected = quantum(&inputs);
+-    let selected_ids: BTreeSet<_> = selected.iter().map(|p| p.owner).collect();
+     let rest: Vec<_> = before
+         .iter()
+         .filter(|p| !selected_ids.contains(&p.owner))
+@@ -1283,6 +1313,53 @@
+     }
+ 
+     #[test]
++    fn source_trace_charges_idle_zero_width_basis_before_frame_cloning() {
++        let source = "use std::quantum::h; use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit;
++            pub observe fn f(q:Q<Bit>,z:Q<((Unit,Unit),(Unit,Unit))>)->(Bits<1>,Q<((Unit,Unit),(Unit,Unit))>){
++                let q=h(q); let b=measure_z(q); (prepend_bit[0](b,empty_bits()),z)
++            }";
++        let proposal = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())])).unwrap()
++            .instantiate("main::f", BTreeMap::new(), BTreeMap::new()).unwrap()
++            .elaborate().unwrap().lower().unwrap();
++        let event = &proposal.events[0];
++        let step = &proposal.source.definitions()[event.definition].steps()[event.step];
++        assert_eq!(step.primitive_kind(), Some(Primitive::H));
++        assert_eq!(event.before.len(), 2);
++        let idle = event.before.iter().find(|p| p.kind == PortKind::Tuple).unwrap();
++        assert!(idle.axes.is_empty());
++        let mut state = Instrument {
++            inputs: vec![], fresh: vec![], initializations: vec![], pure_steps: vec![],
++            measured: vec![], next_axis: 1, next_classical: 1_000_000,
++            current: event.before.clone(), events: vec![], call_path: vec![], trace_cells: 0,
++        };
++        // The old atom-only charge fits exactly. The seven-node idle basis is
++        // retained twice, despite not occurring in the H operands/results.
++        let old_cost = state.current.len() * 2 + event.inputs.len() + event.outputs.len() + 16;
++        state.trace_cells = 100_000 - old_cost;
++        let remaining_before = state.trace_cells;
++        let failure = record(&mut state, event.definition, event.step, step,
++            event.inputs.clone(), event.outputs.clone(), event.node).unwrap_err();
++        assert_eq!(failure.code(), "limit");
++        assert_eq!(failure.span(), step.span());
++        assert!(state.events.is_empty());
++        assert_eq!(state.current, event.before);
++        assert_eq!(state.trace_cells, remaining_before);
++        state.trace_cells = 0;
++        record(&mut state, event.definition, event.step, step,
++            event.inputs.clone(), event.outputs.clone(), event.node).unwrap();
++        assert_eq!(state.trace_cells, old_cost + 12);
++        assert_eq!(state.events.len(), 1);
++        assert_eq!(state.events[0].before, event.before);
++        assert_eq!(state.events[0].after, event.after);
++        // Existing atoms keep the historical charge, including zero-width Bits.
++        assert_eq!(basis_trace_extra([
++            Port { owner: 1, kind: PortKind::Unit, basis: SourceType::unit(), axes: vec![] },
++            Port { owner: 2, kind: PortKind::Bit, basis: SourceType::bit(), axes: vec![0] },
++            Port { owner: 3, kind: PortKind::Bits, basis: SourceType::bits(0), axes: vec![] },
++        ].iter()).unwrap(), 0);
++    }
++
++    #[test]
+     fn initialization_certificate_rejects_native_valid_scalar_for_canonical_product_maps() {
+         use crate::interchange::hierarchical::{Kernel, execution::ExecutionLimits};
+         let make = |helper: &str, join: &str, split: &str| {
+--- a/src/frontend/types.rs
++++ b/src/frontend/types.rs
+@@ -338,6 +338,26 @@
+                 f.debug_tuple("Tuple").field(&Fields(fields)).finish()
+             }
+         }
++    }
++}
++
++
++impl Type<u32> {
++    /// Checked physical width of an ordinary finite basis tree. Q is not a
++    /// basis constructor; callers must explicitly select an owner's basis.
++    pub(super) fn basis_width(&self) -> Option<u32> {
++        let mut total = 0u32;
++        let mut pending = vec![self];
++        while let Some(ty) = pending.pop() {
++            match &ty.kind {
++                Kind::Unit => {}
++                Kind::Bit => total = total.checked_add(1)?,
++                Kind::Bits(n) => total = total.checked_add(*n)?,
++                Kind::Tuple(fields) => pending.extend(fields.iter().rev()),
++                Kind::Q(_) => return None,
++            }
++        }
++        Some(total)
+     }
+ }
+ 
+@@ -424,22 +444,3 @@
+         );
+     }
+ }
+-
+-impl Type<u32> {
+-    /// Checked physical width of an ordinary finite basis tree. Q is not a
+-    /// basis constructor; callers must explicitly select an owner's basis.
+-    pub(super) fn basis_width(&self) -> Option<u32> {
+-        let mut total = 0u32;
+-        let mut pending = vec![self];
+-        while let Some(ty) = pending.pop() {
+-            match &ty.kind {
+-                Kind::Unit => {}
+-                Kind::Bit => total = total.checked_add(1)?,
+-                Kind::Bits(n) => total = total.checked_add(*n)?,
+-                Kind::Tuple(fields) => pending.extend(fields.iter().rev()),
+-                Kind::Q(_) => return None,
+-            }
+-        }
+-        Some(total)
+-    }
+-}

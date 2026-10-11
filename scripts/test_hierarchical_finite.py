@@ -127,8 +127,20 @@ def main():
         add(f'empty-{key}', render(mutation))
     for width in (7, 8):
         add(f'width-{width}', render(model(width, 0)))
-    add('bits-not-legacy', render(dict(m, basis='#[.bits 2]')))
-    add('bits0-not-unit', render(dict(model(0, 0), basis='#[.bits 0]')))
+    # Explicit atomic Bits now survive projection; opaque bodies still cannot
+    # authorize acceptance. Retain their tags, including the zero-width atom.
+    for width in (0, 1, 2, 6):
+        atomic = dict(model(width, 0), basis=f'#[.bits {width}]', codes=[100+width])
+        add(f'atomic-bits-{width}', render(atomic), 'pending', atomic)
+    add('atomic-bits-7', render(dict(model(7, 0), basis='#[.bits 7]')))
+    # Same bit width is insufficient: the actual meaning's tree must match.
+    for width in (0, 1, 2):
+        atomic = render(dict(model(width, 0), basis=f'#[.bits {width}]'))
+        legacy_basis, _ = basis(width)
+        add(f'bits-{width}-not-legacy-tree', f'changedMeaning ({atomic}) '
+            '(fun d => {d with interface := {d.interface with inputs := '
+            '{d.interface.inputs with quantum := d.interface.inputs.quantum.map '
+            f'(fun p => {{p with basis := {legacy_basis}}})}}}}}})')
     add('duplicate-axis', render(dict(m, ia=[20, 20])))
     add('missing-axis', render(dict(m, oa=[70])))
     add('owner-overflow', render(dict(m, oo=4294967296)))

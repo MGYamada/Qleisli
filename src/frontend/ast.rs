@@ -42,10 +42,15 @@ pub struct UseDecl {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum FnKind {
+    /// A provisional bounded Nat helper; never an ordinary runtime function.
+    Static,
     /// A finite mathematical target, never a callable runtime function.
     Meaning,
-    Basis,
-    Iso,
+    /// A total finite classical expression, reusable ordinarily and in basis maps.
+    Classical,
+    /// An ordinary body-bearing function with no effect assertion.
+    Inferred,
+    Isometry,
     Unitary,
     Observe,
 }
@@ -56,7 +61,7 @@ pub struct Decl {
     pub kind: FnKind,
     pub name: Ident,
     pub static_params: Vec<StaticParam>,
-    pub requires: Vec<AccessConstraint>,
+    pub requires: Vec<Requirement>,
     pub params: Vec<Param>,
     pub return_type: Type,
     pub body: FnBody,
@@ -65,8 +70,8 @@ pub struct Decl {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Param {
-    /// Basis functions accept name/wildcard/product patterns. Ordinary
-    /// function parameters remain names. Tuple nodes retain their immediate arity.
+    /// One typed pattern is one argument. Name/wildcard/product patterns retain
+    /// immediate tuple arity; their ownership rules depend on the value's type.
     pub pattern: Pattern,
     pub ty: Type,
     pub span: Span,
@@ -82,20 +87,27 @@ pub struct Type {
 pub enum TypeKind {
     Unit,
     Bit,
-    CBit,
+    Bits(Natural),
+    Named(Ident),
     Q(Box<Type>),
     Tuple(Vec<Type>),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum FnBody {
+    Natural(Natural),
     Meaning { permutation: bool, function: Ident },
+    MeaningReference { function: Ident },
+    MeaningCompose { first: Ident, second: Ident },
+    MeaningTensor { left: Ident, right: Ident },
     Basis(BasisExpr),
     Quantum(Block),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Block {
+    /// True only when source omitted its tail expression; profile checks decide support.
+    pub implicit_result: bool,
     pub statements: Vec<Stmt>,
     pub result: Box<Expr>,
     pub span: Span,
@@ -109,7 +121,25 @@ pub struct Stmt {
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum StmtKind {
-    Let { pattern: Pattern, value: Expr },
+    StaticLet {
+        name: Ident,
+        value: Natural,
+    },
+    Let {
+        pattern: Pattern,
+        value: Expr,
+    },
+    /// Retained only for a typed refusal; never an accepted binding form.
+    MutableLet {
+        marker: Span,
+        pattern: Pattern,
+        value: Expr,
+    },
+    /// Retained only for a typed refusal; never lowered as replacement.
+    Assign {
+        target: Ident,
+        value: Expr,
+    },
     Expr(Expr),
 }
 
@@ -132,15 +162,36 @@ pub struct Expr {
     pub span: Span,
 }
 
+/// Diagnostic syntax only. Common checking always refuses this expression;
+/// neither its parameters nor its body describe an executable callable value.
+/// Optional annotations are parsed for bounded syntax only, not type facts;
+/// their original bytes remain in the retained source collection.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct UnsupportedClosure {
+    pub parameters: Vec<Pattern>,
+    pub body: Block,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum ExprKind {
+    /// Retain lexical identities for capture diagnostics, never for lowering.
+    UnsupportedClosure(Box<UnsupportedClosure>),
+    AccessCall {
+        callee: Ident,
+        static_args: Vec<StaticOp>,
+        args: Vec<AccessArgument>,
+    },
+    ApplyStatic {
+        operation: StaticOp,
+        input: Box<Expr>,
+    },
     ApplyContract {
         implementation: Ident,
         specification: Ident,
         input: Box<Expr>,
     },
     Adjoint {
-        function: Ident,
+        operation: StaticOp,
         input: Box<Expr>,
     },
     RepeatStatic {
@@ -154,8 +205,27 @@ pub enum ExprKind {
         zero: Ident,
         one: Ident,
     },
+    Controlled {
+        operation: StaticOp,
+        args: Vec<Expr>,
+    },
+    StaticIf {
+        predicate: Predicate,
+        then_branch: Block,
+        else_branch: Block,
+    },
+    StaticFold {
+        /// True for explicit quantum-owner threading; false for ordinary carry.
+        quantum: bool,
+        index: Ident,
+        start: Natural,
+        end: Natural,
+        carry: Pattern,
+        initial: Box<Expr>,
+        body: Block,
+    },
     Name(Ident),
-    CBit(bool),
+    Bit(bool),
     Unit,
     Tuple(Vec<Expr>),
     Not(Box<Expr>),
@@ -194,6 +264,69 @@ pub enum ExprKind {
     },
 }
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum QuantumAccess {
+    Excl,
+    Ctrl,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct AccessArgument {
+    pub access: QuantumAccess,
+    pub value: Expr,
+    /// A static place selector, never a value extraction or a reference.
+    pub selection: Option<AxisSelection>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum AxisSelection {
+    Index(Natural),
+    Range { start: Natural, end: Natural },
+}
+impl AxisSelection {
+    pub(in crate::frontend) fn naturals(&self) -> impl Iterator<Item = &Natural> {
+        let values = match self {
+            Self::Index(index) => [Some(index), None],
+            Self::Range { start, end } => [Some(start), Some(end)],
+        };
+        values.into_iter().flatten()
+    }
+}
+
+/// Borrow original expressions; lexical occurrence identity must survive
+/// access adaptation. No copied AST or second resolution table is created.
+#[derive(Clone, Copy)]
+pub(in crate::frontend) enum RuntimeArguments<'a> {
+    Values(&'a [Expr]),
+    Accesses(&'a [AccessArgument]),
+}
+
+impl<'a> RuntimeArguments<'a> {
+    pub(in crate::frontend) fn len(self) -> usize {
+        match self {
+            Self::Values(args) => args.len(),
+            Self::Accesses(args) => args.len(),
+        }
+    }
+
+    pub(in crate::frontend) fn get(self, index: usize) -> &'a Expr {
+        match self {
+            Self::Values(args) => &args[index],
+            Self::Accesses(args) => &args[index].value,
+        }
+    }
+
+    pub(in crate::frontend) fn iter(self) -> impl ExactSizeIterator<Item = &'a Expr> {
+        (0..self.len()).map(move |index| self.get(index))
+    }
+    pub(in crate::frontend) fn optional(self, index: usize) -> Option<&'a Expr> {
+        (index < self.len()).then(|| self.get(index))
+    }
+    pub(in crate::frontend) fn first(self) -> Option<&'a Expr> {
+        self.optional(0)
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum Access {
     Apply,
@@ -203,6 +336,7 @@ pub enum Access {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AccessConstraint {
+    pub span: Span,
     pub access: Access,
     pub name: Ident,
 }
@@ -210,8 +344,24 @@ pub struct AccessConstraint {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StaticParam {
     pub name: Ident,
-    pub basis: Type,
-    pub meaning: Option<Ident>,
+    pub kind: StaticParamKind,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum StaticParamKind {
+    Natural,
+    Basis,
+    Operation {
+        basis: Type,
+        codomain: Option<Box<Type>>,
+        meaning: Option<Ident>,
+    },
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum Requirement {
+    Access(AccessConstraint),
+    Predicate(Predicate),
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -223,6 +373,7 @@ pub struct StaticOp {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum StaticOpKind {
     Name(Ident),
+    Type(Type),
     Bind {
         implementation: Ident,
         meaning: Ident,
@@ -231,7 +382,12 @@ pub enum StaticOpKind {
     Then(Box<StaticOp>, Box<StaticOp>),
     Tensor(Box<StaticOp>, Box<StaticOp>),
     Controlled(Box<StaticOp>),
-    Repeat(u16, Box<StaticOp>),
+    Repeat(Count, Box<StaticOp>),
+    Natural(Natural),
+    Specialize {
+        name: Ident,
+        arguments: Vec<StaticOp>,
+    },
     Conjugate(Box<StaticOp>, Box<StaticOp>),
 }
 
@@ -251,4 +407,56 @@ pub enum BasisExprKind {
     Not(Box<BasisExpr>),
     Xor(Box<BasisExpr>, Box<BasisExpr>),
     And(Box<BasisExpr>, Box<BasisExpr>),
+}
+
+/// Symbolic natural syntax, with a bounded tree depth; not a checked size.
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Natural {
+    pub kind: NatKind,
+    pub span: Span,
+    pub depth: usize,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum NatKind {
+    Call {
+        callee: Ident,
+        arguments: Vec<Natural>,
+    },
+    Number(i128),
+    Name(String),
+    Add(Box<Natural>, Box<Natural>),
+    Sub(Box<Natural>, Box<Natural>),
+    Mul(Box<Natural>, Box<Natural>),
+}
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Compare {
+    Eq,
+    Ne,
+    Lt,
+    Le,
+    Gt,
+    Ge,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub struct Predicate {
+    pub left: Natural,
+    pub comparison: Compare,
+    pub right: Natural,
+}
+#[derive(Clone, Debug, PartialEq, Eq)]
+pub enum Count {
+    Natural(Natural),
+    Power(Natural),
+}
+
+/// The direct literal named-function repetition profile. This classification
+/// does not grant static-provider access or validate the count or target.
+pub(crate) fn named_literal_repetition(operation: &StaticOp) -> Option<(&Ident, i128, Span)> {
+    let StaticOpKind::Repeat(Count::Natural(count), target) = &operation.kind else {
+        return None;
+    };
+    let (StaticOpKind::Name(name), NatKind::Number(number)) = (&target.kind, &count.kind) else {
+        return None;
+    };
+    Some((name, *number, count.span))
 }

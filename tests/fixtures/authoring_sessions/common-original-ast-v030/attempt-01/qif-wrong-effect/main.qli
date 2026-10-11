@@ -1,0 +1,16 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::split;
+use std::quantum::join;
+use std::quantum::id;
+use std::quantum::init0;
+use std::observe::measure_z;
+fn watched(q: Q<Bit>) -> Q<Bit> {
+    let bit = measure_z(q);
+    init0()
+}
+fn conditional(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (c,q) = split(q);
+    let (c,q) = qif(c,q) { 0 => id, 1 => watched };
+    join(c,q)
+}
+pub fn main() -> Unit { () }

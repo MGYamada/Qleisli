@@ -1,0 +1,106 @@
+{
+  "format": "qleisli.ordinary-scope-retention-validation",
+  "version": 1,
+  "records": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "started_after_utc": "2026-10-05T23:55:17.768184+00:00",
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "00.stdout.txt",
+          "bytes": 109,
+          "sha256": "a7d08e5df382720518131654ddc94fe40b41e04b483e515be4566c950875b653"
+        },
+        "stderr": {
+          "path": "00.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_editions.py"
+      ],
+      "started_after_utc": "2026-10-05T23:55:20.322393+00:00",
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "01.stdout.txt",
+          "bytes": 236,
+          "sha256": "b1cf5baf981d55af9e93ededc2583c0cb253023a0f18fba8e106edab4aee8629"
+        },
+        "stderr": {
+          "path": "01.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "started_after_utc": "2026-10-05T23:55:24.853329+00:00",
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "02.stdout.txt",
+          "bytes": 95,
+          "sha256": "9b7d969a8bf86f030351186b15625c1a1c19131773969e457cf18928e3628b7f"
+        },
+        "stderr": {
+          "path": "02.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "started_after_utc": "2026-10-05T23:55:25.505920+00:00",
+      "exit_code": 0,
+      "raw": {
+        "stdout": {
+          "path": "03.stdout.txt",
+          "bytes": 420,
+          "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35"
+        },
+        "stderr": {
+          "path": "03.stderr.txt",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "all_passed": true,
+  "separately_performed_readiness_regressions": {
+    "argv": [
+      "python3",
+      "scripts/test_check_release_ready.py"
+    ],
+    "exit_code": 0,
+    "tests": 31,
+    "seconds": 81.984,
+    "evidence": "Actual exec session56893/tool terminal output; not raw files in this packet."
+  },
+  "not_run": [
+    "new QFT compiler/native execution",
+    "Rust/Lean build or replay",
+    "full CI",
+    "release-readiness execution"
+  ],
+  "scope": "Documentation, editions, unchanged original authoring inputs and protected constitutional identity only."
+}

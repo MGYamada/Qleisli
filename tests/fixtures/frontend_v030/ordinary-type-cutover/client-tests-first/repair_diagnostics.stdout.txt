@@ -1,0 +1,12 @@
+
+running 7 tests
+test effect_errors_locate_the_strongest_cause_and_name_both_effects ... ok
+test concrete_mismatches_show_expected_and_actual_exact_types ... ok
+test snapshot_limit_errors_explain_the_retained_sources ... ok
+test imported_effects_point_to_the_callers_call_in_text_and_json ... ok
+test cleanup_hint_has_a_working_repair_but_cannot_authorize_a_false_contract ... ok
+test argument_types_reach_text_and_json_without_moving_the_callers_span ... ok
+test grouped_import_and_gate_provider_hints_have_checked_rewrites ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.29s
+

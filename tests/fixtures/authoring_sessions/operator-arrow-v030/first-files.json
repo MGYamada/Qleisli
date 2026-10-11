@@ -1,0 +1,29 @@
+{
+  "files": {
+    "attempt-01/candidate-arrow-operator/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/candidate-arrow-operator/main.qli": "f140c890f1b04ad4ca98081acd5df1cd541766ae04b00d3d74c9e95d4bf78655",
+    "attempt-01/candidate-comma-operator/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/candidate-comma-operator/main.qli": "4c70174294ea6cd3c2a23e766337c708b672270ed61ab5336ccb0cfd1da3bdf6",
+    "attempt-01/candidate-prepare-operator/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/candidate-prepare-operator/main.qli": "094a6dd24c1aeaf1b9799dd9ef98f181074d48839440b772b6c4510b78949166",
+    "attempt-01/candidate-quantum-capture/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/candidate-quantum-capture/main.qli": "7cd0c2ad438e0439f08cf690902d275509b24350520a3a1ae5c0fd8fc5c36d32",
+    "attempt-01/existing-identity/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/existing-identity/main.qli": "9ebc8a3143110e4233e338744ec94898cd262a72a52c6e981ed2548f8ab9e9f1",
+    "attempt-01/existing-observer-arrow/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/existing-observer-arrow/main.qli": "9c0ec8abccd10d613ec5cd2cad610b444a32ef05a246e061e694d851eb27be06",
+    "attempt-01/existing-prepare-arrow/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/existing-prepare-arrow/main.qli": "ea2d89fe8cb59c28b3124b5e8c63269c7caaa64dcccb13800eea0db18b4e205a",
+    "attempt-01/existing-scalar-phase/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/existing-scalar-phase/main.qli": "c4f756436a771fe8241b8d358c2a12f2d3357e2c639e1e741da1d68b9622fc58",
+    "attempt-01/existing-static-endo/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/existing-static-endo/main.qli": "d85e3ec47f7ec6c6339ee9e525e456bf2434285fcf3cc6c1883121668666cc2c",
+    "attempt-01/existing-unitor-arrow/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/existing-unitor-arrow/main.qli": "dbd5deaedeae02fb9aab97a8c085fe69104f2de19c27129dd3b06e226862ef53",
+    "attempt-01/false-unitary-prepare/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/false-unitary-prepare/main.qli": "6694b69159c9f442abd30980b02e3c0eaeb7e81683eadd13152c27c404ef2e48",
+    "attempt-01/wrong-endo-provider/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+    "attempt-01/wrong-endo-provider/main.qli": "a16d73d3787d606995dd7d5665b083ada36d82d9610797e09d1da127cfd2ff19"
+  },
+  "scope": "All complete source/manifest bytes before the first observation."
+}

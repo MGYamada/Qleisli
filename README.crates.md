@@ -8,14 +8,14 @@ The Rust frontend produces IR that an independent native Lean verifier checks be
 reference execution. Human-written and AI-generated programs use the same checks.
 
 Package: **`qleisli`** · executable: **`qleisli`** · Rust library: **`qleisli`**.
-Package version: **0.2.9** (development; unpublished). The approved
+Package version: **0.3.0-alpha** (prerelease preparation; unpublished). The approved
 [breaking verifier migration](https://github.com/MGYamada/Qleisli/issues/276)
 removes the Rust verifier and dual acceptance API. Verification requires a
 matching separately installed native Lean checker; Cargo builds and docs remain
 independent of Lean. Select it with `QLEISLI_KERNEL` or `--lean-kernel=PATH`.
 Missing, incompatible or failing checkers reject without a fallback or download.
- Changes are recorded in
-[CHANGELOG](https://github.com/MGYamada/Qleisli/blob/v0.2.9/CHANGELOG.md).
+Changes are recorded in
+[CHANGELOG](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/CHANGELOG.md).
 **Qleisli language edition: `"2026"` for all current
 `.qli` and `.qlt` files.** Each source tree requires an explicit `Qargo.toml`.
 The bounded implementation and pending proof/migration goals are distinguished below.
@@ -38,7 +38,7 @@ Install from a source checkout with
 install it from crates.io with:
 
 ```sh
-cargo install qleisli --version 0.2.9 --locked
+cargo install qleisli --version 0.3.0-alpha --locked
 ```
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -56,7 +56,7 @@ use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());
     (measure_z(a), measure_z(b))
 }
@@ -102,7 +102,7 @@ Once this version is published, add this dependency to your Rust project's `Carg
 
 ```toml
 [dependencies]
-qleisli = "0.2.9"
+qleisli = "0.3.0-alpha"
 ```
 
 The [API documentation](https://docs.rs/qleisli) provides a runnable
@@ -122,8 +122,9 @@ checked programs become `AcceptedProgram` values.
 - The separate Python host requires Python 3.11+ and the Rust executable.
   QIR text/bitcode **input** additionally requires optional PyQIR 0.12.5.
   Cargo installs neither the Python host nor the Lean checker.
-- The additive experimental `qleisli sized` CLI checks and executes bounded
-  `Bits<n>` / `CBits<m>` source and shared measured QPE. It requires a separately
+- The ordinary `check`, `run`, `sample` and `emit-proposal` commands accept
+  explicit `--entry`/`--module` bindings for bounded `Q<Bits<n>>` / ordinary
+  `Bits<m>` source and shared measured QPE. This requires a separately
   built Lean kernel; Cargo does not install that kernel. General source/runtime
   correspondence and full-profile migration remain pending.
 - Lean is the sole production acceptance implementation. General **Soundness**, **Physical Realizability** and
@@ -138,22 +139,23 @@ Cargo alias.
 Version 0.2.9 explicitly breaks the verifier API and runtime installation
 contract: replace `verify`/`VerifiedProgram` with native acceptance/`AcceptedProgram`,
 remove `interchange::dual`, and select the matching checker. Version 0.2.3 also
-requires an edition manifest for filesystem source trees. The planned 0.3.0
-type-system work is a separate
-breaking-change boundary.
+requires an edition manifest for filesystem source trees. The 0.3.0-alpha
+prerelease uses ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1`; the retired
+`CBit`/`CBits`, `false`/`true` and empty-tuple type spellings reject. General
+basis polymorphism and the remaining common-checker work are still incomplete.
 
 ## Documentation
 
-- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.2.9/tests/fixtures/quick_reference/README.md)
-- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.2.9/python/README.md)
-- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.2.9/python/README.md)
-- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.2.9/TRUSTBOUNDARY.md)
+- [Language quick reference](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/tests/fixtures/quick_reference/README.md)
+- [Python and foreign-format connections](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/python/README.md)
+- [Python setup](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/python/README.md)
+- [Trust boundary and proof goals](https://github.com/MGYamada/Qleisli/blob/v0.3.0-alpha/TRUSTBOUNDARY.md)
 - [Source, examples and roadmap](https://github.com/MGYamada/Qleisli)
 
-Current documentation links target `v0.2.9`. Only imaginary-v1 drafts and the
-v0.3 Lean backend plan remain under `docs/`; other former documents are in
-`docs-old/` pending deletion at v0.3.0. Active documentation has no links or
-validation dependencies on that temporary tree.
+Current documentation links target `v0.3.0-alpha`. The single book has its
+sources in `docs/src/`, including the imaginary-v1 drafts and v0.3 Lean backend
+plan. The retired `docs-old/` tree has been deleted. New chapters follow adopted
+decisions, actual code and proofs.
 
 ## License
 

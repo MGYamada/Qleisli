@@ -1,0 +1,3 @@
+# Informed provisional std::gate integration study
+
+The maintainer explicitly selected std::gate and ordinary .qli provisional definitions for swap and permute_axes. The two first clients are frozen before implementation. Both use two Bit owners, with input 01 and independent desired output 10 (first axis written first). Physical SWAP must retain wire order with three CNOTs; structural permutation must retain the reversed axis witness without gate work. Full complex-column checks are separate from these source checks. This is informed maintenance, not an external-model benchmark; model/sampling metadata is unavailable. No new primitive or generic permutation facility is claimed.

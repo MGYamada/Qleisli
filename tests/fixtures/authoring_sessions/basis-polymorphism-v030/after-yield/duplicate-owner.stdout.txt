@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"parse","severity":"error","message":"expected `Op`, found identifier","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-02/duplicate-owner/main.qli","start":26,"end":31},"related":[]}],"result":null}

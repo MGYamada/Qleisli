@@ -1,8 +1,9 @@
 //! Author-written source exercises; no additional IR rule or evidence authority.
 mod common;
 
-use common::SourceRoot;
+use common::{SourceRoot, current_namespace_fixture};
 use qleisli::frontend::ast::{FnBody, PatternKind, TypeKind};
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
 use qleisli::frontend::documentation::render_markdown;
 use qleisli::frontend::parser::parse_module;
@@ -11,11 +12,11 @@ use std::fs;
 use std::path::Path;
 
 fn source(name: &str) -> String {
-    fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/ergonomics")
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics")
             .join(format!("{name}.qli")),
-    )
+    ))
     .unwrap()
 }
 
@@ -39,6 +40,28 @@ fn patterned_basis_contracts_and_nary_clients_execute() {
 }
 
 #[test]
+fn ordinary_parameter_patterns_execute_with_canonical_ordinary_types() {
+    // Preserve the old source as a removed-type counterexample, rather than
+    // mistaking its CBit rejection for rejection of the now-supported pattern.
+    let legacy = source("ordinary_parameter_pattern");
+    let error = parse_module(&legacy).unwrap_err();
+    assert!(error.message.contains("CBit/CBits types were removed"));
+    assert_eq!(&legacy[error.span.start..error.span.end], "CBit");
+
+    let current = include_str!(
+        "fixtures/frontend_v030/runtime-parameter-patterns/current/ergonomics/ordinary_parameter_pattern/main.qli"
+    );
+    let program = compile_project(&SourceRoot::new(current).0).unwrap();
+    let result = run_closed(&program, SimulationLimits::default()).unwrap();
+    // The sole typed argument is an ordinary pair. Returning its first field
+    // and dropping its second field yields this complete four-input truth table.
+    assert_eq!(
+        result,
+        std::collections::BTreeMap::from([(vec![false, false, true, true], 1.0)])
+    );
+}
+
+#[test]
 fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
     for (name, code) in [
         ("duplicate_pattern", "ownership"),
@@ -49,7 +72,6 @@ fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
         ("basis_capture", "unknown_name"),
         ("basis_call_arity", "arity"),
         ("basis_value_not_callable", "type_mismatch"),
-        ("ordinary_parameter_pattern", "parse"),
         ("wildcard_not_injective", "ownership"),
         ("nary_duplicate_owner", "ownership"),
         ("nary_duplicate_binding", "ownership"),
@@ -57,7 +79,27 @@ fn pattern_arity_totality_ownership_and_exact_tree_guards_remain() {
         ("flat_is_not_balanced", "type_mismatch"),
         ("phase_mismatch", "contract"),
     ] {
-        let root = SourceRoot::new(&source(name));
+        let text = if name == "phase_mismatch" {
+            let original = SourceRoot::new(&source(name));
+            let error = check_project_diagnostic(&original.0).unwrap_err();
+            assert_eq!(error.code, "arity", "historical predicate: {error:?}");
+            assert!(
+                error
+                    .message
+                    .contains("exactly one explicit basis parameter")
+            );
+            // The namespace translation retains the historical predicate.
+            // Its explicit domain repair must still reach the phase mismatch.
+            fs::read_to_string(current_namespace_fixture(
+                &Path::new(env!("CARGO_MANIFEST_DIR")).join(
+                    "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+                ),
+            ))
+            .unwrap()
+        } else {
+            source(name)
+        };
+        let root = SourceRoot::new(&text);
         let error = check_project_diagnostic(&root.0).unwrap_err();
         assert_eq!(error.code, code, "{name}: {error:?}");
     }
@@ -99,13 +141,24 @@ fn missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliarie
                 location.column,
                 source[..start].rsplit('\n').next().unwrap().chars().count() + 1
             );
+            let selected = ParsedProgram::parse(std::collections::BTreeMap::from([(
+                "implementation".into(),
+                source.clone(),
+            )]))
+            .unwrap_err();
+            assert_eq!(selected.code(), "ownership", "{name}: {selected}");
+            assert_eq!(selected.module(), Some("implementation"));
+            assert_eq!(selected.span(), location.span, "{name}: {selected}");
+            assert_eq!(selected.message(), error.message, "{name}: {selected}");
         }
     }
 }
 
 #[test]
 fn corpus_dropped_owner_now_points_to_b_not_the_body() {
-    let source = include_str!("fixtures/qli_authoring/rejected/dropped_owner.qli");
+    let source = include_str!(
+        "fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/dropped_owner.qli"
+    );
     let root = SourceRoot::new(source);
     let error = check_project_diagnostic(&root.0).unwrap_err();
     let location = error.primary.as_ref().unwrap();
@@ -116,7 +169,7 @@ fn corpus_dropped_owner_now_points_to_b_not_the_body() {
 
 #[test]
 fn nary_patterns_types_and_basis_values_preserve_immediate_arity() {
-    let source = "basis fn rotate((a,b,c): (Bit,Bit,Bit)) -> (Bit,Bit,Bit) { (c,a,b) }";
+    let source = "classical fn rotate((a,b,c): (Bit,Bit,Bit)) -> (Bit,Bit,Bit) { (c,a,b) }";
     let ast = parse_module(source).unwrap();
     let param = &ast.decls[0].params[0];
     assert_eq!(
@@ -145,10 +198,10 @@ fn nary_patterns_types_and_basis_values_preserve_immediate_arity() {
     let document = render_markdown(&format!("/// Rotate a three-bit label.\n{source}")).unwrap();
     assert!(document.contains("(a,b,c): (Bit,Bit,Bit)"), "{document}");
     for bad in [
-        "basis fn bad((a,b,): (Bit,Bit)) -> Bit { a }",
-        "basis fn bad(a: (Bit,Bit,)) -> Bit { 0 }",
-        "basis fn bad(a:Bit) -> (Bit,Bit,Bit) { (a,a,a,) }",
-        "observe fn main() -> (CBit,CBit,CBit) { (false,false,true,) }",
+        "classical fn bad((a,b,): (Bit,Bit)) -> Bit { a }",
+        "classical fn bad(a: (Bit,Bit,)) -> Bit { 0 }",
+        "classical fn bad(a:Bit) -> (Bit,Bit,Bit) { (a,a,a,) }",
+        "observe fn main() -> (Bit,Bit,Bit) { (0,0,1,) }",
     ] {
         assert!(parse_module(bad).is_err(), "{bad}");
     }
@@ -169,19 +222,19 @@ fn flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits() {
                     vec!["()"; 10_000].join(",")
                 ),
                 format!(
-                    "basis fn f() -> Unit {{ ({}) }}",
+                    "classical fn f() -> Unit {{ ({}) }}",
                     vec!["()"; 10_000].join(",")
                 ),
                 format!(
-                    "basis fn f(({}):Unit) -> Unit {{ () }}",
+                    "classical fn f(({}):Unit) -> Unit {{ () }}",
                     vec!["_"; 10_000].join(",")
                 ),
                 format!(
-                    "basis fn f(a:Bit) -> Unit {{ ((),(),{}) }}",
+                    "classical fn f(a:Bit) -> Unit {{ ((),(),{}) }}",
                     vec!["a"; 64].join(" xor ")
                 ),
                 format!(
-                    "observe fn f(a:CBit) -> Unit {{ ((),(),{}) }}",
+                    "observe fn f(a:Bit) -> Unit {{ ((),(),{}) }}",
                     vec!["a"; 64].join(" xor ")
                 ),
             ] {

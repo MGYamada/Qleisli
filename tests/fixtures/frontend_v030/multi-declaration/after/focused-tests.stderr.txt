@@ -1,0 +1,3 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.14s
+     Running tests/shared_resolution.rs (target/debug/deps/shared_resolution-19424d7186e969a7)
+     Running tests/sized_source.rs (target/debug/deps/sized_source-9c7800cc21e8c647)

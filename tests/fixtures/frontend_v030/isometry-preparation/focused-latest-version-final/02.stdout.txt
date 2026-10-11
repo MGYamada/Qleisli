@@ -1,0 +1,18 @@
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 11 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+
+running 3 tests
+test direct_finite_source_gates_preserve_entangled_h_x_references ... ok
+test reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference ... ok
+test rust_source_proposals_check_natively_and_preserve_small_system_coefficients ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 38 filtered out; finished in 3.61s
+

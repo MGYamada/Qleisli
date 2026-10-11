@@ -13,6 +13,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from current_source_fixtures import current_source_file
 from compile_sized_corpus import Operation, SourceError, text, wires
 from compile_sized_instrument import compile_instrument as produce_instrument
 from compact_sized_graph import compact
@@ -23,9 +24,9 @@ from test_sized_qpe_clients import sources as client_sources, expected as client
 
 
 def sources():
-    return client_sources() | {p.stem:p.read_text() for p in
+    return client_sources() | {p.stem:current_source_file(p).read_text() for p in
         (ROOT/'corpus/sized/measured_qpe').glob('*.qli')} | {
-        'measured_'+p.stem:p.read_text() for p in (ROOT/'tests/fixtures/measured_clients').glob('*.qli')}
+        'measured_'+p.stem:current_source_file(p).read_text() for p in (ROOT/'tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients').glob('*.qli')}
 
 
 def compile_instrument(*args, **kwargs):
@@ -55,10 +56,10 @@ def qpe(source, n=1, m=2, j=1, d=3):
 def source_rejections(base):
     changes = [
         ('unitary-wrapper', 'measurement', 'pub observe fn', 'pub unitary fn'),
-        ('unitary-initializer', 'initialization', 'pub iso fn', 'pub unitary fn'),
-        ('iso-readout', 'readout', 'pub observe fn', 'pub iso fn'),
-        ('missing-access', 'measurement', ', Controlled(U)', ''),
-        ('wrong-classical-width', 'measurement', 'CBits<m>', 'CBits<m+1>'),
+        ('unitary-initializer', 'initialization', 'pub isometry fn', 'pub unitary fn'),
+        ('iso-readout', 'readout', 'pub observe fn', 'pub isometry fn'),
+        ('missing-access', 'measurement', ', Controllable(U)', ''),
+        ('wrong-classical-width', 'measurement', 'Bits<m>', 'Bits<m+1>'),
         ('drop-empty-owner', 'readout', 'let () = consume_empty(q);', ''),
         ('consume-nonempty', 'readout', 'let (bit,rest) = take_bit[n,0](q);', 'let () = consume_empty(q); let (bit,rest) = take_bit[n,0](q);'),
         ('reuse-measured-bit', 'readout', 'let first = measure_z(bit);', 'let first = measure_z(bit); let second = measure_z(bit);'),
@@ -72,7 +73,7 @@ def source_rejections(base):
     ]
     rows = []
     for name, module, before, after in changes:
-        assert before in base[module]
+        assert before in base[module], (name, module, before)
         changed = base | {module:base[module].replace(before,after)}
         try:
             qpe(changed)
@@ -191,7 +192,7 @@ def main():
     copied = source | {'readout':source['readout'].replace('let first = measure_z(bit);',
         'let first = measure_z(bit); let unused = first; let first = first;').replace(
         'prepend_bit[n-1](first,tail)',
-        'let tail = for static k in 0..2 carry value = tail { let unused = first; yield value; }; prepend_bit[n-1](first,tail)')}
+        'let tail = qfor static k in 0..2 carry value = tail { let unused = first; yield value; }; prepend_bit[n-1](first,tail)')}
     proposals['classical-copy-capture']=qpe(copied)
     parameters['classical-copy-capture']=(1,2,1,3,'qpe')
     wrong_sources = {

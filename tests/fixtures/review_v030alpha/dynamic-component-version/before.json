@@ -1,0 +1,42 @@
+{
+  "format": "qleisli.component-version-before",
+  "version": 1,
+  "baseline_commit": "12f55af5b4227cb43570aa060467aee34396c97c",
+  "adapter_source_sha256": "ff1d37c2c659f8d15ac72d51292907cbb95d8bc51267f0a2bfe293e0f28d4270",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cases": [
+    {
+      "kind": "preparation",
+      "payload": "preparation.bin",
+      "input_sha256": "0b875a67ad657f5693194fb40144c164ee511d48c08c0c079c92830d96d0d36f",
+      "adapter_error": "malformed component response",
+      "process": {
+        "argv": [
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--preparation-check"
+        ],
+        "exit_code": 1,
+        "input_sha256": "0b875a67ad657f5693194fb40144c164ee511d48c08c0c079c92830d96d0d36f",
+        "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+        "stderr": ""
+      }
+    },
+    {
+      "kind": "readout",
+      "payload": "readout.bin",
+      "input_sha256": "3405ec62d9cba978c934c1925eba51ac5596edf06189a65ec54d4265fb578705",
+      "adapter_error": "malformed component response",
+      "process": {
+        "argv": [
+          "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "--readout-check"
+        ],
+        "exit_code": 1,
+        "input_sha256": "3405ec62d9cba978c934c1925eba51ac5596edf06189a65ec54d4265fb578705",
+        "stdout": "qleisli.qirf-native 1\nerror\nversion\n",
+        "stderr": ""
+      }
+    }
+  ],
+  "scope": "Local reproduction of the omitted version argument against the explicitly required-version native binary; not a native acceptance bypass"
+}

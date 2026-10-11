@@ -1,0 +1,11 @@
+use std::quantum::join;
+use std::quantum::init0;
+use std::observe::measure_z;
+
+unitary fn apply_pair[const V: Op<(Bit, Bit)>](q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)>
+requires Applicable(V) { V(q) }
+
+unitary fn controlled_adjoint[const U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> Q<(Bit, Bit)>
+requires Controllable(U) { apply_pair[controlled(adjoint(U))](join(c, q)) }
+
+observe fn main() -> Bit { measure_z(init0()) }

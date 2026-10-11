@@ -22,17 +22,17 @@ def main():
             shutil.copy2(ROOT / name, copy / name)
         for name in ('src', 'stdlib'):
             shutil.copytree(ROOT / name, copy / name)
-        path = copy / 'src/frontend/sized/primitive.rs'
+        path = copy / 'src/frontend/specialize/primitive.rs'
         text = path.read_text()
         assert text.count('primitives! {') == 1
         path.write_text(text.replace('primitives! {', '''primitives! {
-    OmittedPrimitive => ("std::quantum::omitted", 0, &[Bit], Bit, Unitary, None),''', 1))
+    OmittedPrimitive => ("std::quantum::omitted", 0, Fixed(&[Bit], Bit), Unitary, None),''', 1))
         command = ['cargo', 'check', '--offline', '--lib', '--target-dir', str(copy / 'target')]
         result = subprocess.run(command, cwd=copy, capture_output=True, text=True, timeout=180)
         assert result.returncode != 0, 'unhandled primitive compiled'
         assert 'Primitive::OmittedPrimitive' in result.stderr, result.stderr
-        passes = ['src/frontend/sized/elaborate.rs', 'src/frontend/sized/lower.rs',
-                  'src/frontend/sized/lower/preservation.rs']
+        passes = ['src/frontend/specialize/elaborate.rs', 'src/frontend/specialize/lower.rs',
+                  'src/frontend/specialize/lower/preservation.rs']
         for name in passes:
             assert name in result.stderr, result.stderr
         report = dict(format='qleisli.primitive-omission-validation', version=1,

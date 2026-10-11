@@ -1,0 +1,8 @@
+
+running 3 tests
+test frontend::sized::parser::token_tests::projected_token_capacity_counts_pairs_but_not_comments_or_eof ... ok
+test frontend::sized::parser::token_tests::comment_capacity_is_independent_of_token_capacity ... ok
+test frontend::sized::parser::token_tests::projected_punctuation_keeps_adjacency_and_legacy_sized_grouping ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 80 filtered out; finished in 0.01s
+

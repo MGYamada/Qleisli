@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+static fn first[static n:Nat]()->[Nat;n]{for static i in 0..n{yield i+1;}}
+static fn second[static n:Nat]()->[Nat;n]{first[n]()}
+pub observe fn main()->Bit{static let values=second[1]();if static values[0]==1{1}else{0}}

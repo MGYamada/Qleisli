@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"name","severity":"error","message":"unbound basis value","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/ordinary-capture-desired/main.qli","start":211,"end":212},"related":[]}],"result":null}

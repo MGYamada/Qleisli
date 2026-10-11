@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling/main.qli",
+    "--ir-profile=auto",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "seconds": 0.006875167018733919,
+  "recorded_utc": "2026-10-05T17:16:46.749932+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "unused-invalid-sibling-selected-auto-check-text.native.jsonl",
+  "stdout_raw": "unused-invalid-sibling-selected-auto-check-text.stdout.txt",
+  "stderr_raw": "unused-invalid-sibling-selected-auto-check-text.stderr.txt",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7149da22410bf92d579474a46eab70f67732da1d417837e58236c99e9d6721bb"
+}

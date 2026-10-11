@@ -1,0 +1,11 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 1.28s
+     Running tests/cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli-1b11e95c071714b3)
+     Running tests/cli_json.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli_json-efa0983cbb4cedaf)
+     Running tests/cli_sampling.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/cli_sampling-58c0dc4744b4ab52)
+     Running tests/mixed_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/mixed_booleans-7ae832804b646e0e)
+     Running tests/ordinary_booleans.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/ordinary_booleans-a8f60bea464ae928)
+     Running tests/project.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/project-1a6219ef2ad49801)
+     Running tests/runtime_parameter_patterns.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/runtime_parameter_patterns-e022d3d46684bda2)
+     Running tests/selected_source_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/selected_source_cli-27f8497ec1219a28)
+error: test failed, to rerun pass `--test selected_source_cli`

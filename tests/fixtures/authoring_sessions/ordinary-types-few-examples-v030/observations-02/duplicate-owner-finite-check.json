@@ -1,0 +1,67 @@
+{
+  "command": [
+    "/private/tmp/qleisli-classical-functions-after",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/ordinary-types-few-examples-v030/attempt-02/duplicate-owner",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T06:45:35.398808+00:00",
+  "case": "duplicate-owner",
+  "mode": "finite",
+  "verb": "check",
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "scope": "Actual bounded observation; no child-start attestation, general LLM benchmark or source-preservation proof.",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-02/duplicate-owner-finite-check.stdout.txt",
+      "sha256": "53186bf75e603d3e2a6e4a112bfb941bbc4bbf29a8e6b1bf83575239f3f7b320"
+    },
+    "stderr": {
+      "path": "observations-02/duplicate-owner-finite-check.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "quantum ownership `q` has already been consumed",
+        "primary": {
+          "path": "main.qli",
+          "start": 212,
+          "end": 213,
+          "line": 9,
+          "column": 30
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

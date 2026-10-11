@@ -1,0 +1,17 @@
+{
+  "source": {
+    "src/frontend/formals.rs": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d",
+    "src/frontend/mod.rs": "5aa13633507fbc405a126b432f13bc62f480e8c7784e50f0a94beb1f58bbf7df",
+    "src/frontend/compile/operations.rs": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a",
+    "src/frontend/sized/check.rs": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17",
+    "src/frontend/sized/linear.rs": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979",
+    "src/frontend/sized/ast.rs": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1",
+    "src/frontend/sized/parser.rs": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0"
+  },
+  "scripts": {
+    "scripts/maintain_release.py": "c05b7775773dbe6cfc0ec59de734d08a8aece4707caf9f1e996d911330676641",
+    "scripts/check_verification_inventory.py": "71e4de5f852226beba197ba109230fb43be4c6e923d28ccef4b98a8b25d15ace",
+    "scripts/check_production_coverage.py": "0b9f1221ed2c659c032c53dd441042937700d279f72875f5b3c4e6f89923e5ee"
+  },
+  "scope": "Reviewed private formal facts/consumers only. No acceptance/proof/status change; public signature scan is bounded and includes methods of private types."
+}

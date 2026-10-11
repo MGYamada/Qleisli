@@ -1,0 +1,49 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "checked_operations",
+    "--test",
+    "parser",
+    "--test",
+    "tuple_shapes",
+    "--test",
+    "operation_parameters",
+    "--test",
+    "source_snapshots",
+    "--test",
+    "authoring_ergonomics",
+    "--test",
+    "predicate_domain",
+    "--test",
+    "qli_corpus",
+    "--test",
+    "interchange",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 71.33565908303717,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/rust-latest-01.stdout.txt",
+      "sha256": "a14557cfa40eff2eb2786789e06d09643082bae813651a09c753f2ac151c55bc"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/checked-operation/implementation-01/rust-latest-01.stderr.txt",
+      "sha256": "4b4f8c70e6ad63cf3cc22933f0b449f3252a21d9c999e80f2758876b66b28d5a"
+    }
+  }
+}

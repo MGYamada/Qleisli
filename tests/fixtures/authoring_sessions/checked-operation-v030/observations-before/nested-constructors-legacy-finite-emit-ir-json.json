@@ -1,0 +1,48 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-ir",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/nested-constructors-legacy",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-before/artifacts/nested-constructors-legacy.qirf",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "recorded_utc": "2026-10-06T04:20:16.598980+00:00",
+  "elapsed_seconds": 0.5171775000053458,
+  "cwd": "/Users/masa/git/Qleisli",
+  "case": "nested-constructors-legacy",
+  "action": "finite-emit-ir-json",
+  "output_format": "json",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "92e776ea3a0c64ab00aeac64ce45bf50cb81affb97e466cd500fe516e997747c",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_stdout": {
+    "path": "observations-before/nested-constructors-legacy-finite-emit-ir-json.stdout.txt",
+    "sha256": "5217741eee2df089b180eebc20f9574a77c02fac7380039929db14a0bd2feb14"
+  },
+  "raw_stderr": {
+    "path": "observations-before/nested-constructors-legacy-finite-emit-ir-json.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "attestation_limit": "Explicit selected executable bytes; no compiled-HEAD claim, independent native child-start/exit count, source preservation or Lean replay.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "emit-ir",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-before/artifacts/nested-constructors-legacy.qirf"
+    }
+  }
+}

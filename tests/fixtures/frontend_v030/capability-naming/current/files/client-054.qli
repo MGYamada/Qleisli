@@ -1,0 +1,13 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Local integration client of the retained Qualtran-derived QPE source.
+use estimation::estimate;
+
+/// Probe the order of a supplied phase-fixed permutation using shared QPE.
+/// The order interpretation requires phase |0> and a specified target orbit.
+pub unitary fn order_phase[const n: Nat, const m: Nat, const U: Op<Bits<n>>](
+    phase: Q<Bits<m>>, target: Q<Bits<n>>
+) -> (Q<Bits<m>>, Q<Bits<n>>)
+requires n >= 2, m >= 1, Controllable(U) {
+    estimate[n,m,U](phase,target)
+}

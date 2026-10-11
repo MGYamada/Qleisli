@@ -3,7 +3,7 @@
 
 Expected decisions and oracle annotations stay outside native inputs. The
 independent required operator is supplied explicitly; neither executable
-receives the other's decision. Production acceptance remains Rust.
+receives the other's decision. Production acceptance belongs to native Lean.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import native_harness
@@ -18,6 +18,8 @@ import tempfile
 
 import test_lean_exact as exact
 import test_lean_finite as finite
+import observation_sources
+from check_input_corpus import current_project as current_corpus_project
 
 ROOT = Path(__file__).resolve().parents[1]
 ZERO, ONE = finite.ZERO, finite.ONE
@@ -80,7 +82,14 @@ def raw_oracle(p, dependencies=()):
         return gate_steps('x',u['target_index'],[(a,True) for a in cs])
     for command in p['operations']:
         tag = command['tag']
-        if tag == 'init0':
+        if tag == 'pack_unit':
+            if command['output'] in live:
+                raise ValueError('Unit output already live')
+            live[command['output']] = []
+        elif tag == 'unpack_unit':
+            if live.pop(command['input']):
+                raise ValueError('Unit input has physical wires')
+        elif tag == 'init0':
             mapping(list(range(2**len(frame))),len(frame)+1)
             frame.append(command['wire']);live[command['output']]=[command['wire']]
         elif tag == 'gate':
@@ -150,6 +159,25 @@ def cases():
     def add(name,p,accepted=True,evidence=(),**kw):
         artifact=dict(format='qleisli.raw-pure-component',version=1,evidence=list(evidence),program=p)
         result.append(dict(name=name,artifact=artifact,expected=accepted,budget=kw.pop('budget',10000000),**kw))
+    def closed(operations, outputs=()):
+        return dict(quantum_inputs=[],classical_inputs=[],operations=operations,
+                    quantum_outputs=list(outputs),classical_outputs=[],declared_effect='unitary')
+    add('pack_unit',closed([op('pack_unit',output=0)],[0]))
+    unpack=closed([op('unpack_unit',input=0)])
+    unpack['quantum_inputs']=[port(0,[])]
+    add('unpack_unit',unpack)
+    add('unit_roundtrip',closed([op('pack_unit',output=0),op('unpack_unit',input=0)]))
+    add('unit_roundtrip_phase',closed([op('pack_unit',output=0),
+        op('apply_unitary',input=0,output=1,steps=[finite.mono([], [0],[1])]),
+        op('unpack_unit',input=1)]))
+    add('unit_with_reference',program(2,[op('pack_unit',output=1),op('unpack_unit',input=1)]))
+    add('pack_live_owner',program(0,[op('pack_unit',output=0)]),False)
+    add('pack_consumed_owner',closed([op('pack_unit',output=0),op('unpack_unit',input=0),
+        op('pack_unit',output=0)],[0]),False)
+    add('unpack_nonempty_owner',program(1,[op('unpack_unit',input=0)]),False)
+    add('unpack_missing_owner',closed([op('unpack_unit',input=0)]),False)
+    add('unpack_twice',closed([op('pack_unit',output=0),op('unpack_unit',input=0),
+        op('unpack_unit',input=0)]),False)
     for gate in ['h','x','z','t']:
         add('gate_'+gate,program(1,[op('gate',gate=gate,input=0,output=1)],1))
     add('unit_scalar_phase',program(0,[op('apply_unitary',input=0,output=1,steps=[finite.mono([], [0],[7])])],1))
@@ -264,8 +292,13 @@ def cases():
             case['oracle']=raw_oracle(case['artifact']['program'],deps)
             case['required']=finite.description(case['oracle'])
         else:case.setdefault('required',finite.description(finite.identity(1)))
+    wrong_phase=copy.deepcopy(next(c for c in result if c['name']=='unit_roundtrip_phase'))
+    wrong_phase.update(name='request_fault_unit_phase',expected=False,
+                       required=finite.description(finite.identity(1)))
+    result.append(wrong_phase)
     for budget in [0,1,23]:
-        case=copy.deepcopy(result[0]);case.update(name='exhausted_work_'+str(budget),expected=False,budget=budget);result.append(case)
+        case=copy.deepcopy(next(c for c in result if c['name']=='gate_h'))
+        case.update(name='exhausted_work_'+str(budget),expected=False,budget=budget);result.append(case)
     for name,mutate in [
         ('producer_accepted_flag',lambda a:a.update(accepted=True)),
         ('producer_matrix_cache',lambda a:a['evidence'][0].update(meaning=finite.description(finite.identity(2)))),
@@ -277,45 +310,80 @@ def cases():
     return result
 
 
-def source_cases(log, record=None):
+def pure_source_prefix(artifact):
+    """Retain the selected root and complete circuit dependencies before readout.
+
+    The common lossless projection validates and topologically renames calls.
+    Pure transport has no identity fields; the original QIRF bytes retain those
+    identities and are separately checked by the production native boundary.
+    """
+    component = observation_sources.component(artifact)
+    p = component['program']
+    ops = p['operations']
+    first = next((j for j, operation in enumerate(ops)
+                  if operation['tag'] == 'measure_z'), None)
+    if first is None or not all(operation['tag'] == 'measure_z' for operation in ops[first:]):
+        raise ValueError('source prefix requires terminal destructive measurements')
+    p.update(operations=ops[:first], quantum_outputs=[operation['input'] for operation in ops[first:]],
+             classical_outputs=[], declared_effect='iso')
+    evidence = [{key: entry[key] for key in ('signature', 'implementation', 'specification')}
+                for entry in component['dependencies']]
+    return dict(format='qleisli.raw-pure-component', version=1, evidence=evidence, program=p)
+
+
+def pure_component_oracle(artifact):
+    """Independently evaluate every retained implementation and specification."""
+    dependencies = []
+    for entry in artifact['evidence']:
+        actual = raw_oracle(entry['implementation'], dependencies)
+        required = raw_oracle(entry['specification'], dependencies)
+        assert actual == required, 'source dependency implementation/specification disagreement'
+        dependencies.append(actual)
+    return raw_oracle(artifact['program'], dependencies)
+
+
+def source_cases(log, record=None, compiler=None):
     """Curated bridge from actual Rust source output to the pure prefix.
 
     Complete observing roots stay outside VM-25. This untrusted adapter ends
     immediately before terminal measurement and lists those residual owners;
     Lean rechecks the resulting actual prefix. No source-preservation claim.
     """
-    compiler=ROOT/'target/debug/qleisli'
-    if not compiler.is_file():exact.command(['cargo','build','--offline','--bin','qleisli'],ROOT,log)
+    compiler=ROOT/'target/debug/qleisli' if compiler is None else Path(compiler)
+    if not compiler.is_file():
+        if compiler != ROOT/'target/debug/qleisli':raise FileNotFoundError(compiler)
+        exact.command(['cargo','build','--offline','--bin','qleisli'],ROOT,log)
     paths=['quantum_katas/controlled_z2','quantum_katas/toffoli3','qualtran/less_equal1',
            'qualtran/greater_than1','pennylane_demos/rotation_mixed_sign','pennylane_demos/qaoa_mixer2']
     result=[]
     with tempfile.TemporaryDirectory(prefix='qleisli-raw-source-') as directory:
         for i,path in enumerate(paths):
+            project=current_corpus_project({'project':path})
             output=Path(directory)/f'{i}.qirf.json'
-            source_paths=sorted((ROOT/'corpus'/path).rglob('*.qli'))+sorted((ROOT/'stdlib/src').rglob('*.qli'))
+            source_paths=sorted(project.rglob('*.qli'))+sorted((ROOT/'stdlib/src').rglob('*.qli'))
             source_paths += [ROOT/'corpus/Qargo.toml',ROOT/'stdlib/Qargo.toml']
+            if (project/'Qargo.toml').is_file():source_paths.append(project/'Qargo.toml')
             source_hashes={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest() for s in source_paths}
-            exact.command([str(compiler),'emit-ir',str(ROOT/'corpus'/path),'--output='+str(output),'--format=json'],ROOT,log)
+            exact.command([str(compiler),'emit-ir',str(project),'--output='+str(output),'--format=json'],ROOT,log)
             assert source_hashes=={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest() for s in source_paths}
             original=output.read_bytes();artifact=json.loads(original)
             if record:
                 saved=record.parent/'source-ir'/f'{i}.qirf.json'
                 saved.parent.mkdir(parents=True,exist_ok=True);saved.write_bytes(original)
-            assert not artifact['evidence'],'these selected prefixes have no retained call graph'
-            p=copy.deepcopy(artifact['programs'][artifact['root']]);ops=p['operations']
-            first=next(j for j,o in enumerate(ops) if o['tag']=='measure_z')
-            terminal=ops[first:];assert all(o['tag']=='measure_z' for o in terminal)
-            p.update(operations=ops[:first],quantum_outputs=[o['input'] for o in terminal],
-                     classical_outputs=[],declared_effect='iso')
-            meaning=raw_oracle(p)
+            component=pure_source_prefix(artifact)
+            assert sum(port['shape']['bits'] for port in component['program']['quantum_inputs'])<=3
+            meaning=pure_component_oracle(component)
             result.append(dict(name='source_prefix_'+path.replace('/','_'),
-                artifact=dict(format='qleisli.raw-pure-component',version=1,evidence=[],program=p),
+                artifact=component,original_qirf=original.decode('utf-8'),
                 expected=True,budget=10000000,oracle=meaning,required=finite.description(meaning),
-                provenance=dict(source_root='corpus/'+path,qirf_sha256=hashlib.sha256(original).hexdigest(),
+                provenance=dict(source_root=str(project.relative_to(ROOT)),historical_source_root='corpus/'+path,
+                    qirf_sha256=hashlib.sha256(original).hexdigest(),
                     compiler_sha256=hashlib.sha256(compiler.read_bytes()).hexdigest(),
                     sources=source_hashes,
                     embedded_sources={s['path']:hashlib.sha256(s['text'].encode()).hexdigest() for s in artifact['sources']},
-                    adapter='original straight-line prefix before terminal destructive measurement')))
+                    adapter='original straight-line prefix before terminal destructive measurement; '
+                            'all circuit dependencies retained with topological index renaming; '
+                            'complete original QIRF separately checked')))
     return result
 
 
@@ -370,7 +438,7 @@ def rust_program(p, receipts='receipts'):
         if u['tag']=='protected_gate':return f'ProtectedUse::ProtectedGate{{bit:{pb(u["bit"])},gate:SingleGate::{u["gate"].upper()}}}'
         if u['tag']=='controlled_target_gate':return f'ProtectedUse::ControlledTargetGate{{controls:{cs()},target_index:{u["target_index"]},gate:SingleGate::{u["gate"].upper()}}}'
         return f'ProtectedUse::ControlledPhase{{controls:{cs()},phase:ScalarPhase::'+('MinusOne' if u['phase']=='minus_one' else 'EighthTurn')+'}'
-    tags={'init0':'Init0','gate':'Gate','cnot':'Cnot','toffoli':'Toffoli','quantum_if':'QuantumIf','split':'Split','join':'Join','lift_basis':'LiftBasis','apply_unitary':'ApplyUnitary','certified_compute':'CertifiedCompute','compute_use_uncompute':'ComputeUseUncompute','discard':'Discard'}
+    tags={'pack_unit':'PackUnit','unpack_unit':'UnpackUnit','init0':'Init0','gate':'Gate','cnot':'Cnot','toffoli':'Toffoli','quantum_if':'QuantumIf','split':'Split','join':'Join','lift_basis':'LiftBasis','apply_unitary':'ApplyUnitary','certified_compute':'CertifiedCompute','compute_use_uncompute':'ComputeUseUncompute','discard':'Discard'}
     commands=[]
     for o in p['operations']:
         fields=[]
@@ -389,7 +457,9 @@ def rust_program(p, receipts='receipts'):
             fields.append(k+':'+value)
         commands.append('RawOp::'+tags[o['tag']]+'{'+','.join(fields)+'}')
     inputs=','.join(f'QuantumPort{{token:{token(v["token"])},wires:vec![{",".join(wire(w) for w in v["wires"])}],shape:BasisShape{{bits:{v["shape"]["bits"]}}}}}' for v in p['quantum_inputs'])
-    return f'RawProgram{{quantum_inputs:vec![{inputs}],classical_inputs:vec![{",".join("ClassicalId("+str(i)+")" for i in p["classical_inputs"])}],operations:vec![{",".join(commands)}],quantum_outputs:vec![{",".join(token(t) for t in p["quantum_outputs"])}],classical_outputs:vec![],declared_effect:Effect::{p["declared_effect"].capitalize()}}}'
+    # Wire tags retain their historical spelling; public Rust names can differ.
+    effect = {'unitary': 'Unitary', 'iso': 'Isometry', 'observe': 'Observe'}[p['declared_effect']]
+    return f'RawProgram{{quantum_inputs:vec![{inputs}],classical_inputs:vec![{",".join("ClassicalId("+str(i)+")" for i in p["classical_inputs"])}],operations:vec![{",".join(commands)}],quantum_outputs:vec![{",".join(token(t) for t in p["quantum_outputs"])}],classical_outputs:vec![],declared_effect:Effect::{effect}}}'
 
 
 def native(all_cases, log):
@@ -409,6 +479,11 @@ def native(all_cases, log):
         for c in all_cases:
             if c['name'].startswith(('request_fault','exhausted_work','producer_','unknown_')) or c['name'] in {'classical_interface','observing_constructor','self_referenced_raw_evidence','forward_raw_evidence'}:continue
             a=c['artifact'];p=a['program'];statements=[]
+            if 'original_qirf' in c:
+                filename=f'source-{len(actions)}.qirf'
+                (project/filename).write_bytes(c['original_qirf'].encode('utf-8'))
+                statements.append('qleisli::interchange::native::Kernel::selected().expect("explicit native checker")'
+                    '.check(include_bytes!('+json.dumps(filename)+'),None).ok()?;')
             if c['name']=='missing_dependency':continue
             for e in a['evidence']:
                 statements.append('receipts.push(std::sync::Arc::new(qleisli::contract::FunctionEvidence::check('+finite.rust_basis(e['signature'])+','+rust_program(e['implementation'])+','+rust_program(e['specification'])+',identity(),&mut b).ok()?));')
@@ -443,11 +518,12 @@ fn main(){
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path);args=parser.parse_args()
+    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path)
+    parser.add_argument('--compiler',type=Path,default=ROOT/'target/debug/qleisli');args=parser.parse_args()
     log=[]
     for argv,cwd in [(['lake','env','lean','--version'],ROOT/'lean-kernel'),(['rustc','-vV'],ROOT)]:
         exact.command(argv,cwd,log)
-    all_cases=cases()+source_cases(log,args.record);lean,rust,bindings=native(all_cases,log)
+    all_cases=cases()+source_cases(log,args.record,args.compiler.resolve());lean,rust,bindings=native(all_cases,log)
     assert len(lean)==len(all_cases)
     matrices=0
     for case,result in zip(all_cases,lean):
@@ -464,14 +540,19 @@ def main():
             values=[[[v['numerator'],v['denominator_bits']] for v in s] for s in other['matrix']['entries']]
             assert values==m['entries'],case['name']
         matrices+=1
+    pure_tags=sorted({o['tag'] for c in all_cases if c['expected']
+                      for o in c['artifact']['program']['operations']})
     report=dict(native_cases=len(all_cases),rust_comparisons=len(rust),independent_matrices=matrices,
         independent_raw_trace_programs=sum(r['reference_programs'] for r in lean),
-        pure_constructors=11,max_semantic_qubits=3,rust_source_prefixes=6,commands=log,native_bindings=bindings,
+        pure_constructors=len(pure_tags),pure_constructor_tags=pure_tags,max_semantic_qubits=3,rust_source_prefixes=6,original_qirf_checks=6,
+        commands=log,native_bindings=bindings,
         remaining=['VM-26 classical control/observation',
                    'VM-27 hierarchy closure','native packaging and byte/decoder refinement'],
         source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
             ROOT/'lean-kernel/QleisliKernel/Semantics/Raw.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Structure.lean',
-            ROOT/'lean-kernel/QleisliKernel/Raw/Finite.lean',ROOT/'lean-kernel/Protocol/Raw.lean',ROOT/'lean/Qleisli/Raw.lean',Path(__file__).resolve()]})
+            ROOT/'lean-kernel/QleisliKernel/Raw/Finite.lean',ROOT/'lean-kernel/Protocol/Raw.lean',ROOT/'lean/Qleisli/Raw.lean',
+            Path(observation_sources.__file__),Path(finite.__file__),Path(exact.__file__),
+            ROOT/'scripts/check_input_corpus.py',Path(__file__).resolve()]})
     report['source_sha256'].update({str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [
         ROOT/'lean-kernel/QleisliKernel/Semantics/RawTrace.lean',ROOT/'lean-kernel/QleisliKernel/Raw/Trace.lean']})
     if args.record:

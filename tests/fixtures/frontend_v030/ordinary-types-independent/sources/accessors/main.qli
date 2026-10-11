@@ -1,0 +1,1 @@
+pub unitary fn f(b: Bit,w: Bits<1>,z: Bits<0>,u: Unit,q: Q<Bit>,r: Q<Bits<1>>,s: Q<Bits<0>>) -> ((Bit,Bits<1>),(Bits<0>,Unit),(Q<Bit>,Q<Bits<1>>,Q<Bits<0>>)) { ((b,w),(z,u),(q,r,s)) }

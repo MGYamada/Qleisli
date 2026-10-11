@@ -24,15 +24,19 @@ class InstrumentParser(Parser):
     primitive_imports = ADAPTERS
 
     def function_effect(self):
-        self.effect = self.peek()
+        spelling = self.peek()
+        # This untrusted comparison reader also reads frozen pre-0.3.0 input.
+        # Canonical source vocabulary maps to the unchanged transport tag; the
+        # production Rust parser owns legacy-source migration diagnostics.
+        self.effect = 'iso' if spelling == 'isometry' else spelling
         if self.effect not in EFFECTS:
-            raise SourceError('expected unitary, iso or observe function effect')
+            raise SourceError('expected unitary, isometry or observe function effect')
         self.index += 1
 
     def ty(self):
-        if self.eat('CBit'):
+        if self.eat('Bit'):
             return ('cbit',)
-        if self.eat('CBits'):
+        if self.eat('Bits'):
             self.need('<')
             width = self.nat()
             self.need('>')
@@ -175,10 +179,10 @@ def check_body(body, env, declarations, effects, effect, hidden=()):
                 if quantum(scope[key]):
                     del scope[key]
             return a
-        _, _, _, carry, initial, inner = fields
+        index, _, _, carry, initial, inner = fields
         initial = expression(initial, scope)
         captures = {name: value for name, value in scope.items() if not quantum(value)}
-        if check_body(inner, captures | {carry: initial}, declarations, effects, effect, hidden) != initial:
+        if check_body(inner, captures | {carry: initial}, declarations, effects, effect, hidden | {index}) != initial:
             raise SourceError('fold carry tuple/classical shape changed')
         return initial
 
@@ -197,7 +201,7 @@ class InstrumentProducer(Producer):
         work = {'iterations': 0, 'calls': 0, 'modules': {}}
         self.effects = {}
         for name, source in modules.items():
-            parser = InstrumentParser(source, modules)
+            parser = InstrumentParser(source, modules, module=name)
             declaration = parser.parse()
             if len({n for n, _ in declaration[2]}) != len(declaration[2]):
                 raise SourceError('duplicate runtime parameter')
@@ -264,7 +268,7 @@ class InstrumentProducer(Producer):
         if name == 'prepend_bit':
             width, = sizes
             if width >= 8 or [value_type(value) for value in args] != [('cbit',), ('cbits', width)]:
-                raise SourceError('prepend_bit requires CBit and exactly CBits<n>, with n < 8')
+                raise SourceError('prepend_bit requires Bit and exactly Bits<n>, with n < 8')
             return Classical(('cbits', width+1), args[0].values+args[1].values)
         return super().call(name, sizes, args)
 
@@ -327,7 +331,8 @@ class InstrumentProducer(Producer):
                     provider.name, provider.sizes, ty, operations=provider.operations)
                 if provider_key not in self.providers:
                     self.providers[provider_key] = Producer(self.modules, self.stack+(provider_key,), self.work).compile(
-                        source, function, substitutions, operations=dict(provider.operations))
+                        source, function, substitutions, operations=dict(provider.operations),
+                        module=provider.name.split('::')[0])
                 self.operations[parameter] = provider, ty
             check_static_names(body, parameters, access, self.declarations)
             check_body(body, {n: shape(t) for n, t in arguments}, self.declarations,
@@ -388,7 +393,7 @@ class InstrumentProducer(Producer):
         graph = self.finish_graph(result)
         values = [leaf for leaf in flattened(result) if isinstance(leaf, Classical)]
         if len(values) > 1 or values and values[0].ty[0] != 'cbits':
-            raise SourceError('this instrument profile returns at most one CBits value')
+            raise SourceError('this instrument profile returns at most one Bits value')
         if self.measured and not values:
             raise SourceError('this readout profile retains all measured results')
         readout = None

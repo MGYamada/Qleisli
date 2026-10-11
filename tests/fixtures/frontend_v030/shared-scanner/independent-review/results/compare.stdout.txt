@@ -1,0 +1,1 @@
+PASS: 165576 finite old/new comparisons; 165536 sized old/new comparisons on inputs without the intentionally tightened character policy

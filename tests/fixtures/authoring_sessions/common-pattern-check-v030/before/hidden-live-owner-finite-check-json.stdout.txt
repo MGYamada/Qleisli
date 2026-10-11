@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"binding would hide unconsumed quantum ownership","primary":{"path":"main.qli","start":130,"end":131,"line":3,"column":9},"related":[]}],"result":null}

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"coherent basis lift is not injective","primary":{"path":"main.qli","start":236,"end":254,"line":6,"column":43},"related":[]}],"result":null}

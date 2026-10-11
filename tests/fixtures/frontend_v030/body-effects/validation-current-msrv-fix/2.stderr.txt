@@ -1,0 +1,5 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 5.24s
+     Running tests/body_effects.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/body_effects-cac57d5ba48b8fc9)
+     Running tests/compile.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/compile-ce50f5c7814f632a)
+     Running tests/sized_source.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_source-757a219cd8492aaa)

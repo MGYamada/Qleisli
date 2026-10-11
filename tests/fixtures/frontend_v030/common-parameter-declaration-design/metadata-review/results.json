@@ -1,0 +1,71 @@
+{
+  "format": "qleisli.parameter-name-metadata-review",
+  "version": 1,
+  "source_changes": [
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "before": "80f37100d8e34d2d64aa676059c34d06bceeb12d796c259999a144b7b06a1558",
+      "after": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/pattern.rs",
+      "before": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede",
+      "after": "16fa6f4c4a6598c53680dc353d7dc4115f9bc137f7ebac4c723269a1d05ee27a",
+      "surface_unchanged": true
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "before": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+      "after": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1",
+      "surface_unchanged": true
+    }
+  ],
+  "before": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 1,
+      "stdout": "before.inventory.stdout.txt",
+      "stderr": "before.inventory.stderr.txt"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "stdout": "before.coverage.stdout.txt",
+      "stderr": "before.coverage.stderr.txt"
+    }
+  ],
+  "after": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "stdout": "after.inventory.stdout.txt",
+      "stderr": "after.inventory.stderr.txt"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "stdout": "after.coverage.stdout.txt",
+      "stderr": "after.coverage.stderr.txt"
+    }
+  ],
+  "source_count": 253,
+  "source_inputs_unchanged": true,
+  "old_surface_sha256": "2967dfbeaac04aa49b93d58641f6001794a44348d3e6c69c58c3592a4d0ab3e4",
+  "new_surface_sha256": "276768a0e24ff83b8e922c956d9a8ba044b7a7f43800b0b75660a0bc251585ff",
+  "other_parsed_metadata_fields_unchanged": true,
+  "recorded_utc": "2026-10-05T17:16:17.366923+00:00",
+  "scope": "Actual source identity guards only, not new regression execution, proof discharge, native authority or release readiness."
+}

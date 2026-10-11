@@ -1,0 +1,2 @@
+pub unitary fn z_client[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+unitary fn private_identity(q:Q<Bit>)->Q<Bit>{q}

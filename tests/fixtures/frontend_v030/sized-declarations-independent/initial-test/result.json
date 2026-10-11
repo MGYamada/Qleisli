@@ -1,0 +1,29 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--offline",
+    "--test",
+    "sized_declarations"
+  ],
+  "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "exit_code": 101,
+  "passed": 4,
+  "failed": 2,
+  "ignored": 0,
+  "failures": [
+    {
+      "test": "duplicate_and_import_alias_collisions_remain_located_rejections",
+      "actual": "main:14..16: parse: expected `;`, found identifier",
+      "expected_substring": "expected ;",
+      "correction": "Preserve actual backticks in assertion; original source unchanged."
+    },
+    {
+      "test": "every_unused_sibling_is_checked_including_dead_static_arms_and_empty_folds",
+      "actual": "main:139..140: ownership: unbound or consumed value r",
+      "expected_code": "name",
+      "correction": "Quantum capture rejection is the existing ownership diagnostic; original source unchanged."
+    }
+  ],
+  "scope": "First test-harness assertions, not production failures. The four native/visibility/cycle tests passed."
+}

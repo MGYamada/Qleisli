@@ -1,0 +1,60 @@
+{
+  "inputs_stable": true,
+  "mdbook_binary_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.935337624978274,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.011877624958287925,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.09177466703113168,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4367125420249067,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "8a6a7167f0abd359fb8cac695033778cbca6203f"
+      ],
+      "exit_code": 0,
+      "seconds": 1.1513401250122115,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    }
+  ],
+  "passed": true
+}

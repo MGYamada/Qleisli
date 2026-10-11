@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/binding-boundary-v030/attempt-01/assignment-live.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T02:09:46.416628+00:00",
+  "cli_sha256_before": "3772150a899515aec5c2b52a01b9eb68f4aae03703af60c9b57e346dfe82768a",
+  "cli_sha256_after": "3772150a899515aec5c2b52a01b9eb68f4aae03703af60c9b57e346dfe82768a",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "assignment would replace a live quantum owner; Qleisli does not assign to quantum-containing places. Consume the owner explicitly and introduce the result with 'let'",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/binding-boundary-v030/attempt-01/assignment-live.qli",
+          "start": 174,
+          "end": 175
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

@@ -1,0 +1,3 @@
+# Preserve actual libtest transcripts, including their final blank lines.
+validation-latest/02.stdout.txt -text -whitespace
+validation-msrv/02.stdout.txt -text -whitespace

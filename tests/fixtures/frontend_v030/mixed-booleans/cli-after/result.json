@@ -1,0 +1,608 @@
+{
+  "recorded_utc": "2026-10-04T21:21:08.665814+00:00",
+  "driver_sha256": "14af82ab9901ea8f1b862364c4e573e5bdd2eb5e6a8ecf7c56d65949805723b9",
+  "binary_sha256": "ba2913eb473aef4387f24b59cfba68d6476d83c793d64d6f8e3af18d520b1462",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "observations": [
+    {
+      "name": "eager-zero",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.8777883750153705,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "eager-zero",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004449000000022352,
+      "stdout": "",
+      "stderr": "main:133..190: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "eager-zero",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/eager-zero",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.42487316601909697,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":1}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "bell-xor",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.41909891698742285,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "bell-xor",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004497957997955382,
+      "stdout": "",
+      "stderr": "main:138..275: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "bell-xor",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/bell-xor",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.42797533300472423,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,false],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "pending-argument",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.44766779197379947,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "pending-argument",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004702000005636364,
+      "stdout": "",
+      "stderr": "main:204..336: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "pending-argument",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/pending-argument",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4439874170348048,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false,true],\"probability\":0.5000000000000001},{\"bits\":[true,false],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "repeated-helper",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4455334169906564,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "repeated-helper",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004617625032551587,
+      "stdout": "",
+      "stderr": "main:186..241: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "repeated-helper",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/repeated-helper",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.44473533402197063,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true,true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "static-fold",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/static-fold",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.006088582973461598,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite profile does not support static Nat parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":157,\"end\":158,\"line\":3,\"column\":25},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "static-fold",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/static-fold/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--nat=n=2"
+      ],
+      "exit": 1,
+      "seconds": 0.004048666974995285,
+      "stdout": "",
+      "stderr": "main:133..264: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "static-fold",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/static-fold",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.0054837079951539636,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite profile does not support static Nat parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":157,\"end\":158,\"line\":3,\"column\":25},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "exact-phase",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.004997041018214077,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"sealed module `std::quantum` has no public name `phase`\",\"primary\":{\"path\":\"main.qli\",\"start\":102,\"end\":107,\"line\":2,\"column\":28},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "exact-phase",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.05246329202782363,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "exact-phase",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/exact-phase",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.00597845803713426,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"sealed module `std::quantum` has no public name `phase`\",\"primary\":{\"path\":\"main.qli\",\"start\":102,\"end\":107,\"line\":2,\"column\":28},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "unit-effect",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/unit-effect",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4442581670009531,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "unit-effect",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/unit-effect/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.0050797079456970096,
+      "stdout": "",
+      "stderr": "main:199..263: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "unit-effect",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/attempt-01/unit-effect",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4443858750164509,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "finite-t",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.42636866599787027,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "finite-t",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004012332996353507,
+      "stdout": "",
+      "stderr": "main:75..105: module: missing dependency module std::quantum\n",
+      "identical": true
+    },
+    {
+      "name": "finite-t",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4244810829986818,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.8535533905932742},{\"bits\":[true],\"probability\":0.1464466094067263}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "fine-phase",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.005186083959415555,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"sealed module `std::quantum` has no public name `phase`\",\"primary\":{\"path\":\"main.qli\",\"start\":102,\"end\":107,\"line\":2,\"column\":28},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "fine-phase",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "seconds": 0.04852770804427564,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "fine-phase",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.005281249992549419,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"sealed module `std::quantum` has no public name `phase`\",\"primary\":{\"path\":\"main.qli\",\"start\":102,\"end\":107,\"line\":2,\"column\":28},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "runtime-if",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4249467499903403,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "runtime-if",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004375499964226037,
+      "stdout": "",
+      "stderr": "main:192..213: unsupported: sized preparation profile: unsupported runtime expression\n",
+      "identical": true
+    },
+    {
+      "name": "runtime-if",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.4329535830183886,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[false],\"probability\":0.5000000000000001},{\"bits\":[true],\"probability\":0.5000000000000001}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "provider",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.47456479200627655,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "provider",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004845666990149766,
+      "stdout": "",
+      "stderr": "main:264..326: unsupported: selected sized lowering profile requires an observe root returning exactly one Bits value\n",
+      "identical": true
+    },
+    {
+      "name": "provider",
+      "mode": "closed",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "run",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider",
+        "--format=json"
+      ],
+      "exit": 0,
+      "seconds": 0.5089757920359261,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"run\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"distribution\":[{\"bits\":[true],\"probability\":1}]}}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "packed-bits",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/packed-bits",
+        "--format=json"
+      ],
+      "exit": 1,
+      "seconds": 0.005326999991666526,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"project\",\"severity\":\"error\",\"message\":\"missing module `std::classical`\",\"primary\":{\"path\":\"main.qli\",\"start\":75,\"end\":106,\"line\":2,\"column\":1},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "identical": true
+    },
+    {
+      "name": "packed-bits",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/packed-bits/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "seconds": 0.004209207952953875,
+      "stdout": "",
+      "stderr": "main:107..153: unsupported: selected sized lowering profile requires quantum results from unitary roots; classical results are unsupported\n",
+      "identical": true
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "closed-named-unit",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-unit",
+        "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/mixed-booleans/cli-after/closed-named-unit.qirf.json"
+      ],
+      "exit": 0,
+      "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/mixed-booleans/cli-after/closed-named-unit.qirf.json\n",
+      "stderr": "",
+      "old_sha256": "ec7a712fd5c8c56886b358c3e3e4682dfec1a87ece0d63ddda6ca917a944a8ac",
+      "new_sha256": "ec7a712fd5c8c56886b358c3e3e4682dfec1a87ece0d63ddda6ca917a944a8ac",
+      "identical": true
+    },
+    {
+      "name": "closed-named-swap",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-swap",
+        "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/mixed-booleans/cli-after/closed-named-swap.qirf.json"
+      ],
+      "exit": 0,
+      "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/mixed-booleans/cli-after/closed-named-swap.qirf.json\n",
+      "stderr": "",
+      "old_sha256": "5ba537c68a7a69973c8071bb699954814313b496170d71d4cfe4998c8563c8fe",
+      "new_sha256": "5ba537c68a7a69973c8071bb699954814313b496170d71d4cfe4998c8563c8fe",
+      "identical": true
+    },
+    {
+      "name": "named-effectful-unit",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-effectful-unit",
+        "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/mixed-booleans/cli-after/named-effectful-unit.qirf.json"
+      ],
+      "exit": 0,
+      "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/mixed-booleans/cli-after/named-effectful-unit.qirf.json\n",
+      "stderr": "",
+      "old_sha256": "debcc2d58eb249e099aa69d567d374cc329513bed136fe409469ada9cae6c653",
+      "new_sha256": "debcc2d58eb249e099aa69d567d374cc329513bed136fe409469ada9cae6c653",
+      "identical": true
+    }
+  ],
+  "history_unchanged": true,
+  "executables_unchanged": true,
+  "scope": "Thirty-five actual preceding-CLI comparisons and three unchanged exact IR controls; mixed Raw API execution is separately tested. No CLI routing convergence claim."
+}

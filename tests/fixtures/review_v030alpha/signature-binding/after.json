@@ -1,0 +1,24 @@
+{
+  "command": [
+    "cargo",
+    "run",
+    "--offline",
+    "--quiet",
+    "--manifest-path",
+    "/private/tmp/qleisli-binding265-after-jbp9mdbm/Cargo.toml"
+  ],
+  "exit_code": 0,
+  "source_sha256": "84f9a3a81a8fea847569df09d047426d79bb64947098b02d43ccc029f0b9401f",
+  "changed_sources_sha256": {
+    "src/contract/function.rs": "dd8bc84054cb830d55702f5102c531d93df3432969b56072bcf88561f0d91ee8",
+    "src/contract/meaning.rs": "5928730da1973c9c2e2ae0627a397eb164f610d59da32f0ec297698da4b3a73d",
+    "tests/function_evidence.rs": "779e1cb43bb303edf5e802771e60c3f0ca57eb9ff4b3013b5c2a447bb8c0b59c",
+    "tests/source_snapshots.rs": "df505d173efafed25ce038e6242858b53041e327f062b10b35722fcc5f5a1d5a",
+    "scripts/test_lean_raw_completion.py": "2ace88cea6c55d01ac19e398777655cebd2f5b717185b3e87716b53c661bb818",
+    "scripts/test_lean_branch_function.py": "41ecbe863bcf07aeeb0283ffb4893812f355e1737f26965a011b0d36430f851a"
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "stdout_sha256": "4bec9ae6f8861359e37274adc3485504b76753eba320e37093d62df771c7213d",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "Local attachment API counterexample and correct-tree control. Concurrent common-parser work is outside this claim; no whole-tree release or proof certification."
+}

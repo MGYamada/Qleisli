@@ -1,0 +1,27 @@
+[
+  {
+    "label": "provider-h",
+    "output": "provider-h.proposal.json",
+    "sha256": "33b086aa3de118caee13dadd49c3dc7e7f577ca75054451039b74996b492da94"
+  },
+  {
+    "label": "provider-x",
+    "output": "provider-x.proposal.json",
+    "sha256": "72096756ec862e8bfe2761782c4e623350cd737d2319f87ed87e80c9069ca5a1"
+  },
+  {
+    "label": "cross-module",
+    "output": "cross-module.proposal.json",
+    "sha256": "751203643dfd4f8d74685b9372376672a3fab9d504339e3c8e5b81a25499d5bc"
+  },
+  {
+    "label": "recursive-zero",
+    "output": "recursive-zero.proposal.json",
+    "sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51"
+  },
+  {
+    "label": "recursive-two",
+    "output": "recursive-two.proposal.json",
+    "sha256": "920254b241039b7fcc4bff998567feb0bb0d2ec6e6e7c51bb6ba549667e48472"
+  }
+]

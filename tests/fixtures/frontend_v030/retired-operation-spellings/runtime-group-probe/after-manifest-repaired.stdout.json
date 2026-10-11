@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type","severity":"error","message":"repetition requires one Q<A> owner","primary":{"module":"main","path":"/private/tmp/qleisli-operator-runtime-group-probe/main.qli","start":147,"end":167},"related":[]}],"result":null}

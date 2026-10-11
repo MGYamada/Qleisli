@@ -1,0 +1,33 @@
+{
+  "format": "qleisli.ledger-v4-live-replay",
+  "version": 1,
+  "baseline_commit": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "command": [
+    "python3",
+    "scripts/check_constitution.py",
+    "--base-ref",
+    "HEAD",
+    "--verify-lean"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "logs": {
+    "stdout": {
+      "path": "tests/fixtures/constitution_v030/ledger-continuity/root-replay/replay.stdout.txt",
+      "sha256": "fb37724faed919f1f27f8ea92fc6c0c1c48fd429c957e19abb1900f48b797097"
+    },
+    "stderr": {
+      "path": "tests/fixtures/constitution_v030/ledger-continuity/root-replay/replay.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "sources_after": {
+    "scripts/check_constitution.py": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "scripts/check_guarantee_ledger.py": "6bc1911bb0c4b8cff7357ff804f6dcc4c50fb99cce1318c0c2e6140bdbeb099c",
+    "scripts/check_initial_guarantees.py": "73cce808ddedca4571211e546f9d381cc7a00ddbb06958a82ed81573b91e5702",
+    "governance/guarantees.json": "9237488a4c2589c50582e66b364859f6dbc240dea842cda71cb4fb2aacc723af",
+    "governance/guarantees/current-evidence.json": "636ff760f27b347bdbaa983ae1db9985f7fef6c5d4aa0c81786e29f36f19790a",
+    "lean/schema-registry.json": "22acf0b8239f645e2f5c09d65ee876ff904e9b3d2eddec479d2ef9665f004d17"
+  },
+  "scope": "Actual fixed-profile Lean replay and final source-only dispatch passed after both independently reproduced timing repairs. Same two admitted scoped guarantees; three broader obligations remain pending. No release or new admission."
+}

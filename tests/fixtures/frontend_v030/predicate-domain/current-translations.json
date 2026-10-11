@@ -1,0 +1,55 @@
+{
+  "status": "explicit current translations; originals remain byte-identical",
+  "translations": [
+    {
+      "historical": "tests/fixtures/qli_authoring/accepted/pair_contract.qli",
+      "current": "tests/fixtures/frontend_v030/predicate-domain/current/qli_authoring/accepted/pair_contract.qli",
+      "historical_sha256": "3b296e36562630db9f1715dfa888931bda60d19d622b5b02f1ee3899c9c3c428",
+      "current_sha256": "c3b060e664e7ff11bbee114ae44c5c5168b2baac63b1088f921c9977142ffa23",
+      "change": "Only marked signature becomes one explicit (Bit,Bit) parameter; body and intended positive/negative semantic behavior unchanged.",
+      "historical_expected_current_diagnostic": "arity: exactly one explicit basis parameter",
+      "harness": "tests/qli_corpus.rs::authoring_limitations_and_useful_guardrails_have_source_reproductions",
+      "current_expected": "accepted; complete distribution [true,true] with probability1"
+    },
+    {
+      "historical": "tests/fixtures/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current": "tests/fixtures/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "historical_sha256": "3e7869673eb86d630a826291573c58691bc3015e006a4a2a33bbb318799701a6",
+      "current_sha256": "89439ed4aba3a710984a64c04c353598ff0dcd4e40f481d63cf01ca314ef84e8",
+      "change": "Only marked signature becomes one explicit (Bit,Bit) parameter; body and intended positive/negative semantic behavior unchanged.",
+      "historical_expected_current_diagnostic": "arity: exactly one explicit basis parameter",
+      "harness": "tests/qli_corpus.rs::authoring_limitations_and_useful_guardrails_have_source_reproductions",
+      "current_expected": "accepted; complete distribution [true,true] with probability1"
+    },
+    {
+      "historical": "tests/fixtures/ergonomics/phase_mismatch.qli",
+      "current": "tests/fixtures/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "historical_sha256": "97533a54cbe36689f95b06fd3317be9629b58967d2f5eaa60d3d4aa0d9af91f0",
+      "current_sha256": "8969383291a5f3679574e2defe6ee2ff13f61d6f49cff9e92b63a635ea9564d0",
+      "change": "Only marked signature becomes one explicit (Bit,Bit) parameter; body and intended positive/negative semantic behavior unchanged.",
+      "historical_expected_current_diagnostic": "arity: exactly one explicit basis parameter",
+      "harness": "tests/authoring_ergonomics.rs::pattern_arity_totality_ownership_and_exact_tree_guards_remain",
+      "current_expected": "contract: independent phase mismatch remains rejected"
+    },
+    {
+      "historical": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02/kernel.qli",
+      "current": "tests/fixtures/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "historical_sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9",
+      "current_sha256": "3f44f153a3cc6d4d3343fa5398ce5c72e90953dd444e0be42c5467e8ddec6287",
+      "change": "Explicitly migrated current Grover project; only kernel predicate signature changes.",
+      "historical_expected_current_diagnostic": "arity: exactly one explicit basis parameter",
+      "harness": "tests/sampling.rs::preserved_grover_trial_has_an_explicit_current_predicate_translation",
+      "current_expected": "accepted; all20 deterministic seeded samples return [true,true]"
+    },
+    {
+      "historical": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02/main.qli",
+      "current": "tests/fixtures/frontend_v030/predicate-domain/current/grover-trial-v020/main.qli",
+      "historical_sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+      "current_sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+      "change": "Explicitly migrated current Grover project; only kernel predicate signature changes.",
+      "historical_expected_current_diagnostic": "arity: exactly one explicit basis parameter",
+      "harness": "tests/sampling.rs::preserved_grover_trial_has_an_explicit_current_predicate_translation",
+      "current_expected": "accepted; all20 deterministic seeded samples return [true,true]"
+    }
+  ]
+}

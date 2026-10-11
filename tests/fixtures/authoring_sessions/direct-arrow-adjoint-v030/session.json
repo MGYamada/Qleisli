@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Preserve direct Adjointable general-arrow port reversal under #83",
+  "author": "Codex assistant; informed repository work",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "850b103aa7740b4ce982b92794659bb351508d00",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Record direct opaque-formal adjoint rejection before repairing common checking and selected elaboration.",
+      "sha256": {
+        "main.qli": "1c2dbd4c67a8b3319cfe9174fe2fa80e3b072570553f7ff91449839918ef968c"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "530004057c52b82fac2f53f009676c26ea2c6a401f856b50a7f8292bffea5a97"
+      },
+      "observations": [
+        "observations/before.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Correct observer-authored schema key from schema to schema-version; preserve attempt-01 and its actual project diagnostic. Source bytes are unchanged.",
+      "sha256": {
+        "main.qli": "1c2dbd4c67a8b3319cfe9174fe2fa80e3b072570553f7ff91449839918ef968c"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "0c463c50f37175837a85ffb3a8c00acdb3cacf35cba4b07ceeaf71398499fe03"
+      },
+      "observations": [
+        "observations/manifest-repaired-before.json",
+        "observations/check-after.json",
+        "observations/run-zero-after.json",
+        "observations/run-one-after.json",
+        "observations/raw-check-after.json"
+      ]
+    }
+  ]
+}

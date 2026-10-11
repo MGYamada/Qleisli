@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"basis expression requires a basis function","primary":{"path":"main.qli","start":226,"end":235,"line":5,"column":58},"related":[]}],"result":null}

@@ -1,0 +1,203 @@
+//! Compatibility of contextual static-natural names with shared type syntax.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use super::*;
+use crate::frontend::compile::ParsedProgram;
+use std::collections::BTreeMap;
+
+const TYPE_WORDS: [&str; 7] = ["Q", "Op", "Unit", "Bit", "CBit", "Bits", "CBits"];
+
+#[test]
+fn const_parameter_headers_preserve_order_kinds_and_original_name_spans() {
+    let source = "// λ\npub fn f[const n: Nat, const B: Basis, const U: Op<B>](q: Q<B>) -> Q<B> requires Applicable(U) { U(q) }";
+    let syntax = parse_module(source).unwrap();
+    let parameters = &syntax.decls[0].static_params;
+    assert_eq!(parameters.len(), 3);
+    assert_eq!(parameters[0].kind, StaticParamKind::Natural);
+    assert_eq!(parameters[1].kind, StaticParamKind::Basis);
+    assert!(matches!(
+        parameters[2].kind,
+        StaticParamKind::Operation { .. }
+    ));
+    for (parameter, name) in parameters.iter().zip(["n", "B", "U"]) {
+        assert_eq!(parameter.name.text, name);
+        assert_eq!(
+            &source[parameter.name.span.start..parameter.name.span.end],
+            name
+        );
+    }
+    assert_eq!(parse_bounded_module(source).unwrap(), syntax);
+}
+
+#[test]
+fn const_naturals_retain_contextual_names_and_existing_small_preparation() {
+    for name in TYPE_WORDS.into_iter().chain(["const"]) {
+        let source = format!(
+            "pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires {name} >= 0 {{ if static {name} < 2 {{ q }} else {{ q }} }}"
+        );
+        for value in [0, 1, 3] {
+            prepare(&source, BTreeMap::from([(name.into(), value)]));
+        }
+    }
+}
+
+#[test]
+fn missing_compile_time_marker_teaches_const_without_reserving_ordinary_names() {
+    let source = "fn f[n: Nat](q: Q<Bit>) -> Q<Bit> { q }";
+    let error = parse_module(source).unwrap_err();
+    assert_eq!(
+        error.message,
+        "expected `const` before compile-time parameter"
+    );
+    assert_eq!(&source[error.span.start..error.span.end], "n");
+    parse_module("fn const(const: Q<Bit>) -> Q<Bit> { const }").unwrap();
+    parse_module("fn f(q: Q<Bit>) -> Q<Bit> { let const = q; const }").unwrap();
+}
+
+#[test]
+fn runtime_parameter_patterns_preserve_whole_argument_count_tree_and_spans() {
+    for kind in ["classical", "isometry", "unitary", "observe"] {
+        let source = format!(
+            "{kind} fn f(((a,_),()): ((Bit,Bit),Unit), _: Unit, (): Unit) -> Unit {{ () }}"
+        );
+        let syntax = parse_module(&source).unwrap();
+        let parameters = &syntax.decls[0].params;
+        assert_eq!(parameters.len(), 3);
+        let first = &parameters[0].pattern;
+        assert_eq!(&source[first.span.start..first.span.end], "((a,_),())");
+        let PatternKind::Tuple(fields) = &first.kind else {
+            panic!("one product argument retains its pattern tree");
+        };
+        assert_eq!(fields.len(), 2);
+        assert!(matches!(&fields[0].kind, PatternKind::Tuple(children) if children.len() == 2));
+        assert!(matches!(&fields[1].kind, PatternKind::Tuple(children) if children.is_empty()));
+        assert!(matches!(parameters[1].pattern.kind, PatternKind::Wildcard));
+        assert!(
+            matches!(&parameters[2].pattern.kind, PatternKind::Tuple(children) if children.is_empty())
+        );
+    }
+}
+
+fn prepare(source: &str, naturals: BTreeMap<String, u32>) {
+    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+        .and_then(|program| program.instantiate("main::f", naturals, BTreeMap::new()))
+        .and_then(|instance| instance.elaborate())
+        .unwrap_or_else(|error| panic!("{source}\n{error}"));
+}
+
+#[test]
+fn contextual_naturals_retain_name_span_type_dimensions_and_constraints() {
+    for name in TYPE_WORDS {
+        let source = format!(
+            "pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires {name} >= 0 {{ if static {name} < 2 {{ q }} else {{ q }} }}"
+        );
+        let syntax = parse_module(&source).unwrap();
+        let parameter = &syntax.decls[0].static_params[0];
+        assert_eq!(parameter.kind, StaticParamKind::Natural);
+        assert_eq!(parameter.name.text, name);
+        assert_eq!(
+            &source[parameter.name.span.start..parameter.name.span.end],
+            name
+        );
+        let TypeKind::Q(basis) = &syntax.decls[0].params[0].ty.kind else {
+            panic!("type constructor Q must retain its meaning");
+        };
+        let TypeKind::Bits(size) = &basis.kind else {
+            panic!("Bits must retain its type constructor meaning");
+        };
+        assert_eq!(size.kind, NatKind::Name(name.into()));
+        for value in [0, 1, 3] {
+            prepare(&source, BTreeMap::from([(name.into(), value)]));
+        }
+    }
+}
+
+#[test]
+fn contextual_naturals_keep_all_comparisons_separate_from_type_angles() {
+    for name in TYPE_WORDS {
+        for comparison in ["<", ">", "!=", "<=", ">=", "=="] {
+            let source = format!(
+                "pub unitary fn f[const {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} {comparison} 2 {{ q }} else {{ q }} }}"
+            );
+            prepare(&source, BTreeMap::from([(name.into(), 1)]));
+        }
+    }
+}
+
+#[test]
+fn contextual_naturals_are_retained_in_fold_indices_and_bounds() {
+    for name in TYPE_WORDS {
+        let source = format!(
+            "pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ qfor static {name} in 0..2 carry a = q {{ yield if static {name} < 1 {{ a }} else {{ a }} }} }}"
+        );
+        prepare(&source, BTreeMap::new());
+        let bounded = format!(
+            "pub unitary fn f[const {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ qfor static i in 0..{name} carry a = q {{ yield a }} }}"
+        );
+        prepare(&bounded, BTreeMap::from([(name.into(), 2)]));
+    }
+}
+
+#[test]
+fn contextual_naturals_pass_through_specialization_and_operation_counts() {
+    for name in TYPE_WORDS {
+        let provider = "pub unitary fn identity[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> { q }";
+        for argument in [name.to_owned(), format!("({name}+0)")] {
+            let client = format!(
+                "use dep::identity; pub unitary fn f[const {name}: Nat](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> {{ identity[{argument}](q) }}"
+            );
+            ParsedProgram::parse(BTreeMap::from([
+                ("dep".into(), provider.into()),
+                ("main".into(), client.clone()),
+            ]))
+            .and_then(|p| {
+                p.instantiate(
+                    "main::f",
+                    BTreeMap::from([(name.into(), 1)]),
+                    BTreeMap::new(),
+                )
+            })
+            .and_then(|p| p.elaborate())
+            .unwrap_or_else(|error| panic!("{client}\n{error}"));
+        }
+        for count in [name.to_owned(), format!("2^{name}")] {
+            let source = format!(
+                "pub unitary fn f[const {name}: Nat, const U: Op<Bits<{name}>>](q: Q<Bits<{name}>>) -> Q<Bits<{name}>> requires Applicable(U), Adjointable(U) {{ adjoint(power(U,{count}))(q) }}"
+            );
+            ParsedProgram::parse(BTreeMap::from([("main".into(), source.clone())]))
+                .unwrap_or_else(|error| panic!("{source}\n{error}"));
+        }
+    }
+}
+
+#[test]
+fn contextual_natural_syntax_does_not_resolve_an_unbound_name() {
+    for name in TYPE_WORDS {
+        let source = format!(
+            "pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ if static {name} < 2 {{ q }} else {{ q }} }}"
+        );
+        parse_module(&source).unwrap();
+        let error = match ParsedProgram::parse(BTreeMap::from([("main".into(), source)])) {
+            Err(error) => error,
+            Ok(_) => panic!("the preparation profile must reject an unbound natural"),
+        };
+        assert_ne!(error.code(), "parse");
+    }
+}
+
+#[test]
+fn contextual_naturals_do_not_unreserve_runtime_global_or_operation_names() {
+    for name in ["Q", "Op", "Unit", "Bit", "CBit"] {
+        for source in [
+            format!("pub unitary fn {name}(q: Q<Bit>) -> Q<Bit> {{ q }}"),
+            format!("pub unitary fn f({name}: Q<Bit>) -> Q<Bit> {{ {name} }}"),
+            format!("pub unitary fn f(q: Q<Bit>) -> Q<Bit> {{ let {name} = q; {name} }}"),
+            format!("pub unitary fn f[const {name}: Op<Bit>](q: Q<Bit>) -> Q<Bit> {{ q }}"),
+        ] {
+            assert!(parse_module(&source).is_err(), "{source}");
+        }
+    }
+    for keyword in ["if", "true", "Apply", "static"] {
+        let source = format!("pub unitary fn f[const {keyword}: Nat](q: Q<Bit>) -> Q<Bit> {{ q }}");
+        assert!(parse_module(&source).is_err(), "{source}");
+    }
+}

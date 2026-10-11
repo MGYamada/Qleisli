@@ -1,0 +1,26 @@
+{
+  "id": "01.mdbook-build",
+  "argv": [
+    "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+    "build",
+    "docs",
+    "--dest-dir",
+    "/private/tmp/qleisli-formal-policy-book-_8anjkhq/book"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:19.806694+00:00",
+  "elapsed_seconds": 0.1298232499975711,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "01.mdbook-build.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "01.mdbook-build.stderr.txt",
+    "sha256": "5e37d5d9b2e17b064b32af94abcc5a05790331b3014f5632f8cd4011383402c2",
+    "bytes": 146
+  }
+}

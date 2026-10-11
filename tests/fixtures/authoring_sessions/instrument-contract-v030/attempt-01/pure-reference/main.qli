@@ -1,0 +1,6 @@
+use std::observe::measure_z;
+
+observe fn readout_z(q: Q<Bit>) -> Bit { measure_z(q) }
+meaning Readout: Bit = reference(readout_z);
+
+pub observe fn main(q: Q<Bit>) -> Bit { measure_z(q) }

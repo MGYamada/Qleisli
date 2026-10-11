@@ -1,0 +1,18 @@
+{
+  "kind": "same-source after concrete scalar convergence",
+  "source_sha256": "09ca8de5039085d2ea72d37d1289377e684fea5e11bf35a22a88df86653cd4ca",
+  "base_commit": "b7d749075593dd6a09541d7fa02c066028d2b1f6",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--format=json",
+    "--entry=main::client",
+    "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/direct-scalar-attempt-01/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "stdout": "after.stdout.txt",
+  "stderr": "after.stderr.txt",
+  "scope": "two system qubits; informed author with prior code access; no independent model or blind benchmark",
+  "worktree": "uncommitted ordinary adapter changes after base_commit; not exact-commit CI evidence"
+}

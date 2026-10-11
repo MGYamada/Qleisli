@@ -1,0 +1,49 @@
+{
+  "format": "qleisli.static-natural-type-word-regression",
+  "version": 1,
+  "status": "bounded-parser-regression-fixed",
+  "baseline_commit": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "production_files": {
+    "src/frontend/parser.rs": "9ed6b4f1938f9ecf29f9f81afb11b60c47544c35d559d268742c1c64e72cbfcf",
+    "src/frontend/parser/tests.rs": "9e885b32f484c48fca71b44d3c06a08d1796854feb53ad410d5ae70f883509f6"
+  },
+  "files": {
+    "tests/fixtures/review_v030alpha/static-natural-type-words/README.md": "824cca9ba17dc57cb68373ec0159f5e96e361ed952f2449acd20bf981c28adfd",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/baseline-source-identities.json": "7e5ecbd83f9d74546dca50494e6a64dd163776d8657dcd4c5d2441fff197fb7c",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/cases.json": "b09a9d9b83d5823b19afcbc5cbe77caeeee908a2234ba0075bccfb5162d6957f",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/ci-test-before.command.json": "8023c931f6e48ba468682e608f43d39aa06b7123ef9429693ba9487569cee4ff",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/ci-test-before.stderr.txt": "59d559accd20b9efb6571875d4618840e0cf8b5bd62b0a2483a798574ac65238",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/ci-test-before.stdout.txt": "adf1c768e4243439075964080c933ad86ffe3910b4d8f5f7d51afde9b6127ca9",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/current-source-identities.json": "d49c49dac6ca10a400f1a9f65f48fdb096ae2e02b48a82cd1bda335999e7e889",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/diagnose-build.command.json": "a2c7de303e5b5f097c708e974928a5725c8d2784bfbcb9557fb4712633660d1b",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/diagnose-build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/diagnose-build.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/diagnose.rs": "8b6d33fbe76d378c2a02b15bee42f07029beb4296c1bc1abc5b08f6a8e636a1b",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/focused.command.json": "d66a22be2026619aef6963fd97d459c15cd144e7859c4a028f9dafd6d83c1788",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/focused.stderr.txt": "78e91caa0ead7587e2b2fd3c38f6442399445f1e8d7053059019b15465aeb2ef",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/focused.stdout.txt": "4cae417338ae0b29ee5f7f3ef3ba5acfd556f9a8fa326f756b4c2e11dcf5565b",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/lexer.before.rs.txt": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/minimal.qli": "ba334cb57a213e566571546a7867dd116b15a801f5f42905eb93a4c7fd91cf1b",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/parser.before.rs.txt": "681acd9607d66ff9df82f6e26f422b10e16dde7f8f2a3af5da4aefe4910cd10d",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/parser.command.json": "daad7358c2ac961a6591dea5614590a687f00295649f584f0f90c38c7b611ecc",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/parser.stderr.txt": "6521650eb7e7f17234589c3d7331807f98affac9b0a9b680ccbf33ce6accda1b",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/parser.stdout.txt": "9b2aca9baa43929bd0018d99a5862e66d3b64df1e0cdbd4cd827ea88bf6b7ce3",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/python-ci-four.command.json": "82cf0aff834df961f9f7a2c9f8616d34eec28b1927892baf4c4579a36fa406c2",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/python-ci-four.stderr.txt": "2531b7a75e890c602438bd9c0623ec35ce9ad293cadd1f5047e411d1f74e6737",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/python-ci-four.stdout.txt": "8da1be3481593a0dd1412a39145fc3ee92385ddb50d3aa1044848d64452868d3",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/rust-before.command.json": "2a9ebc187cda5fe31e7a22d3000fc343aab6dd862631e8472cab05d63349df6e",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/rust-before.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/review_v030alpha/static-natural-type-words/rust-before.stdout.txt": "61b273ffb264697d997c62324b2f1c6bd9cf2d00dbef81922084966b59820471"
+  },
+  "checks": {
+    "baseline_original_ci_test_exit": 101,
+    "focused_tests_passed": 6,
+    "existing_parser_tests_passed": 20,
+    "original_python_ci_tests_passed": 4,
+    "lexer_unchanged": true,
+    "original_ci_test_unchanged": true,
+    "before_and_after_source_inventory_identical": true,
+    "warnings": "Two dead-code warnings in concurrent lexical-ID module retained in captured stderr."
+  },
+  "scope": "Contextual natural interpretation of Q/Op/Unit/Bit/CBit token categories in static-natural positions; existing ordinary identifiers remain supported. No global/runtime/operation-binder reservation relaxation, no general old-sized reserved-word rule, no finite execution or IR acceptance evidence, no claim that invalid-input diagnostics remain at parsing."
+}

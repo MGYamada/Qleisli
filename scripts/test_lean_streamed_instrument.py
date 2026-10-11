@@ -13,6 +13,7 @@ import test_lean_exact as exact
 import test_lean_finite as finite
 import test_lean_raw as raw
 import test_lean_raw_completion as completion
+from check_verification_inventory import variants
 ROOT = observation.ROOT
 
 LEAN = observation.finite.LEAN[:observation.finite.LEAN.index('def execute')] + '''
@@ -70,8 +71,10 @@ def cases():
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path,required=True);args=parser.parse_args()
-    log=[];records=cases()+observation.source_cases(log,args.record)
+    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path,required=True)
+    parser.add_argument('--compiler',type=Path,default=ROOT/'target/debug/qleisli')
+    args=parser.parse_args()
+    log=[];records=cases()+observation.source_cases(log,args.record,args.compiler.resolve())
     for case in records:
         if case['name'].startswith('source_'):case['artifact']['format']='qleisli.raw-instrument-component';case['budget']=100000000
     observed,rust,bindings=observation.native(records,log,LEAN)
@@ -84,12 +87,7 @@ def main():
         if case['name'] in rust and case['name']!='classical_missing_values':
             assert result['accepted']==rust[case['name']],(case['name'],result,rust[case['name']])
         if not result['accepted'] or case['mode']=='structure':continue
-        dependencies=[]
-        for entry in case['artifact']['dependencies']:
-            actual=observation.oracle(entry['implementation'],dependencies=dependencies)
-            assert len(actual)==1 and not actual[0]['hidden']
-            dependencies.append(actual[0]['operator'])
-        expected=observation.oracle(case['artifact']['program'],case['classical'],dependencies)
+        expected=observation.component_oracle(case['artifact'],case['classical'])
         actual=result['result']['histories'];assert len(actual)==len(expected),case['name']
         dimension=len(expected[0]['operator'][0]);gram=[[finite.ZERO[:] for _ in range(dimension)] for _ in range(dimension)]
         for output,wanted in zip(actual,expected):
@@ -104,13 +102,16 @@ def main():
     paths=[ROOT/'lean-kernel/QleisliKernel/Raw/Coefficient.lean',ROOT/'lean-kernel/QleisliKernel/Raw/StreamedInstrument.lean',
         ROOT/'lean-kernel/Protocol/StreamedObservation.lean',ROOT/'lean/Qleisli/RawCoefficient.lean',
         ROOT/'lean/Qleisli/RawStreamedInstrument.lean',ROOT/'lean/Qleisli/Semantics/ObservingAction.lean',Path(__file__),
-        ROOT/'scripts/test_lean_observation.py']
+        ROOT/'scripts/test_lean_observation.py',ROOT/'scripts/observation_sources.py',
+        Path(raw.__file__),Path(finite.__file__),Path(exact.__file__),
+        ROOT/'scripts/check_verification_inventory.py',ROOT/'src/ir.rs']
     report=dict(status='passed',native_cases=len(records),rust_comparisons=sum(name!='classical_missing_values' for name in rust),
-        independent_operators=operators,hidden_histories=operators,original_constructors=19,max_semantic_qubits=3,
+        independent_operators=operators,hidden_histories=operators,
+        original_constructors=len(variants((ROOT/'src/ir.rs').read_text(),'RawOp')),max_semantic_qubits=3,
         complete_observing_sources=5,retained_branch_dependency_cases=4,native_bindings=bindings,commands=log,
         source_sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in paths},
         scope='actual matrix-free coefficient checker; post-acceptance small operator display; exponential budgeted verification',
-        remaining=['native/decoder correspondence and production packaging','VM-27 hierarchy/root closure','native decoder/runtime correspondence'])
+        remaining=['general source/runtime preservation','native compiler/decoder/runtime correspondence'])
     args.record.write_text(json.dumps(report,indent=2)+'\n')
     args.record.with_name('streamed-inputs.json').write_text(json.dumps(records,indent=2)+'\n')
     print(f'{len(records)} native streamed cases; {report["rust_comparisons"]} Rust comparisons; {operators} exact Kraus operators')

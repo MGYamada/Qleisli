@@ -1,0 +1,266 @@
+{
+  "format": 1,
+  "created_utc": "2026-10-07T06:50:49.427654+00:00",
+  "compiler_sha256": "2a2dd77b16005a8ab72477b3934fa1c730081fb47b1a2da5ed306c70c100fff2",
+  "native_kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "oracle_sha256": "37241a2622883463c23b78432415e03e5dc5eb682291da7b660ddbf75dd038e3",
+  "preparation_sha256": "49da14416611228308d6ad8d4bea7f4fe484313cad5ee45ed0c97ff98d7278d2",
+  "sources": {
+    "semantic_faults/erased_rotation_scalar/kernel.qli": "c88ce68c96d63d2129ee3cbd812005754ad99377dcc102ba34eebcbb8bb700c8",
+    "semantic_faults/erased_rotation_scalar/main.qli": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+    "semantic_faults/rx_missing_scalar/kernel.qli": "6e9ba0d10ba0b2775c0d93c46cc6e55c5af61bea6f93efadb338c3ac77f7c949",
+    "semantic_faults/rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "semantic_faults/zz_erased_scalar/kernel.qli": "6609439105c38fbdef41758e2a56cf64f03761b60185a5d654df34285c0f7975",
+    "semantic_faults/zz_erased_scalar/main.qli": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+    "semantic_faults/negative_rx_missing_scalar/kernel.qli": "951cb4730a8de869a8849a68895cb155e0abcc1c413a369e0b2b56da88f69c86",
+    "semantic_faults/negative_rx_missing_scalar/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "semantic_faults/mixed_rotation_order_reversed/kernel.qli": "dfc8124387da3e79cfc761dbdac63248c98b682b3b94a55d587f60f7bb504199",
+    "semantic_faults/mixed_rotation_order_reversed/main.qli": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+    "semantic_faults/half_rotation_order_reversed/kernel.qli": "e8216f83b49d5761603d191927855275344167c4872a092ea8e16d1592623e00",
+    "semantic_faults/half_rotation_order_reversed/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+    "semantic_faults/negative_zz_missing_scalar/kernel.qli": "c66932bfaf8eae8d4f937d86469143dd6ef983ca0174e7a39a29b7927921ee89",
+    "semantic_faults/negative_zz_missing_scalar/main.qli": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+    "semantic_faults/edge_layer_reversed_order/kernel.qli": "53cada1f1d1b05bc83279d99d6fcfa9e7a9cf353a5adbd04d390e4a802bb7f21",
+    "semantic_faults/edge_layer_reversed_order/main.qli": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+    "semantic_faults/rotation_negative_x_positive_y_fault/kernel.qli": "5e4c189f80df6dee99d0fc18f2c91c7ddef886258738a2450b2e39e7173aed54",
+    "semantic_faults/rotation_negative_x_positive_y_fault/main.qli": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+    "semantic_faults/qaoa_negative_mixer2_fault/kernel.qli": "0a6355b1886016cb61fba144a806c9b725ee053dfd48e07c030360296bcc9277",
+    "semantic_faults/qaoa_negative_mixer2_fault/main.qli": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+    "semantic_faults/qaoa_path_layer3_fault/kernel.qli": "a155446cd09a778e232efb520e803ee17a9c72315043a3cb1da4ad08a078f56f",
+    "semantic_faults/qaoa_path_layer3_fault/main.qli": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+    "semantic_faults/negative_rotations_reversed/kernel.qli": "f4d88897c4fac2369618c473f2b4f6337beadbf6ba4033ee64fcce66a6032ad1",
+    "semantic_faults/negative_rotations_reversed/main.qli": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+    "semantic_faults/path_cost_lost_second_phase/kernel.qli": "e4b1cb8a974229d857fb5d9f3327ca021b309c6f017d519eee3535d9821ca38b",
+    "semantic_faults/path_cost_lost_second_phase/main.qli": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+    "semantic_faults/negative_edge_cost_sign/kernel.qli": "8abf01620c53740537e34ad24808ff3ab894a11a8895ef05ef90d38fd0d98487",
+    "semantic_faults/negative_edge_cost_sign/main.qli": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+    "negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a"
+  },
+  "results": [
+    {
+      "project": "semantic_faults/erased_rotation_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/erased_rotation_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 1.272914250032045,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/rx_missing_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4586186669766903,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/zz_erased_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/zz_erased_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4336012500571087,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/negative_rx_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources/semantic_faults/negative_rx_missing_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5015489999204874,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/mixed_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/mixed_rotation_order_reversed",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4477100829826668,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/half_rotation_order_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/half_rotation_order_reversed",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.4360139169730246,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/negative_zz_missing_scalar",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_zz_missing_scalar",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.40179020806681365,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/edge_layer_reversed_order",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/edge_layer_reversed_order",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.562734792008996,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/rotation_negative_x_positive_y_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/rotation_negative_x_positive_y_fault",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5226388339651749,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/qaoa_negative_mixer2_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/qaoa_negative_mixer2_fault",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5196219580247998,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/qaoa_path_layer3_fault",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/qaoa_path_layer3_fault",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.6037331660045311,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/negative_rotations_reversed",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_rotations_reversed",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5207718330202624,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/path_cost_lost_second_phase",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/path_cost_lost_second_phase",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.43950304202735424,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "semantic_faults/negative_edge_cost_sign",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_edge_cost_sign",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.5740105839213356,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "negative/measurement_adjoint",
+      "argv": [
+        "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/negative/measurement_adjoint",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.005448624957352877,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`\",\"primary\":{\"path\":\"main.qli\",\"start\":282,\"end\":286,\"line\":7,\"column\":36},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

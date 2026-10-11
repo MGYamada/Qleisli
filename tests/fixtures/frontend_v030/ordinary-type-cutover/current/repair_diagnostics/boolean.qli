@@ -1,0 +1,1 @@
+unitary fn bad(q:Q<Unit>) -> Bit { 1 and q }

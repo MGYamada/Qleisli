@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "immutable first candidate snapshot",
+  "draft_sha256": "1cefa991578f813aef2e6ca749981953fb598c626b993f41605b2b6136f90796",
+  "files": {
+    "README.md": "b4bb4e21fb25bf9c5677e8258ce090906fe2a12a560fa3ca5866adba9c65e94e",
+    "contract.md": "1cefa991578f813aef2e6ca749981953fb598c626b993f41605b2b6136f90796",
+    "source-inputs.json": "bf0c974c881b5240d0c96a7052f22e5361f5bc6697f337ee8c22f9aa7cc9f4c7",
+    "issue-32.json": "ffe1525bea51ba7c9d082be8f92787b2e599604a86d0bbe5992b287ea5f3b596",
+    "issue-317.json": "5d6d351009ee96fb2d3fc4980aef994a808e94744cd2a6d5e2698c78bf13d249"
+  },
+  "scope": "Keep these initial bytes unchanged. Later corrections use a new additive candidate/addendum and a new identity; hashes are not approval or proof."
+}

@@ -1,0 +1,37 @@
+{
+  "tools": {
+    "rustc": "/opt/homebrew/bin/rustc",
+    "cargo": "/opt/homebrew/bin/cargo",
+    "cargo-clippy": "/opt/homebrew/bin/cargo-clippy"
+  },
+  "versions": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "clippy 0.1.98\n",
+      "stderr": ""
+    }
+  ]
+}

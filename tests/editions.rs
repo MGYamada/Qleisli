@@ -3,13 +3,13 @@ mod common;
 use common::SourceRoot;
 use qleisli::frontend::{
     CURRENT_EDITION,
+    compile::ParsedProgram,
     compile::{check_project, check_project_with_policy, compile_project},
     project::{Project, SourcePolicy, read_source_file},
-    sized::ParsedProgram,
 };
 use std::{collections::BTreeMap, fs, process::Command};
 
-const SOURCE: &str = "observe fn main() -> CBit { true }";
+const SOURCE: &str = "observe fn main() -> Bit { 1 }";
 
 #[test]
 fn empty_files_and_directory_entries_consume_bounded_discovery_capacity() {
@@ -37,7 +37,9 @@ fn edition_only_manifest_covers_ordinary_sources_and_embedded_stdlib() {
     check_project(&root.0).unwrap();
     compile_project(&root.0).unwrap();
     let project = Project::load(&root.0).unwrap();
-    assert!(project.module("std::transforms").is_some());
+    assert!(project.module("std::transform").is_some());
+    assert!(project.module("std::transforms").is_none());
+    assert!(project.module("std::routines").is_none());
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
         .args(["run", root.0.to_str().unwrap(), "--format=json"])
         .output()

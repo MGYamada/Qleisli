@@ -39,6 +39,10 @@ inductive Effect where
   | unitary | iso | observe
   deriving BEq, DecidableEq, Repr
 
+/-- Canonical public effect name. Keep the historical constructor identity for
+formal representation and versioned transport compatibility. -/
+@[match_pattern] abbrev Effect.isometry : Effect := Effect.iso
+
 /-- Maps use ordered port/flattened-axis positions; local IDs are not handles. -/
 structure PortMap where
   owners : Array Nat

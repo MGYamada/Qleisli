@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"verify-ir","outcome":"ok","diagnostics":[],"result":{"verified":true,"request_checked":false}}

@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized] target(s) in 0.09s
+     Running tests/sized_cli.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/sized_cli-c4d9275118d1deee)

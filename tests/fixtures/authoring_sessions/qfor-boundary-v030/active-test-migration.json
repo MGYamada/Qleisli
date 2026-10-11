@@ -1,0 +1,205 @@
+{
+  "format": "qleisli.qfor-active-test-migration",
+  "version": 1,
+  "source_base": "1647bb656b2d8db2ee063fa8243eec32785d453d",
+  "scope": "Active quantum-fold source strings use qfor; consumers select hash-checked current derivatives. Ordinary Bit/Unit folds and frozen originals remain unchanged. Exact predecessor files are recoverable from the recorded Git base.",
+  "files": [
+    {
+      "path": "tests/basis_polymorphism.rs",
+      "before_sha256": "6b8ef7cddeb8a8312ec2da66a7a417f24c26440a9a23d555d4db181bef6a1c76",
+      "after_sha256": "f6c41c7124cdb6cbf22cb805598a278ffc633ff677f9c90cc4e8cb6509255a41",
+      "changes": [
+        {
+          "line": 121,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 309,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "tests/quantum_unit_maps.rs",
+      "before_sha256": "e1772ed10410b5a08b638c4896ac0ed1f696aa3e58823d57298043f8a0e66c4e",
+      "after_sha256": "97a7174bae2452369bd268670d53e9c5bc42568ef77a9888a06e6576bd5c4783",
+      "changes": [
+        {
+          "line": 694,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "tests/quantum_tuple_unitors.rs",
+      "before_sha256": "49312215136ffa27f1b5698b9967495b07af2e81c2a645f8dcdc84e8aa12a4db",
+      "after_sha256": "287a3a99990eea2f6b39884cdac176c99cf47318a57d956cd79573d26dc8d495",
+      "changes": [
+        {
+          "line": 798,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "before_sha256": "b98213feafed2f4ceb24274ad707bc32d2b36f6ad4d532075860437b518314a9",
+      "after_sha256": "9a37c4745fd5d2d8672872606877157babd4f05875d86efb6e748224b43570b2",
+      "changes": [
+        {
+          "line": 396,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 400,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 404,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 432,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 656,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 670,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 709,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 942,
+          "occurrences": 2,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 991,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 2132,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "tests/sized_declarations.rs",
+      "before_sha256": "07d1c95fa6cdb7e7dcb62d7f5b0486272048c646bf81537bca900a336b1dc34e",
+      "after_sha256": "ee72689470a1e27df3a8dd78661903639ad36fe92d7b0ce1409bb3ec54cc5085",
+      "changes": [
+        {
+          "line": 439,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 453,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "tests/static_helpers.rs",
+      "before_sha256": "fc88761e2f05bd7d08f330dca3d94ef12b9a6764a4a0140f2dcc477d4c8ee362",
+      "after_sha256": "cf2241590213cc23664bb0a3b3d60b239c6f2298e1a0f3ad0f562422712bca38",
+      "changes": [
+        {
+          "line": 59,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "before_sha256": "d5b3c2a4c1ab4236dabdf06fa8f00180035999b0f786008f4b6cda58071ccd21",
+      "after_sha256": "ed367dcc004146deb8798ae2bca73a1ffb8afe897e52577f46b70bcaa4ec120c",
+      "changes": [
+        {
+          "line": 83,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 87,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "scripts/test_sized_qpe_clients.py",
+      "before_sha256": "84e69fe4e18872a7b852258d66a393fbbf0e34ac100cd9bc795110134626a2e0",
+      "after_sha256": "ea0cf97f8ba3cf97af5e3b644d987a0d61ee35f14c96712ef22ab91c880442fd",
+      "changes": [
+        {
+          "line": 118,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "scripts/test_sized_local_resolution.py",
+      "before_sha256": "76508e158b5a3462b138dcbefb99ba12c8d13c998fb63f8b7c633edf03d93576",
+      "after_sha256": "d7de51320c13483a01b5375df431d2e25fee7e3d1d6a588bb744fb057c1b05e6",
+      "changes": [
+        {
+          "line": 103,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        },
+        {
+          "line": 113,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "scripts/test_sized_instrument.py",
+      "before_sha256": "c8c780906224f9c71aec02cc97a8eb9572b196de0271e147f5d127fd3455060d",
+      "after_sha256": "cde284b82224d85e60b49a5997d48008e30d186cb3d15406d303de611025e610",
+      "changes": [
+        {
+          "line": 194,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    },
+    {
+      "path": "scripts/test_sized_qft.py",
+      "before_sha256": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
+      "after_sha256": "f616763147d07fff2f2d461113a093759f348c1d04b35cb4b25e154c79c21318",
+      "changes": [
+        {
+          "line": 215,
+          "occurrences": 1,
+          "classification": "explicit quantum carry; ordinary Bit/Unit folds preserved"
+        }
+      ]
+    }
+  ]
+}

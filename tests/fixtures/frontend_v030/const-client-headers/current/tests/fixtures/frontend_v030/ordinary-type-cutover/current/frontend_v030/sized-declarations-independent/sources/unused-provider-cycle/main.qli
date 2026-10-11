@@ -1,0 +1,3 @@
+pub unitary fn f(q:Q<Bit>)->Q<Bit>{skip[g](q)}
+unitary fn g(q:Q<Bit>)->Q<Bit>{f(q)}
+unitary fn skip[const U:Op<Bit>](q:Q<Bit>)->Q<Bit>{q}

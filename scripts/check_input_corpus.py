@@ -13,13 +13,14 @@ import hashlib
 import json
 import math
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
 import subprocess
 import sys
 import tomllib
 import tempfile
+import time
 
 ROOT = Path(__file__).resolve().parents[1]
 CORPUS = ROOT / "corpus"
@@ -65,6 +66,99 @@ def check_attribution(source, text):
                 "lost PennyLane attribution")
     else:
         raise ValueError("unapproved attribution source")
+
+
+def migration_json(path):
+    def unique_fields(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, "duplicate migration JSON field: " + key)
+            result[key] = value
+        return result
+    return json.loads(path.read_text(), object_pairs_hook=unique_fields)
+
+
+def unique_strings(value):
+    return (isinstance(value, list) and all(isinstance(v, str) and v for v in value)
+            and len(set(value)) == len(value))
+
+
+def migrated_sources(corpus, paths, expected, *, source_paths=None):
+    """Advance current identities without rewriting historical authoring records."""
+    require(unique_strings(paths), "invalid/duplicate source migration")
+    resolved = {local(corpus, p) for p in paths}
+    require(len(resolved) == len(paths), "duplicate source migration path")
+    require(resolved ==
+            {p.resolve() for p in (corpus / "migrations").rglob("migration.json")},
+            "unrecorded source migration")
+    current = dict(expected)
+    locations = {source: local(corpus, source) for source in expected}
+    for name in paths:
+        path = local(corpus, name)
+        require(path.is_relative_to((corpus / "migrations").resolve()), "wrong migration directory")
+        data = migration_json(path)
+        fields = {"format", "kind", "issue", "project_version", "created_utc",
+                  "context", "projects", "files", "observations"}
+        require(isinstance(data, dict) and set(data) in (fields, fields | {"source_selection"}),
+                "unknown migration fields")
+        snapshot = "source_selection" in data
+        require(not snapshot or data["source_selection"] == "snapshot",
+                "unknown migration source selection")
+        require(type(data["format"]) is int and data["format"] == 1 and
+                data["kind"] == "explicit-source-migration", "unknown source migration format")
+        require(type(data["issue"]) is int and data["issue"] > 0 and
+                all(isinstance(data[k], str) and data[k].strip()
+                    for k in ("project_version", "created_utc", "context")), "missing migration context")
+        projects = data["projects"]
+        require(unique_strings(projects) and projects
+                and set(projects) <= {str(Path(p).parent) for p in current}, "unknown/duplicate migrated project")
+        files = data["files"]
+        required = {p for p in current if str(Path(p).parent) in projects}
+        require(isinstance(files, dict) and set(files) == required, "incomplete migration project snapshots")
+        base = path.parent / "sources"
+        require(base.resolve().is_relative_to(corpus.resolve()),
+                "migration snapshot root escapes intake")
+        require({str(p.relative_to(base)) for p in base.rglob("*.qli")} == required,
+                "migration snapshot inventory changed")
+        for source, record in files.items():
+            require(isinstance(record, dict) and set(record) == {"before", "after"}, "unknown migration source fields")
+            require(all(isinstance(record[k], str) and re.fullmatch(r"[0-9a-f]{64}", record[k])
+                        for k in ("before", "after")), "invalid migration source hash")
+            require(record["before"] == current[source], "stale migration predecessor: " + source)
+            require(sha256(local(base, source)) == record["after"], "migration snapshot changed: " + source)
+            if snapshot:
+                require(sha256(locations[source]) == record["before"],
+                        "selected migration predecessor changed: " + source)
+                locations[source] = local(base, source)
+            else:
+                locations[source] = local(corpus, source)
+            current[source] = record["after"]
+        observations = data["observations"]
+        require(unique_strings(observations) and observations,
+                "missing/duplicate migration observations")
+        require(len({local(path.parent, name) for name in observations}) == len(observations),
+                "duplicate migration observation path")
+        for name in observations:
+            observation = migration_json(local(path.parent, name))
+            require(isinstance(observation, dict) and observation.get("sources") ==
+                    {source: record["after"] for source, record in files.items()},
+                    "migration observation source identity mismatch")
+            results = observation.get("results")
+            require(isinstance(results, list) and len(results) == len(projects) and
+                    all(isinstance(r, dict) and isinstance(r.get("project"), str) for r in results) and
+                    {r.get("project") for r in results} == set(projects), "incomplete migration observations")
+            for result in results:
+                require(isinstance(result.get("argv"), list) and result["argv"] and
+                        all(isinstance(a, str) for a in result["argv"]) and
+                        isinstance(result.get("cwd"), str) and result["cwd"] and
+                        isinstance(result.get("stdout"), str) and isinstance(result.get("stderr"), str) and
+                        type(result.get("exit_code")) is int, "missing migration command observation")
+                output = json.loads(result["stdout"])
+                require(isinstance(output, dict) and output.get("outcome") in ("ok", "error") and
+                        (result["exit_code"] == 0) == (output["outcome"] == "ok"), "contradictory migration observation")
+    if source_paths is not None:
+        source_paths.update(locations)
+    return current
 
 
 def check_manifest(corpus=CORPUS):
@@ -167,7 +261,7 @@ def check_manifest(corpus=CORPUS):
     require({local(corpus, p) for p in session_paths} ==
             {p.resolve() for p in (corpus / "authoring").rglob("session.json")},
             "unrecorded authoring session")
-    recorded_sources = set()
+    recorded_sources = {}
     for session_path in session_paths:
         session_file = local(corpus, session_path)
         session = json.loads(session_file.read_text())
@@ -195,11 +289,16 @@ def check_manifest(corpus=CORPUS):
         latest = session["attempts"][-1]
         for rel, digest in latest["sha256"].items():
             require(rel not in recorded_sources, "duplicate current authoring source")
-            recorded_sources.add(rel)
-            require(sha256(local(corpus, rel)) == digest, f"current source differs from latest attempt: {rel}")
-    require(recorded_sources == {str(p.relative_to(corpus)) for project in projects
+            recorded_sources[rel] = digest
+    require(set(recorded_sources) == {str(p.relative_to(corpus)) for project in projects
                                 for p in (corpus / project).glob("*.qli")},
             "current sources missing authoring snapshots")
+    source_paths = {}
+    current_sources = migrated_sources(corpus, manifest.get("source_migrations", []),
+                                       recorded_sources, source_paths=source_paths)
+    for rel, digest in current_sources.items():
+        require(sha256(source_paths[rel]) == digest,
+                f"current source differs from latest attempt/migration: {rel}")
     faults = json.loads((corpus / "semantic_faults/manifest.json").read_text())
     require(faults["format"] == 1, "unsupported semantic fault format")
     fault_projects = set()
@@ -216,6 +315,8 @@ def check_manifest(corpus=CORPUS):
                     "semantic fault lost original license")
     require(fault_projects == {p.parent.resolve() for p in (corpus / "semantic_faults").rglob("main.qli")},
             "unrecorded semantic fault project")
+    current_negatives(corpus)
+    current_counterexample_sources(corpus)
     return manifest
 
 
@@ -259,7 +360,7 @@ def driver(n, column, row=None, axis="x"):
         source += f"unitary fn reference(q: Q<{typ}>) -> Q<{typ}> {{\n" + split_register(n)
         source += tuple_of([f"x(w{i})" if ((column ^ row) >> i) & 1 else f"w{i}" for i in range(n)], join=True) + "\n}\n"
     outputs = n + (row is not None)
-    source += f"observe fn main() -> {tuple_of(['CBit'] * outputs)} {{\n"
+    source += f"observe fn main() -> {tuple_of(['Bit'] * outputs)} {{\n"
     source += "let q = " + tuple_of(["x(init0())" if column >> i & 1 else "init0()" for i in range(n)], join=True) + ";\n"
     if row is None:
         source += "let q = kernel(q);\n"
@@ -585,14 +686,14 @@ def protocol_probes(case):
             for parity in [False, True]:
                 a = "x(init0())" if phase else "init0()"
                 b = "x(init0())" if parity else "init0()"
-                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> (CBit,CBit) {\n"
+                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> (Bit,Bit) {\n"
                 source += f"let (a,b) = cnot(h({a}), {b});\nbell_measure(join(a,b))\n}}\n"
                 yield source, {(phase, parity): 1.0}, f"Bell-label-{phase}-{parity}"
         # Choi probe: measure the two inputs of two Bell pairs, retaining both
         # reference wires. Nine Pauli pairs determine every conditional matrix.
         for left in "xyz":
             for right in "xyz":
-                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> ((CBit,CBit),(CBit,CBit)) {\n"
+                source = IMPORTS + "use kernel::bell_measure;\nobserve fn main() -> ((Bit,Bit),(Bit,Bit)) {\n"
                 source += "let (r0,a) = cnot(h(init0()),init0());\nlet (r1,b) = cnot(h(init0()),init0());\nlet outcome = bell_measure(join(a,b));\n"
                 source += f"(outcome, ({measure('r0', left)}, {measure('r1', right)}))\n}}\n"
                 expected = {}
@@ -607,11 +708,11 @@ def protocol_probes(case):
     if case["kind"] == "dense":
         for a in [False, True]:
             for b in [False, True]:
-                yield IMPORTS + f"use kernel::send;\nobserve fn main() -> (CBit,CBit) {{ send({str(a).lower()}, {str(b).lower()}) }}\n", {(a, b): 1.0}, "classical-message"
+                yield IMPORTS + f"use kernel::send;\nobserve fn main() -> (Bit,Bit) {{ send({int(a)}, {int(b)}) }}\n", {(a, b): 1.0}, "classical-message"
         return
     if case["kind"] == "measure":
         for prep, expected in [("init0()", .5), ("x(init0())", .5), ("h(init0())", 1), ("h(x(init0()))", 0), ("t(t(h(init0())))", .5), ("t(h(init0()))", (2 + math.sqrt(2)) / 4)]:
-            yield IMPORTS + f"use kernel::is_plus;\nobserve fn main() -> CBit {{ is_plus({prep}) }}\n", {(True,): expected, (False,): 1 - expected}, "plus-polarity"
+            yield IMPORTS + f"use kernel::is_plus;\nobserve fn main() -> Bit {{ is_plus({prep}) }}\n", {(True,): expected, (False,): 1 - expected}, "plus-polarity"
         return
     require(case["kind"] == "teleport", f"unknown protocol oracle: {case['kind']}")
     # Tomography of the teleported half of a Bell pair, with both message bits.
@@ -619,7 +720,7 @@ def protocol_probes(case):
     # every classical branch separately rather than marginalizing the message.
     for ref in "xyz":
         for target in "xyz":
-            source = IMPORTS + "use kernel::teleport;\nobserve fn main() -> ((CBit,CBit),(CBit,CBit)) {\nlet (r,q) = cnot(h(init0()), init0());\nlet (message,bob) = teleport(q);\n" + f"(message, ({measure('r', ref)}, {measure('bob', target)}))\n}}\n"
+            source = IMPORTS + "use kernel::teleport;\nobserve fn main() -> ((Bit,Bit),(Bit,Bit)) {\nlet (r,q) = cnot(h(init0()), init0());\nlet (message,bob) = teleport(q);\n" + f"(message, ({measure('r', ref)}, {measure('bob', target)}))\n}}\n"
             expected = {}
             for a in [False, True]:
                 for b in [False, True]:
@@ -652,8 +753,40 @@ def host_observables(case, values):
     return results
 
 
-def check_case(case, binary, exhaustive, project=None):
-    project = CORPUS / case["project"] if project is None else project
+def current_project(case, corpus=None):
+    """Select a recorded snapshot explicitly; historical case directories stay frozen."""
+    corpus = CORPUS if corpus is None else corpus
+    project = local(corpus, case["project"])
+    manifest = migration_json(corpus / "manifest.json")
+    counterexamples = current_counterexample_sources(corpus)
+    if case["project"] in counterexamples:
+        return counterexamples[case["project"]]
+    for name in manifest.get("source_migrations", []):
+        path = local(corpus, name)
+        data = migration_json(path)
+        if "source_selection" not in data:
+            continue
+        require(data["source_selection"] == "snapshot", "unknown migration source selection")
+        if case["project"] not in data["projects"]:
+            continue
+        base = path.parent / "sources"
+        require(base.resolve().is_relative_to(corpus.resolve()),
+                "migration snapshot root escapes intake")
+        project = local(base, case["project"])
+        expected = {str(Path(source).relative_to(case["project"])): record["after"]
+                    for source, record in data["files"].items()
+                    if str(Path(source).parent) == case["project"]}
+        actual = {p.relative_to(project).as_posix(): sha256(p)
+                  for p in project.rglob("*")
+                  if p.is_file() and (p.suffix == ".qli" or p.name == "Qargo.toml")}
+        require(expected and actual == expected, "selected migration snapshot changed: " + case["project"])
+    return project
+
+
+def check_case(case, binary, exhaustive, project=None, quick_probe=None):
+    started = time.monotonic()
+    print(f"[corpus] start {case['id']}", file=sys.stderr, flush=True)
+    project = current_project(case) if project is None else project
     shipped = run(binary, project)
     probes = 0
     with tempfile.TemporaryDirectory(prefix="qleisli-corpus-") as temp:
@@ -665,23 +798,31 @@ def check_case(case, binary, exhaustive, project=None):
             (temp / "main.qli").write_text(source)
             compare(run(binary, temp), expected, f"{case['id']} {label}")
             probes += 1
+            if probes % 64 == 0:
+                print(f"[corpus] {case['id']}: {probes} probes checked, "
+                      f"{time.monotonic() - started:.1f}s elapsed", file=sys.stderr, flush=True)
         if case["kind"] == "unitary":
             n = case["qubits"]
             dim = 1 << n
-            for x in range(dim):
+            for x in ([] if quick_probe is not None else range(dim)):
                 column = reference_column(case, x)
                 execute(driver(n, x), probabilities(column), f"column {x}")
                 rows = range(dim) if exhaustive else sorted({0, x, dim - 1})
                 for y in rows:
                     for axis in "xy":
                         execute(driver(n, x, y, axis), interference(column, y, axis), f"entry {y},{x} {axis}")
+            if quick_probe:
+                x, y = quick_probe
+                column = reference_column(case, x)
+                for axis in "xy":
+                    execute(driver(n, x, y, axis), interference(column, y, axis), f"representative entry {y},{x} {axis}")
             default = sum(b << j for j, b in enumerate(case["default_input"]))
             expected = probabilities(reference_column(case, default))
             compare(shipped, expected, f"{case['id']} shipped main")
             observed, wanted = host_observables(case, shipped), host_observables(case, expected)
             require(all(abs(v - wanted[k]) < TOLERANCE for k, v in observed.items()), "host expectation mismatch")
         else:
-            for source, expected, label in protocol_probes(case):
+            for source, expected, label in ([] if quick_probe is not None else protocol_probes(case)):
                 execute(source, expected, label)
             if case["kind"] == "dense":
                 expected = {(True, False): 1.0}
@@ -694,11 +835,13 @@ def check_case(case, binary, exhaustive, project=None):
                 expected = {(a, b, c): (p if not c else 1 - p) / 4 for a in [False, True] for b in [False, True] for c in [False, True]}
             compare(shipped, expected, f"{case['id']} shipped main")
             observed = {}
+    print(f"[corpus] passed {case['id']}: {probes} probes, "
+          f"{time.monotonic() - started:.1f}s elapsed", file=sys.stderr, flush=True)
     return {"id": case["id"], "semantic_probes": probes, "shipped_main": "passed", "host_observables": observed}
 
 
 def check_semantic_fault(fault, case, binary):
-    project = local(CORPUS, fault["project"])
+    project = current_project(fault)
     process = subprocess.run([str(binary), "check", str(project), "--format=json"],
                              capture_output=True, text=True, timeout=30)
     require(process.returncode == 0 and not process.stderr,
@@ -743,7 +886,7 @@ def record_failure(report, stage, identifier, error):
 
 
 def check_negative(case, binary):
-    process = subprocess.run([str(binary), "check", str(local(CORPUS, case["project"])), "--format=json"], capture_output=True, text=True, timeout=30)
+    process = subprocess.run([str(binary), "check", str(current_project(case)), "--format=json"], capture_output=True, text=True, timeout=30)
     require(process.returncode == 1 and not process.stderr, f"negative case accepted: {case['id']}: {process.stdout} {process.stderr}")
     output = json.loads(process.stdout)
     require(output["outcome"] == "error" and output["result"] is None, "negative JSON result")
@@ -751,18 +894,23 @@ def check_negative(case, binary):
     return {"id": case["id"], "code": case["expected_code"], "exit_code": process.returncode}
 
 
-def run_checks(cases, faults, negatives, binary, exhaustive, report, path):
+def run_checks(cases, faults, negatives, binary, exhaustive, report, path, quick_probes=None):
     """Retain completed cases even when a peer fails, times out or crashes."""
     def completed(stage, identifier, action):
+        status = "passed"
         try:
             report[stage].append(action())
         except Exception as error:
+            status = "failed"
             record_failure(report, stage, identifier, error)
         report[stage].sort(key=lambda row: row["id"])
         save_report(path, report)
+        print(f"[corpus] completed {stage}/{identifier}: {status}", file=sys.stderr, flush=True)
 
     with ThreadPoolExecutor(max_workers=4) as pool:
-        futures = {pool.submit(check_case, case, binary, exhaustive): case["id"] for case in cases}
+        futures = {pool.submit(check_case, case, binary, exhaustive, **(
+            {"quick_probe": quick_probes.get(case["id"], ())} if quick_probes is not None else {})):
+            case["id"] for case in cases}
         for future in as_completed(futures):
             completed("cases", futures[future], future.result)
     by_id = {case["id"]: case for case in cases}
@@ -772,25 +920,256 @@ def run_checks(cases, faults, negatives, binary, exhaustive, report, path):
         completed("negative_cases", case["id"], lambda: check_negative(case, binary))
 
 
-def input_binding(cases, faults, negatives, binary):
-    sources = {str(p.relative_to(CORPUS)): sha256(p)
+def current_negatives(corpus=None):
+    """Select current diagnostics without rewriting the frozen negative baseline."""
+    corpus = CORPUS if corpus is None else corpus
+    manifest = migration_json(corpus / "manifest.json")
+    selection = manifest.get("negative_expectations")
+    require(isinstance(selection, dict) and set(selection) == {"path", "sha256"},
+            "missing or invalid current negative expectations")
+    path = local(corpus, selection["path"])
+    require(path.is_relative_to((corpus / "negative").resolve()) and
+            path != local(corpus, "negative/manifest.json"),
+            "current negative expectations must be a separate local derivative")
+    require(sha256(path) == selection["sha256"], "current negative expectation identity changed")
+    original_path = local(corpus, "negative/manifest.json")
+    original = migration_json(original_path)
+    current = migration_json(path)
+    require(isinstance(current, dict) and set(current) ==
+            {"format", "kind", "baseline_sha256", "cases"} and
+            current["baseline_sha256"] == sha256(original_path),
+            "current negative expectation baseline changed")
+    require(current["format"] == original["format"] == 1 and
+            current["kind"] == original["kind"] == "curated_local_counterexamples",
+            "unknown negative expectation format")
+    require(isinstance(current["cases"], list) and
+            len(current["cases"]) == len(original["cases"]),
+            "current negative coverage changed")
+    for before, after in zip(original["cases"], current["cases"]):
+        require(isinstance(after, dict) and set(after) == set(before) ==
+                {"id", "project", "expected_code", "expected_message"} and
+                after["id"] == before["id"] and after["project"] == before["project"] and
+                all(isinstance(after[k], str) and after[k] for k in after),
+                "current negative identity or contract changed")
+    return current["cases"]
+
+
+def canonical_counterexample_application(source):
+    """Fixed textual migration for the retained named-operation clients only.
+
+    This is provenance checking, not a parser, semantic oracle or acceptance
+    rule. Unmatched forms remain byte-identical; arbitrary edits cannot be
+    legalized by changing their recorded hashes.
+    """
+    source = re.sub(rb"\badjoint\(([A-Za-z_][A-Za-z_0-9]*),\s*",
+                    rb"inverse(\1)(", source)
+    needs_t_wrapper = bool(re.search(rb"\brepeat_static\([0-9]+, t, ", source))
+    source = re.sub(rb"\brepeat_static\(([0-9]+), ([A-Za-z_][A-Za-z_0-9]*), ",
+                    lambda match: b"power(" + (b"migration_t" if match[2] == b"t" else match[2])
+                    + b", " + match[1] + b")(", source)
+    if needs_t_wrapper:
+        source += b"\nunitary fn migration_t(q: Q<Bit>) -> Q<Bit> { t(q) }\n"
+    return source
+
+
+def current_counterexample_sources(corpus=None):
+    """Validate explicit source snapshots while retaining logical fault identities."""
+    corpus = CORPUS if corpus is None else corpus
+    manifest = migration_json(corpus / "manifest.json")
+    paths = manifest.get("counterexample_source_migrations", [])
+    require(unique_strings(paths), "invalid/duplicate counterexample source migration")
+    resolved = {local(corpus, name) for name in paths}
+    require(len(resolved) == len(paths), "duplicate counterexample source migration path")
+    require(resolved == {p.resolve() for p in (corpus / "migrations").rglob("counterexamples.json")},
+            "unrecorded counterexample source migration")
+    selected = {}
+    if not paths:
+        return selected
+    baseline_names = {"semantic_faults/manifest.json", "negative/manifest.json",
+                      "negative/current-manifest.json"}
+    baseline_cases = [case for name in ("semantic_faults/manifest.json", "negative/manifest.json")
+                      for case in migration_json(local(corpus, name))["cases"]]
+    known_projects = {case["project"] for case in baseline_cases}
+    negatives = {case["project"]: case for case in current_negatives(corpus)}
+    for name in paths:
+        relative = PurePosixPath(name)
+        require(not relative.is_absolute() and relative.as_posix() == name and
+                not any(part in (".", "..") for part in relative.parts),
+                "noncanonical counterexample source migration path")
+        path = local(corpus, name)
+        require(path.is_relative_to((corpus / "migrations").resolve()) and
+                path.name == "counterexamples.json", "wrong counterexample migration directory")
+        data = migration_json(path)
+        fields = {"format", "kind", "issue", "project_version", "created_utc", "context",
+                  "projects", "files", "observations", "source_selection", "baselines", "transformation"}
+        require(isinstance(data, dict) and set(data) == fields,
+                "unknown counterexample migration fields")
+        require(type(data["format"]) is int and data["format"] == 1 and
+                data["kind"] == "explicit-counterexample-source-migration" and
+                data["source_selection"] == "snapshot" and
+                data["transformation"] in ("basis-to-classical-function", "canonical-operation-application", "capability-operation-naming"),
+                "unknown counterexample migration format")
+        require(type(data["issue"]) is int and data["issue"] > 0 and
+                all(isinstance(data[key], str) and data[key].strip()
+                    for key in ("project_version", "created_utc", "context")),
+                "missing counterexample migration context")
+        baselines = data["baselines"]
+        require(isinstance(baselines, dict) and set(baselines) == baseline_names and
+                all(baselines[name] == sha256(local(corpus, name)) for name in baseline_names),
+                "counterexample migration baseline changed")
+        projects = data["projects"]
+        require(unique_strings(projects) and projects and set(projects) <= known_projects,
+                "unknown/duplicate counterexample migration project")
+        files = data["files"]
+        require(isinstance(files, dict) and files, "missing counterexample migration sources")
+        base = path.parent / "counterexample-sources"
+        require(base.resolve().is_relative_to(corpus.resolve()),
+                "counterexample snapshot root escapes intake")
+        actual = {p.relative_to(base).as_posix(): sha256(p) for p in base.rglob("*")
+                  if p.is_file() and (p.suffix == ".qli" or p.name == "Qargo.toml")}
+        require(set(actual) == set(files), "counterexample snapshot inventory changed")
+        required = set()
+        for project in projects:
+            predecessor = selected.get(project, local(corpus, project))
+            inventory = {project + "/" + p.relative_to(predecessor).as_posix(): sha256(p)
+                         for p in predecessor.rglob("*")
+                         if p.is_file() and (p.suffix == ".qli" or p.name == "Qargo.toml")}
+            require(inventory, "missing counterexample predecessor source")
+            required.update(inventory)
+            for source, digest in inventory.items():
+                record = files.get(source)
+                require(isinstance(record, dict) and set(record) == {"before", "after"} and
+                        all(isinstance(record[key], str) and
+                            re.fullmatch(r"[0-9a-f]{64}", record[key]) for key in record),
+                        "invalid counterexample migration source identity")
+                require(record["before"] == digest,
+                        "stale counterexample migration predecessor: " + source)
+                require(actual[source] == record["after"],
+                        "counterexample snapshot changed: " + source)
+                before = local(predecessor, str(PurePosixPath(source).relative_to(project)))
+                after = local(base, source)
+                if data["transformation"] == "basis-to-classical-function":
+                    translated = re.sub(rb"(?m)^(pub )?basis fn\b",
+                                        lambda match: (match.group(1) or b"") + b"classical fn",
+                                        before.read_bytes())
+                    failure = "counterexample migration changed more than the declaration keyword"
+                elif data["transformation"] == "capability-operation-naming":
+                    from operation_naming import canonical_operation_names
+                    translated = canonical_operation_names(before.read_bytes())
+                    failure = "counterexample migration changed more than the operation names"
+                else:
+                    translated = canonical_counterexample_application(before.read_bytes())
+                    failure = "counterexample migration changed more than the canonical application"
+                require(after.read_bytes() == translated,
+                        failure)
+            selected[project] = local(base, project)
+        require(set(files) == required, "incomplete counterexample migration projects")
+        observations = data["observations"]
+        require(unique_strings(observations) and observations and
+                len({local(path.parent, name) for name in observations}) == len(observations),
+                "missing/duplicate counterexample observations")
+        for observation_name in observations:
+            observation = migration_json(local(path.parent, observation_name))
+            require(isinstance(observation, dict) and observation.get("sources") ==
+                    {source: record["after"] for source, record in files.items()},
+                    "counterexample observation source identity mismatch")
+            results = observation.get("results")
+            require(isinstance(results, list) and len(results) == len(projects) and
+                    all(isinstance(result, dict) for result in results) and
+                    {result.get("project") for result in results} == set(projects),
+                    "incomplete counterexample observations")
+            for result in results:
+                require(isinstance(result.get("argv"), list) and result["argv"] and
+                        all(isinstance(arg, str) for arg in result["argv"]) and
+                        isinstance(result.get("cwd"), str) and result["cwd"] and
+                        isinstance(result.get("stdout"), str) and isinstance(result.get("stderr"), str) and
+                        type(result.get("exit_code")) is int,
+                        "missing counterexample command observation")
+                output = json.loads(result["stdout"])
+                require(isinstance(output, dict) and output.get("outcome") in ("ok", "error") and
+                        (result["exit_code"] == 0) == (output["outcome"] == "ok"),
+                        "contradictory counterexample observation")
+                negative = negatives.get(result["project"])
+                if negative is None:
+                    require(result["exit_code"] == 0,
+                            "semantic fault migration must remain type-correct")
+                else:
+                    diagnostics = output.get("diagnostics")
+                    require(result["exit_code"] == 1 and isinstance(diagnostics, list) and diagnostics and
+                            isinstance(diagnostics[0], dict) and
+                            diagnostics[0].get("code") == negative["expected_code"],
+                            "negative source migration diagnostic changed")
+    return selected
+
+
+def source_binding(cases, faults, negatives):
+    sources = {str(p.resolve().relative_to(CORPUS.resolve())): sha256(p)
                for case in cases + faults + negatives
-               for p in sorted(local(CORPUS, case["project"]).glob("*.qli"))}
-    return dict(compiler_sha256=sha256(binary), oracle_script_sha256=sha256(Path(__file__)),
+               for p in sorted(current_project(case).glob("*.qli"))}
+    manifest = migration_json(CORPUS / "manifest.json")
+    migrations = {name: sha256(local(CORPUS, name))
+                  for name in manifest.get("source_migrations", [])}
+    counterexample_migrations = {name: sha256(local(CORPUS, name))
+                                for name in manifest.get("counterexample_source_migrations", [])}
+    current_negatives()
+    return dict(oracle_script_sha256=sha256(Path(__file__)),
                 manifest_sha256=sha256(CORPUS / "manifest.json"), source_sha256=sources,
+                source_migration_sha256=migrations,
+                counterexample_source_migration_sha256=counterexample_migrations,
                 semantic_fault_manifest_sha256=sha256(CORPUS / "semantic_faults/manifest.json"),
                 negative_manifest_sha256=sha256(CORPUS / "negative/manifest.json"),
-                semantic_fault_source_sha256={str(p.relative_to(CORPUS)): sha256(p)
-                    for fault in faults for p in sorted(local(CORPUS, fault["project"]).glob("*.qli"))})
+                current_negative_manifest_sha256=sha256(local(CORPUS, manifest["negative_expectations"]["path"])),
+                semantic_fault_source_sha256={str(p.resolve().relative_to(CORPUS.resolve())): sha256(p)
+                    for fault in faults for p in sorted(current_project(fault).glob("*.qli"))})
+
+
+def input_binding(cases, faults, negatives, binary):
+    return dict(compiler_sha256=sha256(binary), **source_binding(cases, faults, negatives))
+
+
+def semantic_probe_count(case, exhaustive):
+    if case["kind"] != "unitary":
+        return sum(1 for _ in protocol_probes(case))
+    dim = 1 << case["qubits"]
+    if exhaustive:
+        return dim + 2 * dim * dim
+    return sum(1 + 2 * len({0, x, dim - 1}) for x in range(dim))
+
+
+QUICK_FAULT_IDS = {"rx_missing_scalar", "swapped_bell_labels", "missing_add_two", "incomplete_swap"}
+
+
+def representative_entries(cases):
+    """Twenty fixed entries, stratified by approved source and existing width."""
+    unitary = [case for case in cases if case["kind"] == "unitary"]
+    ordered = sorted(unitary, key=lambda case: hashlib.sha256(case["id"].encode()).hexdigest())
+    selected, groups = [], set()
+    for case in ordered:
+        group = (case["id"].split("/")[0], case["qubits"])
+        if group not in groups:
+            selected.append(case)
+            groups.add(group)
+    for case in ordered:
+        if len(selected) >= 20:
+            break
+        if case not in selected:
+            selected.append(case)
+    return {case["id"]: (int.from_bytes(hashlib.sha256(case["id"].encode()).digest()[:8], "big") % (1 << case["qubits"]),
+                         int.from_bytes(hashlib.sha256(case["id"].encode()).digest()[8:16], "big") % (1 << case["qubits"]))
+            for case in selected}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("binary", nargs="?", type=Path)
     parser.add_argument("--case", help="single source/case ID")
-    parser.add_argument("--exhaustive", action="store_true", help="check every complex matrix entry via X/Y interference")
+    modes = parser.add_mutually_exclusive_group()
+    modes.add_argument("--exhaustive", action="store_true", help="check every complex matrix entry via X/Y interference")
+    modes.add_argument("--quick", action="store_true", help="all shipped entries, 20 representative X/Y entry pairs and four semantic faults")
     parser.add_argument("--report", type=Path)
     args = parser.parse_args(argv)
+    if args.quick and not args.binary:
+        parser.error("--quick requires an executable; provenance-only validation is a separate mode")
     report = dict(format=1, status="incomplete", failures=[], cases=[], semantic_faults=[], negative_cases=[],
                   created_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
                   exhaustive_unitary_entries=args.exhaustive, upstream_frameworks_executed=False, tolerance=TOLERANCE)
@@ -807,13 +1186,23 @@ def main(argv=None):
         require(bool(cases), "unknown corpus case")
         ids = {case["id"] for case in cases}
         faults = [f for f in json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"] if f["reference"] in ids]
-        negatives = json.loads((CORPUS / "negative/manifest.json").read_text())["cases"]
+        negatives = current_negatives()
+        quick_probes = None
+        if args.quick:
+            all_faults = json.loads((CORPUS / "semantic_faults/manifest.json").read_text())["cases"]
+            require(QUICK_FAULT_IDS <= {fault["id"] for fault in all_faults}, "quick semantic fault inventory changed")
+            faults = [fault for fault in faults if fault["id"] in QUICK_FAULT_IDS]
+            quick_probes = {identifier: entry for identifier, entry in representative_entries(manifest["cases"]).items()
+                            if identifier in ids}
+            report.update(validation_mode="quick-representative-v1", representative_entries=quick_probes,
+                          omitted_semantic_fault_ids=sorted(fault["id"] for fault in all_faults
+                              if fault["reference"] in ids and fault["id"] not in QUICK_FAULT_IDS))
         binding = input_binding(cases, faults, negatives, binary)
         report.update(binding, expected_ids={name: [case["id"] for case in items] for name, items in
                       [("cases", cases), ("semantic_faults", faults), ("negative_cases", negatives)]})
         report["project_version"] = tomllib.loads((ROOT / "Cargo.toml").read_text())["package"]["version"]
         save_report(args.report, report)
-        run_checks(cases, faults, negatives, binary, args.exhaustive, report, args.report)
+        run_checks(cases, faults, negatives, binary, args.exhaustive, report, args.report, quick_probes)
         require(binding == input_binding(cases, faults, negatives, binary), "validation inputs changed during the run")
         report["status"] = "failed" if report["failures"] else "passed"
     except (Exception, KeyboardInterrupt) as error:

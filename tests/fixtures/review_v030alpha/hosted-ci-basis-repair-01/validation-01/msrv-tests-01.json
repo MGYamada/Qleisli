@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--jobs",
+    "2",
+    "--test",
+    "quantum_tuple_unitors",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 4.693542916967999,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-ci-repair-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/msrv-tests-01.stdout.txt",
+      "sha256": "51b909b58c0f2b2e68396152df7d6a417c3192041424a7b61af20ee489ae07c5"
+    },
+    "stderr": {
+      "path": "tests/fixtures/review_v030alpha/hosted-ci-basis-repair-01/validation-01/msrv-tests-01.stderr.txt",
+      "sha256": "96ebd907de3a4b91a6659ada2875e42de3e7bd5ec41d9e7a1f26a00e82a753f6"
+    }
+  },
+  "capture_scope": "Actual command and streams only, not a complete build closure or replay of stored records."
+}

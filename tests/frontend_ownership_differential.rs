@@ -10,8 +10,8 @@ mod common;
 use std::collections::BTreeMap;
 
 use common::SourceRoot;
+use qleisli::frontend::compile::ParsedProgram;
 use qleisli::frontend::compile::check_project;
-use qleisli::frontend::sized::ParsedProgram;
 
 const SEED: u64 = 0x514c_4549_534c_4932;
 const CASES: usize = 4_000;
@@ -86,7 +86,7 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     let arguments = quantum
         .iter()
         .map(|name| format!("{name}: Q<Bit>"))
-        .chain(std::iter::once("tag: CBit".into()))
+        .chain(std::iter::once("tag: Bit".into()))
         .collect::<Vec<_>>()
         .join(",");
     let mut classical = vec!["tag".into()];
@@ -212,15 +212,15 @@ fn generate(random: &mut Random, fault: Fault) -> Case {
     let mut returned = quantum.clone();
     let mut result_types = vec!["Q<Bit>".to_owned(); quantum.len()];
     // Classical owners are copyable: returning a copied tag more than once is
-    // a normal control against accidentally applying quantum rules to CBit.
+    // a normal control against accidentally applying quantum rules to Bit.
     for _ in 0..1 + random.choose(3) {
         returned.push(classical[random.choose(classical.len())].clone());
-        result_types.push("CBit".into());
+        result_types.push("Bit".into());
     }
     let declaration = if matches!(fault, Fault::EffectUnderdeclaration) {
         "unitary"
     } else {
-        ["unitary", "iso", "observe"][effect + random.choose(3 - effect)]
+        ["unitary", "isometry", "observe"][effect + random.choose(3 - effect)]
     };
     Case {
         fault,
@@ -245,16 +245,21 @@ fn finite_and_sized_checkers_agree_on_common_linear_ownership() {
     let mut rejected = 0;
     for (index, case) in cases.iter().enumerate() {
         root.write("main.qli", &case.source);
-        let finite = check_project(&root.0).map_err(|error| error.to_string());
+        let finite = check_project(&root.0);
         let sized = ParsedProgram::parse(BTreeMap::from([("main".into(), case.source.clone())]))
-            .map(|_| ())
-            .map_err(|error| error.to_string());
-        let context = format!(
-            "seed={SEED:#x}, case={index}, fault={:?}\n{}\nfinite={finite:?}\nsized={sized:?}",
-            case.fault, case.source
-        );
-        assert_eq!(finite.is_ok(), sized.is_ok(), "{context}");
-        assert_eq!(finite.is_ok(), case.fault.accepted(), "{context}");
+            .map(|_| ());
+        // Preserve the complete reproduction context, but format it only when
+        // an assertion fails. Both public paths still run for every case.
+        let context = || {
+            let finite = finite.as_ref().map_err(ToString::to_string);
+            let sized = sized.as_ref().map_err(ToString::to_string);
+            format!(
+                "seed={SEED:#x}, case={index}, fault={:?}\n{}\nfinite={finite:?}\nsized={sized:?}",
+                case.fault, case.source
+            )
+        };
+        assert_eq!(finite.is_ok(), sized.is_ok(), "{}", context());
+        assert_eq!(finite.is_ok(), case.fault.accepted(), "{}", context());
         if finite.is_ok() {
             accepted += 1;
         } else {

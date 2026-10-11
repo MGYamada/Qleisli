@@ -1,0 +1,8 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::phase_eighth;
+classical fn scalar(u:Unit)->(Bit,(Bit,Bit)){(0,(0,1))}
+meaning Minus:Unit=phase_by(scalar);
+pub unitary fn implementation(q:Q<Unit>)->Q<Unit>{phase_eighth(phase_eighth(phase_eighth(phase_eighth(q))))}
+pub unitary fn client[static U:Op<Unit,Minus>](q:Q<Unit>)->Q<Unit> requires Apply(U){U(q)}
+pub unitary fn bound(q:Q<Unit>)->Q<Unit>{client[checked_op(implementation,Minus)](q)}
+observe fn main()->Unit{()}

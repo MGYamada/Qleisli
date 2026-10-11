@@ -1,0 +1,8 @@
+use std::quantum::init0;
+classical fn predicate(b:Bit) -> Bit { b }
+unitary fn specified(q:Q<Bit>) -> Q<Bit> { q }
+unitary fn bad(q:Q<Bit>) -> Q<Bit> {
+    with_computed(q,predicate,specified) { |data,scratch|
+        (data,init0())
+    }
+}

@@ -1,0 +1,9 @@
+use std::quantum::{init0, h};
+use std::observe::measure_z;
+
+unitary fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }
+unitary fn implementation(q: Q<Bit>) -> Q<Bit> { q }
+
+pub observe fn main() -> Bit {
+    measure_z(h(apply_contract(implementation, reference_h, init0())))
+}

@@ -1,0 +1,1 @@
+basis fn one(_:Unit)->Bit{1} basis fn predicate()->Bit{one()}

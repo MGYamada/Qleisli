@@ -1,0 +1,130 @@
+{
+  "source": "unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=q;power(f,0)(f)}",
+  "initial_missing_checker_observations": [
+    {
+      "label": "before",
+      "argv": [
+        "/private/tmp/qleisli-operator-retirement-before",
+        "check",
+        "/private/tmp/qleisli-retirement-local-name-diagnostic",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "binary_sha256": "2bf467c7b5541c3f3c8fecd3d8c9e4938db9f81dc249304550f21af968297c77",
+      "response": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "project",
+            "severity": "error",
+            "message": "select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL",
+            "primary": null,
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "label": "after",
+      "argv": [
+        "/private/tmp/qleisli-operator-retirement-after-final",
+        "check",
+        "/private/tmp/qleisli-retirement-local-name-diagnostic",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "binary_sha256": "4abf9439216a8724709e18026918dd5a23bfdfcc5c8f86c88d778dfc3784364f",
+      "response": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "project",
+            "severity": "error",
+            "message": "select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL",
+            "primary": null,
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    }
+  ],
+  "checker_selected_observations": [
+    {
+      "label": "before",
+      "argv": [
+        "/private/tmp/qleisli-operator-retirement-before",
+        "check",
+        "/private/tmp/qleisli-retirement-local-name-diagnostic",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "binary_sha256": "2bf467c7b5541c3f3c8fecd3d8c9e4938db9f81dc249304550f21af968297c77",
+      "response": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "type_mismatch",
+            "severity": "error",
+            "message": "a local or spent runtime value cannot be a static operation",
+            "primary": {
+              "path": "main.qli",
+              "start": 47,
+              "end": 48,
+              "line": 1,
+              "column": 48
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    },
+    {
+      "label": "after",
+      "argv": [
+        "/private/tmp/qleisli-operator-retirement-after-final",
+        "check",
+        "/private/tmp/qleisli-retirement-local-name-diagnostic",
+        "--format=json",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "binary_sha256": "4abf9439216a8724709e18026918dd5a23bfdfcc5c8f86c88d778dfc3784364f",
+      "response": {
+        "format": "qleisli.result",
+        "version": 1,
+        "command": "check",
+        "outcome": "error",
+        "diagnostics": [
+          {
+            "code": "type_mismatch",
+            "severity": "error",
+            "message": "a local or spent runtime value cannot be a static operation",
+            "primary": {
+              "path": "main.qli",
+              "start": 47,
+              "end": 48,
+              "line": 1,
+              "column": 48
+            },
+            "related": []
+          }
+        ],
+        "result": null
+      }
+    }
+  ],
+  "scope": "Byte-identical canonical local-name source on before/after binaries; identical type_mismatch text and original token span. The initial missing-checker failures remain failures."
+}

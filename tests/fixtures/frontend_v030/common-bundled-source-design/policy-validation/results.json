@@ -1,0 +1,33 @@
+{
+  "status": "ordinary-policy-and-docs-checks-passed",
+  "selected_input_count": 349,
+  "source_mismatches": {},
+  "pinned_mdbook_verified": true,
+  "actual_command_count": 13,
+  "regression_test_counts": {
+    "03.book-regression": 12,
+    "05.authoring-regression": 7,
+    "07.edition-regression": 11,
+    "09.docs-regression": 36
+  },
+  "rendered_output_bytes": 3850005,
+  "native_acceptance_authority": "unchanged Lean-only",
+  "constitutional_mode": "current source/evidence identity with trusted-base continuity; no fresh Lean replay",
+  "not_run": [
+    "Cargo/Rust builds or tests",
+    "Lean build/audit/replay",
+    "constitutional mutation suite (unchanged checker; prior results not rerun)",
+    "inventory/coverage mutation suites (already run for same metadata inputs)",
+    "full CI or release-readiness validation"
+  ],
+  "no_claim": [
+    "new guarantee admission",
+    "proof closure",
+    "complete common checker",
+    "canonical generic QFT availability",
+    "Issue closure",
+    "release approval"
+  ],
+  "raw_failures_preserved": true,
+  "original_or_previous_records_modified": false
+}

@@ -1,0 +1,23 @@
+{
+  "label": "natural-missing-and-extra-reversed",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/natural-pair/main.qli",
+    "--ir-profile=hierarchy",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+    "--nat=z=2",
+    "--nat=n=1"
+  ],
+  "exit_code": 1,
+  "seconds": 0.005029749998357147,
+  "stdout": "natural-missing-and-extra-reversed.stdout.txt",
+  "stderr": "natural-missing-and-extra-reversed.stderr.txt",
+  "native_invocations": 0,
+  "cli_sha256_before": "66a429665fbe818bbb28d93d2eb2f98757a04a0899115d3a77760618bfc747a9",
+  "cli_sha256_after": "66a429665fbe818bbb28d93d2eb2f98757a04a0899115d3a77760618bfc747a9",
+  "kernel_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+}

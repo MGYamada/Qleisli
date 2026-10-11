@@ -1,0 +1,26 @@
+//! Provisional two-Bit gate and axis-routing interfaces for edition 2026.
+//!
+//! Ordinary checked source, not compiler intrinsics. General register SWAP
+//! and arbitrary permutation witnesses are not implemented by these functions.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::cnot;
+use std::quantum::split;
+use std::quantum::join;
+
+/// Physical SWAP: |a,b> -> |b,a>, with exact coefficient +1, for all inputs
+/// and external references. The returned owners keep their original wire order.
+/// Three CNOTs are actual work; no allocation, observation or cleanup occurs.
+pub unitary fn swap(a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>, Q<Bit>) {
+    let (a,b) = cnot(a,b);
+    let (b,a) = cnot(b,a);
+    cnot(a,b)
+}
+
+/// Explicit two-axis representation reordering, with old/new map [1,0].
+/// Consume the pair and return every owner in reversed axis order, phase +1.
+/// Split/join changes the output wire order and inserts no physical gate.
+/// This is not binding exchange; target routing costs need separate evidence.
+pub unitary fn permute_axes(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+    let (a,b) = split(q);
+    join(b,a)
+}

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "emit-ir",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-swap",
+    "--output=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/baseline-artifacts/closed-named-swap.qirf.json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "recorded_utc": "2026-10-04T17:54:13.797239+00:00",
+  "elapsed_seconds": 0.4153941670083441,
+  "stdout_raw": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/baseline-artifacts/closed-named-swap.qirf.json\n",
+  "stderr": "",
+  "binary_sha256": "74857d08147f27d919021c4eda54b0f7d7edeccba35fa2c17a1bdb19c57e05bd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "transcript": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/baseline-artifacts/closed-named-swap.qirf.json\n",
+  "artifact": {
+    "path": "baseline-artifacts/closed-named-swap.qirf.json",
+    "sha256": "5ba537c68a7a69973c8071bb699954814313b496170d71d4cfe4998c8563c8fe"
+  }
+}

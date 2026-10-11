@@ -1,0 +1,1 @@
+use std::observe::measure_z; pub fn f(q:Q<Bit>)->Bit{measure_z(q)}

@@ -1,0 +1,70 @@
+[
+  {
+    "argv": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+    ],
+    "exit_code": 0,
+    "seconds": 1.2775214170105755,
+    "recorded_utc": "2026-10-05T14:59:02.667402+00:00",
+    "stdout": "00.stdout.txt",
+    "stderr": "00.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.4275092500029132,
+    "recorded_utc": "2026-10-05T14:59:03.095252+00:00",
+    "stdout": "01.stdout.txt",
+    "stderr": "01.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.12676662497688085,
+    "recorded_utc": "2026-10-05T14:59:03.222229+00:00",
+    "stdout": "02.stdout.txt",
+    "stderr": "02.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_authoring_sessions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.42476254201028496,
+    "recorded_utc": "2026-10-05T14:59:03.647222+00:00",
+    "stdout": "03.stdout.txt",
+    "stderr": "03.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_editions.py"
+    ],
+    "exit_code": 0,
+    "seconds": 3.601831084000878,
+    "recorded_utc": "2026-10-05T14:59:07.249276+00:00",
+    "stdout": "04.stdout.txt",
+    "stderr": "04.stderr.txt"
+  },
+  {
+    "argv": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.9779253330198117,
+    "recorded_utc": "2026-10-05T14:59:09.227463+00:00",
+    "stdout": "05.stdout.txt",
+    "stderr": "05.stderr.txt"
+  }
+]

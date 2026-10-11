@@ -1,0 +1,46 @@
+{
+  "scope": "Unmodified command-14 logs extracted from the downloaded hosted distribution artifact; metadata is a selected manifest excerpt.",
+  "run_id": 37204302133,
+  "artifact_id": 11304737633,
+  "run_head_from_parent": "ef111ea",
+  "archive": {
+    "path": "/private/tmp/qleisli-ef-distribution.zip",
+    "bytes": 22230052,
+    "sha256": "e1a597da5d569ec72a1bf5e8d1512cba19b7284924bdab8a6e5891cb10e70ab0"
+  },
+  "original_manifest_sha256": "4ab6f47539e4ba9e4fbbbcaa87d8073ac8d79c15bbcb28416beb9e440a2e4615",
+  "candidate": {
+    "clean": true,
+    "commit": "5efcd97be2a97ec13b1e3509e8b63cf3f63e358a",
+    "tree": "1ba8d968a1c1e8105f011c6a2f8bc450c3d035e4"
+  },
+  "command": {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--all-targets",
+      "--target-dir",
+      "/home/runner/work/_temp/qleisli-distribution-target/source-production"
+    ],
+    "cwd": "/home/runner/work/_temp/qleisli-distribution-artifacts-rwsp5v_0/source",
+    "elapsed_seconds": 1372.86,
+    "exit_code": 101,
+    "stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-rwsp5v_0/logs/14.stderr",
+    "stdout": "/home/runner/work/_temp/qleisli-distribution-artifacts-rwsp5v_0/logs/14.stdout"
+  },
+  "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+  "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)",
+  "logs": {
+    "stdout": {
+      "zip_member": "qleisli-distribution-artifacts-rwsp5v_0/logs/14.stdout",
+      "path": "14.stdout",
+      "sha256": "fd04e4c412cce65231fa63978e97ccb9f64f2d10fd5519fd34ba905c68ef3fe8"
+    },
+    "stderr": {
+      "zip_member": "qleisli-distribution-artifacts-rwsp5v_0/logs/14.stderr",
+      "path": "14.stderr",
+      "sha256": "ff69828cc1605d4c6c57b95de6b4435c8b38a994532bae37a5d4159b119766eb"
+    }
+  }
+}

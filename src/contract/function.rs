@@ -196,22 +196,25 @@ impl FunctionEvidence {
         budget: &mut Budget,
     ) -> Result<Self, ContractDiagnostic> {
         validate_identity(&identity, budget)?;
-        let implementation_view = implementation.clone();
-        let specification_view = specification.clone();
-        let signature_view = signature.clone();
+        // Keep the untrusted trees borrowed until transport has checked their
+        // capacity. Cloning here would recurse before its depth checks run.
         kernel
-            .function_evidence(signature, implementation, specification, identity, budget)
+            .function_evidence(
+                &signature,
+                &implementation,
+                &specification,
+                identity,
+                budget,
+            )
             .map_err(|failure| {
                 let error = native_error(failure);
                 let detail = if error == ContractError::EquationMismatch {
                     (|| {
-                        let bits = signature_view.bits()?;
-                        preflight(&implementation_view, bits, budget)?;
-                        preflight(&specification_view, bits, budget)?;
-                        let a = extract(&implementation_view, &signature_view, budget)?
-                            .matrix(budget)?;
-                        let b = extract(&specification_view, &signature_view, budget)?
-                            .matrix(budget)?;
+                        let bits = signature.bits()?;
+                        preflight(&implementation, bits, budget)?;
+                        preflight(&specification, bits, budget)?;
+                        let a = extract(&implementation, &signature, budget)?.matrix(budget)?;
+                        let b = extract(&specification, &signature, budget)?.matrix(budget)?;
                         Ok::<_, ContractError>(super::equation_counterexample(&a, &b))
                     })()
                     .ok()
@@ -317,14 +320,17 @@ impl FunctionEvidence {
         self.expanded_steps
     }
 
-    /// Check exact attachment, including both raw functions and source bytes.
+    /// Check exact attachment of the basis tree, both raw functions and source bytes.
+    /// Equal bit widths do not identify different tuple trees or Unit factors.
     pub fn check_binding(
         &self,
+        signature: &BasisType,
         identity: &FunctionIdentity,
         implementation: &RawProgram,
         specification: &RawProgram,
     ) -> Result<(), ContractError> {
-        if !self.identity.matches(identity)
+        if signature != &self.signature
+            || !self.identity.matches(identity)
             || !same_snapshot(implementation, &self.implementation)?
             || !same_snapshot(specification, &self.specification)?
         {
@@ -371,7 +377,7 @@ fn expanded_steps(circuit: &Circuit) -> Result<usize, ContractError> {
     Ok(total.max(1))
 }
 
-fn validate_identity(
+pub(crate) fn validate_identity(
     identity: &RetainedIdentity,
     budget: &mut Budget,
 ) -> Result<(), ContractError> {
@@ -685,6 +691,16 @@ impl Extraction<'_> {
         for op in operations {
             self.budget.charge(1)?;
             match op {
+                RawOp::PackUnit { output } => {
+                    if self.registers.insert(*output, vec![]).is_some() {
+                        return Err(invalid("Unit map reuses a live owner"));
+                    }
+                }
+                RawOp::UnpackUnit { input } => {
+                    if !self.take(*input)?.is_empty() {
+                        return Err(invalid("Unit map consumes a nonempty owner"));
+                    }
+                }
                 RawOp::Gate {
                     gate,
                     input,
@@ -1157,7 +1173,9 @@ mod snapshot_tests {
             specification: "specification".into(),
             sources: sources.as_ref().clone(),
         };
-        first.check_binding(&expected, &raw(), &raw()).unwrap();
+        first
+            .check_binding(&BasisType::Unit, &expected, &raw(), &raw())
+            .unwrap();
         let (implementation, specification, borrowed) = first.identity_parts();
         assert_eq!(implementation, expected.implementation);
         assert_eq!(specification, expected.specification);

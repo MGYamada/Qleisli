@@ -1,0 +1,7 @@
+
+running 2 tests
+test frontend::sized::qpe::tests::native_named_qpe_from_rust_source_checks_phase_reference_and_provider_mutation ... ok
+test frontend::sized::qpe::tests::native_named_qpe_commuting_fourier_variants_have_the_same_outcome ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 105 filtered out; finished in 1.72s
+

@@ -1,0 +1,39 @@
+{
+  "format": "qleisli.command-launch-error-observation",
+  "version": 1,
+  "kind": "operator tool-output transcription, not child command output",
+  "attempted_argv": [
+    "/Users/masa/.cargo/bin/rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--locked",
+    "--offline",
+    "--jobs",
+    "2",
+    "--test",
+    "default_construction_boundary",
+    "--test",
+    "rust_boundary_diagnostics",
+    "--test",
+    "quantum_unit_maps",
+    "--",
+    "--test-threads=2"
+  ],
+  "runner_exit_code": 1,
+  "child_started": false,
+  "error": "FileNotFoundError: [Errno 2] No such file or directory: '/Users/masa/.cargo/bin/rustup'",
+  "reason": "Root guessed a nonexistent executable path despite prior successful records using rustup from PATH. This is no Cargo or test failure.",
+  "incomplete_stream_files": [
+    {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/msrv-tests-first-01.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/default-construction/validation-01/msrv-tests-first-01.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "correction": "Resolve actual rustup from PATH and invoke with a new record name; preserve first created empty streams."
+}

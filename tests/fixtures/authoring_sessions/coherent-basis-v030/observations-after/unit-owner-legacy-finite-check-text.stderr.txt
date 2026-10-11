@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-legacy/main.qli:6:50: parse: parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.

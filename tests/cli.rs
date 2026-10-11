@@ -37,7 +37,7 @@ fn explicit_native_check_accepts_mainless_libraries_and_checks_unused_declaratio
 fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
     use std::os::{fd::OwnedFd, unix::net::UnixStream};
     use std::process::Stdio;
-    let root = SourceRoot::new("observe fn main()->CBit{true}");
+    let root = SourceRoot::new("observe fn main()->Bit{1}");
     let artifact = root.0.join("out.qirf");
     for name in ["check", "run", "sample", "doc", "emit-ir", "verify-ir"] {
         let (writer, reader) = UnixStream::pair().unwrap();
@@ -67,7 +67,7 @@ fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
     let (writer, reader) = UnixStream::pair().unwrap();
     drop(reader);
     let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .args(["sized", "emit-proposal", "--entry=main::f"])
+        .args(["emit-proposal", "--entry=main::f"])
         .arg(format!(
             "--module=main={}",
             root.0.join("main.qli").display()
@@ -78,7 +78,10 @@ fn closed_stdout_reports_failure_without_panicking_for_every_text_command() {
         .unwrap();
     assert_eq!(output.status.code(), Some(1), "{output:?}");
     let text = String::from_utf8(output.stderr).unwrap();
-    assert!(text.contains("could not write sized result"), "{text}");
+    assert!(
+        text.contains("could not write selected source result"),
+        "{text}"
+    );
     assert!(!text.contains("panicked"), "{text}");
 }
 
@@ -102,7 +105,7 @@ fn doc_reports_truncated_static_arguments_without_panicking() {
 
 #[test]
 fn check_and_run_accept_source_roots_with_spaces_and_unicode() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     let source_root = root.0.join("source root 日本語");
     std::fs::create_dir(&source_root).unwrap();
     std::fs::rename(root.0.join("main.qli"), source_root.join("main.qli")).unwrap();
@@ -149,16 +152,29 @@ fn non_utf8_command_reports_usage_without_panicking() {
     use std::ffi::OsStr;
     use std::os::unix::ffi::OsStrExt;
 
-    let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
-        .arg(OsStr::from_bytes(b"check\xff"))
+    // Keep historical authoring-session output immutable. A malformed command
+    // must follow the current unknown-command route, including discovery help.
+    let unknown = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+        .arg("unknown-command")
         .arg(".")
         .output()
         .unwrap();
-    assert_eq!(output.status.code(), Some(2), "{output:?}");
-    assert_eq!(
-        String::from_utf8(output.stderr).unwrap(),
-        include_str!("fixtures/verification_v029/usage.txt")
-    );
+    assert_eq!(unknown.status.code(), Some(2), "{unknown:?}");
+    assert!(unknown.stdout.is_empty());
+    let usage = String::from_utf8(unknown.stderr).unwrap();
+    assert!(usage.starts_with("usage:\n"));
+    assert!(usage.contains("qleisli help ecosystem"));
+    assert!(!usage.contains("panicked"));
+    for bytes in [b"check\xff".as_slice(), b"help\xff", b"--help\xff"] {
+        let output = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .arg(OsStr::from_bytes(bytes))
+            .arg(".")
+            .output()
+            .unwrap();
+        assert_eq!(output.status.code(), Some(2), "{output:?}");
+        assert!(output.stdout.is_empty());
+        assert_eq!(String::from_utf8(output.stderr).unwrap(), usage);
+    }
 }
 
 #[test]
@@ -218,7 +234,7 @@ fn check_and_run_accept_existing_non_utf8_source_roots() {
     use std::ffi::OsStr;
     use std::os::unix::ffi::OsStrExt;
 
-    let root = SourceRoot::new("observe fn main() -> CBit { false }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 0 }");
     let source_root = root.0.join(OsStr::from_bytes(b"source-\xff"));
     std::fs::create_dir(&source_root).unwrap();
     std::fs::rename(root.0.join("main.qli"), source_root.join("main.qli")).unwrap();

@@ -1,0 +1,72 @@
+{
+  "format": "qleisli.independent-selector-review",
+  "version": 1,
+  "recorded_utc": "2026-10-06T03:03:03.635281+00:00",
+  "clock_source": "Host Python datetime.now(timezone.utc) observation at record creation.",
+  "prior_review": {
+    "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/independent-selector-review-01.json",
+    "sha256": "705058d9f11ab8b68093d60536417f40397715e01f5069aded80239efe2ab6d7",
+    "preserved_unchanged": true,
+    "source_hash_timing_note": "The SELECTOR-01 negative probe observed the earlier optional-map fallback. The other agent applied its missing-map guard before review01 was written, so review01 current_source_fixtures.py and test_current_source_fixtures.py hashes already identify those later record-time bytes, not the earlier probe state. Preserve that historical record; this supplement explicitly distinguishes the probe observation from its subsequent file-hash observation."
+  },
+  "reviewer_role": "Independent read-only selector reviewer; did not author the four reviewed scripts. Previously authored normative stdlib documentation is outside this independent review.",
+  "scope": "Focused rereview of SELECTOR-01 and SELECTOR-02 fixes and their pure regression definitions; no native/build/unit-test execution by this reviewer in this rereview.",
+  "sources": {
+    "scripts/check_input_corpus.py": {
+      "sha256": "189573cbedbe8d094173bc4558350285927dba2aac27f31a613e3a9d6fdd9c56",
+      "bytes": 51098
+    },
+    "scripts/test_check_input_corpus.py": {
+      "sha256": "70f4dc412f9a01749ebc21664251144ffbf0f18be6a6cc4463f840a2977c8a62",
+      "bytes": 32875
+    },
+    "scripts/current_source_fixtures.py": {
+      "sha256": "82360f66a35341af473c33424d6d5fd59909499c8c1ba3ac9ee8616f4ce560e0",
+      "bytes": 6049
+    },
+    "scripts/test_current_source_fixtures.py": {
+      "sha256": "4e255dca81be955b59212770693f7b6aa5029b8e52d53541ee6fbe2d9511e8a9",
+      "bytes": 14200
+    }
+  },
+  "findings_resolution": [
+    {
+      "id": "SELECTOR-01",
+      "status": "resolved-by-source-review",
+      "path": "scripts/current_source_fixtures.py",
+      "function": "current_source_fixture",
+      "evidence": "After verifying the historical/prior-current pair, the helper requires the namespace map to be an actual file and raises a missing semantic namespace source map error otherwise. It no longer returns the prior project on map absence. Valid present maps still retain prior selection for genuinely unmapped projects.",
+      "regression": "scripts/test_current_source_fixtures.py::SourceFixtureIdentity.test_missing_namespace_map_rejects_without_previous_source_fallback",
+      "fixture_change": "Isolated unit-test roots now write a valid explicit empty namespace map; predecessor inventory/hash checks remain unchanged."
+    },
+    {
+      "id": "SELECTOR-02",
+      "status": "resolved-by-source-review",
+      "path": "scripts/check_input_corpus.py",
+      "functions": [
+        "migrated_sources",
+        "current_project"
+      ],
+      "evidence": "Each function requires base.resolve().is_relative_to(corpus.resolve()) before snapshot inventory, hashing or selected-project traversal. The existing local(base, source/project) check then rejects project/file escapes from that bounded snapshot root. Root symlinks outside corpus cannot become the containment authority.",
+      "regression": "scripts/test_check_input_corpus.py::MigrationTests.test_snapshot_root_symlink_cannot_escape_corpus",
+      "fixture_change": "The new pure regression relocates the snapshot sources outside corpus, symlinks the root and expects rejection from both migration validation and execution-source selection."
+    }
+  ],
+  "new_actionable_findings": [],
+  "static_oracle_identity": {
+    "kind": "AST comparison against current HEAD of named mathematical/probe functions, ignoring location attributes; no function execution.",
+    "head": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+    "unchanged_definitions": {
+      "reference_column": true,
+      "interference": true,
+      "probabilities": true,
+      "driver": true,
+      "protocol_probes": true,
+      "host_observables": true
+    }
+  },
+  "preservation": "The fixes change selection failure guards and isolated regression setup only; they do not rewrite the original review, historical source records, migration maps/observations, source contracts or independent equations.",
+  "validation_limit": "The integrator is running the actual final pure regression suite. This rereview does not adopt prior or pending results as a final test success; no full CI/release/source-preservation proof is claimed.",
+  "constitutional_limit": "Edition2026, QS/PR/RS/EXACT interpretations and both scoped QLV1 guarantees retain their existing scopes/status. No new Guardian act, proof discharge, Issue completion or generic-QFT obligation is asserted.",
+  "license": "Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0."
+}

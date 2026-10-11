@@ -1,0 +1,3 @@
+finite.load: ok, 2 local modules
+sized.parse: a:63..67: name: h is shadowed or is not a transparent function
+finite.check: Diagnostic { code: "type_mismatch", message: "a local value is not callable", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/a.qli", span: Span { start: 63, end: 64 }, line: 1, column: 64 }) }

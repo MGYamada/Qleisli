@@ -1,0 +1,63 @@
+
+running 13 tests
+test all_checked_arms_zero_folds_and_decreasing_recursion_contribute_effects ... ok
+test cli_text_and_json_explain_the_semantic_limit_without_tracker_links ... ok
+test every_derived_stdlib_body_exports_its_effect_without_runtime_annotation ... ok
+test false_annotations_reject_direct_and_transitive_effects_in_both_profiles ... ok
+test fn_suggestions_do_not_require_a_redundant_effect_annotation ... ok
+test host_selected_cli_uses_the_same_semantic_explanation_in_text_and_json ... ok
+test host_selected_providers_distinguish_unsupported_effects_from_shape_errors ... ok
+test immutable_metadata_and_documentation_use_the_checked_source_bytes ... ok
+test names_and_module_paths_do_not_grant_body_effects_or_access ... ok
+test broad_assertions_do_not_inflate_caller_or_interface_effects ... ok
+test operation_providers_use_principal_effects_and_cannot_hide_measurement ... ok
+test typed_finite_lifts_preserve_width_and_scalar_phase_classification ... ok
+test principal_classes_do_not_depend_on_declaration_order_or_call_expansion ... ok
+
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.01s
+
+
+running 3 tests
+test nested_quantum_environments_cannot_be_reused_as_callables_or_providers ... ok
+test ordinary_calls_are_complete_first_order_calls_in_both_source_paths ... ok
+test reusing_a_static_formal_composes_actions_without_duplicating_its_live_owner ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.54s
+
+
+running 15 tests
+test control_conjugation_needs_no_controlled_basis_change_and_keeps_phase ... ok
+test controlled_only_access_derives_transparent_inverse_and_controlled_circuits ... ok
+test generic_bodies_cannot_borrow_undeclared_access_from_concrete_providers ... ok
+test generic_cleanup_obligations_are_discharged_for_each_actual_instance ... ok
+test lexical_runtime_binding_rejects_static_shadow_before_later_calls ... ok
+test meanings_reject_wrong_phase_wrong_tree_and_nonpermutations ... ok
+test new_grammar_imports_documentation_and_depth_limits_are_explicit ... ok
+test parameter_adjoint_repeat_and_both_qif_polarities_are_correct ... ok
+test pending_call_frames_declared_effects_and_local_shadowing_are_preserved ... ok
+test all_constructors_match_independent_full_operator_specifications ... ok
+test scalar_phase_and_zero_width_ownership_survive_control ... ok
+test shipped_contract_examples_execute_after_reserved_module_migration ... ok
+test unchanged_generic_client_accepts_two_independent_providers_and_retains_receipts ... ok
+test unused_generic_declarations_and_static_dependencies_are_checked ... ok
+test static_basis_errors_and_concrete_step_instance_limits_reject_without_panics ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.63s
+
+
+running 12 tests
+test effects_are_not_hidden_by_the_ordinary_unit_argument_or_result ... ok
+test every_isolated_owner_and_unused_zero_iteration_body_is_checked ... ok
+test first_positive_sources_retain_whole_signatures_and_reach_elaboration ... ok
+test four_controlled_roundtrip_scalars_are_z_with_an_untouched_reference ... ok
+test isolated_wrong_types_and_arities_reject_before_argument_evaluation ... ok
+test exact_eta_epsilon_and_both_roundtrips_preserve_reference_coefficients ... ok
+test left_and_right_owner_product_maps_preserve_order_and_entangled_references ... ok
+test ordinary_unit_copy_creates_fresh_owners_while_finish_returns_no_owner ... ok
+test native_valid_wrong_scalar_and_matching_own_meaning_fail_the_unchanged_request ... ok
+test selected_coherent_lifts_remain_separate_from_explicit_packaged_maps ... ok
+test unit_maps_after_observation_retain_actual_source_events_and_native_action ... ok
+test scalar_arguments_execute_once_and_finish_does_not_erase_phase ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.93s
+

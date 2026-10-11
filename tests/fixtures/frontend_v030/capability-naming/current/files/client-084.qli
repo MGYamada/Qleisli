@@ -1,0 +1,10 @@
+//! Probe T dagger on |1>: real overlap is positive, imaginary overlap negative.
+use interference::real_overlap;
+use gates::eighth_phase;
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> (Bit,Bit) {
+    let (meter,target) = real_overlap[adjoint(eighth_phase)](x(init0()));
+    (meter,measure_z(target))
+}

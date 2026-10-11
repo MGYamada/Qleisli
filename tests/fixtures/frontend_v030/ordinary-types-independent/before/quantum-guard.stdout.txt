@@ -1,0 +1,3 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "type_mismatch", message: "if requires a CBit condition: expected `CBit`, found `Q<Bit>`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/quantum-guard/main.qli", span: Span { start: 40, end: 61 }, line: 1, column: 41 }) }
+sized.generic: Error { code: "unsupported", module: Some("main"), span: Span { start: 40, end: 61 }, message: "sized preparation profile: unsupported runtime expression" }

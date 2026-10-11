@@ -1,0 +1,35 @@
+{
+  "format": "qleisli.ordinary-types-independent-follow-up-sources",
+  "version": 1,
+  "reason": "Preserve original !/^/& authoring diagnostics; separately use the existing not/xor/and spellings and add the old empty-tuple spelling of the Unit-returning call for before/after source-event comparison.",
+  "cases": [
+    {
+      "name": "bit-boolean-keywords",
+      "entry": "main::f",
+      "naturals": {},
+      "source_sha256": "9394a999c72a4f5a90b792ee8d5e5b0e2998c9d452c350cf3f0e3908f107abe1",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "canonical-actions-keywords",
+      "entry": "main::main",
+      "naturals": {},
+      "source_sha256": "44062a1ef29abbcc84e798c58e660181233495a61a2ff4cea5fe4186df49304f",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "legacy-actions-keywords",
+      "entry": "main::main",
+      "naturals": {},
+      "source_sha256": "40be593fb0660dc420c6cdd9cf8de7844a61a96b996afc264aca97f0567fdc6b",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "name": "legacy-unit-drain-readout",
+      "entry": "main::f",
+      "naturals": {},
+      "source_sha256": "3b776cce7ad747953d98af435fb17f9fb58853d9a45f5782fed57921259bbc46",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  ]
+}

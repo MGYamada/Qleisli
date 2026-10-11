@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "rustc",
+    "--version"
+  ],
+  "cwd": "/private/tmp/qleisli-routed-control-replay-20261005",
+  "started_at": "2026-10-04T15:31:57.422790+00:00",
+  "elapsed_seconds": 0.02485479199094698,
+  "exit_code": 0,
+  "stdout": "rust-version.stdout.txt",
+  "stderr": "rust-version.stderr.txt"
+}

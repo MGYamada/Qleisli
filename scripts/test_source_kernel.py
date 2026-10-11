@@ -6,6 +6,7 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 import json
 import os
 from pathlib import Path
+from current_source_fixtures import current_source_fixture
 import subprocess
 import sys
 import tempfile
@@ -29,8 +30,9 @@ class SourceKernel(unittest.TestCase):
 
     def test_library_without_entry_checks_with_native_kernel(self):
         for source in ['library', 'project', 'generic']:
-            legacy = self.run_cli('check', FIXTURE/source)
-            selected = self.run_cli('check', FIXTURE/source, KERNEL)
+            project = FIXTURE/source if source == 'library' else current_source_fixture(FIXTURE/source)
+            legacy = self.run_cli('check', project)
+            selected = self.run_cli('check', project, KERNEL)
             self.assertEqual(legacy, selected)
             self.assertEqual(selected[0], 0)
 
@@ -76,20 +78,21 @@ if sum(op.get('gate') == 't' for op in ops) >= 2 or sum(
         any(s['action']['tag'] == 'contract' for s in op.get('steps', [])) for op in ops) >= 2:
     print('qleisli.qirf-native 1\\nerror\\ncontract')
     sys.exit(1)
-result = subprocess.run(''' + repr([str(KERNEL), '--qirf-native']) + ''', input=data, capture_output=True)
+result = subprocess.run(''' + repr([str(KERNEL)]) + ''' + sys.argv[1:], input=data, capture_output=True)
 sys.stdout.buffer.write(result.stdout)
 sys.exit(result.returncode)
 ''')
             shim.chmod(0o700)
             for source in ['project', 'generic']:
+                project = current_source_fixture(FIXTURE/source)
                 for action, flags in [('check', []), ('run', []),
                                       ('sample', ['--shots=2', '--seed=5']),
                                       ('emit-ir', [f'--output={tmp / f"{source}-ordinary.qirf"}'])]:
                     with self.subTest(action=action):
-                        self.assertEqual(self.run_cli(action, FIXTURE/source, None, *flags)[0], 0)
+                        self.assertEqual(self.run_cli(action, project, None, *flags)[0], 0)
                         # The ordinary emit created its output; use another target.
                         selected_flags = [f'--output={tmp / f"{source}-blocked.qirf"}'] if action == 'emit-ir' else flags
-                        code, document = self.run_cli(action, FIXTURE/source, shim, *selected_flags)
+                        code, document = self.run_cli(action, project, shim, *selected_flags)
                         self.assertNotEqual(code, 0)
                         self.assertIsNone(document['result'])
                         self.assertIn('unused_phase', document['diagnostics'][0]['message'])

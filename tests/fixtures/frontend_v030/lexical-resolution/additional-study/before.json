@@ -1,0 +1,26 @@
+[
+  {
+    "case": "shadow-static-missing-argument",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:77..81: unsupported: sized preparation profile: unsupported runtime expression\nfinite.check: Diagnostic { code: \"unknown_name\", message: \"unknown value `missing`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli\", span: Span { start: 84, end: 91 }, line: 1, column: 85 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "shadow-static-valid-argument",
+    "argv": [
+      "/private/tmp/qleisli-lexical-before/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument",
+      "check"
+    ],
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:77..81: unsupported: sized preparation profile: unsupported runtime expression\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"a local or spent runtime value cannot be a static operation\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli\", span: Span { start: 82, end: 83 }, line: 1, column: 83 }) }\n",
+    "stderr": ""
+  }
+]

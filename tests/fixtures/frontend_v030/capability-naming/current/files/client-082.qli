@@ -1,0 +1,9 @@
+use std::quantum::{init0,h,s,sdg,tdg,t,id,phase_eighth};
+use std::observe::measure_z;
+
+observe fn main() -> Bit {
+    let q = h(init0());
+    let q = tdg(t(sdg(s(id(q)))));
+    let q = adjoint(phase_eighth)(phase_eighth(q));
+    measure_z(h(q))
+}

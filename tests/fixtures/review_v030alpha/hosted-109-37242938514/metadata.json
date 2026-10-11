@@ -1,0 +1,205 @@
+{
+  "format": "qleisli.hosted-failure-audit",
+  "version": 1,
+  "scope": "Read-only audit of four failed jobs; no current-tree execution or passing-CI claim.",
+  "repository": "MGYamada/Qleisli",
+  "run_id": 37242938514,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37242938514",
+  "fetched_via": [
+    "github_fetch_workflow_run_jobs",
+    "github_fetch_workflow_job_logs",
+    "github_fetch_commit_workflow_runs"
+  ],
+  "run": {
+    "id": 37242938514,
+    "name": "Specification and implementation checks",
+    "status": "completed",
+    "conclusion": "failure",
+    "run_number": 177,
+    "jobs_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37242938514/jobs",
+    "logs_url": "https://api.github.com/repos/MGYamada/Qleisli/actions/runs/37242938514/logs",
+    "workflow_id": 367733658
+  },
+  "checkout": {
+    "pull_request": 307,
+    "ref": "refs/remotes/pull/307/merge",
+    "merge_sha": "dca850b5e8b543af36cf1a907826a7a819dd9a4b",
+    "head_sha": "d753962de3eedd39629c8441f2b82521ce01d70f",
+    "base_sha": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+    "evidence": "Each job log records the same checkout and merge subject; this distinguishes tested merge bytes from the PR head."
+  },
+  "jobs": [
+    {
+      "id": 111555118065,
+      "name": "check-lean-kernel",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_url": "https://github.com/MGYamada/Qleisli/actions/runs/37242938514/job/111555118065",
+      "failed_steps": [
+        {
+          "name": "Run all retained native comparisons with bounded parallelism",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 12
+        }
+      ],
+      "skipped_step_count": 7,
+      "excerpt": "native-comparisons.excerpt.txt",
+      "decoded_log_line_count": 764,
+      "observed_failure": "existing_execution_profile_limits_remain_explicit panicked at tests/ordinary_types.rs:369:84: unwrap_err() received parsed ordinary Bit constant 0. The ordinary_types target finished 13 passed / 1 failed.",
+      "native_comparison_passed_tasks": [
+        "lean-layout-dag (10.9s)",
+        "lean-phase-operations (2.5s)",
+        "lean-layout (16.9s)",
+        "lean-phase-layout (31.8s)",
+        "hierarchical-gradient (30.6s)",
+        "lean-interference (21.3s)",
+        "lean-hierarchy (53.6s)",
+        "hierarchical-fourier-stage (36.8s)",
+        "lean-exact (62.7s)",
+        "lean-finite (117.9s)",
+        "lean-raw-completion (121.9s)",
+        "lean-raw (126.3s)",
+        "lean-observation (76.9s)",
+        "lean-qft (6.3s)",
+        "lean-qft-semantic (4.8s)",
+        "lean-qpe (11.9s)",
+        "lean-controlled-power (7.4s)",
+        "lean-qft-graph (27.3s)",
+        "hierarchical-artifact (6.1s)",
+        "hierarchical-graph (14.6s)",
+        "hierarchical-typing (4.5s)",
+        "hierarchical-contract-typing (9.9s)",
+        "hierarchical-structural (9.3s)",
+        "lean-reshape (9.8s)",
+        "hierarchical-readout (15.1s)",
+        "hierarchical-instrument (2.5s)",
+        "hierarchical-preparation (11.1s)",
+        "lean-streamed-instrument (77.9s)",
+        "compact-sized-graph (0.3s)",
+        "lean-branch-function (100.4s)",
+        "sized-instrument (21.4s)",
+        "hierarchical-execution (21.9s)",
+        "sized-qpe-readout (6.7s)",
+        "hierarchical-power (9.7s)",
+        "hierarchical-routed-power (12.0s)",
+        "hierarchical-circuit-trace (14.8s)",
+        "hierarchical-qpe-schedule (13.2s)",
+        "sized-source-native (16.9s)",
+        "hierarchical-qpe-root (30.4s)",
+        "sized-cli-native (2.6s)",
+        "sized-review-dialects-native (6.7s)",
+        "named-qpe-native (27.5s)",
+        "hierarchical-derivation (31.8s)",
+        "hierarchical-calls (8.5s)",
+        "hierarchical-finite (5.3s)",
+        "hierarchical-qpe-instrument (69.4s)",
+        "hierarchical-conditional (16.7s)",
+        "instrument-host (137.0s)",
+        "verification-baseline (54.8s)",
+        "hierarchical-fourier-base (41.6s)",
+        "hierarchical-host (84.5s)",
+        "hierarchical-wiring (34.2s)",
+        "hierarchical-fourier-body (44.8s)",
+        "sized-corpus (4.0s)",
+        "hierarchical-request (126.3s)",
+        "sized-qft (12.0s)",
+        "rust-fourier-factoring (6.5s)",
+        "sized-qpe (9.8s)",
+        "hierarchical-fourier-root (60.1s)",
+        "sized-arithmetic (17.0s)",
+        "sized-qpe-clients (16.3s)",
+        "hierarchical-qft (11.7s)",
+        "hierarchical-fourier-host (58.2s)",
+        "hierarchical-qft-shared-gradient (31.3s)",
+        "lean-kernel-self-test (81.9s)",
+        "native-paths (273.4s)"
+      ],
+      "native_comparison_failed_tasks": [
+        "native-acceptance"
+      ]
+    },
+    {
+      "id": 111555118097,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_url": "https://github.com/MGYamada/Qleisli/actions/runs/37242938514/job/111555118097",
+      "failed_steps": [
+        {
+          "name": "Run cargo +1.98.1 test --all-targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        }
+      ],
+      "skipped_step_count": 23,
+      "excerpt": "rust.excerpt.txt",
+      "decoded_log_line_count": 1181,
+      "observed_failure": "existing_execution_profile_limits_remain_explicit panicked at tests/ordinary_types.rs:369:84: unwrap_err() received parsed ordinary Bit constant 0. The ordinary_types target finished 13 passed / 1 failed."
+    },
+    {
+      "id": 111555118103,
+      "name": "check-rust-msrv",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_url": "https://github.com/MGYamada/Qleisli/actions/runs/37242938514/job/111555118103",
+      "failed_steps": [
+        {
+          "name": "Run cargo +1.85.0 test --all-targets",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 7
+        }
+      ],
+      "skipped_step_count": 15,
+      "excerpt": "msrv.excerpt.txt",
+      "decoded_log_line_count": 1177,
+      "observed_failure": "existing_execution_profile_limits_remain_explicit panicked at tests/ordinary_types.rs:369:84: unwrap_err() received parsed ordinary Bit constant 0. The ordinary_types target finished 13 passed / 1 failed."
+    },
+    {
+      "id": 111555118156,
+      "name": "check-distribution",
+      "status": "completed",
+      "conclusion": "failure",
+      "job_url": "https://github.com/MGYamada/Qleisli/actions/runs/37242938514/job/111555118156",
+      "failed_steps": [
+        {
+          "name": "Verify clean package and complete source archive",
+          "status": "completed",
+          "conclusion": "failure",
+          "number": 8
+        }
+      ],
+      "skipped_step_count": 3,
+      "excerpt": "distribution.excerpt.txt",
+      "decoded_log_line_count": 546,
+      "observed_failure": "Distribution cargo rustdoc returned 101; exact rustdoc diagnostic is only in uploaded logs/10.stderr."
+    }
+  ],
+  "distribution_diagnostic": {
+    "command": [
+      "cargo",
+      "rustdoc",
+      "--offline",
+      "--locked",
+      "--lib",
+      "--target-dir",
+      "/home/runner/work/_temp/qleisli-distribution-target/package-docs",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "exit_code": 101,
+    "reported_stderr": "/home/runner/work/_temp/qleisli-distribution-artifacts-gtvdis81/logs/10.stderr",
+    "diagnosis": "Not present in fetched job log. This is a rustdoc failure, not a source-test failure.",
+    "artifact_id": 11317129248,
+    "artifact_zip_size_reported": 34134611,
+    "artifact_note": "Connector returned a remote ZIP file reference. No ZIP bytes were saved or extracted locally, and the diagnostic file was not inspected."
+  },
+  "constraints": [
+    "No production changes, builds, tests, workflow retries or GitHub mutations.",
+    "Only selected exact log lines are preserved, with original one-based line numbers and timestamps.",
+    "Job execution stops or skips commands after failures; unexecuted tests are not reported as passing."
+  ]
+}

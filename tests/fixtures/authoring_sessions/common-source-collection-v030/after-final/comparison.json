@@ -1,0 +1,259 @@
+{
+  "comparisons": [
+    {
+      "case": "finite-bundled-qft2",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "finite-bundled-qft2",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "local-helper-private",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "local-helper-private",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "local-helper-private",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false,
+      "same_proposal_bytes": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "external-private-import",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "external-private-import",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "external-private-import",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "unsupported-basis",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "unsupported-basis",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "unsupported-basis",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "profile-before-late-parse",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": true
+    },
+    {
+      "case": "profile-before-late-parse",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": true
+    },
+    {
+      "case": "profile-before-late-parse",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": true
+    },
+    {
+      "case": "parse-before-late-profile",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": true
+    },
+    {
+      "case": "parse-before-late-profile",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": true
+    },
+    {
+      "case": "parse-before-late-profile",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": true
+    },
+    {
+      "case": "reserved-std-injection",
+      "action": "check",
+      "presentation": "text",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "reserved-std-injection",
+      "action": "check",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    },
+    {
+      "case": "reserved-std-injection",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "same_exit_code": true,
+      "same_stdout_bytes": true,
+      "same_stderr_bytes": true,
+      "same_native_call_count": true,
+      "same_proposal_presence": true,
+      "ordering_sensitive": false
+    }
+  ],
+  "scope": "Exact original output/proposal-byte comparisons; changes are recorded for review and never automatically waived or accepted as equivalent."
+}

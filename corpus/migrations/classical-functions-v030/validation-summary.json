@@ -1,0 +1,55 @@
+{
+  "format": 1,
+  "scope": "Completed scoped bounded migration validation. Two previously admitted QLV1 guarantees retain their original scopes and premises; broader QS/PR/RS/EXACT obligations remain pending. No new Lean build, audit or replay, theorem admission, universal source-preservation proof, maximum-sized corpus execution, QFT work or release certification is claimed.",
+  "production_snapshot_root": "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources",
+  "counterexample_snapshot_root": "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/counterexample-sources",
+  "snapshot_qli_files": 35,
+  "snapshot_qli_bytes": 28665,
+  "real_candidate_checks": {
+    "production_accepted": 10,
+    "semantic_faults_accepted": 7,
+    "negative_rejected": 1,
+    "all_first_predictions_matched": true
+  },
+  "python_regressions": {
+    "total": 74,
+    "new_migration_tests": 6,
+    "first_result": "one canonical-path report binding error; preserved before repair",
+    "after_result": "passed"
+  },
+  "semantic_replay": {
+    "production_cases": 10,
+    "production_semantic_probes": 716,
+    "type_correct_faults_detected": 7,
+    "negative_controls": 4,
+    "seconds": 355.3136509999749,
+    "status": "passed"
+  },
+  "compiler": {
+    "path": "/private/tmp/qleisli-classical-functions-after",
+    "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a",
+    "bytes": 23170928
+  },
+  "configured_native_kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "bytes": 91666928
+  },
+  "records_sha256": {
+    "migration.json": "b7715a54a7d6c19183b0a05cc5e440d30811701b03e30f0f8e940779a301a0a2",
+    "counterexamples.json": "594dd565b7dff61d6a874e886e58a4765d0d340ecb3d2b055bf83057c90babac",
+    "checks-first.json": "7b7a3d44b7ac6b565b21f926a5f82559178a9a81483fe4df2eff9a0ad48ff898",
+    "counterexample-checks-first.json": "2f8724e5f93e3475e97ce0bcacc74a96386da9074a3506c6f0fea838d344dd50",
+    "python-tests-first.txt": "a89043e436676ee4dbe04d71839617ad0366e2cf98c75fdb39aeb7a058df291b",
+    "python-tests-after.json": "4d4bf4000a41bc79da29f813fbe9e9ba0d0ae73c1e329ea585ce5d0b9270fa8c",
+    "semantic-replay-driver.py": "c9bb00012f3f8e00c693c2212fa8dac18c5ea4263e1f76c522154c2f6ddb99b8",
+    "semantic-replay-first.json": "5dcc268ee0cea44ca638827fb87459b3db52dc00c93c8610f96ab4ba085ccd9d",
+    "semantic-replay-first.stdout.txt": "97d57020f4d6e1d139d64243617f5141ab895df691f43e2f427bc1066a97b50d"
+  },
+  "manifest_serialization_repair": {
+    "path": "manifest-serialization-repair.json",
+    "sha256": "a3c919fec512fcd5bc83d1efe5a0940209a84eaabb0395a0127af01322f0b414",
+    "current_manifest_sha256": "efb6ed47972df01ded4548ed3cb074183b4e1d05acb1aae61b9bfc790d402db7",
+    "parsed_json_and_all_other_replay_bindings_unchanged": true
+  }
+}

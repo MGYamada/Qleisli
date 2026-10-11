@@ -1,0 +1,16 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/private/tmp/qleisli-unused-generic-contract-first",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite profile does not support static Nat parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":204,\"end\":205,\"line\":4,\"column\":33},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "cli_sha256_before": "345106a4911df98a8f95a52dd786d999c0d77729bab6bd07c7e4aed62402190a",
+  "cli_sha256_after": "345106a4911df98a8f95a52dd786d999c0d77729bab6bd07c7e4aed62402190a",
+  "source_sha256": "3e786b88ba9a0ee6ac1002e44431a7aa641891e0e97c5db1629b5f0741f71c32",
+  "recorded_utc": "2026-10-11T00:17:04.391262+00:00"
+}

@@ -18,10 +18,12 @@ import subprocess
 import tempfile
 import time
 
+from check_input_corpus import check_manifest, current_project
+
 ROOT = Path(__file__).resolve().parents[1]
 CASES = [
     ("bell", "corpus/quantum_katas/bell_measure", 2),
-    ("classical_branch", "tests/fixtures/authoring_sessions/dual-v028/attempt-02", 2),
+    ("classical_branch", "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02", 2),
     ("grover2", "corpus/quantum_katas/grover2", 2),
     ("qft2", "corpus/qualtran/qft2", 2),
     ("qpe3", "corpus/quantum_katas/qpe3", 4),
@@ -39,20 +41,33 @@ def metadata(command, cwd=ROOT):
     return subprocess.check_output(command, cwd=cwd, text=True).strip()
 
 
-def source_hashes():
+def selected_cases(manifest):
+    by_project = {case["project"]: case for case in manifest["cases"]}
+    selected = []
+    for name, source, qubits in CASES:
+        if source.startswith("corpus/"):
+            project = current_project(by_project[source.removeprefix("corpus/")], ROOT / "corpus")
+        else:
+            project = ROOT / source
+        selected.append((name, project, qubits))
+    return selected
+
+
+def source_hashes(cases, manifest):
     paths = {ROOT / name for name in [
         "Cargo.toml", "Cargo.lock", "stdlib/Qargo.toml", "corpus/Qargo.toml",
         "corpus/manifest.json", "lean-kernel/lakefile.toml",
         "lean-kernel/lean-toolchain", "lean-kernel/lake-manifest.json",
-        "scripts/benchmark_verification.py",
+        "scripts/benchmark_verification.py", "scripts/check_input_corpus.py",
     ]}
+    paths.update(ROOT / "corpus" / name for name in manifest.get("source_migrations", []))
     for directory, suffix in [("src", "*.rs"), ("stdlib", "*.qli"),
                               ("lean-kernel", "*.lean")]:
         paths.update(path for path in (ROOT / directory).rglob(suffix)
                      if ".lake" not in path.parts)
-    for _, source, _ in CASES:
-        paths.update((ROOT / source).rglob("*.qli"))
-        paths.update((ROOT / source).rglob("Qargo.toml"))
+    for _, source, _ in cases:
+        paths.update(source.rglob("*.qli"))
+        paths.update(source.rglob("Qargo.toml"))
     return {str(path.relative_to(ROOT)): digest(path.read_bytes())
             for path in sorted(paths)}
 
@@ -78,7 +93,9 @@ def main():
         parser.error("use at least four measured repetitions and one warmup")
     binary, kernel = args.binary.resolve(), args.kernel.resolve()
     binaries = {str(p): digest(p.read_bytes()) for p in [binary, kernel]}
-    sources = source_hashes()
+    manifest = check_manifest(ROOT / "corpus")
+    cases = selected_cases(manifest)
+    sources = source_hashes(cases, manifest)
     record = dict(
         status="running", started_utc=datetime.datetime.now(datetime.UTC).isoformat(),
         scope="Small finite CLI clients; both selections use the same native verifier",
@@ -108,8 +125,8 @@ def main():
             serial = 0
             artifacts = {}
             by_name = {}
-            for name, source, qubits in CASES:
-                row = dict(name=name, source=source, qubits=qubits,
+            for name, source, qubits in cases:
+                row = dict(name=name, source=source.relative_to(ROOT).as_posix(), qubits=qubits,
                            samples={action: {route: [] for route in ["environment", "explicit"]}
                                     for action in ["emit-ir", "verify-ir"]})
                 record["cases"].append(row)
@@ -187,7 +204,7 @@ def main():
                     stats["explicit_over_environment"] = stats["explicit"]["median_ms"] / stats["environment"]["median_ms"]
                     row["summary"][action] = stats
                 row["all_emissions_byte_identical"] = True
-            if source_hashes() != sources or any(digest(Path(p).read_bytes()) != h for p, h in binaries.items()):
+            if source_hashes(cases, manifest) != sources or any(digest(Path(p).read_bytes()) != h for p, h in binaries.items()):
                 raise RuntimeError("sources or binaries changed during measurement")
             record["status"] = "passed"
     except BaseException as error:

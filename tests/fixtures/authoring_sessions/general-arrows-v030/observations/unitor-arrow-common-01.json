@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/general-arrows-v030/attempt-02/unitor.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T11:39:31.290202+00:00",
+  "cli_sha256_before": "2c6593ce71dbaf980f630a65895285bed956f0f12fdf4807ca80a3e5ec5d8630",
+  "cli_sha256_after": "2c6593ce71dbaf980f630a65895285bed956f0f12fdf4807ca80a3e5ec5d8630",
+  "native_sha256": "1b604c58e48827872de7e8179a5092d4deced42e3eb401ebb5b3285648378731",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "proposal rename changes an owner type",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

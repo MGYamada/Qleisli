@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-02/exclusive-explicit",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 0,
+  "recorded_utc": "2026-10-08T21:15:25.586321+00:00",
+  "cli_sha256_before": "63717d8908e6270fef640c878bcf0a6777b46d053e1c73e5f2b2034c27ea59a9",
+  "cli_sha256_after": "63717d8908e6270fef640c878bcf0a6777b46d053e1c73e5f2b2034c27ea59a9",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "ok",
+    "diagnostics": [],
+    "result": {
+      "verified": true
+    }
+  },
+  "stderr": ""
+}

@@ -1,0 +1,1 @@
+use std::quantum::init0; use std::quantum::h; use std::quantum::x; use std::observe::measure_z; observe fn main() -> (Bit,Bit) { let b = measure_z(h(init0())); let q = init0(); let q = if b { x(q) } else { q }; (b,measure_z(q)) }

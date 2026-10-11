@@ -179,10 +179,8 @@ def compare_rust(all_cases, project, log):
             commands.append('let receipt=FunctionEvidence::check('+finite.rust_basis(entry['signature'])+','+
                 raw.rust_program(entry['implementation'])+','+raw.rust_program(entry['specification'])+','+
                 rust_identity(entry['identity'])+',&mut budget).ok()?;')
-            commands.append('receipt.check_binding(&'+rust_identity(binding['identity'])+',&'+
+            commands.append('receipt.check_binding(&'+finite.rust_basis(binding['signature'])+',&'+rust_identity(binding['identity'])+',&'+
                 raw.rust_program(binding['implementation'])+',&'+raw.rust_program(binding['specification'])+').ok()?;')
-            # Public check_binding does not carry a type parameter; independently compare signature.
-            commands.append('if receipt.signature()!=&'+finite.rust_basis(binding['signature'])+'{return None;}')
             commands.append('receipts.push(std::sync::Arc::new(receipt));')
         if len(case['functions']) != len(case['bindings']): commands.append('return None;')
         if case['mode'] == 'structured': commands.append('qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw('+raw.rust_program(case['program'])+').ok()?;')

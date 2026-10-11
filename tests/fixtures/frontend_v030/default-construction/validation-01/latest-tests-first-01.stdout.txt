@@ -1,0 +1,21 @@
+
+running 4 tests
+test false_unitary_assertions_cannot_hide_default_named_preparation ... ok
+test explicit_unit_maps_do_not_make_zero_width_owners_ordinary_defaults ... ok
+test unresolved_default_has_one_conditional_hint_without_creating_a_factory ... ok
+test resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation ... FAILED
+
+failures:
+
+---- resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation stdout ----
+
+thread 'resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation' (17731819) panicked at tests/default_construction_boundary.rs:62:6:
+called `Result::unwrap()` on an `Err` value: Diagnostic { code: "unsupported", message: "static argument is outside the finite lowering profile", primary: Some(SourceLocation { path: "/private/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-test-80260-18/main.qli", span: Span { start: 84, end: 93 }, line: 2, column: 41 }) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    resolved_user_defaults_keep_ordinary_bodies_and_explicit_preparation
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+

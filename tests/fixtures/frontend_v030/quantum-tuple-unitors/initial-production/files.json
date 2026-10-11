@@ -1,0 +1,15 @@
+{
+  "status": "Initial implementation before formatting, compiler execution or independent post-implementation review.",
+  "base_commit": "9fcd4fc141af82eb5cc96157acbfea5b1d2bdd43",
+  "files": {
+    "src/frontend/sized/ast.rs": "3a167ba29926929bd46759f29de08a3b230114bd79f434402135097854fc5763",
+    "src/frontend/sized/check.rs": "a74a9632b4746820e4f068aaf4a80575b3d72f9926321b516effa1f3857f4cee",
+    "src/frontend/sized/elaborate.rs": "d52fdbf261ebd7ac89d8871edd9c8f77d194b1bcb65bd5cb72da8108f91aea24",
+    "src/frontend/sized/fourier.rs": "ae9b4bbebd2d459b0bf2b732a3fa548a4c562396d5443786deaa28e17f7a693c",
+    "src/frontend/sized/lower.rs": "0fed16206ca5d71bae795e091001dc56035cd61523debf992671d8040383297e",
+    "src/frontend/sized/lower/preservation.rs": "0662400e236a3088e73e50b8781a4bc83fce173f864a57da0c655a851f503de7",
+    "src/frontend/sized/parser.rs": "40835ff2dead13235b81a34c9773e142cb43cda2c5483126d2bc4b2523fb60a0",
+    "src/frontend/sized/primitive.rs": "1a345df1aa8ef0840bbed85efb95e3e0884c249ae543a11819acf08dd291d30a",
+    "src/frontend/types.rs": "46a8f75329653f8b89a14845810a6141ce5433e30c1321b7362aa28bb1fac000"
+  }
+}

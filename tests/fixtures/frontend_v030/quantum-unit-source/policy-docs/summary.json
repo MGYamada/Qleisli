@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "scope": "Local documentation, immutable authoring records and scheduler policy only; no native build or comparison execution.",
+  "attempts": {
+    "initial": {
+      "result_sha256": "a8ba46bc330652ef157f8db01b0ba1664afaba3e245d52229db1a7e6623067a5",
+      "all_commands_passed": false,
+      "commands": 8
+    },
+    "scheduler-fixed": {
+      "result_sha256": "c0a8f5c85980279f29f07e24c352bf05baaf89d27008fe1b2d18dd7eebce380f",
+      "all_commands_passed": false,
+      "commands": 1
+    },
+    "scheduler-final": {
+      "result_sha256": "6a120fc5ed659d85a5da87fc094f1221afc446723638aa453b88ed407f4c42c4",
+      "all_commands_passed": true,
+      "commands": 1
+    }
+  },
+  "scheduler_test_sha256": "57a2af83c28f0cb28ae60749292d80d71a88a62443fc42f08b4c4644bbc3bfb3",
+  "manifest_sha256": "591fdfe72583f5800a35d93eb3cf3f68dc1c58160cd2d5df707b2ba3497b41d5",
+  "all_selected_inputs_unchanged_during_each_attempt": true,
+  "original_inventory_verifications": [
+    {
+      "manifest": "tests/fixtures/authoring_sessions/quantum-unit-v030/first-files.json",
+      "sha256": "620ff262140a6604c12356233e0759c59b8ee0fbe00312c7799e16dba9de5e67",
+      "files_verified": 32
+    },
+    {
+      "manifest": "tests/fixtures/authoring_sessions/quantum-unit-v030/files.json",
+      "sha256": "292bf6372b934da1e692540cb01f5d9fe75f2169256c2a77b157a1ca146f6fb7",
+      "files_verified": 63
+    },
+    {
+      "manifest": "tests/fixtures/frontend_v030/quantum-unit-source/translation-first-files.json",
+      "sha256": "eaa7bf607e548fda15ae4d28f834803e4c16267320e6c0d22ec90bec02636d0f",
+      "files_verified": 10
+    }
+  ],
+  "run_native_ci_check_option": "not present; actual --help captured; load_tasks selected-function validation used instead",
+  "final_scheduler_tests_passed": 15
+}

@@ -35,30 +35,30 @@ fn deterministic(source: &str, expected: &[bool]) {
 fn basis_lifts_destructure_exact_product_patterns() {
     accepted(
         r#"
-iso fn duplicate(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),(Bit,Bit))> {
-    do x <- q; pure (x,x)
+isometry fn duplicate(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),(Bit,Bit))> {
+    basis q as x { (x,x) }
 }
 unitary fn collapse_units(q: Q<(Unit,Unit)>) -> Q<Unit> {
-    do x <- q; pure ()
+    basis q as x { () }
 }
 "#,
     );
     accepted(
         "unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-            do (a,b) <- q; pure (b,a)
+            basis q as (a,b) { (b,a) }
         }",
     );
     accepted(
         "unitary fn remove_unit(q: Q<(Bit,Unit)>) -> Q<Bit> {
-            do (a,_) <- q; pure a
+            basis q as (a,_) { a }
         }
         unitary fn regroup(q: Q<(Bit,(Unit,Bit))>) -> Q<(Bit,Bit)> {
-            do (a,(_,b)) <- q; pure (b,a)
+            basis q as (a,(_,b)) { (b,a) }
         }",
     );
     // Basis declarations still use named parameters and expression bodies.
     rejected(
-        "basis fn first(p: (Bit,Bit)) -> Bit { let (a,b) = p; a }",
+        "classical fn first(p: (Bit,Bit)) -> Bit { let (a,b) = p; a }",
         ErrorCode::Project,
     );
     accepted(
@@ -76,21 +76,30 @@ unitary fn swap(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
 #[test]
 fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     for source in [
-        "unitary fn bad(q: Q<Bit>) -> Q<(Bit,Bit)> { do (a,b) <- q; pure (a,b) }",
+        "unitary fn bad(q: Q<Bit>) -> Q<(Bit,Bit)> { basis q as (a,b) { (a,b) } }",
         "unitary fn bad(q: Q<(Bit,(Bit,Bit))>) -> Q<((Bit,Bit),Bit)> {
-            do ((a,b),c) <- q; pure ((a,b),c)
+            basis q as ((a,b),c) { ((a,b),c) }
         }",
     ] {
         rejected(source, ErrorCode::TypeMismatch);
     }
-    for source in [
-        "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
-            do (a,a) <- q; pure (a,a)
+    for (source, expected) in [
+        (
+            "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {
+            basis q as (a,a) { (a,a) }
         }",
-        "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<Bit> { do (a,_) <- q; pure a }",
-        "unitary fn bad(q: Q<Bit>) -> Q<Bit> { do _ <- q; pure 0 }",
+            ErrorCode::Ownership,
+        ),
+        (
+            "unitary fn bad(q: Q<(Bit,Bit)>) -> Q<Bit> { basis q as (a,_) { a } }",
+            ErrorCode::Effect,
+        ),
+        (
+            "unitary fn bad(q: Q<Bit>) -> Q<Bit> { basis q as _ { 0 } }",
+            ErrorCode::Ownership,
+        ),
     ] {
-        rejected(source, ErrorCode::Ownership);
+        rejected(source, expected);
     }
     for a in [false, true] {
         for b in [false, true] {
@@ -102,10 +111,10 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
                     use std::quantum::join; use std::quantum::split;
                     use std::observe::measure_z;
                     unitary fn regroup(q: Q<((Bit,Bit),Unit)>) -> Q<(Bit,Bit)> {{
-                        do ((a,b),_) <- q; pure (b,a)
+                        basis q as ((a,b),_) {{ (b,a) }}
                     }}
-                    observe fn main() -> (CBit,CBit) {{
-                        let q = do p <- join({left},{right}); pure (p,());
+                    observe fn main() -> (Bit,Bit) {{
+                        let q = basis join({left},{right}) as p {{ (p,()) }};
                         let (b,a) = split(regroup(q));
                         (measure_z(b),measure_z(a))
                     }}"
@@ -118,9 +127,9 @@ fn basis_patterns_reject_wrong_shapes_duplicate_names_and_lost_bits() {
     deterministic(
         "use std::quantum::init0; use std::quantum::h;
         use std::observe::measure_z;
-        observe fn main() -> CBit {
-            let q = do a <- h(init0()); pure (a,());
-            let q = do (a,_) <- q; pure a;
+        observe fn main() -> Bit {
+            let q = basis h(init0()) as a { (a,()) };
+            let q = basis q as (a,_) { a };
             measure_z(h(q))
         }",
         &[false],
@@ -138,7 +147,7 @@ fn zero_wire_ownership_requires_explicit_consumption() {
     );
     // A Unit basis result remains quantum ownership, not an ordinary Unit.
     rejected(
-        "unitary fn remove(q: Q<Unit>) -> Unit { do u <- q; pure () }",
+        "unitary fn remove(q: Q<Unit>) -> Unit { basis q as u { () } }",
         ErrorCode::TypeMismatch,
     );
     rejected(
@@ -154,18 +163,18 @@ fn zero_wire_ownership_requires_explicit_consumption() {
 
 #[test]
 fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
-    let declaration = "basis fn flip(x: Bit) -> Bit { not x }";
+    let declaration = "classical fn flip(x: Bit) -> Bit { not x }";
     accepted(&format!(
         "{declaration}
-        unitary fn lifted(flip: CBit, q: Q<Bit>) -> Q<Bit> {{
-            do x <- q; pure flip(x)
+        unitary fn lifted(flip: Bit, q: Q<Bit>) -> Q<Bit> {{
+            basis q as x {{ flip(x) }}
         }}"
     ));
     rejected(
         &format!(
             "{declaration}
             unitary fn lifted(q: Q<Bit>) -> Q<Bit> {{
-                do flip <- q; pure flip(flip)
+                basis q as flip {{ flip(flip) }}
             }}"
         ),
         ErrorCode::TypeMismatch,
@@ -174,7 +183,7 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
         &format!(
             "{declaration}
             unitary fn lifted(q: Q<(Bit,Unit)>) -> Q<Bit> {{
-                do (flip,_) <- q; pure flip(flip)
+                basis q as (flip,_) {{ flip(flip) }}
             }}"
         ),
         ErrorCode::TypeMismatch,
@@ -183,7 +192,7 @@ fn basis_calls_ignore_outer_cbit_names_but_respect_basis_binders() {
 
 #[test]
 fn computed_auxiliary_shadow_preserves_the_outer_owner() {
-    let prefix = "use std::quantum::z; basis fn p(x: Bit) -> Bit { x }";
+    let prefix = "use std::quantum::z; classical fn p(x: Bit) -> Bit { x }";
     deterministic(
         &format!(
             r#"{prefix}
@@ -195,7 +204,7 @@ unitary fn keep(a: Q<Bit>, q: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
     let q = with_computed(q,p) {{ |a| z(a) }};
     (a,q)
 }}
-observe fn main() -> (CBit,CBit) {{
+observe fn main() -> (Bit,Bit) {{
     let (a,q) = keep(x(init0()),h(init0()));
     (measure_z(a),measure_z(h(q)))
 }}
@@ -216,40 +225,42 @@ observe fn main() -> (CBit,CBit) {{
 }
 
 #[test]
-fn ordinary_cbit_literals_and_operators_have_their_truth_tables() {
+fn ordinary_bit_literals_and_operators_have_their_truth_tables() {
     for source in [
-        "unitary fn zero() -> CBit { 0 }",
-        "unitary fn one() -> CBit { 1 }",
+        "unitary fn invalid() -> Bit { 2 }",
+        "unitary fn invalid() -> Bit { 01 }",
     ] {
         rejected(source, ErrorCode::Project);
     }
     for a in [false, true] {
         for b in [false, true] {
+            let av = u8::from(a);
+            let bv = u8::from(b);
             deterministic(
                 &format!(
-                    "unitary fn booleans(a: CBit,b: CBit) -> (CBit,(CBit,CBit)) {{
+                    "unitary fn booleans(a: Bit,b: Bit) -> (Bit,(Bit,Bit)) {{
                         (not a,(a and b,a xor b))
                     }}
-                    observe fn main() -> (CBit,(CBit,CBit)) {{
-                        booleans({a},{b})
+                    observe fn main() -> (Bit,(Bit,Bit)) {{
+                        booleans({av},{bv})
                     }}"
                 ),
                 &[!a, a && b, a ^ b],
             );
             deterministic(
                 &format!(
-                    "unitary fn both(a: CBit,b: CBit) -> CBit {{
+                    "unitary fn both(a: Bit,b: Bit) -> Bit {{
                         if a {{ b }} else {{ a }}
                     }}
-                    observe fn main() -> CBit {{ both({a},{b}) }}"
+                    observe fn main() -> Bit {{ both({av},{bv}) }}"
                 ),
                 &[a && b],
             );
         }
     }
     deterministic(
-        "observe fn main() -> (CBit,CBit) {
-            (true xor false and false,not false and true xor true)
+        "observe fn main() -> (Bit,Bit) {
+            (1 xor 0 and 0,not 0 and 1 xor 1)
         }",
         &[true, false],
     );
@@ -260,30 +271,30 @@ fn ordinary_boolean_operands_require_cbits_and_have_checked_dependencies() {
     // The computed certificate still accepts only a complete empty/Z/T IR
     // sequence, even when an extra classical instruction is harmless.
     rejected(
-        "basis fn p(b:Bit)->Bit { b }
+        "classical fn p(b:Bit)->Bit { b }
         unitary fn f(q:Q<Bit>)->Q<Bit> {
-            with_computed(q,p) { |a| let unused = true; a }
+            with_computed(q,p) { |a| let unused = 1; a }
         }",
         ErrorCode::Unsupported,
     );
     for source in [
-        "unitary fn bad() -> CBit { not () }",
-        "unitary fn bad() -> CBit { true and () }",
-        "unitary fn bad() -> CBit { () xor false }",
-        "unitary fn bad(q: Q<Bit>) -> CBit { not q }",
-        "unitary fn bad(q: Q<Bit>) -> CBit { false and q }",
-        "unitary fn bad() -> CBit { (true,false) xor false }",
+        "unitary fn bad() -> Bit { not () }",
+        "unitary fn bad() -> Bit { 1 and () }",
+        "unitary fn bad() -> Bit { () xor 0 }",
+        "unitary fn bad(q: Q<Bit>) -> Bit { not q }",
+        "unitary fn bad(q: Q<Bit>) -> Bit { 0 and q }",
+        "unitary fn bad() -> Bit { (1,0) xor 0 }",
     ] {
         rejected(source, ErrorCode::TypeMismatch);
     }
-    for expression in ["not missing()", "false and missing()", "true xor missing()"] {
+    for expression in ["not missing()", "0 and missing()", "1 xor missing()"] {
         rejected(
-            &format!("unitary fn bad() -> CBit {{ {expression} }}"),
+            &format!("unitary fn bad() -> Bit {{ {expression} }}"),
             ErrorCode::UnknownName,
         );
     }
     rejected(
-        "unitary fn recursive(b: CBit) -> CBit { false and recursive(b) }",
+        "unitary fn recursive(b: Bit) -> Bit { 0 and recursive(b) }",
         ErrorCode::RecursiveCall,
     );
 }
@@ -293,11 +304,11 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     deterministic(
         "use std::quantum::init0; use std::quantum::x;
         use std::observe::measure_z;
-        observe fn keep(pair: (Q<Bit>,Q<Bit>)) -> (Q<Bit>,CBit) {
+        observe fn keep(pair: (Q<Bit>,Q<Bit>)) -> (Q<Bit>,Bit) {
             let (q,r) = pair;
-            (q,false and measure_z(r))
+            (q,0 and measure_z(r))
         }
-        observe fn main() -> (CBit,CBit) {
+        observe fn main() -> (Bit,Bit) {
             let (q,b) = keep((x(init0()),x(init0())));
             (measure_z(q),b)
         }",
@@ -305,13 +316,13 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     );
     rejected(
         "use std::observe::measure_z;
-        unitary fn bad(q: Q<Bit>) -> CBit { false and measure_z(q) }",
+        unitary fn bad(q: Q<Bit>) -> Bit { 0 and measure_z(q) }",
         ErrorCode::Effect,
     );
     rejected(
         "use std::observe::measure_z;
-        observe fn bad(q: Q<Bit>) -> (CBit,Q<Bit>) {
-            (false and measure_z(q),q)
+        observe fn bad(q: Q<Bit>) -> (Bit,Q<Bit>) {
+            (0 and measure_z(q),q)
         }",
         ErrorCode::Ownership,
     );
@@ -320,7 +331,7 @@ fn boolean_operands_are_eager_and_preserve_pending_quantum_ownership() {
     let root = SourceRoot::new(
         "use std::quantum::init0; use std::quantum::x;
         use std::observe::measure_z;
-        observe fn main() -> CBit {
+        observe fn main() -> Bit {
             measure_z(init0()) and measure_z(x(init0()))
         }",
     );
@@ -347,7 +358,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
             &format!(
                 "{import}
                 unitary fn invalid(q: Q<(Bit,Bit)>) -> Q<Bit> {{
-                    do p <- q; pure {name}(p)
+                    basis q as p {{ {name}(p) }}
                 }}"
             ),
             ErrorCode::Arity,
@@ -358,7 +369,7 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
             &format!(
                 "{import}
                 unitary fn invalid(q: Q<Bit>) -> Q<Bit> {{
-                    do x <- q; pure {name}(x,{constant})
+                    basis q as x {{ {name}(x,{constant}) }}
                 }}"
             ),
             ErrorCode::Ownership,
@@ -367,21 +378,21 @@ fn basis_call_arity_is_distinct_from_lift_injectivity() {
             &format!(
                 "{import}
                 unitary fn invalid(q: Q<(Bit,Bit)>) -> Q<Bit> {{
-                    do (a,b) <- q; pure {name}(a,b)
+                    basis q as (a,b) {{ {name}(a,b) }}
                 }}"
             ),
-            ErrorCode::Ownership,
+            ErrorCode::Effect,
         );
         accepted(&format!(
             "{import}
-            iso fn retain_inputs(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
-                do (a,b) <- q; pure ((a,b),{name}(a,b))
+            isometry fn retain_inputs(q: Q<(Bit,Bit)>) -> Q<((Bit,Bit),Bit)> {{
+                basis q as (a,b) {{ ((a,b),{name}(a,b)) }}
             }}"
         ));
         accepted(&format!(
             "{import}
             unitary fn identity(q: Q<Bit>) -> Q<Bit> {{
-                do x <- q; pure {name}(x,{identity})
+                basis q as x {{ {name}(x,{identity}) }}
             }}"
         ));
     }
@@ -394,11 +405,11 @@ fn entry_point_accepts_nested_classical_products() {
 use std::quantum::init0;
 use std::quantum::x;
 use std::observe::measure_z;
-observe fn main() -> (Unit,(CBit,(CBit,Unit))) {
+observe fn main() -> (Unit,(Bit,(Bit,Unit))) {
     ((),(measure_z(init0()),(measure_z(x(init0())),())))
 }
 "#,
-        // Unit leaves carry no output bit; CBit leaves retain their tree order.
+        // Unit leaves carry no output bit; Bit leaves retain their tree order.
         &[false, true],
     );
 }

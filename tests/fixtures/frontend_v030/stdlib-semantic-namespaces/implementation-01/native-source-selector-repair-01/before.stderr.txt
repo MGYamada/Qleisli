@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/Users/masa/git/Qleisli/scripts/test_native_verification.py", line 173, in <module>
+    main()
+    ~~~~^^
+  File "/Users/masa/git/Qleisli/scripts/test_native_verification.py", line 155, in main
+    base = json.loads(run([binary, "run", source, "--format=json"]))
+                      ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/masa/git/Qleisli/scripts/test_native_verification.py", line 46, in run
+    assert (result.returncode == 0) == (expected == 0), row
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'command': ['/private/tmp/qleisli-bounded-validation-target/debug/qleisli', 'run', '/Users/masa/git/Qleisli/corpus/quantum_katas/grover2', '--format=json'], 'exit_code': 1, 'stdout': '{"format":"qleisli.result","version":1,"command":"run","outcome":"error","diagnostics":[{"code":"project","severity":"error","message":"missing module `std::routines`","primary":{"path":"kernel.qli","start":469,"end":498,"line":9,"column":1},"related":[]}],"result":null}\n', 'stderr': ''}

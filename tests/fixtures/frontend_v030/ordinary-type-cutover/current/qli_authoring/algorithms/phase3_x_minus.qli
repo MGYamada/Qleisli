@@ -1,0 +1,11 @@
+//! Reuse QPE with X, then undo preparation to check the returned eigenstate.
+use estimation::phase3;
+use gates::flip;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::observe::measure_z;
+observe fn main() -> ((Bit,Bit,Bit),Bit) {
+    let (word,target) = phase3[flip](h(x(init0())));
+    (word,measure_z(x(h(target))))
+}

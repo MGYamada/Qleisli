@@ -1,0 +1,22 @@
+{
+  "label": "operation-flip",
+  "argv": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/attempt-01/operation-choice/main.qli",
+    "--ir-profile=hierarchy",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/inference-law-v030/native-log.py",
+    "--operation=U=main::flip"
+  ],
+  "exit_code": 0,
+  "seconds": 0.0743954160134308,
+  "stdout": "operation-flip.stdout.txt",
+  "stderr": "operation-flip.stderr.txt",
+  "native_invocations": 1,
+  "cli_sha256_before": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+  "cli_sha256_after": "15900c32b81fcbac71ff3a519dd6cb1f8b07ace1677101d68bc30074a1de4eb3",
+  "kernel_sha256_before": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_sha256_after": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+}

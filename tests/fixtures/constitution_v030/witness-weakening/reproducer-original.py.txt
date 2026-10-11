@@ -1,0 +1,49 @@
+from pathlib import Path
+import os,subprocess,sys,json
+repo=Path('/Users/masa/git/Qleisli')
+scratch=Path('/private/tmp/qleisli-review-admission-witness')
+scratch.mkdir(exist_ok=True)
+sys.path.insert(0,str(repo/'scripts'))
+import test_check_initial_guarantees as test
+import check_initial_guarantees as checker
+fixture=scratch/'fixture'
+fixture.mkdir(exist_ok=True)
+record,proposal=test.copy_evidence_fixture(fixture)
+path=fixture/checker.NATIVE_SOURCE
+original=path.read_text()
+assert 'packetBound : packet bytes = .ok (body,requestBytes)' in original
+weakened=original.replace('packetBound : packet bytes = .ok (body,requestBytes)', 'packetBound : True').replace('requirement,b,c,bound,hd,hr,ha,result.1.symm', 'requirement,b,c,True.intro,hd,hr,ha,result.1.symm')
+assert weakened != original
+path.write_text(weakened)
+# Update only mutable current identity/evidence records, as the validator allows.
+case=test.InitialGuaranteeEvidence()
+case.root=fixture
+case.record=record
+case.refresh_test_current_identity()
+result=checker.check(fixture)
+print('IDENTITY_CHECK',json.dumps(result),flush=True)
+oleans=scratch/'oleans'
+(oleans/'Protocol').mkdir(parents=True,exist_ok=True)
+(oleans/'Qleisli').mkdir(parents=True,exist_ok=True)
+for source, destination, skipped in [(repo/'lean-kernel/.lake/build/lib/lean/Protocol',oleans/'Protocol','Validity'),(repo/'lean/.lake/build/lib/lean/Qleisli',oleans/'Qleisli','NativeValidity')]:
+    for item in source.iterdir():
+        target=destination/item.name
+        if item.name.split('.')[0]==skipped:
+            continue
+        if not target.exists():
+            target.symlink_to(item)
+env=os.environ.copy()
+env['LEAN_PATH']=str(oleans)+os.pathsep+env.get('LEAN_PATH','')
+steps=[('protocol',['lean','-R',str(fixture/'lean-kernel'),'-DwarningAsError=true','-o',str(oleans/'Protocol/Validity.olean'),str(path)]),('native',['lean','-R',str(fixture/'lean'),'-DwarningAsError=true','-o',str(oleans/'Qleisli/NativeValidity.olean'),str(fixture/'lean/Qleisli/NativeValidity.lean')]),('review',['lean','-R',str(fixture),'-DwarningAsError=true',str(fixture/checker.REVIEW_PATH)])]
+for name,cmd in steps:
+    run=subprocess.run(cmd,env=env,capture_output=True,cwd=repo/'lean')
+    (scratch/(name+'.stdout.txt')).write_bytes(run.stdout)
+    (scratch/(name+'.stderr.txt')).write_bytes(run.stderr)
+    print(name,run.returncode,len(run.stdout),len(run.stderr),flush=True)
+    if run.returncode:
+        print(run.stdout.decode(errors='replace')[:3500],run.stderr.decode(errors='replace')[:1000],flush=True)
+        raise SystemExit(run.returncode)
+actual=(scratch/'review.stdout.txt').read_bytes()
+expected=(fixture/checker.REVIEW_STDOUT).read_bytes()
+print('REVIEW_OUTPUT_IDENTICAL',actual==expected,flush=True)
+print('CHANGED_SOURCE',path,flush=True)

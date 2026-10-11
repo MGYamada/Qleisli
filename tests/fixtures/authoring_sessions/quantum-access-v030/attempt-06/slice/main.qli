@@ -1,0 +1,2 @@
+unitary fn identity(q:Q<Bits<2>>)->Q<Bits<2>>{q}
+pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{identity(excl q[1..3]);q}

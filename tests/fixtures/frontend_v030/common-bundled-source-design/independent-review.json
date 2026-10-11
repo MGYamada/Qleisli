@@ -1,0 +1,24 @@
+{
+  "format": "qleisli.ordinary-independent-technical-review",
+  "version": 1,
+  "reviewer": "/root/review_isometry_adapter",
+  "transcriber": "/root",
+  "provenance": "Actual collaboration messages and final report during this implementation; this checked-in transcription is not independent authentication of identity.",
+  "review_mode": "Read-only actual source/diff, new tests, Reference and retained logs; no builds or mutations by the reviewer.",
+  "finding": "The initial adapter converted the caller input map before the existing module-count guard, weakening its early capacity behavior.",
+  "repair": "ParsedProgram::parse now rejects empty or greater-than-64 maps before constructing the path-bearing map. The load-path parse_inputs guard remains.",
+  "final_conclusion": "No additional actionable defect found after the repair.",
+  "checked_properties": [
+    "Complete original text and common AST retained without dropping bodies",
+    "Private fixed bundled registry cannot be supplied by external callers",
+    "Finite collection consumed into mutable Project; no authoritative parallel cache",
+    "Sized preparation keeps immutable collection and existing complete checks",
+    "Parser policies, diagnostic ordering and original whole-declaration checks preserved",
+    "Two independent simultaneous-fault regressions check first-failure order",
+    "All 23 real before/after observations match, including native counts and proposal bytes",
+    "97 after-replay Rust inputs match reviewed current sources",
+    "Lean-kernel, stdlib/manifest, Cargo, native executable and protected text unchanged"
+  ],
+  "observed_validation": "Reviewer inspected actual latest Rust 82-passed/5-ignored logs; MSRV and full CI completion were not part of this review.",
+  "limits": "Ordinary technical review only. No human constitutional judgment, formal discharge, source-preservation proof, common checker completion, canonical QFT publication or release approval."
+}

@@ -1,0 +1,32 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T18:17:44.389004+00:00",
+  "client_capture": {
+    "spawned": true,
+    "returncode": 1,
+    "reason": null,
+    "error": null,
+    "seconds": 0.004958749981597066,
+    "stdin_written": 0,
+    "stdout_limited": false,
+    "stderr_limited": false
+  },
+  "native_forwarded_attempts": 0,
+  "native_argv_log": "forward-natural-finite-check-text.native.jsonl",
+  "native_count_scope": "Actual forwarder JSONL rows immediately before execv; no independently observed native starts/exits.",
+  "stdout_raw": "forward-natural-finite-check-text.stdout.bin",
+  "stderr_raw": "forward-natural-finite-check-text.stderr.bin",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "b3d11b33e1d44adf0eebba396351066b985de2603a9209ddee4551b0b3ce4267",
+  "native_journal_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "outcomes_predicted": false,
+  "transcript": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-formal-access-v030/attempt-01/forward-natural/main.qli:2:32: unsupported: register types are outside the finite lowering profile\n",
+  "transcript_limited_prefix": false,
+  "transcript_scope": "At most 65536 decoded characters; exact captured raw byte prefixes remain in separate files."
+}

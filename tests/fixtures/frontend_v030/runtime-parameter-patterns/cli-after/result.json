@@ -1,0 +1,779 @@
+{
+  "recorded_utc": "2026-10-04T18:05:32.344149+00:00",
+  "driver_sha256": "e5295dd8e421f84c6ee0093385b0a4742e8a2823d3ac44d5bd24ff0c06d26090",
+  "binary_sha256": "aa1d49498f9bc7b7e75509680c8cde6d516d074c9aa889dc8b043cdb7216f4fd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "commands": [
+    {
+      "project": "attempt-01/unit",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/unit",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.8337407499784604,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/unit",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/unit/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.05062587501015514,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/nested-copy-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/nested-copy-wildcard",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.40135000000009313,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/nested-copy-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/nested-copy-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.004599499981850386,
+      "stdout": "",
+      "stderr": "main:74..143: unsupported: selected sized lowering profile requires quantum entry values; classical entry values are unsupported\n"
+    },
+    {
+      "project": "attempt-01/mixed-swap",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/mixed-swap",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.40205208404222503,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/mixed-swap",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/mixed-swap/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.04784054198535159,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/wildcard-ordinary",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/wildcard-ordinary",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.3947762920288369,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/wildcard-ordinary",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/wildcard-ordinary/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.004121000005397946,
+      "stdout": "",
+      "stderr": "main:74..120: unsupported: selected sized lowering profile requires quantum entry values; classical entry values are unsupported\n"
+    },
+    {
+      "project": "attempt-01/static-mixed",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/static-mixed",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003967166994698346,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `static`, found identifier\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":92,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "attempt-01/static-mixed",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/static-mixed/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--nat=n=1"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0032812500139698386,
+      "stdout": "",
+      "stderr": "main:91..92: parse: expected `static`, found identifier\n"
+    },
+    {
+      "project": "attempt-01/effectful-unit",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/attempt-01/effectful-unit",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.44519599998602644,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/quantum-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-wildcard",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005632958025671542,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"wildcard would discard quantum ownership\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":92,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/quantum-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0034140830393880606,
+      "stdout": "",
+      "stderr": "main:91..92: ownership: wildcard would discard quantum ownership\n"
+    },
+    {
+      "project": "counterexamples/quantum-tuple-pattern",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-tuple-pattern",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005054457986261696,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"tuple pattern requires a tuple value with the same immediate arity: expected a tuple of 2 immediate fields, found `Q<(Bit,Bit)>`; help: a quantum register is one owner; call `split` to obtain its immediate product fields, then split any nested register separately\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":96,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/quantum-tuple-pattern",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-tuple-pattern/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003536999982316047,
+      "stdout": "",
+      "stderr": "main:100..109: unsupported: sized preparation profile: operation/quantum basis must be Bit or Bits<n>\n"
+    },
+    {
+      "project": "counterexamples/unit-shape",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/unit-shape",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.004789375001564622,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"empty pattern requires ordinary Unit, found `(Unit,Unit)`\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":93,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/unit-shape",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/unit-shape/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0034811250516213477,
+      "stdout": "",
+      "stderr": "main:91..93: type: binding pattern does not preserve tuple arity and nesting\n"
+    },
+    {
+      "project": "counterexamples/duplicate-across-parameters",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/duplicate-across-parameters",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005097999994177371,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"duplicate parameter name\",\"primary\":{\"path\":\"main.qli\",\"start\":112,\"end\":113,\"line\":2,\"column\":39},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/duplicate-across-parameters",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/duplicate-across-parameters/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003784957982134074,
+      "stdout": "",
+      "stderr": "main:112..113: name: duplicate runtime parameter\n"
+    },
+    {
+      "project": "counterexamples/static-collision",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/static-collision",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0036163749755360186,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `static`, found identifier\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":92,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/static-collision",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/static-collision/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--nat=n=1"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003234374977182597,
+      "stdout": "",
+      "stderr": "main:91..92: parse: expected `static`, found identifier\n"
+    },
+    {
+      "project": "counterexamples/unused-bad",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/unused-bad",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.004972083959728479,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"tuple pattern requires a tuple value with the same immediate arity: expected a tuple of 2 immediate fields, found `Bit`\",\"primary\":{\"path\":\"main.qli\",\"start\":133,\"end\":138,\"line\":3,\"column\":16},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/unused-bad",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/unused-bad/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003827249980531633,
+      "stdout": "",
+      "stderr": "main:133..138: type: binding pattern does not preserve tuple arity and nesting\n"
+    },
+    {
+      "project": "counterexamples/lost-owner",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/lost-owner",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005013916990719736,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `r` was not returned or explicitly consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":94,\"end\":95,\"line\":2,\"column\":21},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/lost-owner",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/lost-owner/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0035852500004693866,
+      "stdout": "",
+      "stderr": "main:125..130: ownership: function leaves live quantum arguments unconsumed\n"
+    },
+    {
+      "project": "counterexamples/call-arity",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/call-arity",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.025816334004048258,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"arity\",\"severity\":\"error\",\"message\":\"function argument count does not match\",\"primary\":{\"path\":\"main.qli\",\"start\":148,\"end\":157,\"line\":3,\"column\":28},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/zero-owner-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/zero-owner-wildcard",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005051249987445772,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"register types are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":96,\"end\":103,\"line\":2,\"column\":23},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "counterexamples/zero-owner-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/zero-owner-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003371166007127613,
+      "stdout": "",
+      "stderr": "main:91..92: ownership: wildcard would discard quantum ownership\n"
+    },
+    {
+      "project": "controls/named-unit",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-unit",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.40358766698045656,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "controls/named-unit",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-unit/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.047604417020920664,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "controls/named-mixed-swap",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-mixed-swap",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4071402909466997,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "controls/named-mixed-swap",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-mixed-swap/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.04954791703494266,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "controls/named-effectful-unit",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-effectful-unit",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.45246479200432077,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "additional-wildcards/let-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/let-wildcard",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4156379589694552,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "additional-wildcards/let-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/let-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.047635541995987296,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "additional-wildcards/zero-fold-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/zero-fold-wildcard",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0052545840153470635,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"expression is outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":123,\"end\":170,\"line\":2,\"column\":50},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "additional-wildcards/zero-fold-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/zero-fold-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.04840641701593995,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "additional-wildcards/quantum-let-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/quantum-let-wildcard",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.0055072500254027545,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"wildcard would discard quantum ownership\",\"primary\":{\"path\":\"main.qli\",\"start\":116,\"end\":117,\"line\":2,\"column\":43},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "additional-wildcards/quantum-let-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/additional-wildcards/quantum-let-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.004244750016368926,
+      "stdout": "",
+      "stderr": "main:116..117: ownership: wildcard would discard quantum ownership\n"
+    },
+    {
+      "project": "followups/closed-named-unit",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-unit",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4364362500491552,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "followups/closed-named-swap",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-swap",
+        "--format=json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4363887919462286,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "followups/zero-fold-quantum-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005335125024430454,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"register types are outside the finite lowering profile\",\"primary\":{\"path\":\"main.qli\",\"start\":96,\"end\":103,\"line\":2,\"column\":23},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "followups/zero-fold-quantum-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/zero-fold-quantum-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003513959003612399,
+      "stdout": "",
+      "stderr": "main:149..150: ownership: wildcard would discard quantum ownership\n"
+    },
+    {
+      "project": "followups/let-nested-quantum-wildcard",
+      "mode": "finite",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/let-nested-quantum-wildcard",
+        "--format=json"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.005246541055385023,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"wildcard would discard quantum ownership\",\"primary\":{\"path\":\"main.qli\",\"start\":116,\"end\":117,\"line\":2,\"column\":43},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "project": "followups/let-nested-quantum-wildcard",
+      "mode": "sized",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/let-nested-quantum-wildcard/main.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.003211583010852337,
+      "stdout": "",
+      "stderr": "main:116..117: ownership: wildcard would discard quantum ownership\n"
+    },
+    {
+      "project": "validation-repairs/static-mixed.qli",
+      "mode": "sized-repaired",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/static-mixed.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--nat=n=1"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.048178916971664876,
+      "stdout": "{\"status\":\"checked\",\"profile\":\"sized-unitary\",\"contract\":\"composition\",\"verification\":{\"scope\":\"producer-consistency\",\"request_origin\":\"producer\",\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\"}\n",
+      "stderr": ""
+    },
+    {
+      "project": "validation-repairs/static-collision.qli",
+      "mode": "sized-repaired",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "sized",
+        "check",
+        "--entry=main::f",
+        "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/static-collision.qli",
+        "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+        "--nat=n=1"
+      ],
+      "exit": 1,
+      "elapsed_seconds": 0.004182666016276926,
+      "stdout": "",
+      "stderr": "main:107..108: name: binding n shadows a static parameter/index or discards a value\n"
+    },
+    {
+      "project": "followups/closed-named-unit",
+      "mode": "emit-ir",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-unit",
+        "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/runtime-parameter-patterns/cli-after/closed-named-unit.qirf.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4414537499542348,
+      "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/runtime-parameter-patterns/cli-after/closed-named-unit.qirf.json\n",
+      "stderr": ""
+    },
+    {
+      "project": "followups/closed-named-swap",
+      "mode": "emit-ir",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/followups/closed-named-swap",
+        "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/runtime-parameter-patterns/cli-after/closed-named-swap.qirf.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.4432214999687858,
+      "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/runtime-parameter-patterns/cli-after/closed-named-swap.qirf.json\n",
+      "stderr": ""
+    },
+    {
+      "project": "controls/named-effectful-unit",
+      "mode": "emit-ir",
+      "command": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "emit-ir",
+        "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/controls/named-effectful-unit",
+        "--output=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/runtime-parameter-patterns/cli-after/named-effectful-unit.qirf.json"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.45868049998534843,
+      "stdout": "emitted independently verified IR: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/runtime-parameter-patterns/cli-after/named-effectful-unit.qirf.json\n",
+      "stderr": ""
+    }
+  ],
+  "comparisons": [
+    {
+      "control": "closed-named-unit",
+      "before_sha256": "ec7a712fd5c8c56886b358c3e3e4682dfec1a87ece0d63ddda6ca917a944a8ac",
+      "after_sha256": "ec7a712fd5c8c56886b358c3e3e4682dfec1a87ece0d63ddda6ca917a944a8ac",
+      "identical": true
+    },
+    {
+      "control": "closed-named-swap",
+      "before_sha256": "5ba537c68a7a69973c8071bb699954814313b496170d71d4cfe4998c8563c8fe",
+      "after_sha256": "5ba537c68a7a69973c8071bb699954814313b496170d71d4cfe4998c8563c8fe",
+      "identical": true
+    },
+    {
+      "control": "named-effectful-unit",
+      "before_sha256": "debcc2d58eb249e099aa69d567d374cc329513bed136fe409469ada9cae6c653",
+      "after_sha256": "debcc2d58eb249e099aa69d567d374cc329513bed136fe409469ada9cae6c653",
+      "identical": true
+    }
+  ],
+  "historical_study_files_unchanged": true,
+  "executables_unchanged": true,
+  "scope": "Actual finite/sized CLI observations; three unchanged named controls compare exact emitted IR. Unsupported profiles remain distinct from successful generic checking."
+}

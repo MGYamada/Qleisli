@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+"""Fixed bounded validation; never run commands supplied by result metadata.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+"""
+import datetime
+import hashlib
+import json
+import os
+from pathlib import Path
+import subprocess
+import sys
+import signal
+import time
+
+root = Path(__file__).resolve().parent
+repo = root.parents[3]
+phase = sys.argv[1]
+out = root / phase
+out.mkdir()
+env = dict(os.environ, CARGO_TARGET_DIR='/private/tmp/qleisli-bounded-validation-target',
+    CARGO_INCREMENTAL='0', CARGO_PROFILE_DEV_DEBUG='0', CARGO_PROFILE_TEST_DEBUG='0',
+    CARGO_BUILD_JOBS='2', QLEISLI_KERNEL=str(repo / 'lean-kernel/.lake/build/bin/qleisli-kernel'),
+    QLEISLI_HIERARCHY_KERNEL=str(repo / 'lean-kernel/.lake/build/bin/qleisli-kernel'))
+if 'msrv' in phase:
+    env['PATH'] = '/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:' + env['PATH']
+commands = [['cargo', 'test', '--offline', '--lib', 'isometry_']]
+if 'full' in phase:
+    commands = [['cargo', 'test', '--offline', '--all-targets'],
+                ['cargo', 'test', '--offline', '--doc']]
+if 'remainder' in phase:
+    # Complete the targets not reached after the retained diagnostic failure,
+    # and rerun that repaired target. No test filters or new ignores are added.
+    targets = ['sized_review_diagnostics', 'sized_review_dialects', 'sized_source',
+        'source_capacities', 'source_ir_correspondence', 'source_judgments',
+        'source_scope', 'source_semantics', 'source_snapshots', 'source_soundness',
+        'specification_boundaries', 'static_operations', 'static_semantics',
+        'trials', 'tuple_shapes', 'unit_patterns', 'verification_boundary',
+        'with_computed_diagnostics']
+    commands = [['cargo', 'test', '--offline',
+                 *[arg for target in targets for arg in ['--test', target]]],
+                ['cargo', 'test', '--offline', '--examples'],
+                ['cargo', 'test', '--offline', '--doc']]
+if 'focused' in phase:
+    commands += [
+        ['cargo', 'test', '--offline', '--test', 'isometry_source', '--test', 'sized_review_diagnostics', '--test', 'body_effects', '--test', 'selected_source_cli',
+         '--test', 'sized_source', '--test', 'quantum_unit_maps', '--test', 'quantum_tuple_unitors'],
+        ['cargo', 'test', '--offline', '--test', 'sized_source', '--test', 'quantum_unit_maps',
+         '--test', 'quantum_tuple_unitors', '--', '--ignored'],
+        ['cargo', 'clippy', '--offline', '--all-targets', '--', '-D', 'warnings'],
+        ['cargo', 'fmt', '--all', '--', '--check'],
+    ]
+digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+def source_inputs():
+    paths = set((repo / 'src').rglob('*.rs')) | set((repo / 'tests').glob('*.rs')) | set((repo / 'tests/common').rglob('*.rs'))
+    paths |= set((repo / 'tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01').rglob('main.qli'))
+    paths |= set((root / 'supplemental-multi-init').glob('*'))
+    paths |= {repo / 'Cargo.toml', repo / 'Cargo.lock'}
+    return {str(p.relative_to(repo)):digest(p) for p in sorted(paths) if p.is_file()}
+inputs = source_inputs()
+identity = {'source_files':inputs, 'native_sha256':digest(Path(env['QLEISLI_KERNEL'])),
+            'cargo':subprocess.run(['cargo','--version'], env=env, capture_output=True, check=True).stdout.decode().strip()}
+(out/'identity.json').write_text(json.dumps(identity,indent=2)+'\n')
+(out/'executed-driver.py.txt').write_bytes(Path(__file__).read_bytes())
+rows=[]
+for i,command in enumerate(commands):
+    start=time.monotonic()
+    process = subprocess.Popen(command, cwd=repo, env=env, stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE, start_new_session=True)
+    timed_out = False
+    try:
+        stdout, stderr = process.communicate(timeout=1800 if 'full' in phase else 900)
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        os.killpg(process.pid, signal.SIGKILL)
+        stdout, stderr = process.communicate()
+    class Result: pass
+    result = Result()
+    result.stdout, result.stderr, result.returncode = stdout, stderr, process.returncode
+    (out/f'{i:02d}.stdout.txt').write_bytes(result.stdout)
+    (out/f'{i:02d}.stderr.txt').write_bytes(result.stderr)
+    rows.append({'command':command,'exit_code':result.returncode,'seconds':time.monotonic()-start,
+        'recorded_utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        'stdout':f'{i:02d}.stdout.txt','stderr':f'{i:02d}.stderr.txt', 'timed_out':timed_out})
+    (out/'commands.json').write_text(json.dumps(rows,indent=2)+'\n')
+    print(command, result.returncode, flush=True)
+    if result.returncode: break
+assert inputs == source_inputs()
+assert identity['native_sha256']==digest(Path(env['QLEISLI_KERNEL']))
+sys.exit(int(any(row['exit_code'] for row in rows)))

@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-03/existing-observer-arrow/main.qli"
+  ],
+  "exit_code": 0,
+  "stderr": "",
+  "native_invocations": 1,
+  "seconds": 0.04542524996213615,
+  "recorded_utc": "2026-10-05T12:10:34.681865+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "{\"status\":\"checked\",\"verification\":{\"scope\":\"native-validity\",\"request_origin\":\"none\",\"source_steps_checked\":true,\"source_meaning_verified\":false},\"execution_authority\":\"checked-produced-ir\",\"entry\":\"main::entry\",\"ir_profile\":\"raw\",\"source_check_scope\":\"all-supplied-module-declarations\",\"native_check_scope\":\"selected-specialization\"}\n"
+}

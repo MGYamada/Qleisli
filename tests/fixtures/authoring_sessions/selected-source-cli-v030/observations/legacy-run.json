@@ -1,0 +1,22 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sized",
+    "run",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/selected-source-cli-v030/attempt-01/unit-parameter/main.qli",
+    "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T22:08:24.771127+00:00",
+  "elapsed_seconds": 0.004348666989244521,
+  "stdout_raw": "",
+  "stderr": "main:0..39: unsupported: selected sized lowering profile requires quantum results from unitary roots; classical results are unsupported\n",
+  "transcript": "main:0..39: unsupported: selected sized lowering profile requires quantum results from unitary roots; classical results are unsupported\n",
+  "source_sha256": "3a4fa70a4d41b8f6307c9ff9c71949e35b2b7306c6c86357c84e47da9b7ace60",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "ba2913eb473aef4387f24b59cfba68d6476d83c793d64d6f8e3af18d520b1462",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "scope": "Actual baseline CLI outcome; no native acceptance inferred from an earlier rejection."
+}

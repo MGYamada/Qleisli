@@ -1,0 +1,36 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "tests/fixtures/authoring_sessions/constructed-inverse-v030/attempt-01"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "started_utc": "2026-10-07T04:29:10.806056+00:00",
+  "recorded_utc": "2026-10-07T04:29:11.003929+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "finite adjoint requires a function name",
+        "primary": {
+          "path": "main.qli",
+          "start": 231,
+          "end": 246,
+          "line": 5,
+          "column": 52
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite adjoint requires a function name\",\"primary\":{\"path\":\"main.qli\",\"start\":231,\"end\":246,\"line\":5,\"column\":52},\"related\":[]}],\"result\":null}\n",
+  "stderr": ""
+}

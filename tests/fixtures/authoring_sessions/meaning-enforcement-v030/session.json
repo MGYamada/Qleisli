@@ -1,0 +1,83 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Original Meaning enforcement; retrospective schema registration with fresh actual observations",
+  "baseline_commit": "b7d749075593dd6a09541d7fa02c066028d2b1f6",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed source and specification access; exact model and sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Original retained Bit/Unit first sources and separately identified lying counterexample; no source repairs or fabricated original timestamp. New observations recheck both invocation forms.",
+      "sha256": {
+        "unit.qli": "3ab95569d883199d9bc7937780b5be41e4c4c9226bd1f825d82c29c9b1428d4f",
+        "bit.qli": "d2aed93147e4c8905108cc80a7a85ca25ce879649831833324237e1189fa4798",
+        "lying-bit.qli": "da9b6d06711d69f737719262f352916116e7541b36dd9eca2ef805b9ced3d1b7",
+        "repeated-bit.qli": "4a9bccd2e5782e5775fa7ef4b02da36643ed26aa83ae68e8fcfa407c40574cba"
+      },
+      "observations": [
+        "observations-registered/unselected-bit-outer.json",
+        "observations-registered/unselected-bit-unused.json",
+        "observations-registered/unselected-unit-outer.json",
+        "observations-registered/unselected-lying-bit-unused.json",
+        "observations-registered/selected-bit-outer.json",
+        "observations-registered/selected-bit-unused.json",
+        "observations-registered/selected-unit-outer.json",
+        "observations-registered/selected-lying-bit-unused.json"
+      ],
+      "reports": [
+        "unselected-checker-original.json",
+        "selected-checker.json",
+        "repeated-binding.json"
+      ]
+    }
+  ],
+  "scope": "Historical original streams are preserved. Fresh recorded checks validate invocation/exit consistency, not original-source preservation, global guarantees or a blind benchmark.",
+  "source_records": [
+    {
+      "id": "forward-helper-attempt-01",
+      "reason": "Pre-code original desired nested helper; actual before/after observations keep exactly the same source and invocation. Informed bounded component, not blind benchmark or source proof.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/forward-helper-attempt-01/main.qli": "e781ed3eff2dbfd4780b5cf6d14641b3d9634058cc44211316e7db179e533907"
+      },
+      "reports": [
+        "forward-helper-attempt-01/before.json",
+        "forward-helper-attempt-01/after.json"
+      ]
+    },
+    {
+      "id": "access-attempt-01",
+      "reason": "Original pre-code inverse/control sources retained; separate actual after observations use identical source bytes and invocations. Informed bounded component; no source theorem.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli": "ef23bd0d9cd0d018492e56773cb366ce4af34cb28b773fe66d7c0fc71c725737",
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli": "0f8cf52a31f0e1c05f2a3e11cf41ed7203cd59e093424dd1b85a0d7168e04aba"
+      },
+      "reports": [
+        "access-attempt-01/before.json",
+        "access-attempt-01/after.json",
+        "access-attempt-01/after-final.json"
+      ]
+    },
+    {
+      "id": "bits-attempt-01",
+      "reason": "Pre-implementation source using one Basis/Nat body at Bits0 and Bits1; original exact tagged source and actual current refusal retained, with no width coercion or claim of implemented finite Bits support.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/main.qli": "0c43df6b1a0aa4faf2c61e5cd5502a150e6a60411cc16231a51e7fba58f86a1c"
+      },
+      "reports": [
+        "bits-attempt-01/before.json"
+      ]
+    },
+    {
+      "id": "bits-spaced-attempt-02",
+      "reason": "First source tokenized adjacent > and = as >= and stopped in parsing. Add the required lexical separation at the two Meaning declarations only. Original source and actual parse failures remain unchanged. This is a source repair, not a compiler change or successful Meaning check.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/meaning-enforcement-v030/bits-attempt-01/spaced.qli": "6b8348e775ec09227ee76156e45405383e03a19f0df6b17360c94019fd6edb89"
+      },
+      "reports": [
+        "bits-attempt-01/spaced-before.json"
+      ]
+    }
+  ]
+}

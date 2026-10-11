@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.coherent-basis-documentation-review-followup",
+  "version": 1,
+  "preceding_review": {
+    "path": "docs-reference-review-02.json",
+    "sha256": "5216eda192725fb7348080e1221d3fb10bd32e7dc434063b7bb2f49ff4ecb051"
+  },
+  "final_validation": {
+    "path": "docs-validation-02.json",
+    "sha256": "96bcfb6b0f42c938b82e5bcfde69501308dba59ed6f929e81c9d063feb6ba9fb",
+    "status": "passed"
+  },
+  "reviewed_source_bindings_changed": [],
+  "render_finding_status": "resolved",
+  "current_chapter_sha256": "0a604988dccddbcd4156a5faf78523cc42233cbe8e26e31288f7c4cdd99b9c7e",
+  "scope": "Final generated chapter/print show the exact map equation in one fenced text code block each; book links and previously failed docs/inventory checks now pass. The first failures, raw rendering excerpt and first two technical notes remain unchanged. No remote link, Qleisli compiler/proof/native replay, external qlippy integration or release claim.",
+  "remaining_actionable_documentation_findings": []
+}

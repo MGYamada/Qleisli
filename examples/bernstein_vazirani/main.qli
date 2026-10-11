@@ -1,6 +1,6 @@
 use interference::recover_secret;
-use std::routines::measure_z2;
+use std::measurement::measure_z2;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     measure_z2(recover_secret())
 }

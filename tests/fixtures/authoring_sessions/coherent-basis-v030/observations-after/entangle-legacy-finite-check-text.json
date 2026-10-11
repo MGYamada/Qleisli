@@ -1,0 +1,35 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-legacy",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:57:34.055025+00:00",
+  "elapsed_seconds": 0.005131250014528632,
+  "case": "entangle-legacy",
+  "action": "finite-check-text",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "d0ca34f86bad1a27976c342366f50916df0fdc9476bb4a4739f5742f683681ba",
+  "raw_stdout": {
+    "path": "observations-after/entangle-legacy-finite-check-text.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "raw_stderr": {
+    "path": "observations-after/entangle-legacy-finite-check-text.stderr.txt",
+    "sha256": "4b5a735d1ee7ee474d8ab948e1b0a8eab10a69357ebd88dad825bd40644abd8f"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "text_stdout": "",
+  "text_stderr": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-legacy/main.qli:9:50: parse: parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.\n"
+}

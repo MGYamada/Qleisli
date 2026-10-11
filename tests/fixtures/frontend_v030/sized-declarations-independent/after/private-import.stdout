@@ -1,0 +1,3 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli:9..15: `dep::hidden` is not public
+sized.parse: main:0..16: visibility: dependency dep::hidden is private
+finite.check: Diagnostic { code: "project", message: "`dep::hidden` is not public", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli", span: Span { start: 9, end: 15 }, line: 1, column: 10 }) }

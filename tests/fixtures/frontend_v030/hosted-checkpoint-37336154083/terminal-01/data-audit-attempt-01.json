@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.hosted-terminal-data-audit-attempt",
+  "version": 1,
+  "status": "failed-assertion-before-log-compression",
+  "actual_tool_exit_code": 1,
+  "actual_stdout": "",
+  "actual_stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 18, in <module>\nAssertionError\n",
+  "cause": "The read-only data audit incorrectly compared unexpanded YAML job IDs with hosted job display names. The workflow's required matrix expands into eight named contexts; the raw jobs API contains all 18 resulting jobs. The fixed audit accounts for that literal matrix.",
+  "corrected_initial_diagnostic_guess": "An initial explanatory draft guessed a published-head/merge mismatch. A direct readback showed every API job head_sha is correctly the published 9256fe9 head; the actual failed assertion was the unexpanded workflow-ID comparison at line 18. Checkout logs independently bind tested merge 7549cec. This correction changes no fetched data or job conclusion.",
+  "artifact_changes_before_failure": "Metadata and all seventeen freshly retained decoded log copies existed. No decoded log was compressed or removed before this failed assertion.",
+  "scope": "Local metadata-audit assertion failure only. No GitHub workflow, build, test, CLI or native process was run or failed by this audit."
+}

@@ -1,0 +1,628 @@
+{
+  "format": "qleisli.checked-operation-after-capture",
+  "version": 1,
+  "started_utc": "2026-10-06T04:28:33.513004+00:00",
+  "ended_utc": "2026-10-06T04:28:41.242148+00:00",
+  "cli_sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "prepared_record_sha256": {
+    "after.pending-01.json": "de2447d1263deaad598a8af0694e9989c023413b9ec3981c78db278a9e22a1c3",
+    "after-contract-01.md": "6cb719e25f9d5b8642fadf201351d4ac8dff1b9b15a85ac781e5670b24d87da1",
+    "after-baseline-files-01.json": "0f6fc7326d68ff3bcaebb277723df7c5d59ddc101c78078ad7cffcf3576721fa",
+    "capture_after_01.py": "a36af90db6768d3643d43457e16d302bdb37b472ad3382920b9fe8e483bcc665"
+  },
+  "immutable_before_inventory": "after-baseline-files-01.json",
+  "observations": [
+    "observations-after-01/providers-reference-control-desired-finite-check-json.json",
+    "observations-after-01/providers-reference-control-desired-default-text-check.json",
+    "observations-after-01/providers-reference-control-desired-public-selected-check-json.json",
+    "observations-after-01/providers-reference-control-desired-finite-run-json.json",
+    "observations-after-01/providers-reference-control-desired-finite-emit-ir-json.json",
+    "observations-after-01/providers-reference-control-legacy-finite-check-json.json",
+    "observations-after-01/providers-reference-control-legacy-default-text-check.json",
+    "observations-after-01/providers-reference-control-legacy-public-selected-check-json.json",
+    "observations-after-01/wrong-phase-desired-finite-check-json.json",
+    "observations-after-01/wrong-phase-desired-default-text-check.json",
+    "observations-after-01/wrong-phase-legacy-finite-check-json.json",
+    "observations-after-01/wrong-phase-legacy-default-text-check.json",
+    "observations-after-01/wrong-tree-desired-finite-check-json.json",
+    "observations-after-01/wrong-tree-legacy-finite-check-json.json",
+    "observations-after-01/runtime-provider-capture-desired-finite-check-json.json",
+    "observations-after-01/runtime-provider-capture-legacy-finite-check-json.json",
+    "observations-after-01/quantum-provider-capture-desired-finite-check-json.json",
+    "observations-after-01/quantum-provider-capture-legacy-finite-check-json.json",
+    "observations-after-01/formal-provider-capture-desired-finite-check-json.json",
+    "observations-after-01/formal-provider-capture-legacy-finite-check-json.json",
+    "observations-after-01/spent-owner-reuse-desired-finite-check-json.json",
+    "observations-after-01/spent-owner-reuse-legacy-finite-check-json.json",
+    "observations-after-01/nested-constructors-desired-finite-check-json.json",
+    "observations-after-01/nested-constructors-desired-finite-run-json.json",
+    "observations-after-01/nested-constructors-desired-finite-emit-ir-json.json",
+    "observations-after-01/nested-constructors-legacy-finite-check-json.json"
+  ],
+  "artifacts": {
+    "observations-after-01/artifacts/nested-constructors-desired.qirf": {
+      "before_sha256": "66ab00461bba159eade17b719c59fc5d4a436bb2de3f2f64af51521e2b75fadf",
+      "after_sha256": "2863b4dfcb494a4d2202b4eb781d8072b6aabddc48ce763a217b7040cdeb2c34",
+      "ordered_ports_equal": true,
+      "before_ports": {
+        "root_interface": null,
+        "root": 0,
+        "program_ports": [
+          {
+            "quantum_inputs": [],
+            "quantum_outputs": [],
+            "classical_inputs": [],
+            "classical_outputs": [
+              0,
+              1
+            ],
+            "declared_effect": "observe"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          }
+        ],
+        "evidence_signatures": [
+          {
+            "tag": "bit"
+          },
+          {
+            "tag": "bit"
+          }
+        ]
+      },
+      "after_ports": {
+        "root_interface": null,
+        "root": 0,
+        "program_ports": [
+          {
+            "quantum_inputs": [],
+            "quantum_outputs": [],
+            "classical_inputs": [],
+            "classical_outputs": [
+              0,
+              1
+            ],
+            "declared_effect": "observe"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          }
+        ],
+        "evidence_signatures": [
+          {
+            "tag": "bit"
+          },
+          {
+            "tag": "bit"
+          }
+        ]
+      },
+      "source_identity_note": "Whole QIRF equality not required; no identities stripped or rewritten."
+    },
+    "observations-after-01/artifacts/providers-reference-control-desired.qirf": {
+      "before_sha256": "f1c0940ba6fd530e3ca9214eb13f917db3dbd1853aa32146f478f767eb44a4cb",
+      "after_sha256": "b96a4d341b7d1ad25b1560af40bbf5d134527940c3ebd9eb7f47c32dea466cce",
+      "ordered_ports_equal": true,
+      "before_ports": {
+        "root_interface": null,
+        "root": 0,
+        "program_ports": [
+          {
+            "quantum_inputs": [],
+            "quantum_outputs": [],
+            "classical_inputs": [],
+            "classical_outputs": [
+              0,
+              1,
+              2
+            ],
+            "declared_effect": "observe"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          }
+        ],
+        "evidence_signatures": [
+          {
+            "tag": "bit"
+          },
+          {
+            "tag": "bit"
+          }
+        ]
+      },
+      "after_ports": {
+        "root_interface": null,
+        "root": 0,
+        "program_ports": [
+          {
+            "quantum_inputs": [],
+            "quantum_outputs": [],
+            "classical_inputs": [],
+            "classical_outputs": [
+              0,
+              1,
+              2
+            ],
+            "declared_effect": "observe"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          },
+          {
+            "quantum_inputs": [
+              {
+                "shape": {
+                  "bits": 1
+                },
+                "token": 0,
+                "wires": [
+                  0
+                ]
+              }
+            ],
+            "quantum_outputs": [
+              1
+            ],
+            "classical_inputs": [],
+            "classical_outputs": [],
+            "declared_effect": "unitary"
+          }
+        ],
+        "evidence_signatures": [
+          {
+            "tag": "bit"
+          },
+          {
+            "tag": "bit"
+          }
+        ]
+      },
+      "source_identity_note": "Whole QIRF equality not required; no identities stripped or rewritten."
+    }
+  },
+  "assertions": [
+    {
+      "case": "providers-reference-control-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-desired-finite-check-json.json"
+    },
+    {
+      "case": "providers-reference-control-desired",
+      "action": "default-text-check",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-desired-default-text-check.json"
+    },
+    {
+      "case": "providers-reference-control-desired",
+      "action": "public-selected-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-desired-public-selected-check-json.json"
+    },
+    {
+      "case": "providers-reference-control-desired",
+      "action": "finite-run-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-desired-finite-run-json.json"
+    },
+    {
+      "case": "providers-reference-control-desired",
+      "action": "finite-emit-ir-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-desired-finite-emit-ir-json.json"
+    },
+    {
+      "case": "providers-reference-control-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-legacy-finite-check-json.json"
+    },
+    {
+      "case": "providers-reference-control-legacy",
+      "action": "default-text-check",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-legacy-default-text-check.json"
+    },
+    {
+      "case": "providers-reference-control-legacy",
+      "action": "public-selected-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/providers-reference-control-legacy-public-selected-check-json.json"
+    },
+    {
+      "case": "wrong-phase-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/wrong-phase-desired-finite-check-json.json"
+    },
+    {
+      "case": "wrong-phase-desired",
+      "action": "default-text-check",
+      "prediction_matched": true,
+      "observation": "observations-after-01/wrong-phase-desired-default-text-check.json"
+    },
+    {
+      "case": "wrong-phase-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/wrong-phase-legacy-finite-check-json.json"
+    },
+    {
+      "case": "wrong-phase-legacy",
+      "action": "default-text-check",
+      "prediction_matched": true,
+      "observation": "observations-after-01/wrong-phase-legacy-default-text-check.json"
+    },
+    {
+      "case": "wrong-tree-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/wrong-tree-desired-finite-check-json.json"
+    },
+    {
+      "case": "wrong-tree-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/wrong-tree-legacy-finite-check-json.json"
+    },
+    {
+      "case": "runtime-provider-capture-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/runtime-provider-capture-desired-finite-check-json.json"
+    },
+    {
+      "case": "runtime-provider-capture-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/runtime-provider-capture-legacy-finite-check-json.json"
+    },
+    {
+      "case": "quantum-provider-capture-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/quantum-provider-capture-desired-finite-check-json.json"
+    },
+    {
+      "case": "quantum-provider-capture-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/quantum-provider-capture-legacy-finite-check-json.json"
+    },
+    {
+      "case": "formal-provider-capture-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/formal-provider-capture-desired-finite-check-json.json"
+    },
+    {
+      "case": "formal-provider-capture-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/formal-provider-capture-legacy-finite-check-json.json"
+    },
+    {
+      "case": "spent-owner-reuse-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/spent-owner-reuse-desired-finite-check-json.json"
+    },
+    {
+      "case": "spent-owner-reuse-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/spent-owner-reuse-legacy-finite-check-json.json"
+    },
+    {
+      "case": "nested-constructors-desired",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/nested-constructors-desired-finite-check-json.json"
+    },
+    {
+      "case": "nested-constructors-desired",
+      "action": "finite-run-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/nested-constructors-desired-finite-run-json.json"
+    },
+    {
+      "case": "nested-constructors-desired",
+      "action": "finite-emit-ir-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/nested-constructors-desired-finite-emit-ir-json.json"
+    },
+    {
+      "case": "nested-constructors-legacy",
+      "action": "finite-check-json",
+      "prediction_matched": true,
+      "observation": "observations-after-01/nested-constructors-legacy-finite-check-json.json"
+    },
+    {
+      "case": "nested-constructors-desired",
+      "action": "ordered-ports-comparison",
+      "prediction_matched": true
+    },
+    {
+      "case": "providers-reference-control-desired",
+      "action": "ordered-ports-comparison",
+      "prediction_matched": true
+    }
+  ],
+  "scope": "Actual bounded first-source checks/run/emission and literal predictions. No source repairs, independent numerical oracle, native-child attestation, fresh Lean replay, general theorem, guarantee/Issue/release completion."
+}

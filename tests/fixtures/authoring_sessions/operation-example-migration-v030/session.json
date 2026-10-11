@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "#33 fixed operation-example canonical migration",
+  "baseline_commit": "67d8988efc9005d32d74e8b16297c71f0d8c9e14",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/Reference access; exact model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete desired translations of four current fixed examples, prepared before checking or active-source edits.",
+      "sha256": {
+        "iterative_phase_estimation/iterative.qli": "d26a4202923edc3901c67986cf12f0676abf27870659ad1c4adb7fa5494ddbbf",
+        "iterative_phase_estimation/main.qli": "398f30de1a0a7aea2431cccb959711ff53ec99924c0209f050eb7a863b9a6fa9",
+        "operation_contracts/main.qli": "93125e1ed0bc0187a1cbb06a63016c7532ae83d6ebc269fabf1dcb4a1478a1df",
+        "order_finding/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+        "order_finding/estimation.qli": "13028cc8d93923cb5126b39f65907746d927c1a50de22827f308cfb2b134a92b",
+        "order_finding/evolution.qli": "1807e9b9551788e3d6b036863908c46dc2919fb15f6ad7606a7577bc889a1a6d",
+        "order_finding/main.qli": "263b79b60ef0b86a46bdd8c85b2f2413c196a51f55b9756d3b4b68f1775d64cf",
+        "phase_estimation/estimation.qli": "e595c1abd3af2c6735b4dc8cc717a04685ac19f4bb69e13533f51f119a3f5762",
+        "phase_estimation/evolution.qli": "caac3156d6da71fb71e6cb449d1ee2da045277f7e3c11d2dbffabfa86500cbcb",
+        "phase_estimation/main.qli": "25e5150052217e8e72f205cfef325589ec09c53770613e28e915cfa5c93131a1"
+      },
+      "observations": [
+        "observation-iterative_phase_estimation-check.json",
+        "observation-iterative_phase_estimation-run.json",
+        "observation-operation_contracts-check.json",
+        "observation-operation_contracts-run.json",
+        "observation-phase_estimation-check.json",
+        "observation-phase_estimation-run.json",
+        "observation-order_finding-check.json",
+        "observation-order_finding-run.json",
+        "observation-active-iterative_phase_estimation-check.json",
+        "observation-active-iterative_phase_estimation-run.json",
+        "observation-active-operation_contracts-check.json",
+        "observation-active-operation_contracts-run.json",
+        "observation-active-phase_estimation-check.json",
+        "observation-active-phase_estimation-run.json",
+        "observation-active-order_finding-check.json",
+        "observation-active-order_finding-run.json"
+      ],
+      "reports": [
+        "before-source-hashes.json",
+        "before-readme-hash.json",
+        "active-comparison.json",
+        "validation.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "checks": [
+    {
+      "label": "docs",
+      "command": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.184150666987989
+    },
+    {
+      "label": "constitution",
+      "command": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "exit_code": 0,
+      "seconds": 1.1233175419620238
+    }
+  ],
+  "skipped": "Rust/Lean runtime reruns: only Git attributes, changelog and frozen diagnostic records changed; no compiler/kernel behavior or proof definition changed. Hosted full CI remains separate."
+}

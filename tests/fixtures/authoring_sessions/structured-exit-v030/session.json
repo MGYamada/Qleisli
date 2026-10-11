@@ -1,0 +1,74 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "status": "actual-first-observations-retained",
+  "task": "Issue #37 structured quantum exit diagnostics",
+  "baseline_commit": "21c227dfef1bc379c2762de6e6c1ee3119498ed2",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository study; exact deployed model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Five complete forbidden-exit probes and one ordinary identifier control saved before current baseline checks; no source repairs.",
+      "sha256": {
+        "early-return/main.qli": "3c786d7d7a2deb50cfdbc4e4fdebcaa9ba06bc35a008dec21b2129b37e3e3a10",
+        "residual/main.qli": "4ec87c811c0b22d6b4c191b56f7b6722afa4d8e7007e1208374662838aefa0b8",
+        "panic/main.qli": "0a0be91dc14cdd3326478c8dc63306f3c51287b0b68e56a04398cce206737bc8",
+        "assert/main.qli": "53d3006b1e178aa2a0f2284a140fae3463306a8e77438856d84aa8a99c1ec0ee",
+        "unreachable/main.qli": "b46aa2d24e32e4ac04471c1474f49a9030664e4241f554258934c6efa0f1496e",
+        "ordinary-identifiers/main.qli": "e7bcf380d36cfb1aee40e5b650c12ac57c12af37d06a2a7955b7afa729cad780"
+      },
+      "observations": [
+        "before/assert.json",
+        "before/early-return.json",
+        "before/ordinary-identifiers.json",
+        "before/panic.json",
+        "before/residual.json",
+        "before/unreachable.json"
+      ],
+      "manifest_sha256": {
+        "assert/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "early-return/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "ordinary-identifiers/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "panic/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "residual/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea",
+        "unreachable/Qargo.toml": "1989e5f4da39d6713f675f3b4351a912348ce7dbc0260f910c4146916c7630ea"
+      }
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Manifest-only repair from incorrect schema key to schema-version = 2. Every original source is identical; initial manifest refusals remain preserved and are not syntax evidence.",
+      "sha256": {
+        "assert/main.qli": "53d3006b1e178aa2a0f2284a140fae3463306a8e77438856d84aa8a99c1ec0ee",
+        "early-return/main.qli": "3c786d7d7a2deb50cfdbc4e4fdebcaa9ba06bc35a008dec21b2129b37e3e3a10",
+        "ordinary-identifiers/main.qli": "e7bcf380d36cfb1aee40e5b650c12ac57c12af37d06a2a7955b7afa729cad780",
+        "panic/main.qli": "0a0be91dc14cdd3326478c8dc63306f3c51287b0b68e56a04398cce206737bc8",
+        "residual/main.qli": "4ec87c811c0b22d6b4c191b56f7b6722afa4d8e7007e1208374662838aefa0b8",
+        "unreachable/main.qli": "b46aa2d24e32e4ac04471c1474f49a9030664e4241f554258934c6efa0f1496e"
+      },
+      "observations": [
+        "manifest-corrected/assert.json",
+        "manifest-corrected/early-return.json",
+        "manifest-corrected/ordinary-identifiers.json",
+        "manifest-corrected/panic.json",
+        "manifest-corrected/residual.json",
+        "manifest-corrected/unreachable.json",
+        "after/assert.json",
+        "after/early-return.json",
+        "after/ordinary-identifiers.json",
+        "after/panic.json",
+        "after/residual.json",
+        "after/unreachable.json"
+      ],
+      "manifest_sha256": {
+        "assert/Qargo.toml": "1ed981ac11d070f9c085b0a4998ddb4c22861ef8581ad705085d54292eec343f",
+        "early-return/Qargo.toml": "1ed981ac11d070f9c085b0a4998ddb4c22861ef8581ad705085d54292eec343f",
+        "ordinary-identifiers/Qargo.toml": "1ed981ac11d070f9c085b0a4998ddb4c22861ef8581ad705085d54292eec343f",
+        "panic/Qargo.toml": "1ed981ac11d070f9c085b0a4998ddb4c22861ef8581ad705085d54292eec343f",
+        "residual/Qargo.toml": "1ed981ac11d070f9c085b0a4998ddb4c22861ef8581ad705085d54292eec343f",
+        "unreachable/Qargo.toml": "1ed981ac11d070f9c085b0a4998ddb4c22861ef8581ad705085d54292eec343f"
+      }
+    }
+  ]
+}

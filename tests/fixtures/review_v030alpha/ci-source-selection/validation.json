@@ -1,0 +1,80 @@
+{
+  "format": "qleisli.ci-source-selection-review",
+  "version": 1,
+  "date": "2026-10-07",
+  "base_commit": "241474ee2bce4e0631632d8ba51dcc1cf39a5d40",
+  "failed_run": 37578949691,
+  "checked_merge_commit": "41070c0a85cd1d2634e06c7ce3ec88c55426e635",
+  "source_sha256": {
+    "scripts/observation_sources.py": "c8c250773926a88ab7ed16431bb3968f4c749bed5ae7bda7fe036fbdf41b999a",
+    "scripts/test_observation_sources.py": "6c474883cbf7c07d50fd38911877eab5fca6f852079df4728550b0e22ad834b6",
+    "scripts/test_lean_observation.py": "1c6a96366396a01321c38e1732367b069a9a001cf6b7399042e194e7c8651e88",
+    "scripts/test_lean_streamed_instrument.py": "5f6e8ab733b8becac8008458a4170126845a7c99c73db7d510d3fa8fe7c61f7d",
+    "scripts/test_verification_baseline.py": "c9c75441c60f13b14f91c26fa5a24e446745e0ebd11ac031282340e2a247d579",
+    "tests/common/mod.rs": "af7816895703a4788a56a5fdaab3233359662d318a49017f0f010671139025e8",
+    "tests/input_corpus.rs": "43119e5bab1080283194a47fa27621a949c63192d402c26eb4f779a6346ee58f",
+    "tests/native_roundtrip.rs": "a85ba5f39d9ef2bae84e7efde6692f43821f3c78845d1ebd303e9cb84f76e567"
+  },
+  "validation": [
+    {
+      "check": "rust all-targets",
+      "status": "passed",
+      "log_sha256": "a75ed2f696a44bdbee1e206751be9bf0c90f1cebcaa816fc9f574dd4cd52a682",
+      "targets": 102,
+      "passed": 960,
+      "failed": 0,
+      "ignored": 52
+    },
+    {
+      "check": "msrv all-targets",
+      "status": "passed",
+      "log_sha256": "ae339493b38afe9e832446bd422a6bd5593d1c08a8197c1ed56cb31d7fc27d8a",
+      "targets": 102,
+      "passed": 960,
+      "failed": 0,
+      "ignored": 52
+    },
+    {
+      "check": "observation",
+      "status": "passed",
+      "report_sha256": "44e417543a8abf2bd1c82b3e1585acd9165c8b81c357219d901c628e184d2f16",
+      "counts": {
+        "native_cases": 150,
+        "rust_comparisons": 143,
+        "independent_operators": 145
+      },
+      "note": "Before subsequent report-only hash/pending-description edits; rerun exact committed runner separately."
+    },
+    {
+      "check": "streamed",
+      "status": "passed",
+      "report_sha256": "83ffee4c0e5af1b73843aecf324b85fc320698bcf72737eb83c09ed188aa87ec",
+      "counts": {
+        "native_cases": 154,
+        "rust_comparisons": 143,
+        "independent_operators": 147
+      },
+      "note": "Before subsequent report-only hash/pending-description edits; rerun exact committed runner separately."
+    },
+    {
+      "check": "source-contracts-02",
+      "status": "passed",
+      "commands": 9,
+      "report_sha256": "53c7ea5a14605fd0198f14b05ac7ee1a070707bdadcf7ca48a821ac5f15502f5"
+    },
+    {
+      "check": "source-contracts-msrv",
+      "status": "passed",
+      "commands": 9,
+      "report_sha256": "24bfd3194fae06c9fe0251e6a6610e21ceab1910b9b119eabf2e68a2098bcdcc"
+    }
+  ],
+  "limitations": [
+    "Local macOS development evidence; not hosted exact-commit release approval.",
+    "Sandboxed all-target runs failed only at ps permission checks; normal-permission runs above passed.",
+    "First shared source-contract invocation failed at an unsupported compiler --version probe; removed that probe and bound executable bytes.",
+    "Existing 52 ignored tests per toolchain remain separately scheduled; not counted as passed.",
+    "Full native manifest, clean source archive, Lean replay and hosted final-commit checks still required.",
+    "No constitutional guarantee added or discharged."
+  ]
+}

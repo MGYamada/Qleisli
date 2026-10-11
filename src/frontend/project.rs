@@ -9,10 +9,10 @@ use std::fs;
 use std::io::Read;
 use std::path::{Path, PathBuf};
 
-use super::ast::{self, FnKind, Span, UseDecl};
+use super::ast::{self, FnKind, Span};
 use super::diagnostic::{Diagnostic, SourceLocation, coordinates};
 use super::lexer::keyword_kind;
-use super::parser::parse_module;
+use super::source::{self, BundledRegistry, ParsePolicy, Source};
 
 mod edition;
 mod manifest;
@@ -20,18 +20,9 @@ mod source_file;
 
 pub use manifest::{QrateSource, manifest_warnings, qrate_source_root};
 
-const BUNDLED_SOURCES: &[(&str, &str)] = &[
-    (
-        "arithmetic",
-        include_str!("../../stdlib/src/arithmetic.qli"),
-    ),
-    ("basis", include_str!("../../stdlib/src/basis.qli")),
-    ("routines", include_str!("../../stdlib/src/routines.qli")),
-    (
-        "transforms",
-        include_str!("../../stdlib/src/transforms.qli"),
-    ),
-];
+pub(super) fn check_bundled_manifest() -> Result<(), Diagnostic> {
+    edition::check_bundled().map_err(LoadFailure::into_diagnostic)
+}
 
 /// Byte policy before UTF-8 decoding. Bounded project loading also permits at
 /// most max(64, project_bytes / 1024) directory entries, including empty files.
@@ -235,6 +226,7 @@ impl fmt::Display for ProjectError {
 
 impl std::error::Error for ProjectError {}
 
+#[derive(Clone)]
 pub(crate) struct LoadFailure {
     pub error: ProjectError,
     pub coordinates: Option<(usize, usize)>,
@@ -384,54 +376,56 @@ impl Project {
             }
         }
         let root = root.to_path_buf();
-        edition::check_manifest(
-            Path::new("<bundled>/std/Qargo.toml"),
-            include_str!("../../stdlib/Qargo.toml"),
-        )?;
+        edition::check_bundled()?;
         let mut files = Vec::new();
         collect_qli_files(&root, directory, &mut budget, &mut files)?;
         files.sort_by(|a, b| a.0.cmp(&b.0));
 
-        let mut modules = BTreeMap::new();
+        let mut collection = source::Builder::default();
         for (path, source) in files {
             let name = local_module_name(&root, &path)?;
-            let module = parse_source(name.clone(), path, ModuleOrigin::Local, source)?;
-            if modules.insert(name.clone(), module).is_some() {
-                return Err(error(
-                    &root,
-                    Span::default(),
-                    format!("duplicate module `{name}`"),
-                ));
-            }
-        }
-
-        for &(name, source) in BUNDLED_SOURCES {
-            let path = PathBuf::from(format!("<bundled>/std/{name}.qli"));
-            budget.charge(&path, source.len() as u64)?;
-            let ast = parse_module(source).map_err(|failure| {
-                located_error(
-                    &path,
-                    source,
-                    failure.span,
-                    "parse",
-                    format!("parse error: {}", failure.message),
-                )
+            let parsed = Source::local(name, Some(path), source, ParsePolicy::Project)
+                .map_err(collection_error)?;
+            check_declarations(&parsed)?;
+            collection.insert(parsed).map_err(|name| {
+                error(&root, Span::default(), format!("duplicate module `{name}`"))
             })?;
-            let module = SourceModule {
-                name: format!("std::{name}"),
-                path,
-                source: source.to_owned(),
-                ast,
-                imports: BTreeMap::new(),
-                origin: ModuleOrigin::Bundled,
-            };
-            check_declarations(&module)?;
-            modules.insert(module.name.clone(), module);
         }
 
+        for bundled in BundledRegistry::sources() {
+            budget.charge(Path::new(bundled.path()), bundled.text().len() as u64)?;
+            let parsed =
+                Source::bundled(bundled, ParsePolicy::Project).map_err(collection_error)?;
+            check_declarations(&parsed)?;
+            collection.insert(parsed).map_err(|name| {
+                error(&root, Span::default(), format!("duplicate module `{name}`"))
+            })?;
+        }
+
+        // Consume the collection into the public mutable compatibility view;
+        // compilation must inspect that view afresh, not a stale parallel cache.
+        let modules = collection
+            .finish()
+            .into_entries()
+            .map(|entry| {
+                let (name, path, source, ast, bundled) = entry.into_parts();
+                let module = SourceModule {
+                    name: name.clone(),
+                    path: path.expect("filesystem and bundled sources have paths"),
+                    source,
+                    ast,
+                    imports: BTreeMap::new(),
+                    origin: if bundled {
+                        ModuleOrigin::Bundled
+                    } else {
+                        ModuleOrigin::Local
+                    },
+                };
+                (name, module)
+            })
+            .collect();
         let mut project = Self { root, modules };
         project.resolve_imports()?;
-        project.reject_cycles()?;
         Ok(project)
     }
 
@@ -439,167 +433,88 @@ impl Project {
         self.modules.get(name)
     }
 
-    fn resolve_imports(&mut self) -> Result<(), LoadFailure> {
-        // Resolve against immutable module declarations first, then publish the
-        // completed scopes. Declaration order cannot change import meaning.
-        let mut scopes = BTreeMap::new();
-        for (module_name, module) in &self.modules {
-            let mut used_names: BTreeSet<&str> = module
-                .ast
-                .decls
-                .iter()
-                .map(|decl| decl.name.text.as_str())
-                .collect();
-            let mut imports = BTreeMap::new();
-            for use_decl in &module.ast.uses {
-                let imported = self.resolve_one_import(module, use_decl)?;
-                let local_name = imported.name.clone();
-                if !used_names.insert(&use_decl.path.last().expect("parser requires name").text) {
-                    return Err(source_error(
-                        module,
-                        use_decl.path.last().expect("parser requires name").span,
-                        format!("name `{local_name}` collides with another declaration or import"),
-                    ));
-                }
-                imports.insert(local_name, imported);
-            }
-            scopes.insert(module_name.clone(), imports);
-        }
-        for (module_name, imports) in scopes {
+    pub(super) fn resolution(&self) -> Result<super::resolve::Resolution, LoadFailure> {
+        use super::resolve::Resolution;
+        let mut result = Resolution::new(
             self.modules
-                .get_mut(&module_name)
-                .expect("module exists")
-                .imports = imports;
+                .iter()
+                .map(|(name, source)| (name.as_str(), &source.ast)),
+        )
+        .map_err(|failure| self.resolution_error(failure))?;
+        for (name, source) in &self.modules {
+            let module = result.module(name).expect("registered module");
+            let scope = result
+                .imports(module, &source.ast)
+                .map_err(|failure| self.resolution_error(failure))?;
+            result.set_scope(module, scope);
         }
-        Ok(())
+        Ok(result)
     }
 
-    fn resolve_one_import(
-        &self,
-        caller: &SourceModule,
-        use_decl: &UseDecl,
-    ) -> Result<ResolvedImport, LoadFailure> {
-        let segments = &use_decl.path;
-        if segments.len() < 2 {
-            return Err(source_error(
-                caller,
-                use_decl.span,
-                "import needs a module and a name",
-            ));
-        }
-        let name = &segments.last().expect("nonempty import path").text;
-        let source_module = segments[..segments.len() - 1]
-            .iter()
-            .map(|segment| segment.text.as_str())
-            .collect::<Vec<_>>()
-            .join("::");
-
-        if source_module == "std::quantum" || source_module == "std::observe" {
-            if let Some(kind) = sealed_kind(&source_module, name) {
-                return Ok(ResolvedImport {
-                    module: source_module,
-                    name: name.clone(),
-                    kind,
-                    origin: ImportOrigin::Sealed,
-                    span: use_decl.span,
-                });
+    fn resolution_error(&self, failure: super::resolve::Failure) -> LoadFailure {
+        use super::resolve::FailureKind;
+        let message = match failure.kind {
+            FailureKind::InvalidPath => "import needs a module and a name".into(),
+            FailureKind::MissingModule(module) => format!("missing module `{module}`"),
+            FailureKind::MissingName { module, name } => format!(
+                "module `{module}` has no name `{name}`{}",
+                self.public_name_hint(&name, &module)
+            ),
+            FailureKind::UnknownPrimitive { module, name } => format!(
+                "sealed module `{module}` has no public name `{name}`{}",
+                self.public_name_hint(&name, &module)
+            ),
+            FailureKind::Private(path) => format!("`{path}` is not public"),
+            FailureKind::Collision(name) | FailureKind::DuplicateImport(name) => {
+                format!("name `{name}` collides with another declaration or import")
             }
-            return Err(source_error(
-                caller,
-                segments.last().expect("nonempty import path").span,
-                format!(
-                    "sealed module `{source_module}` has no public name `{name}`{}",
-                    self.public_name_hint(name, &source_module)
-                ),
-            ));
-        }
-        let target = self.modules.get(&source_module).ok_or_else(|| {
-            source_error(
-                caller,
-                use_decl.span,
-                format!("missing module `{source_module}`"),
-            )
-        })?;
-        let declaration = target
-            .ast
-            .decls
-            .iter()
-            .find(|declaration| declaration.name.text == *name)
-            .ok_or_else(|| {
-                source_error(
-                    caller,
-                    segments.last().expect("nonempty import path").span,
-                    format!(
-                        "module `{source_module}` has no name `{name}`{}",
-                        self.public_name_hint(name, &source_module)
-                    ),
-                )
-            })?;
-        if !declaration.public {
-            return Err(source_error(
-                caller,
-                segments.last().expect("nonempty import path").span,
-                format!("`{source_module}::{name}` is not public"),
-            ));
-        }
-        Ok(ResolvedImport {
-            module: source_module,
-            name: name.clone(),
-            kind: declaration.kind,
-            origin: match target.origin {
-                ModuleOrigin::Local => ImportOrigin::Local,
-                ModuleOrigin::Bundled => ImportOrigin::Bundled,
-            },
-            span: use_decl.span,
-        })
+            FailureKind::Duplicate(name) => format!("duplicate declaration `{name}`"),
+        };
+        source_error(&self.modules[&failure.module], failure.span, message)
     }
 
-    fn reject_cycles(&self) -> Result<(), LoadFailure> {
-        let mut marks = BTreeMap::<&str, u8>::new();
-        // Each frame records the next import to visit. Keep the active path on
-        // the heap so a long acyclic module chain cannot exhaust the Rust stack.
-        let mut stack = Vec::<(&str, usize)>::new();
-        for name in self.modules.keys() {
-            if marks.get(name.as_str()).copied() == Some(2) {
-                continue;
-            }
-            marks.insert(name, 1);
-            stack.push((name, 0));
-            while let Some((name, next_import)) = stack.last_mut() {
-                let module = self.modules.get(*name).expect("known module");
-                let Some(use_decl) = module.ast.uses.get(*next_import) else {
-                    marks.insert(*name, 2);
-                    stack.pop();
-                    continue;
-                };
-                *next_import += 1;
-                let local_name = &use_decl.path.last().expect("parser requires name").text;
-                let imported = module.imports.get(local_name).expect("imports resolved");
-                if imported.origin == ImportOrigin::Sealed {
-                    continue;
-                }
-                let dependency = imported.module.as_str();
-                match marks.get(dependency).copied() {
-                    Some(1) => {
-                        let start = stack
-                            .iter()
-                            .position(|(name, _)| *name == dependency)
-                            .expect("active module is on the DFS path");
-                        let mut cycle: Vec<_> =
-                            stack[start..].iter().map(|(name, _)| *name).collect();
-                        cycle.push(dependency);
-                        return Err(source_error(
-                            module,
-                            use_decl.span,
-                            format!("cyclic import: {}", cycle.join(" -> ")),
-                        ));
+    fn resolve_imports(&mut self) -> Result<(), LoadFailure> {
+        use super::resolve::Target;
+        let resolution = self.resolution()?;
+        let mut scopes = BTreeMap::new();
+        for (name, source) in &self.modules {
+            let module = resolution.module(name).expect("registered module");
+            let scope = resolution.scope(module);
+            let mut imports = BTreeMap::new();
+            for usage in &source.ast.uses {
+                let local = &usage.path.last().expect("parsed import").text;
+                let (owner, name, kind, origin) = match scope.imports[local] {
+                    Target::Declaration(id) => {
+                        let declaration = resolution.declaration(id);
+                        let (owner, name) = &declaration.name;
+                        let origin = match self.modules[owner].origin {
+                            ModuleOrigin::Local => ImportOrigin::Local,
+                            ModuleOrigin::Bundled => ImportOrigin::Bundled,
+                        };
+                        (owner.clone(), name.clone(), declaration.kind, origin)
                     }
-                    Some(2) => continue,
-                    _ => {}
-                }
-                marks.insert(dependency, 1);
-                stack.push((dependency, 0));
+                    Target::Primitive(id) => (
+                        id.module.into(),
+                        id.name.into(),
+                        sealed_kind(id.module, id.name).expect("resolved primitive"),
+                        ImportOrigin::Sealed,
+                    ),
+                };
+                imports.insert(
+                    local.clone(),
+                    ResolvedImport {
+                        module: owner,
+                        name,
+                        kind,
+                        origin,
+                        span: usage.span,
+                    },
+                );
             }
+            scopes.insert(name.clone(), imports);
+        }
+        for (name, imports) in scopes {
+            self.modules.get_mut(&name).expect("known module").imports = imports;
         }
         Ok(())
     }
@@ -740,40 +655,32 @@ fn valid_ident(name: &str) -> bool {
         && keyword_kind(name).is_none()
 }
 
-fn parse_source(
-    name: String,
-    path: PathBuf,
-    origin: ModuleOrigin,
-    source: String,
-) -> Result<SourceModule, LoadFailure> {
-    let ast = parse_module(&source).map_err(|failure| {
-        located_error(
-            &path,
-            &source,
-            failure.span,
-            "parse",
-            format!("parse error: {}", failure.message),
-        )
-    })?;
-    let module = SourceModule {
-        name,
-        path,
-        source,
-        ast,
-        imports: BTreeMap::new(),
-        origin,
+fn collection_error(failure: source::Failure) -> LoadFailure {
+    let span = failure.span();
+    let (code, message) = match failure.kind {
+        source::FailureKind::ReservedModule => {
+            ("project", "local modules cannot occupy `std`".into())
+        }
+        source::FailureKind::Parse(error) => ("parse", format!("parse error: {}", error.message)),
     };
-    check_declarations(&module)?;
-    Ok(module)
+    located_error(
+        failure.path.as_deref().expect("project source has a path"),
+        &failure.text,
+        span,
+        code,
+        message,
+    )
 }
 
-fn check_declarations(module: &SourceModule) -> Result<(), LoadFailure> {
+fn check_declarations(module: &Source) -> Result<(), LoadFailure> {
     let mut seen = BTreeSet::new();
-    for declaration in &module.ast.decls {
+    for declaration in &module.syntax().decls {
         if !seen.insert(declaration.name.text.as_str()) {
-            return Err(source_error(
-                module,
+            return Err(located_error(
+                module.path().expect("project source has a path"),
+                module.text(),
                 declaration.name.span,
+                "project",
                 format!("duplicate declaration `{}`", declaration.name.text),
             ));
         }
@@ -782,5 +689,10 @@ fn check_declarations(module: &SourceModule) -> Result<(), LoadFailure> {
 }
 
 fn sealed_kind(module: &str, name: &str) -> Option<FnKind> {
-    super::core::primitive(module, name).map(|item| item.kind)
+    let path = format!("{module}::{name}");
+    super::check::primitive::Primitive::lookup(&path).map(|item| match item.effect() {
+        crate::ir::Effect::Unitary => FnKind::Unitary,
+        crate::ir::Effect::Isometry => FnKind::Isometry,
+        crate::ir::Effect::Observe => FnKind::Observe,
+    })
 }

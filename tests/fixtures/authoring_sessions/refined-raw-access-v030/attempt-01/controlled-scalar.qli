@@ -1,0 +1,6 @@
+use std::quantum::phase_eighth;
+fn scalar(q:Q<Unit>)->Q<Unit>{phase_eighth(q)}
+classical fn phi(u:Unit)->(Bit,(Bit,Bit)){(1,(0,0))}
+meaning M:Unit=phase_by(phi);
+fn invoke[const U:Op<(Bit,Unit)>](q:Q<(Bit,Unit)>)->Q<(Bit,Unit)> requires Applicable(U){U(q)}
+pub fn main(q:Q<(Bit,Unit)>)->Q<(Bit,Unit)>{invoke[controlled(checked_op(scalar,M))](q)}

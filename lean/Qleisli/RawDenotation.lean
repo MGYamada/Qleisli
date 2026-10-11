@@ -19,7 +19,9 @@ theorem circuit_denotes (dependencies : List Dependency) (bits : Nat) (steps : L
     | succ n ih =>
       cases n with
       | zero => rfl
-      | succ n => simpa [QleisliKernel.Semantics.Raw.registerBasis,width] using congrArg Nat.succ ih
+      | succ n =>
+        simp [QleisliKernel.Semantics.Raw.registerBasis,width] at ih ⊢
+        omega
   simpa only [CircuitMeaning,BasisColumn,circuit,QleisliKernel.Raw.registerBasis,width_register] using
     Finite.circuitMatrix_trace dependencies (circuit bits steps) actual work left ok
 

@@ -1,0 +1,28 @@
+// Upstream authors (repository usernames): alowe, Jay. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qaoa_maxcut/demo.py
+// Selected symbol: U_C
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::z;
+use std::quantum::s;
+use std::quantum::t;
+use std::quantum::tdg;
+use std::quantum::id;
+use std::quantum::phase_eighth;
+use std::quantum::toffoli;
+use std::quantum::cnot;
+use std::quantum::join;
+use std::quantum::split;
+
+unitary fn rz(q: Q<Bit>) -> Q<Bit> { inverse(phase_eighth)(s(q)) }
+pub unitary fn kernel(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {
+    let (ab, d) = split(q);
+    let (a, b) = split(ab);
+    let (a, b) = cnot(a, b);
+    let (a, b) = cnot(a, rz(b));
+    let (b, d) = cnot(b, d);
+    let (b, d) = cnot(b, d);
+    join(join(a, b), d)
+}

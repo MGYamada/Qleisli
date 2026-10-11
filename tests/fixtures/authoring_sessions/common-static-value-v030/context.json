@@ -1,0 +1,98 @@
+{
+  "format": "qleisli.informed-first-source-study",
+  "recorded_utc": "2026-10-05T22:51:34.074918+00:00",
+  "edition": "2026",
+  "release": "0.3.0-alpha",
+  "kind": "Informed tiny source regression after actual06 and direct core review, not a blind benchmark.",
+  "available_context": [
+    "Existing original whole-AST ordinary contract",
+    "Actual06 diagnostic changes",
+    "Core author repaired BindingKind-based static-value rule; not compiled or observed here"
+  ],
+  "author_role": "AI subagent isometry_docs; deployed model details unavailable",
+  "first_check_completed": false,
+  "cases": [
+    {
+      "case": "static-natural",
+      "source": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/static-natural/main.qli",
+      "physical_quantum_input_width": 1,
+      "prediction_only": {
+        "selected_code": "type",
+        "finite_code": "type-mismatch",
+        "message": "static name `n` is not a runtime value",
+        "span": [
+          59,
+          60
+        ]
+      },
+      "observations": []
+    },
+    {
+      "case": "static-basis",
+      "source": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/static-basis/main.qli",
+      "physical_quantum_input_width": 1,
+      "prediction_only": {
+        "selected_code": "type",
+        "finite_code": "type-mismatch",
+        "message": "static name `A` is not a runtime value",
+        "span": [
+          61,
+          62
+        ]
+      },
+      "observations": []
+    },
+    {
+      "case": "static-operation",
+      "source": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/static-operation/main.qli",
+      "physical_quantum_input_width": 1,
+      "prediction_only": {
+        "selected_code": "type",
+        "finite_code": "type-mismatch",
+        "message": "static name `U` is not a runtime value",
+        "span": [
+          63,
+          64
+        ]
+      },
+      "observations": []
+    },
+    {
+      "case": "fold-index",
+      "source": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/fold-index/main.qli",
+      "physical_quantum_input_width": 1,
+      "prediction_only": {
+        "selected_code": "type",
+        "finite_code": "type-mismatch",
+        "message": "static name `i` is not a runtime value",
+        "span": [
+          83,
+          84
+        ]
+      },
+      "observations": []
+    },
+    {
+      "case": "consumed-runtime-owner",
+      "source": "tests/fixtures/authoring_sessions/common-static-value-v030/attempt-01/consumed-runtime-owner/main.qli",
+      "physical_quantum_input_width": 1,
+      "prediction_only": {
+        "selected_code": "ownership",
+        "finite_code": "ownership",
+        "message": "quantum ownership `q` has already been consumed",
+        "span": [
+          65,
+          66
+        ]
+      },
+      "observations": []
+    }
+  ],
+  "execution": {
+    "rust_tests": false,
+    "cli": false,
+    "native": false,
+    "lean": false
+  },
+  "claim_limits": "Predictions only. No check acceptance, source preservation, theorem, guarantee admission, Issue credit or constitutional act."
+}

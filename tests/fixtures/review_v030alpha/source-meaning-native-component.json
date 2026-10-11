@@ -1,0 +1,86 @@
+{
+  "format": "qleisli.local-review",
+  "version": 1,
+  "issue": 44,
+  "status": "source target request and native provider-byte component verified; generic binding remains unfinished",
+  "source_sha256": {
+    "src/frontend/sized.rs": "475aa86c54a4ded12eee6c5675fac1e2590f22e1a894959fd8a2ae1e3110c5c6",
+    "src/frontend/sized/meaning.rs": "b8bebb30d4ae62447bb8c01bfe1161bab5d7ed3c861ad3a9880d8cab561a143b",
+    "tests/classical_functions.rs": "4d5cde38983c5e7dc46fb977eaf9eb9bac66330930123122618f49cf03f81a79",
+    "scripts/run_msrv.py": "3df88b1ba9ac74e5b67c249fabf0ffa4d94a6efd354eb1c37032e977b26325ac",
+    "scripts/check_production_coverage.py": "9d47ce47e7ed96d1967a266c235150a11bdc4083bff3d87dbd9d94e64b90ef23"
+  },
+  "contract": "finite_meaning_target resolves original source Meanings into untrusted requests. It does not select a provider, issue an accepted handle or remove any generic projection guard. Exact Bits identity is unsupported by the legacy finite signature and must not be replaced by width.",
+  "native_checks": [
+    "Original correct-x source produces actual selected Raw bytes accepted against the source Flip target (fixed off-diagonal ones). Original wrong-x identity bytes are independently valid but rejected against that unchanged target.",
+    "Original scalar-minus source produces zero-wire owner bytes accepted against the source Minus target, whose exact 1x1 coefficient is -1. A separate in-memory derivative with three instead of four phase_eighth calls is independently valid but rejected against the same -1 target.",
+    "The native finite-leaf result matches the complete actual payload, boundary and required matrix. Raw source-step replay is performed separately on the same payload. This is bounded correspondence evidence, not an AST/source theorem or generic provider admission.",
+    "Nested (Bit,(Unit,Bit)) is preserved as that exact requested tree. Bits<1> refuses conversion; unknown paths and non-Meaning declarations refuse."
+  ],
+  "toolchain_correction": {
+    "problem": "rustup run 1.85.0 cargo clippy selected ambient Clippy0.1.98. Earlier Cargo test compiler selection was not independently established and is not genuine MSRV evidence merely because Cargo1.85 was invoked.",
+    "historical_records_qualified": [
+      "retained-meaning-targets.json",
+      "issue-43-unit-review.json",
+      "raw-scalar-preparation.json",
+      "raw-quantum-unit-preparation.json"
+    ],
+    "preservation": "Historical bytes and commands remain in Git. New explicit-toolchain results supersede their unverified MSRV labels; no prior success is silently reclassified as a failure of semantic tests.",
+    "repair": "scripts/run_msrv.py resolves Cargo.toml MSRV, sets explicit RUSTC/RUSTDOC/CARGO and prepends the same toolchain bin directory for cargo-clippy/clippy-driver. It installs nothing.",
+    "observed_identities": [
+      "cargo1.85.0 (d73d2caf9 2024-12-31)",
+      "rustc1.85.0 (4d91de4e4 2025-02-17)",
+      "clippy0.1.85 (4d91de4e48 2025-02-17)"
+    ],
+    "target": "/private/tmp/qleisli-bounded-validation-msrv-target",
+    "performed": "85 integration tests across7 targets plus3 new Meaning library tests passed, no ignored; all-target MSRV Clippy passed with -D warnings",
+    "targets": {
+      "basis_polymorphism": 10,
+      "classical_functions": 17,
+      "quantum_tuple_unitors": 11,
+      "quantum_unit_maps": 12,
+      "quantum_unit_source": 16,
+      "selected_source_cli": 10,
+      "unit_patterns": 9
+    },
+    "actual_failed_invocation": "The first correction command named nonexistent test target tuple_unitors and exited101 before testing. Correct target quantum_tuple_unitors was subsequently run successfully."
+  },
+  "latest_results": "Rust1.98.1:37 related integration tests (classical_functions17, basis_polymorphism10, selected_source_cli10) passed; all-target check and Clippy pass. No new maximum-qubit validation.",
+  "other_checks": [
+    "VM-22 and VM-29 pass with one reviewed additive untrusted API and explicit route/tests; no capacities or acceptance classifications change",
+    "14 production-coverage policy tests pass",
+    "Constitutional continuity passes against38baae7d19535602b21270e11e97617d45205b37 (identity/evidence only)",
+    "Docs2186links/30anchors/206Lean roots; pinned mdBook0.5.4 builds and29HTML/1224links/471anchors pass",
+    "Rust formatting and worktree whitespace pass"
+  ],
+  "hosted_checkpoint": {
+    "run": 37468828239,
+    "head": "815a053b4ebdacceb71c4fdfde66ea8471bf224e",
+    "state": "completed failure",
+    "successful_producers": [
+      "changes",
+      "check-lean",
+      "check-macos-source",
+      "check-rust",
+      "check-lean-kernel",
+      "check-distribution",
+      "check-interop"
+    ],
+    "failed_producers": {
+      "check-docs": "frozen experimental/static-nat-tables/attempt-01.patch whitespace; local5031481a preserves bytes and adds exact-file attribute",
+      "check-rust-msrv": "all-target tests succeeded; Clippy reports needless_lifetimes on validate and Context impl in meaning.rs; removed those two explicit lifetime parameters"
+    },
+    "aggregators": "all8 require complete producer success and therefore fail; release-readiness skipped. This is not full CI success and does not validate the new local source.",
+    "next": "push coherent local commits only after terminal old run; obtain fresh exact-head CI"
+  },
+  "not_claimed": [
+    "generic Op<A,M> admission",
+    "mandatory unused-provider native checks",
+    "full source preservation",
+    "new Lean build/audit/replay",
+    "constitutional discharge or human adequacy",
+    "new exact-head full CI",
+    "Issue closure or release"
+  ],
+  "completion": "22/111 (19.82%)"
+}

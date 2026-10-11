@@ -1,0 +1,25 @@
+{
+  "scope": "The five actually rejected first manifests are retained byte-for-byte as historical data, not active project configuration. Original source files and original diagnostic events are unchanged. The current source collection uses a valid enclosing schema-2 manifest; only attempt-02 is used for the intended host-effect replay. This grants no exception to production or edition checking.",
+  "original_manifests": {
+    "attempt-01/finite-sealed-provider/Qargo.toml": {
+      "retained_path": "attempt-01/finite-sealed-provider/Qargo.toml.original.txt",
+      "sha256": "a3b1385e9492fadf24a02873f0d284c385338becb819e18e84f84b90a94352ad"
+    },
+    "attempt-01/host-hidden-observer/Qargo.toml": {
+      "retained_path": "attempt-01/host-hidden-observer/Qargo.toml.original.txt",
+      "sha256": "a3b1385e9492fadf24a02873f0d284c385338becb819e18e84f84b90a94352ad"
+    },
+    "attempt-01/host-wide-pure/Qargo.toml": {
+      "retained_path": "attempt-01/host-wide-pure/Qargo.toml.original.txt",
+      "sha256": "a3b1385e9492fadf24a02873f0d284c385338becb819e18e84f84b90a94352ad"
+    },
+    "attempt-01/host-wrong-shape/Qargo.toml": {
+      "retained_path": "attempt-01/host-wrong-shape/Qargo.toml.original.txt",
+      "sha256": "a3b1385e9492fadf24a02873f0d284c385338becb819e18e84f84b90a94352ad"
+    },
+    "attempt-01/public-missing-kind/Qargo.toml": {
+      "retained_path": "attempt-01/public-missing-kind/Qargo.toml.original.txt",
+      "sha256": "a3b1385e9492fadf24a02873f0d284c385338becb819e18e84f84b90a94352ad"
+    }
+  }
+}

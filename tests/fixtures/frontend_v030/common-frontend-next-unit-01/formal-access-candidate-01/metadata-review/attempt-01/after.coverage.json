@@ -1,0 +1,17 @@
+{
+  "label": "after.coverage",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_production_coverage.py"
+  ],
+  "started_utc": "2026-10-05T18:37:21.792616+00:00",
+  "exit_code": 0,
+  "stdout": {
+    "path": "after.coverage.stdout.txt",
+    "sha256": "01988f73bb44af12755aa85e81b748373e9f18116c60fdcae362f0a3846b7164"
+  },
+  "stderr": {
+    "path": "after.coverage.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

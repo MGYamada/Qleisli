@@ -5,17 +5,29 @@
 mod common;
 
 use common::SourceRoot;
-use qleisli::frontend::compile::{check_project, check_project_diagnostic, compile_project};
+use qleisli::frontend::compile::{
+    ParsedProgram, check_project, check_project_diagnostic, compile_project,
+};
 use qleisli::sim::{SimulationLimits, run_closed};
+use std::collections::BTreeMap;
 
 const IMPORTS: &str = "
 use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split;
 use std::observe::measure_z;
-basis fn predicate(x: Bit) -> Bit { x }
+classical fn predicate(x: Bit) -> Bit { x }
 unitary fn identity(q: Q<Bit>) -> Q<Bit> { q }
 ";
+
+fn selected(source: &str) -> Result<ParsedProgram, qleisli::frontend::compile::Error> {
+    ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+}
+
+fn both_source_checks(source: &str) {
+    check_project(&SourceRoot::new(source).0).unwrap_or_else(|error| panic!("{source}\n{error}"));
+    selected(source).unwrap_or_else(|error| panic!("{source}\n{error}"));
+}
 
 fn assert_capture(source: &str, name: &str, quantum: bool) {
     let root = SourceRoot::new(source);
@@ -25,6 +37,10 @@ fn assert_capture(source: &str, name: &str, quantum: bool) {
         "with_computed body cannot capture outer binding `{name}`"
     )));
     assert!(!diagnostic.message.contains("already been consumed"));
+    let other = selected(source).unwrap_err();
+    assert_eq!(other.code(), diagnostic.code);
+    assert_eq!(other.message(), diagnostic.message);
+    assert_eq!(other.span(), diagnostic.primary.as_ref().unwrap().span);
     if quantum {
         assert!(diagnostic.message.contains("source data with `join`"));
         assert!(diagnostic.message.contains("data binder"));
@@ -65,10 +81,24 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
 }
 
 #[test]
+fn nested_and_zero_width_owners_are_still_quantum_captures() {
+    for ty in ["(Bit,(Q<Bit>,Unit))", "Q<Unit>", "Q<Bits<0>>"] {
+        let source = format!(
+            "{IMPORTS}
+unitary fn candidate(q: Q<Bit>, other: {ty}) -> (Q<Bit>,{ty}) {{
+    let q=with_computed(q,predicate) {{ |flag| let held=other; flag }};
+    (q,other)
+}}"
+        );
+        assert_capture(&source, "other", true);
+    }
+}
+
+#[test]
 fn certified_classical_capture_has_a_classical_repair_hint() {
     let source = format!(
         "{IMPORTS}
-unitary fn candidate(tag: CBit, q: Q<Bit>) -> Q<Bit> {{
+unitary fn candidate(tag: Bit, q: Q<Bit>) -> Q<Bit> {{
     with_computed(q,predicate,identity) {{ |data,flag|
         if tag {{ (data,flag) }} else {{ (data,flag) }}
     }}
@@ -94,6 +124,10 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
         let root = SourceRoot::new(&source);
         let diagnostic = check_project_diagnostic(&root.0).unwrap_err();
         assert_eq!(diagnostic.code, "ownership");
+        let other = selected(&source).unwrap_err();
+        assert_eq!(other.code(), diagnostic.code);
+        assert_eq!(other.message(), diagnostic.message);
+        assert_eq!(other.span(), diagnostic.primary.as_ref().unwrap().span);
         assert_eq!(
             diagnostic.message,
             format!("quantum ownership `{name}` has already been consumed")
@@ -117,8 +151,7 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
     (q,other)
 }}"
         );
-        check_project(&SourceRoot::new(&source).0)
-            .unwrap_or_else(|error| panic!("{source}\n{error}"));
+        both_source_checks(&source);
     }
 }
 
@@ -126,24 +159,24 @@ unitary fn candidate(q: Q<Bit>, other: Q<Bit>) -> (Q<Bit>,Q<Bit>) {{
 fn two_argument_body_keeps_its_existing_classical_capture_support() {
     let source = format!(
         "{IMPORTS}
-unitary fn candidate(tag: CBit, q: Q<Bit>) -> Q<Bit> {{
+unitary fn candidate(tag: Bit, q: Q<Bit>) -> Q<Bit> {{
     with_computed(q,predicate) {{ |flag| let _=tag; flag }}
 }}"
     );
-    check_project(&SourceRoot::new(&source).0).unwrap();
+    both_source_checks(&source);
 }
 
 #[test]
 fn joined_source_data_supports_the_suggested_controlled_gate_repair() {
     let source = format!(
         "{IMPORTS}
-basis fn first(x: Bit, y: Bit) -> Bit {{ x }}
+classical fn first((x,y): (Bit,Bit)) -> Bit {{ x }}
 unitary fn controlled_x(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
     let (control,target)=split(q);
     let (control,target)=cnot(control,target);
     join(control,target)
 }}
-observe fn main() -> (CBit,CBit) {{
+observe fn main() -> (Bit,Bit) {{
     let q=h(init0());
     let other=init0();
     let pair=with_computed(join(q,other),first,controlled_x) {{ |data,flag|
@@ -156,6 +189,7 @@ observe fn main() -> (CBit,CBit) {{
 }}"
     );
     let root = SourceRoot::new(&source);
+    selected(&source).unwrap();
     let program = compile_project(&root.0).unwrap_or_else(|error| panic!("{source}\n{error}"));
     let outcomes = run_closed(&program, SimulationLimits::default()).unwrap();
     for (bits, probability) in &outcomes {

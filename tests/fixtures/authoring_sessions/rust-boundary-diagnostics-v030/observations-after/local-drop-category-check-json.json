@@ -1,0 +1,77 @@
+{
+  "command": [
+    "/private/tmp/qleisli-rust-boundary-after",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/attempt-01/local-drop-category",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "case": "local-drop-category",
+  "phase": "after",
+  "mode": "finite",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T05:17:05.327063+00:00",
+  "recorded_utc": "2026-10-06T05:17:05.332974+00:00",
+  "seconds": 0.005898708011955023,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "8e7f4d557d7d555e6de8f60386a477d15808fbcfe83090e95ad3c593b439be35",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-after/local-drop-category-check-json.stdout.txt",
+      "sha256": "40e35479c1b303a5a09c983587b802da03a2ce9903fd09d98ede536c3c050f93",
+      "bytes": 277
+    },
+    "stderr": {
+      "path": "observations-after/local-drop-category-check-json.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "scope": "Actual bounded public CLI observation; selected native bytes identify a path, not child-start attestation, authenticated build provenance or a source/runtime theorem.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "a local value is not callable",
+        "primary": {
+          "path": "main.qli",
+          "start": 171,
+          "end": 175,
+          "line": 6,
+          "column": 5
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

@@ -1,0 +1,19 @@
+use code::encode;
+use code::recover;
+use code::decode;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::x;
+use std::quantum::split;
+use std::quantum::join;
+use std::observe::measure_z;
+use std::routines::measure_x;
+
+observe fn main() -> ((Bit, Bit), (Bit, (Bit, Bit))) {
+    let (ab, c) = split(encode(h(init0())));
+    let (a, b) = split(ab);
+    let damaged = join(join(a, x(b)), c);
+    let (repaired, syndrome) = recover(damaged);
+    let (logical, (a, b)) = decode(repaired);
+    (syndrome, (measure_x(logical), (measure_z(a), measure_z(b))))
+}

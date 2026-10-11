@@ -1,0 +1,87 @@
+{
+  "format": "qleisli.informed-source-predictions",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:45:45.282612+00:00",
+  "status": "fixed-before-any-study-cli-command",
+  "profiles": [
+    "finite",
+    "sized"
+  ],
+  "predictions": {
+    "complete-call": {
+      "check": "accept",
+      "qubits": 1,
+      "run_distribution": {
+        "1": 1
+      },
+      "reason": "Complete two-argument first-order call consumes one owner, X changes zero to one; ordinary Unit is explicitly supplied."
+    },
+    "partial-call": {
+      "check": "reject",
+      "qubits": 1,
+      "stage": "runtime-call arity",
+      "message_fragment": "arity",
+      "reason": "Missing Unit argument cannot create a reusable callable that captures q. No claim about an unimplemented closure grammar."
+    },
+    "ordinary-local-callee": {
+      "check": "reject",
+      "qubits": 1,
+      "stage": "runtime callable category",
+      "message_fragment": "local value is not callable",
+      "reason": "The lexical ordinary Bit gate shadows the declaration; call lookup must not retry the global."
+    },
+    "quantum-unit-tuple-callee": {
+      "check": "reject",
+      "qubits": 0,
+      "stage": "runtime callable category",
+      "message_fragment": "local value is not callable",
+      "reason": "A tuple carrying Q<Unit> remains linear data rather than a callable; zero width supplies no capture exception. The other declaration illustrates an explicit legal move only."
+    },
+    "quantum-unit-tuple-provider": {
+      "check": "reject",
+      "qubits": 0,
+      "stage": "static-provider category",
+      "message_fragment": "runtime",
+      "reason": "The runtime tuple cannot supply an Op<Unit>; hidden owner/provider capture must reject before a concrete emitter may be selected."
+    },
+    "static-description-reuse": {
+      "check": "accept",
+      "qubits": 2,
+      "run_distribution": {
+        "00": 1
+      },
+      "reason": "Reusing a closed then_op(X,X) description is allowed. Each application receives a different owner; X squared is exact identity on each."
+    },
+    "owner-duplication": {
+      "check": "reject",
+      "qubits": 1,
+      "stage": "ownership",
+      "message_fragment": "consum",
+      "reason": "The first application consumes q; a second use of the original owner is forbidden despite reusable static descriptions."
+    },
+    "classical-condition": {
+      "check": "accept",
+      "qubits": 1,
+      "run_distribution": {
+        "1": 1
+      },
+      "reason": "Ordinary Bit selects one runtime branch; each branch returns the same input owner. b=1 chooses X."
+    },
+    "quantum-condition": {
+      "check": "reject",
+      "qubits": 1,
+      "stage": "classical-condition type",
+      "message_fragment": "Bit",
+      "reason": "Unmeasured Q<Bit> is not an ordinary Bit condition; branch syntax cannot observe it implicitly."
+    },
+    "explicit-observation": {
+      "check": "accept",
+      "qubits": 1,
+      "run_distribution": {
+        "0": 1
+      },
+      "reason": "Explicit measure_z consumes the prepared |1> owner and yields ordinary Bit one; ordinary branch then returns zero."
+    }
+  },
+  "limits": "Stage/fragments predicted; no general closure/function/capture theorem or source/runtime preservation claim."
+}

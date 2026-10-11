@@ -1,0 +1,39 @@
+{
+  "format": "qleisli.isometry-inventory-version-review",
+  "version": 1,
+  "phase": "before",
+  "observed_at_utc": "2026-10-05T13:33:56.613746+00:00",
+  "driver_sha256": "cb12d25bb4c70096a56c0ff5b52cac92ada3638b4ff77fda51c2be2d103c5042",
+  "source_files": "source-files.json",
+  "source_files_sha256": "8d1dd0fee0ac5c9580b63bce707af59a1a0a78bd0775ea457d5c40561d1a13fa",
+  "source_tree_unchanged": true,
+  "metadata_sha256": {
+    "tests/fixtures/verification_v022/inventory.json": "d70c7a1d3be42231af082aaa96baeffde77c367b128d9e5444564b3f922d1d6b",
+    "tests/fixtures/verification_v029/coverage.json": "ce0308085da1510cbbae6c3336625a67e964d7f4708b55b0762610ab147b9098"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 1,
+      "seconds": 0.39942958299070597,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.1651184579823166,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    }
+  ],
+  "scope": "Inventory identities and route metadata only; no Cargo, Lean build/replay, source-preservation proof or guarantee admission."
+}

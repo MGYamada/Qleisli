@@ -1,0 +1,11 @@
+
+running 6 tests
+test frontend::parser::tests::contextual_naturals_do_not_unreserve_runtime_global_or_operation_names ... ok
+test frontend::parser::tests::contextual_natural_syntax_does_not_resolve_an_unbound_name ... ok
+test frontend::parser::tests::contextual_naturals_are_retained_in_fold_indices_and_bounds ... ok
+test frontend::parser::tests::contextual_naturals_retain_name_span_type_dimensions_and_constraints ... ok
+test frontend::parser::tests::contextual_naturals_keep_all_comparisons_separate_from_type_angles ... ok
+test frontend::parser::tests::contextual_naturals_pass_through_specialization_and_operation_counts ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 94 filtered out; finished in 0.00s
+

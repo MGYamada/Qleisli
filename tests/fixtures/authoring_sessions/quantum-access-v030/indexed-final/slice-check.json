@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-06/slice/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-09T10:49:23.610154+00:00",
+  "cli_sha256_before": "b347abcd550dbd6ab41c2607392a8f2c565aa14cd45c3e386e2700fa500bb595",
+  "cli_sha256_after": "b347abcd550dbd6ab41c2607392a8f2c565aa14cd45c3e386e2700fa500bb595",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `)`, found `[`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-06/slice/main.qli",
+          "start": 110,
+          "end": 111
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

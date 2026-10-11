@@ -1,0 +1,2 @@
+use std::registers::{take_bit,put_bit};
+pub unitary fn main(q:Q<Bits<3>>)->Q<Bits<3>>{let(b,r)=take_bit[3,1](q);put_bit[3,1](b,r)}

@@ -1,0 +1,10 @@
+{
+  "run_id": 37257529673,
+  "job_id": 111597739062,
+  "commit": "9a1ecef79f2f1e42f94093b6f4822f282f6e9129",
+  "outcome": "Hosted failure in compile-time omission calibration; injected catalog row still used the old macro argument shape. The macro parse error prevented exercising exhaustive handlers.",
+  "repair": "Use current fixed-signature TypeRule spelling. Keep required OmittedPrimitive diagnostic and all three required exhaustive handler locations.",
+  "script_before": "8790c19e690fd587f8cc7226c2b314990904f147a742638dcef7f0541a509620",
+  "script_after": "4d3b14cbab8d2d7e022d5a53be669411b00cc57da3717414fd1e4bdf323cfbb0",
+  "validation": "Pending actual post-repair mutation run; other job status is the recorded observation, not final full-run success."
+}

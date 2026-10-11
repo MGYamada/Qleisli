@@ -1,7 +1,7 @@
 mod common;
 
-use common::SourceRoot;
-use qleisli::frontend::compile::compile_project;
+use common::{SourceRoot, current_namespace_fixture};
+use qleisli::frontend::compile::{ErrorCode, check_project, compile_project};
 use qleisli::sim::{RandomSource, SampleError, SampleLimits, SplitMix64, sample_closed};
 use std::path::Path;
 
@@ -37,7 +37,7 @@ fn bell_draws_follow_the_word_threshold_and_consume_deterministic_words() {
 #[test]
 fn stochastic_samples_match_independent_bell_and_reset_feedback_contracts() {
     let source = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::quantum::cnot; use std::quantum::x; use std::observe::measure_z; use std::observe::reset; observe fn main() -> (CBit,CBit) { let (a,b) = cnot(h(init0()),init0()); let a = reset(a); let flag = measure_z(b); let a = if flag { x(a) } else { a }; (flag,measure_z(a)) }",
+        "use std::quantum::init0; use std::quantum::h; use std::quantum::cnot; use std::quantum::x; use std::observe::measure_z; use std::observe::reset; observe fn main() -> (Bit,Bit) { let (a,b) = cnot(h(init0()),init0()); let a = reset(a); let flag = measure_z(b); let a = if flag { x(a) } else { a }; (flag,measure_z(a)) }",
     );
     for p in [
         compile_project(Path::new("examples/bell")).unwrap(),
@@ -58,7 +58,7 @@ fn stochastic_samples_match_independent_bell_and_reset_feedback_contracts() {
 #[test]
 fn discarded_entangled_half_is_sampled_and_no_state_is_reused() {
     let source = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::quantum::cnot; use std::observe::measure_z; use std::observe::discard; observe fn main() -> CBit { let (a,b)=cnot(h(init0()),init0()); discard(a); measure_z(b) }",
+        "use std::quantum::init0; use std::quantum::h; use std::quantum::cnot; use std::observe::measure_z; use std::observe::discard; observe fn main() -> Bit { let (a,b)=cnot(h(init0()),init0()); discard(a); measure_z(b) }",
     );
     let p = compile_project(&source.0).unwrap();
     let mut draws = 0;
@@ -209,11 +209,35 @@ fn projection_copy_limits_precede_visible_and_hidden_random_draws() {
 }
 
 #[test]
-fn preserved_grover_trial_draws_marked_result() {
-    let p = compile_project(Path::new(
+fn preserved_grover_trial_has_an_explicit_current_predicate_translation() {
+    let original = check_project(Path::new(
         "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02",
     ))
-    .unwrap();
+    .unwrap_err();
+    assert_eq!(original.code, ErrorCode::Project);
+    // The preserved project now encounters its retired declaration before
+    // its retired C-prefixed type. Keep the first source unchanged and test
+    // the actual current migration priority before its explicit translation.
+    assert!(
+        original
+            .message
+            .contains("`basis fn` was replaced by `classical fn`")
+    );
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR")).join(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020",
+    );
+    let current = SourceRoot::new("");
+    for entry in std::fs::read_dir(directory).unwrap() {
+        let path = entry.unwrap().path();
+        if path.extension().is_some_and(|extension| extension == "qli") {
+            std::fs::copy(
+                current_namespace_fixture(&path),
+                current.0.join(path.file_name().unwrap()),
+            )
+            .unwrap();
+        }
+    }
+    let p = compile_project(&current.0).unwrap();
     let mut rng = SplitMix64::new(0);
     for _ in 0..20 {
         assert_eq!(
@@ -228,7 +252,7 @@ fn preserved_grover_trial_draws_marked_result() {
 #[test]
 fn interference_probability_matches_an_independent_analytic_value() {
     let root = SourceRoot::new(
-        "use std::quantum::init0; use std::quantum::h; use std::quantum::t; use std::observe::measure_z; observe fn main() -> CBit { measure_z(h(t(h(init0())))) }",
+        "use std::quantum::init0; use std::quantum::h; use std::quantum::t; use std::observe::measure_z; observe fn main() -> Bit { measure_z(h(t(h(init0())))) }",
     );
     let p = compile_project(&root.0).unwrap();
     let mut rng = SplitMix64::new(17);

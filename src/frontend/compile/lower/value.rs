@@ -10,10 +10,11 @@
 use std::collections::BTreeMap;
 
 use super::super::{TreeSize, Ty, total_size};
-use crate::ir::{ClassicalId, TokenId, WireId};
+use crate::ir::ClassicalId;
 
-pub(super) type Slot = u32;
-pub(super) type Env = BTreeMap<String, Binding>;
+pub(super) use crate::frontend::raw_state::Slot;
+pub(super) type Register = crate::frontend::raw_state::Register<std::convert::Infallible>;
+pub(super) type Env = BTreeMap<crate::frontend::resolve::locals::BinderKey, Binding>;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(super) enum Binding {
@@ -61,12 +62,35 @@ pub(super) fn env_size(env: &Env) -> usize {
 pub(super) enum Value {
     Unit,
     Classical(ClassicalId),
+    /// Retains the complete Q type, including zero-width basis owners.
     Quantum(Slot, Ty),
     Pair(Box<Value>, Box<Value>),
     Tuple(Vec<Value>),
 }
 
 impl Value {
+    pub(super) fn outputs(
+        &self,
+        registers: &BTreeMap<Slot, Register>,
+        quantum: &mut Vec<crate::ir::TokenId>,
+        classical: &mut Vec<ClassicalId>,
+    ) {
+        match self {
+            Self::Quantum(slot, _) => quantum.push(registers[slot].token),
+            Self::Classical(id) => classical.push(*id),
+            Self::Pair(a, b) => {
+                a.outputs(registers, quantum, classical);
+                b.outputs(registers, quantum, classical);
+            }
+            Self::Tuple(fields) => {
+                for field in fields {
+                    field.outputs(registers, quantum, classical);
+                }
+            }
+            Self::Unit => {}
+        }
+    }
+
     pub(super) fn tree_size(&self) -> TreeSize {
         let mut size = TreeSize::default();
         let mut pending = vec![(self, 1)];
@@ -78,10 +102,11 @@ impl Value {
                 Self::Tuple(fields) => {
                     pending.extend(fields.iter().map(|field| (field, depth + 1)))
                 }
-                Self::Quantum(_, basis) => {
-                    let basis = basis.tree_size();
-                    size.nodes += basis.nodes;
-                    size.depth = size.depth.max(depth + basis.depth);
+                Self::Quantum(_, ty) => {
+                    let ty = ty.tree_size();
+                    // The value node itself already counts the Q owner.
+                    size.nodes += ty.nodes - 1;
+                    size.depth = size.depth.max(depth + ty.depth - 1);
                 }
                 _ => {}
             }
@@ -91,21 +116,25 @@ impl Value {
 
     pub(super) fn ty(&self) -> Ty {
         match self {
-            Self::Unit => Ty::Unit,
-            Self::Classical(_) => Ty::CBit,
-            Self::Quantum(_, basis) => Ty::Q(Box::new(basis.clone())),
+            Self::Unit => Ty::unit(),
+            Self::Classical(_) => Ty::bit(),
+            Self::Quantum(_, ty) => ty.clone(),
             Self::Pair(a, b) => Ty::pair(a.ty(), b.ty()),
-            Self::Tuple(fields) => Ty::Tuple(fields.iter().map(Self::ty).collect()),
+            Self::Tuple(fields) => Ty::tuple(fields.iter().map(Self::ty).collect()),
         }
     }
 
     pub(super) fn owns_quantum(&self) -> bool {
         match self {
-            Self::Quantum(..) => true,
+            Self::Quantum(_, ty) => ty.linear(),
             Self::Pair(a, b) => a.owns_quantum() || b.owns_quantum(),
             Self::Tuple(fields) => fields.iter().any(Self::owns_quantum),
             _ => false,
         }
+    }
+
+    pub(super) fn quantum(slot: Slot, basis: Ty) -> Self {
+        Self::Quantum(slot, Ty::quantum(basis))
     }
 
     pub(super) fn pair(a: Self, b: Self) -> Self {
@@ -127,18 +156,5 @@ impl Value {
             Self::Tuple(fields) => Some(fields),
             _ => None,
         }
-    }
-}
-
-#[derive(Clone)]
-pub(super) struct Register {
-    pub(super) token: TokenId,
-    pub(super) wires: Vec<WireId>,
-    pub(super) basis: Ty,
-}
-
-impl Register {
-    pub(super) fn size(&self) -> usize {
-        1 + self.wires.len() + self.basis.tree_size().nodes
     }
 }

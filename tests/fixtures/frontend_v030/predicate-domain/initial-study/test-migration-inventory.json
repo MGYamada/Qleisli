@@ -1,0 +1,541 @@
+{
+  "scope": "Read-only active Rust test and Python/script text inventory. Occurrence scan is not an AST proof; confirmed migration rows are manually reviewed. Active .qli inventory is independently supplied by frontend reviewer.",
+  "confirmed_migration_rows": [
+    {
+      "path": "tests/algorithms.rs",
+      "lines": [
+        64,
+        114
+      ],
+      "reason": "Two generated two-argument marked/linear predicates used by Grover/Bernstein-Vazirani tests.",
+      "sha256": "faeffbcab300c4d999a9920d638edd20d1eb0182bf94df0ff8d620f6d26ba351"
+    },
+    {
+      "path": "tests/compile.rs",
+      "lines": [
+        220,
+        356
+      ],
+      "reason": "Two-bit predicate plus legacy synthetic70-Unit-parameter tree-limit case. Keep ordinary xor2/and2 basis calls multi-argument. Replace capacity oracle with explicit product-domain case, not a more permissive implicit fold.",
+      "sha256": "dbb1e75c01ab1102f64ffdc9ec800536a6528922f75f299f67397d10cd083923"
+    },
+    {
+      "path": "tests/source_ir_correspondence.rs",
+      "lines": [
+        336
+      ],
+      "reason": "Four arguments including Unit; migrate to exact (((Bit,Unit),Bit),Bit) single product parameter without changing independent 3-bit phase oracle.",
+      "sha256": "b47db857575c5dc1928dade55d899bf2ac634bb9bf3399431022eeb338415a72"
+    },
+    {
+      "path": "tests/source_judgments.rs",
+      "lines": [
+        96
+      ],
+      "reason": "Exact ((Bit,Unit),Bit) domain; preserve negative association/Unit-erasure cases.",
+      "sha256": "75895e4bf10e12695061f000181cfd123f918b7e49fc72195593e74fb1727e46"
+    },
+    {
+      "path": "tests/with_computed_diagnostics.rs",
+      "lines": [
+        140
+      ],
+      "reason": "Certified first(x,y) predicate over joined data; explicit (Bit,Bit) parameter preserves Bell/cnot cleanup repair.",
+      "sha256": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc"
+    },
+    {
+      "path": "tests/certified_source.rs",
+      "lines": [
+        334
+      ],
+      "reason": "Existing six-bit limit rejection should remain testing width limit after explicit-domain migration; do not newly run maximum-size quantum acceptance.",
+      "sha256": "8013d82df459f5f61dc66e22db8ebe545c3a64850a063023731dc8d993f898e3"
+    },
+    {
+      "path": "tests/sampling.rs",
+      "lines": [
+        212
+      ],
+      "reason": "Directly compiles preserved grover-trial-v020/attempt-02. Keep historical bytes; add a named migrated derivative for current execution and retain original as historical incompatibility observation.",
+      "sha256": "fadbd3cbc7a5699c0c88efee706da90d6740010a1f97b1c8d859ef102ac7c6f8"
+    },
+    {
+      "path": "tests/qli_corpus.rs",
+      "lines": [
+        32
+      ],
+      "reason": "Current execution reads qli_authoring/accepted/{pair_contract,basis_tuple_pattern}.qli, whose computed predicates are multi-parameter. Preserve historical versions and explicitly select adapted current variants.",
+      "sha256": "a807f98c2e3ac229f803328b694ea38487313413142cac69584b841b8c1201f1"
+    },
+    {
+      "path": "tests/authoring_ergonomics.rs",
+      "lines": [
+        69
+      ],
+      "reason": "ergonomics/phase_mismatch.qli uses multi-parameter marked. Adapt current derivative so failure remains contract/phase mismatch rather than early predicate arity rejection.",
+      "sha256": "cb54074f6e9ff78a67e51e9b100b38e84eee2939d950891ace7cb88bccd5109a"
+    }
+  ],
+  "occurrence_scan": [
+    {
+      "path": "tests/algorithms.rs",
+      "sha256": "faeffbcab300c4d999a9920d638edd20d1eb0182bf94df0ff8d620f6d26ba351",
+      "occurrences": [
+        {
+          "line": 66,
+          "text": "                 with_computed(q, marked) {{ |ancilla| z(ancilla) }}"
+        },
+        {
+          "line": 116,
+          "text": "                 with_computed(q, linear) {{ |ancilla| z(ancilla) }}"
+        }
+      ]
+    },
+    {
+      "path": "tests/certified_source.rs",
+      "sha256": "8013d82df459f5f61dc66e22db8ebe545c3a64850a063023731dc8d993f898e3",
+      "occurrences": [
+        {
+          "line": 48,
+          "text": "                let q = with_computed(h(init0()), predicate, {logical}) {{ |d,a| {body} }};"
+        },
+        {
+          "line": 83,
+          "text": "            let q = with_computed(q,predicate,x) {{ |d,a| (x(d),x(a)) }};"
+        },
+        {
+          "line": 97,
+          "text": "            let q = with_computed(q,predicate,z) {{ |d,a| (d,z(a)) }};"
+        },
+        {
+          "line": 116,
+          "text": "                    with_computed(q,predicate,{logical}) {{ |d,a| {body} }}"
+        },
+        {
+          "line": 128,
+          "text": "            let q = with_computed(x(init0()),predicate,identity) {{ |d,a| (a,d) }};"
+        },
+        {
+          "line": 138,
+          "text": "                    with_computed(q,zero,z) {{ |d,a| {body} }}"
+        },
+        {
+          "line": 157,
+          "text": "                    let q = with_computed(q,predicate,identity) {{ |d,a| {extra} {body} }};"
+        },
+        {
+          "line": 171,
+          "text": "                with_computed(q,predicate,identity) {{ |d,a| if flag {{ (d,a) }} else {{ (d,a) }} }}"
+        },
+        {
+          "line": 178,
+          "text": "            let q = with_computed(init0(),predicate,identity) {{ |d,a|"
+        },
+        {
+          "line": 193,
+          "text": "                    with_computed(q,predicate,identity) {{ |d,a| (d,a) }}"
+        },
+        {
+          "line": 202,
+          "text": "                with_computed(q,predicate,identity) {{ |a,a| (a,a) }}"
+        },
+        {
+          "line": 214,
+          "text": "            let q = with_computed(init0(),predicate,identity) {{ |d,a| (d,a) }};"
+        },
+        {
+          "line": 235,
+          "text": "                    with_computed(q,predicate,specified) {{ |d,a| (d,a) }}"
+        },
+        {
+          "line": 244,
+          "text": "                with_computed(q,predicate,identity) {{ |d,a|"
+        },
+        {
+          "line": 257,
+          "text": "        unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| z(a) }} }}"
+        },
+        {
+          "line": 259,
+          "text": "            with_computed(q,yes,phase) {{ |d,a| (d,z(a)) }}"
+        },
+        {
+          "line": 275,
+          "text": "                with_computed(q,no,unit_identity) {{ |d,a| ((),a) }}"
+        },
+        {
+          "line": 286,
+          "text": "            with_computed(q,predicate,t) {{ |d,a| (d,h(h(t(a)))) }}"
+        },
+        {
+          "line": 310,
+          "text": "                    with_computed(q,predicate,z) {{ |d,a| {body} }}"
+        },
+        {
+          "line": 328,
+          "text": "                with_computed(q,predicate,identity) {{ |d,a| (d,repeat_static(1025,h,a)) }}"
+        },
+        {
+          "line": 337,
+          "text": "            with_computed(q,predicate,identity) { |d,a| (d,a) }"
+        },
+        {
+          "line": 344,
+          "text": "                with_computed(q,predicate,candidate) {{ |d,a| (d,a) }}"
+        }
+      ]
+    },
+    {
+      "path": "tests/compile.rs",
+      "sha256": "dbb1e75c01ab1102f64ffdc9ec800536a6528922f75f299f67397d10cd083923",
+      "occurrences": [
+        {
+          "line": 139,
+          "text": "            \"basis fn p(x: Bit) -> Bit { x } observe fn main() -> CBit { measure_z(with_computed(init0(), p) { |a| h(a) }) }\","
+        },
+        {
+          "line": 143,
+          "text": "            \"basis fn p(x: Bit) -> Bit { x } observe fn main() -> CBit { measure_z(with_computed(init0(), p) { |a| let b = measure_z(a); init0() }) }\","
+        },
+        {
+          "line": 147,
+          "text": "            \"basis fn p(x: Bit) -> Bit { x } observe fn main() -> CBit { let q = init0(); measure_z(with_computed(q, p) { |a| let q = h(q); a }) }\","
+        },
+        {
+          "line": 223,
+          "text": "    let q = with_computed(q, predicate) { |a| z(a) };"
+        },
+        {
+          "line": 356,
+          "text": "            \"basis fn p({params}) -> Bit {{ 0 }} unitary fn f(q: Q<Unit>) -> Q<Unit> {{ with_computed(q, p) {{ |a| a }} }}\""
+        },
+        {
+          "line": 569,
+          "text": "                 with_computed(q,p) {{ |a| {body} }}"
+        },
+        {
+          "line": 579,
+          "text": "                 with_computed(q,p) {{ |a| {body} }}"
+        }
+      ]
+    },
+    {
+      "path": "tests/diagnostics.rs",
+      "sha256": "2f3ed52b4e5b9e6cb768be41684e58fef15b618d3df73a9fd7b692b2dbb9ad92",
+      "occurrences": [
+        {
+          "line": 79,
+          "text": "    let dirty = \"with_computed(q, predicate, identity) { |d,a| (d,x(a)) }\";"
+        },
+        {
+          "line": 84,
+          "text": "        format!(\"let q = with_computed(q, predicate) {{ |a| z(z(a)) }};\\n    {dirty}\"),"
+        },
+        {
+          "line": 144,
+          "text": "    let dirty = \"with_computed(d, predicate, identity) { |e,b| (e,x(b)) }\";"
+        },
+        {
+          "line": 147,
+          "text": "    with_computed(q, predicate, identity) {{ |d,a|"
+        }
+      ]
+    },
+    {
+      "path": "tests/function_contracts.rs",
+      "sha256": "d50fa660535112c5a9fcd0f48aff78c2388110ba3188bed9140a8d6e951e3d1a",
+      "occurrences": [
+        {
+          "line": 78,
+          "text": "        \"with_computed(q,predicate) { |a| z(a) }\","
+        },
+        {
+          "line": 79,
+          "text": "        \"with_computed(q,predicate,specified_phase) { |d,a| (d,h(h(z(a)))) }\","
+        },
+        {
+          "line": 109,
+          "text": "        unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| t(a) }} }}"
+        },
+        {
+          "line": 136,
+          "text": "    for body in [\"q\", \"x(q)\", \"t(q)\", \"with_computed(q,zero) { |a| z(a) }\"] {"
+        },
+        {
+          "line": 155,
+          "text": "            with_computed(q,predicate) {{ |a| z(a) }}"
+        },
+        {
+          "line": 302,
+          "text": "        unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| t(a) }} }}"
+        },
+        {
+          "line": 344,
+          "text": "        unitary fn implementation(q: Q<Bit>) -> Q<Bit> {{ with_computed(q,predicate) {{ |a| z(a) }} }}"
+        },
+        {
+          "line": 491,
+          "text": "        unitary fn implementation(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| z(a) }} }}"
+        },
+        {
+          "line": 492,
+          "text": "        unitary fn specified(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(t(t(t(a)))) }} }}"
+        }
+      ]
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "sha256": "2184c77e53cfec8557a014ccdb5de4d0c094eaf5c4654d88c9cdbbbedb667fa4",
+      "occurrences": [
+        {
+          "line": 19,
+          "text": "meaning ZMeaning: Bit = phase_by(z_phase);"
+        },
+        {
+          "line": 45,
+          "text": "    let source = \"/// A phase-fixed contract.\\nmeaning M:Bit=phase_by(phi);\\n\\"
+        },
+        {
+          "line": 48,
+          "text": "    assert!(rendered.contains(\"meaning M:Bit=phase_by(phi);\"));"
+        },
+        {
+          "line": 90,
+          "text": "        pub meaning Flip:Bit=permutation_by(flip);"
+        },
+        {
+          "line": 96,
+          "text": "        \"basis fn flip(b:Bit)->Bit{not b} meaning Flip:Bit=permutation_by(flip);"
+        },
+        {
+          "line": 247,
+          "text": "        meaning Minus:Unit=phase_by(scalar);"
+        },
+        {
+          "line": 248,
+          "text": "        unitary fn minus(q:Q<Unit>)->Q<Unit>{with_computed(q,yes){|a|z(a)}}"
+        },
+        {
+          "line": 338,
+          "text": "        \"basis fn constant(b:Bit)->Bit{0} meaning Bad:Bit=permutation_by(constant);\","
+        },
+        {
+          "line": 342,
+          "text": "        \"basis fn wrong(b:Bit)->Bit{b} meaning Bad:Bit=phase_by(wrong);\","
+        },
+        {
+          "line": 361,
+          "text": "            with_computed(q,pred,direct_z){|d,a|(d,U(a))}}"
+        }
+      ]
+    },
+    {
+      "path": "tests/parser.rs",
+      "sha256": "e1ac69142c883ebe9f5336b08fc023a94f6e7af3f3dec0f7939e1c2ad3b41c73",
+      "occurrences": [
+        {
+          "line": 143,
+          "text": "    with_computed(q, predicate) { |a| z(a) }"
+        }
+      ]
+    },
+    {
+      "path": "tests/repair_diagnostics.rs",
+      "sha256": "cf4bbbf574b25ddeddd1433960463c82b7faa35b0c5cbb2b3dafd060c7baf537",
+      "occurrences": [
+        {
+          "line": 266,
+          "text": "            .contains(\"with_computed(source, predicate, logical) { |data, ancilla| ... }\")"
+        }
+      ]
+    },
+    {
+      "path": "tests/review_v027.rs",
+      "sha256": "58aaafc658458f766f847810f2d50fbbf74e79a6db06c97b3e7eab246a2b9779",
+      "occurrences": [
+        {
+          "line": 177,
+          "text": "            \"unitary fn bad(q:Q<Bit>)->Q<Bit>{let f=true;with_computed(q,f){|a|a}}\","
+        },
+        {
+          "line": 178,
+          "text": "            \"with_computed requires a basis function name\","
+        },
+        {
+          "line": 181,
+          "text": "            \"unitary fn bad(q:Q<Bit>)->Q<Bit>{with_computed(q,p){|f|f(f)}} basis fn p(b:Bit)->Bit{b}\","
+        }
+      ]
+    },
+    {
+      "path": "tests/source_ir_correspondence.rs",
+      "sha256": "b47db857575c5dc1928dade55d899bf2ac634bb9bf3399431022eeb338415a72",
+      "occurrences": [
+        {
+          "line": 338,
+          "text": "    with_computed(q,predicate) { |ancilla| z(t(t(t(ancilla)))) }"
+        },
+        {
+          "line": 429,
+          "text": "    with_computed(q,one) {{ |a| z(t(t(t(a)))) }}"
+        },
+        {
+          "line": 465,
+          "text": "    with_computed(q,one) {{ |a| t(a) }}"
+        }
+      ]
+    },
+    {
+      "path": "tests/source_judgments.rs",
+      "sha256": "75895e4bf10e12695061f000181cfd123f918b7e49fc72195593e74fb1727e46",
+      "occurrences": [
+        {
+          "line": 87,
+          "text": "    (saved,with_computed(q,predicate) { |a| a })"
+        },
+        {
+          "line": 99,
+          "text": "            with_computed(q,p) {{ |a| a }}"
+        },
+        {
+          "line": 108,
+          "text": "                    with_computed(q,p) {{ |a| a }}"
+        },
+        {
+          "line": 163,
+          "text": "                with_computed(q,p) {{ |a| forget(b); phase(a) }}"
+        },
+        {
+          "line": 207,
+          "text": "            unitary fn prepare() -> Q<Bit> {{ with_computed(init0(),p) {{ |a| a }} }}\""
+        },
+        {
+          "line": 214,
+          "text": "                let q = with_computed(q,p) {{ |a| z(a) }};"
+        },
+        {
+          "line": 252,
+          "text": "    with_computed(q,predicate) { |a| z(a) }"
+        }
+      ]
+    },
+    {
+      "path": "tests/source_snapshots.rs",
+      "sha256": "df505d173efafed25ce038e6242858b53041e327f062b10b35722fcc5f5a1d5a",
+      "occurrences": [
+        {
+          "line": 126,
+          "text": "             basis fn flip(b:Bit)->Bit{{not b}} meaning Flip:Bit=permutation_by(flip);"
+        }
+      ]
+    },
+    {
+      "path": "tests/specification_boundaries.rs",
+      "sha256": "faada0da53d009857027f5bc83dd87c222a17a72eb9cbd29fa334018fe5846b7",
+      "occurrences": [
+        {
+          "line": 195,
+          "text": "    let q = with_computed(q,p) {{ |a| z(a) }};"
+        },
+        {
+          "line": 211,
+          "text": "                with_computed(q,p) {{ |a| z(a) }}"
+        },
+        {
+          "line": 265,
+          "text": "            with_computed(q,p) { |a| let unused = true; a }"
+        }
+      ]
+    },
+    {
+      "path": "tests/static_operations.rs",
+      "sha256": "dbdbf877acb074272e393d063f634af73ab5b9c272c52530082282e546fb1cae",
+      "occurrences": [
+        {
+          "line": 207,
+          "text": "        unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(a) }} }}"
+        }
+      ]
+    },
+    {
+      "path": "tests/static_semantics.rs",
+      "sha256": "c3548c7070b12522465374c4c23829963e9d0cdb6ef9eb8ae6d3532e8bbb5df2",
+      "occurrences": [
+        {
+          "line": 340,
+          "text": "unitary fn phase(q: Q<Unit>) -> Q<Unit> { with_computed(q,yes) { |a| z(t(t(t(a)))) } }"
+        },
+        {
+          "line": 689,
+          "text": "        if true and false { q } else { with_computed(q,one) { |a| z(t(a)) } }"
+        }
+      ]
+    },
+    {
+      "path": "tests/tuple_shapes.rs",
+      "sha256": "26f91c9e6028d2abd6cc335fab0eb81bc75dbbdbff874c40736fbf4b3cc0ce05",
+      "occurrences": [
+        {
+          "line": 67,
+          "text": "        meaning Id: (Bit,Bit,Bit) = permutation_by(id);"
+        }
+      ]
+    },
+    {
+      "path": "tests/with_computed_diagnostics.rs",
+      "sha256": "214eeb9813dd4a61234d4b80cb98e7aeeec06efa1ea92966be0b6f5919f007cc",
+      "occurrences": [
+        {
+          "line": 25,
+          "text": "        \"with_computed body cannot capture outer binding `{name}`\""
+        },
+        {
+          "line": 40,
+          "text": "    assert!(location.span.start > source.find(\"with_computed\").unwrap());"
+        },
+        {
+          "line": 48,
+          "text": "    let q = with_computed(q,predicate) {{ |flag| cnot(flag,other) }};"
+        },
+        {
+          "line": 60,
+          "text": "    let q = with_computed(q,predicate,identity) {{ |data,flag| (data,x(other)) }};"
+        },
+        {
+          "line": 72,
+          "text": "    with_computed(q,predicate,identity) {{ |data,flag|"
+        },
+        {
+          "line": 90,
+          "text": "    let q=with_computed(q,predicate,identity) {{ |data,flag| {body} }};"
+        },
+        {
+          "line": 103,
+          "text": "        assert!(span.start > source.find(\"with_computed\").unwrap());"
+        },
+        {
+          "line": 110,
+          "text": "        \"with_computed(q,predicate) { |flag| let other=flag; z(other) }\","
+        },
+        {
+          "line": 111,
+          "text": "        \"with_computed(q,predicate,identity) { |data,flag| let other=data; (other,flag) }\","
+        },
+        {
+          "line": 130,
+          "text": "    with_computed(q,predicate) {{ |flag| let _=tag; flag }}"
+        },
+        {
+          "line": 149,
+          "text": "    let pair=with_computed(join(q,other),first,controlled_x) {{ |data,flag|"
+        }
+      ]
+    }
+  ],
+  "preserve_unchanged": [
+    "ordinary multi-argument basis calls",
+    "general zero-argument basis definitions and parser/documentation cases",
+    "Meaning exact unary input and its existing exact output types",
+    "Unit scalar-phase positive/negative tests already use one explicit Unit parameter"
+  ]
+}

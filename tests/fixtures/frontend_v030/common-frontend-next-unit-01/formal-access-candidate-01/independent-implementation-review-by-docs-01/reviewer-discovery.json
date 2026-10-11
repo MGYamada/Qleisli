@@ -1,0 +1,19 @@
+{
+  "status": "actual reviewer-only read/identity discovery failures, preserved additively",
+  "recorded_utc": "2026-10-05T18:38:04.956110+00:00",
+  "attempts": [
+    {
+      "operation": "inline read-only historical235 data audit",
+      "exit_code": 1,
+      "observed_stderr": "Traceback (most recent call last):\n  File \"<stdin>\", line 30, in <module>\nAssertionError: ['docs/src/reference/type-model.md', 'src/frontend/compile/operations.rs', 'src/frontend/mod.rs', 'src/frontend/sized/ast.rs', 'src/frontend/sized/check.rs', 'src/frontend/sized/linear.rs', 'src/frontend/sized/parser.rs']\n",
+      "cause": "Reviewer expected exactly six old production source changes in the historical235 map; current Reference also changed. Root subsequently confirmed its additive Reference paragraph. Preserve historical map; audit expected production changes and separately disclose current documentation difference."
+    },
+    {
+      "operation": "rg -n abstract_bindings|Access::|require|check_generic src/frontend/compile/lower.rs",
+      "exit_code": 2,
+      "observed_stderr": "rg: src/frontend/compile/lower.rs: IO error for operation on src/frontend/compile/lower.rs: No such file or directory (os error 2)\n",
+      "cause": "Reviewer guessed a flat path. rg --files located the existing lower/operations.rs and lower/mod.rs directory modules; actual consumer source was then read."
+    }
+  ],
+  "recording_limit": "The stderr strings are transcripts of actual displayed tool output, not copies of previously saved raw logs; no separate raw files existed for those reviewer-only calls. No product/native/test failure is inferred."
+}

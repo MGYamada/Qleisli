@@ -1,0 +1,3 @@
+use std::quantum::init0; use std::observe::measure_z;
+pub fn provider(q:Q<Bit>)->Q<Bit>{let a=init0();let b=measure_z(a);q}
+pub fn entry[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}

@@ -1,0 +1,12 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::phase_eighth;
+pub unitary fn phase(q: Q<Unit>) -> Q<Unit> { basis phase_eighth(q) as () { () } }
+use std::quantum::{init0,split,h};
+use std::observe::{discard,measure_z};
+unitary fn identity(q: Q<Unit>) -> Q<Unit> { q }
+observe fn main() -> Bit {
+    let pair = basis init0() as bit { ((),bit) };
+    let (unit,bit) = split(pair);
+    let (control,unit) = qif(h(init0()),unit) { 0 => identity, 1 => phase };
+    discard(unit); discard(bit); measure_z(h(control))
+}

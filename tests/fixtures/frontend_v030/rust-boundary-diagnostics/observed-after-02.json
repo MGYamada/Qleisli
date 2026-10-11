@@ -1,0 +1,21 @@
+{
+  "source_baseline": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "trusted_constitution_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "files": {
+    "src/frontend/check/body.rs": "435412d5d46cb6d04de1e437f0719905ece2b2b6b313b620df8d1eb017bf30ab",
+    "tests/source_scope.rs": "963ac205da9a619c0d58eaa82a81111e0890412ab00f2a2d44d8238431bd640c",
+    "tests/rust_boundary_diagnostics.rs": "d24e5db0c28aa04a6af608fc87f37de2c9aded41026caef9b4e695fd920b80cd",
+    "docs/src/reference/rust-boundary.md": "8d2c489b9f73a6987c4e1a2fa358e656ce7feee16c9ad872a93b70353f422d16",
+    "docs/src/SUMMARY.md": "992476609c6dfb329d98da8518a13c78553a5be14a42b3393ff37a06ecb8c241",
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080",
+    "lean-kernel/.lake/build/bin/qleisli-kernel": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "capture_timing": "After both first test executions and explicit CLI build returned exit zero.",
+  "scope": "Observed declared inputs, not a complete build closure or proof.",
+  "correction": {
+    "earlier_record": "observed-after-01.json",
+    "earlier_sha256": "ecaeecfbc8abac2f55645024fd3bcf0bcdd5e817104aca28adaaf1777e002182",
+    "reason": "The earlier manually written timing sentence wrongly says before the explicit CLI build finished. The orchestration awaited the successful build before invoking capture. Source/hash fields remain unchanged; original retained."
+  }
+}

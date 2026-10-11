@@ -1,0 +1,13 @@
+{
+  "format": "qleisli.ordinary-types-independent-unit-pattern-regression",
+  "version": 1,
+  "cases": [
+    {
+      "name": "unit-pattern-consume",
+      "entry": "main::f",
+      "naturals": {},
+      "source_sha256": "8ef919b3d607a8f78bd3a3bac2a4e2fc1c94d4c59049caa8c29d0347baf18568",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  ]
+}

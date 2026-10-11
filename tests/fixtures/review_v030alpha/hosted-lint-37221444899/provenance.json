@@ -1,0 +1,13 @@
+{
+  "run": 37221444899,
+  "job": 111492483405,
+  "branch_head": "56eb0725b77670be38d11ce450c1d525b90a5636",
+  "actual_merge_checkout": "affcee3ca1b4385e22b66bfb269b20db22458326",
+  "failed_step": "cargo +1.85.0 clippy --all-targets -- -D warnings",
+  "source": "tests/specification_boundaries.rs",
+  "source_before_sha256": "64cdbe428f15684d32700d0d4d839ff49b2f0dfb8e2d1c528da68377d0bd1323",
+  "source_after_sha256": "67df9e366ded4b1ee3cf155a72ffdf568cc83fac184716afce400ed1cdcccffc",
+  "only_change": "Remove the first pair of unused u8 conversions; retain the later used pair. All loop inputs, generated sources and expected outputs remain unchanged.",
+  "failure_excerpt_sha256": "dca10a0fa3f67567808752687f140094505b9e4efba2866d62473184bddd5e78",
+  "scope": "Selected exact error excerpt, not full log archival or a successful hosted rerun."
+}

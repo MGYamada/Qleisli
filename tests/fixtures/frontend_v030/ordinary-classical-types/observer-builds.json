@@ -1,0 +1,33 @@
+{
+  "record_kind": "Post-execution command summary; rustc returned exit0 and no stdout/stderr in both cases. Observer execution streams are directly captured separately.",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--edition=2024",
+        "tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/observer.rs",
+        "--extern",
+        "qleisli=target/debug/libqleisli.rlib",
+        "-L",
+        "dependency=target/debug/deps",
+        "-o",
+        "/private/tmp/qleisli-ordinary-classical-type-study/observer"
+      ],
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "rustc",
+        "--edition=2024",
+        "tests/fixtures/frontend_v030/ordinary-classical-types/library-study/observer.rs",
+        "--extern",
+        "qleisli=target/debug/libqleisli.rlib",
+        "-L",
+        "dependency=target/debug/deps",
+        "-o",
+        "/private/tmp/qleisli-ordinary-classical-type-study/library-observer"
+      ],
+      "exit_code": 0
+    }
+  ]
+}

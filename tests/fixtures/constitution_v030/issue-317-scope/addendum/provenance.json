@@ -1,0 +1,81 @@
+{
+  "format": "qleisli.issue-317-addendum-observation",
+  "version": 1,
+  "source": "GitHub Issue body; task identifies this as a user-authored ordinary design addition",
+  "observations": [
+    {
+      "issue": 317,
+      "tool": "GitHub plugin github_fetch",
+      "request": {
+        "url": "https://api.github.com/repos/MGYamada/Qleisli/issues/317"
+      },
+      "clock_observed_before_request_utc": "2026-10-05 15:37:28 UTC",
+      "clock_observed_after_requests_utc": "2026-10-05 15:40:59 UTC",
+      "issue_updated_at": "2026-10-05T15:13:25Z",
+      "issue_author": "MGYamada",
+      "issue_author_association": "OWNER",
+      "performed_via_github_app": "chatgpt-codex-connector",
+      "state": "open",
+      "milestone": "0.3.0",
+      "criteria_total": 24,
+      "checked_criteria": 0
+    },
+    {
+      "issue": 142,
+      "tool": "GitHub plugin github_fetch",
+      "request": {
+        "url": "https://api.github.com/repos/MGYamada/Qleisli/issues/142"
+      },
+      "clock_observed_before_request_utc": "2026-10-05 15:37:28 UTC",
+      "clock_observed_after_requests_utc": "2026-10-05 15:40:59 UTC",
+      "issue_updated_at": "2026-10-05T15:29:54Z",
+      "issue_author": "MGYamada",
+      "issue_author_association": "OWNER",
+      "performed_via_github_app": "chatgpt-codex-connector",
+      "state": "open",
+      "milestone": "0.3.0",
+      "criteria_total": 10,
+      "checked_criteria": 0
+    },
+    {
+      "issue": 152,
+      "tool": "GitHub plugin github_fetch",
+      "request": {
+        "url": "https://api.github.com/repos/MGYamada/Qleisli/issues/152"
+      },
+      "clock_observed_before_request_utc": "2026-10-05 15:37:28 UTC",
+      "clock_observed_after_requests_utc": "2026-10-05 15:40:59 UTC",
+      "issue_updated_at": "2026-10-05T10:13:30Z",
+      "issue_author": "MGYamada",
+      "issue_author_association": "OWNER",
+      "performed_via_github_app": "chatgpt-codex-connector",
+      "state": "open",
+      "milestone": null,
+      "criteria_total": 12,
+      "checked_criteria": 0
+    }
+  ],
+  "comments317": {
+    "tool": "GitHub plugin github_fetch_issue_comments",
+    "request": {
+      "issue_number": 317,
+      "repo_full_name": "MGYamada/Qleisli"
+    },
+    "returned_comments": 0
+  },
+  "scope": {
+    "selected_issues": 111,
+    "issue317_group": "G10",
+    "original317_criteria": 20,
+    "added317_criteria": 4,
+    "current317_criteria": 24,
+    "criteria_completed_by_accounting": 0
+  },
+  "limitations": [
+    "The clock observations bound the actual read; issue updated_at is server metadata, not a human message timestamp.",
+    "REST issue author and app metadata do not independently authenticate who wrote the last body addition. The task identifies it as user-authored; no separate human constitutional act is inferred.",
+    "Direct milestone endpoint was unavailable through this connector allowlist. Nested milestone counters are not used as the selected-work completion denominator.",
+    "No source, documentation, test, tracker, adoption or proof-status changes were made for this audit; only these new observation/draft records are saved.",
+    "No Rust, Lean, mdBook, policy regression or release readiness test was rerun. Existing terminal checks remain historical evidence for their captured inputs."
+  ]
+}

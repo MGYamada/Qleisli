@@ -1,0 +1,781 @@
+{
+  "observations": [
+    {
+      "case": "left-remove",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-remove/main.qli",
+            "start": 129,
+            "end": 139
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "left-remove",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 99,
+            "end": 105,
+            "line": 2,
+            "column": 26
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "left-insert",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/left-insert/main.qli",
+            "start": 135,
+            "end": 145
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "left-insert",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `unit`",
+          "primary": {
+            "path": "main.qli",
+            "start": 93,
+            "end": 97,
+            "line": 2,
+            "column": 20
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "right-remove",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-remove/main.qli",
+            "start": 129,
+            "end": 143
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "right-remove",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 99,
+            "end": 105,
+            "line": 2,
+            "column": 26
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "right-insert",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/right-insert/main.qli",
+            "start": 139,
+            "end": 153
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "right-insert",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `unit`",
+          "primary": {
+            "path": "main.qli",
+            "start": 93,
+            "end": 97,
+            "line": 2,
+            "column": 20
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "roundtrips",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/roundtrips/main.qli",
+            "start": 140,
+            "end": 150
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "roundtrips",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `unit`",
+          "primary": {
+            "path": "main.qli",
+            "start": 93,
+            "end": 97,
+            "line": 2,
+            "column": 20
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "zero-unit-pair",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/zero-unit-pair/main.qli",
+            "start": 139,
+            "end": 150
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "zero-unit-pair",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `unit`",
+          "primary": {
+            "path": "main.qli",
+            "start": 93,
+            "end": 97,
+            "line": 2,
+            "column": 20
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "nested-product",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/nested-product/main.qli",
+            "start": 129,
+            "end": 146
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "nested-product",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 99,
+            "end": 105,
+            "line": 2,
+            "column": 26
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "tuple-provider",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/tuple-provider/main.qli",
+            "start": 98,
+            "end": 108
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "tuple-provider",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "removed-unit-phase",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/removed-unit-phase/main.qli",
+            "start": 142,
+            "end": 152
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "removed-unit-phase",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 99,
+            "end": 105,
+            "line": 2,
+            "column": 26
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "controlled-four",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/controlled-four/main.qli",
+            "start": 153,
+            "end": 163
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "controlled-four",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `unit`",
+          "primary": {
+            "path": "main.qli",
+            "start": 104,
+            "end": 108,
+            "line": 2,
+            "column": 31
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "ordered-axes",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/ordered-axes/main.qli",
+            "start": 129,
+            "end": 138
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "ordered-axes",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "same-width-wrong-tree",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/same-width-wrong-tree/main.qli",
+            "start": 95,
+            "end": 111
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "same-width-wrong-tree",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "result does not match the function return type: expected `Q<(Bit,(Unit,Bit))>`, found `Q<((Bit,Unit),Bit)>`",
+          "primary": {
+            "path": "main.qli",
+            "start": 135,
+            "end": 136,
+            "line": 2,
+            "column": 62
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "bits0-is-not-unit",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/bits0-is-not-unit/main.qli",
+            "start": 129,
+            "end": 142
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "bits0-is-not-unit",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 99,
+            "end": 105,
+            "line": 2,
+            "column": 26
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "implicit-destructure",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/implicit-destructure/main.qli",
+            "start": 121,
+            "end": 131
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "implicit-destructure",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 92,
+            "end": 98,
+            "line": 2,
+            "column": 19
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "aliased-zero-owner",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/aliased-zero-owner/main.qli",
+            "start": 129,
+            "end": 140
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "aliased-zero-owner",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "quantum ownership `q` has already been consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 149,
+            "end": 150,
+            "line": 3,
+            "column": 52
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "lost-revived-owners",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/lost-revived-owners/main.qli",
+            "start": 134,
+            "end": 144
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "lost-revived-owners",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "project",
+          "severity": "error",
+          "message": "sealed module `std::quantum` has no public name `finish`",
+          "primary": {
+            "path": "main.qli",
+            "start": 99,
+            "end": 105,
+            "line": 2,
+            "column": 26
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "wrong-arities",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/wrong-arities/main.qli",
+            "start": 127,
+            "end": 137
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "wrong-arities",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "static argument is outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 164,
+            "end": 165,
+            "line": 3,
+            "column": 59
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "effectful-argument",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/effectful-argument/main.qli",
+            "start": 164,
+            "end": 173
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "effectful-argument",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "effect",
+          "severity": "error",
+          "message": "body effect `Observe` exceeds declared `Unitary` effect of `f`",
+          "primary": {
+            "path": "main.qli",
+            "start": 289,
+            "end": 305,
+            "line": 5,
+            "column": 66
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "unused-zero-fold",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/unused-zero-fold/main.qli",
+            "start": 127,
+            "end": 138
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "unused-zero-fold",
+      "route": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "expression is outside the finite lowering profile",
+          "primary": {
+            "path": "main.qli",
+            "start": 157,
+            "end": 224,
+            "line": 3,
+            "column": 52
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "finite-coherent-unitors",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-coherent-unitors/main.qli",
+            "start": 95,
+            "end": 105
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "finite-coherent-unitors",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "finite-split-join",
+      "route": "selected",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: operation/quantum basis must be Unit, Bit or Bits<n>",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/finite-split-join/main.qli",
+            "start": 127,
+            "end": 136
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "case": "finite-split-join",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "existing-atom-control",
+      "route": "selected",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "case": "existing-atom-control",
+      "route": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    }
+  ],
+  "count": 44,
+  "scope": "Repeated44 unchanged first-source checks under stable explicitly identified CLI. Open functions are not executed."
+}

@@ -4,13 +4,15 @@ use std::path::PathBuf;
 
 /// Shared by text and machine-readable usage diagnostics.
 pub(super) const USAGE: &str = "usage:
+  qleisli --help | qleisli help
+  qleisli help ecosystem
   qleisli check <source-root> [--format=json] [source-options]
   qleisli run <source-root> [--format=json] [source-options]
   qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]
   qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]
   qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]
   qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]
-  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]
+  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]
   qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]
   interop always returns JSON; qli input takes a project directory.
 source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate
@@ -20,8 +22,23 @@ source-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; -
   Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.
   Bounded projects allow max(64, project byte limit / 1024) directory entries.
   --legacy-source-limits cannot be combined with explicit byte limits.
-  --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
-  doc produces Markdown text; verify-ir does not accept source-options.";
+selected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION
+  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy
+  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.
+  --type binds exact ordinary Basis types; it is distinct from runtime --basis.
+  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL
+  --request=PATH or --qpe-provider=PATH lock the hierarchy route.
+  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.
+  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.
+  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).
+  doc produces Markdown text; verify-ir does not accept source-options.
+discovery: qleisli help ecosystem introduces language/tools without a project/kernel.
+  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.
+  These analysis tools are planned, not executable commands in this alpha.
+  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.
+  Canonical contract: docs/src/reference/discovery.md
+  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md
+  Help is text-only; invalid/extra flags, including --format=json, remain usage errors.";
 
 pub(super) struct Options {
     pub command: String,
@@ -32,7 +49,6 @@ pub(super) struct Options {
     pub output: Option<PathBuf>,
     pub against: Option<PathBuf>,
     pub qrate: bool,
-    pub selected_root: Option<qleisli::frontend::project::QrateSource>,
     pub lean_kernel: Option<PathBuf>,
 }
 
@@ -130,7 +146,6 @@ impl Options {
             output,
             against,
             qrate,
-            selected_root: None,
             lean_kernel,
         })
     }

@@ -1,0 +1,3 @@
+use std::quantum::{init0,finish,unit,phase_eighth,h,cnot,split};
+fn prep(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+pub fn entry((u,r):(Q<Unit>,Q<Bit>))->(Q<Bit>,Q<Bit>){let a=prep(u);cnot(r,a)}

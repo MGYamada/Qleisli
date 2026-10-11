@@ -1,0 +1,33 @@
+
+running 8 tests
+test closed_bindings_preserve_tags_order_and_nesting_and_require_eof ... ok
+test common_syntax_retains_basis_names_and_contextual_type_arguments ... ok
+test exact_type_substitutions_are_distinct_specialization_cache_keys ... ok
+test entry_and_provider_bindings_are_explicit_and_deterministic ... ok
+test unused_and_zero_iteration_bodies_do_not_gain_missing_access ... ok
+test names_forward_the_resolved_type_without_width_coercion ... ok
+test all_first_opaque_rejections_reach_their_actual_rules_before_binding ... FAILED
+test same_algorithm_retains_small_reference_action_and_unit_scalar_phase ... FAILED
+
+failures:
+
+---- all_first_opaque_rejections_reach_their_actual_rules_before_binding stdout ----
+
+thread 'all_first_opaque_rejections_reach_their_actual_rules_before_binding' (13897402) panicked at tests/basis_polymorphism.rs:93:9:
+assertion `left == right` failed: assumed-unit: main:71..72: ownership: expression statement would discard quantum ownership
+  left: "ownership"
+ right: "type"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- same_algorithm_retains_small_reference_action_and_unit_scalar_phase stdout ----
+
+thread 'same_algorithm_retains_small_reference_action_and_unit_scalar_phase' (13897408) panicked at tests/basis_polymorphism.rs:285:17:
+Bit, k=1: [[0.2857142857142857, -0.09090909090909091], [0.14285714285714285, -0.18181818181818182], [0.5714285714285714, 0.09090909090909091], [0.42857142857142855, 0.0]] != [[0.42857142857142855, 0.0], [0.5714285714285714, 0.09090909090909091], [0.14285714285714285, -0.18181818181818182], [0.2857142857142857, -0.09090909090909091]]
+
+
+failures:
+    all_first_opaque_rejections_reach_their_actual_rules_before_binding
+    same_algorithm_retains_small_reference_action_and_unit_scalar_phase
+
+test result: FAILED. 6 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+

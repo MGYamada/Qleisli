@@ -1,0 +1,9 @@
+{
+  "surface_before": "63cdfee286253fa0963ccc645ba381617c5b6e1e32cee173599a39817cfe5eb4",
+  "surface_after": "95b9cc03424ddc6afe311aa18f629eeb977bfc977c1c213de943709a2ec2ca8c",
+  "coverage_before_sha256": "93d9594ecd227b886ce63feb71baa7a90a030fec06b430429554e52011dd13e2",
+  "coverage_after_sha256": "7e01835b93564b04eb208ab080924b254e1d76d72e2583505c19f3affe587c76",
+  "review": "Reviewed readonly Type::quantum_basis and FramePort::basis plus internal dependent type rule signature; all remain untrusted source/trace views. Complete tuple source proposals use the same dedicated native hierarchy/instrument routes. Existing raw rejection and no-fallback boundaries remain. No new native mode, accepted-handle constructor, external schema or proof closure.",
+  "source_delta": "inventory-delta.json",
+  "initial_check": "policy-docs/2.stderr.txt"
+}

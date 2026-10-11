@@ -1,0 +1,138 @@
+{
+  "format": "qleisli.coherent-basis-documentation-review",
+  "version": 1,
+  "reviewer": "/root/basis_reference",
+  "observed_utc": "2026-10-06T03:57:43.005297+00:00",
+  "authority": "Technical source/specification review only, not a human Guardian ruling, formal proof, source-preservation theorem or release approval.",
+  "bindings": {
+    "docs/src/reference/coherent-basis.md": "0a604988dccddbcd4156a5faf78523cc42233cbe8e26e31288f7c4cdd99b9c7e",
+    "docs/src/reference/source-text.md": "754ec6a4a74c194b3b517631b627d7e8d9bee52613442c9f04089d11f4691e74",
+    "docs/src/reference/type-model.md": "3f81cb813878414f7433e6c2899e869dd42530e3b57d3ff83c282d1521a25ef5",
+    "docs/src/SUMMARY.md": "7b8b1bf718ab5fb65c8df78240b30b98979767f17a22cee54c0cb54a9c1c0158",
+    "docs/book.toml": "f1f0bb0a3c62340f3483574c2da6b13358a7b84db1cf5bc473575eae0a68b14d",
+    "src/frontend/lexer.rs": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+    "src/frontend/parser.rs": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
+    "src/frontend/check.rs": "f0060cecd778ff199ada98d24776244427c0309f4637004ac46a21dff0f9b6e5",
+    "src/frontend/check/body.rs": "d4ce8b4b67497fdaa1f172cba7a6174319fcb3834f380baff4c4c3d758adf9ef",
+    "src/frontend/check/body/special.rs": "116245387985c10b013c46cf8dbadbd255c4ea59bab726461006ebd2208b3079",
+    "src/frontend/check/primitive.rs": "38caedf63ce840caccfabd94f522fef79f9e408c3eb139f22d5df25b3f195c11",
+    "src/frontend/compile/lower/mod.rs": "c75920f6961ee5ee590880ee00f28dc0dd254247a36ac234fa2fee3487cb7848",
+    "src/frontend/sized/parser.rs": "9bd9baffd118a4850c068df06e104a0077f32c8303d4b701c81f7e53e6ae754f",
+    "src/frontend/sized/primitive.rs": "60456760d69d05a438456dd98baaa54de49a8b9f4edd111a7f22744c55f424e4"
+  },
+  "checks": [
+    {
+      "contract": "basis Expr as Pattern { BasisExpr }; as contextual and basis fn unchanged",
+      "source": "src/frontend/parser.rs",
+      "definitions": [
+        "coherent_lift",
+        "basis_block",
+        "expect_word"
+      ],
+      "result": "matches current parser"
+    },
+    {
+      "contract": "Retired do/pure have no accepted aliases or preparation semantics",
+      "sources": [
+        "src/frontend/lexer.rs",
+        "src/frontend/parser.rs"
+      ],
+      "definitions": [
+        "keyword",
+        "expr_inner",
+        "basis_atom_inner",
+        "retired_coherent_syntax"
+      ],
+      "result": "reserved tokens and explicit removal diagnostic agree"
+    },
+    {
+      "contract": "Input expression evaluates before pattern and requires one exact Q<A> owner; no implicit join",
+      "sources": [
+        "src/frontend/check/body/special.rs",
+        "src/frontend/compile/lower/mod.rs"
+      ],
+      "definitions": [
+        "Checker::coherent",
+        "Builder::expr",
+        "Builder::lift"
+      ],
+      "result": "quantum_basis source requirement and one quantum register agree"
+    },
+    {
+      "contract": "Restricted basis grammar, exact pattern shape, isolated runtime context and declared basis calls",
+      "sources": [
+        "src/frontend/parser.rs",
+        "src/frontend/check.rs",
+        "src/frontend/check/body/special.rs"
+      ],
+      "definitions": [
+        "basis_expr",
+        "basis_atom_inner",
+        "Scope::basis_scope",
+        "Checker::basis_inner"
+      ],
+      "result": "body uses BasisExpr; basis scope keeps static premises but no outer runtime values; calls require FnKind::Basis"
+    },
+    {
+      "contract": "Injectivity remains separate from width-based effect inference; finite lowering retains fixed result type, table and ordered axes",
+      "sources": [
+        "src/frontend/check/body/special.rs",
+        "src/frontend/compile/lower/mod.rs"
+      ],
+      "definitions": [
+        "Checker::coherent",
+        "Builder::lift"
+      ],
+      "result": "source records Injectivity; finite traversal rejects repeated labels, preserves register axes and extends only for larger basis. This inspection is not a source preservation proof."
+    },
+    {
+      "contract": "Exact +1 basis-map meaning, arbitrary-reference extension and no quantum clone",
+      "source": "docs/src/reference/coherent-basis.md",
+      "result": "equation states linear label injection; explanation gives alpha|00>+beta|11>, not a tensor square. It specifies existing intended semantics, without claiming a new theorem or accepted external realization."
+    },
+    {
+      "contract": "Common phase_eighth accepts packaged quantum owners while selected concrete preparation is atom-only",
+      "sources": [
+        "src/frontend/check/primitive.rs",
+        "src/frontend/sized/primitive.rs"
+      ],
+      "definitions": [
+        "Primitive::output",
+        "quantum_endomorphism"
+      ],
+      "result": "type-model distinction matches separate current judgments"
+    },
+    {
+      "contract": "Selected concrete projection and finite quantum Unit restrictions are disclosed",
+      "source": "src/frontend/sized/parser.rs",
+      "definitions": [
+        "Projection::expr"
+      ],
+      "result": "CoherentLift has no selected runtime projection; wildcard rejection remains. No new concrete Unit or controlled Unit support is claimed."
+    },
+    {
+      "contract": "External qlippy component is excluded by maintainer, with no updated integration claim",
+      "source": "docs/src/reference/coherent-basis.md",
+      "result": "current Reference reflects explicit human exclusion reported in Issue81 comment6008953407; actual Qleisli library/CLI diagnostics remain part of the contract."
+    }
+  ],
+  "render_finding": {
+    "priority": "P2",
+    "status": "source repaired; rendered rerun pending",
+    "old_rendered_html": "/private/tmp/qleisli-coherent-basis-book/reference/coherent-basis.html",
+    "old_print_html": "/private/tmp/qleisli-coherent-basis-book/print.html",
+    "finding": "New chapter used display TeX with math rendering disabled; generated HTML/print showed literal backslash commands.",
+    "repair": "Only new coherent-basis.md now uses a fenced text equation preserving the exact linear action and +1 coefficient prose. No plugin, pin or other chapter changed.",
+    "current_chapter_sha256": "0a604988dccddbcd4156a5faf78523cc42233cbe8e26e31288f7c4cdd99b9c7e"
+  },
+  "first_validation": {
+    "path": "docs-validation-01.json",
+    "sha256": "3390b60bb4c8f1610cf9f0de19e25a3796979db9710899fe3220edfd50c5c173",
+    "status": "failed",
+    "failures": [
+      "Copied corpus before-sources README relative links have missing targets",
+      "VM22 parser source snapshot is stale"
+    ]
+  },
+  "remaining": "Rerun mdBook/rendered links after chapter repair, and docs/inventory checks after respective root/corpus fixes. Preserve all first failures and original source/guarantee/acceptance/proof requirements."
+}

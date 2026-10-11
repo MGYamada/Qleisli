@@ -1,0 +1,4 @@
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized] target(s) in 0.76s
+     Running tests/native_roundtrip.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/native_roundtrip-9594d384c4bc204f)
+     Running tests/review_v019.rs (/private/tmp/qleisli-bounded-validation-target/debug/deps/review_v019-da0760545169967e)

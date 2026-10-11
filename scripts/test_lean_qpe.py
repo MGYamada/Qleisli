@@ -12,6 +12,7 @@ import hashlib
 import json
 import math
 from pathlib import Path
+from current_source_fixtures import current_source_fixture, source_hashes
 import subprocess
 import tempfile
 
@@ -311,9 +312,11 @@ def source_check(binary,log):
         project=FIXTURE/name;baseline=json.loads((FIXTURE/(name+"-baseline.json")).read_text())
         for file,digest in baseline["source_sha256"].items():
             assert hashlib.sha256((project/file).read_bytes()).hexdigest()==digest
+        project=current_source_fixture(project)
         command=[str(binary.resolve()),"run",str(project),"--format=json"]
         run=subprocess.run(command,capture_output=True,text=True,timeout=30)
-        log.append(dict(command=command,exit=run.returncode,stdout=run.stdout,stderr=run.stderr))
+        log.append(dict(command=command,exit=run.returncode,stdout=run.stdout,stderr=run.stderr,
+                        historical_source_sha256=baseline["source_sha256"],executed_source_sha256=source_hashes(project)))
         assert run.returncode==0,run.stderr
         actual={sum(int(bit)<<i for i,bit in enumerate(row["bits"])):row["probability"]
                 for row in json.loads(run.stdout)["result"]["distribution"]}

@@ -1,0 +1,112 @@
+[
+  {
+    "case": "legacy-certified-three",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "nullary-certified",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-certified",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "nullary-meaning",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-meaning",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"meaning function has the wrong exact basis signature\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli\", span: Span { start: 387, end: 395 }, line: 8, column: 30 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "unit-meaning",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/unit-meaning",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..195: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: ok\n",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-certified-flat-as-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/main.qli\", span: Span { start: 552, end: 561 }, line: 8, column: 71 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-certified-flat-as-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,Bit,Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/main.qli\", span: Span { start: 552, end: 561 }, line: 8, column: 71 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-certified-left-as-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/main.qli\", span: Span { start: 560, end: 569 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-certified-left-as-right",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `((Bit,Bit),Bit) -> Bit`, found `(Bit,(Bit,Bit)) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/main.qli\", span: Span { start: 564, end: 573 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-certified-right-as-flat",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `(Bit,Bit,Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/main.qli\", span: Span { start: 560, end: 569 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  },
+  {
+    "case": "wrong-certified-right-as-left",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-after-complete-0d93a18/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left",
+      "check"
+    ],
+    "exit_code": 0,
+    "stdout": "finite.load: ok, 1 local modules\nsized.parse: main:168..231: unsupported: sized preparation profile: requires an ordinary function\nfinite.check: Diagnostic { code: \"type_mismatch\", message: \"predicate must map the exact source basis type to Bit: expected `(Bit,(Bit,Bit)) -> Bit`, found `((Bit,Bit),Bit) -> Bit`\", primary: Some(SourceLocation { path: \"/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli\", span: Span { start: 564, end: 573 }, line: 8, column: 75 }) }\n",
+    "stderr": ""
+  }
+]

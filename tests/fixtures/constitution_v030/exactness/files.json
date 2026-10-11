@@ -1,0 +1,29 @@
+{
+  "scope": "Exactness integration packet only; excludes own manifest and all build products",
+  "files": {
+    "README.md": "a3c1e4cbe30bafbbb04bbf446e777978d6dd451d33bcff945db8451a2460cbac",
+    "bridge-review/README.md": "a5d7c5ef7454fd1c4635096b4ec0b8d6c6ae3a30b9b44b82dddaf570fca5b001",
+    "bridge-review/after-record.json": "ddd492ce4fe09aa07303dcea5e13b04f51f13afbf740ed5779596e29a9b627ae",
+    "bridge-review/after.stdout.json": "76f739ff423f7c8a91499045dc9e6a01f667bd070804e57a0ab79741b43b5dfc",
+    "bridge-review/before-record.json": "03727696869b34cbabc028b1f2aab7b3fb72e3fb79cccc1a681b3abd2b43603e",
+    "bridge-review/before.stdout.json": "279db8aa6e13f83025a9e4a5dd2afb71fb4fdf6e69f082f3c44e34aa8290ea60",
+    "bridge-review/check_release_ready.before.py.txt": "70f687dcc99c816882e58b22e4f50ca2131660ad3f70e18fa981551d5ebc3351",
+    "bridge-review/reproduce.py": "d28877cb224454745d2c046031d2746cb26c90a8673a25a3d1e2833183c793f9",
+    "bridge-review/source-identities-at-before-run.json": "e80b7f641d86072273fe7f8a6ba719ab360b61c276fdaa98c13316ae8f521e37",
+    "bridge-review/test_check_release_ready.before.py.txt": "057408833cf226384971a7b76e61fc3ebc72dd9f2fd5d1daa000066876b4dc58",
+    "final-tests/constitution-combined.txt": "67c9bdd2de32dd3295e2fe632a8291afb4f64f62e70c5aa936a435299b9cc74b",
+    "final-tests/constitution-command.json": "7adf207828995bacaded99e1e714284a747cb95992d79517c2e6ff75d81d2ee6",
+    "final-tests/constitution-tool-chunks.json": "083dc026f2cb81d9d943f622ac15d3c72eb0935720f2f77d991c6390adbc9b21",
+    "independent-review.json": "09579c26a114c8209600e245978c7ace645069b38cf8cf5ec8b09eeda0967d63",
+    "initial-tests-reported.json": "e8a221e9a51e022d0fcdb406dc1f1ee609043321b7f305770cee3a3351cc66a0",
+    "integration.json": "f26227de57e2564737c0408dd35a400fd8781590bbbdcf3b3c20fe4a4ddb77bd",
+    "live-replay/after.json": "d157e4393b5348e3eb3327b2a6b2c01fd4f9289a9338078f7f22ef2fa164524c",
+    "live-replay/before.json": "d157e4393b5348e3eb3327b2a6b2c01fd4f9289a9338078f7f22ef2fa164524c",
+    "live-replay/command.json": "86ae9a67f4a2f3280c2a067e2ed60a346e54ecf5999d5865d475369588e3c473",
+    "live-replay/record.py": "13f1d063cba284c0d91c1b64156c65097162c12438c7968db3098a60bb0fa075",
+    "live-replay/result.json": "b314bac9db7ae2dc8f4e17134e3d77a662358f717ac542fc1fb7bdfbf5f2f45f",
+    "live-replay/stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "live-replay/stdout.txt": "e18368e9cf1d770f0e081979efef0d9a19e757927369e35bfc2f04ce63b87761",
+    "root-checks.json": "41a53d670743b1dcd22421d8dac101e3ea7d053591698e076755e295c9b5e6e3"
+  }
+}

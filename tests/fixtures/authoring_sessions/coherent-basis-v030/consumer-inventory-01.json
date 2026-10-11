@@ -1,0 +1,46 @@
+{
+  "format": "qleisli.coherent-basis-consumer-inventory",
+  "version": 1,
+  "baseline_commit": "73355382a3db94893982e5954e9400fffcd7f48e",
+  "method": "Read selected source fixtures and direct Rust consumers before changing their selection. This records an inventory, not consumer validation.",
+  "frozen_direct_consumers": [
+    {
+      "consumer": "tests/body_effects.rs:186,192",
+      "mechanism": "include_str!",
+      "sources": [
+        "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-permutation/main.qli",
+        "tests/fixtures/authoring_sessions/body-effects-v030/attempt-01/finite-lift-expansion/main.qli"
+      ]
+    },
+    {
+      "consumer": "tests/unit_patterns.rs:23,63,172,225",
+      "mechanism": "source(category,name) reads original first-source tree",
+      "sources": [
+        "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/counterexamples/coherent-unit-product/main.qli",
+        "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-contract/main.qli",
+        "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli",
+        "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/computed-control/main.qli"
+      ]
+    },
+    {
+      "consumer": "tests/quantum_unit_source.rs:884",
+      "mechanism": "direct read",
+      "sources": [
+        "tests/fixtures/authoring_sessions/finite-unit-pattern-v030/validation-sources/coherent-control/main.qli"
+      ]
+    }
+  ],
+  "currently_selected_fixture_sources_with_old_form": [
+    "tests/fixtures/ordinary-type-cutover/current/ergonomics/nary_lift.qli",
+    "tests/fixtures/ordinary-type-cutover/current/ergonomics/wildcard_not_injective.qli",
+    "tests/fixtures/semantic-namespace-current/ordinary-type-cutover/ergonomics/multi_parameter.qli"
+  ],
+  "currently_selected_corpus_sources_with_old_form": [
+    "corpus/qualtran/less_than2/kernel.qli",
+    "corpus/pennylane_demos/vqe_excitation/kernel.qli"
+  ],
+  "preservation": "Preserve original first sources, raw IR/native histories and existing fixture observations. Migrate active consumers through selected derivative snapshots, complete projects for corpus. No maximum-size case is generated or executed by this audit.",
+  "other_ownership": "Core parser and parser tests, docs, frozen fixture/corpus derivatives and selectors are handled separately by coordinated agents.",
+  "external_consumer": "external-qlippy-consumer-01.json records the separate qargo contract and unvalidated criterion-12 consumer obligation.",
+  "validation_limit": "No build or test was performed for the active spelling migration. The existing compile growing_values_and_zero_bit_types_return_limits_on_a_normal_thread_stack test contains .repeat(8192); existing project stress cases contain 3000 paths. Do not execute or newly expand these in this bounded unit."
+}

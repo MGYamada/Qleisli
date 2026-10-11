@@ -1,0 +1,481 @@
+[
+  {
+    "label": "latest-rustc",
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/rustc",
+    "exit_code": 0,
+    "stdout": "latest-rustc.stdout",
+    "stderr": "latest-rustc.stderr"
+  },
+  {
+    "label": "latest-cargo",
+    "argv": [
+      "cargo",
+      "--version"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/cargo",
+    "exit_code": 0,
+    "stdout": "latest-cargo.stdout",
+    "stderr": "latest-cargo.stderr"
+  },
+  {
+    "label": "latest-cargo-clippy",
+    "argv": [
+      "cargo-clippy",
+      "--version"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/cargo-clippy",
+    "exit_code": 0,
+    "stdout": "latest-cargo-clippy.stdout",
+    "stderr": "latest-cargo-clippy.stderr"
+  },
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/cargo",
+    "exit_code": 0,
+    "stdout": "build.stdout",
+    "stderr": "build.stderr"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/observer.rs",
+      "--extern",
+      "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-multidecl-independent-final/observer"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/rustc",
+    "exit_code": 0,
+    "stdout": "observer-build.stdout",
+    "stderr": "observer-build.stderr"
+  },
+  {
+    "label": "ambiguous-import",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "ambiguous-import.stdout",
+    "stderr": "ambiguous-import.stderr"
+  },
+  {
+    "label": "collision",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "collision.stdout",
+    "stderr": "collision.stderr"
+  },
+  {
+    "label": "duplicate",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "duplicate.stdout",
+    "stderr": "duplicate.stderr"
+  },
+  {
+    "label": "nondecreasing-recursion",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "nondecreasing-recursion.stdout",
+    "stderr": "nondecreasing-recursion.stderr"
+  },
+  {
+    "label": "phase-backward",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "phase-backward.stdout",
+    "stderr": "phase-backward.stderr"
+  },
+  {
+    "label": "phase-same",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "phase-same.stdout",
+    "stderr": "phase-same.stderr"
+  },
+  {
+    "label": "phase-split",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "phase-split.stdout",
+    "stderr": "phase-split.stderr"
+  },
+  {
+    "label": "private-import",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "private-import.stdout",
+    "stderr": "private-import.stderr"
+  },
+  {
+    "label": "providers",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "providers.stdout",
+    "stderr": "providers.stderr"
+  },
+  {
+    "label": "rename",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "rename.stdout",
+    "stderr": "rename.stderr"
+  },
+  {
+    "label": "self-recursion",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/self-recursion",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "self-recursion.stdout",
+    "stderr": "self-recursion.stderr"
+  },
+  {
+    "label": "sibling-cycle",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "sibling-cycle.stdout",
+    "stderr": "sibling-cycle.stderr"
+  },
+  {
+    "label": "source-order-errors",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/source-order-errors",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "source-order-errors.stdout",
+    "stderr": "source-order-errors.stderr"
+  },
+  {
+    "label": "unused-owner",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-owner",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "unused-owner.stdout",
+    "stderr": "unused-owner.stderr"
+  },
+  {
+    "label": "unused-provider-cycle",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "unused-provider-cycle.stdout",
+    "stderr": "unused-provider-cycle.stderr"
+  },
+  {
+    "label": "unused-static-arm",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-static-arm",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "unused-static-arm.stdout",
+    "stderr": "unused-static-arm.stderr"
+  },
+  {
+    "label": "unused-type",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-type",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "unused-type.stdout",
+    "stderr": "unused-type.stderr"
+  },
+  {
+    "label": "zero-fold-capture",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-independent-final/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/zero-fold-capture",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/private/tmp/qleisli-multidecl-independent-final/observer",
+    "exit_code": 0,
+    "stdout": "zero-fold-capture.stdout",
+    "stderr": "zero-fold-capture.stderr"
+  },
+  {
+    "label": "latest-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_declarations"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/cargo",
+    "exit_code": 0,
+    "stdout": "latest-tests.stdout",
+    "stderr": "latest-tests.stderr"
+  },
+  {
+    "label": "latest-clippy",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/cargo",
+    "exit_code": 0,
+    "stdout": "latest-clippy.stdout",
+    "stderr": "latest-clippy.stderr"
+  },
+  {
+    "label": "msrv-rustc",
+    "argv": [
+      "rustc",
+      "--version"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/rustc",
+    "exit_code": 0,
+    "stdout": "msrv-rustc.stdout",
+    "stderr": "msrv-rustc.stderr"
+  },
+  {
+    "label": "msrv-cargo",
+    "argv": [
+      "cargo",
+      "--version"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+    "exit_code": 0,
+    "stdout": "msrv-cargo.stdout",
+    "stderr": "msrv-cargo.stderr"
+  },
+  {
+    "label": "msrv-cargo-clippy",
+    "argv": [
+      "cargo-clippy",
+      "--version"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo-clippy",
+    "exit_code": 0,
+    "stdout": "msrv-cargo-clippy.stdout",
+    "stderr": "msrv-cargo-clippy.stderr"
+  },
+  {
+    "label": "msrv-tests",
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_declarations"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+    "exit_code": 0,
+    "stdout": "msrv-tests.stdout",
+    "stderr": "msrv-tests.stderr"
+  },
+  {
+    "label": "msrv-clippy",
+    "argv": [
+      "cargo",
+      "clippy",
+      "--offline",
+      "--all-targets",
+      "--",
+      "-D",
+      "warnings"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin/cargo",
+    "exit_code": 0,
+    "stdout": "msrv-clippy.stdout",
+    "stderr": "msrv-clippy.stderr"
+  },
+  {
+    "label": "fmt",
+    "argv": [
+      "cargo",
+      "fmt",
+      "--all",
+      "--check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "PATH": "/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.juliaup/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/TeX/texbin:/opt/homebrew/bin:/Users/masa/.codex/tmp/arg0/codex-arg0ORibe8:/Applications/ChatGPT.app/Contents/Resources/codex-cli/codex-path:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/masa/.juliaup/bin:/opt/homebrew/sbin:/Users/masa/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources:/Applications/ChatGPT.app/Contents/Resources/codex-cli/CodexCLI.app/Contents/MacOS",
+    "executable": "/opt/homebrew/bin/cargo",
+    "exit_code": 0,
+    "stdout": "fmt.stdout",
+    "stderr": "fmt.stderr"
+  }
+]

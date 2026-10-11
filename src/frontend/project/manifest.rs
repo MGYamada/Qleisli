@@ -204,14 +204,14 @@ mod tests {
         )
         .unwrap();
         fs::create_dir(path.join("src")).unwrap();
-        fs::write(path.join("src/main.qli"), "observe fn main()->CBit{true}").unwrap();
+        fs::write(path.join("src/main.qli"), "observe fn main()->Bit{1}").unwrap();
         let selected = QrateSource::select(&path).unwrap();
         // Schedule exactly the previously vulnerable interval. The two public
         // pre/post pathname checks both succeed; loading must still reject B.
         assert!(selected.unchanged().is_ok());
         fs::rename(path.join("src"), path.join("saved")).unwrap();
         fs::create_dir(path.join("src")).unwrap();
-        fs::write(path.join("src/main.qli"), "observe fn main()->CBit{false}").unwrap();
+        fs::write(path.join("src/main.qli"), "observe fn main()->Bit{0}").unwrap();
         let result = super::super::Project::load_anchored(
             selected.path(),
             &selected.directory,
@@ -228,7 +228,7 @@ mod tests {
         .unwrap();
         let mut source = String::new();
         std::io::Read::read_to_string(&mut original, &mut source).unwrap();
-        assert!(source.contains("true"));
+        assert!(source.contains("{1}"));
         fs::remove_dir_all(path.join("src")).unwrap();
         fs::rename(path.join("saved"), path.join("src")).unwrap();
         assert!(selected.unchanged().is_ok());

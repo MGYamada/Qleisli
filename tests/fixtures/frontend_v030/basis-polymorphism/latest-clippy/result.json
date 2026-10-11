@@ -1,0 +1,18 @@
+{
+  "command": [
+    "cargo",
+    "clippy",
+    "--offline",
+    "--locked",
+    "--all-targets",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "exit_code": 0,
+  "seconds": 5.3921942909946665,
+  "sources_unchanged": true,
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+  "test_result_lines": []
+}

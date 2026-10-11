@@ -1,0 +1,11 @@
+{
+  "format": "qleisli.negative-check-driver-first-failure",
+  "version": 1,
+  "status": "failed",
+  "reason": "Driver omitted QLEISLI_KERNEL; the CLI correctly rejected missing native selection before checking the negative source. No product defect or passed negative check.",
+  "exit_code": 1,
+  "stdout": "duplicate_owner-negative-final-03.stdout.txt",
+  "stderr": "duplicate_owner-negative-final-03.stderr.txt",
+  "binary_sha256": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8",
+  "repair": "Supply explicit matching native checker in each subprocess environment."
+}

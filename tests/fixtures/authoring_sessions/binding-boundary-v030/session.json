@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Preserve fixed no-live-owner-assignment and nonquantum mut contracts with accurate typed diagnostics",
+  "author": "Codex assistant; informed maintenance; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "28f61da415093ac76710618e887468b4d7a5116b",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze six rejected binding forms and two existing positive controls before implementation.",
+      "sha256": {
+        "assignment-live.qli": "77d4b91793d5faf2c3899e259af38c959f2be3b955f6a52d0884872f62fb2003",
+        "assignment-mixed.qli": "269e07be19e9d7ccc688ed308f3fa48b451c194cf0e9926958afc3b6f897737b",
+        "assignment-ordinary.qli": "3cabedcb1ee29ad61ea49391df11e08f0bd0645bc5fec6bce26c04a780be43e0",
+        "contextual-name.qli": "81d01e5b79baefb81cd632042291b895a260d699859c2642480461e97431a033",
+        "linear-rebinding.qli": "0c376b6dcf68a33ef65681542df9858bd7fdc32799b1c1b5e7d0f05b64231860",
+        "mutable-live.qli": "d7a30349daea398970981e62610e61f83f7b1a038b5d89dd47f84a0fd7636b7b",
+        "mutable-mixed.qli": "227556f751f3a3fe2290d50645aa8afe568118b9c6fb40421d932c08f31cf013",
+        "mutable-ordinary.qli": "f7c15a75e5b4db0a7a050e295712a99b660b5c51e20097d913d60df942fa9732"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/assignment-live.json",
+        "before/assignment-mixed.json",
+        "before/assignment-ordinary.json",
+        "before/contextual-name.json",
+        "before/linear-rebinding.json",
+        "before/mutable-live.json",
+        "before/mutable-mixed.json",
+        "before/mutable-ordinary.json",
+        "after/assignment-live.json",
+        "after/assignment-mixed.json",
+        "after/assignment-ordinary.json",
+        "after/contextual-name.json",
+        "after/linear-rebinding.json",
+        "after/mutable-live.json",
+        "after/mutable-mixed.json",
+        "after/mutable-ordinary.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "evidence_kind": "Actual earlier tool-output transcript, not reconstructed raw streams",
+  "probe": "rg -n 'argparse|add_argument|def main|write-corpus|check_authoring' scripts/check_docs.py scripts/check_constitution.py scripts/test_authoring_sessions.py",
+  "exit_code": 2,
+  "diagnostic": "rg: scripts/test_authoring_sessions.py: No such file or directory (os error 2)",
+  "scope": "Entrypoint discovery only; no missing checker was executed or reported as passing."
+}

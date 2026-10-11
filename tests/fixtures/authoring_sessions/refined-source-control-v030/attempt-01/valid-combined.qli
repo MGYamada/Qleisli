@@ -1,0 +1,8 @@
+use std::quantum::{x,z,h};
+classical fn flip(b:Bit)->Bit{not b}
+classical fn same(b:Bit)->Bit{b}
+meaning X:Bit=permutation_by(flip);
+meaning I:Bit=permutation_by(same);
+fn flip_q(q:Q<Bit>)->Q<Bit>{x(q)}
+fn invoke[const U:Op<Bit,X>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+pub fn main(q:Q<Bit>)->Q<Bit>{z(ctrl q);invoke[flip_q](q)}

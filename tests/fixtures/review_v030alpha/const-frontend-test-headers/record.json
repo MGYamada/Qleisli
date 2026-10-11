@@ -1,0 +1,95 @@
+{
+  "baseline_commit": "8d3effc6c0af881055aecd144af23b85a136bbbc",
+  "scope": "current frontend regression sources only; frozen fixtures and runtime parser unchanged",
+  "files": [
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "markers": 9,
+      "before_sha256": "be525df5091885440476904a8471cb4020c20d1563ab648353600c7af1fd1373",
+      "desired_sha256": "e708a848dc6326501fb32d56be6e2d73c458f75aec161497935fcc0d349a462a",
+      "final_sha256": "d03d058dee3688017ab6d191cac0bf98ab3317d1a5745b367a0d8becb9086fa3"
+    },
+    {
+      "path": "src/frontend/linear.rs",
+      "markers": 3,
+      "before_sha256": "ddc31bd21f3ccb0d4883db3cd61b921ae762023b637c3bc67f05c29381042c52",
+      "desired_sha256": "63af6b8c486eb23d8da07a1e4ac52add16101d1da5c094ada71e54e7f5b28ac0",
+      "final_sha256": "63af6b8c486eb23d8da07a1e4ac52add16101d1da5c094ada71e54e7f5b28ac0"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "markers": 3,
+      "before_sha256": "5124b5179231cd9393d1b175c9434f5ec048fe05953a8340d209ff23cd247036",
+      "desired_sha256": "b1095707b82d0389be8ed51649eb6d38c0e4130f65c303439f5e0432e7dbe463",
+      "final_sha256": "b1095707b82d0389be8ed51649eb6d38c0e4130f65c303439f5e0432e7dbe463"
+    },
+    {
+      "path": "src/frontend/specialize/meaning.rs",
+      "markers": 1,
+      "before_sha256": "94a6f4c84a2da3a623c7cd6b03c906bec12199ba09700254a82835f5bcd729e5",
+      "desired_sha256": "c01cfc67e6968e6c734f65ccf850c826af7b07ae19b5d05d7f0806318967040a",
+      "final_sha256": "c01cfc67e6968e6c734f65ccf850c826af7b07ae19b5d05d7f0806318967040a"
+    },
+    {
+      "path": "src/frontend/specialize/raw.rs",
+      "markers": 7,
+      "before_sha256": "ca991e2631006e1ebd5b91a45af99c69b4114001e42792b97985b2d8fb3bcf17",
+      "desired_sha256": "4d2632ddd2f001aee17a39bf02c01e2974ec283ee0cfee7745973bc209fd76c0",
+      "final_sha256": "4d2632ddd2f001aee17a39bf02c01e2974ec283ee0cfee7745973bc209fd76c0"
+    },
+    {
+      "path": "src/frontend/specialize/raw/preservation.rs",
+      "markers": 1,
+      "before_sha256": "ed41b79597301a370d4d76adc4660db9710d810d37c1467f7a7b486966aae8af",
+      "desired_sha256": "23e64c112dcf43e000487b0b61fd4b119ed41b49781a1b9d795df558db43e555",
+      "final_sha256": "23e64c112dcf43e000487b0b61fd4b119ed41b49781a1b9d795df558db43e555"
+    }
+  ],
+  "formatting": "rustfmt shortened one format statement after marker replacement; public surfaces unchanged",
+  "validation": {
+    "latest": {
+      "before_log_sha256": "3c015a0477c4fed80592e7f85aaf95d0922e3683c46203a3015bac8dfab79528",
+      "final_log_sha256": "9a696c57f45d020f024694bdf25145c3b02f2c086e6f5c3e7271983f706603b0",
+      "outcomes_sha256": "1d2c95df85a2a8a2c786baeefb66bda3344e29cb78390f11f356b9434c0831e1",
+      "passed": 87,
+      "failed": 0,
+      "existing_ignored": 2,
+      "outcomes_equal": true,
+      "before_seconds": 2.24,
+      "final_seconds": 1.36,
+      "command": "cargo test --lib frontend::",
+      "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+      "clippy": "cargo clippy --all-targets -- -D warnings"
+    },
+    "msrv": {
+      "before_log_sha256": "d527853d0e2201d13260709e51d818aa2c3eabf623bb0cb592190ec617e32ef3",
+      "final_log_sha256": "cef2f286e4a7b86352bece4b18d8913a18d57366fe36c9a7dc45f0caa7b05ce0",
+      "outcomes_sha256": "1d2c95df85a2a8a2c786baeefb66bda3344e29cb78390f11f356b9434c0831e1",
+      "passed": 87,
+      "failed": 0,
+      "existing_ignored": 2,
+      "outcomes_equal": true,
+      "before_seconds": 2.12,
+      "final_seconds": 1.45,
+      "command": "python3 scripts/run_msrv.py test --lib frontend::",
+      "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+      "clippy": "python3 scripts/run_msrv.py clippy --all-targets -- -D warnings"
+    }
+  },
+  "initial_invocation_error": {
+    "diagnostic": "explicit test kernel: Error { code: \"kernel\", message: \"select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL\", json_pointer: \"\" }",
+    "summary": "56 passed; 31 failed; 2 ignored: both initial invocations omitted the required kernel variables; actual tests were rerun on unchanged baseline with explicit kernels"
+  },
+  "toolchains": {
+    "latest": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "msrv": "repository Cargo rust-version via scripts/run_msrv.py"
+  },
+  "environment": {
+    "QLEISLI_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "target_reuse": "existing separate latest/MSRV targets; no accepted-result cache"
+  }
+}

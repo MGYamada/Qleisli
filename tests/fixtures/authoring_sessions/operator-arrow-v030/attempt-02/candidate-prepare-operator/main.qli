@@ -1,0 +1,3 @@
+use std::quantum::init0;
+pub fn provider(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+pub fn entry[static U:Op<Unit->Bit>](q:Q<Unit>)->Q<Bit> requires Apply(U){U(q)}

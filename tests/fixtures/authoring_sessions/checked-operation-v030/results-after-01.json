@@ -1,0 +1,562 @@
+{
+  "format": "qleisli.checked-operation-after-results",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:29:20.853818+00:00",
+  "actual_after_commands": 26,
+  "actual_after_successes": 7,
+  "actual_after_refusals": 19,
+  "bounded_prediction_assertions": 28,
+  "matched_predictions": 28,
+  "mismatched_predictions": 0,
+  "first_sources_and_manifests_unchanged": true,
+  "all_immutable_before_files_preserved": true,
+  "only_changed_before_index": "session.json; exact original archive preserved and observations appended after all calls",
+  "source_baseline_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "constitutional_continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "cli_sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "record_sha256": {
+    "after.pending-01.json": "de2447d1263deaad598a8af0694e9989c023413b9ec3981c78db278a9e22a1c3",
+    "after-contract-01.md": "6cb719e25f9d5b8642fadf201351d4ac8dff1b9b15a85ac781e5670b24d87da1",
+    "after-baseline-files-01.json": "0f6fc7326d68ff3bcaebb277723df7c5d59ddc101c78078ad7cffcf3576721fa",
+    "observations-after-01/capture.json": "0c934034a9672c2f7015b12a5679ea14eb1d26ab5c53bf59a72dfb98ecbe42ac",
+    "metadata-check-after-capture-01.json": "9285215c1771ef0fb13aa8bf0c025c522da8f8c8cd7c23a989101ae8b99a636c",
+    "session-before-after-01.json": "1ad55eef4120806a7058ac550987223717b1c88f9278d8155c0a2d5c6761b410",
+    "session.json": "6fd59a273bb5d2dc8ec724a8c36458b4399bbc05cebd6b6fe44321351384bb75",
+    "results-before.json": "fa0590a95e602f3422dc6b017505c76a93259af54d42d8228c730e6941601b42"
+  },
+  "registration": {
+    "format": "qleisli.authoring-metadata-integrity-observation",
+    "version": 1,
+    "recorded_utc": "2026-10-06T04:28:41.244579+00:00",
+    "session_sha256": "6fd59a273bb5d2dc8ec724a8c36458b4399bbc05cebd6b6fe44321351384bb75",
+    "method": "Pure check_session for this session; no recorded command execution",
+    "exit_code": 0,
+    "result": {
+      "snapshots": 1,
+      "observations": 56
+    }
+  },
+  "observations": [
+    {
+      "path": "observations-after-01/providers-reference-control-desired-finite-check-json.json",
+      "sha256": "79970172febb15cda0daf7663664a8998ea8e9c5a0e828b7d3f8d91d36cfada6",
+      "case": "providers-reference-control-desired",
+      "action": "finite-check-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-desired-default-text-check.json",
+      "sha256": "c0199a5ee7f561807544754cf6bfae6d5fd778fd680abede4e4a8bd007c1071b",
+      "case": "providers-reference-control-desired",
+      "action": "default-text-check",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-desired-public-selected-check-json.json",
+      "sha256": "5abaee1b3baa787e82ffb5b54cd97dbf26343ce734959723526bdbbec600b6e0",
+      "case": "providers-reference-control-desired",
+      "action": "public-selected-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "severity": "error",
+          "message": "sized preparation profile: unsupported static operation constructor",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-desired/main.qli",
+            "start": 680,
+            "end": 709
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-desired-finite-run-json.json",
+      "sha256": "30e2791c36dc6d26040cbdb0fa1a75497fa2009d22629257d919b3083cce17af",
+      "case": "providers-reference-control-desired",
+      "action": "finite-run-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "distribution": [
+          {
+            "bits": [
+              false,
+              false,
+              false
+            ],
+            "probability": 1
+          }
+        ]
+      }
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-desired-finite-emit-ir-json.json",
+      "sha256": "72e9c2172b64a27c7299b80680484097c4f563a4f9a2528fb4ed9bacc186011f",
+      "case": "providers-reference-control-desired",
+      "action": "finite-emit-ir-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-after-01/artifacts/providers-reference-control-desired.qirf"
+      }
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-legacy-finite-check-json.json",
+      "sha256": "1ccc2806c9fff9a0c59240e8060b44030fd2078e9baa3fd532785109b8b080f2",
+      "case": "providers-reference-control-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 680,
+            "end": 687,
+            "line": 16,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-legacy-default-text-check.json",
+      "sha256": "79b25b3a44c485d13f0ff34626006bd86c9a6d9acbfba4ae52bc8faa5e5f6501",
+      "case": "providers-reference-control-legacy",
+      "action": "default-text-check",
+      "exit_code": 1,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/providers-reference-control-legacy-public-selected-check-json.json",
+      "sha256": "71d361422524df1b73dc6221bcb4398f9accd7f8138d44550ae8b7af6ce3ee15",
+      "case": "providers-reference-control-legacy",
+      "action": "public-selected-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "`bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/attempt-01/providers-reference-control-legacy/main.qli",
+            "start": 680,
+            "end": 687
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/wrong-phase-desired-finite-check-json.json",
+      "sha256": "ec9e07ccc450f89be13f78bd55d292963c7f58499818077302db2f1003d5fbbf",
+      "case": "wrong-phase-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "contract",
+          "severity": "error",
+          "message": "exact equation U E_in = E_out u does not hold",
+          "primary": {
+            "path": "main.qli",
+            "start": 746,
+            "end": 753,
+            "line": 17,
+            "column": 27
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/wrong-phase-desired-default-text-check.json",
+      "sha256": "57fbed5c0aff25822d791eae04301d7fc351b31b9c56dee926c9ff769c305567",
+      "case": "wrong-phase-desired",
+      "action": "default-text-check",
+      "exit_code": 1,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/wrong-phase-legacy-finite-check-json.json",
+      "sha256": "4d85e7dcf823486769c87723328bd93839178c94473a93456ecd364a5a8cb241",
+      "case": "wrong-phase-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 735,
+            "end": 742,
+            "line": 17,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/wrong-phase-legacy-default-text-check.json",
+      "sha256": "311883a046d77e3eead257e43183464ff91cc8bd7dd4a7cc1b4a205eec73c190",
+      "case": "wrong-phase-legacy",
+      "action": "default-text-check",
+      "exit_code": 1,
+      "diagnostics": [],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/wrong-tree-desired-finite-check-json.json",
+      "sha256": "58e397f16eaae6827dcce00ecd0a6535ef87bffbe252ef28ee150ae3febcc8e9",
+      "case": "wrong-tree-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "type or tuple/size shape mismatch: expected `(Bit,Bit,Bit)`, found `((Bit,Bit),Bit)`",
+          "primary": {
+            "path": "main.qli",
+            "start": 1029,
+            "end": 1068,
+            "line": 21,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/wrong-tree-legacy-finite-check-json.json",
+      "sha256": "3b7604ebe5643506792d7d449bc49d5b43791aaf9ec78b909bc435e2f4f4f865",
+      "case": "wrong-tree-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 1029,
+            "end": 1036,
+            "line": 21,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/runtime-provider-capture-desired-finite-check-json.json",
+      "sha256": "9eb90a576f229f7213601eab8635f6524e1d20bd6373bf50c647eda6da9623fa",
+      "case": "runtime-provider-capture-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "a local or spent runtime value cannot be a static operation",
+          "primary": {
+            "path": "main.qli",
+            "start": 706,
+            "end": 714,
+            "line": 16,
+            "column": 27
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/runtime-provider-capture-legacy-finite-check-json.json",
+      "sha256": "71e7e74d9a2d8b732a8b3235c069c9bf17ba10dc69a0b52ab2957c88d52f6927",
+      "case": "runtime-provider-capture-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 695,
+            "end": 702,
+            "line": 16,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/quantum-provider-capture-desired-finite-check-json.json",
+      "sha256": "53817ee09dfc014333fccaac8b3b9d2cc6ef56cc5b9e03ce4abd5db3dfc19d45",
+      "case": "quantum-provider-capture-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "a local or spent runtime value cannot be a static operation",
+          "primary": {
+            "path": "main.qli",
+            "start": 709,
+            "end": 717,
+            "line": 16,
+            "column": 27
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/quantum-provider-capture-legacy-finite-check-json.json",
+      "sha256": "11db8519dc81d5595829a476952bf7ec1d080bfdc026f4d283c7c39d7d80e75e",
+      "case": "quantum-provider-capture-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 698,
+            "end": 705,
+            "line": 16,
+            "column": 16
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/formal-provider-capture-desired-finite-check-json.json",
+      "sha256": "36b0f62d77354b21d7ce88fdda41ed1aec3d9f22142685bec675fe426aa7e3ae",
+      "case": "formal-provider-capture-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "severity": "error",
+          "message": "checked_op requires closed declarations",
+          "primary": {
+            "path": "main.qli",
+            "start": 724,
+            "end": 725,
+            "line": 16,
+            "column": 43
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/formal-provider-capture-legacy-finite-check-json.json",
+      "sha256": "da7701f0f791a3a395c3b7f0522b1a23fb912e09e0f0a8fc7f01d6ab76f65bb6",
+      "case": "formal-provider-capture-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 713,
+            "end": 720,
+            "line": 16,
+            "column": 32
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/spent-owner-reuse-desired-finite-check-json.json",
+      "sha256": "b27185ac2531e4cf90dae4d654c38cf1491e366f54055bf53dfe9c07c05ba771",
+      "case": "spent-owner-reuse-desired",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "severity": "error",
+          "message": "quantum ownership `q` has already been consumed",
+          "primary": {
+            "path": "main.qli",
+            "start": 776,
+            "end": 777,
+            "line": 18,
+            "column": 38
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/spent-owner-reuse-legacy-finite-check-json.json",
+      "sha256": "cd59644fac33c47a98f93697cfb210194afd9aba24b76771744491f48c9ab789",
+      "case": "spent-owner-reuse-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 704,
+            "end": 711,
+            "line": 17,
+            "column": 29
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    },
+    {
+      "path": "observations-after-01/nested-constructors-desired-finite-check-json.json",
+      "sha256": "1c3c55d5ccdfeb0741c29fa8ecb8159824e4bd5e83f79b2206ef4c84f56573d5",
+      "case": "nested-constructors-desired",
+      "action": "finite-check-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "verified": true
+      }
+    },
+    {
+      "path": "observations-after-01/nested-constructors-desired-finite-run-json.json",
+      "sha256": "555ee88407c7482052d619b90994197325ef4da5d7ff7853d6cd7c4fadf6cd04",
+      "case": "nested-constructors-desired",
+      "action": "finite-run-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "distribution": [
+          {
+            "bits": [
+              false,
+              false
+            ],
+            "probability": 1
+          }
+        ]
+      }
+    },
+    {
+      "path": "observations-after-01/nested-constructors-desired-finite-emit-ir-json.json",
+      "sha256": "962f087b2f20a8edb4a979300b62754323d659c6429a988281e578b621817e1c",
+      "case": "nested-constructors-desired",
+      "action": "finite-emit-ir-json",
+      "exit_code": 0,
+      "diagnostics": [],
+      "result": {
+        "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/checked-operation-v030/observations-after-01/artifacts/nested-constructors-desired.qirf"
+      }
+    },
+    {
+      "path": "observations-after-01/nested-constructors-legacy-finite-check-json.json",
+      "sha256": "f691be31ee913ccf272b289a51327dd6b3bf02fd586fac7a8707cce5bbd5a4ec",
+      "case": "nested-constructors-legacy",
+      "action": "finite-check-json",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "parse error: `bind_op` was renamed to `checked_op` in Qleisli 0.3.0; use `checked_op(implementation, Meaning)` to request exact meaning checking.",
+          "primary": {
+            "path": "main.qli",
+            "start": 725,
+            "end": 732,
+            "line": 16,
+            "column": 49
+          },
+          "related": []
+        }
+      ],
+      "result": null
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "observations-after-01/artifacts/nested-constructors-desired.qirf",
+      "sha256": "2863b4dfcb494a4d2202b4eb781d8072b6aabddc48ce763a217b7040cdeb2c34",
+      "bytes": 10133,
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": 5,
+      "evidence": 2,
+      "sources": 5,
+      "ordered_ports_equal": true,
+      "source_identity_limit": "Source-bearing whole QIRF byte equality is not required; no original identities are rewritten."
+    },
+    {
+      "path": "observations-after-01/artifacts/providers-reference-control-desired.qirf",
+      "sha256": "b96a4d341b7d1ad25b1560af40bbf5d134527940c3ebd9eb7f47c32dea466cce",
+      "bytes": 10814,
+      "format": "qleisli.finite-ir",
+      "version": 2,
+      "profile": "finite-meaning-v1",
+      "programs": 5,
+      "evidence": 2,
+      "sources": 5,
+      "ordered_ports_equal": true,
+      "source_identity_limit": "Source-bearing whole QIRF byte equality is not required; no original identities are rewritten."
+    }
+  ],
+  "known_limits": [
+    "Both root_interface values remain null; actual ordered ports/signatures are compared without inventing a source tuple-tree annotation.",
+    "Probability comparisons use preserved literal exact expectations, not an independently executed numerical oracle or all-input source theorem.",
+    "Public selected Bind projection remains unsupported; finite check success is not selected concrete eligibility.",
+    "Original observer usage and metadata failures remain unchanged, including the first README punctuation overgeneralization corrected separately.",
+    "No source repair, compiler/native rebuild, compiled-HEAD or child-start attestation, fresh Lean replay, Guardian act, guarantee admission, Issue completion or release approval."
+  ]
+}

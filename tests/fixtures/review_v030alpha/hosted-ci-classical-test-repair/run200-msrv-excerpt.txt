@@ -1,0 +1,46 @@
+2026-10-06T07:53:50.1788985Z     Checking qleisli v0.3.0-alpha (/home/runner/work/Qleisli/Qleisli)
+2026-10-06T07:53:55.2646909Z error: the borrowed expression implements the required traits
+2026-10-06T07:53:55.2649562Z    --> src/frontend/check/body/special.rs:522:18
+2026-10-06T07:53:55.2650110Z     |
+2026-10-06T07:53:55.2650494Z 522 |         .map_err(&predicate_mismatch)?;
+2026-10-06T07:53:55.2651176Z     |                  ^^^^^^^^^^^^^^^^^^^ help: change this to: `predicate_mismatch`
+2026-10-06T07:53:55.2651803Z     |
+2026-10-06T07:53:55.2652762Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#needless_borrows_for_generic_args
+2026-10-06T07:53:55.2654229Z     = note: `-D clippy::needless-borrows-for-generic-args` implied by `-D warnings`
+2026-10-06T07:53:55.2656021Z 
+2026-10-06T07:53:55.2656321Z error: the borrowed expression implements the required traits
+2026-10-06T07:53:55.2657023Z    --> src/frontend/check/body/special.rs:530:18
+2026-10-06T07:53:55.2657807Z     |
+2026-10-06T07:53:55.2658182Z 530 |         .map_err(&predicate_mismatch)?;
+2026-10-06T07:53:55.2658818Z     |                  ^^^^^^^^^^^^^^^^^^^ help: change this to: `predicate_mismatch`
+2026-10-06T07:53:55.2659422Z     |
+2026-10-06T07:53:55.2660362Z     = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#needless_borrows_for_generic_args
+2026-10-06T07:53:55.2661660Z 
+2026-10-06T07:53:55.3247434Z error: the following explicit lifetimes could be elided: 'a
+2026-10-06T07:53:55.3248508Z   --> src/frontend/check/declarations.rs:39:23
+2026-10-06T07:53:55.3249217Z    |
+2026-10-06T07:53:55.3249830Z 39 | pub(super) fn prepare<'a>(p: &mut Program<'a>) -> Result<()> {
+2026-10-06T07:53:55.3250537Z    |                       ^^                  ^^
+2026-10-06T07:53:55.3251014Z    |
+2026-10-06T07:53:55.3251841Z    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#needless_lifetimes
+2026-10-06T07:53:55.3253007Z    = note: `-D clippy::needless-lifetimes` implied by `-D warnings`
+2026-10-06T07:53:55.3256916Z 
+2026-10-06T07:53:56.7867517Z error: the following explicit lifetimes could be elided: 'ast
+2026-10-06T07:53:56.7868605Z    --> src/frontend/resolve/locals.rs:818:14
+2026-10-06T07:53:56.7869727Z     |
+2026-10-06T07:53:56.7870115Z 818 |     fn index<'ast>(
+2026-10-06T07:53:56.7870539Z     |              ^^^^
+2026-10-06T07:53:56.7870957Z 819 |         definition: DefId,
+2026-10-06T07:53:56.7871419Z 820 |         declaration: &'ast Decl,
+2026-10-06T07:53:56.7871885Z     |                       ^^^^
+2026-10-06T07:53:56.7879046Z 
+2026-10-06T07:53:57.7886904Z error: could not compile `qleisli` (lib) due to 3 previous errors
+2026-10-06T07:53:57.7888117Z warning: build failed, waiting for other jobs to finish...
+2026-10-06T07:53:58.8314279Z error: could not compile `qleisli` (lib test) due to 4 previous errors
+2026-10-06T07:53:58.8380810Z ##[error]Process completed with exit code 101.
+2026-10-06T07:53:58.8522233Z Post job cleanup.
+2026-10-06T07:53:58.9447993Z [command]/usr/bin/git version
+2026-10-06T07:53:58.9477797Z git version 2.55.0
+2026-10-06T07:53:58.9521794Z Temporarily overriding HOME='/home/runner/work/_temp/eed0e395-1062-4d1e-84ea-d52c6b6a4c7b' before making global git config changes
+2026-10-06T07:53:58.9523249Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-06T07:53:58.9529124Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/Qleisli/Qleisli

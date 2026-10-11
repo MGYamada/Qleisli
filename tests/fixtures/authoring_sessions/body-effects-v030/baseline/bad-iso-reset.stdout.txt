@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"effect","severity":"error","message":"body effect `Observe` exceeds declared `Iso` effect of `f`","primary":{"path":"main.qli","start":56,"end":64,"line":1,"column":57},"related":[]}],"result":null}

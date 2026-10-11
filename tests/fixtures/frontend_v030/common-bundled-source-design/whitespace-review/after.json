@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "git",
+    "diff",
+    "--cached",
+    "--check"
+  ],
+  "exit_code": 0,
+  "observed_at_utc": "2026-10-05T16:29:27.818703+00:00",
+  "repair": "Two exact raw libtest stdout paths are -text -whitespace. No production source or transcript bytes were changed.",
+  "scope": "Actual full staged snapshot after attributes; newly written empty logs/record are included in the subsequent final staging."
+}

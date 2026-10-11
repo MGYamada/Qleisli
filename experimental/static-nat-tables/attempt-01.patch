@@ -1,0 +1,854 @@
+diff --git a/src/frontend/ast.rs b/src/frontend/ast.rs
+index 8f5ec498..6d69688c 100644
+--- a/src/frontend/ast.rs
++++ b/src/frontend/ast.rs
+@@ -88,6 +88,8 @@ pub enum TypeKind {
+     Unit,
+     Bit,
+     Bits(Natural),
++    /// Static helper result only; never an ordinary or quantum basis type.
++    NatArray(Natural),
+     Named(Ident),
+     Q(Box<Type>),
+     Tuple(Vec<Type>),
+@@ -301,7 +303,7 @@ pub enum BasisExprKind {
+     And(Box<BasisExpr>, Box<BasisExpr>),
+ }
+ 
+-/// Symbolic natural syntax, with a bounded tree depth; not a checked size.
++/// Static Nat syntax (scalar or finite array), not a checked category or size.
+ #[derive(Clone, Debug, PartialEq, Eq)]
+ pub struct Natural {
+     pub kind: NatKind,
+@@ -310,6 +312,17 @@ pub struct Natural {
+ }
+ #[derive(Clone, Debug, PartialEq, Eq)]
+ pub enum NatKind {
++    Array(Vec<Natural>),
++    Generate {
++        index: Ident,
++        start: Box<Natural>,
++        end: Box<Natural>,
++        value: Box<Natural>,
++    },
++    Index {
++        table: Ident,
++        index: Box<Natural>,
++    },
+     Call {
+         callee: Ident,
+         arguments: Vec<Natural>,
+diff --git a/src/frontend/check.rs b/src/frontend/check.rs
+index 13f55e99..83a1f364 100644
+--- a/src/frontend/check.rs
++++ b/src/frontend/check.rs
+@@ -9,6 +9,7 @@ mod declarations;
+ mod normalize;
+ pub(super) mod primitive;
+ mod static_helpers;
++mod static_tables;
+ 
+ use super::ast::{self, FnKind, Span};
+ use super::effects::{BodyEffects, FunctionEffect};
+@@ -26,9 +27,14 @@ pub(super) type StaticHelpers = Rc<BTreeMap<DefId, Arc<StaticHelper>>>;
+ #[derive(Debug)]
+ pub(super) struct StaticHelper {
+     pub parameters: Vec<BinderKey>,
+-    pub result: Linear,
++    pub result: StaticValue,
+     pub requirements: Vec<(Linear, ast::Compare, Linear)>,
+ }
++#[derive(Debug)]
++pub(super) enum StaticValue {
++    Natural(Linear),
++    Array(Arc<static_tables::Table>),
++}
+ pub(super) type Result<T> = std::result::Result<T, SourceError>;
+ 
+ fn runtime_quantum_group(ty: &Ty, span: Span, budget: &Budget) -> Result<bool> {
+@@ -376,6 +382,7 @@ struct Binding {
+ struct Scope {
+     helpers: StaticHelpers,
+     naturals: BTreeMap<BinderKey, Linear>,
++    tables: BTreeMap<BinderKey, Arc<static_tables::Table>>,
+     bases: BTreeMap<BinderKey, Ty>,
+     operations: BTreeMap<BinderKey, Operation>,
+     context: Context,
+@@ -417,9 +424,15 @@ impl Scope {
+             );
+         }
+         budget.charge(span, 1)?;
++        budget.charge(span, self.tables.len())?;
++        let mut tables = BTreeMap::new();
++        for (key, value) in &self.tables {
++            tables.insert(budget.key(span, key)?, Arc::clone(value));
++        }
+         Ok(Self {
+             helpers: Rc::clone(&self.helpers),
+             naturals,
++            tables,
+             bases,
+             operations,
+             context: budget.copy_context(span, &self.context)?,
+diff --git a/src/frontend/check/body.rs b/src/frontend/check/body.rs
+index b2b7d6cf..a3bf3d11 100644
+--- a/src/frontend/check/body.rs
++++ b/src/frontend/check/body.rs
+@@ -390,11 +390,13 @@ impl Checker<'_, '_> {
+                             "static binding cannot shadow a visible lexical binding",
+                         ));
+                     }
+-                    let value =
+-                        normalize::natural(value, self.index(), scope, None, &self.program.budget)?;
++                    let value = static_tables::value(value, self.index(), scope, &self.program.budget)?;
+                     let key = self.program.budget.key(name.span, &info.key)?;
+                     self.program.budget.charge(name.span, key.name.len() + 2)?;
+-                    scope.naturals.insert(key.clone(), value);
++                    match value {
++                        StaticValue::Natural(value) => { scope.naturals.insert(key.clone(), value); }
++                        StaticValue::Array(value) => { scope.tables.insert(key.clone(), value); }
++                    }
+                     local_naturals.push(key);
+                 }
+                 StmtKind::Let { pattern, value } => {
+@@ -414,6 +416,7 @@ impl Checker<'_, '_> {
+         let result = self.expr(&block.result, scope, expected)?;
+         for key in local_naturals {
+             scope.naturals.remove(&key);
++            scope.tables.remove(&key);
+         }
+         for (key, binding) in &scope.values {
+             if !outer.contains(&binding.identity) && binding.ty.linear() {
+diff --git a/src/frontend/check/body/operations.rs b/src/frontend/check/body/operations.rs
+index 4caa8fe6..434049fd 100644
+--- a/src/frontend/check/body/operations.rs
++++ b/src/frontend/check/body/operations.rs
+@@ -184,6 +184,10 @@ impl Checker<'_, '_> {
+                     self.program.budget.sized_charge(span, cells)
+                 })?)
+             }
++            StaticOpKind::Specialize { name, arguments } if arguments.len() == 1 => {
++                let position = self.static_natural(&arguments[0], scope)?;
++                static_tables::lookup(name, &position, arguments[0].span, self.index(), scope, &self.program.budget)
++            }
+             _ => Err(SourceError::new(
+                 "static",
+                 arg.span,
+@@ -234,6 +238,7 @@ impl Checker<'_, '_> {
+         let mut target = Scope {
+             helpers: Rc::clone(&scope.helpers),
+             naturals: BTreeMap::new(),
++            tables: BTreeMap::new(),
+             bases: BTreeMap::new(),
+             operations: BTreeMap::new(),
+             context: self.program.budget.copy_context(span, &scope.context)?,
+diff --git a/src/frontend/check/declarations.rs b/src/frontend/check/declarations.rs
+index 610f6d74..9decac43 100644
+--- a/src/frontend/check/declarations.rs
++++ b/src/frontend/check/declarations.rs
+@@ -166,6 +166,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
+     let mut scope = Scope {
+         helpers: Rc::clone(&p.helpers),
+         naturals,
++        tables: BTreeMap::new(),
+         bases: BTreeMap::new(),
+         operations: BTreeMap::new(),
+         context,
+@@ -342,6 +343,7 @@ pub(super) fn scope(
+     let mut scope = Scope {
+         helpers: Rc::clone(helpers),
+         naturals: BTreeMap::new(),
++            tables: BTreeMap::new(),
+         bases: BTreeMap::new(),
+         operations: BTreeMap::new(),
+         context: budget.copy_context(span, &interface.premises)?,
+diff --git a/src/frontend/check/normalize.rs b/src/frontend/check/normalize.rs
+index fb530e65..f3228abb 100644
+--- a/src/frontend/check/normalize.rs
++++ b/src/frontend/check/normalize.rs
+@@ -21,7 +21,7 @@ fn arithmetic_context(error: super::super::sized::Error, span: Span, context: &s
+     error
+ }
+ 
+-fn local<'a>(index: &'a Index<'_>, name: &ast::Ident) -> Option<&'a BinderKey> {
++pub(super) fn local<'a>(index: &'a Index<'_>, name: &ast::Ident) -> Option<&'a BinderKey> {
+     match index.table.usage(index.usage(name)).target {
+         ResolvedUse::Local(id) => Some(index.table.key(id)),
+         _ => None,
+@@ -54,53 +54,18 @@ fn natural_inner(
+     }
+     let mut charge = |span, cells| budget.sized_charge(span, cells);
+     let result = match &n.kind {
+-        NatKind::Call { callee, arguments } => {
+-            let id = static_helpers::target(index, callee)?;
+-            let helper = scope.helpers.get(&id).ok_or_else(|| {
+-                SourceError::new(
+-                    "static",
+-                    callee.span,
+-                    "natural expressions require a checked static Nat helper",
+-                )
+-            })?;
+-            if arguments.len() != helper.parameters.len() {
+-                return Err(SourceError::new(
+-                    "static-arity",
+-                    n.span,
+-                    "static Nat helper argument arity mismatch",
+-                ));
+-            }
+-            let mut values = BTreeMap::new();
+-            for (key, argument) in helper.parameters.iter().zip(arguments) {
+-                let value = natural_inner(argument, index, scope, prefix, budget, depth + 1)?;
+-                values.insert(budget.key(argument.span, key)?, value);
+-            }
+-            for (left, comparison, right) in &helper.requirements {
+-                let a = left.substitute_budgeted(&values, n.span, &mut charge)?;
+-                let b = right.substitute_budgeted(&values, n.span, &mut charge)?;
+-                let counterexample = scope.context.compare_budgeted(
+-                    a,
+-                    *comparison,
+-                    b,
+-                    false,
+-                    n.span,
+-                    &mut charge,
+-                )?;
+-                if counterexample.feasible_budgeted(
+-                    n.span,
+-                    "while checking static helper premise",
+-                    &mut charge,
+-                )? {
+-                    return Err(SourceError::new(
+-                        "size",
+-                        n.span,
+-                        "static helper premise is not implied by caller guards",
+-                    ));
+-                }
++        NatKind::Array(_) | NatKind::Generate { .. } => {
++            return Err(SourceError::new("static", n.span, "a Nat expression cannot contain an array value"));
++        }
++        NatKind::Index { table, index: position } => {
++            let value = natural_inner(position, index, scope, prefix, budget, depth + 1)?;
++            static_tables::lookup(table, &value, position.span, index, scope, budget)?
++        }
++        NatKind::Call { .. } => {
++            match helper(n, index, scope, prefix, budget, depth)? {
++                StaticValue::Natural(value) => value,
++                StaticValue::Array(_) => return Err(SourceError::new("static", n.span, "a Nat expression cannot use a static array without an index")),
+             }
+-            helper
+-                .result
+-                .substitute_budgeted(&values, n.span, &mut charge)?
+         }
+         NatKind::Number(value) => {
+             if *value < 0 {
+@@ -180,6 +145,59 @@ fn natural_inner(
+     };
+     Ok(result)
+ }
++pub(super) fn helper(
++    n: &Natural,
++    index: &Index<'_>, scope: &Scope, prefix: Option<&BTreeSet<BinderKey>>,
++    budget: &Budget, depth: usize,
++) -> Result<StaticValue> {
++    let NatKind::Call { callee, arguments } = &n.kind else { unreachable!("original helper call") };
++    let mut charge = |span, cells| budget.sized_charge(span, cells);
++            let id = static_helpers::target(index, callee)?;
++            let helper = scope.helpers.get(&id).ok_or_else(|| {
++                SourceError::new(
++                    "static",
++                    callee.span,
++                    "natural expressions require a checked static Nat helper",
++                )
++            })?;
++            if arguments.len() != helper.parameters.len() {
++                return Err(SourceError::new(
++                    "static-arity",
++                    n.span,
++                    "static Nat helper argument arity mismatch",
++                ));
++            }
++            let mut values = BTreeMap::new();
++            for (key, argument) in helper.parameters.iter().zip(arguments) {
++                let value = natural_inner(argument, index, scope, prefix, budget, depth + 1)?;
++                values.insert(budget.key(argument.span, key)?, value);
++            }
++            for (left, comparison, right) in &helper.requirements {
++                let a = left.substitute_budgeted(&values, n.span, &mut charge)?;
++                let b = right.substitute_budgeted(&values, n.span, &mut charge)?;
++                let counterexample = scope.context.compare_budgeted(
++                    a,
++                    *comparison,
++                    b,
++                    false,
++                    n.span,
++                    &mut charge,
++                )?;
++                if counterexample.feasible_budgeted(
++                    n.span,
++                    "while checking static helper premise",
++                    &mut charge,
++                )? {
++                    return Err(SourceError::new(
++                        "size",
++                        n.span,
++                        "static helper premise is not implied by caller guards",
++                    ));
++                }
++            }
++            static_tables::substitute(&helper.result, &values, n.span, budget)
++}
++
+ pub(super) fn predicate(
+     p: &Predicate,
+     index: &Index<'_>,
+@@ -288,6 +306,9 @@ pub(super) fn ty(
+         fn quantum_basis_error(&mut self, span: Span) -> SourceError {
+             SourceError::new("type", span, "a Basis type cannot contain a quantum owner")
+         }
++        fn static_array_error(&mut self, span: Span) -> SourceError {
++            SourceError::new("static", span, "a static Nat array is not an ordinary or quantum Basis type")
++        }
+         fn checked_node(&mut self, source: &ast::Type, _stage: Stage, result: &Ty) -> Result<()> {
+             self.budget.ty(source.span, result).map(|_| ())
+         }
+diff --git a/src/frontend/check/static_helpers.rs b/src/frontend/check/static_helpers.rs
+index 345009cd..c11ddb58 100644
+--- a/src/frontend/check/static_helpers.rs
++++ b/src/frontend/check/static_helpers.rs
+@@ -34,6 +34,7 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
+         };
+         if !declaration.params.is_empty()
+             || !matches!(&declaration.return_type.kind, TypeKind::Named(name) if name.text == "Nat")
++                && !matches!(&declaration.return_type.kind, TypeKind::NatArray(_))
+             || declaration
+                 .static_params
+                 .iter()
+@@ -48,6 +49,7 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
+         p.budget
+             .charge(declaration.span, 1 + declaration.requires.len())?;
+         let mut pending = vec![body];
++        if let TypeKind::NatArray(length) = &declaration.return_type.kind { pending.push(length); }
+         for requirement in &declaration.requires {
+             if let Requirement::Predicate(predicate) = requirement {
+                 pending.extend([&predicate.left, &predicate.right]);
+@@ -57,6 +59,15 @@ pub(super) fn prepare(p: &mut Program<'_>) -> Result<()> {
+         while let Some(natural) = pending.pop() {
+             p.budget.charge(natural.span, 1)?;
+             match &natural.kind {
++                NatKind::Array(values) => {
++                    p.budget.charge(natural.span, values.len())?;
++                    pending.extend(values.iter().rev());
++                }
++                NatKind::Generate { start, end, value, .. } => {
++                    p.budget.charge(natural.span, 3)?;
++                    pending.extend([start.as_ref(), end.as_ref(), value.as_ref()]);
++                }
++                NatKind::Index { index, .. } => pending.push(index),
+                 NatKind::Call { callee, arguments } => {
+                     let dependency =
+                         target(&p.indices[&id], callee).map_err(|e| e.in_module(p.module(id)))?;
+@@ -127,6 +138,7 @@ fn check(p: &Program<'_>, id: DefId) -> Result<StaticHelper> {
+     let mut scope = Scope {
+         helpers: Rc::clone(&p.helpers),
+         naturals,
++        tables: BTreeMap::new(),
+         context,
+         bases: BTreeMap::new(),
+         operations: BTreeMap::new(),
+@@ -159,7 +171,19 @@ fn check(p: &Program<'_>, id: DefId) -> Result<StaticHelper> {
+     let FnBody::Natural(body) = &declaration.body else {
+         unreachable!("checked helper shape")
+     };
+-    let result = normalize::natural(body, index, &scope, None, budget)?;
++    let result = static_tables::value(body, index, &scope, budget)?;
++    match (&declaration.return_type.kind, &result) {
++        (TypeKind::Named(name), StaticValue::Natural(_)) if name.text == "Nat" => {},
++        (TypeKind::NatArray(length), StaticValue::Array(table)) => {
++            let declared = normalize::natural(length, index, &scope, None, budget)?;
++            let mut charge = |s, c| budget.sized_charge(s, c);
++            if !scope.context.proves_le_budgeted(&declared, &table.length, length.span, "static array return length", &mut charge)?
++                || !scope.context.proves_le_budgeted(&table.length, &declared, length.span, "static array return length", &mut charge)? {
++                return Err(SourceError::new("size", length.span, "static helper array length does not match its declared result"));
++            }
++        }
++        _ => return Err(SourceError::new("static", body.span, "static helper result category differs from its declared Nat or Nat array result")),
++    }
+     Ok(StaticHelper {
+         parameters,
+         result,
+diff --git a/src/frontend/parser.rs b/src/frontend/parser.rs
+index 7459e020..76df4ab3 100644
+--- a/src/frontend/parser.rs
++++ b/src/frontend/parser.rs
+@@ -364,13 +364,18 @@ impl Parser {
+         self.expect(&TokenKind::RParen)?;
+         self.expect(&TokenKind::Arrow)?;
+         let return_type = if kind == FnKind::Static {
++            let open = self.consume(&TokenKind::LBracket);
+             let name = self.ident()?;
+             if name.text != "Nat" {
+-                return Err(self.error("a bounded static helper must return Nat"));
++                return Err(self.error("a bounded static helper must return Nat or [Nat; length]"));
+             }
+-            Type {
+-                span: name.span,
+-                kind: TypeKind::Named(name),
++            if let Some(open) = open {
++                self.expect(&TokenKind::Semicolon)?;
++                let length = self.natural()?;
++                let close = self.expect(&TokenKind::RBracket)?;
++                Type { span: open.span.cover(close.span), kind: TypeKind::NatArray(length) }
++            } else {
++                Type { span: name.span, kind: TypeKind::Named(name) }
+             }
+         } else if kind == FnKind::Classical {
+             self.basis_type()?
+@@ -473,7 +478,9 @@ impl Parser {
+                 TokenKind::Zero | TokenKind::One | TokenKind::Natural(_) | TokenKind::LParen
+             )
+         {
+-            let natural = self.natural()?;
++            // Bare f[n] in an operation argument remains a specialization.
++            // A Nat formal may later resolve that same shape as table lookup.
++            let natural = self.natural_with_index(false)?;
+             let kind = if self.consume(&TokenKind::LBracket).is_some() {
+                 let NatKind::Name(text) = natural.kind else {
+                     return Err(self.error("only a function can have static arguments"));
+@@ -589,6 +596,9 @@ impl Parser {
+ 
+     fn natural_node(kind: NatKind, span: Span) -> Result<Natural, ParseError> {
+         let depth = match &kind {
++            NatKind::Array(values) => 1 + values.iter().map(|n| n.depth).max().unwrap_or(0),
++            NatKind::Generate { start, end, value, .. } => 1 + start.depth.max(end.depth).max(value.depth),
++            NatKind::Index { index, .. } => 1 + index.depth,
+             NatKind::Call { arguments, .. } => {
+                 1 + arguments.iter().map(|n| n.depth).max().unwrap_or(0)
+             }
+@@ -607,10 +617,14 @@ impl Parser {
+     }
+ 
+     fn natural(&mut self) -> Result<Natural, ParseError> {
+-        let mut left = self.natural_factor()?;
++        self.natural_with_index(true)
++    }
++
++    fn natural_with_index(&mut self, indices: bool) -> Result<Natural, ParseError> {
++        let mut left = self.natural_factor(indices)?;
+         while self.at(&TokenKind::Plus) || self.at(&TokenKind::Minus) {
+             let sub = self.bump().kind == TokenKind::Minus;
+-            let right = self.natural_factor()?;
++            let right = self.natural_factor(indices)?;
+             let span = left.span.cover(right.span);
+             left = Self::natural_node(
+                 if sub {
+@@ -624,10 +638,10 @@ impl Parser {
+         Ok(left)
+     }
+ 
+-    fn natural_factor(&mut self) -> Result<Natural, ParseError> {
+-        let mut left = self.natural_atom()?;
++    fn natural_factor(&mut self, indices: bool) -> Result<Natural, ParseError> {
++        let mut left = self.natural_atom_with_index(indices)?;
+         while self.consume(&TokenKind::Star).is_some() {
+-            let right = self.natural_atom()?;
++            let right = self.natural_atom_with_index(indices)?;
+             let span = left.span.cover(right.span);
+             left = Self::natural_node(NatKind::Mul(Box::new(left), Box::new(right)), span)?;
+         }
+@@ -635,9 +649,35 @@ impl Parser {
+     }
+ 
+     fn natural_atom(&mut self) -> Result<Natural, ParseError> {
++        self.natural_atom_with_index(true)
++    }
++
++    fn natural_atom_with_index(&mut self, indices: bool) -> Result<Natural, ParseError> {
+         self.nested(|parser| {
+             let token = parser.current().clone();
+-            if parser.consume(&TokenKind::LParen).is_some() {
++            if parser.consume(&TokenKind::LBracket).is_some() {
++                let mut values = Vec::new();
++                while !parser.at(&TokenKind::RBracket) {
++                    values.push(parser.natural()?);
++                    if parser.consume(&TokenKind::Comma).is_none() { break; }
++                }
++                let close = parser.expect(&TokenKind::RBracket)?;
++                Self::natural_node(NatKind::Array(values), token.span.cover(close.span))
++            } else if parser.word("for") {
++                parser.bump();
++                parser.expect(&TokenKind::Static)?;
++                let index = parser.natural_ident()?;
++                parser.expect_word("in")?;
++                let start = Box::new(parser.natural()?);
++                parser.expect(&TokenKind::DotDot)?;
++                let end = Box::new(parser.natural()?);
++                parser.expect(&TokenKind::LBrace)?;
++                parser.expect_word("yield")?;
++                let value = Box::new(parser.natural()?);
++                parser.expect(&TokenKind::Semicolon)?;
++                let close = parser.expect(&TokenKind::RBrace)?;
++                Self::natural_node(NatKind::Generate { index, start, end, value }, token.span.cover(close.span))
++            } else if parser.consume(&TokenKind::LParen).is_some() {
+                 let mut natural = parser.natural()?;
+                 let close = parser.expect(&TokenKind::RParen)?;
+                 natural.span = token.span.cover(close.span);
+@@ -713,6 +753,13 @@ impl Parser {
+                             token.span.cover(end),
+                         );
+                     }
++                    if indices && parser.consume(&TokenKind::LBracket).is_some() {
++                        let index = Box::new(parser.natural()?);
++                        let end = parser.expect(&TokenKind::RBracket)?;
++                        return Self::natural_node(NatKind::Index {
++                            table: Ident { text: name.clone(), span: token.span }, index
++                        }, token.span.cover(end.span));
++                    }
+                 }
+                 Self::natural_node(kind, token.span)
+             }
+diff --git a/src/frontend/resolve/locals.rs b/src/frontend/resolve/locals.rs
+index a77e1d0f..36407ac4 100644
+--- a/src/frontend/resolve/locals.rs
++++ b/src/frontend/resolve/locals.rs
+@@ -328,11 +328,14 @@ impl Task<'_> {
+                 _ => 0,
+             },
+             Self::Type(t) => match &t.kind {
+-                TypeKind::Named(_) | TypeKind::Bits(_) | TypeKind::Q(_) => 1,
++                TypeKind::Named(_) | TypeKind::Bits(_) | TypeKind::NatArray(_) | TypeKind::Q(_) => 1,
+                 TypeKind::Tuple(f) => f.len(),
+                 _ => 0,
+             },
+             Self::Natural(n) => match &n.kind {
++                NatKind::Array(values) => values.len(),
++                NatKind::Generate { .. } => 7,
++                NatKind::Index { .. } => 2,
+                 NatKind::Call { arguments, .. } => arguments.len() + 1,
+                 NatKind::Add(..) | NatKind::Sub(..) | NatKind::Mul(..) => 2,
+                 _ => 0,
+@@ -551,6 +554,8 @@ where
+         }];
+         if declaration.kind != FnKind::Static {
+             tasks.push(Task::Type(&declaration.return_type));
++        } else if let TypeKind::NatArray(length) = &declaration.return_type.kind {
++            tasks.push(Task::Natural(length));
+         }
+         let kind = if declaration.kind == FnKind::Classical {
+             BindingKind::Basis
+@@ -608,12 +613,18 @@ where
+                 },
+                 Task::Type(ty) => match &ty.kind {
+                     TypeKind::Named(name) => tasks.push(Task::Reference(name)),
+-                    TypeKind::Bits(n) => tasks.push(Task::Natural(n)),
++                    TypeKind::Bits(n) | TypeKind::NatArray(n) => tasks.push(Task::Natural(n)),
+                     TypeKind::Tuple(fields) => tasks.extend(fields.iter().rev().map(Task::Type)),
+                     TypeKind::Q(inner) => tasks.push(Task::Type(inner)),
+                     TypeKind::Unit | TypeKind::Bit => {}
+                 },
+                 Task::Natural(natural) => match &natural.kind {
++                    NatKind::Array(values) => tasks.extend(values.iter().rev().map(Task::Natural)),
++                    NatKind::Index { table, index } => tasks.extend([Task::Natural(index), Task::Reference(table)]),
++                    NatKind::Generate { index, start, end, value } => tasks.extend([
++                        Task::Leave, Task::Natural(value), Task::Bind(index, BindingKind::FoldIndex),
++                        Task::Enter, Task::Natural(end), Task::Natural(start),
++                    ]),
+                     NatKind::Call { callee, arguments } => {
+                         tasks.extend(arguments.iter().rev().map(Task::Natural));
+                         tasks.push(Task::Reference(callee));
+diff --git a/src/frontend/sized.rs b/src/frontend/sized.rs
+index 690494bc..67394535 100644
+--- a/src/frontend/sized.rs
++++ b/src/frontend/sized.rs
+@@ -467,6 +467,7 @@ impl BasisBinding {
+                 match &n.kind {
+                     NatKind::Number(n) => u32::try_from(*n).map_err(|_| bad()),
+                     NatKind::Name(_) | NatKind::Call { .. } => Err(bad()),
++                    NatKind::Array(_) | NatKind::Generate { .. } | NatKind::Index { .. } => Err(bad()),
+                     NatKind::Add(a, b) => self
+                         .resolve_size(a)?
+                         .checked_add(self.resolve_size(b)?)
+@@ -498,6 +499,9 @@ impl BasisBinding {
+                     "closed Basis binding must be an ordinary type, not a Q owner",
+                 )
+             }
++            fn static_array_error(&mut self, span: Span) -> Error {
++                Error::new("type", span, "a static Nat array is not an ordinary or quantum Basis type")
++            }
+             fn checked_node(
+                 &mut self,
+                 source: &super::ast::Type,
+diff --git a/src/frontend/sized/elaborate.rs b/src/frontend/sized/elaborate.rs
+index 3e7a2ed4..3d6dc036 100644
+--- a/src/frontend/sized/elaborate.rs
++++ b/src/frontend/sized/elaborate.rs
+@@ -534,8 +534,11 @@ fn natural(
+                 charge_retained_cells(cells, 2 + key.name.len(), n.span)?;
+                 actual.insert(key, value);
+             }
+-            let mut result = template.result.constant;
+-            for (key, coefficient) in &template.result.terms {
++            let crate::frontend::check::StaticValue::Natural(template_result) = &template.result else {
++                return Err(error("unsupported", n.span, "static Nat table concrete evaluation is not yet implemented"));
++            };
++            let mut result = template_result.constant;
++            for (key, coefficient) in &template_result.terms {
+                 charge_retained_cells(cells, 1, n.span)?;
+                 let value = actual.get(key).ok_or_else(|| {
+                     error("static", n.span, "missing original Nat helper binding")
+@@ -1981,7 +1984,7 @@ mod natural_budget_tests {
+             kind: NatKind::Helper {
+                 template: Arc::new(crate::frontend::check::StaticHelper {
+                     parameters: vec![],
+-                    result: crate::frontend::check::Linear::constant(1),
++                    result: crate::frontend::check::StaticValue::Natural(crate::frontend::check::Linear::constant(1)),
+                     requirements: vec![],
+                 }),
+                 arguments: vec![],
+diff --git a/src/frontend/sized/parser.rs b/src/frontend/sized/parser.rs
+index ab4d48de..94037e97 100644
+--- a/src/frontend/sized/parser.rs
++++ b/src/frontend/sized/parser.rs
+@@ -79,6 +79,9 @@ impl Projection<'_, '_> {
+         Ok(Natural {
+             span: natural.span,
+             kind: match &natural.kind {
++                source::NatKind::Array(_) | source::NatKind::Generate { .. } | source::NatKind::Index { .. } => {
++                    return Err(unsupported(natural.span, "static Nat table projection is not yet implemented"));
++                }
+                 source::NatKind::Call { callee, arguments } => {
+                     let ResolvedUse::Global(Target::Declaration(id)) =
+                         self.index.table.usage(self.index.usage(callee)).target
+@@ -472,6 +475,9 @@ impl crate::frontend::types::SourceTypeContext for Projection<'_, '_> {
+             "a quantum basis must be an ordinary finite type; nested Q owners are invalid",
+         )
+     }
++    fn static_array_error(&mut self, span: Span) -> Error {
++        unsupported(span, "a static Nat array is not an ordinary or quantum Basis type")
++    }
+     fn checked_node(
+         &mut self,
+         source: &source::Type,
+diff --git a/src/frontend/types.rs b/src/frontend/types.rs
+index 78da6b52..2ae1352c 100644
+--- a/src/frontend/types.rs
++++ b/src/frontend/types.rs
+@@ -47,6 +47,7 @@ pub(super) trait SourceTypeContext {
+     fn resolve_size(&mut self, size: &super::ast::Natural) -> Result<Self::Size, Self::Error>;
+     fn resolve_basis(&mut self, name: &super::ast::Ident) -> Result<Type<Self::Size>, Self::Error>;
+     fn quantum_basis_error(&mut self, span: super::ast::Span) -> Self::Error;
++    fn static_array_error(&mut self, span: super::ast::Span) -> Self::Error;
+     fn checked_node(
+         &mut self,
+         source: &super::ast::Type,
+@@ -68,6 +69,7 @@ pub(super) fn classify_source<C: SourceTypeContext>(
+         TypeKind::Unit => Type::unit(),
+         TypeKind::Bit => Type::bit(),
+         TypeKind::Bits(size) => Type::bits(context.resolve_size(size)?),
++        TypeKind::NatArray(_) => return Err(context.static_array_error(source.span)),
+         TypeKind::Named(name) => context.resolve_basis(name)?,
+         TypeKind::Q(basis) => {
+             if stage == Stage::Basis {
+diff --git a/src/frontend/check/static_tables.rs b/src/frontend/check/static_tables.rs
+new file mode 100644
+index 00000000..859bda50
+--- /dev/null
++++ b/src/frontend/check/static_tables.rs
+@@ -0,0 +1,199 @@
++//! Original-source finite Nat tables; never runtime data or semantic evidence.
++// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
++use super::super::ast::{NatKind, Natural};
++use super::super::resolve::locals::ResolvedUse;
++use super::*;
++
++#[derive(Debug)]
++pub(in crate::frontend) struct Table {
++    pub length: Linear,
++    pub elements: Elements,
++}
++#[derive(Debug)]
++pub(in crate::frontend) enum Elements {
++    Literal(Vec<Linear>),
++    Generate { index: BinderKey, start: Linear, value: Linear },
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use crate::frontend::parser::parse_module;
++
++    fn check(source: &str) -> Result<()> {
++        let syntax = parse_module(source).unwrap();
++        program_with(BTreeMap::from([("main", &syntax)]), SourceLimits::selected(),
++            |_, _, _, _, _, _| Ok(())).map(|_| ())
++    }
++
++    #[test]
++    fn original_table_definitions_check_lengths_lookup_and_generic_equalities() {
++        for source in [
++            "static fn values[static n:Nat]()->[Nat;n]{for static i in 0..n{yield i+1;}} pub fn f[static n:Nat,static k:Nat]()->Bit requires k<n {static let v=values[n]();if static v[k]==k+1{1}else{0}}",
++            "static fn values[static n:Nat]()->[Nat;2]{[n,n+1]} pub unitary fn f[static n:Nat](q:Q<Bits<n+1>>)->Q<Bits<n+1>>{static let v=values[n]();g[v[1]](q)} pub unitary fn g[static m:Nat](q:Q<Bits<m>>)->Q<Bits<m>>{q}",
++            "static fn values()->[Nat;3]{[1,2,3]} pub fn f[static i:Nat]()->Bit requires i<3 {static let v=values();if static v[i]==i+1{1}else{0}}",
++            "static fn first[static n:Nat]()->[Nat;n]{for static i in 0..n{yield i+1;}} static fn second[static n:Nat]()->[Nat;n]{first[n]()} pub fn f()->Bit{static let v=second[1]();static let k=v[0];0}",
++            "static fn empty()->[Nat;0]{for static i in 0..0{yield i+1;}} pub fn f()->Bit{static let v=empty();0}",
++            "pub fn f()->Bit{static let v=[1,2,3];static let alias=v;static let k=alias[2];0}",
++        ] { check(source).unwrap_or_else(|e| panic!("{source}: {e}")); }
++    }
++
++    #[test]
++    fn invalid_unused_empty_and_staged_original_occurrences_reject() {
++        for (source, code) in [
++            ("static fn bad()->[Nat;2]{[1]} pub fn f()->Bit{0}", "size"),
++            ("static fn empty()->[Nat;0]{[]} pub fn f()->Bit{static let v=empty();static let k=v[0];0}", "size"),
++            ("pub fn f()->Bit{static let v=[1,2];static let k=v[2];0}", "size"),
++            ("static fn values[static n:Nat]()->[Nat;n]{for static i in 0..n{yield i+1;}} pub fn f[static n:Nat,static k:Nat]()->Bit{static let v=values[n]();static let bad=v[k];0}", "size"),
++            ("static fn empty()->[Nat;0]{for static i in 0..0{yield missing;}} pub fn f()->Bit{0}", "static"),
++            ("static fn empty()->[Nat;0]{for static i in 0..0{yield 0-1;}} pub fn f()->Bit{0}", "size"),
++            ("pub fn f(b:Bit)->Bit{static let v=[b];b}", "static"),
++            ("pub unitary fn f(q:Q<Bit>)->Q<Bit>{static let v=[q];q}", "static"),
++            ("pub fn f()->Bit{static let v=[1];v}", "static"),
++            ("static fn first()->[Nat;1]{second()} static fn second()->[Nat;1]{first()} pub fn f()->Bit{0}", "cycle"),
++            ("static fn scalar()->Nat{[1]} pub fn f()->Bit{0}", "static"),
++            ("static fn table()->[Nat;1]{1} pub fn f()->Bit{0}", "static"),
++            ("pub fn f()->Bit{static let v=[[1]];0}", "static"),
++            ("pub fn f[static i:Nat]()->Bit requires i<3 {static let v=[0,1,4];static let k=v[i];0}", "unsupported"),
++        ] {
++            let e = check(source).unwrap_err();
++            assert_eq!(e.code, code, "{source}: {e}");
++        }
++    }
++
++    #[test]
++    fn index_diagnostic_names_the_actual_index_expression() {
++        let source = "pub fn f()->Bit{static let values=[1,2];static let bad=values[1+1];0}";
++        let e = check(source).unwrap_err();
++        assert_eq!(e.code, "size");
++        assert_eq!(&source[e.span.start..e.span.end], "1+1");
++    }
++}
++
++pub(super) fn value(n: &Natural, index: &Index<'_>, scope: &Scope, budget: &Budget) -> Result<StaticValue> {
++    budget.charge(n.span, 1)?;
++    let mut charge = |s, c| budget.sized_charge(s, c);
++    let table = match &n.kind {
++        NatKind::Call { .. } => return normalize::helper(n, index, scope, None, budget, 1),
++        NatKind::Name(_) => {
++            if let ResolvedUse::Local(id) = index.table.usage(index.natural_usage(n)).target {
++                if let Some(table) = scope.tables.get(index.table.key(id)) {
++                    return Ok(StaticValue::Array(Arc::clone(table)));
++                }
++            }
++            return normalize::natural(n, index, scope, None, budget).map(StaticValue::Natural);
++        }
++        NatKind::Array(values) => {
++            budget.charge(n.span, values.len())?;
++            let mut elements = Vec::with_capacity(values.len());
++            for element in values {
++                elements.push(normalize::natural(element, index, scope, None, budget)?);
++            }
++            Table { length: Linear::constant_budgeted(values.len() as i128, n.span, &mut charge)?, elements: Elements::Literal(elements) }
++        }
++        NatKind::Generate { index: binder, start, end, value } => {
++            let info = index.table.binder(index.binder(binder));
++            if info.shadowed.is_some() {
++                return Err(SourceError::new("shadow", binder.span, "static generator index cannot shadow a visible binding"));
++            }
++            let start = normalize::natural(start, index, scope, None, budget)?;
++            let end = normalize::natural(end, index, scope, None, budget)?;
++            if !scope.context.proves_le_budgeted(&start, &end, n.span, "static generator requires start <= end", &mut charge)? {
++                return Err(SourceError::new("size", n.span, "static generator requires start <= end"));
++            }
++            let length = end.sub_budgeted(&start, n.span, &mut charge)?;
++            let key = budget.key(binder.span, &info.key)?;
++            let i = Linear::variable_budgeted(&key, binder.span, &mut charge)?;
++            let mut inner = scope.basis_scope(budget, n.span)?;
++            // Always check the original body. A provably empty range cannot
++            // supply contradictory bounds as a vacuous arithmetic discharge.
++            let zero = Linear::constant_budgeted(0, n.span, &mut charge)?;
++            let mut bounds = vec![zero.sub_budgeted(&i, n.span, &mut charge)?];
++            if !scope.context.proves_le_budgeted(&end, &start, n.span, "checking empty generator range", &mut charge)? {
++                let one = Linear::constant_budgeted(1, n.span, &mut charge)?;
++                budget.charge(n.span, 2)?;
++                bounds.push(start.sub_budgeted(&i, n.span, &mut charge)?);
++                bounds.push(i.add_budgeted(&one, n.span, &mut charge)?.sub_budgeted(&end, n.span, &mut charge)?);
++            }
++            inner.context = inner.context.push_budgeted(&bounds, n.span, &mut charge)?;
++            inner.naturals.insert(budget.key(binder.span, &key)?, i);
++            let result = normalize::natural(value, index, &inner, None, budget)?;
++            Table { length, elements: Elements::Generate { index: key, start, value: result } }
++        }
++        _ => return normalize::natural(n, index, scope, None, budget).map(StaticValue::Natural),
++    };
++    budget.charge(n.span, 1)?;
++    Ok(StaticValue::Array(Arc::new(table)))
++}
++
++pub(super) fn substitute(value: &StaticValue, actual: &BTreeMap<BinderKey, Linear>, span: Span, budget: &Budget) -> Result<StaticValue> {
++    let mut charge = |s, c| budget.sized_charge(s, c);
++    let sub = |linear: &Linear, charge: &mut _| linear.substitute_budgeted(actual, span, charge);
++    Ok(match value {
++        StaticValue::Natural(n) => StaticValue::Natural(sub(n, &mut charge)?),
++        StaticValue::Array(table) => {
++            let length = sub(&table.length, &mut charge)?;
++            let elements = match &table.elements {
++                Elements::Literal(values) => {
++                    budget.charge(span, values.len())?;
++                    let mut result = Vec::with_capacity(values.len());
++                    for v in values { result.push(sub(v, &mut charge)?); }
++                    Elements::Literal(result)
++                }
++                Elements::Generate { index, start, value } => Elements::Generate {
++                    index: budget.key(span, index)?, start: sub(start, &mut charge)?, value: sub(value, &mut charge)?,
++                },
++            };
++            budget.charge(span, 1)?;
++            StaticValue::Array(Arc::new(Table { length, elements }))
++        }
++    })
++}
++
++pub(super) fn lookup(name: &ast::Ident, position: &Linear, span: Span, index: &Index<'_>, scope: &Scope, budget: &Budget) -> Result<Linear> {
++    let table = normalize::local(index, name).and_then(|key| scope.tables.get(key)).ok_or_else(|| {
++        SourceError::new("static", name.span, "static indexing requires a lexical Nat array binding")
++    })?;
++    let mut charge = |s, c| budget.sized_charge(s, c);
++    let zero = Linear::constant_budgeted(0, span, &mut charge)?;
++    let successor = position.add_budgeted(&Linear::constant_budgeted(1, span, &mut charge)?, span, &mut charge)?;
++    if !scope.context.proves_le_budgeted(&zero, position, span, "static index must be nonnegative", &mut charge)?
++        || !scope.context.proves_le_budgeted(&successor, &table.length, span, "static index must be below the array length", &mut charge)? {
++        return Err(SourceError::new("size", span, "static Nat array index is not proved in range"));
++    }
++    match &table.elements {
++        Elements::Generate { index, start, value } => {
++            let actual = position.add_budgeted(start, span, &mut charge)?;
++            budget.charge(span, 1)?;
++            value.substitute_budgeted(&BTreeMap::from([(budget.key(span, index)?, actual)]), span, &mut charge).map_err(Into::into)
++        }
++        Elements::Literal(values) => {
++            for (ordinal, value) in values.iter().enumerate() {
++                budget.charge(span, 1)?;
++                let ordinal = Linear::constant_budgeted(ordinal as i128, span, &mut charge)?;
++                if scope.context.proves_le_budgeted(position, &ordinal, span, "resolving literal array index", &mut charge)?
++                    && scope.context.proves_le_budgeted(&ordinal, position, span, "resolving literal array index", &mut charge)? {
++                    return value.copy_budgeted(span, &mut charge).map_err(Into::into);
++                }
++            }
++            // Symbolic literal lookup remains affine only when the entire
++            // literal table has the same exact affine law in its index.
++            let Some((first, rest)) = values.split_first() else {
++                return Err(SourceError::new("size", span, "an empty Nat array has no element"));
++            };
++            let delta = if let Some(second) = rest.first() { second.sub_budgeted(first, span, &mut charge)? } else { zero };
++            if !delta.terms.is_empty() {
++                return Err(SourceError::new("unsupported", span, "symbolic literal lookup is not an affine Nat expression"));
++            }
++            for (ordinal, element) in values.iter().enumerate() {
++                let term = delta.scale_budgeted(ordinal as i128, span, &mut charge)?;
++                let expected = first.add_budgeted(&term, span, &mut charge)?;
++                if !scope.context.proves_le_budgeted(&expected, element, span, "checking literal lookup law", &mut charge)?
++                    || !scope.context.proves_le_budgeted(element, &expected, span, "checking literal lookup law", &mut charge)? {
++                    return Err(SourceError::new("unsupported", span, "symbolic literal lookup is not an affine Nat expression"));
++                }
++            }
++            first.add_budgeted(&position.scale_budgeted(delta.constant, span, &mut charge)?, span, &mut charge).map_err(Into::into)
++        }
++    }
++}

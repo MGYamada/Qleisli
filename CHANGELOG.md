@@ -6,6 +6,969 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add a Mathlib-free exact instrument-coefficient comparator for the
+  adopted observing `apply_contract` design. Stream complete outcome-indexed
+  Choi coefficients under existing limits; prove its complex/reference meaning
+  and ordered projection. Preserve existing request variants and pure Meaning
+  phase rules; source integration remains unfinished.
+  Add the paired original-QIRF gate with complete requested signatures,
+  principal Observe checks, retained zero-width owners and fresh graph evidence.
+  Prove its original instrument/reference comparison and complete Kraus sum;
+  connect strict native `kind = "instrument"` byte acceptance to both original
+  meanings and exact outcome maps on arbitrary finite external references.
+  Add a private paired Rust handle retaining both original artifacts, complete
+  signature and source identity. Ordinary concrete compilation executes only
+  the implementation and freshly checks its emitted call interval against the
+  reference; retain private pair/call sidecars without changing whole-root
+  request disclosure. Explicit specialization and source replay remain open.
+
+- Add the adopted bounded `meaning M: A = reference(f)` form for closed
+  principal-Unitary endomorphisms. Mix reference and monomial targets through
+  compose/tensor, retaining original artifacts, dependencies and source-bound
+  native receipts in both concrete adapters. Preserve exact phase, Unit owners
+  and axis order; keep the public FiniteMeaning accessor monomial-only.
+
+- Repair native comparison generators after the isometry vocabulary migration:
+  map preserved wire effect tags explicitly to Rust variants and check the
+  decoder's exact constructor set, including quantum Unit packing. Resolve
+  compiler-version-specific Clippy findings without changing checking behavior.
+
+- Connect existing `apply_contract` calls to selected Raw and hierarchy
+  lowering, retaining original function pairs, source dependencies and fresh
+  native receipts. Check unused and zero-count obligations before emission;
+  replay receipt-bearing instructions and hierarchy initialization events
+  against the source.
+  Both concrete adapters now accept a declared finite Meaning specification.
+
+- Defer remaining general operation arrows and rectangular Meaning beyond all
+  of v0.3.0, with no future release target assigned. Keep existing bounded
+  support and ordinary function-return syntax. #83 remains open outside the
+  active goal; #46 retains its independent endomorphic and instrument work.
+
+- Add canonical Lean `Effect.isometry` aliases in Raw semantics, hierarchy
+  artifacts and the retained bounded QFT graph. Preserve historical `iso`
+  constructor identity, cases, reflection and versioned transport tags. Document
+  the source/Rust/Lean vocabulary and internal-name exceptions; this adds no
+  semantic acceptance, QFT implementation or constitutional guarantee.
+
+- Retire the temporary `iso fn` source prefix with a located migration error
+  directing authors to `isometry fn`. Migrate active tests and source selection
+  without rewriting historical inputs or versioned `"iso"` transport tags.
+  Keep inference, effect assertions and native acceptance unchanged.
+
+- Reverse both exact ports for direct adjoints of opaque general operation
+  parameters. Reuse the checked inverse constructor in selected lowering,
+  preserving provider/Meaning bindings and named runtime-group restrictions.
+
+- Preserve `Op<A>` / `Op<A -> A>` equivalence in the ordinary finite project
+  adapter using the common checker's exact port equality. Keep different-port
+  restrictions, original Meaning checks and native acceptance unchanged.
+
+- Join refined Raw source `ctrl` sector checks with original Meaning checks,
+  including added closed audit bodies and control-bearing providers. Recheck
+  bindings in the expanded graph and charge finite-equation replay to the caller's
+  shared budget. Retain original coverage refusals and transformed-control limits.
+
+- Bind refined Raw adjoint and controlled substeps to original exact Meaning
+  requests, including hidden called-body requests and conditional axis routing.
+  Preserve scalar phase, existing finite bounds and fresh native decisions;
+  rectangular Meanings and broader #83/#46 remain unfinished.
+
+- Connect checked finite operation Meanings to Raw direct, sequential and tensor
+  application. Independently replay and freshly check actual emitted instruction
+  intervals against original requests, preserving owners, phase and axes.
+  Keep zero-repeat/unused requests mandatory and reject unsupported refined Raw
+  inverse/control access. Broader #83/#46 and source preservation remain open.
+
+- Rename the public Rust effect, function-kind and token-kind variants from
+  `Iso` to `Isometry`, including body-effect diagnostics. Callers migrate their
+  variant references; no Rust alias is added. Keep the effect order, all checking
+  rules and explicit versioned/checked-graph transport tags unchanged.
+
+- Connect the adopted `isometry fn` spelling to the common source judgment,
+  actual inferred effects, both concrete consumers and fresh native checking.
+  Migrate current examples without changing versioned QIRF `"iso"` tags. The
+  canonical spelling grants no additional semantics or access.
+
+- Extend the independent rational Raw and Kraus oracles to structural Unit
+  maps, with literal phase, reference-axis and readout-history regressions and
+  fresh native rejection checks for invalid owner reuse. Derive constructor
+  report counts from exercised cases or the actual Raw enum; record oracle
+  source identities. Align the operation Reference with the bounded Raw profile.
+
+- Materialize explicit `unit(Unit)` and `finish(Q<Unit>)` through finite and
+  shared Raw lowering, strict opcode decoding and native dispatch. Prove the
+  dispatch's independent trace and ownership correspondence, preserving fresh
+  logical identities, the physical frame and prior scalar work. Retain source
+  step checks and controlled-scalar interference regressions. These maps do not
+  widen the unary source Meaning interface or discharge broader QS/PR/RS.
+
+- Connect the checked historical Raw embedding to a fixed continuity profile
+  with fresh typed proof reviews, original-byte/root binding checks and
+  negative regression tests. Retain the identity and Basis-only profiles.
+  This enables no new public opcode and admits no additional guarantee.
+
+- Prove an injective embedding of the pre-Unit Raw representation, preserving
+  whole literal traces, original-root selection, and both ownership and
+  classical-scope judgments in both directions. The transport supports current
+  evidence continuity; it does not by itself authorize a new opcode.
+
+- Prove executable structural Raw Unit-map building blocks against independent
+  owner/interface rules and exact event meaning. Preserve suspended owners,
+  issued identities and prior scalar work. The building blocks are now used by
+  actual Raw dispatch, with separate decoding and historical transport checks.
+
+- Bound every constructor child before operation-key comparison in independent
+  Raw access replay, including zero-count children. Preserve Repeat-chain
+  accounting and existing caps; reject excessive depth or value cells before
+  key expansion. Retain independent inverse-order and suspended-owner checks
+  through generic calls.
+
+- Materialize retained pure operation constructor trees through the bounded Raw
+  adapter, preserving exact ports, ordered tensor axes, inverse phase and
+  conjugation order. Check whole finite endomorphic Meanings and every annotated
+  descendant with fresh native decisions, including zero-count children;
+  independently replay the actual Raw steps. Native-valid gate/phase mutations
+  remain rejected by replay. Unsupported Raw primitives, rectangular Meanings,
+  general source preservation and broader #83/#46 conditions remain pending.
+
+- Retain ordered operation constructor trees through selected hierarchy lowering,
+  including preparation composition/tensor and principal-Unitary differing-tree
+  adjoints. Preserve packed-control phase, exact middle types and conjugation
+  order, the existing nested repetition product limit and complete runtime
+  endomorphism checks even in unused declarations. Independently replay tensor
+  boundaries during initialization movement;
+  broader source preservation, refined constructor materialization and rectangular
+  Meanings remain pending under #83/#46. No acceptance protocol is changed.
+
+- Add explicit `Op<A -> B>` pure-arrow formals while retaining `Op<A>` and its
+  Meaning comma slot. Check both exact ports, ordered substitution, principal
+  effect bounds and endomorphic control/repetition rules. Forward transparent
+  providers reach selected native lowering; finite general-arrow lowering,
+  refined constructor materialization and rectangular Meanings remain
+  unsupported. Small independent exact requests and complex executions cover
+  preparation, differing-tree unitors and a native-valid wrong-gate substitution;
+  they do not establish general source preservation or complete #83/#46.
+
+- Separate provider effect ceilings from principal body-effect inference in the
+  common checker. Repeated demands keep the strictest ceiling and its original
+  location; existing Unitary diagnostics and work accounting are preserved.
+  This prepares general pure arrows without enabling their source syntax.
+
+- Compose and tensor independently declared finite monomial Meanings through
+  both source adapters, retaining exact phase, ordered basis trees and fresh
+  native provider checks. Preserve forward references and refuse cycles and
+  wrong providers; broader arrow and instrument Meaning work remains open.
+
+- Retain exact borrowed input/output interfaces when preparing static source
+  providers across the common checker and concrete adapters. Keep existing
+  endomorphism checks explicit and remove output-only type copies; general
+  static-arrow syntax remains unimplemented.
+
+- Clarify quantum access vocabulary and diagnose unsupported `borrow q`
+  without reserving ordinary names or implying clean/dirty workspace support.
+  Explicit `excl`/`ctrl` and checked consuming calls retain their contracts.
+
+- Consolidate seven historical frontend validation log groups into lossless,
+  Git-verified archives; retain original bytes, paths and executable modes.
+  Current test inputs and authoring/constitutional evidence stay intact.
+
+- Diagnose unsupported unrestricted closure capture at the resolved live
+  quantum owner's use, including nested and zero-width owners. Preserve
+  shadowing and classical values; closure annotations grant no type evidence
+  and runtime closure values remain unsupported on both source paths.
+
+- Add provisional two-Bit `std::gate::{swap,permute_axes}` as ordinary checked
+  `.qli` source. Preserve physical CNOT work versus explicit output-axis routing;
+  no new primitive, general register SWAP or arbitrary permutation API is added.
+
+- Explain unsupported field/method receiver syntax without guessing its type.
+  Quantum access requires explicit call arguments; receiver adjustment cannot
+  infer or forward `excl`/`ctrl`. Existing ordinary calls remain unchanged.
+
+- Publish the existing static operation capability derivations and check
+  opaque forwarding of each enabled constructor through both source paths.
+  Meaning refinements and zero powers grant no additional provider access.
+
+- Diagnose forbidden quantum-containing assignment and mutable bindings using
+  original lexical identities and transitive types. Distinguish unsupported
+  ordinary/static mutation, preserve consuming `let` rebinding and contextual
+  identifier `mut`, and refuse before native dispatch without hidden disposal.
+
+- Clarify existing source-order evaluation and quantum temporary/access exit
+  rules. Check effectful Unit arguments and tuple fields through both source
+  paths; reject implicit quantum destruction and native-valid noncommuting
+  gate substitutions through independent source replay.
+
+- Explain unsupported Rust reference notation and the distinction between
+  arbitrary coherent `excl` access and basis-sector-preserving `ctrl` access.
+  Share the control explanation across native source adapters; preserve refusal
+  categories, original spans, phase-kickback permission and native decisions.
+
+- Represent explicit indexed/slice quantum access in the common source AST.
+  Check original static bounds, same-parent disjointness and exact selected
+  callee interfaces without moving or duplicating the parent owner. Keep
+  control-sector obligations. Selected Raw lowering partitions ordered axes,
+  applies the callee once and reconstructs parents from updated values using
+  existing Split/Join instructions. Independent replay rejects native-valid
+  wrong partitions, including identity round trips. Hierarchical and finite
+  project lowering of these places remain unsupported.
+
+- Lower explicit register `take_bit`/`put_bit` to existing Raw Split/Join
+  instructions, preserving ordered axes and zero-width remainder owners.
+  Independently replay their source partitions and reject native-valid
+  substitutions, including a wrong partition whose round trip is identity.
+
+- Center routine development on the shared local checks. Run hosted validation
+  at explicit Issue-completion checkpoints instead of ordinary pushes/PR
+  updates; retain exact PR size/fixture gates, required checks and full release
+  validation. CI success never closes an Issue automatically.
+
+- Check unused closed control-bearing functions and their concrete dependencies
+  in selected Raw lowering, using original resolved identities and shared
+  elaboration/native budgets. Preserve the public execution root and recheck
+  additional Meaning obligations; unclosed generics and inactive control calls
+  still refuse without substituted evidence.
+
+- Connect retained concrete whole-owner `ctrl` calls to selected Raw checking
+  and execution through fresh native artifact/sector checks and source replay.
+  Check every retained specialization and zero-count provider body under one
+  exact-work budget; refuse original obligations without concrete intervals.
+  Checker-free emission, hierarchy and symbolic transformed control bodies
+  remain unsupported; general access and source-preservation duties stay open.
+
+- Retain original `ctrl` sector obligations in the common source judgment,
+  including unused declarations, unselected branches and empty loops. Selected
+  native-checked Raw lowering refuses any obligation without a concrete call
+  in each retained specialization, preserving its original diagnostic site.
+
+- Refuse retained `ctrl` obligations in symbolic inverse/controlled replay,
+  whose transformed trace cannot supply an original call interval for a fresh
+  native sector check. Such transformed control bodies remain unsupported.
+
+- Retain public `ctrl` obligations through selected-source projection and
+  elaboration, preserving original owner identities and positions. Ordinary
+  checker-free Raw/hierarchical proposal generation refuses them; native
+  replay regressions now also read original public source graphs.
+
+- Admit whole-owner `ctrl` calls in finite project compilation only after
+  fresh native checking of each actual emitted call interval and ordered owner
+  interface. Reject H/X and target-side CNOT access; preserve phase kickback,
+  external correlations and zero-width phase. General access and
+  source-preservation obligations remain open.
+
+- Connect retained source access obligations to fresh native checking of the
+  actual Raw call interval read by source-step replay, with ordered original
+  owner ports and basis trees. Public source `ctrl` remains unsupported pending
+  complete lowering integration.
+
+- Retain original ordered access roles through selected source projection and
+  elaboration. Recheck the exact owner interface before Raw or hierarchical
+  lowering and source replay; unchecked `ctrl` roles remain unsupported.
+
+- Bind original-byte control-sector requests through the existing native
+  contract gate. Reject producer matrices and receipts; prove original-body
+  meaning and projector commutation with arbitrary external references, including
+  ordered multi-owner requests with bounded forest decoding.
+  Source `ctrl` elaboration and general access/resource obligations remain open.
+
+- Elaborate whole-owner `excl` calls through existing consuming operations,
+  requiring actual Unitary effects and exact ordered owner interfaces. Preserve
+  returned values across lexical scope closure; reject overlap, spent owners,
+  changed interfaces and observing calls. General views, access declarations,
+  mixed arguments and source `ctrl` remain pending.
+
+- Add an internal bounded QIRF control-sector check tied to fresh graph/root
+  validation and exact reconstruction, with an exact joint-reference projector
+  commutation proof. Check ordered multi-owner calls without a synthetic packing
+  wrapper; retain zero-width owners and exact complex action. Preserve
+  phase-sensitive positive and negative tests;
+  source access, footprint/lifetime rules and resource correspondence remain
+  unimplemented by this component.
+
+- Specify static refusal, explicit owner-preserving alternatives and external
+  faults in the verified-core failure model. Test original range/overflow/shape
+  refusals, correlated branch owners and separate simulator host limits.
+
+- Explain unsupported early return, residual propagation and runtime abort
+  macros with the structured final-expression/owner rule; preserve ordinary
+  identifiers, original locations and the existing accepted source grammar.
+
+- Specify the surface-to-core elaboration whitelist, including evaluation
+  order, exact owner trees and phase, original locations, profile refusals and
+  independent checking duties. Link preserved old/new migration evidence;
+  keep implicit coherence, views and omitted quantum arms unsupported.
+
+- Check `Adjointable(U)` when constructing a static `adjoint(U)` description,
+  including nested, unused, zero-count and zero-width cases. Preserve derived
+  adjoints of controlled circuits and report missing access at the constructor.
+
+- Name operation capabilities `Applicable`, `Adjointable` and `Controllable`,
+  and constructed adjoints `adjoint(U)` / `adjoint(U)(q)`. Reject the retired
+  predicates and `inverse_op` / `controlled_op` descriptions with located
+  migrations. Preserve capability derivation, exact phase and native acceptance;
+  retain historical client bytes and select hash-bound current source copies.
+
+- Select current corpus projects in the pure raw native comparison, retaining
+  dependency bodies for independent exact evaluation and separately checking
+  the complete original QIRF through native acceptance.
+
+- Reject retired `adjoint(U,q)`, `repeat_op(k,U)` and `repeat_static(k,U,q)`
+  at their original constructor tokens, with migration to `inverse(U)(q)`,
+  `power(U,k)` and `power(U,k)(q)`. Select hash-bound current client copies,
+  preserving original sources, independent oracles and native acceptance.
+
+- Run whole-tree whitespace and CI infrastructure checks through the shared
+  local/hosted preflight before scheduling builds. Preserve inherited EOF
+  bytes in seven hash-bound Basis migrations with narrowly scoped attributes.
+  Share process execution and scratch cleanup between source/native runners.
+  Centralize hosted check reports, native setup, dependency archive caches and
+  release receipts across all producer jobs, retaining their validation gates.
+
+- Check linked VM-22/VM-29 source identities before scheduling heavy CI lanes;
+  retain later rejection tests and refresh the reviewed test-only identity.
+
+- Support contextual `const` markers in compile-time parameter headers while
+  preserving ordered kinds, explicit bindings and ordinary const-named values.
+  Reject retired `static` headers with a located `const` migration diagnostic.
+  Migrate ten maintained example headers to `const`, retaining independent
+  phase, reference and protocol checks and the original source identities.
+  Align the independent Python proposal parser's contextual header markers;
+  preserve small IR proposals and historical comparison inputs.
+  Move current frontend regression builders to `const` while preserving their
+  full named outcomes, fresh native checks and historical source records.
+  Migrate current integration-test headers, preserving historical match needles,
+  the same 310 outcomes and all existing ignored cases on both Rust toolchains.
+  Select thirteen current corpus sources through a hash-bound `const` migration
+  stage; retain original corpus bytes and share selection with Python clients.
+  Select canonical QPE `power` and curried `inverse` applications, preserving
+  small proposals and independent native/oracle checks. Reject stale negative
+  test mutation needles instead of silently leaving sources unchanged.
+  Migrate selected generic, observing-QPE, ownership/phase and sized/instrument
+  clients to `const`, retaining original source inventories and independent
+  meaning expectations rather than maintaining separate migration counts.
+  Move direct permission counterexamples through the same hash-bound selector
+  and migrate the independent CLI generator to `const`, preserving all seeded
+  cases, reference oracles and public acceptance calls.
+  Select current shadowing and shared-work-budget fixtures through the same
+  reader, retaining precise diagnostics and existing limit assertions.
+  Migrate direct effect and Meaning clients through the same selection stage,
+  preserving semantic refusals, false-annotation checks and fresh CLI calls.
+  Select classical/Meaning regression headers while retaining original requests,
+  exact phase/axis oracles and guarded negative-source transformations.
+  Route AST-loading and guarded-size comparisons through selected current text,
+  preserving parser/project agreement and the independent Python comparison.
+
+- Select canonical `inverse`/`power` snapshots for fourteen semantic faults
+  and the measurement-inverse rejection client. Preserve previous sources,
+  require exact migration bytes, and test both historical and current refusals.
+
+- Keep full CI selection records while summarizing the changed-path count in
+  GitHub's bounded step summary, so cumulative PR diffs remain inspectable.
+
+- Keep ordinary CLI source selection and loading policy in one private input
+  value shared by text/JSON execution and IR emission. Preserve held qrate
+  directory identity, diagnostic paths and fresh checks for every invocation.
+
+- Remove the public `sized` command namespace and `frontend::sized` Rust module.
+  Use ordinary commands with `--entry`/`--module` and preparation/binding types
+  in `frontend::compile`; the former command now reports a migration usage error.
+  Preserve source checking, specialization limits and independent native gates.
+
+- Separate pending specialization body projections from complete functions; retain
+  required binder/use identities and finalize lexical tables and effects once.
+
+- Reuse only the embedded stdlib manifest's validation, and defer ownership-test
+  failure formatting while retaining all 4,000 cases and fresh native checks.
+
+- Decouple common source arithmetic and preparation diagnostics from the sized
+  adapter while preserving bounded checking, error details and public error paths.
+
+- Reclaim the Python host's POSIX process session after completion or timeout,
+  including native checkers which use separate process groups. Keep cleanup
+  bounded, preserve timeout rejection, and leave unrelated jobs untouched.
+- Reject malformed Python host responses with boolean/floating version fields,
+  duplicate JSON keys, non-finite numbers or excessive JSON nesting; retain
+  fresh native verification for every public operation.
+- Validate current corpus discovery against registered logical projects rather
+  than migration-stage counts. Preserve observing dependency bodies and source
+  identities in native comparisons, and compare current and historical source
+  artifacts through exact instruments while retaining frozen input bytes.
+- Share source validation commands between local runs and both Rust CI jobs.
+  Share the repository and constitutional-record check list with the docs job.
+  Declare tool versions, native preparation and commands for both Rust lanes,
+  research checks, independent source comparisons and the pinned book build.
+  Check source identities before scheduling builds, build native-test hosts
+  before parallel workers, and retain failed preflights and unexecuted checks.
+  Keep complete hosted coverage and distinguish producer failures in summaries.
+  Reclaim child scratch directories on failures and timeouts as well as success.
+
+- Select canonical `inverse`/`power` derivatives for 25 finite corpus clients,
+  retaining frozen originals, scalar phase and ordinary checked gate wrappers.
+  Compare all shipped outputs with predecessors and independent expectations,
+  plus one X/Y complex-entry probe per migrated unitary (125 CLI calls total).
+- Migrate the remaining protocol-example adjoints to named `inverse`
+  application. Preserve seven-state and entangled-reference protocol checks,
+  and compare the full `y_minus` operator with a literal exact phase contract
+  and accepted relative/global-phase fault controls.
+- Migrate iterative/coherent phase-estimation, fixed order-finding and
+  operation-contract examples to canonical `controlled`, `power` and `inverse`
+  applications. Retain complete source/diagnostic snapshots and the existing
+  phase, reference, feedback and fixed-register oracles.
+- Update finite-profile regression expectations after canonical controlled
+  application became supported. Preserve the separate opaque-Basis barrier,
+  missing-access refusals and independent native phase/reference checks.
+- Lower constructed inverse applications such as `inverse(power(U,k))(q)`
+  through existing checked Adjoint operation steps, preserving exact phase,
+  zero-count input evaluation and the named/sealed inverse path.
+
+- Migrate fixed operation-algorithm examples to canonical control, power and
+  inverse applications; retain independent phase/reference regressions and
+  correct the README's obsolete Bit spelling and tuple-tree equivalence.
+
+- Connect canonical `controlled(U)(c, q)` to finite lowering through existing
+  checked circuits and native evidence, retaining eager order, exact types,
+  access, both owners and phase on zero-width targets.
+
+- Keep contextual power parsing out of recursive expression dispatch frames;
+  check deep syntax on a bounded 2 MiB stack without changing nesting limits.
+
+- Add contextual `power(U, count)(q)` application and nested static descriptions,
+  retaining provider identities, counts, source spans and access checks.
+
+- Connect the existing Z intrinsic to selected concrete preparation, Raw and
+  hierarchy proposals, with independent phase and source-step checks.
+
+- Add an isolated experimental Julia environment with pinned Cyclotomics.jl,
+  exact big-rational arithmetic checks and small Clifford/T matrix examples.
+
+- Preserve the refused operation-application authoring attempt as exact hashed
+  history while checking the corrected project normally. Use an immutable
+  checker fixtures for native framing, deadline and descendant tests, avoiding Linux executable
+  write/spawn races without transport retries or reduced assertions.
+
+- Add contextual `inverse(U)(q)` source application through the existing
+  adjoint/access, owner and native-evidence rules. Preserve single-stage
+  ordinary calls with that name and scalar phase on zero-width owners.
+  Remaining builder notation and legacy retirement stay tracked in #33.
+
+- Transport ordinary `Bits<n>` through selected Raw source lowering and
+  independent ordered replay, retaining exact source values including width
+  zero, copying/drop, Nat specialization and eager measurement effects.
+  Materialize existing empty/prepend construction without new native acceptance
+  rules; preserve concrete width/storage limits and reject native-valid order
+  and computation faults. The finite project profile and general source proofs
+  retain their separate limitations.
+
+- Consolidate the historical common-AST implementation packet into a lossless
+  archive retaining all 946 original files. Verify complete original Git
+  inventory, contents and executable modes in CI; preserve historical sources,
+  diagnostics, failures and notices without executing archived tools.
+
+- Retain atomic `Bits<n>` in finite Meaning signatures and native request
+  transport, including distinct zero-width owners, exact phase and ordered
+  products. Reject same-width type substitutions and false controlled scalar
+  contracts. Preserve the two admitted ordinary-root guarantees through a
+  fixed Lean basis/artifact transport proof, unchanged independent meanings
+  and original-subject templates, and fresh current proof checking. Historical
+  admission evidence remains immutable; broader source/QS/PR/RS proofs remain open.
+
+- Materialize existing adjoint and controlled access inside closed operation
+  providers in the finite Meaning adapter. Preserve exact phase, structural
+  routing, original requests and caller owners, including controlled zero-width
+  targets. Independently replay transformed source actions and retain the
+  existing native acceptance and capacity limits; broader source proofs remain open.
+
+- Materialize closed forward operation arguments through ordinary helpers in
+  the bounded finite Meaning adapter. Retain actual provider identities,
+  nested and zero-count Meaning obligations, exact interfaces and caller frames;
+  independently replay source calls and reject native-valid substituted actions.
+  Inverse/control adapter paths and general source preservation remain unfinished.
+
+- Align selected `phase_eighth` preparation with its existing `Q<A>` signature,
+  preserving packaged basis trees, zero-width owners, ordered axes and exact
+  scalar phase through existing native checks. Repair stale `checked_op`
+  conformance expectations and register Meaning authoring observations without
+  rewriting their historical records.
+
+- Check original Meaning annotations for every retained concrete operation
+  binding, including unused and nested callers, before selected hierarchy
+  emission. Require the private all-binding collection, shared exact-work and
+  provider-storage limits, and fresh native checking of the actual graph;
+  refuse unchecked single-leaf and Raw routes. This adds no source proof (#44).
+
+- Embed a source-bound checked provider's exact bytes and requested matrix
+  in the actual emitted hierarchy node, keyed by its complete operation.
+  Preserve typed ports and repeats; fresh native checking rejects substituted
+  bodies with a different meaning. The all-binding route uses this bridge (#44).
+
+- Prepare and replay complete bounded repeated provider leaves, including
+  bindings in nested instantiated callers. Preserve zero-count owners and
+  dependency preflight; reject a native-valid base artifact substituted for
+  its repeated subject. Mandatory generic Meaning enforcement remains open (#44).
+
+- Prepare actual closed operation-provider leaves while retaining the original
+  caller instance and shared immutable source graph. Replay the selected body
+  and dependencies; keep generic Meaning enforcement unfinished (#44).
+
+- Align retained Raw-profile regressions with supported Q<Unit> owners and
+  the still-unsupported finish primitive. Check actual native owner/type
+  retention and source-step replay instead of expecting obsolete refusals.
+
+- Bind fresh finite native checks to actual Raw source proposals and replay
+  their ordered source steps. Retain immutable source/request references;
+  reject native-valid substituted providers and preflight exact type, effect
+  and budget failures. Generic Meaning binding remains unfinished (#44).
+
+- Expose retained finite source Meanings as untrusted exact requests, preserving
+  Unit/Bit/product trees and refusing unsupported Bits signature substitution.
+  Check actual X/scalar provider bytes and reject lying implementations through
+  the existing native finite-leaf gate; generic binding remains open (#44).
+- Preserve explicit `checked_op` requests in the selected hierarchy path,
+  including unused bindings, direct adjoints, forwarded requirements and
+  repeated children under zero iterations. Check each original requested
+  Meaning through the existing native finite-leaf gate before lowering; Raw
+  bypasses reject. General Meaning/profile convergence remains open (#44).
+- Carry exact packaged Unit/Bit product bases through the source Raw leaf
+  adapter, structural split/join and independent ordered replay. Bind native
+  Meaning requests and emitted hierarchy leaves to the original tuple tree and
+  actual wire order, retaining zero-width owners and scalar phase. Bits tags
+  remain distinct and unsupported by this finite representation mapping (#44).
+- Remove two unnecessary lifetime parameters found by hosted MSRV Clippy;
+  select actual local MSRV compiler and Clippy executables for validation.
+
+- Retain selected Meaning request tables under original definition identities,
+  exact basis trees and phase/permutation rows. Check the closed provider's
+  requested basis within existing budgets; keep native provider equality and
+  unused-binding enforcement unfinished (#44).
+
+- Materialize existing `phase_eighth` on Raw Q<Unit>/Q<Bit> through the shared
+  finite emitter's exact zero-axis monomial. Independently recheck its phase,
+  owner and ordered source work; keep pure Unit-map Raw lowering open (#43/#44).
+
+- Retain zero-width `Q<Unit>` owners through selected Raw inputs, ordinary
+  calls and ordered products; independently reject owner loss, duplication,
+  reordering and Unit/Bit substitution. Attach exact unary quantum source
+  interfaces for fresh native finite requests. Raw Unit-map lowering
+  remain unfinished (#43/#44).
+
+- Validate all selected-source finite Meaning targets through original resolved
+  classical bodies, including unused nonpermutations and exact zero-width/product
+  interfaces. Keep selected provider binding unsupported until its native
+  artifact comparison is connected (#44).
+- Share original-AST finite-label evaluation for classical/Meaning preparation.
+  Preserve eager operand order, exact product labels, lexical identities,
+  diagnostics and existing budgets; selected Meaning integration remains open (#44).
+- Repair strict qfor migration metadata and retained CLI/Python corpus source
+  selection, including zero-fold ownership counterexamples;
+  check the real migration map in regression tests. Keep fold parsing out of
+  recursive expression dispatch frames so bounded nesting rejects on the
+  default test stack. Add small static identity-fold accounting checks (#28/#194).
+- Reduce ordinary corpus CI to all shipped entries, 20 representative X/Y
+  entry pairs, four semantic faults and existing rejection cases at the
+  maintainer's request. Record omitted coverage explicitly; retain exhaustive
+  release/manual-full validation and fresh native checks (#142).
+- Show corpus CI case starts, bounded probe progress, elapsed times and
+  completion/failure on stderr. Preserve stdout summaries, JSON reports and all independent oracle
+  checks, fresh native decisions and partial failure records (#142).
+- Add explicit `qfor static` quantum-owner threading and restrict `for static`
+  to ordinary carry. Preserve zero-iteration body checks, exact mixed tuple
+  shapes, caller frames and native gates; migrate active tests and bounded
+  corpus clients through hash-checked derivatives (#194).
+- Add provisional acyclic `static fn` Nat helpers through original-source
+  checking, exact affine normalization and the shared concrete Nat evaluator.
+  Check callee premises and all unused bodies; reject runtime dependencies and
+  cycles. Preserve existing native gates and aggregate capacities (#28/#63).
+- Repair hosted MSRV Clippy's namespace-test string construction and explicitly
+  select the local MSRV compiler/Clippy binaries; retain failed-run evidence.
+- Share bounded exact affine Nat substitution with common type specialization;
+  preserve original binder identities, simultaneous replacement, capacity
+  refusals and source locations. Static helper syntax remains separate work (#63).
+- Add block-local `static let` Nat bindings through the common source judgment
+  and concrete evaluator. Preserve lexical identities, exact normalization,
+  guarded arithmetic, original-body checking and native output gates (#28/#63).
+- Select hash-checked current corpus derivatives in VM-22 and observing native
+  comparisons, keeping frozen historical sources and oracle artifacts intact.
+  Repair MSRV Clippy findings in classical predicate checking and local indexing.
+- Migrate the remaining positive parser test to `classical fn` and require the
+  pure runtime effect of classical stdlib helpers in the effect-report test.
+- Specify the implemented static fragment, guarded exact arithmetic, incomplete
+  linear implication, decreasing recursion, definition/instance checking and
+  concrete capacities in the Reference. Keep static helper and final loop work
+  open; compiler limits do not certify quantitative resources (#28, #44, #63).
+- Use `classical fn` for total finite classical declarations, reserving
+  `basis q as pattern { expression }` for coherent basis maps. Reject the
+  retired `basis fn` declaration with a located migration diagnostic. Run
+  the original classical body through ordinary eager calls as well as the
+  existing static/Meaning and coherent paths; noninjective ordinary functions
+  remain legal while coherent use retains its independent checks. Preserve
+  exact tuple/Unit shapes, caller effects, lexical identities, existing profile
+  limits and native acceptance. Migrate active sources through small explicit
+  derivatives without rewriting first attempts or validation history (#22).
+- Repair the hosted runtime-pattern phase test to select a canonical `basis`
+  derivative; preserve its original source and independent phase oracle.
+- Show bounded retained command stdout/stderr on distribution-check failure,
+  keeping original logs, exit status and binary archive output intact.
+- Reject future PRs with at least one million added/deleted text lines, and
+  bound fixture totals and PR additions before CI scheduling. Preserve the
+  current #307 growth exception and require local agent size preflight.
+- Repair the tuple-unitor integration control to use canonical `basis` syntax;
+  retain historical `do/pure` sources and test their migration refusal.
+- Fix the 0.3.0 Default boundary: live quantum-containing types, including
+  zero-axis Q<Unit>, have no Rust-like default construction. Preserve explicit
+  ordinary values and checked user functions named `default`; preparation
+  retains its inferred effect and zero-width owners remain linear (#79).
+- Explain absent Rust disposal/copy/default machinery and implicit quantum
+  owner loss in source diagnostics. Preserve ordinary Bit/Unit reuse and
+  omission, normal user declarations named `drop`, original error categories,
+  spans and priority. Distinguish measurement, discard, reset's fresh owner
+  and checked clean discharge without granting implicit destruction (#68).
+- Repair the native round-trip discovery test's stale corpus expectations:
+  require six namespace and two coherent-basis snapshots, each preserving its
+  logical project path. Retain 87 corpus roots, 14 examples and all original
+  history, exclusion, IR and evidence-cache checks (#142).
+- Specify the boundary between static operation descriptions and live quantum
+  owners. Keep runtime calls eager and first-order, with complete argument lists;
+  retain checked scoped bodies, decreasing Nat specialization, exact Unit
+  ownership and separate capability evidence. Explain current refusals for
+  hidden callable captures, partial application, generic Monad/lazy/host-I/O
+  assumptions and unimplemented coherent sums without adopting those features
+  or enlarging native acceptance (#80).
+- Rename the exact-meaning static constructor to
+  `checked_op(implementation, Meaning)`. Reject the retired `bind_op` spelling
+  with a located migration diagnostic; reserve the new spelling and migrate
+  current examples, grammar, Reference and explicit fixture derivatives.
+  Preserve closed declaration inputs, exact phase/basis checks, pending source
+  obligations, source-bound receipts and native acceptance without granting
+  monadic bind, constitutional certification or new provider access (#82).
+- Replace coherent `do p <- q; pure e` with `basis q as p { e }` in the common
+  source grammar. Retain the existing isolated basis-expression checker and
+  finite injectivity/lowering rules, exact types, owners, phase and ordered
+  axes; reserve the old tokens for explicit removal diagnostics. Preserve
+  original source/diagnostics beside explicit migration derivatives. Selected
+  concrete CoherentLift support remains separate; external qargo/qlippy
+  diagnostics are excluded by explicit maintainer decision, without claiming
+  that integration. Add no primitive, native schema or guarantee (#81).
+- Organize ordinary std source into `basis`, singular `transform`, `reflection`
+  and `measurement`, with mathematical admission rules and exact contracts.
+  Retire `routines`, `transforms` and fixed demo arithmetic exports; preserve
+  arithmetic as local order-finding source and migrate active examples, corpus
+  and fixture clients without rewriting historical inputs (#317).
+- Restore common-source diagnostics for exact types, empty/tuple patterns,
+  static arguments, predicates, tuple-owner bindings and forbidden computed
+  captures. Retain lexical identities and original caller/binding locations;
+  derive capture explanations only after rejection. Suggest `split` only for
+  an immediate binary packaged basis. Update existing arity, effect and
+  concrete-profile expectations without moving those limits into common
+  checking. Preserve the deep import-only cycle and real call-cycle controls
+  (#32).
+- Resolve Python sized-adapter local calls and operation references through
+  their actual module identity, without self-imports. Preserve lexical hiding
+  inside every loop body, including zero iterations, and reject ambiguous or
+  mismatched entry-source registrations. Native acceptance and the existing
+  pure/instrument producer profiles remain separate (#32).
+- Remove QFT implementation completion, generic QFT public integration and
+  fixed/generic QFT equivalence from v0.3.0 and the current goal by explicit
+  maintainer decision. Retain #317's semantic namespace/admission work, existing
+  fixed-QFT behavior and all historical evidence; assign no future target or
+  completion credit. Retain generic-QFT attempts and original experiment/tooling
+  archives only under experimental/qft (#317, #142).
+- Check every complete original declaration and body through one mandatory
+  source judgment before finite or selected concrete eligibility, including
+  private/unused definitions, both arms, zero folds and all four ordinary std
+  modules. Share typed 27-name primitive lookup, canonical declaration/lexical
+  facts, static premises, owners/access, dependencies and principal effects;
+  retain located pending concrete evidence obligations instead of placeholder
+  IR approval. Permit import-only cycles, reject all self-imports and runtime
+  bindings that shadow active static names, and charge actual source work/copies
+  under the common 1M capacity. Preserve direct transformed runtime owner groups separately from
+  unary opaque Op/static/host providers and checked decreasing runtime self
+  calls. Concrete projection/emitter limits, exact Meaning/clean/provider
+  evidence, native acceptance and general source preservation remain separate;
+  this unit adds no primitive, proof or guarantee (#32, #317).
+- Share checked formal operation bases, finite Meaning payloads and explicit
+  Apply/Adjoint/Controlled grants between the two declaration paths. Retain
+  original binder identities, ordered kind availability, diagnostic and budget
+  order; borrow sized kind environments instead of cloning whole scopes.
+  Generic assumptions grant no native acceptance or arbitrary provider access.
+  Concrete lowering convergence and canonical generic std integration remain
+  unfinished (#32, #317).
+- Share ordered static and runtime parameter-name checks over the original
+  common AST. Preserve exact declaration/parameter association, per-argument
+  type checks, complete unused-declaration rejection, capacities and existing
+  profile-specific diagnostic/native order. Full concrete lowering convergence
+  and canonical generic std integration remain unfinished (#32, #317).
+- Share actual runtime wildcard, duplicate-name and exact tuple/Unit binding
+  rules between finite lowering and sized generic checking. Retain existing
+  value moves, owner identities, capacity checks and diagnostic order; the
+  borrowed sized pattern bridge does not complete concrete lowering convergence
+  or expose canonical std APIs (#32, #317).
+- Share retained original source, common syntax and provenance through a private
+  immutable collection. Preserve complete declaration checks, source budgets,
+  diagnostic order and the fixed ordinary std registry; retain selected file
+  paths without inventing in-memory manifest provenance. Concrete emitter
+  convergence and canonical generic std namespace integration remain unfinished
+  (#32, #317).
+- Include #317 in the maintainer-confirmed 111-Issue scope and release gate.
+  Reject prior 110-Issue candidates that omit semantic stdlib namespace criteria
+  or acceptance evidence; preserve all earlier targets and historical records.
+- Lower principal Isometry selected-source roots through the existing fresh-zero,
+  unitary hierarchy and zero-measurement readout transport, retaining quantum
+  result trees, Unit-owner phase and complete caller frames. Return the single
+  unnormalized coefficient vector from `run`; require a principal Observe
+  entry for sampling and named QPE. Raw quantum Unit-map support and general source
+  preservation remain unfinished; no native primitive or guarantee is added
+  (#43).
+  Report incompatible native hierarchy checker versions explicitly while
+  retaining strict rejection of generic success and malformed response frames.
+- Infer ordinary function effects from typed bodies and callees, with optional
+  prefixes checked as upper-bound assertions. Reject contradictions with an
+  explicit semantic diagnostic that `"externally unitary"` is unsupported,
+  without Issue links. Export immutable body facts and checked documentation;
+  remove redundant prefixes from ten derived stdlib functions while preserving
+  mathematical contracts, source bodies and native acceptance (#315).
+  Apply the same semantic explanation to host-selected providers, preserve
+  independent shape errors, and teach ordinary `fn` in provider/parser hints.
+- Add bounded opaque Basis parameters and explicit exact type/provider bindings
+  to the common selected-source path. Check generic bodies before specialization,
+  preserve exact trees in caches and charge retained substitutions; general
+  Meaning refinement and final directory-profile integration remain open (#44).
+  Migrate the active sized forwarding fixture to the adopted ordered-kind rule,
+  retaining its original failure and forward-reference rejection coverage.
+- Include #315 in the maintainer-confirmed 110-Issue scope and release gate.
+  Reject prior 108/109-Issue candidates that omit the added criteria or evidence;
+  ordinary-source effect inference and stdlib migration remain required work.
+  Preserve the frozen scope records' bytes during whole-tree whitespace checks.
+- Keep the non-UTF-8 CLI regression aligned with the current usage/discovery
+  contract while retaining historical help fixtures. Clarify the current v5
+  guarantee ledger and pending exactness supplement in contributor guidance.
+- Add standalone text help and an embedded canonical ecosystem discovery
+  chapter. Route usage failures to the same introduction, distinguish familiar
+  structure from native/specification-only concepts, and expose planned tool
+  status without executing a project or checker (#253).
+- Name missing and unexpected explicit Nat/Op bindings, affected providers and
+  ordered source-call static parameters in deterministic diagnostics. Preserve
+  rejection priorities, locations, explicit provider choices and the
+  uniqueness/no-physics inference law (#100).
+- Document the architecture principle "Policy as Theorem. Constitution as
+  Harness. Compiler as Executor" and its human/proof/execution separation,
+  fail-closed boundaries, diagnostic recovery and future design review (#254).
+- Admit exact packaged quantum tuple bases and explicit binary `split`/`join`
+  in the selected hierarchy, preserving nested trees, ordered axes and linear
+  owners. Compose explicit Unit unitors without losing scalar phase or retained
+  reference correlations; bind lowering to the existing structural rules and
+  charge retained recursive frame types to the trace storage budget (#43).
+- Update the primitive-omission calibration to the current catalog macro so
+  it reaches exhaustive-handler checking instead of failing at macro parsing.
+- Expose explicit `unit(())` and `finish(q)` maps on the common hierarchy
+  path, preserving exact Unit owners, scalar phase and complete argument
+  evaluation through existing checked structure (#43). Finite/Raw support
+  remains separate unfinished integration work.
+- Require constitutional state to be reread and checked at agent startup and
+  after model/session/context changes. Preserve adopted human decisions,
+  pending obligations and paused work across handoffs.
+- Admit exact `Q<Unit>` and `Op<Unit>` in the common selected-source projection,
+  preserving zero-width ownership separately from ordinary Unit and Bits(0).
+  Carry the existing scalar `phase_eighth` through checked hierarchy structure,
+  including adjoint, repetition and control (#27, #32, #43).
+- Include #311 in the maintainer-confirmed 109-Issue release scope and progress
+  denominator. Require its criteria and evidence in release readiness; preserve
+  the original 108 targets and historical validation records (#142).
+- Record the Guardian's adopted EXACT-2026-01 interpretation: epsilon error
+  bounds cannot replace edition-2026 exact QS, PR or RS obligations. Preserve
+  the Constitution, three original interpretations, two admitted guarantees
+  and current evidence; protect the additive ledger-v5 transition and pending
+  release disclosure. Read actual pending-ledger identities in the release
+  gate instead of the incompatible test-only row shape, and bind receipts to
+  the exact ledger bytes returned by verification (#311, #142).
+- Connect explicit module/entry source selection and the legacy `sized`
+  adapter to one CLI execution plan. Select Raw or hierarchy before native
+  checking, preserve independent requests and reject unsupported invocations
+  without falling back after a failed check. Keep source/native check scopes
+  explicit; final frontend convergence and open runtime invocation remain
+  unfinished (#32, #250).
+- Share ordinary Boolean type checking, eager operand evaluation and Raw
+  instruction emission across finite and sized source preparation. Add a
+  source-bound Unit/Bit/Q<Bit>/product Raw proposal and independent step replay.
+  Share physical register state and primitive transitions for mixed calls,
+  measurement postprocessing and exact eighth-turn phases, preserving pending
+  owners and caller entanglement. General physical target capabilities remain
+  unfinished (#32).
+- Accept exact ordinary function parameter patterns through the common parser
+  and finite/sized checking. Keep whole argument types, source arity and effects;
+  reject duplicate names and implicit quantum-owner discard (#32, #43).
+- Restrict native round-trip compilation to current corpus provider roots,
+  preserving migration archives as history. Select an explicit canonical
+  bare-CR diagnostic input while retaining its original bytes (#27, #32).
+- Match ordinary `Unit` with `()` in finite let and basis patterns using the
+  same exact shape rule as sized checking. Preserve effectful computations,
+  quantum owners and scalar phase; reject other zero-width types (#43).
+- Select explicitly migrated Qleisli fixtures in external-format and Lean
+  comparison clients while retaining original source hashes and independent
+  format, phase and probability checks (#27, #32).
+- Preserve the exact routed-control experiment as in-memory source evidence;
+  distinguish its unused historical manifests from schema-2 filesystem admission
+  instead of rewriting recorded inputs (#303).
+- Check scoped release readiness from a reviewed criterion base, complete
+  evidence and exact same-run CI receipts/artifacts. Preserve pending broader
+  obligations and require real replay of admitted guarantees; missing inputs
+  reject. Tagging and publication remain separate (#142).
+- Remove owned distribution build work after success or failure while keeping
+  reports, logs and candidate archives. Add `--keep-work` for debugging and
+  preserve caller-owned external Cargo targets (#142).
+- Use canonical ordinary `Unit`, `Bit`, `Bits<n>` and `0`/`1` through common
+  source type classification. Reject retired classical spellings with migration
+  diagnostics; migrate active clients and keep explicit historical translations.
+  Sized Unit values and empty patterns preserve executed operations while
+  omitting only ordinary Unit ports. Public type kind accessors now require
+  `is_quantum()` to distinguish ownership (#22, #27, #43).
+- Retain immutable corpus authoring records across source migrations, checking
+  ordered predecessor hashes, complete project snapshots and source-bound
+  observations. Record the six predicate-domain migrations and their original
+  provenance-check failures without rewriting earlier trials (#25).
+- Prove exchange of original hierarchy entry bodies with their distinct routed
+  control/target frames, same-artifact typing, fresh wiring summaries and
+  computed two-sided inverses. Retain exact provider and evaluation premises,
+  arbitrary reference amplitudes, and valid noncommuting/output-route
+  counterexamples; source access rules remain separate (#303).
+- Require one explicit, exact basis-domain parameter for both forms of
+  `with_computed`; reject nullary and multi-parameter predicates without
+  implicit tuple packing. Preserve ordinary call arity, noninjective predicates,
+  ordered truth tables and controlled Unit phase. Migrate active examples,
+  standard-library code and corpus clients, retaining historical sources with
+  explicit current translations and bounded semantic comparisons (#25).
+- Check every supported ordinary declaration in sized modules, including
+  private and forward siblings and unused bodies. Preserve distinct definition
+  identities, public host-entry visibility, decreasing self-recursion and
+  rejection of mutual call/provider cycles (#32).
+- Resolve local, basis, static-natural and static-operation bindings through
+  common structural identities in both finite compilation and sized checking
+  and elaboration. Preserve dynamic ownership, source diagnostic order,
+  public Send/Sync and retained proposal bytes (#32).
+- Restore contextual type words such as `Q` and `Op` as static natural names
+  in the shared parser, including comparisons, dimensions and specialization;
+  preserve ordinary runtime and operation-binder keyword rules (#32).
+- Keep the native round-trip fixture recorder warning-free under the actual
+  Rust 1.85 Clippy toolchain while preserving its emitted proposal bytes.
+- Separate append-only admitted guarantee identities from current evidence in
+  ledger schema v4. Require explicit admission registrations, exact verifier
+  coverage, trusted-base continuity and stable snapshots during replay; retain
+  the two scoped guarantees and three pending broader obligations (#135, #141).
+- Prove exact exchange of shared coherent-control operations on disjoint ordered
+  target factors, connected to the existing hierarchy tensor/control/sequence
+  meanings and arbitrary reference amplitudes, including zero-width phase.
+  This is a local proof component, not a source access or reordering rule (#303).
+- Align the retained finite-profile corpus regression with the shared parser:
+  static `Nat` parameters parse once, then reject as unsupported with the exact
+  parameter span. Preserve the original source and historical diagnostics (#32).
+- Check current-artifact continuity for the two admitted QLV1 guarantees against
+  an elaborated historical baseline. Allow unchanged-meaning formatting and
+  theorem proof maintenance, reject witness/decoder weakening and concurrent
+  evidence replacement, and preserve the original human admission (#141).
+- Share declaration identities, import visibility and dependency graph traversal
+  across finite compilation and sized checking/elaboration. Retain existing
+  profile differences, canonical evidence names and provider identities; local
+  owner scopes and the final source cutover remain separate (#32, #41, #65).
+- Prove adjacent protected literal phases commute on arbitrary joint/reference
+  states, and connect both successful executable matrix checks to identical
+  complex entries and actions. Retain shared-control and zero-target examples
+  plus a noncommuting phase/X counterexample; general access rules remain open
+  (#303).
+- Quote generic type notation in API documentation so strict packaged rustdoc
+  generation succeeds after the common type refactor.
+- Share exact type trees, structural comparison and linear-owner classification
+  across finite, symbolic-sized and concrete-sized checking. Preserve existing
+  source profile restrictions, capacities and public type accessors; ordinary
+  Bit/Bits surface migration remains separate (#27).
+- Prove that the encoded native-contract wrapper computes the original root's
+  exact matrix, including zero-width phase and ordered axes. Connect actual
+  byte acceptance to the original `BodyMeaning` and encoded equation for any
+  reference amplitude function; preserve existing guarantee admission scopes.
+- Specify closed specialization, exact forward realization, workspace and
+  quantitative resource boundaries in the Language Reference (#120, #127).
+  Distinguish actual target evidence from synthesis completeness and from the
+  existing bounded export checks.
+- Parse finite and sized source with one grammar and recursive AST. Project the
+  shared AST into the existing sized checker and reject unsupported finite forms
+  before lowering. Preserve bounded source/proposal comparisons, explicit profile
+  limits and diagnostics for reserved words and documentation migration (#32).
+- Forward the required product version through dynamic preparation/readout
+  transports and require their native regression checks in CI (#289).
+- Expand small accepted-artifact round trips to nested shared circuits,
+  compute/uncompute and both conditional branches, comparing actual cached
+  matrices with independent exact oracles. Require this suite in CI (#288).
+- Require the expected exact basis tree in `FunctionEvidence::check_binding`,
+  rejecting same-width tuple and Unit substitutions inside the attachment API.
+  Migrate Rust callers and native comparison harnesses to the complete check
+  without changing native acceptance or evidence construction (#265).
+- Specify the 0.3.0 target ordinary/quantum type boundary, Bit literals, exact
+  tree equality, zero-width owner phase and explicit generic responsibilities.
+  Record these ordinary design choices separately from implementation and
+  retain the operation/Meaning calculus as a reviewable design candidate.
+- Share physical source scanning between finite and sized frontends, preserving
+  original UTF-8 spans, contextual token adapters and existing capacity limits.
+  Sized comments now follow the same control-character and whitespace rules;
+  retain old/new diagnostics and proposal comparisons for the migration (#32).
+- Record the human ratification of the edition-2026 Constitution and adoption of
+  governance, effective 2026-10-04 (Asia/Tokyo), appointing Masahiko G. Yamada as
+  initial Guardian. Preserve the exact approved hashes, human reply, Draft 5,
+  candidate diff and pre-existing alpha baseline. Add ratified identity checks
+  and a bootstrap guarantee ledger; no QS/PR/RS interpretation or proof discharge
+  is implied by ratification. Document the authority hierarchy and prepare the
+  initial interpretation candidates for a separate human decision.
+- Record the subsequent explicit Guardian adoption of QS-2026-01, PR-2026-01
+  and RS-2026-01 as binding pending obligations. Preserve the exact reviewed
+  packet and human answer separately from proof discharge.
+- Record the subsequent human adequacy judgment and admission of two scoped
+  QLV1 guarantees: original-root ownership and classical scope. Preserve their
+  reviewed meanings and historical evidence separately from current proof and
+  source binding; the three broader QS/PR/RS obligations remain pending.
+- Protect the admitted semantic dependency closure and elaborated acceptance
+  witness fields in constitutional CI. Retain a compiled witness-weakening
+  counterexample and reject it even after mutable source hashes are refreshed.
+- Prove actual native encoded/leaf-contract acceptance-to-root-meaning bridges
+  without changing executable acceptance. Preserve explicit limits on encoded
+  wrapper correspondence and distinguish these proofs from ledger admission.
+- Inventory 21 current production paths and nine native modes, distinguishing
+  fresh acceptance, hierarchy/component checks, proposal generation and host
+  execution. Bind their references to tests and actual source entry points.
+- Rename the ownership-only Lean predicate and checker-facing theorems from
+  `ResourceSafe` to `OwnershipSafe` under #287, preserving their mathematical
+  content and acceptance behavior. Ownership and clean return belong to QS;
+  quantitative Resource Safety remains a distinct pending obligation.
+- Track the 108 selected 0.3.0 issues through a GitHub milestone and the existing
+  release-readiness umbrella. Edition identifies the constitutional regime;
+  the syntax/frontend migration remains within edition 2026.
+- Pin the external mdBook documentation tool to 0.5.4 with an official binary
+  checksum in docs CI; add a minimal book and document its separation from
+  Qargo, language acceptance and Qleisli API documentation.
+- Move existing documentation into ordinary mdBook chapters under `docs/src/`,
+  remove the former files and update source/build references. Each chapter is
+  maintained in one place while the new tutorial is prepared.
+- Select `0.3.0-alpha` for the Rust, Lean, Python and standard-library product
+  versions and prepare version maintenance and native archives for prereleases.
+  This is prerelease preparation; the v0.3.0 type-system goals remain open.
+- Complete the planned documentation cleanup: delete `docs-old/`, retain
+  imaginary-v1 and the Lean backend plan in `docs/src/`, and write new chapters
+  from adopted decisions, code and proofs.
+- Require an explicit matching product version in every native kernel mode;
+  update direct tests, forwarding shims and relocated bundle checks (#289).
+- Bound JSON prescan allocation by scanning the input string directly, retaining
+  only bounded keys and bare tokens while preserving native protocol validation
+  and duplicate-field rejection (#290).
+- Add accepted-artifact round trips and recursive function/meaning evidence
+  matrix comparisons, including explicit QIRF2 meaning entries (#288).
+- Avoid cloning untrusted function-evidence inputs before bounded transport
+  validation, and retain parsed command names in CLI JSON with leading options.
+- Preserve empty classical-unit boundaries in sized-source compaction without
+  dropping zero-width quantum owners or their scalar phases.
+- Limit shared prerelease selectors to stable, alpha, beta and rc forms whose
+  Python normalization preserves release ordering; keep `0.3.0-alpha` unchanged.
+- Select full proof replay and schema binding when either Lean audit changes.
+- Replace repeated quadratic history-subset scans with a proved-equivalent
+  linear fast path for growing histories, addressing the classical-constant
+  timeout reproduced under #278 without changing native decisions or work counts.
+
 ## 0.2.9 — 2026-10-04
 
 Published to crates.io and GitHub with macOS arm64 and Linux x86-64 native

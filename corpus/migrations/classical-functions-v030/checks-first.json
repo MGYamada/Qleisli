@@ -1,0 +1,231 @@
+{
+  "format": 1,
+  "kind": "actual-bounded-migration-checks",
+  "scope": "Actual public CLI checks of the explicitly prepared source snapshots. Configured native bytes are recorded, not child-start/completion attestation, source-preservation proof, new guarantee discharge or release certification. No Cargo rebuild or new Lean build/audit/replay was performed.",
+  "compiler": {
+    "path": "/private/tmp/qleisli-classical-functions-after",
+    "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a",
+    "bytes": 23170928
+  },
+  "native_kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "bytes": 91666928
+  },
+  "sources": {
+    "quantum_katas/grover2/kernel.qli": "3d308274042d094ce76d8c62302da2ed4ba4d30d44e768988e3525369fc529dd",
+    "quantum_katas/grover2/main.qli": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a",
+    "quantum_katas/deutsch_jozsa3/kernel.qli": "e1ea691ef195dc421dc1a964302c1f38fd55e2828974c74be35ea8623996f3d4",
+    "quantum_katas/deutsch_jozsa3/main.qli": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+    "qualtran/less_than2/kernel.qli": "0bdf4bb83a43550930d49b43a4f85e75a186c96ae552bfbb820b3610034e3126",
+    "qualtran/less_than2/main.qli": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce",
+    "qualtran/and_phase/kernel.qli": "24dd0a71a99f0f814daa519e70eb58fe6c4f112def08c9479a8b1e6adb5a7b9c",
+    "qualtran/and_phase/main.qli": "767b429dbf6a28a63c04e878d4a35f2ef2fb26686bc1522028db8ea3cd64d7a9",
+    "qualtran/reflection2/kernel.qli": "2a8ed2e4a73c548c77b149de9a139975e7fab4b8ed9e7f8e4adfefe0c5669464",
+    "qualtran/reflection2/main.qli": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a",
+    "qualtran/reflection_minus1/kernel.qli": "5beae876e8de2e8757c81a743a898d9e924eb9e1f4b0438f9521c319e73d6437",
+    "qualtran/reflection_minus1/main.qli": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+    "qualtran/control_zero_reflection2/kernel.qli": "c15cf03a4720c76956b052b14cb7d9a4e62211fe61d61221b2e984320a95ba78",
+    "qualtran/control_zero_reflection2/main.qli": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+    "pennylane_demos/vqe_excitation/kernel.qli": "e43639bf288667f00f017396df1be2de205bbb24c5c1c59a9827289c194f72ce",
+    "pennylane_demos/vqe_excitation/main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+    "pennylane_demos/phase_lock/kernel.qli": "711b6f47a02e10f38d601577818937715ef29c7c7082946d3cda9344d0a3e069",
+    "pennylane_demos/phase_lock/main.qli": "db986d416273f36507749da6b4473dc18dd3b3adbdd42bdceb15f178c351204b",
+    "pennylane_demos/rx_quarter/kernel.qli": "53fd5dd9667fac08bd6481f56c8781daa447f0365986aac7c4ee6aa7f9d06559",
+    "pennylane_demos/rx_quarter/main.qli": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4"
+  },
+  "results": [
+    {
+      "project": "quantum_katas/grover2",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/quantum_katas/grover2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:24.694635+00:00",
+      "recorded_utc": "2026-10-06T06:36:25.043412+00:00",
+      "seconds": 0.3483397919917479,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "quantum_katas/deutsch_jozsa3",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/quantum_katas/deutsch_jozsa3",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:25.043472+00:00",
+      "recorded_utc": "2026-10-06T06:36:25.404111+00:00",
+      "seconds": 0.36064316699048504,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/less_than2",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/qualtran/less_than2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:25.404190+00:00",
+      "recorded_utc": "2026-10-06T06:36:25.752678+00:00",
+      "seconds": 0.3485029999865219,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/and_phase",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/qualtran/and_phase",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:25.752757+00:00",
+      "recorded_utc": "2026-10-06T06:36:26.090521+00:00",
+      "seconds": 0.33777637500315905,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/reflection2",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/qualtran/reflection2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:26.090597+00:00",
+      "recorded_utc": "2026-10-06T06:36:26.442886+00:00",
+      "seconds": 0.35230170900467783,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/reflection_minus1",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/qualtran/reflection_minus1",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:26.442962+00:00",
+      "recorded_utc": "2026-10-06T06:36:26.836707+00:00",
+      "seconds": 0.3937595000024885,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "qualtran/control_zero_reflection2",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/qualtran/control_zero_reflection2",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:26.836792+00:00",
+      "recorded_utc": "2026-10-06T06:36:27.343391+00:00",
+      "seconds": 0.5066129160113633,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/vqe_excitation",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/pennylane_demos/vqe_excitation",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:27.343474+00:00",
+      "recorded_utc": "2026-10-06T06:36:27.694118+00:00",
+      "seconds": 0.35065762500744313,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/phase_lock",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/pennylane_demos/phase_lock",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:27.694210+00:00",
+      "recorded_utc": "2026-10-06T06:36:28.038877+00:00",
+      "seconds": 0.34468045801622793,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    },
+    {
+      "project": "pennylane_demos/rx_quarter",
+      "argv": [
+        "/private/tmp/qleisli-classical-functions-after",
+        "check",
+        "/Users/masa/git/Qleisli/corpus/migrations/classical-functions-v030/sources/pennylane_demos/rx_quarter",
+        "--format=json"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "started_utc": "2026-10-06T06:36:28.038956+00:00",
+      "recorded_utc": "2026-10-06T06:36:28.486684+00:00",
+      "seconds": 0.4477438750327565,
+      "exit_code": 0,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"ok\",\"diagnostics\":[],\"result\":{\"verified\":true}}\n",
+      "stderr": ""
+    }
+  ],
+  "compiler_identity_stable": true,
+  "native_kernel_identity_stable": true
+}

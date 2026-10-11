@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "lake",
+    "env",
+    "lean",
+    "-DwarningAsError=true",
+    "../tests/fixtures/constitution_v030/shared-control-commutation/Examples.lean"
+  ],
+  "cwd": "lean",
+  "started_utc": "2026-10-04T13:59:34.826536+00:00",
+  "elapsed_seconds": 19.589,
+  "exit_code": 0,
+  "stdout": "examples.stdout.txt",
+  "stderr": "examples.stderr.txt"
+}

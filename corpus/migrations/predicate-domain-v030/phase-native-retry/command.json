@@ -1,0 +1,24 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+    "--case",
+    "pennylane_demos/phase_lock",
+    "--report",
+    "/private/tmp/qleisli-predicate-corpus-phase-native-retry/report.json"
+  ],
+  "cwd": "/private/tmp/qleisli-predicate-corpus-fixed",
+  "inputs": {
+    "/private/tmp/qleisli-predicate-corpus-fixed/scripts/check_input_corpus.py": "4a1986c0dd22da345b9d331a813c9f3186f0e9e715696d5b4dee3da1305a830c",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli": "58a68f1f89bac25e221d5e392587560c994144df359360b1073150a2d5ab1959",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "reason": "Retry with frozen validator and explicit native runtime; previous retry omitted the required runtime selection and failed before probes.",
+  "exit_code": 0,
+  "seconds": 125.4033144999994,
+  "inputs_unchanged": true
+}

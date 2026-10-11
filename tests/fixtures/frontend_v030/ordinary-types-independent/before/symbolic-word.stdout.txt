@@ -1,0 +1,3 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "unsupported", message: "finite profile does not support static Nat parameters", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/symbolic-word/main.qli", span: Span { start: 24, end: 25 }, line: 1, column: 25 }) }
+sized.generic: Error { code: "unsupported", module: Some("main"), span: Span { start: 35, end: 44 }, message: "sized preparation profile: unsupported runtime type" }

@@ -1,0 +1,21 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.012302999966777861,
+  "recorded_utc": "2026-10-05T17:16:45.766012+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "launch_error": null,
+  "timed_out": false,
+  "native_invocations": 0,
+  "native_argv_log": "forward-operation-kind-finite-check-json.native.jsonl",
+  "stdout_raw": "forward-operation-kind-finite-check-json.stdout.txt",
+  "stderr_raw": "forward-operation-kind-finite-check-json.stderr.txt",
+  "stdout_sha256": "5eda170edd5504ca2781294e5b53add4ff64101ed7cfc6d921105ce574dfec18",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

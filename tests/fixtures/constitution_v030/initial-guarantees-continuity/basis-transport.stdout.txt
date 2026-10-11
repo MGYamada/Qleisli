@@ -1,0 +1,5 @@
+'Qleisli.FiniteBasisTransport.ownership_preserved' depends on axioms: [propext]
+'Qleisli.FiniteBasisTransport.scope_preserved' depends on axioms: [propext]
+'Qleisli.FiniteBasisTransport.targetProgram_preserved' depends on axioms: [propext, Classical.choice, Quot.sound]
+'QleisliKernel.Protocol.Validity.check_ownershipSafe' depends on axioms: [propext, Classical.choice, Quot.sound]
+'Qleisli.NativeValidity.check_scopeSafe' depends on axioms: [propext, Classical.choice, Quot.sound]

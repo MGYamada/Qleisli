@@ -1,0 +1,5 @@
+use std::quantum::h;
+basis fn predicate(b: Bit) -> Bit { b }
+unitary fn round_trip(q: Q<Bit>) -> Q<Bit> {
+    with_computed(q,predicate) { |flag| h(h(flag)) }
+}

@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-02/finite-sealed-provider/main.qli:3:34: type_mismatch: static provider requires an ordinary declared unitary function; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`

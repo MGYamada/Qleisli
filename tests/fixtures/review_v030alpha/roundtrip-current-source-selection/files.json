@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "files": {
+    "tests/fixtures/review_v030alpha/roundtrip-current-source-selection/README.md": "9b7ef13ad3ba261eed10d15aebe20c7b3fa560f888217ed975a6c38e168d067f",
+    "tests/fixtures/review_v030alpha/roundtrip-current-source-selection/checkout.stdout.txt": "1d2f157748cf1d53cb509a0bd09a9efe078979abc1ff3f5353cefffe26221e5e",
+    "tests/fixtures/review_v030alpha/roundtrip-current-source-selection/failure.stdout.txt": "7050cd48cd46e3fc5f07985b672b6331d44ec44e56434b4b59003561da2871da",
+    "tests/fixtures/review_v030alpha/roundtrip-current-source-selection/inspection.json": "bf04e7031879b4fa943cc566bafb54042783b04cc3151038782f13add7b8732c",
+    "tests/native_roundtrip.rs": "94d528ce0d2b8c3f7165585bdb3f09c77f6f9a195173a9f546efbb13e7482722"
+  },
+  "checks": {
+    "rustfmt_check": "passed",
+    "git_diff_check": "passed",
+    "migration_files_unchanged": 264
+  },
+  "rust_native_validation": "not run by packet author"
+}

@@ -1,0 +1,41 @@
+   Compiling serde_core v1.0.229
+   Compiling serde v1.0.229
+   Compiling libc v0.2.177
+    Checking hashbrown v0.17.1
+    Checking equivalent v1.0.2
+   Compiling rustix v1.1.3
+    Checking winnow v0.7.15
+    Checking bitflags v2.13.2
+    Checking indexmap v2.14.2
+    Checking errno v0.3.14
+    Checking serde_spanned v0.6.9
+    Checking toml_datetime v0.6.11
+    Checking toml_edit v0.22.27
+    Checking toml v0.8.23
+    Checking qleisli v0.3.0-alpha (/private/tmp/qleisli-ci-repair-fae)
+error: use of `format!` to build up a string from an iterator
+   --> tests/native_roundtrip.rs:386:15
+    |
+386 |       let hex = bytes
+    |  _______________^
+387 | |         .iter()
+388 | |         .map(|byte| format!("{byte:02x}"))
+389 | |         .collect::<String>();
+    | |____________________________^
+    |
+help: call `fold` instead
+   --> tests/native_roundtrip.rs:388:10
+    |
+388 |         .map(|byte| format!("{byte:02x}"))
+    |          ^^^
+help: ... and use the `write!` macro here
+   --> tests/native_roundtrip.rs:388:21
+    |
+388 |         .map(|byte| format!("{byte:02x}"))
+    |                     ^^^^^^^^^^^^^^^^^^^^^
+    = note: this can be written more efficiently by appending to a `String` directly
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#format_collect
+    = note: `-D clippy::format-collect` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::format_collect)]`
+
+error: could not compile `qleisli` (test "native_roundtrip") due to 1 previous error

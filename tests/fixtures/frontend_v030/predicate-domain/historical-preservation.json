@@ -1,0 +1,2873 @@
+{
+  "comparison_base": "a6c8bb7e83a5885c39af1d528afd9a480dfdf62c",
+  "checked_files": [
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/classifier_layer/kernel.qli",
+      "sha256": "a0e4b3131d3d906afbc74a55ed8428bc022f4c79427ee96a96a0e78582039a3c"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/classifier_layer/main.qli",
+      "sha256": "08693374f0459d16ad55e27aedf766e0a568a5036ddfc44c6f7308d7aada7085"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/phase_lock/kernel.qli",
+      "sha256": "bbc6b8744a117960182aed249ac94d4f08e56a082431336fc6560e8ed4309b57"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/phase_lock/main.qli",
+      "sha256": "908a1096605c5fd189e6519c410b2a8007d7acadcc415bbba726de5f446984e6"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qaoa_maxcut/kernel.qli",
+      "sha256": "2b5230bfa872f5e738734d9e635ca48cea507b7a4f2e8519614d11f5db5ee820"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qaoa_maxcut/main.qli",
+      "sha256": "56a11cd0b1d6a6f7235ae30e1a0023bab7cac9a151ed34019c33e07753589745"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+      "sha256": "2481b6bc6bda60d9a7451c343736c5b695fd44737839c4c04d7d76d8862bc35f"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "sha256": "a8813236d336d29c62806a8dcd1b0ca6f765244a51ff98f41e10d2e4c1916168"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qpe3/kernel.qli",
+      "sha256": "116658ebbee68d6c52af61535b2c6ec6ae3886d65f70cecd3f1f681a4bf80d0b"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qpe3/main.qli",
+      "sha256": "d58c46f6d6692bafba9e060fdba2e3ef03bf4db97479e9593de5e8e6199b0efb"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qubit_rotation/kernel.qli",
+      "sha256": "b5013c8b52ef18820181352fc5182bfe75bb8d593e4079bffbec0485fd4f67b8"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/qubit_rotation/main.qli",
+      "sha256": "8fcf1b14ea9b0e5b4df33a16ffc2b15a2e62219155c9025945736314dd997733"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/teleport/kernel.qli",
+      "sha256": "607b3cc15194d30dda919aa7177aad4d16766cacf3cb25cfe3ff54b663611ab1"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/teleport/main.qli",
+      "sha256": "c5fdabd78cef0aed097bfec178d199f1b604b6630c674e38aaf2c18bc053882d"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/vqe_excitation/kernel.qli",
+      "sha256": "3e7353a7717e94a7013b6e76088ec4a9973959974848f23a179ff2056698962d"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/pennylane_demos/vqe_excitation/main.qli",
+      "sha256": "745627ab62a22a6cae0045a131c312e0893398ccec84f4a67919eb97a88fe10b"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/add2/kernel.qli",
+      "sha256": "ccf6bb04853e2e2f8ee47e083aca2b45bf129fc5b754291e499448631cc48a2a"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/add2/main.qli",
+      "sha256": "e6cbe0a322b670263c1d1164a2e6b230e82ad787630b409918576e9dd3591098"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/and_phase/kernel.qli",
+      "sha256": "d3cb10bbc068ddb22dd544fa42821ae47c604e2d0e78d58ff98ae914f0b5cab0"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/and_phase/main.qli",
+      "sha256": "52b34bb261e34a921079fea69298f936ea32d8eff7c6ba2d52883e754ca586e7"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/less_than2/kernel.qli",
+      "sha256": "7d131e7a1c28be28bfbecf556eedc9f057a2fd33985dd0872bcf39b34736e33a"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/less_than2/main.qli",
+      "sha256": "629c664affcab6e77081c3dfe19fe2669b6f21c349e40309cb8dfc80d522bdf4"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/qft2/kernel.qli",
+      "sha256": "c0ecf1f64b018b7a5219ba79a5b94e769139442387e2cdfe8efe5f77e06160ba"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/qft2/main.qli",
+      "sha256": "0d24948fa5eb6b762a60f61feef4bd2268fb408df0548ee4d0b911299f87822e"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/qpe2/kernel.qli",
+      "sha256": "b45a1ea7c16e68747f5803550e3957385e263cef440cf5e8168f049c0ff1d3e1"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/qpe2/main.qli",
+      "sha256": "cb9181b3ba81b88a9adaaf3481760c5b5054bf5f92e0657a7785ef4d142185be"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/qrom2/kernel.qli",
+      "sha256": "6245919d99ae9e4b75496cb28a58f9b136cd35112e12ff25299956d291566d11"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/qrom2/main.qli",
+      "sha256": "95d131e575584edb6108653c5d2dff034f5a1b95e3761b8d4cde258b0457403b"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/reflection2/kernel.qli",
+      "sha256": "2ce0f4334aa1d7f055ab566d5f6b0857f8f6b86c1ca32bd26774646e766b63ad"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/reflection2/main.qli",
+      "sha256": "6a285d901f5e977c92ca2d6a3a337185ca188cbe710f8f97a9b17d46b709ab3f"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/xor2/kernel.qli",
+      "sha256": "2961ddf933b7e15528c509b55f53dc0ee26529e993528709388c187bddc0b62f"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/qualtran/xor2/main.qli",
+      "sha256": "c69bcbb5cb395e7e371a103d3698cecc1c4522c04fcf67b0b1bb00db04a7c67b"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/bernstein_vazirani/kernel.qli",
+      "sha256": "b453a3e11f8ad64e031db6a5cf3d66760cc843781c8d39e30a4e5b635a80fbfc"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/bernstein_vazirani/main.qli",
+      "sha256": "a8cb63804c17ef429d8ffbe2e16e299c7bcc7b845116898961f3b7f914355a1e"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/dense_coding/kernel.qli",
+      "sha256": "53b470ca86afa41e7d38fb64dcfc8e4fa4a409a349efc4131fe0976dba090792"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/dense_coding/main.qli",
+      "sha256": "0a9dde3a831848907b73f2125ec9dc2435639bc4d16556b7f6ede4fbde8e37c4"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/ghz3/kernel.qli",
+      "sha256": "bb91b077c8c592d2ff352dc3c719701f26545f0a81f175e7ee303657bf3f9554"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/ghz3/main.qli",
+      "sha256": "f5824c8f59a97f2ca36bd6e6308b3c1b0361dc2a8f989b32f9c007edc2926255"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/global_phase/kernel.qli",
+      "sha256": "933778712c054cb3aabc04b6b1503f89759e36ff76423fe81bf9ddf143a2717a"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/global_phase/main.qli",
+      "sha256": "4766858fb951f1285996557820d65faf0c841c81c185f06b0ae1b68063c0c70d"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/grover2/kernel.qli",
+      "sha256": "a73837d063e74fe7404e7a9cbd8c9d46997b70271556c178ffd4c8c44970b925"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/grover2/main.qli",
+      "sha256": "567fd78ab4b1048805b83a27b8b411db77b65a9ad5b58c67c4d54ae8e8dd13a5"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/measure_plus/kernel.qli",
+      "sha256": "1d92b5b525a4bfee6017e0172a311c21d483408e1e1adcaf117548407a960c75"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/measure_plus/main.qli",
+      "sha256": "1d1ead26a5d0c79cbc4bac9705b298cda1c69069954e23fab89d99c4d4a408e2"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/qpe3/kernel.qli",
+      "sha256": "bdb3b66b83ad2af6b86609a435536dd60cc96fbc0e7ef5d1233a342b27fdfde7"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/qpe3/main.qli",
+      "sha256": "6e9051551fbc72bd23b0f05ebd0fdef00df445cb6d2063b81088e73f47d28769"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/teleport/kernel.qli",
+      "sha256": "170e9b149565f6fbe55d7f86ff208fd4e18b98c82cfb07747d671cc638a0d6c5"
+    },
+    {
+      "path": "corpus/authoring/attempt-01/quantum_katas/teleport/main.qli",
+      "sha256": "d14e703441d9ab94b86cda96d48188e7dff52a4374d834f623193bbfaa019dfa"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/classifier_layer/kernel.qli",
+      "sha256": "a0e4b3131d3d906afbc74a55ed8428bc022f4c79427ee96a96a0e78582039a3c"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/classifier_layer/main.qli",
+      "sha256": "08693374f0459d16ad55e27aedf766e0a568a5036ddfc44c6f7308d7aada7085"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/phase_lock/kernel.qli",
+      "sha256": "bbc6b8744a117960182aed249ac94d4f08e56a082431336fc6560e8ed4309b57"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/phase_lock/main.qli",
+      "sha256": "908a1096605c5fd189e6519c410b2a8007d7acadcc415bbba726de5f446984e6"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qaoa_maxcut/kernel.qli",
+      "sha256": "425098e66ee7e9109122a2d0607165af04b04a54e816a2a5a3d6239f328be5ce"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qaoa_maxcut/main.qli",
+      "sha256": "56a11cd0b1d6a6f7235ae30e1a0023bab7cac9a151ed34019c33e07753589745"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+      "sha256": "3311ce41f277d48e4d026bbf5b9e193d3a6142e24a9b685bbf31b292d192b3e5"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "sha256": "a8813236d336d29c62806a8dcd1b0ca6f765244a51ff98f41e10d2e4c1916168"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qpe3/kernel.qli",
+      "sha256": "116658ebbee68d6c52af61535b2c6ec6ae3886d65f70cecd3f1f681a4bf80d0b"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qpe3/main.qli",
+      "sha256": "d58c46f6d6692bafba9e060fdba2e3ef03bf4db97479e9593de5e8e6199b0efb"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qubit_rotation/kernel.qli",
+      "sha256": "006e4523d0576b1b3e3ddf0a55a91cd21ac6ddad7b65d18a6e9d5be2ff8ae1b6"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/qubit_rotation/main.qli",
+      "sha256": "8fcf1b14ea9b0e5b4df33a16ffc2b15a2e62219155c9025945736314dd997733"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/teleport/kernel.qli",
+      "sha256": "607b3cc15194d30dda919aa7177aad4d16766cacf3cb25cfe3ff54b663611ab1"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/teleport/main.qli",
+      "sha256": "c5fdabd78cef0aed097bfec178d199f1b604b6630c674e38aaf2c18bc053882d"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/vqe_excitation/kernel.qli",
+      "sha256": "b49462b235fb1314492c211d195891b9bf57bd4b12b7f71c32222f007b555c1e"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/pennylane_demos/vqe_excitation/main.qli",
+      "sha256": "745627ab62a22a6cae0045a131c312e0893398ccec84f4a67919eb97a88fe10b"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/add2/kernel.qli",
+      "sha256": "ccf6bb04853e2e2f8ee47e083aca2b45bf129fc5b754291e499448631cc48a2a"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/add2/main.qli",
+      "sha256": "e6cbe0a322b670263c1d1164a2e6b230e82ad787630b409918576e9dd3591098"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/and_phase/kernel.qli",
+      "sha256": "d3cb10bbc068ddb22dd544fa42821ae47c604e2d0e78d58ff98ae914f0b5cab0"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/and_phase/main.qli",
+      "sha256": "52b34bb261e34a921079fea69298f936ea32d8eff7c6ba2d52883e754ca586e7"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/less_than2/kernel.qli",
+      "sha256": "07f42dac84b9e7f440bd5c4cb0839e89fd28e1598254b1f20d28c842217c0bec"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/less_than2/main.qli",
+      "sha256": "629c664affcab6e77081c3dfe19fe2669b6f21c349e40309cb8dfc80d522bdf4"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/qft2/kernel.qli",
+      "sha256": "c0ecf1f64b018b7a5219ba79a5b94e769139442387e2cdfe8efe5f77e06160ba"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/qft2/main.qli",
+      "sha256": "0d24948fa5eb6b762a60f61feef4bd2268fb408df0548ee4d0b911299f87822e"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/qpe2/kernel.qli",
+      "sha256": "b45a1ea7c16e68747f5803550e3957385e263cef440cf5e8168f049c0ff1d3e1"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/qpe2/main.qli",
+      "sha256": "cb9181b3ba81b88a9adaaf3481760c5b5054bf5f92e0657a7785ef4d142185be"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/qrom2/kernel.qli",
+      "sha256": "6245919d99ae9e4b75496cb28a58f9b136cd35112e12ff25299956d291566d11"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/qrom2/main.qli",
+      "sha256": "95d131e575584edb6108653c5d2dff034f5a1b95e3761b8d4cde258b0457403b"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/reflection2/kernel.qli",
+      "sha256": "2ce0f4334aa1d7f055ab566d5f6b0857f8f6b86c1ca32bd26774646e766b63ad"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/reflection2/main.qli",
+      "sha256": "6a285d901f5e977c92ca2d6a3a337185ca188cbe710f8f97a9b17d46b709ab3f"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/xor2/kernel.qli",
+      "sha256": "2961ddf933b7e15528c509b55f53dc0ee26529e993528709388c187bddc0b62f"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/qualtran/xor2/main.qli",
+      "sha256": "c69bcbb5cb395e7e371a103d3698cecc1c4522c04fcf67b0b1bb00db04a7c67b"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/bernstein_vazirani/kernel.qli",
+      "sha256": "b453a3e11f8ad64e031db6a5cf3d66760cc843781c8d39e30a4e5b635a80fbfc"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/bernstein_vazirani/main.qli",
+      "sha256": "a8cb63804c17ef429d8ffbe2e16e299c7bcc7b845116898961f3b7f914355a1e"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/dense_coding/kernel.qli",
+      "sha256": "53b470ca86afa41e7d38fb64dcfc8e4fa4a409a349efc4131fe0976dba090792"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/dense_coding/main.qli",
+      "sha256": "0a9dde3a831848907b73f2125ec9dc2435639bc4d16556b7f6ede4fbde8e37c4"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/ghz3/kernel.qli",
+      "sha256": "bb91b077c8c592d2ff352dc3c719701f26545f0a81f175e7ee303657bf3f9554"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/ghz3/main.qli",
+      "sha256": "f5824c8f59a97f2ca36bd6e6308b3c1b0361dc2a8f989b32f9c007edc2926255"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/global_phase/kernel.qli",
+      "sha256": "933778712c054cb3aabc04b6b1503f89759e36ff76423fe81bf9ddf143a2717a"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/global_phase/main.qli",
+      "sha256": "4766858fb951f1285996557820d65faf0c841c81c185f06b0ae1b68063c0c70d"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/grover2/kernel.qli",
+      "sha256": "a73837d063e74fe7404e7a9cbd8c9d46997b70271556c178ffd4c8c44970b925"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/grover2/main.qli",
+      "sha256": "567fd78ab4b1048805b83a27b8b411db77b65a9ad5b58c67c4d54ae8e8dd13a5"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/measure_plus/kernel.qli",
+      "sha256": "1d92b5b525a4bfee6017e0172a311c21d483408e1e1adcaf117548407a960c75"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/measure_plus/main.qli",
+      "sha256": "1d1ead26a5d0c79cbc4bac9705b298cda1c69069954e23fab89d99c4d4a408e2"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/qpe3/kernel.qli",
+      "sha256": "bdb3b66b83ad2af6b86609a435536dd60cc96fbc0e7ef5d1233a342b27fdfde7"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/qpe3/main.qli",
+      "sha256": "6e9051551fbc72bd23b0f05ebd0fdef00df445cb6d2063b81088e73f47d28769"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/teleport/kernel.qli",
+      "sha256": "170e9b149565f6fbe55d7f86ff208fd4e18b98c82cfb07747d671cc638a0d6c5"
+    },
+    {
+      "path": "corpus/authoring/attempt-02/quantum_katas/teleport/main.qli",
+      "sha256": "d14e703441d9ab94b86cda96d48188e7dff52a4374d834f623193bbfaa019dfa"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/classifier_layer/kernel.qli",
+      "sha256": "67973d9db14af1cc242610ce5e7a219759ec3aff46aab5da8c8db81a7365ce75"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/classifier_layer/main.qli",
+      "sha256": "78eea282bdb75fc4d9c26d74cf42faab028c11eb36b9d9930499eb34835a2584"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/phase_lock/kernel.qli",
+      "sha256": "bead7c17c8619bb2cb791f5a65ef8e0c2dc91435515c5e5c91b02f62558747a8"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/phase_lock/main.qli",
+      "sha256": "779911d5b4b3f0fd76fa4467004e9e924d695664fda5ee3e3b198d33675683fa"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qaoa_maxcut/kernel.qli",
+      "sha256": "26ca16de43d6862a00afe1003733f8dcc94bd6bcee8f630e871c54b7c1c1ea74"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qaoa_maxcut/main.qli",
+      "sha256": "af1e74619f4682388feefee7419dceac859cfa5aa5a433f34536acf0c7926945"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+      "sha256": "d062e4e0f47c49ea6350c3a159cdc777fe0e8152d121e332ad40625536b4501c"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "sha256": "9ed1d5273bf06eb266a78c48a5274ef5545e57a644819ff2474e2493d1c68c31"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qpe3/kernel.qli",
+      "sha256": "8ea57fed01a3800d8053463571bd496e95b92fcf560936443a4d767a34e5bad8"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qpe3/main.qli",
+      "sha256": "d76df3145897833f290ff26660ac0641bff6a699d90aa1d94596db4f365a714e"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qubit_rotation/kernel.qli",
+      "sha256": "fcb5793030013cd63751acbd0aa64f87534192aa49e81d2c398f9231d13c479d"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/qubit_rotation/main.qli",
+      "sha256": "427cc5c47839612ccd79271e851f819e3ed3160d554ba80d85e7dd0bb045654d"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/teleport/kernel.qli",
+      "sha256": "84078ef3a93141f893230fbbadd8d42b1f48ea9e3d9f1eb7fc7f0a034dbfa614"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/teleport/main.qli",
+      "sha256": "5ea3e260683d1483461980f4685f6bddc08d7c55e0aec6cfda413caa7a2f6a57"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/vqe_excitation/kernel.qli",
+      "sha256": "b4a2692660dd15fba342444f4346081628e8b9cc8be215bcf9e356ce597cbe3a"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/pennylane_demos/vqe_excitation/main.qli",
+      "sha256": "daa243dd9cf9df5e9de353d30f6da795095f7bc9337c425f6e92ec86e8331090"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/add2/kernel.qli",
+      "sha256": "d312954923927e79ca31ce1d3dae1ab3d376f5cb0848ee38af052d19d0b1a6c6"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/add2/main.qli",
+      "sha256": "0e5c1c586b546194450bce013d6c98d520ac82f60b111b8e12b72514595e5e73"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/and_phase/kernel.qli",
+      "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/and_phase/main.qli",
+      "sha256": "cf0a05c55747d89469d061e61601582182ef833fc42b19392178b8fbdf47cfd8"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/less_than2/kernel.qli",
+      "sha256": "a3531c2b2c54a5bb60c4834b447569dd4f7cbe698097675bc700c42b38696c82"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/less_than2/main.qli",
+      "sha256": "b68a775682d106dc41b12e56dbb177e798967a78423ca84ba41f238182b973f1"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/qft2/kernel.qli",
+      "sha256": "b8d2fa060a0a8711732e3d2b7ea737b1d771ec3dd1853aac6ad7a5fa51a3206a"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/qft2/main.qli",
+      "sha256": "ece2a088d8ac636a95a388687733ed447994e62e69164267e93241069ff0c747"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/qpe2/kernel.qli",
+      "sha256": "f16db88b7e0e992e6333d4e6459050501f002e20522bd80739f1d3ace87c1e36"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/qpe2/main.qli",
+      "sha256": "87e2ad98b19655b910309d25426e6c5817fe42974116a9f2d9e774864822e91e"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/qrom2/kernel.qli",
+      "sha256": "517c2c9e1ddddd6474d170d337362ed05b76b907df859ebdbeb13577cc410443"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/qrom2/main.qli",
+      "sha256": "28d39ce78b31897c7837c4722c1e8351b1d908bce8896c9236f13a1b1d694d35"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/reflection2/kernel.qli",
+      "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/reflection2/main.qli",
+      "sha256": "6355138d09d8b1e826a91aef1048f1e4ac1bd5574a08514b0059887173209fdf"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/xor2/kernel.qli",
+      "sha256": "64a2334b8f5e3e3d6d0d404d3f0f9c958c208fac17c4dcd5989224e31acaa0a3"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/qualtran/xor2/main.qli",
+      "sha256": "5c2d083d13df1a02c6050a91e5630e1d39910eace3be7202de401e8bc0fda74c"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/bernstein_vazirani/kernel.qli",
+      "sha256": "bff0cce9d231beca913f07eb44ca787318cef6cc2b7726ae572ccd68a25d8017"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/bernstein_vazirani/main.qli",
+      "sha256": "a78dbc690b80d1c2eb94ce5ce07952d4cda3fb5d75280ba0d4188fcdca9cba02"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/dense_coding/kernel.qli",
+      "sha256": "51fb6ca95d0205223d339df3ddd25df0b67a42f4a59b47ce0ebbc4c7c1fb70c6"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/dense_coding/main.qli",
+      "sha256": "3337b2794d55a73f52e2583cb1b9c0dfd2c3ac33645eea7a316573e57e0761ba"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/ghz3/kernel.qli",
+      "sha256": "f0d93807854ec7721b138c11b299f269cd31fbc86d2e8e55183940e1fbb2a6cd"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/ghz3/main.qli",
+      "sha256": "f1cd1ca0216398d40a87e6ed7edf924064343ec6fd5a12ed0924b105bb53027a"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/global_phase/kernel.qli",
+      "sha256": "5937d1db8abf6b82d8a23610ffe67cd2e1bfa48eb7653ce2489cb57fd58eae44"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/global_phase/main.qli",
+      "sha256": "70c5a477eeb03177ef95e4493c8da6861398487e5d93735697e91fa39891e406"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/grover2/kernel.qli",
+      "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/grover2/main.qli",
+      "sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/measure_plus/kernel.qli",
+      "sha256": "47e1ee57f5449d746e6b2ef88364b6650b2acb426ef90fa495646f50fd38ef57"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/measure_plus/main.qli",
+      "sha256": "0d41c21beaff789f0288e81a26ca15418ffcef7372cbe2cd72feb3c1373f1a0b"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/qpe3/kernel.qli",
+      "sha256": "9ae855816902a3924a6da32148d2cd33863e7797af0f8e94689619a812adeace"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/qpe3/main.qli",
+      "sha256": "37040c2953de4a97b3ca07a7602c87411aefdff5cce54ee9f178d9f6a57e2fd0"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/teleport/kernel.qli",
+      "sha256": "1d181d4e8877f22df905571f44300318e71281c78ba5536ed65f64fca6c92f0d"
+    },
+    {
+      "path": "corpus/authoring/attempt-03/quantum_katas/teleport/main.qli",
+      "sha256": "d784808cdd07a2bda54e067f5da14027127188ecc7addad038162d4781a9e59d"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/classifier_layer/kernel.qli",
+      "sha256": "67973d9db14af1cc242610ce5e7a219759ec3aff46aab5da8c8db81a7365ce75"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/classifier_layer/main.qli",
+      "sha256": "78eea282bdb75fc4d9c26d74cf42faab028c11eb36b9d9930499eb34835a2584"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/phase_lock/kernel.qli",
+      "sha256": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/phase_lock/main.qli",
+      "sha256": "779911d5b4b3f0fd76fa4467004e9e924d695664fda5ee3e3b198d33675683fa"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qaoa_maxcut/kernel.qli",
+      "sha256": "26ca16de43d6862a00afe1003733f8dcc94bd6bcee8f630e871c54b7c1c1ea74"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qaoa_maxcut/main.qli",
+      "sha256": "af1e74619f4682388feefee7419dceac859cfa5aa5a433f34536acf0c7926945"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+      "sha256": "d062e4e0f47c49ea6350c3a159cdc777fe0e8152d121e332ad40625536b4501c"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "sha256": "9ed1d5273bf06eb266a78c48a5274ef5545e57a644819ff2474e2493d1c68c31"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qpe3/kernel.qli",
+      "sha256": "8ea57fed01a3800d8053463571bd496e95b92fcf560936443a4d767a34e5bad8"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qpe3/main.qli",
+      "sha256": "d76df3145897833f290ff26660ac0641bff6a699d90aa1d94596db4f365a714e"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qubit_rotation/kernel.qli",
+      "sha256": "fcb5793030013cd63751acbd0aa64f87534192aa49e81d2c398f9231d13c479d"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/qubit_rotation/main.qli",
+      "sha256": "427cc5c47839612ccd79271e851f819e3ed3160d554ba80d85e7dd0bb045654d"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/teleport/kernel.qli",
+      "sha256": "84078ef3a93141f893230fbbadd8d42b1f48ea9e3d9f1eb7fc7f0a034dbfa614"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/teleport/main.qli",
+      "sha256": "5ea3e260683d1483461980f4685f6bddc08d7c55e0aec6cfda413caa7a2f6a57"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/vqe_excitation/kernel.qli",
+      "sha256": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/pennylane_demos/vqe_excitation/main.qli",
+      "sha256": "daa243dd9cf9df5e9de353d30f6da795095f7bc9337c425f6e92ec86e8331090"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/add2/kernel.qli",
+      "sha256": "d312954923927e79ca31ce1d3dae1ab3d376f5cb0848ee38af052d19d0b1a6c6"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/add2/main.qli",
+      "sha256": "0e5c1c586b546194450bce013d6c98d520ac82f60b111b8e12b72514595e5e73"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/and_phase/kernel.qli",
+      "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/and_phase/main.qli",
+      "sha256": "cf0a05c55747d89469d061e61601582182ef833fc42b19392178b8fbdf47cfd8"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/less_than2/kernel.qli",
+      "sha256": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/less_than2/main.qli",
+      "sha256": "b68a775682d106dc41b12e56dbb177e798967a78423ca84ba41f238182b973f1"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/qft2/kernel.qli",
+      "sha256": "b8d2fa060a0a8711732e3d2b7ea737b1d771ec3dd1853aac6ad7a5fa51a3206a"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/qft2/main.qli",
+      "sha256": "ece2a088d8ac636a95a388687733ed447994e62e69164267e93241069ff0c747"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/qpe2/kernel.qli",
+      "sha256": "f16db88b7e0e992e6333d4e6459050501f002e20522bd80739f1d3ace87c1e36"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/qpe2/main.qli",
+      "sha256": "87e2ad98b19655b910309d25426e6c5817fe42974116a9f2d9e774864822e91e"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/qrom2/kernel.qli",
+      "sha256": "517c2c9e1ddddd6474d170d337362ed05b76b907df859ebdbeb13577cc410443"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/qrom2/main.qli",
+      "sha256": "28d39ce78b31897c7837c4722c1e8351b1d908bce8896c9236f13a1b1d694d35"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/reflection2/kernel.qli",
+      "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/reflection2/main.qli",
+      "sha256": "6355138d09d8b1e826a91aef1048f1e4ac1bd5574a08514b0059887173209fdf"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/xor2/kernel.qli",
+      "sha256": "64a2334b8f5e3e3d6d0d404d3f0f9c958c208fac17c4dcd5989224e31acaa0a3"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/qualtran/xor2/main.qli",
+      "sha256": "5c2d083d13df1a02c6050a91e5630e1d39910eace3be7202de401e8bc0fda74c"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/bernstein_vazirani/kernel.qli",
+      "sha256": "bff0cce9d231beca913f07eb44ca787318cef6cc2b7726ae572ccd68a25d8017"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/bernstein_vazirani/main.qli",
+      "sha256": "a78dbc690b80d1c2eb94ce5ce07952d4cda3fb5d75280ba0d4188fcdca9cba02"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/dense_coding/kernel.qli",
+      "sha256": "51fb6ca95d0205223d339df3ddd25df0b67a42f4a59b47ce0ebbc4c7c1fb70c6"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/dense_coding/main.qli",
+      "sha256": "3337b2794d55a73f52e2583cb1b9c0dfd2c3ac33645eea7a316573e57e0761ba"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/ghz3/kernel.qli",
+      "sha256": "f0d93807854ec7721b138c11b299f269cd31fbc86d2e8e55183940e1fbb2a6cd"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/ghz3/main.qli",
+      "sha256": "f1cd1ca0216398d40a87e6ed7edf924064343ec6fd5a12ed0924b105bb53027a"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/global_phase/kernel.qli",
+      "sha256": "5937d1db8abf6b82d8a23610ffe67cd2e1bfa48eb7653ce2489cb57fd58eae44"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/global_phase/main.qli",
+      "sha256": "70c5a477eeb03177ef95e4493c8da6861398487e5d93735697e91fa39891e406"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/grover2/kernel.qli",
+      "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/grover2/main.qli",
+      "sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/measure_plus/kernel.qli",
+      "sha256": "47e1ee57f5449d746e6b2ef88364b6650b2acb426ef90fa495646f50fd38ef57"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/measure_plus/main.qli",
+      "sha256": "0d41c21beaff789f0288e81a26ca15418ffcef7372cbe2cd72feb3c1373f1a0b"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/qpe3/kernel.qli",
+      "sha256": "9ae855816902a3924a6da32148d2cd33863e7797af0f8e94689619a812adeace"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/qpe3/main.qli",
+      "sha256": "37040c2953de4a97b3ca07a7602c87411aefdff5cce54ee9f178d9f6a57e2fd0"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/teleport/kernel.qli",
+      "sha256": "1d181d4e8877f22df905571f44300318e71281c78ba5536ed65f64fca6c92f0d"
+    },
+    {
+      "path": "corpus/authoring/attempt-04/quantum_katas/teleport/main.qli",
+      "sha256": "d784808cdd07a2bda54e067f5da14027127188ecc7addad038162d4781a9e59d"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/classifier_layer/kernel.qli",
+      "sha256": "67973d9db14af1cc242610ce5e7a219759ec3aff46aab5da8c8db81a7365ce75"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/classifier_layer/main.qli",
+      "sha256": "78eea282bdb75fc4d9c26d74cf42faab028c11eb36b9d9930499eb34835a2584"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/phase_lock/kernel.qli",
+      "sha256": "0b0b0ea6a74ca38c80a72e0c7ce1d8faa38924946083c8d81dfc5c86aa0f1c78"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/phase_lock/main.qli",
+      "sha256": "779911d5b4b3f0fd76fa4467004e9e924d695664fda5ee3e3b198d33675683fa"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qaoa_maxcut/kernel.qli",
+      "sha256": "baad3cd880f1fcea80d69b57e24842317e14376cdf684b403183a4cfecdcc9a4"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qaoa_maxcut/main.qli",
+      "sha256": "af1e74619f4682388feefee7419dceac859cfa5aa5a433f34536acf0c7926945"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qaoa_vertex_cover/kernel.qli",
+      "sha256": "80c3382c46fec5d20893d3a8ba9ebc38d2bd423194faa30afd3ed6fb2c8c5118"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "sha256": "9ed1d5273bf06eb266a78c48a5274ef5545e57a644819ff2474e2493d1c68c31"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qpe3/kernel.qli",
+      "sha256": "19075932c37f442aafd63ee47e76aa37a3472b6879fae98e3468fd139fc23dcf"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qpe3/main.qli",
+      "sha256": "d76df3145897833f290ff26660ac0641bff6a699d90aa1d94596db4f365a714e"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qubit_rotation/kernel.qli",
+      "sha256": "f47149d434e7db85529d2fb20b13061e6cedba23fa58ae17f3b83fc65b8daf1b"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/qubit_rotation/main.qli",
+      "sha256": "427cc5c47839612ccd79271e851f819e3ed3160d554ba80d85e7dd0bb045654d"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/teleport/kernel.qli",
+      "sha256": "84078ef3a93141f893230fbbadd8d42b1f48ea9e3d9f1eb7fc7f0a034dbfa614"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/teleport/main.qli",
+      "sha256": "5ea3e260683d1483461980f4685f6bddc08d7c55e0aec6cfda413caa7a2f6a57"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/vqe_excitation/kernel.qli",
+      "sha256": "67821e676ff282ab93af6dc1069fa92f61c8c28c179f6298a21054a2d27d0e37"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/pennylane_demos/vqe_excitation/main.qli",
+      "sha256": "daa243dd9cf9df5e9de353d30f6da795095f7bc9337c425f6e92ec86e8331090"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/add2/kernel.qli",
+      "sha256": "d312954923927e79ca31ce1d3dae1ab3d376f5cb0848ee38af052d19d0b1a6c6"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/add2/main.qli",
+      "sha256": "0e5c1c586b546194450bce013d6c98d520ac82f60b111b8e12b72514595e5e73"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/and_phase/kernel.qli",
+      "sha256": "6cbca4bdab837622a7fe3b3368c6dac4af936357cac5c2f136d3e9f3919c19b1"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/and_phase/main.qli",
+      "sha256": "cf0a05c55747d89469d061e61601582182ef833fc42b19392178b8fbdf47cfd8"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/less_than2/kernel.qli",
+      "sha256": "0dd8be8af12aeef0dc93e2ae8c4926db5c3f2b771dda218f9ceca03073c25d20"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/less_than2/main.qli",
+      "sha256": "b68a775682d106dc41b12e56dbb177e798967a78423ca84ba41f238182b973f1"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/qft2/kernel.qli",
+      "sha256": "b8d2fa060a0a8711732e3d2b7ea737b1d771ec3dd1853aac6ad7a5fa51a3206a"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/qft2/main.qli",
+      "sha256": "ece2a088d8ac636a95a388687733ed447994e62e69164267e93241069ff0c747"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/qpe2/kernel.qli",
+      "sha256": "f92af9bedac5237a91854f606588a205480a09e67ab779e0c17d0855ba94e75a"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/qpe2/main.qli",
+      "sha256": "87e2ad98b19655b910309d25426e6c5817fe42974116a9f2d9e774864822e91e"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/qrom2/kernel.qli",
+      "sha256": "517c2c9e1ddddd6474d170d337362ed05b76b907df859ebdbeb13577cc410443"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/qrom2/main.qli",
+      "sha256": "28d39ce78b31897c7837c4722c1e8351b1d908bce8896c9236f13a1b1d694d35"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/reflection2/kernel.qli",
+      "sha256": "442e7860b790c0aa6131e47fc50cc7d87f3433b92aa83dc783891185617e657e"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/reflection2/main.qli",
+      "sha256": "6355138d09d8b1e826a91aef1048f1e4ac1bd5574a08514b0059887173209fdf"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/xor2/kernel.qli",
+      "sha256": "64a2334b8f5e3e3d6d0d404d3f0f9c958c208fac17c4dcd5989224e31acaa0a3"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/qualtran/xor2/main.qli",
+      "sha256": "5c2d083d13df1a02c6050a91e5630e1d39910eace3be7202de401e8bc0fda74c"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/bernstein_vazirani/kernel.qli",
+      "sha256": "bff0cce9d231beca913f07eb44ca787318cef6cc2b7726ae572ccd68a25d8017"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/bernstein_vazirani/main.qli",
+      "sha256": "a78dbc690b80d1c2eb94ce5ce07952d4cda3fb5d75280ba0d4188fcdca9cba02"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/dense_coding/kernel.qli",
+      "sha256": "51fb6ca95d0205223d339df3ddd25df0b67a42f4a59b47ce0ebbc4c7c1fb70c6"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/dense_coding/main.qli",
+      "sha256": "3337b2794d55a73f52e2583cb1b9c0dfd2c3ac33645eea7a316573e57e0761ba"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/ghz3/kernel.qli",
+      "sha256": "f0d93807854ec7721b138c11b299f269cd31fbc86d2e8e55183940e1fbb2a6cd"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/ghz3/main.qli",
+      "sha256": "f1cd1ca0216398d40a87e6ed7edf924064343ec6fd5a12ed0924b105bb53027a"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/global_phase/kernel.qli",
+      "sha256": "5937d1db8abf6b82d8a23610ffe67cd2e1bfa48eb7653ce2489cb57fd58eae44"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/global_phase/main.qli",
+      "sha256": "70c5a477eeb03177ef95e4493c8da6861398487e5d93735697e91fa39891e406"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/grover2/kernel.qli",
+      "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/grover2/main.qli",
+      "sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/measure_plus/kernel.qli",
+      "sha256": "47e1ee57f5449d746e6b2ef88364b6650b2acb426ef90fa495646f50fd38ef57"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/measure_plus/main.qli",
+      "sha256": "0d41c21beaff789f0288e81a26ca15418ffcef7372cbe2cd72feb3c1373f1a0b"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/qpe3/kernel.qli",
+      "sha256": "7bf19c837512d27e44a3a23085ded55faef863e727ffc1fc9cab4c08feeb2fee"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/qpe3/main.qli",
+      "sha256": "37040c2953de4a97b3ca07a7602c87411aefdff5cce54ee9f178d9f6a57e2fd0"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/teleport/kernel.qli",
+      "sha256": "1d181d4e8877f22df905571f44300318e71281c78ba5536ed65f64fca6c92f0d"
+    },
+    {
+      "path": "corpus/authoring/attempt-05/quantum_katas/teleport/main.qli",
+      "sha256": "d784808cdd07a2bda54e067f5da14027127188ecc7addad038162d4781a9e59d"
+    },
+    {
+      "path": "corpus/authoring/check-initial.json",
+      "sha256": "fa921c8d22966f438b751c89ea9c1d3b08c65f785d7365fb71c487240a247e55"
+    },
+    {
+      "path": "corpus/authoring/check-second.json",
+      "sha256": "9a30e9a16eb7f576fd23d3bff907407b7ba653f977519b578e22348b5feb75b7"
+    },
+    {
+      "path": "corpus/authoring/check-third.json",
+      "sha256": "e3610cffebe13a9d04ccc306780f6d8b0ce41c6387ba2289da94f3fe0baae38e"
+    },
+    {
+      "path": "corpus/authoring/review-checks.json",
+      "sha256": "be5486fc8699aaf8e439c2dd0099c28c5854f13c5394502affed95af1a16bafd"
+    },
+    {
+      "path": "corpus/authoring/review-semantics.json",
+      "sha256": "7f289726f359f9de733c1c8459c0415242e78324a71a56039a73a816989dabb9"
+    },
+    {
+      "path": "corpus/authoring/semantic-final.json",
+      "sha256": "bca913caae1153eb0b088d271624c5eee24625cf8d2e08d1d3f14dae06380e72"
+    },
+    {
+      "path": "corpus/authoring/session.json",
+      "sha256": "994fce25f857fc046725c261db1abd7f08a5cd9617625d8b7db0e821f7549a60"
+    },
+    {
+      "path": "corpus/authoring/tuple-shapes-after.json",
+      "sha256": "4e6f710176d3bcc2c3baff8e2ec469a504039be0e7d4d19e8a37e4585e935000"
+    },
+    {
+      "path": "corpus/authoring/tuple-shapes-before.json",
+      "sha256": "8aba461801aadf19691c176b1590e51289cacaf0d1059ec3b8f27b95ba337d53"
+    },
+    {
+      "path": "corpus/authoring/tuple-shapes-semantic.json",
+      "sha256": "f33a4819fc366d2184ba8f5806790fb9782b3d64a90232e83da62ae812d6077f"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/README.md",
+      "sha256": "0f8d55ab882fdc97d5c4459bceb959c3ae8ffea266c6762cb966a132b2bba48d"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/pennylane_demos/kernel_overlap2/kernel.qli",
+      "sha256": "10d81029ed2d6978b1c4773f6411f182d13cc96902246f13234c7d97c8edbdef"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/pennylane_demos/kernel_overlap2/main.qli",
+      "sha256": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/pennylane_demos/lcu_projector/kernel.qli",
+      "sha256": "3cbed5e5f11e398efcd0f8fe69a0a204f9a0d64baadcd81d0b2aa06315425aec"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/pennylane_demos/lcu_projector/main.qli",
+      "sha256": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/qualtran/add_constant3/kernel.qli",
+      "sha256": "919e0a13fb82450d067ea24c7cf2c27d6040b7794010c0a241c126d37c2fe518"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/qualtran/add_constant3/main.qli",
+      "sha256": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/qualtran/equals2/kernel.qli",
+      "sha256": "f90a3d88e538f7b6b32cd944017fd1683d85a93cc41853b91c99be7c625427e5"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/qualtran/equals2/main.qli",
+      "sha256": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/quantum_katas/bell_measure/kernel.qli",
+      "sha256": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/quantum_katas/bell_measure/main.qli",
+      "sha256": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/quantum_katas/deutsch_jozsa3/kernel.qli",
+      "sha256": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-01/quantum_katas/deutsch_jozsa3/main.qli",
+      "sha256": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/pennylane_demos/kernel_overlap2/kernel.qli",
+      "sha256": "7a0a853c0a0d706eff7cffef6e726465a524ebf8f265444b932033a6a786f40b"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/pennylane_demos/kernel_overlap2/main.qli",
+      "sha256": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/pennylane_demos/lcu_projector/kernel.qli",
+      "sha256": "2e545374d28ce5949c0b4dec9f5ba5ace2a405fce330166644b2940d0793bb77"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/pennylane_demos/lcu_projector/main.qli",
+      "sha256": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/qualtran/add_constant3/kernel.qli",
+      "sha256": "919e0a13fb82450d067ea24c7cf2c27d6040b7794010c0a241c126d37c2fe518"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/qualtran/add_constant3/main.qli",
+      "sha256": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/qualtran/equals2/kernel.qli",
+      "sha256": "f90a3d88e538f7b6b32cd944017fd1683d85a93cc41853b91c99be7c625427e5"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/qualtran/equals2/main.qli",
+      "sha256": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/quantum_katas/bell_measure/kernel.qli",
+      "sha256": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/quantum_katas/bell_measure/main.qli",
+      "sha256": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/quantum_katas/deutsch_jozsa3/kernel.qli",
+      "sha256": "5feceb98517826f3145f7bc94360762827f690ab1cf44a2c0b729cb15a12e257"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/attempt-02/quantum_katas/deutsch_jozsa3/main.qli",
+      "sha256": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/check-initial.json",
+      "sha256": "504e35b95c426a26db6d7b592af4ee0a18dfa6894b5ea65f73bb3a261ab1fc75"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/review-checks.json",
+      "sha256": "27b1b8ee3e0534b542e83f90518f63a49db362c79158175cd7caba754e8f545c"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/review-semantics.json",
+      "sha256": "ed4d3ad3c00a0d106f464aecb264426df7eade76a6df9b32c182d683d15cf0ac"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/semantic-validation.json",
+      "sha256": "cde08590613d13a2e8d7f38b8ffc00673198c280bb4a835422c7c0104b0b36bf"
+    },
+    {
+      "path": "corpus/authoring/v021-expansion/session.json",
+      "sha256": "26cfd8512250f64170cf032681d5236c2160c2433a2d09fd85448e15e816e228"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/README.md",
+      "sha256": "60f5c4983f6608ebb2fd359f40c4d3458b3d30677c751eb12466426754242cc6"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/pennylane_demos/phase_kickback1/kernel.qli",
+      "sha256": "f15f8609927646108b9b4f574978c234417428c515b7e604ced754d2e8590c50"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/pennylane_demos/phase_kickback1/main.qli",
+      "sha256": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/pennylane_demos/rx_quarter/kernel.qli",
+      "sha256": "eb606ddd18348b65251ad0a00ae224a774dce848929cb179dc8ce3f3c0a52893"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/pennylane_demos/rx_quarter/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/qualtran/bitwise_not2/kernel.qli",
+      "sha256": "d944295bf851b4c33a3bb9a6b4de93a1fb6502b6d64818bce440e5612443601f"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/qualtran/bitwise_not2/main.qli",
+      "sha256": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/qualtran/xor_constant2/kernel.qli",
+      "sha256": "88a310c945e9515d1002f5d60718a4886284f968615348e729144d9f3e18d72b"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/qualtran/xor_constant2/main.qli",
+      "sha256": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/quantum_katas/fredkin3/kernel.qli",
+      "sha256": "43a912a26d87c1fdc3bfe13b638e3b0f0ce6b3e0cde99c16342edac38e0bf752"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/quantum_katas/fredkin3/main.qli",
+      "sha256": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/quantum_katas/swap2/kernel.qli",
+      "sha256": "c870100717bc27d62cf66f5a3d0eb67632b15f908a2fa2b653cdd61860737a35"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/attempt-01/quantum_katas/swap2/main.qli",
+      "sha256": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/check-initial.json",
+      "sha256": "cc3b819ef38acf1c48773bf7e730f6606ad26d2191cca24f383979d65c80887e"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/semantic-validation.json",
+      "sha256": "4539e0a8e7065b0e1dcd5f72c22f406af0a280aa2e759d330c947fab9dd55cfc"
+    },
+    {
+      "path": "corpus/authoring/v022-simple/session.json",
+      "sha256": "8fa9f929aa453728cab3a206643be8ce555276b37986b033ad23c0a304826373"
+    },
+    {
+      "path": "corpus/authoring/v023-small/README.md",
+      "sha256": "86ab70bc0fc1591c04891790e89e474f0c4b6c39b9b01164b7cc1859615609a7"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/pennylane_demos/ising_zz_quarter2/kernel.qli",
+      "sha256": "af6353a2e64e2a9074c447fef3071077454a6ae95b71ff9ce58e492e7c458b86"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/pennylane_demos/ising_zz_quarter2/main.qli",
+      "sha256": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/pennylane_demos/ry_quarter/kernel.qli",
+      "sha256": "3771cc1cc037c2105f64bb898e5110ad23642c45616a0326db80928d9162e986"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/pennylane_demos/ry_quarter/main.qli",
+      "sha256": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/qualtran/equals_constant2/kernel.qli",
+      "sha256": "0b6b4197ce9de80c8a993bebffc8710d4872f5ba914914cb59779c4944710c27"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/qualtran/equals_constant2/main.qli",
+      "sha256": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/qualtran/less_than_constant2/kernel.qli",
+      "sha256": "13c58a461e5c4dd7ec1d236cf9717f351638d9b29aa3fb84953d859863048c7f"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/qualtran/less_than_constant2/main.qli",
+      "sha256": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/quantum_katas/bell_singlet2/kernel.qli",
+      "sha256": "9be91c7ca7fb9a1bee37b86036427d1bd63b093db7da1219a13211948f367e77"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/quantum_katas/bell_singlet2/main.qli",
+      "sha256": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/quantum_katas/odd_parity3/kernel.qli",
+      "sha256": "e18626c24b5a29e68ce783e67456f38b2f16845927d77e3cf767ba532939fa0d"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-01/quantum_katas/odd_parity3/main.qli",
+      "sha256": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/pennylane_demos/ising_zz_quarter2/kernel.qli",
+      "sha256": "f37fb2390062640645c70a92c3c18fedf112060a98637ab1ebb34d125b4896f0"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/pennylane_demos/ising_zz_quarter2/main.qli",
+      "sha256": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/pennylane_demos/ry_quarter/kernel.qli",
+      "sha256": "3771cc1cc037c2105f64bb898e5110ad23642c45616a0326db80928d9162e986"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/pennylane_demos/ry_quarter/main.qli",
+      "sha256": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/qualtran/equals_constant2/kernel.qli",
+      "sha256": "0b6b4197ce9de80c8a993bebffc8710d4872f5ba914914cb59779c4944710c27"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/qualtran/equals_constant2/main.qli",
+      "sha256": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/qualtran/less_than_constant2/kernel.qli",
+      "sha256": "13c58a461e5c4dd7ec1d236cf9717f351638d9b29aa3fb84953d859863048c7f"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/qualtran/less_than_constant2/main.qli",
+      "sha256": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/quantum_katas/bell_singlet2/kernel.qli",
+      "sha256": "9be91c7ca7fb9a1bee37b86036427d1bd63b093db7da1219a13211948f367e77"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/quantum_katas/bell_singlet2/main.qli",
+      "sha256": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/quantum_katas/odd_parity3/kernel.qli",
+      "sha256": "e18626c24b5a29e68ce783e67456f38b2f16845927d77e3cf767ba532939fa0d"
+    },
+    {
+      "path": "corpus/authoring/v023-small/attempt-02/quantum_katas/odd_parity3/main.qli",
+      "sha256": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75"
+    },
+    {
+      "path": "corpus/authoring/v023-small/check-initial.json",
+      "sha256": "1aea9e0e0cd3c8fadc5e81eed073cbfa4ea9164af9017b8e5ae56d8cc7908a1d"
+    },
+    {
+      "path": "corpus/authoring/v023-small/review-checks.json",
+      "sha256": "4f26d4723c98fe375445fdec15271c97e2c1996a387c26680dfa03e81f57e250"
+    },
+    {
+      "path": "corpus/authoring/v023-small/review-semantics.json",
+      "sha256": "d6d64fde845c2675063f1eb54b4efb392be0733c04a0d5bd05cadf15e873e698"
+    },
+    {
+      "path": "corpus/authoring/v023-small/semantic-validation.json",
+      "sha256": "e99340ec85aa304e11700e3e1c427c8bb50c40c54f3360a30d271de880533344"
+    },
+    {
+      "path": "corpus/authoring/v023-small/session.json",
+      "sha256": "8e0b3b98c05c440499aba745343d5aa35eff8043dbda46aebfda95262d3c086e"
+    },
+    {
+      "path": "corpus/authoring/v024-small/README.md",
+      "sha256": "e2c18d95833e86f0f466f35c23b2234a24ca46e28e6a8e9e3a9d5b67b1ae44c3"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/pennylane_demos/rx_negative_quarter/kernel.qli",
+      "sha256": "f48c774d21a515b33fcff6ce050526c7a8c24e63bd24128458e9dba9e460ba5a"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/pennylane_demos/rx_negative_quarter/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/pennylane_demos/ry_negative_quarter/kernel.qli",
+      "sha256": "0706725fb5e88108dda3564c45c36db571c7371b4b4772c37862b714946b4f64"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/pennylane_demos/ry_negative_quarter/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/qualtran/add_minus_one2/kernel.qli",
+      "sha256": "404ed4fb916643d034fca8f65f546bc185ad91f3c3243f9f3306eeaf0a19dd9c"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/qualtran/add_minus_one2/main.qli",
+      "sha256": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/qualtran/qrom1/kernel.qli",
+      "sha256": "12831e0cdb2776176b8e1215a74d44f61d5f3f5e03b06093c5427f7cea5fc671"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/qualtran/qrom1/main.qli",
+      "sha256": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/quantum_katas/bell_change_zx2/kernel.qli",
+      "sha256": "5b361a8ae3d27bfa0a28e6ee775c9762141d77751131b7a5328576c1d533cb7d"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/quantum_katas/bell_change_zx2/main.qli",
+      "sha256": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/quantum_katas/zero_control_x2/kernel.qli",
+      "sha256": "1733046b23a824a30f85be7336328758389c1020e092f3aa44424ad5d64d1042"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-01/quantum_katas/zero_control_x2/main.qli",
+      "sha256": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/pennylane_demos/rx_negative_quarter/kernel.qli",
+      "sha256": "8e5a2c4dfd83c8b3a577ca56a6404c38cf9cec26ce2ed8a66d771f51b0094346"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/pennylane_demos/rx_negative_quarter/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/pennylane_demos/ry_negative_quarter/kernel.qli",
+      "sha256": "0706725fb5e88108dda3564c45c36db571c7371b4b4772c37862b714946b4f64"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/pennylane_demos/ry_negative_quarter/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/qualtran/add_minus_one2/kernel.qli",
+      "sha256": "404ed4fb916643d034fca8f65f546bc185ad91f3c3243f9f3306eeaf0a19dd9c"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/qualtran/add_minus_one2/main.qli",
+      "sha256": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/qualtran/qrom1/kernel.qli",
+      "sha256": "12831e0cdb2776176b8e1215a74d44f61d5f3f5e03b06093c5427f7cea5fc671"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/qualtran/qrom1/main.qli",
+      "sha256": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/quantum_katas/bell_change_zx2/kernel.qli",
+      "sha256": "5b361a8ae3d27bfa0a28e6ee775c9762141d77751131b7a5328576c1d533cb7d"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/quantum_katas/bell_change_zx2/main.qli",
+      "sha256": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/quantum_katas/zero_control_x2/kernel.qli",
+      "sha256": "1733046b23a824a30f85be7336328758389c1020e092f3aa44424ad5d64d1042"
+    },
+    {
+      "path": "corpus/authoring/v024-small/attempt-02/quantum_katas/zero_control_x2/main.qli",
+      "sha256": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809"
+    },
+    {
+      "path": "corpus/authoring/v024-small/check-initial.json",
+      "sha256": "02211dd4afffda46b9b4ac7a4434092c842ddb25221c84988e91db8afcad6a30"
+    },
+    {
+      "path": "corpus/authoring/v024-small/review-checks.json",
+      "sha256": "5e15735b6ea2018ddf3b93d25847545b1e88afb5eca0bd8ade42d417a82df2a4"
+    },
+    {
+      "path": "corpus/authoring/v024-small/review-semantics.json",
+      "sha256": "951b342a932704cd9b7008e90ecadc0c2a83aa3a4dced0d59b79b34bce4a317b"
+    },
+    {
+      "path": "corpus/authoring/v024-small/semantic-validation.json",
+      "sha256": "2d3b2c57b62c1e0e8453e59fe263b5af90b10a11a61351ff2383129e89039645"
+    },
+    {
+      "path": "corpus/authoring/v024-small/session.json",
+      "sha256": "b0682161bd1ca51378bed03b195d320c3282b2a65b9a2360d7e5fe9542bb1434"
+    },
+    {
+      "path": "corpus/authoring/v025-small/README.md",
+      "sha256": "47cf0c296b81cca95e9a9bd87fbb0b3308a73e8dab7f08dc5d8c5396d00e7195"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/pennylane_demos/qaoa_mixer2/kernel.qli",
+      "sha256": "0ba51a680cf6085dd0a867b23a0b031cd15184082e26b11d2c65f458fab5ac4d"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/pennylane_demos/qaoa_mixer2/main.qli",
+      "sha256": "d4706196e878cbb481016b84fa0865cc45aae968f32cf2128c26d471ae409a5c"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/pennylane_demos/rotation_mixed_sign/kernel.qli",
+      "sha256": "31e3b49049e06ef03c965513a85f7e03d03c8bcf1fc658366310eeb409c37632"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/pennylane_demos/rotation_mixed_sign/main.qli",
+      "sha256": "c5d4421fba7e9b312cac4995313eb62b81076de82671f25a684800fa21fd052b"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/qualtran/greater_than1/kernel.qli",
+      "sha256": "410404f79d76713bfc3c9966e547f17fe24a54cd96224cd37bac678dd1c39bfc"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/qualtran/greater_than1/main.qli",
+      "sha256": "54c322c5d4607c510096c285ec2746387d445a7610bbf4fb302c03485545a0e5"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/qualtran/less_equal1/kernel.qli",
+      "sha256": "4f291ff35098f69bd6c3880b89a47b98f2d5791e883833e94771ff050f53238e"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/qualtran/less_equal1/main.qli",
+      "sha256": "443d835ec94803075145f44746dd2f1603b96efdc2f9f363c04246f6fef886ea"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/quantum_katas/controlled_z2/kernel.qli",
+      "sha256": "9206a31949ee7f54cf952d98c107c1dccec9c61e9208436245e1b83000b55eec"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/quantum_katas/controlled_z2/main.qli",
+      "sha256": "8cf711b717a8cc2e93caea629d906ed9e00deb89705b36c0b1a80f232cc8fb18"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/quantum_katas/toffoli3/kernel.qli",
+      "sha256": "277ad25095503cf3ad5563a7151e77f5d789c275c485776c64816d28531651de"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-01/quantum_katas/toffoli3/main.qli",
+      "sha256": "042b9a11d35e5f3a2d613e47016470bd995745117d570dbc95938d84b633ae9c"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/pennylane_demos/qaoa_mixer2/kernel.qli",
+      "sha256": "1b13c7de6f499ea5debb62752bc4f7d890231cfff748ab01cd7d3d5feb151914"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/pennylane_demos/qaoa_mixer2/main.qli",
+      "sha256": "6be799967a57541d8dcb3fa64382d743bb6dc885aa194ead3728aef803df8047"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/pennylane_demos/rotation_mixed_sign/kernel.qli",
+      "sha256": "31e3b49049e06ef03c965513a85f7e03d03c8bcf1fc658366310eeb409c37632"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/pennylane_demos/rotation_mixed_sign/main.qli",
+      "sha256": "c5d4421fba7e9b312cac4995313eb62b81076de82671f25a684800fa21fd052b"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/qualtran/greater_than1/kernel.qli",
+      "sha256": "410404f79d76713bfc3c9966e547f17fe24a54cd96224cd37bac678dd1c39bfc"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/qualtran/greater_than1/main.qli",
+      "sha256": "54c322c5d4607c510096c285ec2746387d445a7610bbf4fb302c03485545a0e5"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/qualtran/less_equal1/kernel.qli",
+      "sha256": "4f291ff35098f69bd6c3880b89a47b98f2d5791e883833e94771ff050f53238e"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/qualtran/less_equal1/main.qli",
+      "sha256": "443d835ec94803075145f44746dd2f1603b96efdc2f9f363c04246f6fef886ea"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/quantum_katas/controlled_z2/kernel.qli",
+      "sha256": "9f3a91e7f6ce1140cf39978e3f8f51125ecdba402f798f72ceae96a0aa33fda6"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/quantum_katas/controlled_z2/main.qli",
+      "sha256": "8cf711b717a8cc2e93caea629d906ed9e00deb89705b36c0b1a80f232cc8fb18"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/quantum_katas/toffoli3/kernel.qli",
+      "sha256": "277ad25095503cf3ad5563a7151e77f5d789c275c485776c64816d28531651de"
+    },
+    {
+      "path": "corpus/authoring/v025-small/attempt-02/quantum_katas/toffoli3/main.qli",
+      "sha256": "042b9a11d35e5f3a2d613e47016470bd995745117d570dbc95938d84b633ae9c"
+    },
+    {
+      "path": "corpus/authoring/v025-small/check-initial.json",
+      "sha256": "a27685ee3537176257b82ea3a035dba334c64619aa454764361585dc5d32cc0a"
+    },
+    {
+      "path": "corpus/authoring/v025-small/check-repaired.json",
+      "sha256": "090aed76e8907fdeca67bfb4f6c4bd3142c2809d4c7a827433ec3c3ce573343d"
+    },
+    {
+      "path": "corpus/authoring/v025-small/semantic-validation.json",
+      "sha256": "00c20eacea0948d7ad81ce295c3097306250a84a5bab85445da9e9d4fa36c16c"
+    },
+    {
+      "path": "corpus/authoring/v025-small/session.json",
+      "sha256": "6aeaf5a8490293ece44c1ae4ca66d3acde8458494cc311f1a47c72d3eab7e8d6"
+    },
+    {
+      "path": "corpus/authoring/v026-small/README.md",
+      "sha256": "5e740d73d5f9abd8cc95a7f17f243d2767e510cda287694608f9c2d9a52d3c0a"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/pennylane_demos/ising_zz_negative2/kernel.qli",
+      "sha256": "96759c5279570da1eb0b65da316b5017bcba1c2720580b8ade9efbc6fe54f5a8"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/pennylane_demos/ising_zz_negative2/main.qli",
+      "sha256": "2a33c3fe869e32dfa47a5540bbac0a5c6892105faadc7dff2a0e9668bf11bdf9"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/pennylane_demos/rotation_half_y/kernel.qli",
+      "sha256": "773bf5c4f3a75147fbf60f4b83a51aee42c2bc1b4e5369026e13321d6c2234bb"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/pennylane_demos/rotation_half_y/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/qualtran/control_zero_reflection2/kernel.qli",
+      "sha256": "bf9e21f5202ce08f74ba709448cf9d02b3a1792719a172b5b45b4ffb6b195495"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/qualtran/control_zero_reflection2/main.qli",
+      "sha256": "90ebe4370bc4379c82c35b93d7ff4803ac7a3268dd0a9509415c69b21e2f2f80"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/qualtran/reflection_minus1/kernel.qli",
+      "sha256": "4551b6874e7a15eb06c0188407e7d124a577545fea6d08d29ca30a203c8e3e0a"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/qualtran/reflection_minus1/main.qli",
+      "sha256": "6fbc46b1eefcb3f4c20191ac36a9a8a869b34108e51d8d325e80323d46812d0c"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/quantum_katas/graph_state2/kernel.qli",
+      "sha256": "06e85903b74cbb2cfea124bc767e7a97a91541e343113651030981bad091443f"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/quantum_katas/graph_state2/main.qli",
+      "sha256": "5a4ab8353e2f70ba9e16248c93c58fedd66d381bb79fc57f4bc7fe9defce3373"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/quantum_katas/phased_uniform2/kernel.qli",
+      "sha256": "aebbed75f118d05ff3eefb54f824519c0daa35f7ecdc7628592330777a91b11a"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-01/quantum_katas/phased_uniform2/main.qli",
+      "sha256": "aed24c38216e9260fa1a914370cf703e6da8b05d4f3c88923a0d8edf8fe2f7f8"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/pennylane_demos/ising_zz_negative2/kernel.qli",
+      "sha256": "96759c5279570da1eb0b65da316b5017bcba1c2720580b8ade9efbc6fe54f5a8"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/pennylane_demos/ising_zz_negative2/main.qli",
+      "sha256": "2a33c3fe869e32dfa47a5540bbac0a5c6892105faadc7dff2a0e9668bf11bdf9"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/pennylane_demos/rotation_half_y/kernel.qli",
+      "sha256": "773bf5c4f3a75147fbf60f4b83a51aee42c2bc1b4e5369026e13321d6c2234bb"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/pennylane_demos/rotation_half_y/main.qli",
+      "sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/qualtran/control_zero_reflection2/kernel.qli",
+      "sha256": "3d5818827242495d3663697f257004c0bffe7f54ca97c1972346d4197f862b5b"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/qualtran/control_zero_reflection2/main.qli",
+      "sha256": "90ebe4370bc4379c82c35b93d7ff4803ac7a3268dd0a9509415c69b21e2f2f80"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/qualtran/reflection_minus1/kernel.qli",
+      "sha256": "3744de242c1fafd0f4e9e1f2e1692d87f99edb92d59de4bc8881babccca36c24"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/qualtran/reflection_minus1/main.qli",
+      "sha256": "6fbc46b1eefcb3f4c20191ac36a9a8a869b34108e51d8d325e80323d46812d0c"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/quantum_katas/graph_state2/kernel.qli",
+      "sha256": "06e85903b74cbb2cfea124bc767e7a97a91541e343113651030981bad091443f"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/quantum_katas/graph_state2/main.qli",
+      "sha256": "5a4ab8353e2f70ba9e16248c93c58fedd66d381bb79fc57f4bc7fe9defce3373"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/quantum_katas/phased_uniform2/kernel.qli",
+      "sha256": "aebbed75f118d05ff3eefb54f824519c0daa35f7ecdc7628592330777a91b11a"
+    },
+    {
+      "path": "corpus/authoring/v026-small/attempt-02/quantum_katas/phased_uniform2/main.qli",
+      "sha256": "aed24c38216e9260fa1a914370cf703e6da8b05d4f3c88923a0d8edf8fe2f7f8"
+    },
+    {
+      "path": "corpus/authoring/v026-small/check-initial.json",
+      "sha256": "85451747a4682513ef21b1e0945f27b72a4af9a47660df69c8da6601e174fa10"
+    },
+    {
+      "path": "corpus/authoring/v026-small/check-repaired.json",
+      "sha256": "da94102586e992b312a1c9acef8a4b10b2ae944d27077314582fa4b2ce6837b1"
+    },
+    {
+      "path": "corpus/authoring/v026-small/semantic-validation.json",
+      "sha256": "4ace9d303c322284ef4e428a89f79a0295e2d81a2e304529e2c7986799d39810"
+    },
+    {
+      "path": "corpus/authoring/v026-small/session.json",
+      "sha256": "b5c4f74c00cdd2aefe5f64b2134df94e0ec24b1ed72bd95e6882fa0c810f68fe"
+    },
+    {
+      "path": "corpus/authoring/v027-small/README.md",
+      "sha256": "1cce2e7b9288edf138cce2044d53b857fe1dd360ce95a20332221e8a2dcc6b0e"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/pennylane_demos/ising_zz_half2/kernel.qli",
+      "sha256": "50428259af64ee53e93a809c6146e78e56107a5e204f2b689ffe05909e3d9a68"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/pennylane_demos/ising_zz_half2/main.qli",
+      "sha256": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/pennylane_demos/qaoa_edge_layer2/kernel.qli",
+      "sha256": "39f9602d9cba52668e8d250672cac70020681bf324c607a525ecc8dc3c87a148"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/pennylane_demos/qaoa_edge_layer2/main.qli",
+      "sha256": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/pennylane_demos/rotation_half_x/kernel.qli",
+      "sha256": "abc920f1d9c2345ee919bf4812518e9409b528da874446396c1348800b1f63bd"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/pennylane_demos/rotation_half_x/main.qli",
+      "sha256": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/qualtran/add_one3/kernel.qli",
+      "sha256": "500d7ad78ec32b4690194340e32a1167e6478c36ef3ed515366b7971aa25039d"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/qualtran/add_one3/main.qli",
+      "sha256": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/qualtran/greater_constant2/kernel.qli",
+      "sha256": "e99c417397dd916a46384df22833be50e6c891bdd4a50ae45a060479741b7ae4"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/qualtran/greater_constant2/main.qli",
+      "sha256": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/qualtran/xor_constant3/kernel.qli",
+      "sha256": "1c3c20f325096f22aa6bf7801d4bd74bbab7b87c14e317057bb3be17e04fcb27"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/qualtran/xor_constant3/main.qli",
+      "sha256": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/controlled_h2/kernel.qli",
+      "sha256": "3954e5e6388a093b33a57a69a620e3efb5fd67b8b5e8449d1d2708f008bf5e94"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/controlled_h2/main.qli",
+      "sha256": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/even_numbers3/kernel.qli",
+      "sha256": "1871f97fc3c01980ad0be31ef12f9f49d6da14567ae3963666801517b0cf7e4f"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/even_numbers3/main.qli",
+      "sha256": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/zero_bitstring3/kernel.qli",
+      "sha256": "de1149594b906961996014862d0775585b7e3c0810ea0c987afea35a0749e980"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-01/quantum_katas/zero_bitstring3/main.qli",
+      "sha256": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/pennylane_demos/ising_zz_half2/kernel.qli",
+      "sha256": "50428259af64ee53e93a809c6146e78e56107a5e204f2b689ffe05909e3d9a68"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/pennylane_demos/ising_zz_half2/main.qli",
+      "sha256": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/pennylane_demos/qaoa_edge_layer2/kernel.qli",
+      "sha256": "39f9602d9cba52668e8d250672cac70020681bf324c607a525ecc8dc3c87a148"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/pennylane_demos/qaoa_edge_layer2/main.qli",
+      "sha256": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/pennylane_demos/rotation_half_x/kernel.qli",
+      "sha256": "abc920f1d9c2345ee919bf4812518e9409b528da874446396c1348800b1f63bd"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/pennylane_demos/rotation_half_x/main.qli",
+      "sha256": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/qualtran/add_one3/kernel.qli",
+      "sha256": "500d7ad78ec32b4690194340e32a1167e6478c36ef3ed515366b7971aa25039d"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/qualtran/add_one3/main.qli",
+      "sha256": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/qualtran/greater_constant2/kernel.qli",
+      "sha256": "e99c417397dd916a46384df22833be50e6c891bdd4a50ae45a060479741b7ae4"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/qualtran/greater_constant2/main.qli",
+      "sha256": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/qualtran/xor_constant3/kernel.qli",
+      "sha256": "1c3c20f325096f22aa6bf7801d4bd74bbab7b87c14e317057bb3be17e04fcb27"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/qualtran/xor_constant3/main.qli",
+      "sha256": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/quantum_katas/controlled_h2/kernel.qli",
+      "sha256": "4304d7ca885f446b786326c7d2bfaa53263d59550b2018b236dbe774cab36dba"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/quantum_katas/controlled_h2/main.qli",
+      "sha256": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/quantum_katas/even_numbers3/kernel.qli",
+      "sha256": "1871f97fc3c01980ad0be31ef12f9f49d6da14567ae3963666801517b0cf7e4f"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/quantum_katas/even_numbers3/main.qli",
+      "sha256": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/quantum_katas/zero_bitstring3/kernel.qli",
+      "sha256": "de1149594b906961996014862d0775585b7e3c0810ea0c987afea35a0749e980"
+    },
+    {
+      "path": "corpus/authoring/v027-small/attempt-02/quantum_katas/zero_bitstring3/main.qli",
+      "sha256": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3"
+    },
+    {
+      "path": "corpus/authoring/v027-small/check-initial.json",
+      "sha256": "162daa14a37db8c36ef9945b4b5c92960ec24f1d3be1f542cf210c9172824bbe"
+    },
+    {
+      "path": "corpus/authoring/v027-small/check-repaired.json",
+      "sha256": "eafcdefd15916dcaf90cf4925203d13f9d2422236f2061bcf15b044c52ec6d6f"
+    },
+    {
+      "path": "corpus/authoring/v027-small/semantic-validation.json",
+      "sha256": "a1935e113b5bf09c3f20c9748c0e9a4c96e2bf9c46eb11cca05ec45b0944d283"
+    },
+    {
+      "path": "corpus/authoring/v027-small/session.json",
+      "sha256": "394f3ea6bb6805b2b1973c17c78da8933b7390b22e9da4b0580172bbcd16e844"
+    },
+    {
+      "path": "corpus/authoring/v028-small/README.md",
+      "sha256": "5a2560924350f690578f0d9c683d9ba940eeb5cdfb740e0175f85585f6272075"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/pennylane_demos/qaoa_negative_mixer2/kernel.qli",
+      "sha256": "7f25dc36108873d5e297f9979c4ba7e51c09769bca6f82923e07a0ff96bee9c1"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/pennylane_demos/qaoa_negative_mixer2/main.qli",
+      "sha256": "ddea33492e73a3dca5cd456b681c9e9f44ca2229b2837c3fd391c74bf9a11a8e"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/pennylane_demos/qaoa_path_layer3/kernel.qli",
+      "sha256": "6007ab7d0b82113fd38dc93ed2b4ea5e0f040073b89117d9bbf862e8f93dcc13"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/pennylane_demos/qaoa_path_layer3/main.qli",
+      "sha256": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/pennylane_demos/rotation_negative_x_positive_y/kernel.qli",
+      "sha256": "f413eff72ef013c6811afa73b93a3e83126290149b9e4fe133d5f79d9852d950"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/pennylane_demos/rotation_negative_x_positive_y/main.qli",
+      "sha256": "b49d7f82d91c703aa072a8e9fd64a436452b974bb19056c8bdd2f30170aea5af"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/qualtran/controlled_increment2/kernel.qli",
+      "sha256": "274b833da245acc498008e0e083d113bee31dd1a89c915d2ea0bf09a2ae14131"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/qualtran/controlled_increment2/main.qli",
+      "sha256": "86e866b479d514262156b275b2d484d582fa9369e959ae117b49b89adecf97d3"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/qualtran/equals1/kernel.qli",
+      "sha256": "bd377eea2a1306b1de5b3915c0628c2e29e8dd342e54fdee86ee0c88f6ac5a12"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/qualtran/equals1/main.qli",
+      "sha256": "71254aaa03a24453c6942674bde0dbee1f663dd9a6764ebd003dcc9f7d09bc1a"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/qualtran/reflection_zero2/kernel.qli",
+      "sha256": "9100f5e23798f13f1e97014d8db44472a457d4ce4e20b61fb7dcb82791514c4a"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/qualtran/reflection_zero2/main.qli",
+      "sha256": "22b088b594aef245ce6debf4b8d3afec37af7ebffd9c790b81ad328d0febfdbb"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/quantum_katas/even_parity3/kernel.qli",
+      "sha256": "5002adc4267dba940fefdf769270c564955152991d8dcd6356b735f1659115c8"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/quantum_katas/even_parity3/main.qli",
+      "sha256": "c0355ebdd6050340af0dde5803e0d28cfa7968163e700d6fba8c4dffd3809050"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/quantum_katas/two_bitstrings3/kernel.qli",
+      "sha256": "962a3f10728a9796d06d38185ea2be37a4443662ef2f59c32335c6b0004b9608"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/quantum_katas/two_bitstrings3/main.qli",
+      "sha256": "16364cc1eed5f9af1278af681c19cb2c44cc4bd6fe0b9096add00a6c0775d5f8"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/quantum_katas/w2_retained3/kernel.qli",
+      "sha256": "60775a152f5b1b48274237c49d149975ab42ad0df7b6dc2b7509784a08f04dc3"
+    },
+    {
+      "path": "corpus/authoring/v028-small/attempt-01/quantum_katas/w2_retained3/main.qli",
+      "sha256": "f58e50e0462d6e996d5ebbdc601881c50983ccf199591fd37dcc8c8e90903d2e"
+    },
+    {
+      "path": "corpus/authoring/v028-small/check-initial.json",
+      "sha256": "2bd7f4e81d4d4d10fddb4c3bd58e4e4867ba9d42a868f0cc65ed9f3b6d1aa766"
+    },
+    {
+      "path": "corpus/authoring/v028-small/semantic-validation.json",
+      "sha256": "d041236981ca715b7a9141b4201fd58f7f5e5a8522411f92a6e594512c68a595"
+    },
+    {
+      "path": "corpus/authoring/v028-small/session.json",
+      "sha256": "b2662a9db892a8ace1bba1a8bf4db996db840a4c24491eacaa9b05ee63e8611e"
+    },
+    {
+      "path": "corpus/authoring/v029-small/README.md",
+      "sha256": "df57a137ff0595ac20cb8d0b96defd65061895be9dad571f18b1d106e0a6d121"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/pennylane_demos/qaoa_negative_edge_layer2/kernel.qli",
+      "sha256": "4aeb519b60c366dc2e0bbf9f5bada910da3c44176bc936b031e1e6b9eecba87b"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/pennylane_demos/qaoa_negative_edge_layer2/main.qli",
+      "sha256": "154f59db6baea249e02b1e99f77398a4aae1082b35804216b55ad2b42754abfe"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/pennylane_demos/qaoa_path_cost3/kernel.qli",
+      "sha256": "bc7fc293d3e218b32ef4353964f95838c85bfaa3fcb62e9825dae3a24616fa5b"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/pennylane_demos/qaoa_path_cost3/main.qli",
+      "sha256": "266fa60f28dc251f452e541ab33d2da1b1f16deb1e7dd14d2bca9acdcbfa3c51"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/pennylane_demos/rotation_both_negative/kernel.qli",
+      "sha256": "7a9552173ead38987678e5a17049fb31c2ef10cb215a88412f56a3770ffed45b"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/pennylane_demos/rotation_both_negative/main.qli",
+      "sha256": "b566c44bc3a4ddf33fe6b3bcf2742f6a24fa357f5ef17fd43bdb635651347c8d"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/qualtran/add_minus_one3/kernel.qli",
+      "sha256": "e1022ac088d69d56c53996166751efe7d0d7b62cf76e93a120d147ae5a4700ed"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/qualtran/add_minus_one3/main.qli",
+      "sha256": "55f978d20f37b58cbd800fe51acb873841ebbf80a02d2ebab964b744e75f3725"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/qualtran/less_than_one2/kernel.qli",
+      "sha256": "3cb1de6dd5c4eda7690e6e68bbc738fa66f2eba2e213ca1407048ddc78f83212"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/qualtran/less_than_one2/main.qli",
+      "sha256": "01111ded91255b8661e17537b1f9b2157d429701fc0a4f21368ec67bd7b22cf3"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/qualtran/reflection_basis_one2/kernel.qli",
+      "sha256": "c23b116c08346ed58720e8d31bb0fd4db94e52334715bb05585f95153ba81ff7"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/qualtran/reflection_basis_one2/main.qli",
+      "sha256": "4c288ea210e3b2fb8af0bd1470c5826c8e5d9c23a081f9cb20b3003e62ec538a"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/quantum_katas/minus_state1/kernel.qli",
+      "sha256": "eb2ba0688ae81c3c7a1ca7e92360b8414cd69c6c40932ab3a16f28a7d8fbbc03"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/quantum_katas/minus_state1/main.qli",
+      "sha256": "60211bdbee010c4b1afd5b69d27a285981b08857150ceb5f43b5d2cfc5958382"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/quantum_katas/phase_negative_eighth1/kernel.qli",
+      "sha256": "898ea7a88de5b2fbaa4e98379e3ed394861bc7efeaaba87b7c336ec3834b851d"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/quantum_katas/phase_negative_eighth1/main.qli",
+      "sha256": "f3c9fc8479f4518528cf1cb1983e6fd4b966d6e3c45cc5a2696b9d84eed2f80c"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/quantum_katas/uniform3/kernel.qli",
+      "sha256": "665b6d5d854cf0aee757da0e4cd23726db7733d2927b39096f143c7e67dce2d9"
+    },
+    {
+      "path": "corpus/authoring/v029-small/attempt-01/quantum_katas/uniform3/main.qli",
+      "sha256": "9ee0c5ca955000c03f0005c3edf1091c280cd0df0375dc122ca0b6ce767a0c06"
+    },
+    {
+      "path": "corpus/authoring/v029-small/check-initial.json",
+      "sha256": "46863ab0a268b9c38bfcce850b32f0d83be6a1e9a251bef9e12ac49977853598"
+    },
+    {
+      "path": "corpus/authoring/v029-small/fault-calibration.json",
+      "sha256": "399fc10fdfbe9152eaa94098bcb8d559561054569c75740e7fc736d0fe192bcf"
+    },
+    {
+      "path": "corpus/authoring/v029-small/fault-calibration/equivalent_minus_extension.qli",
+      "sha256": "a9f8f09f266eff05711c4818c528df788ff62b7a98f1e1855964b64e2ad8e9e8"
+    },
+    {
+      "path": "corpus/authoring/v029-small/semantic-validation.json",
+      "sha256": "13c639aeefb572c744f911dabfc07df9876a541c9bca32e9bb77c941203264b0"
+    },
+    {
+      "path": "corpus/authoring/v029-small/session.json",
+      "sha256": "fb065776fc5a1577a18109ca92196e9ffa126577bea0014ee3b73f2c8eb910a3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/README.md",
+      "sha256": "fa98c31e12f5f2907ead432286c3454f02d656b69f5542b7475405a859e9fb48"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/attempt-01/main.qli",
+      "sha256": "eabb33555e8b370433471d305aa028bc77cc47c40c345fe8be3ad506c7478cd1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/attempt-02/main.qli",
+      "sha256": "804cf040fc83cb9d3f05e821cf0690a9c5fca8fc1996f7798f69cb76530b1107"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/check-after.json",
+      "sha256": "3eb2bf4f75ee120653ba481f10fc9a669fadac869d7ecb69bdae2cef9dfbcc8a"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/check-before.json",
+      "sha256": "9548bbc4e56c5e06f747460b53dbd7278ad4a2f5c2686652aa93333218130285"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/check-repaired.json",
+      "sha256": "bd45fe62633469a28cd8eb3df6243da59d42b6c0de45d9e42b4fe827f1654741"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/context.md",
+      "sha256": "2f119972630ff4c2791512753871aea4956ba1a4774d16d0ba7ac464c6f70d5a"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/run-repaired.json",
+      "sha256": "1ac1b890c3851ed1b96960cf5d97d01e21efabd63286349b633de93738817cbb"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/cleanup-repair/session.json",
+      "sha256": "83f87b926268e7504255fe0d877ccc101ffc6187d2518aabf7fe2855ff401d4c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/attempt-01/Qargo.toml.rejected",
+      "sha256": "5f06deb3bda3a8daf982cea12462993e2278216f7b1837fa229edf8e8162fb3c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/attempt-01/main.qli",
+      "sha256": "c65d87c634e3cbb23e62b319199cb3c8d7fcec8b25e56e947911de3a9b11caf4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/attempt-02/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/attempt-02/main.qli",
+      "sha256": "c65d87c634e3cbb23e62b319199cb3c8d7fcec8b25e56e947911de3a9b11caf4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/baseline-run.json",
+      "sha256": "576eb4ea6dc457b5aab09f8ce30f23fea75b0bfcdea2ce8302cb8ea7c57433b1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/baseline.json",
+      "sha256": "8d2bdafe272ad819a5b6dd4e7331d2d735359231b4ce259c60b3a9b5eceadc20"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/context.md",
+      "sha256": "afd3dd62380b0bf7ceba5ba2b831e7db054a43d34dc9b61a737c0a8a6ca5fdbb"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/dual-run.json",
+      "sha256": "93fe475f12c9edf8e327102ef09ee3e35f85dffc899bf2522aebc5c315be243e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/initial-check.json",
+      "sha256": "cb130731a3a9471a10f6178a8c379c45f1c5e4df2b55baf001b019325ad199f9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/initial-dual.json",
+      "sha256": "881786e575b73c63ff51c78e9d2ecacb1225623b653d0588e55f85d3931522ab"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/initial.json",
+      "sha256": "349057a22b2cf9012622383a743b01a1b7bfdcb630384882e4c8aa5b18638567"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/dual-v028/session.json",
+      "sha256": "77259e1d85c7efcbbebce11a7f0e5c9af2962960e1971518b26938c45851694e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/LICENSE-MIT",
+      "sha256": "27ebda9d51f0a56b7e281ccd8230a27236dcb51c05f64b07869ecf6e965d68b0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/NOTICE-QuantumKatas.txt",
+      "sha256": "e91c89494f07160d25fe6c8774f46933a611065b74acdfba749aa29dd387d875"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-01/main.qli",
+      "sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02/kernel.qli",
+      "sha256": "d50ccc26e94c29390ef29e13325144562c3ea2b1051aee9971fe1c41f09d1cf9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/attempt-02/main.qli",
+      "sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/check-initial.json",
+      "sha256": "0cf193dbd0f64e1da1b79c7cc50418e06e9a7e0981268864634fce72464c3e9f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/check-repaired.json",
+      "sha256": "3ae3f4839441c5398765aa0c159da825a8e1fd0afb80a841391e1b35403fdd9e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/context.md",
+      "sha256": "420a6b9b5abf6e4266105f8b8346ced8c6c7054b5c615b92d06675b2e71d24b2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/sample-initial.json",
+      "sha256": "ae5e7d55883c6a08b9019c92d64aec16242a62f2df9ce0180a5fdec2921381a3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/sample-repaired.json",
+      "sha256": "e502c0345f5721714cc80b5b8868c1acf6192c3f09abd6bf2033c1e149ca0b3f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/sample-v020.json",
+      "sha256": "6015c4506864ab62910d8d707f89564d56a044da82c6f175e8d29e3c2ad958bb"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/grover-trial-v020/session.json",
+      "sha256": "94fba7c4136dc8b2fffb121b72292a4b7ba4c84bafef566a833e042d71da8873"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/attempt-01/iterative.qli",
+      "sha256": "01621974a64cad924b806bcb818ad41cc0754e549567b693f946818e85aa4605"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/attempt-01/main.qli",
+      "sha256": "407220b2d2dd869f1ae438a14660ecc2c9e3cc134f703a2b68733b081e3329e0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/check-initial.json",
+      "sha256": "5f1cf02b5dd2e316cd6da2d2d228ac8f9c0d496c5f1ce17475ac36037c3b157f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/context.md",
+      "sha256": "7a4e0c31619a215bbd7d293dfe369cb4b9d4b665c2bf36ff34067cd30781c573"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/run-initial.json",
+      "sha256": "37b64794300ea493fe8bf8fedb7f4121508b34e89820aa16bbb1b2b853ee0072"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/semantic-tests.json",
+      "sha256": "52e1433b596baa4ac8a66cfc771a359ef1a1c441d9492e2e7c37afe6da08741c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/iterative-qpe/session.json",
+      "sha256": "bb7c1fab39a3830d75933cb18e80de9769493abe274e19f57e5fb33f42d4726c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-01/readout.qli",
+      "sha256": "e300fd07cd06e17a74467e111fcb7fc76e94007246af7301a49d38c29ffbe688"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02-first-check.json",
+      "sha256": "332e30c91bb34a1be76d2288865442330feffbfb6deb6f0f914cb291c9a451de"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02-parser-replay.json",
+      "sha256": "bb2eb74e1ef2cf7fa4b409d30664952d6ec60b8e8fa1b83dab26d34bc6b675a0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/initialization.qli",
+      "sha256": "e8a741844748f806ce1a9893dd15d449c1be020ae6d221aa4c2acc957a894896"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/measurement.qli",
+      "sha256": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/attempt-02/readout.qli",
+      "sha256": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/branch-schema-validation.json",
+      "sha256": "46a703c3d1918a0b94494f6699a82741c2db9d53272a08e2b4485cc24b5d3c93"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/capacity-continuation-validation.json",
+      "sha256": "7da19a8303674bf3161b8291b158895412883321c0ff7c4de7615573d05a47fb"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/capacity-producer-probe.json",
+      "sha256": "a9c95c6131f202774024eec6c3b294e6ce785cbd27ce01c06b3acd5c03913fc1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/checkpoint.md",
+      "sha256": "3587ca0a1c6e218407ca6847b0deec12b77665b9e08cd6665299cd2d8e71b2ea"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/circuit-trace-validation.json",
+      "sha256": "f836139aeb3c54007bf21875e20273bdeaa77f04e458ffb6bdf4ec01c800dab1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/composed-instrument-validation.json",
+      "sha256": "8436dae88e4d5fc557e4273b436cad96b627f20a312d30b8c92e0a0c45766584"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/composed-schema-validation.json",
+      "sha256": "0dbfd99882686d9b1d919f06eff5783a19e51636c2b0631e824cd62c4794d39b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/context.md",
+      "sha256": "2ffd2940691ddd3073cd8cfddc397d7f2228cadb86b294c1c4dd3b22501a6f0b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/continuation-baseline.json",
+      "sha256": "d1fdf7b95faa7d876ab0553c3aaafa320b85e2284f0e38dc2833c6d095858f46"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/continuation-integration-validation.json",
+      "sha256": "16030470d9771dabb262a02a45e5288e749b82255af089ef26181a8e3b907375"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/docs-inventory-validation.json",
+      "sha256": "e8829ba8adb96dea67f5d6730fbc540565616c2f58538bc9628f824a1a2893c1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/execution-validation.json",
+      "sha256": "acfbb74c2db988487f2a97bb5dcb1949ec51151975315a1bd44c5acfbc535629"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/final-compatibility-validation.json",
+      "sha256": "ede9fd9d9124a5af7fcac9418a6a879391851fb63579a93d712a30d210ccc2ac"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/final-continuation-baseline.json",
+      "sha256": "145dd645444095303c620052eaf3501f3a8cffa9c34c1b457d0c113b0eb7e4c3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/final-documentation-validation.json",
+      "sha256": "f49ba4509b5952d0f3b5931b5a79245402b1511a73b00bece563232a1f66d501"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/first-check.json",
+      "sha256": "3e6e61349f365b63d5eb25392563c7b33c5dce4bdae756ce04376af1a4b62ecf"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/fourier-component-validation.json",
+      "sha256": "f71d050b5248eceb94e3ecb413a9f2fadbc3289b0979b91e510f47f2ab4c66c1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/host-instrument-validation.json",
+      "sha256": "0b497d0f1ec275ea190a8706e953519b7fb5cfd34fa0b7b0a02b943d6a96bef8"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/host-schema-validation.json",
+      "sha256": "1ff576cb70c1d93964d7816b1794e6a6cae3230791a05c91fdefd9ee77943a53"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/instrument-validation.json",
+      "sha256": "c0eda9a13c05efdf2e06a04c00c0275b1cf921d0b61271a7be27877f2ca56384"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/package-rehearsal-validation.json",
+      "sha256": "48067394f98b2de4fa7bf465ead85b5c1af0d905e122e388adb303dbfcb430ec"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/preparation-baseline.json",
+      "sha256": "f5746bd4999fe63711aacfba4ea423785f9a633e020bda1ffa418c5a5775fcc2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/preparation-packet.md",
+      "sha256": "58609df5352bcf1835735e431bfab1add7d9ed08ab810b1e936b5040c6898c49"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/preparation-schema-validation.json",
+      "sha256": "3cdd24e4ea3afc7dd1775ee091d700aa482fd954ea0e4af160dd8269e2734bb1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/preparation-validation.json",
+      "sha256": "87b4a0aa5fdfe8165af7e6b874e5988770b14b72705d121657973e4f464bf85c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/prepared-header-validation.json",
+      "sha256": "2c0165cfdccdd314ce93db481fdb7f36e13d7aae435ef8e8e48492a344f66bbc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/qpe-host-validation.json",
+      "sha256": "67b8dcb16765b5e20561c907d15163cde0411fac79e8b7ef72380a8137205ee7"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/qpe-instrument-validation.json",
+      "sha256": "8ceafa89983a25ad1b3a4fca71d6fadf4a5d76c052bc34dd07adce67f757493e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/qpe-readout-validation.json",
+      "sha256": "766ea997476bcb3ed3b1fc78da75b44d892203def206164ad561748413182ec2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/qpe-root-validation.json",
+      "sha256": "8c47eb51f647730a6447e0d41f4db8f294140b5d64e9f921945d4d18f0ade498"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/qpe-schedule-validation.json",
+      "sha256": "a34b3fbbfb6c1fa62510ef393eed53f83df5336da093f1436331d89549d522d4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/readout-packet.md",
+      "sha256": "8c1ea1b4fa074af9ff3c43128550bf7aea836b703415f9c264cb274aa901685d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/readout-schema-validation.json",
+      "sha256": "a9077640a0cb58dbb385240afc699438c545136e4d72a25f8728101134a0b24b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/readout-validation.json",
+      "sha256": "ea99a2ecf6ad0124e8294e8015cbd692104e3718f303a9283cce45ec28e12eab"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/reuse-schema-validation.json",
+      "sha256": "7f9d237ca63de67ebe94298619ea122da00b8317824900c14cb331a3223f6233"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/routed-power-validation.json",
+      "sha256": "2e78ba0e0a6d9e2aaa7689320d87aee60669f64bbec7dc555d95dcd5bd820fae"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/rust-fourier-validation.json",
+      "sha256": "4f5535b507103765fbb2c54a214494c93d15ca498415f63f55394b28576b2d57"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/rust-sized-validation.json",
+      "sha256": "d4abda76b3949ef3a235688d7ea593cb05458f13078d8782a7b9e4b5b5a2629c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/sampling-build-interruption.json",
+      "sha256": "3d31df7fd43d4f350bbce8429eeeee87a332bf2a9a281959438957bc2cea0e96"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/sampling-validation.json",
+      "sha256": "8bbfd621f7b8e22b322cd644e5e81dc3b7f90660480b8374bf15e9c085ced9c6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/session.json",
+      "sha256": "44162602848547efdc740047c08e603ab0c730dc98ef839235d173140ddad1b7"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/sized-compatibility.json",
+      "sha256": "8547ebc57020097c598b4c07ceb4ff56eabdd2562bb792cf074f4fd591fe4ca5"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/source-cli-integration-validation.json",
+      "sha256": "1c8c55e97f4caf0373cf0918aec7ccb082686ffc3851baf5797b3e09cb7ffa75"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/measured-qpe-v021/typing-reuse-validation.json",
+      "sha256": "7882d5c43b3dfbb0f138d3436ac9ded4d11f3816ea3c5d03f9dc92c77651b28e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/attempt-01/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/attempt-01/main.qli",
+      "sha256": "981b416a86f7e8cdbcc1136d953239f2dbb3b49119314113b43be43ad0fff812"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/context.md",
+      "sha256": "5ad3a222818d07d02ad197b968ac51316e2e451902e7f1445b733526b18fc6b6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/first/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/first/main.qli",
+      "sha256": "981b416a86f7e8cdbcc1136d953239f2dbb3b49119314113b43be43ad0fff812"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/replay.json",
+      "sha256": "f169a355e64d78ae9d0b32bcec38bbcb03c7ea7fbc159a348a07b12fd8df6213"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/raw-observing-v026/session.json",
+      "sha256": "882d621dcf5ed7c0fc0f475aad71301f789867682ead4f651f715b7fc707f5d2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/reshape-v021/attempt-01/main.qli",
+      "sha256": "ff7d1d40c608d55184b0a05d4dbb0e39e1e241dc85d7c043d40e87d591e96a87"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/reshape-v021/check-initial.json",
+      "sha256": "4c32b1313312e23d8b1118039828c9a2d25a500162b159522608d064b6a2b3ad"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/reshape-v021/context.md",
+      "sha256": "5d7ce0733b2719a410e734729f78f32db1b2914e8fba573b61d33b4b3f5a94e4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/reshape-v021/session.json",
+      "sha256": "48c222a712005c3c8810538e158548038cb78e75d571ea5a6791e3a9738ea146"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/attempt-01/estimation.qli",
+      "sha256": "a4c34f13f1659db3d773b18d5573ec15a7198769a2bfce807cfa160f7f2d3cad"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/attempt-01/main.qli",
+      "sha256": "67144ef9f8831a66c21e536baf105831540e99d7464cec87c86f02efc51c17d0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/check-initial.json",
+      "sha256": "c3fd9e01a0d088774e0e7d646bb250b1b5ef3d2e29c06cf70ea438494f491c96"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/context.md",
+      "sha256": "ce6a422022c2903d3376500ae1878a187c3f81cf2235302dff510be3af43acb8"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/shared-qpe-v020/session.json",
+      "sha256": "838e4aeccb61246fa26d1a7fd261ee4b7fee0214589b2b97e45aab04588bff3a"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/addition.qli",
+      "sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/bitwise.qli",
+      "sha256": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/comparison.qli",
+      "sha256": "dec1b18d722f0e8f0507742ae3e0a286ad06e04684333fa4b4e4238cf9386439"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/controls.qli",
+      "sha256": "d4db793e94bc8db69d0da2bbab43059f223d00ba82b060d6b144ff18e5116b2d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-01/increment.qli",
+      "sha256": "61aa52b3f679af107359a897d7f8b08c3256b41da879d8ad466671e4daa6048f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/addition.qli",
+      "sha256": "26c2f4682e8a438ff7fbfdc1f158098ec46950a5ffe120d6d160e6ba5ece45d6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/bitwise.qli",
+      "sha256": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/comparison.qli",
+      "sha256": "2578fb5c72d36fa056979ff4f40bc0e5ecd6f509c51cb6652883f08555b51729"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/controls.qli",
+      "sha256": "d4db793e94bc8db69d0da2bbab43059f223d00ba82b060d6b144ff18e5116b2d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/increment.qli",
+      "sha256": "61aa52b3f679af107359a897d7f8b08c3256b41da879d8ad466671e4daa6048f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/attempt-02/negation.qli",
+      "sha256": "6144f88d435873c442e4135b7a709dd879df8eac9c34029d820b11fc20f7b5c3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/complete-small-validation.json",
+      "sha256": "7ef7b3523578e13c8e0fa98a48da214de4f48039fb12546fa7f26043a2b20679"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/context.md",
+      "sha256": "e49527bd66ca1a629104dbf49fd41556dc15d867f940052d559e60649bddd365"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/first-check.json",
+      "sha256": "f091ba5ce515cd48a99bc7d12dd8ff8889c188c1202c1ef05dae5e5cfc1dfed4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/first-native.json",
+      "sha256": "bf751844effd815a8f737c3c5764b8a09d2e3a39d0841070c294e3174819560e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/session.json",
+      "sha256": "c9f4c01d7841fe0497a14ccc2b178df1d9eb06f072dd7e95a6d2089a915f8260"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-arithmetic-v021/shared-native.json",
+      "sha256": "b0f6ea584a15cc36120eaa2660928ce2374e289c9bd7254542ac97a60392a395"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/attempt-01/bitwise.qli",
+      "sha256": "d4023b59f93e95ad7ea433305da689c2f608724673270c3efc98203085b412ce"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/attempt-01/prepare.qli",
+      "sha256": "67b958139f21cc2a35a5f3d18d2c8685d604e504cf82ffaf5acd77a95ad74af6"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/compact-native-first.json",
+      "sha256": "8995f3295c12058582a18e9d011844b12f5a3200b6de9e9387241562dc557581"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/context.md",
+      "sha256": "6392342c26aed68690549335b05ddb52ed3873267c1902cd58b80053c9d76dcd"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/first-compile.json",
+      "sha256": "cf25112ddf65b3e81305c53d5f69c1b330edc2dd051d719663df0fa50263ff15"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/first-native.json",
+      "sha256": "6f3ef3929141f88eb237dfc0d10234e440cda9275504e52ad28a8d30d2280f1f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/observation-compact-native-first.json",
+      "sha256": "2bb474dcea074ccfacd1a04bb4f694b9ab8afe296b4000b7cd37fec996a999ac"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/observation-first-native.json",
+      "sha256": "f69d9719256ce4c6d025267ff5809017ae4ec765d67b8c98d8450fe37ac048b4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/session.json",
+      "sha256": "78909c96abfdd867e1e69a680f7f2f1bf050b27bf770294d64dc2b48599a7144"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-corpus-v021/validated-source.json",
+      "sha256": "f094b72264712e3d8f32127320e0f6939df6ec2f7b3e3007c5e33ebc19d612a3"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/attempt-01/fourier.qli",
+      "sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/attempt-02/fourier.qli",
+      "sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/attempt-02/inverse.qli",
+      "sha256": "ddc8d2d9411050e49c5872ff58ed43f62afb3cbff69c22166f43952381992de4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/context.md",
+      "sha256": "2ba33858f78f2950e0d2baae36ccbd14002c745cbac1b42a4f3530b76c63bfea"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/first-check.json",
+      "sha256": "2388c99e440bfc1de84372c2607410fe8a97ba669f51aed8535f0dfcd9fb4a13"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/inverse-first-check.json",
+      "sha256": "880b56642ab49409175423326db11cd6cd9364fcc5fcdb5af16162b913fa63d4"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/profile-frame-validation.json",
+      "sha256": "38b28b76392d50381c8df95161cc4ad38e6b3de4e0a95f2ce719b4bf186369af"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/recursive-reversal-validation.json",
+      "sha256": "696977d60b84986b903f12cdd6c29999894a4140f2f109732e6a2876e09d0170"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/session.json",
+      "sha256": "dda8089ccb18e4422032deeeb77358e5ae412bc804e9a0707174d73e79509b52"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qft-v021/validated-source.json",
+      "sha256": "5d87521231c3cb63e04356f141666d19839cb769a1846bb1670380b5dc5daea2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/amplification.qli",
+      "sha256": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/amplitude.qli",
+      "sha256": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/estimation.qli",
+      "sha256": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/evolution.qli",
+      "sha256": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/fourier.qli",
+      "sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/modular.qli",
+      "sha256": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/order.qli",
+      "sha256": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/preparation.qli",
+      "sha256": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/reflection.qli",
+      "sha256": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/attempt-01/rotation.qli",
+      "sha256": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/complete-small-validation.json",
+      "sha256": "34ca554cb2a6ea98da1c0da5c7ecfa868c2d7c3c59f7e4a7079e0c8460575a97"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/context.md",
+      "sha256": "bcfad3d3d6a3b7546faa413695b8043cedfa27de91d8672ed681b9dfc34bd065"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/first-check.json",
+      "sha256": "0763ccdcdb9591b8097018b830e9f5aba9e22b1485ab79816ebe3fc180165347"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/first-native.json",
+      "sha256": "3d7b680c9dbadc09b0b7f68fdabede30066eb447bc953291d666a0c0c4fa8c71"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-clients-v021/session.json",
+      "sha256": "95b2a294b0ae6670d204ff20e39192650662e5935e4260d779a5aa584b4421b2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/estimation.qli",
+      "sha256": "1a33df5e24e6c51b312d708017038d526edb3392f95c3f367e7c873d5367bcfd"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/evolution.qli",
+      "sha256": "348664fbf5a4d30e6318bfdaeee46724ca61b87c32593c0ee2bd50be9f899df1"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/fourier.qli",
+      "sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-01/preparation.qli",
+      "sha256": "44f588448e6428ed124dd891cf8a63168151b80ec0f90f5e8c439a30979138fc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/estimation.qli",
+      "sha256": "dac0ba1a3ddc05649d40fa53d432a54c67a7f85e7ee8234a1329d1440c6b3852"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/evolution.qli",
+      "sha256": "dfcf99164596f9662a9d2dde71ff5da4f30e348282df16fa1c8b28087f4f918f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/fourier.qli",
+      "sha256": "be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/attempt-02/preparation.qli",
+      "sha256": "a2c7615047af2b9d6a7d3cb1e3488ea0f3d1d11c4b0b3ff189c009078b6114a9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/coherent-first-validation.json",
+      "sha256": "432d47c283adacc8e4aa0c5ed5c254d385edcfe26e562882cc45d2fda7fe73d5"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/context.md",
+      "sha256": "55bfdb7e3ae952bf549f58dff9f0fa8e038942fbdd7b34eb7d3bfabac32b4038"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/first-check.json",
+      "sha256": "6025398e0dfecfc4c68de61898d547c85445443454c46b203e004a3281267c35"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/first-native.json",
+      "sha256": "20ff983a186e1e0b2f6d3be2cc4f33703927fc8fbb5201ba667b0ce79b081656"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/session.json",
+      "sha256": "ede5b53c1eb2ff153f6efef80f243ece33e97c3a722e4ea3e11ddf14df320a27"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-qpe-v021/validated-source.json",
+      "sha256": "e8ad5b88f7d5b9973033dc2d1cce7e5892dc8430a993cf30b7912454ebadf189"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/attempt-01/layout.qli",
+      "sha256": "b30b8526993f52ca1ff45d7a158192e8d7b5fa878fb1cb38609c9b93cc8e49ef"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/attempt-01/main.qli",
+      "sha256": "f8cd8d655188a1bc009a4a3013cf8bad6dfb547eaa29d2ab8bd2f568607e0d24"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/check-initial.json",
+      "sha256": "37829324f7675e6a50a015e064c3fb4e44d1bb99479ce5437eec2c8f4dc8fa84"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/context.md",
+      "sha256": "327dd238f677e18fc131dd5ce203c7c1ae32d0f502eb05184f09962a88b71466"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-reshape-v021/session.json",
+      "sha256": "f5f4116548bf7a41696f7ccfbe2b3043bd4b15fa014c4e597634b70df97a807f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-01/main.qli",
+      "sha256": "a57d75e3ce165ea89e8d978305c4110cdcd01770de0d923ddf18a7081e1bcdcc"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-01/xor.qli",
+      "sha256": "c29b322c140be85520834004f058a1344100e74261ec32998aebec86b623c7bf"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-02/bitwise.qli",
+      "sha256": "3a94314244d5afddba3e426313ebfa50b81fddee23a43f4c677c4caeba571a9c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/attempt-02/main.qli",
+      "sha256": "86d2f711ec95d66015004bf1e2479e1fdae15e76e4171a6403dd6628361df589"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/check-initial.json",
+      "sha256": "b4df9c4419cb8ac8b31eeaaf4d85aba072ec285a4f12bbec7dff3bd1bf02b6de"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/check-renamed.json",
+      "sha256": "db7afd7f39843358702efdf803dfdabcbc00c56749c59c5b725af6a64ba9c967"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/context.md",
+      "sha256": "bbb685859ea23f28ee6eb8286b7740ebf6ebff3b3de45a2140ce3da1b28dd5d9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/sized-xor-v021/session.json",
+      "sha256": "f68efb7e2785826afb053f6c665b581f0cb8bf93330a68e19e86e703591b4423"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-01/generic/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-01/generic/main.qli",
+      "sha256": "1126ca706f9165dd8be8f10c45f52d0097329cf8fc4141a7429366314ff46987"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-01/ordinary-bit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-01/ordinary-bit/main.qli",
+      "sha256": "acffae4cb81a54af1a68fd8c159f642954947c4cbcc263f91846f08c8f17386f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-01/unit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-01/unit/main.qli",
+      "sha256": "5b1885a753f29d4ade240fa6c193c09c791cd4b997f12142a980f74713c9e143"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-02/generic/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-02/generic/main.qli",
+      "sha256": "1126ca706f9165dd8be8f10c45f52d0097329cf8fc4141a7429366314ff46987"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-02/ordinary-bit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-02/ordinary-bit/main.qli",
+      "sha256": "acffae4cb81a54af1a68fd8c159f642954947c4cbcc263f91846f08c8f17386f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-02/unit/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/attempt-02/unit/main.qli",
+      "sha256": "7d2d6359db52a5fe3a7872683be7a1675fe0a43d998735ac3f4e4b8aa67276f0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/context.md",
+      "sha256": "56efee1ab63b3ee71a3b0438fde70473c5dfb623f807c1b8576cc365567dd4df"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/generic-initial.json",
+      "sha256": "220dbbdcf63c1214cac289382cfb0947f40892fe18865e34c5e737fb186a962d"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/ordinary-bit-initial.json",
+      "sha256": "53b7abc80c54a260bc7274c9eda7af070fcd82c30bd292b4b2ba638ddd42e472"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/session.json",
+      "sha256": "b0a5178e3ff5671bd355e12bbeaba9c8fa27a0c8beeea693eaf49438107e89b2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/unit-entry-repair.json",
+      "sha256": "40d38f92852cf205c33d0ba2b5861017af6ed6e723a54bf414e49933b9d56975"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-foundation-v030/unit-initial.json",
+      "sha256": "db84fff37e08fae66d589e412e491c2a11d3ab2a32934bbd10575cddc2d7e366"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/attempt-01/main.qli",
+      "sha256": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/attempt-02/main.qli",
+      "sha256": "a9f780cca445b0a54c6185ea41b081e12062d4ec2bb04b82555ca3cbe3ad691c"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/check-after.json",
+      "sha256": "d4e4c6d7524a2dc52f9e01f29b41c2a61759569c59112f2d7e9fdccc4cb1650f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/check-before.json",
+      "sha256": "9bef5760a96eb998a1d0e5ed6a2855c1eecb466fbfca29d7ce3d625b9971f624"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/check-repaired.json",
+      "sha256": "6e522cc2a2446042a91108bf088639f1db959f2074e3f824d4d9d4620842650b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/context.md",
+      "sha256": "2f119972630ff4c2791512753871aea4956ba1a4774d16d0ba7ac464c6f70d5a"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/run-repaired.json",
+      "sha256": "b5b2b8b02709fb77b6278f111546506e28ec3e08b58f9d620e75a48849be84c9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/type-layout-repair/session.json",
+      "sha256": "d6c70c173da774168b5f7c39434922463af798ddcf0466ec0a2e03bcaf56aaff"
+    },
+    {
+      "path": "tests/fixtures/verification_v029/equivalence/README.md",
+      "sha256": "bf9f6ddefe9dfa4a30804010d76999fb54065eb03853a7b92a0e57fd7493bc6f"
+    },
+    {
+      "path": "tests/fixtures/verification_v029/equivalence/inputs.jsonl.gz",
+      "sha256": "296c36efa109762fefe9386c9a5b53ac010f8aa94e7464f595c0bf3173f3fae1"
+    },
+    {
+      "path": "tests/fixtures/verification_v029/equivalence/results.json",
+      "sha256": "3b5f3bf8d5d7311114b302bfe78e3eb0ec76ef4700af6b8fe4cf339bf6d1c699"
+    }
+  ],
+  "all_identical_to_base": true,
+  "fixed_artifact_request_pairs": 799,
+  "fixed_archive_sha256": "296c36efa109762fefe9386c9a5b53ac010f8aa94e7464f595c0bf3173f3fae1",
+  "scope": "Byte preservation and pair count only. This record does not rerun the fixed799 native outcomes or relabel historical source files as currently accepted."
+}

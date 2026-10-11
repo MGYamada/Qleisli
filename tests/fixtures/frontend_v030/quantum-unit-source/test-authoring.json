@@ -1,0 +1,14 @@
+{
+  "status": "ready-for-first-integrated-run",
+  "execution": "No build or tests run by the authoring subagent. Root coordinates actual validation.",
+  "test": {
+    "path": "tests/quantum_unit_source.rs",
+    "sha256": "93b2d54f9c90fafd14b3647a186ce3086b79366943ed0c0c6af0832193d060cb"
+  },
+  "original_study_manifest": {
+    "path": "tests/fixtures/authoring_sessions/quantum-unit-v030/first-files.json",
+    "sha256": "620ff262140a6604c12356233e0759c59b8ee0fbe00312c7799e16dba9de5e67"
+  },
+  "test_count": 9,
+  "scope": "Independent bounded requests/oracles, not new acceptance authority or universal proof."
+}

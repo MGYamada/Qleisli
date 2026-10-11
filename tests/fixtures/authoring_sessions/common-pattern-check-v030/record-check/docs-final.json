@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "scripts/check_docs.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "recorded_utc": "2026-10-05T16:39:34.747865+00:00",
+  "exit_code": 0,
+  "seconds": 2.0825391670223325,
+  "stdout": {
+    "path": "docs-final.stdout.txt",
+    "sha256": "32205e6cbf8b913bd08e9a1f3ac5c905486c2dee929611e80e2bedb80e46f157"
+  },
+  "stderr": {
+    "path": "docs-final.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "reason": "Final link check after adding results.md; no source/checker change or stored command execution."
+}

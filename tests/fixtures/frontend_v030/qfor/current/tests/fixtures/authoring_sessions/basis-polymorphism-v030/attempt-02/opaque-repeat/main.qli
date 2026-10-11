@@ -1,0 +1,6 @@
+pub unitary fn identity_bit(q:Q<Bit>)->Q<Bit>{q}
+pub unitary fn identity_register(q:Q<Bits<1>>)->Q<Bits<1>>{q}
+pub unitary fn repeat[static A:Basis,static k:Nat,static U:Op<A>](q:Q<A>)->Q<A>
+requires Apply(U), k <= 4 {
+    qfor static i in 0..k carry result=q { yield U(result) }
+}

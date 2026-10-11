@@ -4,15 +4,29 @@
 //! validity. The `compile` API checks source and independently verifies its IR.
 
 pub mod ast;
+mod check;
 pub mod compile;
 pub mod core;
 pub mod diagnostic;
 pub mod documentation;
+pub mod effects;
+mod error;
+mod formals;
+mod instrument;
 pub mod lexer;
+mod linear;
+mod meaning;
+mod ordinary;
 pub mod parser;
+mod pattern;
 pub mod project;
-pub mod sized;
+mod raw_state;
+mod resolve;
+mod scanner;
+mod source;
+mod specialize;
+mod types;
 
-/// Language edition for the current grammar, in-memory source APIs and bundled
-/// library. This is independent of the product version and Rust's Cargo edition.
+/// Constitutional edition selected by in-memory source APIs and the bundled
+/// library, independently of grammar, product version and Rust's Cargo edition.
 pub const CURRENT_EDITION: &str = "2026";

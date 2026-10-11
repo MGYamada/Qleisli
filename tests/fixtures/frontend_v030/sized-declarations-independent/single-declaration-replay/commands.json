@@ -1,0 +1,494 @@
+[
+  {
+    "label": "build",
+    "argv": [
+      "cargo",
+      "build",
+      "--offline",
+      "--lib",
+      "--bin",
+      "qleisli"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "build.stdout",
+    "stderr": "build.stderr"
+  },
+  {
+    "label": "observer-build",
+    "argv": [
+      "rustc",
+      "--edition=2024",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/observer.rs",
+      "--extern",
+      "qleisli=/Users/masa/git/Qleisli/target/debug/libqleisli.rlib",
+      "-L",
+      "dependency=/Users/masa/git/Qleisli/target/debug/deps",
+      "-o",
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "observer-build.stdout",
+    "stderr": "observer-build.stderr"
+  },
+  {
+    "label": "duplicate-pattern",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/duplicate-pattern",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "duplicate-pattern.stdout",
+    "stderr": "duplicate-pattern.stderr"
+  },
+  {
+    "label": "fold-two-activations",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/fold-two-activations",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "fold-two-activations.stdout",
+    "stderr": "fold-two-activations.stderr"
+  },
+  {
+    "label": "hide-live-owner",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/hide-live-owner",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "hide-live-owner.stdout",
+    "stderr": "hide-live-owner.stderr"
+  },
+  {
+    "label": "initializer-rebind",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/initializer-rebind",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "initializer-rebind.stdout",
+    "stderr": "initializer-rebind.stderr"
+  },
+  {
+    "label": "moved-shadows-import",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/moved-shadows-import",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "moved-shadows-import.stdout",
+    "stderr": "moved-shadows-import.stderr"
+  },
+  {
+    "label": "multiple-acyclic",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/multiple-acyclic",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "multiple-acyclic.stdout",
+    "stderr": "multiple-acyclic.stderr"
+  },
+  {
+    "label": "multiple-unused-invalid",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/multiple-unused-invalid",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "multiple-unused-invalid.stdout",
+    "stderr": "multiple-unused-invalid.stderr"
+  },
+  {
+    "label": "shadow-static-operation",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/shadow-static-operation",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "shadow-static-operation.stdout",
+    "stderr": "shadow-static-operation.stderr"
+  },
+  {
+    "label": "static-branch-rebind",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/static-branch-rebind",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "static-branch-rebind.stdout",
+    "stderr": "static-branch-rebind.stderr"
+  },
+  {
+    "label": "zero-fold-capture",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/initial-study/zero-fold-capture",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "zero-fold-capture.stdout",
+    "stderr": "zero-fold-capture.stderr"
+  },
+  {
+    "label": "additional-shadow-static-missing-argument",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "additional-shadow-static-missing-argument.stdout",
+    "stderr": "additional-shadow-static-missing-argument.stderr"
+  },
+  {
+    "label": "additional-shadow-static-valid-argument",
+    "argv": [
+      "/private/tmp/qleisli-multidecl-lexical-replay/observer",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument",
+      "check"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "additional-shadow-static-valid-argument.stdout",
+    "stderr": "additional-shadow-static-valid-argument.stderr"
+  },
+  {
+    "label": "finite-rebind-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/finite-rebind",
+      "--output=/private/tmp/qleisli-multidecl-lexical-replay/finite-rebind.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite-rebind-proposal.stdout",
+    "stderr": "finite-rebind-proposal.stderr"
+  },
+  {
+    "label": "finite-rebind-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/finite-rebind",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite-rebind-check.stdout",
+    "stderr": "finite-rebind-check.stderr"
+  },
+  {
+    "label": "finite-rebind-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/finite-rebind",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite-rebind-run.stdout",
+    "stderr": "finite-rebind-run.stderr"
+  },
+  {
+    "label": "finite-branch-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "emit-ir",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/finite-branch",
+      "--output=/private/tmp/qleisli-multidecl-lexical-replay/finite-branch.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite-branch-proposal.stdout",
+    "stderr": "finite-branch-proposal.stderr"
+  },
+  {
+    "label": "finite-branch-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "check",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/finite-branch",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite-branch-check.stdout",
+    "stderr": "finite-branch-check.stderr"
+  },
+  {
+    "label": "finite-branch-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "run",
+      "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/finite-branch",
+      "--format=json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "finite-branch-run.stdout",
+    "stderr": "finite-branch-run.stderr"
+  },
+  {
+    "label": "sized-fold-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/sized-fold/main.qli",
+      "--output=/private/tmp/qleisli-multidecl-lexical-replay/sized-fold.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "sized-fold-proposal.stdout",
+    "stderr": "sized-fold-proposal.stderr"
+  },
+  {
+    "label": "sized-fold-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/sized-fold/main.qli",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "sized-fold-check.stdout",
+    "stderr": "sized-fold-check.stderr"
+  },
+  {
+    "label": "sized-fold-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/sized-fold/main.qli",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "sized-fold-run.stdout",
+    "stderr": "sized-fold-run.stderr"
+  },
+  {
+    "label": "sized-recursive-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/sized-recursive/main.qli",
+      "--nat=n=2",
+      "--output=/private/tmp/qleisli-multidecl-lexical-replay/sized-recursive.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "sized-recursive-proposal.stdout",
+    "stderr": "sized-recursive-proposal.stderr"
+  },
+  {
+    "label": "sized-recursive-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/sized-recursive/main.qli",
+      "--nat=n=2",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "sized-recursive-check.stdout",
+    "stderr": "sized-recursive-check.stderr"
+  },
+  {
+    "label": "sized-recursive-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/sized-recursive/main.qli",
+      "--nat=n=2",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "sized-recursive-run.stdout",
+    "stderr": "sized-recursive-run.stderr"
+  },
+  {
+    "label": "provider-h-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/main.qli",
+      "--operation=U=a::gate",
+      "--output=/private/tmp/qleisli-multidecl-lexical-replay/provider-h.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-h-proposal.stdout",
+    "stderr": "provider-h-proposal.stderr"
+  },
+  {
+    "label": "provider-h-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/main.qli",
+      "--operation=U=a::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-h-check.stdout",
+    "stderr": "provider-h-check.stderr"
+  },
+  {
+    "label": "provider-h-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/main.qli",
+      "--operation=U=a::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-h-run.stdout",
+    "stderr": "provider-h-run.stderr"
+  },
+  {
+    "label": "provider-x-proposal",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "emit-proposal",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/main.qli",
+      "--operation=U=b::gate",
+      "--output=/private/tmp/qleisli-multidecl-lexical-replay/provider-x.proposal.json"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-x-proposal.stdout",
+    "stderr": "provider-x-proposal.stderr"
+  },
+  {
+    "label": "provider-x-check",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "check",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/main.qli",
+      "--operation=U=b::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-x-check.stdout",
+    "stderr": "provider-x-check.stderr"
+  },
+  {
+    "label": "provider-x-run",
+    "argv": [
+      "/Users/masa/git/Qleisli/target/debug/qleisli",
+      "sized",
+      "run",
+      "--entry=main::f",
+      "--module=a=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/a.qli",
+      "--module=b=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/b.qli",
+      "--module=main=/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/lexical-resolution/sources/providers/main.qli",
+      "--operation=U=b::gate",
+      "--kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--basis=0"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "exit_code": 0,
+    "stdout": "provider-x-run.stdout",
+    "stderr": "provider-x-run.stderr"
+  }
+]

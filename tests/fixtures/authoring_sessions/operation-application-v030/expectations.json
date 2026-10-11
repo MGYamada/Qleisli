@@ -1,0 +1,30 @@
+{
+  "status": "independent-before-implementation",
+  "case": "k=1, U=Z, input=plus tensor plus",
+  "operation": "controlled-Z followed by target Z",
+  "amplitudes_by_control_target": {
+    "00": [
+      0.5,
+      0
+    ],
+    "01": [
+      -0.5,
+      0
+    ],
+    "10": [
+      0.5,
+      0
+    ],
+    "11": [
+      0.5,
+      0
+    ]
+  },
+  "probabilities_by_control_target": {
+    "00": 0.25,
+    "01": 0.25,
+    "10": 0.25,
+    "11": 0.25
+  },
+  "max_source_qubits": 2
+}

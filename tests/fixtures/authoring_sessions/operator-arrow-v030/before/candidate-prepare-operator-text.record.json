@@ -1,0 +1,20 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/candidate-prepare-operator/main.qli",
+    "--operation=U=main::provider"
+  ],
+  "exit_code": 1,
+  "stderr": "main:100..102: parse: expected `>`, found `->`\n",
+  "native_invocations": 0,
+  "seconds": 0.004834457999095321,
+  "transcript": "main:100..102: parse: expected `>`, found `->`\n",
+  "recorded_utc": "2026-10-05T12:08:27.683444+00:00",
+  "timestamp_note": "Clock of metadata normalization after the actual original CLI observation, not that command start/completion timestamp.",
+  "raw_event": {
+    "path": "before/candidate-prepare-operator-text.json",
+    "sha256": "1bcef0ee76eaa3c9743ecc90548739811b89bf4b6b1fc5da402b660d40ec4a14"
+  }
+}

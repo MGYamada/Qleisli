@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::unit;
+use std::quantum::finish;
+pub unitary fn f(u: Unit) -> Unit { let q = unit(u); () }
+
+observe fn main() -> Unit { () }

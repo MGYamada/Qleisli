@@ -1,0 +1,366 @@
+[
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "parser"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.9361303339828737,
+    "stdout": "parser.stdout.txt",
+    "stderr": "parser.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "frontend_types"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.47051020798971877,
+    "stdout": "frontend_types.stdout.txt",
+    "stderr": "frontend_types.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_source"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 1.1013106669997796,
+    "stdout": "sized_source.stdout.txt",
+    "stderr": "sized_source.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "documentation"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 1.3066605830099434,
+    "stdout": "documentation.stdout.txt",
+    "stderr": "documentation.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "qli_corpus"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 16.773660374979954,
+    "stdout": "qli_corpus.stdout.txt",
+    "stderr": "qli_corpus.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "authoring_ergonomics"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 2.1818442089715973,
+    "stdout": "authoring_ergonomics.stdout.txt",
+    "stderr": "authoring_ergonomics.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "repair_diagnostics"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 2.9863136669737287,
+    "stdout": "repair_diagnostics.stdout.txt",
+    "stderr": "repair_diagnostics.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "predicate_domain"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 14.36231354199117,
+    "stdout": "predicate_domain.stdout.txt",
+    "stderr": "predicate_domain.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "shared_resolution"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.6666879169642925,
+    "stdout": "shared_resolution.stdout.txt",
+    "stderr": "shared_resolution.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sized_declarations"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.9567119590356015,
+    "stdout": "sized_declarations.stdout.txt",
+    "stderr": "sized_declarations.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "sampling"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 1.6649947919650003,
+    "stdout": "sampling.stdout.txt",
+    "stderr": "sampling.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_scope"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 4.122245665988885,
+    "stdout": "source_scope.stdout.txt",
+    "stderr": "source_scope.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "specification_boundaries"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 5.20598270802293,
+    "stdout": "specification_boundaries.stdout.txt",
+    "stderr": "specification_boundaries.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "diagnostics"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 0.7082586670294404,
+    "stdout": "diagnostics.stdout.txt",
+    "stderr": "diagnostics.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "compile"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 101,
+    "seconds": 3.429317874950357,
+    "stdout": "compile.stdout.txt",
+    "stderr": "compile.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_semantics"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 4.758125666005071,
+    "stdout": "source_semantics.stdout.txt",
+    "stderr": "source_semantics.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_judgments"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 4.886499750020448,
+    "stdout": "source_judgments.stdout.txt",
+    "stderr": "source_judgments.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_ir_correspondence"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 120.89374387502903,
+    "stdout": "source_ir_correspondence.stdout.txt",
+    "stderr": "source_ir_correspondence.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_snapshots"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 4.596894666959997,
+    "stdout": "source_snapshots.stdout.txt",
+    "stderr": "source_snapshots.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "source_soundness"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 2.032863125030417,
+    "stdout": "source_soundness.stdout.txt",
+    "stderr": "source_soundness.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "static_semantics"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 9.557387958979234,
+    "stdout": "static_semantics.stdout.txt",
+    "stderr": "static_semantics.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "static_operations"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 21.12988033297006,
+    "stdout": "static_operations.stdout.txt",
+    "stderr": "static_operations.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "operation_parameters"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 101,
+    "seconds": 14.151112249994185,
+    "stdout": "operation_parameters.stdout.txt",
+    "stderr": "operation_parameters.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "function_contracts"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 6.003685916017275,
+    "stdout": "function_contracts.stdout.txt",
+    "stderr": "function_contracts.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "certified_source"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 3.247776249947492,
+    "stdout": "certified_source.stdout.txt",
+    "stderr": "certified_source.stderr.txt"
+  },
+  {
+    "argv": [
+      "cargo",
+      "test",
+      "--offline",
+      "--test",
+      "algorithms"
+    ],
+    "cwd": "/Users/masa/git/Qleisli",
+    "exit_code": 0,
+    "seconds": 18.215171625022776,
+    "stdout": "algorithms.stdout.txt",
+    "stderr": "algorithms.stderr.txt"
+  }
+]

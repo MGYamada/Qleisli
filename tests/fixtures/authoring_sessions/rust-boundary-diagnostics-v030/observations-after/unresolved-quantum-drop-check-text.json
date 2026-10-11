@@ -1,0 +1,55 @@
+{
+  "command": [
+    "/private/tmp/qleisli-rust-boundary-after",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/attempt-01/unresolved-quantum-drop"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "case": "unresolved-quantum-drop",
+  "phase": "after",
+  "mode": "finite",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T05:17:04.204766+00:00",
+  "recorded_utc": "2026-10-06T05:17:04.210120+00:00",
+  "seconds": 0.005343041964806616,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-rust-boundary-after",
+      "sha256": "d140ae375e1319f3cc353fe475178357355f921b5dae515a98a785b06ca8bb5d"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "d91271c0a7e552a3535d020cfe8e9fb8eff1d8adfb80f784138cbe74be312965",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-after/unresolved-quantum-drop-check-text.stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "stderr": {
+      "path": "observations-after/unresolved-quantum-drop-check-text.stderr.txt",
+      "sha256": "7204fbf8cc3d180ae28a71aa2a2ec07b2a9e1eee06d916ecade0e9145228fa94",
+      "bytes": 494
+    }
+  },
+  "scope": "Actual bounded public CLI observation; selected native bytes identify a path, not child-start attestation, authenticated build provenance or a source/runtime theorem.",
+  "transcript": "stdout:\n\nstderr:\n/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/rust-boundary-diagnostics-v030/attempt-01/unresolved-quantum-drop/main.qli:5:5: unknown_name: unresolved function drop; there is no built-in Rust drop or forget operation. Ordinary Bit/Unit may be unused or matched by _. If a value contains live Q<T>, it must be returned or explicitly consumed; scope exit is not destruction. Measurement, discard, reset and checked clean discharge have distinct meanings; reset returns a fresh owner.\n"
+}

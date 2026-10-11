@@ -1,0 +1,550 @@
+#!/usr/bin/env python3
+"""Check ratification, binding interpretations and append-only admitted identities.
+
+Hashes cannot independently authenticate a human transcript. This limited check
+does not implement full constitutional CI (#141), prove a guarantee, approve a
+release, or authorize a constitutional interpretation. A caller-supplied trusted
+Git base additionally prevents replacement of already recorded identities.
+Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+"""
+
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+
+import check_guarantee_ledger as ledger_policy
+
+from check_ratification_packet import (
+    GOVERNANCE_SNAPSHOT, PACKET_PATH, ROOT, SHA256, PacketError, check_packet,
+    checked_file, exact_keys, json_object, read_file,
+)
+
+
+EVENT_PATH = "governance/ratification-2026.json"
+LEDGER_PATH = "governance/guarantees.json"
+EVENT_SHA256 = "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+CONSTITUTION_SHA256 = "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b"
+GOVERNANCE_SHA256 = "60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721"
+PACKET_SHA256 = "d8acc219ba992c8833141543b3f68fe5a1c0e165403881a5c8b5ee15107af885"
+ADOPTION_PATH = "governance/interpretations/initial-2026-adoption.json"
+REVIEWED_PATH = "governance/interpretations/initial-2026-reviewed.txt"
+BOOTSTRAP_PATH = "tests/fixtures/constitution_v030/bootstrap-ledger.json"
+ADOPTION_SHA256 = "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+REVIEWED_SHA256 = "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+BOOTSTRAP_SHA256 = "44c504cfd5b34e01126504d18e278a6991b9dac2d3de13582ff4c3c22eda62d6"
+ADMISSION_PATH = "governance/guarantees/initial-2026-admission.json"
+ADMISSION_SHA256 = "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2"
+PENDING_PATH = "tests/fixtures/constitution_v030/pending-ledger.json"
+PENDING_SHA256 = "248e25655a89becea9c0ca008102f50db8ea096248b2c2624b671445866d9481"
+PROPOSAL_PATH = "governance/proposals/initial-guarantees.json"
+PROPOSAL_SHA256 = "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
+CURRENT_PATH = "governance/guarantees/current-evidence.json"
+GUARANTEE_IDS = ("QS-QLV1-OWNERSHIP-2026-01", "QS-QLV1-SCOPE-2026-01")
+RATIFICATION_PATHS = (
+    EVENT_PATH, "CONSTITUTION.md", GOVERNANCE_SNAPSHOT, PACKET_PATH,
+    "tests/fixtures/constitution_v030/issue-129.json",
+    "tests/fixtures/constitution_v030/baseline.json",
+)
+INTERPRETATION_PATHS = (ADOPTION_PATH, REVIEWED_PATH, BOOTSTRAP_PATH)
+GUARANTEE_PATHS = (
+    ADMISSION_PATH, PENDING_PATH, PROPOSAL_PATH,
+    "governance/guarantees/initial-2026-semantic-sources.json",
+    "tests/fixtures/constitution_v030/initial-guarantees/validation.json",
+    "tests/fixtures/constitution_v030/initial-guarantees/reviewed-source.tar.gz",
+    "tests/fixtures/constitution_v030/initial-guarantees/reviewed-registry.json",
+    "tests/fixtures/constitution_v030/initial-guarantees/CurrentBinding.lean",
+    "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stdout.txt",
+    "tests/fixtures/constitution_v030/initial-guarantees/current-binding.stderr.txt",
+    "tests/fixtures/constitution_v030/initial-guarantees/Review.lean",
+    "tests/fixtures/constitution_v030/initial-guarantees/review-types.stdout.txt",
+    "tests/fixtures/constitution_v030/initial-guarantees/review-types.stderr.txt",
+    "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stdout.txt",
+    "tests/fixtures/constitution_v030/initial-guarantees/native-main-replay.stderr.txt",
+    "tests/fixtures/constitution_v030/ownership-rename-registry.json",
+)
+CONTINUITY_ROOT = "tests/fixtures/constitution_v030/initial-guarantees-continuity"
+CONTINUITY_BASELINE = f"{CONTINUITY_ROOT}/baseline.json"
+CONTINUITY_PATHS = tuple(f"{CONTINUITY_ROOT}/{name}" for name in (
+    "baseline.json", "Extract.lean", "reviewed-expressions.json.gz",
+    "historical-setup.json", "historical-build-command.json",
+    "historical-build.stdout.txt", "historical-build.stderr.txt",
+    "historical-extraction-command.json", "empty.stderr.txt",
+))
+FROZEN_IDENTITIES_PATH = "tests/fixtures/constitution_v030/ledger-continuity/frozen-identities.json"
+FROZEN_IDENTITIES_SHA256 = "6a2f99413d8357f3cdc4ba5b1b42e2bb21d03c781816ec91890d8159f2ee51e4"
+LEDGER_HISTORY_PATHS = (ledger_policy.V3_PATH, FROZEN_IDENTITIES_PATH)
+INITIAL_FROZEN_PATHS = RATIFICATION_PATHS + INTERPRETATION_PATHS + GUARANTEE_PATHS + CONTINUITY_PATHS + LEDGER_HISTORY_PATHS
+EXACTNESS_ID = "EXACT-2026-01"
+EXACTNESS_ADOPTION_PATH = "governance/interpretations/exactness-2026-adoption.json"
+EXACTNESS_ADOPTION_SHA256 = "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59"
+EXACTNESS_REVIEWED_PATH = "governance/proposals/exactness-2026.md"
+EXACTNESS_REVIEWED_SHA256 = "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179"
+SUPPLEMENT_PATHS = (EXACTNESS_ADOPTION_PATH, EXACTNESS_REVIEWED_PATH)
+FROZEN_PATHS = INITIAL_FROZEN_PATHS + SUPPLEMENT_PATHS
+SUPPLEMENT_SCOPE = (
+    ledger_policy.V4_SCOPE + " EXACT-2026-01 is an additional binding interpretation across QS, PR and RS; "
+    "its additional proof and enforcement obligations remain pending. It creates no fourth jurisdiction or discharged guarantee."
+)
+INTERPRETATIONS = {
+    "QS-2026-01": ("QS", "1. Candidate QS-2026-01 — Meaning of accepted programs"),
+    "PR-2026-01": ("PR", "2. Candidate PR-2026-01 — Accepted target realizations"),
+    "RS-2026-01": ("RS", "3. Candidate RS-2026-01 — Quantitative resource accountability"),
+}
+LEDGER_LISTS = ("binding_interpretations", "pending_obligations", "discharged_guarantees")
+BOOTSTRAP_SCOPE = (
+    "No formal guarantee has yet been admitted to this constitutional ledger. "
+    "Existing proofs and the open QS/PR/RS duties retain their recorded status "
+    "outside this bootstrap inventory. Empty lists neither discharge nor waive those duties."
+)
+LEDGER_SCOPE = (
+    "QS-2026-01, PR-2026-01 and RS-2026-01 are binding pending obligations under "
+    "their exact adopted text. Existing proofs retain their scoped status but "
+    "have not been admitted as constitutional discharges. No production-wide "
+    "QS, PR or quantitative RS discharge is claimed."
+)
+ADMITTED_SCOPE = (
+    "Three binding interpretations retain their broader pending obligations. "
+    "Two scoped ordinary QLV1 guarantees have been formally discharged and admitted "
+    "under the recorded human adequacy judgment. No production-wide QS, PR or "
+    "quantitative RS discharge is claimed."
+)
+
+
+def require_fields(value, expected, label):
+    exact_keys(value, expected, label)
+    # Python's bool/int equality must not let true stand in for version 1.
+    for key, wanted in expected.items():
+        if type(value[key]) is not type(wanted) or value[key] != wanted:
+            raise PacketError(f"{label}: unexpected {key}")
+
+
+def validate_event(event):
+    exact_keys(event, {"format", "version", "edition", "effective_date", "effective_timezone",
+                       "adopter", "constitution", "governance_adoption", "guardian_appointment",
+                       "provenance", "recording", "scope"}, "ratification event")
+    require_fields({key: event[key] for key in ("format", "version", "edition", "effective_date", "effective_timezone")},
+                   dict(format="qleisli.human-ratification", version=1, edition="2026",
+                        effective_date="2026-10-04", effective_timezone="Asia/Tokyo"), "ratification event")
+    require_fields(event["adopter"], dict(name="Masahiko G. Yamada", capacity="natural-human project maintainer"), "adopter")
+    require_fields(event["constitution"], dict(path="CONSTITUTION.md", sha256=CONSTITUTION_SHA256), "constitution binding")
+    require_fields(event["governance_adoption"], dict(reviewed_path="GOVERNANCE.md", snapshot_path=GOVERNANCE_SNAPSHOT,
+                                                    sha256=GOVERNANCE_SHA256), "governance adoption")
+    require_fields(event["guardian_appointment"], dict(office="Constitution Guardian Office", holder="Masahiko G. Yamada",
+                                                     form="sole natural-human holder"), "guardian appointment")
+    for field, keys in (("provenance", {"kind", "conversation_id", "question_item_id", "question", "answer",
+                                       "first_clock_observation_after_reply_utc", "timestamp_note"}),
+                        ("recording", {"transcriber", "authority", "authentication_limit"})):
+        exact_keys(event[field], keys, field)
+        if any(type(value) is not str or not value.strip() for value in event[field].values()):
+            raise PacketError(f"{field}: expected nonempty recorded strings")
+    if event["provenance"]["kind"] != "direct-user-message":
+        raise PacketError("provenance: expected the recorded direct human message")
+    if type(event["scope"]) is not str or not event["scope"].strip():
+        raise PacketError("ratification event: missing scope")
+    # The fixed complete event digest, not the presence of a name or an answer
+    # string, binds these fields to the event reviewed at introduction.
+
+
+def validate_adoption(event):
+    exact_keys(event, {"format", "version", "edition", "adopted_on", "timezone", "guardian",
+                       "interpretation_ids", "reviewed_packet", "provenance", "recording", "status", "scope"},
+               "interpretation adoption")
+    require_fields({key: event[key] for key in ("format", "version", "edition", "adopted_on", "timezone", "status")},
+                   dict(format="qleisli.human-interpretation-adoption", version=1, edition="2026",
+                        adopted_on="2026-10-04", timezone="Asia/Tokyo", status="binding-pending-discharge"),
+                   "interpretation adoption")
+    exact_keys(event["guardian"], {"name", "capacity", "appointment_record"}, "adopting guardian")
+    require_fields({key: event["guardian"][key] for key in ("name", "capacity")},
+                   dict(name="Masahiko G. Yamada", capacity="sole natural-human holder of the Constitution Guardian Office"),
+                   "adopting guardian")
+    require_fields(event["guardian"]["appointment_record"], dict(path=EVENT_PATH, sha256=EVENT_SHA256),
+                   "guardian appointment binding")
+    if type(event["interpretation_ids"]) is not list or event["interpretation_ids"] != list(INTERPRETATIONS):
+        raise PacketError("interpretation adoption: require exactly the three adopted QS/PR/RS identifiers")
+    require_fields(event["reviewed_packet"], dict(reviewed_path="docs/src/design/initial-interpretations.md",
+                                                snapshot_path=REVIEWED_PATH, sha256=REVIEWED_SHA256),
+                   "reviewed interpretation binding")
+    for field, keys in (("provenance", {"kind", "conversation_id", "question_item_id", "question", "answer",
+                                       "first_clock_observation_after_reply_utc", "timestamp_note"}),
+                        ("recording", {"transcriber", "authority", "authentication_limit"})):
+        exact_keys(event[field], keys, f"interpretation {field}")
+        if any(type(value) is not str or not value.strip() for value in event[field].values()):
+            raise PacketError(f"interpretation {field}: expected nonempty recorded strings")
+    if event["provenance"]["kind"] != "direct-user-message":
+        raise PacketError("interpretation provenance: expected the recorded direct human message")
+    if type(event["scope"]) is not str or not event["scope"].strip():
+        raise PacketError("interpretation adoption: missing scope")
+    # As for ratification, the full pinned event digest binds the transcript;
+    # these strings alone cannot authenticate or create a human decision.
+
+
+def validate_reviewed_sections(data):
+    try:
+        text = data.decode("utf-8")
+    except UnicodeError as error:
+        raise PacketError("reviewed interpretation snapshot: expected UTF-8") from error
+    headings = [line[3:] for line in text.splitlines() if line.startswith("## ")]
+    for _, section in INTERPRETATIONS.values():
+        if headings.count(section) != 1:
+            raise PacketError(f"reviewed interpretation snapshot: missing or duplicated section {section}")
+
+
+def validate_admission(event):
+    exact_keys(event, {"format", "version", "edition", "admitted_on", "timezone", "status", "guardian", "guarantee_ids",
+                       "reviewed_proposal", "evidence_at_admission", "previous_ledger", "provenance", "recording", "scope"}, "scoped guarantee admission")
+    require_fields({key: event[key] for key in ("format", "version", "edition", "admitted_on", "timezone", "status", "guarantee_ids")},
+                   dict(format="qleisli.human-guarantee-admission", version=1, edition="2026", admitted_on="2026-10-04", timezone="Asia/Tokyo",
+                        status="scoped-guarantees-admitted", guarantee_ids=list(GUARANTEE_IDS)), "scoped guarantee admission")
+    require_fields(event["guardian"], dict(name="Masahiko G. Yamada", capacity="sole natural-human holder of the Constitution Guardian Office",
+                                        appointment_record=dict(path=EVENT_PATH, sha256=EVENT_SHA256)), "admitting guardian")
+    require_fields(event["reviewed_proposal"], dict(path=PROPOSAL_PATH, sha256=PROPOSAL_SHA256), "admitted proposal")
+    require_fields(event["previous_ledger"], dict(path=PENDING_PATH, sha256=PENDING_SHA256), "prior pending ledger")
+    require_fields(event["evidence_at_admission"], dict(
+        validation=dict(path="tests/fixtures/constitution_v030/initial-guarantees/validation.json", sha256="0afcb38ce713a998cb8025d4e6b4406a9e1ac023cd04cf273eaae67a58508720"),
+        reviewed_source_archive=dict(path="tests/fixtures/constitution_v030/initial-guarantees/reviewed-source.tar.gz", sha256="8cdfc71a2ca583a3c41a46717b847e6ba904ccffdbb57a768b360d0c88c9e6f3"),
+        reviewed_registry=dict(path="tests/fixtures/constitution_v030/initial-guarantees/reviewed-registry.json", sha256="ac39211f5a94a0b6b14a794d4bbedc614940cb2b82e4850983df7fc8830759ee")), "admission evidence")
+    for field, keys in (("provenance", {"kind", "conversation_id", "question_item_id", "question", "answer",
+                                      "first_clock_observation_after_reply_utc", "timestamp_note"}),
+                        ("recording", {"transcriber", "authority", "authentication_limit"})):
+        exact_keys(event[field], keys, f"admission {field}")
+        if any(type(value) is not str or not value.strip() for value in event[field].values()):
+            raise PacketError(f"admission {field}: expected nonempty recorded strings")
+    if event["provenance"]["kind"] != "direct-user-message" or type(event["scope"]) is not str or not event["scope"].strip():
+        raise PacketError("admission: missing recorded human provenance/scope")
+
+
+def initial_entries():
+    return tuple(dict(id=identifier, jurisdiction="QS", interpretation="QS-2026-01", proposal_entry=identifier,
+                      admission=dict(path=ADMISSION_PATH, sha256=ADMISSION_SHA256),
+                      reviewed_proposal=dict(path=PROPOSAL_PATH, sha256=PROPOSAL_SHA256))
+                 for identifier in GUARANTEE_IDS)
+
+
+def admission_registrations():
+    # Adding a registration requires a separately reviewed actual human event.
+    # It is independent of the proof verifiers permitted to cover its meaning.
+    return (ledger_policy.AdmissionRegistration(initial_entries()),)
+
+
+def verifier_profiles():
+    return (ledger_policy.VerifierProfile(
+        ledger_policy.PROFILE,
+        tuple((entry["id"], ledger_policy.identity_sha256(entry)) for entry in initial_entries()),
+        CURRENT_PATH, ledger_policy.initial_verifier),)
+
+
+def validate_ledger(ledger, *, label="guarantee ledger", allow_bootstrap=False,
+                    _registrations=None, _profiles=None):
+    registrations = admission_registrations() if _registrations is None else _registrations
+    profiles = verifier_profiles() if _profiles is None else _profiles
+    version = ledger.get("version") if type(ledger) is dict else None
+    if type(version) is not int or version not in {1, 2, 3, 4, 5}:
+        raise PacketError(f"{label}: unsupported ledger schema; cannot discard obligations from another schema")
+    exact_keys(ledger, {"format", "version", "edition", "status", "ratification", "scope", *LEDGER_LISTS}
+               | ({"current_evidence"} if version == 3 else
+                  {"current_bindings", "previous_ledger"} if version >= 4 else set())
+               | ({"supplemental_interpretations"} if version == 5 else set()), label)
+    if version < 5 and not allow_bootstrap:
+        raise PacketError(f"{label}: active ledger must be v5; cannot roll back to pending or bootstrap or a prior admitted schema")
+    require_fields({key: ledger[key] for key in ("format", "version", "edition", "status", "scope")},
+                   dict(format="qleisli.guarantee-ledger", version=version, edition="2026",
+                        status={1: "bootstrap-awaiting-initial-interpretations", 2: "active-pending-discharge",
+                                3: "active-scoped-guarantees", 4: "active-scoped-guarantees", 5: "active-scoped-guarantees"}[version],
+                        scope={1: BOOTSTRAP_SCOPE, 2: LEDGER_SCOPE, 3: ADMITTED_SCOPE, 4: ledger_policy.V4_SCOPE, 5: SUPPLEMENT_SCOPE}[version]), label)
+    require_fields(ledger["ratification"], dict(path=EVENT_PATH, sha256=EVENT_SHA256), f"{label} ratification")
+    for field in LEDGER_LISTS if version == 1 else (("discharged_guarantees",) if version == 2 else ()):
+        if type(ledger[field]) is not list or ledger[field]:
+            raise PacketError(f"{label}: {field} must be empty in this schema; formal discharge needs a separately audited admission schema, not rollback or fabricated evidence")
+    if version == 1:
+        return version
+    if version == 3:
+        entries = ledger["discharged_guarantees"]
+        if type(entries) is not list or len(entries) != len(GUARANTEE_IDS):
+            raise PacketError(f"{label}: both admitted scoped guarantees must be retained")
+        seen = set()
+        for entry in entries:
+            exact_keys(entry, {"id", "jurisdiction", "interpretation", "admission", "reviewed_proposal", "proposal_entry"}, f"{label} discharged guarantee")
+            identifier = entry["id"]
+            if type(identifier) is not str or identifier not in GUARANTEE_IDS or identifier in seen:
+                raise PacketError(f"{label}: unknown or duplicate admitted guarantee")
+            seen.add(identifier)
+            require_fields(entry, dict(id=identifier, jurisdiction="QS", interpretation="QS-2026-01", proposal_entry=identifier,
+                                      admission=dict(path=ADMISSION_PATH, sha256=ADMISSION_SHA256),
+                                      reviewed_proposal=dict(path=PROPOSAL_PATH, sha256=PROPOSAL_SHA256)), f"{label} discharged guarantee")
+        exact_keys(ledger["current_evidence"], {"path", "sha256"}, f"{label} current evidence")
+        if (ledger["current_evidence"]["path"] != CURRENT_PATH or type(ledger["current_evidence"]["sha256"]) is not str
+                or SHA256.fullmatch(ledger["current_evidence"]["sha256"]) is None):
+            raise PacketError(f"{label}: invalid current evidence binding")
+
+    if version >= 4:
+        require_fields(ledger["previous_ledger"], dict(path=ledger_policy.V3_PATH, sha256=ledger_policy.V3_SHA256),
+                       f"{label} previous ledger")
+        entries = ledger_policy.validate_entries(ledger["discharged_guarantees"], registrations, hashed=True,
+                                                  require_all=not allow_bootstrap, label=label)
+        if not set(GUARANTEE_IDS) <= entries.keys():
+            raise PacketError(f"{label}: both initial admitted scoped guarantees must be retained")
+        ledger_policy.validate_bindings(ledger["current_bindings"], entries, profiles, label=label)
+
+    for field, id_field, keys in (
+        ("binding_interpretations", "id", {"id", "jurisdiction", "adoption", "reviewed_text", "section"}),
+        ("pending_obligations", "interpretation", {"interpretation", "formalization_status", "proof_status", "evidence_bindings"}),
+    ):
+        rows = ledger[field]
+        if type(rows) is not list or len(rows) != len(INTERPRETATIONS):
+            raise PacketError(f"{label}: {field} must retain all three adopted obligations")
+        seen = set()
+        for row in rows:
+            exact_keys(row, keys, f"{label} {field}")
+            identifier = row[id_field]
+            if type(identifier) is not str or identifier not in INTERPRETATIONS or identifier in seen:
+                raise PacketError(f"{label}: unknown or duplicate {field} identifier")
+            seen.add(identifier)
+            jurisdiction, section = INTERPRETATIONS[identifier]
+            if field == "binding_interpretations":
+                require_fields(row, dict(id=identifier, jurisdiction=jurisdiction, section=section,
+                                        adoption=dict(path=ADOPTION_PATH, sha256=ADOPTION_SHA256),
+                                        reviewed_text=dict(path=REVIEWED_PATH, sha256=REVIEWED_SHA256)),
+                               f"{label} interpretation {identifier}")
+            else:
+                require_fields(row, dict(interpretation=identifier, formalization_status="pending-coverage-and-adequacy-review",
+                                        proof_status="not-discharged", evidence_bindings=[]),
+                               f"{label} pending obligation {identifier}")
+    if version >= 4:
+        jurisdictions = {row["id"]: row["jurisdiction"] for row in ledger["binding_interpretations"]}
+        for entry in entries.values():
+            if jurisdictions.get(entry["interpretation"]) != entry["jurisdiction"]:
+                raise PacketError(f"{label}: admitted guarantee must reference a retained interpretation with matching jurisdiction")
+    if version == 5:
+        rows = ledger["supplemental_interpretations"]
+        if type(rows) is not list or len(rows) != 1:
+            raise PacketError(f"{label}: require the one adopted exactness supplement")
+        require_fields(rows[0], supplemental_interpretation(), f"{label} exactness supplement")
+    return version
+
+
+def supplemental_interpretation():
+    """The recorded human supplement is interpretation authority, not admission."""
+    return dict(id=EXACTNESS_ID, jurisdictions=["QS", "PR", "RS"], applies_to=list(INTERPRETATIONS),
+                adoption=dict(path=EXACTNESS_ADOPTION_PATH, sha256=EXACTNESS_ADOPTION_SHA256),
+                reviewed_text=dict(path=EXACTNESS_REVIEWED_PATH, sha256=EXACTNESS_REVIEWED_SHA256),
+                formalization_status="pending-coverage-and-adequacy-review",
+                proof_status="not-discharged", evidence_bindings=[])
+
+
+def validate_exactness_adoption(event):
+    exact_keys(event, {"format", "version", "edition", "adopted_on", "timezone", "guardian",
+                       "interpretation_ids", "jurisdictions", "reviewed_packet", "provenance", "recording",
+                       "status", "scope"}, "exactness adoption")
+    require_fields({key: event[key] for key in ("format", "version", "edition", "adopted_on", "timezone", "status",
+                                                "interpretation_ids", "jurisdictions")},
+                   dict(format="qleisli.human-interpretation-adoption", version=1, edition="2026",
+                        adopted_on="2026-10-05", timezone="Asia/Tokyo", status="binding-pending-discharge",
+                        interpretation_ids=[EXACTNESS_ID], jurisdictions=["QS", "PR", "RS"]), "exactness adoption")
+    require_fields(event["guardian"], dict(name="Masahiko G. Yamada",
+                   capacity="sole natural-human holder of the Constitution Guardian Office",
+                   appointment_record=dict(path=EVENT_PATH, sha256=EVENT_SHA256)), "exactness Guardian")
+    require_fields(event["reviewed_packet"], dict(reviewed_path=EXACTNESS_REVIEWED_PATH,
+                   snapshot_path=EXACTNESS_REVIEWED_PATH, sha256=EXACTNESS_REVIEWED_SHA256), "exactness reviewed packet")
+    for field, keys in (("provenance", {"kind", "conversation_id", "question_item_id", "question", "answer",
+                                       "first_clock_observation_after_reply_utc", "timestamp_note"}),
+                        ("recording", {"transcriber", "authority", "authentication_limit"})):
+        exact_keys(event[field], keys, f"exactness {field}")
+        if any(type(value) is not str or not value.strip() for value in event[field].values()):
+            raise PacketError(f"exactness {field}: expected nonempty recorded strings")
+    if event["provenance"]["kind"] != "direct-user-message":
+        raise PacketError("exactness adoption: expected the recorded direct human message")
+    if type(event["scope"]) is not str or not event["scope"].strip():
+        raise PacketError("exactness adoption: missing scope")
+
+
+def validate_supplement_snapshots(snapshots):
+    # Authenticate the captured bytes themselves. Subsequent valid reads must
+    # not hide an invalid initial/final snapshot during evidence dispatch.
+    for path, expected in ((EXACTNESS_ADOPTION_PATH, EXACTNESS_ADOPTION_SHA256),
+                           (EXACTNESS_REVIEWED_PATH, EXACTNESS_REVIEWED_SHA256)):
+        if hashlib.sha256(snapshots[path]).hexdigest() != expected:
+            raise PacketError(f"frozen artifact snapshot: SHA-256 mismatch: {path}")
+    validate_exactness_adoption(json_object(snapshots[EXACTNESS_ADOPTION_PATH], "exactness adoption"))
+
+
+def git(root, *args):
+    try:
+        result = subprocess.run(["git", "-C", str(root), *args], capture_output=True, check=False)
+    except OSError as error:
+        raise PacketError("cannot execute Git for trusted-base verification") from error
+    if result.returncode:
+        raise PacketError("Git trusted-base verification failed; the base must be an available commit")
+    return result.stdout
+
+
+def base_file(root, commit, name):
+    listing = git(root, "ls-tree", "-z", commit, "--", name)
+    if not listing:
+        return None
+    records = listing.rstrip(b"\0").split(b"\0")
+    if len(records) != 1:
+        raise PacketError(f"trusted base: ambiguous artifact {name}")
+    try:
+        metadata, found = records[0].split(b"\t", 1)
+        mode, kind, object_id = metadata.split()
+    except ValueError as error:
+        raise PacketError("trusted base: malformed tree metadata") from error
+    if found != name.encode() or mode not in {b"100644", b"100755"} or kind != b"blob":
+        raise PacketError(f"trusted base: {name} must be a regular file")
+    return git(root, "cat-file", "blob", object_id.decode("ascii"))
+
+
+def check_base(root, base_ref, *, ledger=None, _registrations=None, _profiles=None):
+    if type(base_ref) is not str or not base_ref or any(ord(ch) < 32 for ch in base_ref):
+        raise PacketError("trusted base must be a nonempty Git ref")
+    raw = git(root, "rev-parse", "--verify", "--end-of-options", base_ref + "^{commit}")
+    commit = raw.decode("ascii").strip()
+    if re.fullmatch(r"(?:[0-9a-f]{40}|[0-9a-f]{64})", commit) is None:
+        raise PacketError("trusted base did not resolve to one commit")
+    previous = {name: base_file(root, commit, name) for name in (*FROZEN_PATHS, LEDGER_PATH)}
+    # Each stage protects its own recorded artifacts. In particular, the first
+    # continuity baseline postdates admission; an admitted base without that
+    # later evidence is a valid migration source, not an incomplete admission.
+    for anchor, names in ((EVENT_PATH, RATIFICATION_PATHS), (ADOPTION_PATH, INTERPRETATION_PATHS),
+                          (ADMISSION_PATH, GUARANTEE_PATHS), (CONTINUITY_BASELINE, CONTINUITY_PATHS),
+                          (ledger_policy.V3_PATH, LEDGER_HISTORY_PATHS),
+                          (EXACTNESS_ADOPTION_PATH, SUPPLEMENT_PATHS)):
+        already_recorded = previous[anchor] is not None
+        for name in names:
+            before = previous[name]
+            if before is None:
+                if already_recorded:
+                    raise PacketError(f"trusted base: recorded stage is missing {name}; cannot treat it as a new introduction")
+                continue
+            if read_file(root, name) != before:
+                raise PacketError(f"trusted base: protected artifact changed: {name}")
+    before_ledger = previous[LEDGER_PATH]
+    if before_ledger is None:
+        if any(previous[path] is not None for path in (EVENT_PATH, ADOPTION_PATH, ADMISSION_PATH, EXACTNESS_ADOPTION_PATH)):
+            raise PacketError("trusted base: recorded ratification has no ledger; cannot silently bootstrap it")
+    else:
+        if previous[EVENT_PATH] is None:
+            raise PacketError("trusted base: a recorded ledger is missing its ratification event")
+        prior_ledger = json_object(before_ledger, "trusted-base ledger")
+        version = validate_ledger(prior_ledger, label="trusted-base ledger", allow_bootstrap=True,
+                                  _registrations=_registrations, _profiles=_profiles)
+        if version == 1:
+            if previous[ADOPTION_PATH] is not None or previous[ADMISSION_PATH] is not None:
+                raise PacketError("trusted base: an adopted interpretation event cannot retain a bootstrap ledger")
+            if read_file(root, BOOTSTRAP_PATH) != before_ledger:
+                raise PacketError("trusted base: archived bootstrap must preserve the previous ledger bytes")
+        elif previous[ADOPTION_PATH] is None:
+            raise PacketError("trusted base: active v2 ledger is missing its interpretation adoption event")
+        elif version == 2:
+            if previous[ADMISSION_PATH] is not None:
+                raise PacketError("trusted base: admitted scoped guarantees cannot retain a pending-only ledger")
+            if read_file(root, PENDING_PATH) != before_ledger:
+                raise PacketError("trusted base: archived pending ledger must preserve the previous ledger bytes")
+        elif previous[ADMISSION_PATH] is None:
+            raise PacketError("trusted base: active v3 ledger is missing its scoped guarantee admission event")
+        if version == 5 and previous[EXACTNESS_ADOPTION_PATH] is None:
+            raise PacketError("trusted base: supplemented ledger is missing its exactness adoption event")
+        if version < 5 and previous[EXACTNESS_ADOPTION_PATH] is not None:
+            raise PacketError("trusted base: exactness adoption cannot retain an older ledger without its supplement")
+        if version >= 3:
+            if version >= 4 and previous[ledger_policy.V3_PATH] is None:
+                raise PacketError("trusted base: v4 ledger is missing its immutable v3 history")
+            current = ledger if ledger is not None else json_object(read_file(root, LEDGER_PATH), LEDGER_PATH)
+            validate_ledger(current, _registrations=_registrations, _profiles=_profiles)
+            ledger_policy.preserve_entries(prior_ledger["discharged_guarantees"], current["discharged_guarantees"],
+                                           before_hashed=version >= 4)
+            # Future registered events/proposals receive the same historical
+            # non-replacement protection as the initial fixed admission group.
+            for entry in prior_ledger["discharged_guarantees"]:
+                for field in ("admission", "reviewed_proposal"):
+                    name = entry[field]["path"]
+                    before = base_file(root, commit, name)
+                    if before is None:
+                        raise PacketError(f"trusted base: admitted guarantee is missing its {field}")
+                    if read_file(root, name) != before:
+                        raise PacketError(f"trusted base: protected admission artifact changed: {name}")
+
+
+def check_constitution(root=ROOT, *, base_ref=None, require_release_ready=False, verify_lean=False,
+                       _registrations=None, _profiles=None):
+    if require_release_ready:
+        from check_release_ready import check
+        # Release validation consumes trusted same-run replay receipts; ordinary
+        # source-only checks never establish readiness. No record-selected code.
+        return check(root, base_ref=base_ref or os.environ.get("RELEASE_TRUSTED_BASE"))
+    root = Path(root)
+    ledger_bytes = read_file(root, LEDGER_PATH)
+    ledger = json_object(ledger_bytes, LEDGER_PATH)
+    if base_ref is not None:
+        check_base(root, base_ref, ledger=ledger, _registrations=_registrations, _profiles=_profiles)
+    protected_snapshots = {name: read_file(root, name) for name in FROZEN_PATHS}
+    event = json_object(checked_file(root, EVENT_PATH, EVENT_SHA256), EVENT_PATH)
+    validate_event(event)
+    checked_file(root, "CONSTITUTION.md", CONSTITUTION_SHA256)
+    checked_file(root, GOVERNANCE_SNAPSHOT, GOVERNANCE_SHA256)
+    checked_file(root, PACKET_PATH, PACKET_SHA256)
+    check_packet(root)
+    bootstrap = json_object(checked_file(root, BOOTSTRAP_PATH, BOOTSTRAP_SHA256), "archived bootstrap ledger")
+    if validate_ledger(bootstrap, label="archived bootstrap ledger", allow_bootstrap=True) != 1:
+        raise PacketError("archived bootstrap ledger must retain schema v1")
+    adoption = json_object(checked_file(root, ADOPTION_PATH, ADOPTION_SHA256), ADOPTION_PATH)
+    validate_adoption(adoption)
+    validate_reviewed_sections(checked_file(root, REVIEWED_PATH, REVIEWED_SHA256))
+    admission = json_object(checked_file(root, ADMISSION_PATH, ADMISSION_SHA256), ADMISSION_PATH)
+    validate_admission(admission)
+    pending = json_object(checked_file(root, PENDING_PATH, PENDING_SHA256), "archived pending ledger")
+    if validate_ledger(pending, label="archived pending ledger", allow_bootstrap=True) != 2:
+        raise PacketError("archived pending ledger must retain schema v2")
+    historical = json_object(checked_file(root, ledger_policy.V3_PATH, ledger_policy.V3_SHA256), "archived v3 ledger")
+    if validate_ledger(historical, label="archived v3 ledger", allow_bootstrap=True) != 3:
+        raise PacketError("archived v3 ledger must retain schema v3")
+    registrations = admission_registrations() if _registrations is None else _registrations
+    profiles = verifier_profiles() if _profiles is None else _profiles
+    validate_ledger(ledger, _registrations=registrations, _profiles=profiles)
+    entries = ledger_policy.validate_entries(ledger["discharged_guarantees"], registrations, hashed=True)
+    ledger_policy.preserve_entries(historical["discharged_guarantees"], ledger["discharged_guarantees"], before_hashed=False)
+    selected = ledger_policy.validate_bindings(ledger["current_bindings"], entries, profiles)
+    ledger_policy.validate_frozen_snapshots({name: protected_snapshots[name] for name in INITIAL_FROZEN_PATHS},
+                                            FROZEN_IDENTITIES_PATH, FROZEN_IDENTITIES_SHA256)
+    validate_supplement_snapshots(protected_snapshots)
+    ledger_policy.dispatch(root, LEDGER_PATH, ledger_bytes, entries, selected, verify_lean=verify_lean,
+                           protected_snapshots=protected_snapshots)
+
+    return {"admitted_guarantees": len(entries), "pending_obligations": len(ledger["pending_obligations"]),
+            "supplemental_pending_obligations": len(ledger["supplemental_interpretations"]),
+            "ledger_sha256": hashlib.sha256(ledger_bytes).hexdigest(),
+            "mode": "current-Lean-replay" if verify_lean else "source-identity-only"}
+
+
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--root", type=Path, default=ROOT)
+    parser.add_argument("--base-ref", help="caller-selected trusted Git commit/ref for non-rollback checks")
+    parser.add_argument("--require-release-ready", action="store_true")
+    parser.add_argument("--verify-lean", action="store_true", help="replay every fixed registered verifier in its built Lean environment")
+    args = parser.parse_args(argv)
+    try:
+        result = check_constitution(args.root, base_ref=args.base_ref, require_release_ready=args.require_release_ready,
+                                    verify_lean=args.verify_lean)
+    except (PacketError, OSError) as error:
+        print(f"constitutional record integrity: {error}", file=sys.stderr)
+        return 1
+    if args.require_release_ready:
+        print(json.dumps(result, sort_keys=True))
+        return 0
+    count = "two" if result["admitted_guarantees"] == 2 else str(result["admitted_guarantees"])
+    mode = "fixed current Lean verifiers replayed" if args.verify_lean else "current source/evidence identity is checked, not a fresh Lean replay"
+    print(f"Recorded edition 2026 ratification, appointment, interpretation adoption and {count} scoped guarantee admissions verified. "
+          "Human transcript authenticity is not independently established by hashes. "
+          f"Three broader obligations and one exactness supplement retain pending proof/enforcement duties; {mode}. "
+          "full constitutional CI and release approval remain separate.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,1 @@
+classical fn bad((a,b): (Bit,Bit),a: Bit) -> Bit { b }

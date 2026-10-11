@@ -1,0 +1,188 @@
+{
+  "baseline_commit": "6daea68fe7efb75df0b627f2d20bd7b409f0cfd3",
+  "observations": [
+    {
+      "label": "declaration-call-cycle",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "duplicate-declarations",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "moved-local-shadows-import",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "private-unused-import",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "reserved-module",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "same-module-two-declarations",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "self-import-private",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "self-import-public",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "underscore-module",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "unused-import-cycle",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "provider-h-proposal",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "provider-h-native-check",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "provider-h-native-run",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "provider-x-proposal",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "provider-x-native-check",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "provider-x-native-run",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "cross-module-proposal",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "cross-module-native-check",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "cross-module-native-run",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "recursive-zero-proposal",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "recursive-zero-native-check",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "recursive-zero-native-run",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "recursive-two-proposal",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "recursive-two-native-check",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    },
+    {
+      "label": "recursive-two-native-run",
+      "exit_equal": true,
+      "stdout_equal": true,
+      "stderr_equal": true
+    }
+  ],
+  "proposals": [
+    {
+      "label": "provider-h",
+      "before_sha256": "33b086aa3de118caee13dadd49c3dc7e7f577ca75054451039b74996b492da94",
+      "after_sha256": "33b086aa3de118caee13dadd49c3dc7e7f577ca75054451039b74996b492da94",
+      "bytes_equal": true
+    },
+    {
+      "label": "provider-x",
+      "before_sha256": "72096756ec862e8bfe2761782c4e623350cd737d2319f87ed87e80c9069ca5a1",
+      "after_sha256": "72096756ec862e8bfe2761782c4e623350cd737d2319f87ed87e80c9069ca5a1",
+      "bytes_equal": true
+    },
+    {
+      "label": "cross-module",
+      "before_sha256": "751203643dfd4f8d74685b9372376672a3fab9d504339e3c8e5b81a25499d5bc",
+      "after_sha256": "751203643dfd4f8d74685b9372376672a3fab9d504339e3c8e5b81a25499d5bc",
+      "bytes_equal": true
+    },
+    {
+      "label": "recursive-zero",
+      "before_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51",
+      "after_sha256": "ddb376a41e785a54f7c8b730815ab743a1d9b9bf2d6170b8ca9ced082181cf51",
+      "bytes_equal": true
+    },
+    {
+      "label": "recursive-two",
+      "before_sha256": "920254b241039b7fcc4bff998567feb0bb0d2ec6e6e7c51bb6ba549667e48472",
+      "after_sha256": "920254b241039b7fcc4bff998567feb0bb0d2ec6e6e7c51bb6ba549667e48472",
+      "bytes_equal": true
+    }
+  ],
+  "scope": "Bounded diagnostic/producer-consistency/execution observations. No general source-preservation or independent source-meaning proof."
+}

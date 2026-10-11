@@ -1,0 +1,5611 @@
+{
+  "format": 1,
+  "scope": "One complete complex matrix entry per selected unitary and its shipped default input, not full-matrix or general source-preservation coverage. No new maximum-size case.",
+  "cases": [
+    {
+      "id": "quantum_katas/qpe3",
+      "project": "quantum_katas/qpe3",
+      "qubits": 4,
+      "column": 8,
+      "row": 9,
+      "entry": [
+        1.0,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(x(w0), w1), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(x(w0), w1), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.4721729764261235e-32
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 3.3127414863346336e-32
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.4721729764261235e-32
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 3.3127414863346336e-32
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.4721729764261235e-32
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 3.3127414863346336e-32
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.4721729764261235e-32
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 3.3127414863346336e-32
+          }
+        ]
+      }
+    },
+    {
+      "id": "qualtran/qpe2",
+      "project": "qualtran/qpe2",
+      "qubits": 3,
+      "column": 4,
+      "row": 5,
+      "entry": [
+        1.0,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(x(w0), w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(x(w0), w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636603e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636603e-34
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636603e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.6867493208183025e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636603e-34
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qubit_rotation",
+      "project": "pennylane_demos/qubit_rotation",
+      "qubits": 1,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.4999999999999999,
+        0.4999999999999999
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.1249999999999999
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.1249999999999999
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.1249999999999999
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.1249999999999999
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_vertex_cover",
+      "project": "pennylane_demos/qaoa_vertex_cover",
+      "qubits": 4,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        -0.24999999999999983,
+        1.8756272740922512e-16
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(w0, w1), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(w0, w1), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.140625
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.3906249999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.265625
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.2656249999999998
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_maxcut",
+      "project": "pennylane_demos/qaoa_maxcut",
+      "qubits": 4,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        -0.24999999999999983,
+        -4.163336342344337e-17
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(w0, w1), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(w0, w1), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.140625
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.3906249999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.2656249999999999
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.2656249999999999
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.015624999999999976
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.015624999999999965
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.015624999999999976
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qpe3",
+      "project": "pennylane_demos/qpe3",
+      "qubits": 4,
+      "column": 8,
+      "row": 11,
+      "entry": [
+        1.0,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(x(w0), x(w1)), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(((Bit, Bit), Bit), Bit)>) -> Q<(((Bit, Bit), Bit), Bit)> {\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\njoin(join(join(x(w0), x(w1)), w2), w3)\n}\nobserve fn main() -> ((((Bit, Bit), Bit), Bit), Bit) {\nlet q = join(join(join(init0(), init0()), init0()), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part3, w3) = split(q);\nlet (part2, w2) = split(part3);\nlet (w0, w1) = split(part2);\n((((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2)), measure_z(w3))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 4.641311536819002e-34
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 2.9855463687716872e-33
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 4.686749320818301e-34
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 9.373498641636607e-34
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/kernel_overlap2",
+      "project": "pennylane_demos/kernel_overlap2",
+      "qubits": 2,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.5,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.5624999999999997
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.3124999999999999
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.3124999999999999
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rx_quarter",
+      "project": "pennylane_demos/rx_quarter",
+      "qubits": 1,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.7071067811865475,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.7285533905932733
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.02144660940672623
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.3749999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.3749999999999998
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_quarter2",
+      "project": "pennylane_demos/ising_zz_quarter2",
+      "qubits": 2,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.7071067811865476,
+        -0.7071067811865475
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.8535533905932733
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.14644660940672616
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.1464466094067262
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.8535533905932733
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rx_negative_quarter",
+      "project": "pennylane_demos/rx_negative_quarter",
+      "qubits": 1,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.7071067811865475,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.7285533905932733
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.02144660940672623
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.3749999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.3749999999999998
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rotation_mixed_sign",
+      "project": "pennylane_demos/rotation_mixed_sign",
+      "qubits": 1,
+      "column": 1,
+      "row": 0,
+      "entry": [
+        0.5,
+        -0.5
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nx(w0)\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = x(init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nx(w0)\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = x(init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_mixer2",
+      "project": "pennylane_demos/qaoa_mixer2",
+      "qubits": 2,
+      "column": 2,
+      "row": 0,
+      "entry": [
+        0.0,
+        -0.5
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.3124999999999999
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.3124999999999999
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.5624999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "qualtran/reflection_minus1",
+      "project": "qualtran/reflection_minus1",
+      "qubits": 1,
+      "column": 0,
+      "row": 1,
+      "entry": [
+        1.0,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nx(w0)\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nx(w0)\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.4999999999999998
+          }
+        ]
+      }
+    },
+    {
+      "id": "qualtran/control_zero_reflection2",
+      "project": "qualtran/control_zero_reflection2",
+      "qubits": 2,
+      "column": 0,
+      "row": 2,
+      "entry": [
+        1.0,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, x(w1))\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rotation_half_y",
+      "project": "pennylane_demos/rotation_half_y",
+      "qubits": 1,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.0,
+        0.7071067811865475
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.3749999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.3749999999999998
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.7285533905932733
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.02144660940672623
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_negative2",
+      "project": "pennylane_demos/ising_zz_negative2",
+      "qubits": 2,
+      "column": 2,
+      "row": 2,
+      "entry": [
+        0.7071067811865476,
+        -0.7071067811865475
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.8535533905932733
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.14644660940672616
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.1464466094067262
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.8535533905932733
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rotation_half_x",
+      "project": "pennylane_demos/rotation_half_x",
+      "qubits": 1,
+      "column": 0,
+      "row": 1,
+      "entry": [
+        -0.0,
+        -1.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nx(w0)\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nx(w0)\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.4999999999999998
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.9999999999999996
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/ising_zz_half2",
+      "project": "pennylane_demos/ising_zz_half2",
+      "qubits": 2,
+      "column": 2,
+      "row": 2,
+      "entry": [
+        0.0,
+        1.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), x(init0()));\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_edge_layer2",
+      "project": "pennylane_demos/qaoa_edge_layer2",
+      "qubits": 2,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.3535533905932738,
+        -0.35355339059327373
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.4892766952966367
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.135723304703363
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.13572330470336305
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.4892766952966367
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rotation_negative_x_positive_y",
+      "project": "pennylane_demos/rotation_negative_x_positive_y",
+      "qubits": 1,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.5,
+        -0.5
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_negative_mixer2",
+      "project": "pennylane_demos/qaoa_negative_mixer2",
+      "qubits": 2,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.5,
+        0.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.5624999999999997
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.3124999999999999
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.3124999999999999
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_path_layer3",
+      "project": "pennylane_demos/qaoa_path_layer3",
+      "qubits": 3,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        2.1648901405887332e-17,
+        -0.35355339059327373
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(w0, w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(w0, w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.28124999999999983
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.28124999999999983
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.10447330470336305
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.4580266952966367
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.031249999999999986
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.031249999999999986
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/rotation_both_negative",
+      "project": "pennylane_demos/rotation_both_negative",
+      "qubits": 1,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.5,
+        0.5
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(meter)), measure_z(w0))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<Bit>) -> Q<Bit> {\nlet w0 = q;\nw0\n}\nobserve fn main() -> (Bit, Bit) {\nlet q = init0();\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet w0 = q;\n(measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0
+            ],
+            "probability": 0.6249999999999998
+          },
+          {
+            "bits": [
+              0,
+              1
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              0
+            ],
+            "probability": 0.12499999999999994
+          },
+          {
+            "bits": [
+              1,
+              1
+            ],
+            "probability": 0.12499999999999994
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_path_cost3",
+      "project": "pennylane_demos/qaoa_path_cost3",
+      "qubits": 3,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        6.123233995736766e-17,
+        -1.0
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(w0, w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(meter)), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<((Bit, Bit), Bit)>) -> Q<((Bit, Bit), Bit)> {\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\njoin(join(w0, w1), w2)\n}\nobserve fn main() -> (((Bit, Bit), Bit), Bit) {\nlet q = join(join(init0(), init0()), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (part2, w2) = split(q);\nlet (w0, w1) = split(part2);\n(((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1)), measure_z(w2))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.4999999999999999
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.4999999999999998
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              0
+            ],
+            "probability": 9.373498641636607e-34
+          },
+          {
+            "bits": [
+              0,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              0
+            ],
+            "probability": 0.9999999999999996
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0,
+              1
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              0
+            ],
+            "probability": 0.0
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1,
+              1
+            ],
+            "probability": 0.0
+          }
+        ]
+      }
+    },
+    {
+      "id": "pennylane_demos/qaoa_negative_edge_layer2",
+      "project": "pennylane_demos/qaoa_negative_edge_layer2",
+      "qubits": 2,
+      "column": 0,
+      "row": 0,
+      "entry": [
+        0.3535533905932738,
+        0.35355339059327373
+      ],
+      "sources": {
+        "x": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(meter)), measure_z(w0)), measure_z(w1))\n}\n",
+        "y": "use std::quantum::init0;\nuse std::quantum::h;\nuse std::quantum::x;\nuse std::quantum::t;\nuse std::quantum::cnot;\nuse std::quantum::join;\nuse std::quantum::split;\nuse std::observe::measure_z;\nuse kernel::kernel;\nunitary fn reference(q: Q<(Bit, Bit)>) -> Q<(Bit, Bit)> {\nlet (w0, w1) = split(q);\njoin(w0, w1)\n}\nobserve fn main() -> ((Bit, Bit), Bit) {\nlet q = join(init0(), init0());\nlet (meter, q) = qif(h(init0()), q) { 0 => reference, 1 => kernel };\nlet (w0, w1) = split(q);\n((measure_z(h(t(t(t(t(t(t(meter)))))))), measure_z(w0)), measure_z(w1))\n}\n"
+      },
+      "expected": {
+        "x": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.4892766952966367
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.135723304703363
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ],
+        "y": [
+          {
+            "bits": [
+              0,
+              0,
+              0
+            ],
+            "probability": 0.4892766952966367
+          },
+          {
+            "bits": [
+              0,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              0,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              0,
+              0
+            ],
+            "probability": 0.13572330470336305
+          },
+          {
+            "bits": [
+              1,
+              0,
+              1
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              0
+            ],
+            "probability": 0.06249999999999997
+          },
+          {
+            "bits": [
+              1,
+              1,
+              1
+            ],
+            "probability": 0.06249999999999997
+          }
+        ]
+      }
+    }
+  ]
+}

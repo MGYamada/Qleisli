@@ -1,0 +1,42 @@
+[
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.45846487500239164,
+    "stdout": "after.inventory.stdout.txt",
+    "stderr": "after.inventory.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 0.13515637500677258,
+    "stdout": "after.coverage.stdout.txt",
+    "stderr": "after.coverage.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_check_verification_inventory.py"
+    ],
+    "exit_code": 0,
+    "seconds": 8.834687041002326,
+    "stdout": "after.inventory-regression.stdout.txt",
+    "stderr": "after.inventory-regression.stderr.txt"
+  },
+  {
+    "argv": [
+      "/opt/homebrew/opt/python@3.14/bin/python3.14",
+      "scripts/test_check_production_coverage.py"
+    ],
+    "exit_code": 0,
+    "seconds": 1.1398636249941774,
+    "stdout": "after.coverage-regression.stdout.txt",
+    "stderr": "after.coverage-regression.stderr.txt"
+  }
+]

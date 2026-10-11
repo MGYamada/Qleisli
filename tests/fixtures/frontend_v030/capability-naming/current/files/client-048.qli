@@ -1,0 +1,2 @@
+unitary fn apply[const U: Op<Bit>](q: Q<Bit>) -> Q<Bit>
+requires Controllable(U) { U(q) }

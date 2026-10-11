@@ -1,0 +1,56 @@
+RawProgram {
+    quantum_inputs: [],
+    classical_inputs: [],
+    operations: [
+        Init0 {
+            output: TokenId(
+                0,
+            ),
+            wire: WireId(
+                0,
+            ),
+        },
+        ApplyUnitary {
+            input: TokenId(
+                0,
+            ),
+            output: TokenId(
+                1,
+            ),
+            steps: [
+                CircuitStep {
+                    controls: [],
+                    action: Contract {
+                        indices: [
+                            0,
+                        ],
+                        evidence: FunctionEvidence {
+                            signature: Bit,
+                            implementation: "main::implementation",
+                            specification: "main::specification",
+                            depth: 1,
+                            expanded_steps: 1,
+                            ..
+                        },
+                        adjoint: false,
+                    },
+                },
+            ],
+        },
+        MeasureZ {
+            input: TokenId(
+                1,
+            ),
+            output: ClassicalId(
+                0,
+            ),
+        },
+    ],
+    quantum_outputs: [],
+    classical_outputs: [
+        ClassicalId(
+            0,
+        ),
+    ],
+    declared_effect: Observe,
+}

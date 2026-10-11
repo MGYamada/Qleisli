@@ -19,6 +19,9 @@ import tempfile
 import test_lean_exact as exact
 import test_lean_finite as finite
 import test_lean_raw as raw
+import observation_sources
+from check_input_corpus import current_project as current_corpus_project
+from check_verification_inventory import variants
 
 ROOT = Path(__file__).resolve().parents[1]
 ZERO, ONE = finite.ZERO, finite.ONE
@@ -56,7 +59,14 @@ def route(frame, ordered):
 def pure_live(live, op):
     live = copy.deepcopy(live)
     tag = op['tag']
-    if tag == 'init0':
+    if tag == 'pack_unit':
+        if op['output'] in live:
+            raise ValueError('Unit output already live')
+        live[op['output']] = []
+    elif tag == 'unpack_unit':
+        if live.pop(op['input']):
+            raise ValueError('Unit input has physical wires')
+    elif tag == 'init0':
         live[op['output']] = [op['wire']]
     elif tag in {'gate', 'apply_unitary'}:
         live[op['output']] = live.pop(op['input'])
@@ -168,7 +178,7 @@ def cases():
             budget=kw.pop('budget', 10000000),
             artifact=dict(format='qleisli.raw-observing-component', version=1, dependencies=[],
                           bindings=[], program=copy.deepcopy(program)), **kw))
-    # All eleven existing pure constructors now travel through the new boundary.
+    # Every accepted dependency-free pure case also crosses the observing boundary.
     for c in raw.cases():
         if c['expected'] and 'oracle' in c and not c['artifact']['evidence']:
             add('pure_'+c['name'], c['artifact']['program'])
@@ -179,6 +189,20 @@ def cases():
             operations=[raw.op('reset', input=0, output=1, fresh_wire=1)], outputs=[1], effect=effect), effect=='observe')
         add('discard_effect_'+effect, p([raw.port(0,[0])],
             operations=[raw.op('discard', input=0)], effect=effect), effect=='observe')
+    add('unit_after_measurement', p([raw.port(0,[0]),raw.port(1,[1])],
+        operations=[raw.op('measure_z',input=0,output=0),raw.op('pack_unit',output=2),
+                    raw.op('unpack_unit',input=2)], outputs=[1],results=[0]))
+    add('unit_after_discard', p([raw.port(0,[0]),raw.port(1,[1])],
+        operations=[raw.op('discard',input=0),raw.op('pack_unit',output=2),
+                    raw.op('unpack_unit',input=2)], outputs=[1]))
+    add('pack_measured_owner', p([raw.port(0,[0])],
+        operations=[raw.op('measure_z',input=0,output=0),raw.op('pack_unit',output=0)],
+        outputs=[0],results=[0]),False)
+    for choice in [False,True]:
+        add('unit_in_branch_'+str(choice), p(classical=[0],
+            operations=[branch(0,[raw.op('pack_unit',output=1)],
+                [raw.op('pack_unit',output=2)],quantum=[qphi(1,2,3,[])]),
+                raw.op('unpack_unit',input=3)],effect='unitary'),classical=[choice])
     add('discard_unit', p([raw.port(0,[])], operations=[raw.op('discard',input=0)]))
     add('discard_two_bits', p([raw.port(0,[4,2])], operations=[raw.op('discard',input=0)]))
     add('measure_unit_rejected', p([raw.port(0,[])], operations=[raw.op('measure_z',input=0,output=0)],results=[0]),False)
@@ -293,11 +317,25 @@ def cases():
         if c['name'] in {'pure_gate_h','classical_phi_True','adaptive_measurement_reversed_results'}:
             bad=copy.deepcopy(c);bad.update(name='work_limit_'+c['name'],budget=0,expected=False,rust=False)
             records.append(bad)
-    bad=copy.deepcopy(records[0]);bad.update(name='producer_success_flag',expected=False,rust=False)
+    bad=copy.deepcopy(next(c for c in records if c['name']=='pure_gate_h'))
+    bad.update(name='producer_success_flag',expected=False,rust=False)
     bad['artifact']['program']['accepted']=True;records.append(bad)
-    bad=copy.deepcopy(records[0]);bad.update(name='unknown_profile',expected=False,rust=False)
+    bad=copy.deepcopy(next(c for c in records if c['name']=='pure_gate_h'))
+    bad.update(name='unknown_profile',expected=False,rust=False)
     bad['artifact']['format']='qleisli.raw-observing-component.future';records.append(bad)
     return records
+
+
+def component_oracle(artifact, classical=()):
+    """Interpret original implementations and specifications independently."""
+    dependencies = []
+    for entry in artifact['dependencies']:
+        actual = oracle(entry['implementation'], dependencies=dependencies)
+        required = oracle(entry['specification'], dependencies=dependencies)
+        assert len(actual) == len(required) == 1 and not actual[0]['hidden'] and not required[0]['hidden']
+        assert actual == required, 'source dependency implementation/specification disagreement'
+        dependencies.append(actual[0]['operator'])
+    return oracle(artifact['program'], classical, dependencies)
 
 
 LEAN = finite.LEAN[:finite.LEAN.index('def execute')] + '''
@@ -357,30 +395,33 @@ def rust_program(program):
     return text.replace('classical_outputs:vec![]','classical_outputs:vec!['+','.join(cid(v) for v in program['classical_outputs'])+']')
 
 
-def source_cases(log, record):
+def source_cases(log, record, compiler=None):
     cases=[]
-    compiler=ROOT/'target/debug/qleisli'
-    paths=['tests/fixtures/authoring_sessions/raw-observing-v026/first','examples/bell',
+    compiler=ROOT/'target/debug/qleisli' if compiler is None else Path(compiler)
+    paths=['tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first','examples/bell',
            'corpus/quantum_katas/graph_state2','corpus/qualtran/control_zero_reflection2',
            'corpus/pennylane_demos/ising_zz_negative2']
     with tempfile.TemporaryDirectory(prefix='qleisli-observation-source-') as directory:
         for index,path in enumerate(paths):
+            project = (current_corpus_project({'project': path.removeprefix('corpus/')})
+                       if path.startswith('corpus/') else ROOT/path)
             output=Path(directory)/f'{index}.json'
-            exact.command([str(compiler),'emit-ir',str(ROOT/path),'--output='+str(output),'--format=json'],ROOT,log)
+            exact.command([str(compiler),'emit-ir',str(project),'--output='+str(output),'--format=json'],ROOT,log)
             original=output.read_bytes();artifact=json.loads(original)
-            assert not artifact['evidence']
-            program=artifact['programs'][artifact['root']]
+            component=observation_sources.component(artifact)
+            program=component['program']
             assert sum(port['shape']['bits'] for port in program['quantum_inputs'])<=3
             source_hashes={str(s.relative_to(ROOT)):hashlib.sha256(s.read_bytes()).hexdigest()
-                           for s in sorted((ROOT/path).rglob('*.qli'))}
+                           for s in sorted(project.rglob('*.qli'))}
             if record:
                 dest=record.parent/'source-ir'/f'{index}.qirf.json'
                 dest.parent.mkdir(parents=True,exist_ok=True);dest.write_bytes(original)
             cases.append(dict(name='source_'+str(index),expected=True,mode='instrument',classical=[],budget=10000000,
-                artifact=dict(format='qleisli.raw-observing-component',version=1,dependencies=[],bindings=[],program=program),
-                provenance=dict(source_root=path,qirf_sha256=hashlib.sha256(original).hexdigest(),sources=source_hashes,
+                artifact=component, original_qirf=original.decode('utf-8'),
+                provenance=dict(source_root=str(project.relative_to(ROOT)),historical_source_root=path,
+                    qirf_sha256=hashlib.sha256(original).hexdigest(),sources=source_hashes,
                     compiler_sha256=hashlib.sha256(compiler.read_bytes()).hexdigest(),
-                    adapter='original complete observing root, no terminal-measurement truncation')))
+                    adapter='complete observing root and original dependency bodies; topological index renaming only')))
     return cases
 
 
@@ -400,6 +441,13 @@ def native(records, log, lean_source=LEAN):
         actions=[]
         for c in records:
             if not c.get('rust',True):continue
+            if 'original_qirf' in c:
+                filename=f'source-{len(actions)}.qirf'
+                (project/filename).write_bytes(c['original_qirf'].encode('utf-8'))
+                actions.append('println!("{} {}",'+json.dumps(c['name'])+
+                    ',qleisli::interchange::native::Kernel::selected().expect("explicit native checker")'+
+                    '.check(include_bytes!('+json.dumps(filename)+'),None).is_ok());')
+                continue
             text=rust_program(c['artifact']['program'])
             actions.append('println!("{} {}",'+json.dumps(c['name'])+',qleisli::interchange::native::Kernel::selected().expect("explicit native checker").accept_raw('+text+').is_ok());')
         source='use qleisli::ir::*;\nfn main(){\n'+'\n'.join(actions)+'\n}\n'
@@ -413,8 +461,10 @@ def native(records, log, lean_source=LEAN):
 
 
 def main():
-    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path);args=parser.parse_args()
-    log=[];records=cases()+source_cases(log,args.record)
+    parser=argparse.ArgumentParser();parser.add_argument('--record',type=Path)
+    parser.add_argument('--compiler',type=Path,default=ROOT/'target/debug/qleisli')
+    args=parser.parse_args()
+    log=[];records=cases()+source_cases(log,args.record,args.compiler.resolve())
     observed,rust,bindings=native(records,log)
     if args.record:
         args.record.parent.mkdir(parents=True,exist_ok=True)
@@ -429,7 +479,7 @@ def main():
             if case['name']!='classical_missing_values':
                 assert result['accepted']==rust[case['name']],(case['name'],result,rust[case['name']])
         if not result['accepted'] or case['mode']=='structure':continue
-        expected=oracle(case['artifact']['program'],case['classical'])
+        expected=component_oracle(case['artifact'],case['classical'])
         actual=result['result']['histories']
         assert len(actual)==len(expected),(case['name'],len(actual),len(expected))
         dimension=len(expected[0]['operator'][0]);gram=[[ZERO[:] for _ in range(dimension)] for _ in range(dimension)]
@@ -447,15 +497,18 @@ def main():
            ROOT/'lean-kernel/QleisliKernel/Raw/Observation.lean',
            ROOT/'lean-kernel/QleisliKernel/Raw/Instrument.lean',
            ROOT/'lean-kernel/Protocol/Observation.lean',ROOT/'lean/Qleisli/RawInstrument.lean',
-           ROOT/'lean/Qleisli/RawInstrumentDenotation.lean',ROOT/'lean/Qleisli/Semantics/RawInstrument.lean',Path(__file__)]
+        ROOT/'lean/Qleisli/RawInstrumentDenotation.lean',ROOT/'lean/Qleisli/Semantics/RawInstrument.lean',
+        Path(observation_sources.__file__),Path(raw.__file__),Path(finite.__file__),Path(exact.__file__),
+        ROOT/'scripts/check_verification_inventory.py',ROOT/'src/ir.rs',Path(__file__)]
     comparisons=sum(name!='classical_missing_values' for name in rust)
-    report=dict(native_cases=len(records),rust_checks=len(rust),rust_comparisons=comparisons,original_constructors=19,
+    report=dict(native_cases=len(records),rust_checks=len(rust),rust_comparisons=comparisons,
+        original_constructors=len(variants((ROOT/'src/ir.rs').read_text(),'RawOp')),
         independent_operators=operators,hidden_histories=histories,complete_observing_sources=5,
         max_semantic_qubits=3,native_bindings=bindings,commands=log,
         source_sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in paths},
         remaining=['six-bit dense component; general matrix-free acceptance and branch functions use separate VM-26 modules',
-                   'native/decoder correspondence',
-                   'VM-27 hierarchy closure','VM-28/29 packaging and production dual integration'])
+                   'general source/runtime preservation',
+                   'native compiler/decoder/runtime correspondence'])
     if args.record:
         args.record.parent.mkdir(parents=True,exist_ok=True)
         args.record.write_text(json.dumps(report,indent=2)+'\n')

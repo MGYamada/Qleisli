@@ -1,0 +1,147 @@
+{
+  "format": "qleisli.guarantee-ledger",
+  "version": 5,
+  "edition": "2026",
+  "status": "active-scoped-guarantees",
+  "ratification": {
+    "path": "governance/ratification-2026.json",
+    "sha256": "3363bf5b25da3efe7094959972f25f7c9737ec3e0444f953ff0f0ee86155af3a"
+  },
+  "binding_interpretations": [
+    {
+      "id": "QS-2026-01",
+      "jurisdiction": "QS",
+      "adoption": {
+        "path": "governance/interpretations/initial-2026-adoption.json",
+        "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+      },
+      "reviewed_text": {
+        "path": "governance/interpretations/initial-2026-reviewed.txt",
+        "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+      },
+      "section": "1. Candidate QS-2026-01 \u2014 Meaning of accepted programs"
+    },
+    {
+      "id": "PR-2026-01",
+      "jurisdiction": "PR",
+      "adoption": {
+        "path": "governance/interpretations/initial-2026-adoption.json",
+        "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+      },
+      "reviewed_text": {
+        "path": "governance/interpretations/initial-2026-reviewed.txt",
+        "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+      },
+      "section": "2. Candidate PR-2026-01 \u2014 Accepted target realizations"
+    },
+    {
+      "id": "RS-2026-01",
+      "jurisdiction": "RS",
+      "adoption": {
+        "path": "governance/interpretations/initial-2026-adoption.json",
+        "sha256": "bb9e4b68024b4153515d3a2652feb3b64d16907522bf9575fd18e3a9e61a7c9e"
+      },
+      "reviewed_text": {
+        "path": "governance/interpretations/initial-2026-reviewed.txt",
+        "sha256": "7a79a18ad66e4b7cdaa87865eff1bf87ce933da758461cb45cc13a87fb1555b3"
+      },
+      "section": "3. Candidate RS-2026-01 \u2014 Quantitative resource accountability"
+    }
+  ],
+  "pending_obligations": [
+    {
+      "interpretation": "QS-2026-01",
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    },
+    {
+      "interpretation": "PR-2026-01",
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    },
+    {
+      "interpretation": "RS-2026-01",
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    }
+  ],
+  "discharged_guarantees": [
+    {
+      "id": "QS-QLV1-OWNERSHIP-2026-01",
+      "interpretation": "QS-2026-01",
+      "jurisdiction": "QS",
+      "admission": {
+        "path": "governance/guarantees/initial-2026-admission.json",
+        "sha256": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2"
+      },
+      "reviewed_proposal": {
+        "path": "governance/proposals/initial-guarantees.json",
+        "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
+      },
+      "proposal_entry": "QS-QLV1-OWNERSHIP-2026-01",
+      "identity_sha256": "c30496379e2e88bf863a7ecc93746a1a445219fd64cc14016a02b30ae48b2a27"
+    },
+    {
+      "id": "QS-QLV1-SCOPE-2026-01",
+      "interpretation": "QS-2026-01",
+      "jurisdiction": "QS",
+      "admission": {
+        "path": "governance/guarantees/initial-2026-admission.json",
+        "sha256": "9f20661fd98ec56c58286b70f4e9d9f49c76570313b5ddc90ae4685d4e251dd2"
+      },
+      "reviewed_proposal": {
+        "path": "governance/proposals/initial-guarantees.json",
+        "sha256": "bf9eb89d9ebadd41f16f40c5896b824b0e04fe1655264e102fb179948fa06c02"
+      },
+      "proposal_entry": "QS-QLV1-SCOPE-2026-01",
+      "identity_sha256": "1ab1b9925a69c0d4f2153f74a8772d15298940bf7c5f97f3fdea1a4c2ee02c89"
+    }
+  ],
+  "scope": "Registered scoped guarantees retain their admitted meanings and current evidence bindings. The three binding interpretations retain their broader pending obligations. No production-wide QS, PR or quantitative RS discharge is claimed. EXACT-2026-01 is an additional binding interpretation across QS, PR and RS; its additional proof and enforcement obligations remain pending. It creates no fourth jurisdiction or discharged guarantee.",
+  "previous_ledger": {
+    "path": "governance/guarantees/initial-v3-ledger.json",
+    "sha256": "cd80e99f85da974b10af763af96f595c44acee88fc07fb34b406c093b9f8225e"
+  },
+  "current_bindings": [
+    {
+      "guarantee_ids": [
+        "QS-QLV1-OWNERSHIP-2026-01",
+        "QS-QLV1-SCOPE-2026-01"
+      ],
+      "verifier_profile": "qlv1-structural-identity-v1",
+      "evidence": {
+        "path": "governance/guarantees/current-evidence.json",
+        "sha256": "b4de2de5c16ef26c4f64341ce446970d90acffdbc38fc9c4b3ab677b5b588c59"
+      }
+    }
+  ],
+  "supplemental_interpretations": [
+    {
+      "id": "EXACT-2026-01",
+      "jurisdictions": [
+        "QS",
+        "PR",
+        "RS"
+      ],
+      "applies_to": [
+        "QS-2026-01",
+        "PR-2026-01",
+        "RS-2026-01"
+      ],
+      "adoption": {
+        "path": "governance/interpretations/exactness-2026-adoption.json",
+        "sha256": "e94e7db74949651a0f962f006fb449bebfb92ab8898fa1d5b35d54eb978afa59"
+      },
+      "reviewed_text": {
+        "path": "governance/proposals/exactness-2026.md",
+        "sha256": "b84b014bebd4454b7b3dfff8bb0322e0c54b4c23966ed02e7212c46ab8f3f179"
+      },
+      "formalization_status": "pending-coverage-and-adequacy-review",
+      "proof_status": "not-discharged",
+      "evidence_bindings": []
+    }
+  ]
+}

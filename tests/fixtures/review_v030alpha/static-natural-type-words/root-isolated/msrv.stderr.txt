@@ -1,0 +1,15 @@
+    Checking qleisli v0.3.0-alpha (/private/tmp/qleisli-ci-repair-fae)
+error: called `.err().expect()` on a `Result` value
+   --> src/frontend/parser/tests.rs:109:14
+    |
+109 |               .err()
+    |  ______________^
+110 | |             .expect("the preparation profile must reject an unbound natural");
+    | |___________________^ help: try: `expect_err`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#err_expect
+    = note: `-D clippy::err-expect` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::err_expect)]`
+
+error: could not compile `qleisli` (lib test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

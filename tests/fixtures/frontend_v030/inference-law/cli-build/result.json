@@ -1,0 +1,13 @@
+{
+  "argv": [
+    "cargo",
+    "build",
+    "--offline",
+    "--locked",
+    "--bin",
+    "qleisli"
+  ],
+  "exit_code": 0,
+  "seconds": 0.2807235409854911,
+  "cli_sha256": "66a429665fbe818bbb28d93d2eb2f98757a04a0899115d3a77760618bfc747a9"
+}

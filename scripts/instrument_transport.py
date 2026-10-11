@@ -4,6 +4,12 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import struct
 import subprocess
+from pathlib import Path
+import tomllib
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 class Writer:
@@ -69,7 +75,7 @@ def encode_readout(request, packet, budget=2000000):
 def inspect(kernel, kind, payload):
     if kind not in ('preparation', 'readout'):
         raise ValueError('unknown component')
-    run = subprocess.run([str(kernel), f'--{kind}-check'], input=payload,
+    run = subprocess.run([str(kernel), f'--{kind}-check', PRODUCT_VERSION], input=payload,
                          capture_output=True, timeout=60)
     fields = run.stdout.decode('ascii').splitlines()
     if len(fields) != 3 or fields[0] != f'qleisli.{kind}-result 1':

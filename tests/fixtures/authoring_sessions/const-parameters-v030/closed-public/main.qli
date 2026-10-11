@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::observe::measure_z;
+pub unitary fn identity[const B: Basis](q: Q<B>) -> Q<B> { q }
+pub observe fn main() -> Bit { measure_z(identity[type(Bit)](init0())) }

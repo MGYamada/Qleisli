@@ -1,0 +1,11 @@
+
+running 6 tests
+test nary_patterns_types_and_basis_values_preserve_immediate_arity ... ok
+test corpus_dropped_owner_now_points_to_b_not_the_body ... ok
+test flat_and_mixed_tuple_syntax_cannot_bypass_ast_depth_limits ... ok
+test missing_owners_point_to_the_actual_binding_including_shadowing_and_auxiliaries ... ok
+test pattern_arity_totality_ownership_and_exact_tree_guards_remain ... ok
+test patterned_basis_contracts_and_nary_clients_execute ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.95s
+

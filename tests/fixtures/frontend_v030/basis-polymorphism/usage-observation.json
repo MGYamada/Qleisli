@@ -1,0 +1,9 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "unknown"
+  ],
+  "exit_code": 2,
+  "stdout_bytes": 0,
+  "stderr_bytes": 2865
+}

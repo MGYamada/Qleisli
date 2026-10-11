@@ -1,0 +1,140 @@
+{
+  "format": "qleisli.qfor-boundary-validation",
+  "version": 1,
+  "status": "bounded-implementation-checked",
+  "source_base": "1647bb656b2d8db2ee063fa8243eec32785d453d",
+  "source_review": "implementation-surface-review.json",
+  "source_map": "tests/fixtures/frontend_v030/qfor/source-map.json",
+  "project_version": "0.3.0-alpha",
+  "edition": "2026",
+  "constitutional_base": "38baae7d19535602b21270e11e97617d45205b37",
+  "protected_guarantees_preserved": [
+    "QS-QLV1-OWNERSHIP-2026-01",
+    "QS-QLV1-SCOPE-2026-01"
+  ],
+  "pending": [
+    "QS-2026-01",
+    "PR-2026-01",
+    "RS-2026-01",
+    "EXACT-2026-01"
+  ],
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "checks": [
+    {
+      "command": "cargo test --test qfor --test static_helpers --test static_naturals --test sized_declarations --test basis_polymorphism --test quantum_unit_maps --test quantum_tuple_unitors --test selected_source_cli",
+      "passed": 69,
+      "failed": 0,
+      "scope": "Combined final successes across bounded runs; initial migration failures retained below."
+    },
+    {
+      "command": "cargo test --lib frontend::",
+      "passed": 69,
+      "ignored": 2,
+      "filtered": 52
+    },
+    {
+      "command": "cargo test --test sized_source fold",
+      "passed": 3,
+      "filtered": 38
+    },
+    {
+      "command": "Explicit Rust 1.85 cargo test: qfor, static_helpers, static_naturals, sized_declarations",
+      "passed": 27,
+      "rustc": "rustc 1.85.0 (4d91de4e4 2025-02-17)"
+    },
+    {
+      "command": "Explicit cargo-clippy 0.1.85 clippy --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "Default cargo clippy --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/test_current_source_fixtures.py",
+      "passed": 46
+    },
+    {
+      "command": "python3 scripts/test_sized_local_resolution.py",
+      "passed": 16
+    },
+    {
+      "command": "python3 scripts/check_docs.py",
+      "local_links": 2176,
+      "lean_roots": 206
+    },
+    {
+      "command": "mdbook 0.5.4 build docs",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 scripts/check_book.py",
+      "html_files": 29,
+      "local_links": 1222,
+      "anchors": 470
+    },
+    {
+      "command": "python3 scripts/check_verification_inventory.py",
+      "constructors": 275,
+      "source_snapshots": 263,
+      "boundaries": 20
+    },
+    {
+      "command": "python3 scripts/check_production_coverage.py",
+      "groups": 36,
+      "production_paths": 21,
+      "native_modes": 9,
+      "open_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ]
+    },
+    {
+      "command": "python3 scripts/check_constitution.py --base-ref 38baae7d19535602b21270e11e97617d45205b37",
+      "exit_code": 0,
+      "scope": "Identity/continuity only, not fresh Lean replay or broader discharge"
+    }
+  ],
+  "independent_cli_oracles": {
+    "distributions": {
+      "zero-owner": "0:1",
+      "ghz": "000:1/2,111:1/2",
+      "qpe-attempt-04": "11:1, CNOT phase kickback on target |->",
+      "arithmetic": "11:1",
+      "mixed-carry": "00:1",
+      "ordinary-control": "1:1"
+    },
+    "unit_owner": "hierarchy quantum_bits=0, amplitudes=[[1,0]]; no distribution field",
+    "numeric_comparison": "1e-12 small-system conformance tolerance, not exact constitutional discharge"
+  },
+  "encountered_failures": [
+    "First qfor build omitted TokenKind::description arm; corrected before successful builds.",
+    "Basis-polymorphism and unused sized declaration regressions first read old quantum-for fixtures; corrected selection through current_source_file, retaining old bytes.",
+    "Frontend commuting Fourier regression first read historical delayed source; switched only active test to existing qfor derivative.",
+    "Attempt-01 QPE uses a non-admitted direct phase provider; unit() lacks its ordinary Unit argument. Original sources and real diagnostics retained.",
+    "Attempt-02 wrapper and attempt-03 direct dyadic controlled phase lack closed finite lowering. Both unsupported examples retained; attempt-04 uses existing CNOT for pi eigenphase.",
+    "The first CLI oracle script assumed a distribution field for zero-width hierarchical output and stopped with KeyError. Corrected assertion checks the returned amplitude and quantum_bits, preserving original command observation."
+  ],
+  "not_performed": [
+    "New local Lean build/audit/replay: Lean definitions and protected current evidence unchanged.",
+    "Blind/zero-shot external model benchmark; these are informed first attempts with disclosed repository access.",
+    "New maximum-size generation or checking.",
+    "Full CI on this uncommitted source tree, package, fresh installation and release gates.",
+    "Generic qft<N> implementation, integration or equivalence, fully excluded from the goal."
+  ],
+  "hosted_ci": {
+    "run_id": 37443178912,
+    "head": "38baae7d19535602b21270e11e97617d45205b37",
+    "rust": "in_progress in exhaustive corpus at latest observation",
+    "msrv": "failed Clippy format_collect, corrected earlier in a2780b3f96c6234ed85f5bd58882a71d55a914d7; hosted repair not yet exercised"
+  },
+  "issue_completion": "Not #194 closure: broader empirical authoring/corpus/full-CI criteria are not claimed complete.",
+  "goal_progress": {
+    "completed": 20,
+    "total": 111,
+    "percent": 18.02
+  }
+}

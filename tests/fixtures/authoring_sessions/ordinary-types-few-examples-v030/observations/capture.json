@@ -1,0 +1,26 @@
+{
+  "observations": [
+    "observations/copy-ordinary-finite-check.json",
+    "observations/copy-ordinary-selected-check.json",
+    "observations/observe-pair-finite-check.json",
+    "observations/observe-pair-selected-check.json",
+    "observations/implicit-readout-finite-check.json",
+    "observations/implicit-readout-selected-check.json",
+    "observations/duplicate-owner-finite-check.json",
+    "observations/duplicate-owner-selected-check.json",
+    "observations/copy-ordinary-finite-run.json",
+    "observations/copy-ordinary-selected-run.json",
+    "observations/observe-pair-finite-run.json",
+    "observations/observe-pair-selected-run.json"
+  ],
+  "identity": {
+    "cli": {
+      "path": "/private/tmp/qleisli-classical-functions-after",
+      "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  }
+}

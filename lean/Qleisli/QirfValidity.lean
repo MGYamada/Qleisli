@@ -5,7 +5,7 @@ import QleisliKernel.Raw.ObservationOwnership
 import QleisliKernel.Raw.ObservationScope
 
 /-! Composition from production QIRF acceptance to original-body semantics.
-Ordinary roots have independent linear ResourceSafe and lexical ScopeSafe; the finite contract and
+Ordinary roots have independent linear OwnershipSafe and lexical ScopeSafe; the finite contract and
 full production EffectSound/hierarchical theorems remain distinct.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace Qleisli.Qirf.Validity
@@ -20,7 +20,7 @@ structure RootMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array Na
     slots.all Option.isSome = true ∧ root.dependencies = (before slots).map Receipt.dependency
   original : artifact.programs[artifact.root]? = some root.program
   observation : QleisliKernel.Raw.Observation.Postcondition root.program root.checked
-  resources : QleisliKernel.Semantics.Ownership.ResourceSafe root.program
+  resources : QleisliKernel.Semantics.Ownership.OwnershipSafe root.program
   scopes : QleisliKernel.Semantics.ClassicalScope.ScopeSafe root.program
   interface : interfaceValid artifact root.program = true
   sources : sourcesUsed artifact = true
@@ -49,7 +49,7 @@ theorem root_meaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat
   obtain ⟨a,b,verified⟩ := facts.verification
   exact ⟨checkGraph_semantics _ _ _ _ _ graph,facts.original,
     QleisliKernel.Raw.Observation.verify_postcondition _ _ _ _ _ verified,
-    QleisliKernel.Raw.Observation.verify_resourceSafe _ _ _ _ _ verified,
+    QleisliKernel.Raw.Observation.verify_ownershipSafe _ _ _ _ _ verified,
     QleisliKernel.Raw.Observation.verify_scopeSafe _ _ _ _ _ verified,facts.interface,facts.sources⟩
 
 theorem request_meaning (artifact : QleisliKernel.Qirf.Artifact) (root : Root)

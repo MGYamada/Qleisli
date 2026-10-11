@@ -1,0 +1,174 @@
+{
+  "format": "qleisli.contextual-natural-isolated-validation",
+  "version": 1,
+  "baseline_commit": "fae0e6a149f5b218bcc7f67f38d9509eb8aeb4f3",
+  "only_changed_rust_files": {
+    "src/frontend/parser.rs": "9ed6b4f1938f9ecf29f9f81afb11b60c47544c35d559d268742c1c64e72cbfcf",
+    "src/frontend/parser/tests.rs": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+    "tests/native_roundtrip.rs": "d9b89443d14ba44622bec313cd95811eb0efd9605666b53ee776b76d21c072f8"
+  },
+  "checks": [
+    {
+      "name": "unit",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--lib",
+        "frontend::parser"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "test_source": "9e885b32f484c48fca71b44d3c06a08d1796854feb53ad410d5ae70f883509f6",
+      "stdout": {
+        "path": "unit.stdout.txt",
+        "sha256": "ab6e6765df565bbf2c90953f23bcb8830999a07269fecd192d37e12a2f6c7f64"
+      },
+      "stderr": {
+        "path": "unit.stderr.txt",
+        "sha256": "3f9c5679acb268aeb11ab7d0b3f18223d7c6e977a032ca5625ae162882fa7a1f"
+      }
+    },
+    {
+      "name": "integrations",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--test",
+        "parser",
+        "--test",
+        "sized_review_dialects"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "test_source": "9e885b32f484c48fca71b44d3c06a08d1796854feb53ad410d5ae70f883509f6",
+      "stdout": {
+        "path": "integrations.stdout.txt",
+        "sha256": "db2e86a30b37411104ddaa997260ab9cf8f704123363b67976e96322477c5923"
+      },
+      "stderr": {
+        "path": "integrations.stderr.txt",
+        "sha256": "e2616716bba1e4330160aaaad2fe4d4742bc3336bc6c15ea4b4ce3a9a5221954"
+      }
+    },
+    {
+      "name": "python",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--test",
+        "sized_review_dialects",
+        "--",
+        "--ignored",
+        "--skip",
+        "native"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "test_source": "9e885b32f484c48fca71b44d3c06a08d1796854feb53ad410d5ae70f883509f6",
+      "stdout": {
+        "path": "python.stdout.txt",
+        "sha256": "8da1be3481593a0dd1412a39145fc3ee92385ddb50d3aa1044848d64452868d3"
+      },
+      "stderr": {
+        "path": "python.stderr.txt",
+        "sha256": "7809019aa0126d3ddcba7fd337f03e743be3e657a7fadbfdf416649a6e92b62d"
+      }
+    },
+    {
+      "name": "msrv",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 101,
+      "test_source": "9e885b32f484c48fca71b44d3c06a08d1796854feb53ad410d5ae70f883509f6",
+      "PATH_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin",
+      "stdout": {
+        "path": "msrv.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "msrv.stderr.txt",
+        "sha256": "448acf49f27b191bc93691432e6b802ecca3726bd83958d737d1076205eb9b66"
+      }
+    },
+    {
+      "name": "msrv-final",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "test_source": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+      "PATH_prefix": "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin",
+      "stdout": {
+        "path": "msrv-final.stdout.txt",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "msrv-final.stderr.txt",
+        "sha256": "ed5885d8adf9307021236890a22eff94fd85b05d583292685b975c5845fe8025"
+      }
+    },
+    {
+      "name": "unit-final",
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/private/tmp/qleisli-ci-repair-fae/Cargo.toml",
+        "--lib",
+        "frontend::parser"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "test_source": "c23e487d2cb2edbabb5dae57749dbf00e8d64b066403df3adfd87a6993bbce47",
+      "stdout": {
+        "path": "unit-final.stdout.txt",
+        "sha256": "57fb75575f5fe72e34da5c284a23341316ce2e933a9d98dcc89ce8eb7a96d4c8"
+      },
+      "stderr": {
+        "path": "unit-final.stderr.txt",
+        "sha256": "e169574f0142f22c55128ad890197c107b494193aba0ad45f1523c21ca985e11"
+      }
+    }
+  ],
+  "toolchains": {
+    "tests": "Rust 1.98.1 Homebrew",
+    "msrv_clippy": "explicit PATH prefix /Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin; Clippy 0.1.85"
+  },
+  "summary": {
+    "unit_pass": 6,
+    "parser_pass": 20,
+    "ordinary_sized_pass": 3,
+    "python_sized_pass": 4,
+    "native_sized_ignored": 1
+  },
+  "scope": "Isolated parser and recorder fixes only; common lexical-ID work excluded. First MSRV test lint failure preserved, explicit-match correction retested. No full CI or release claim."
+}

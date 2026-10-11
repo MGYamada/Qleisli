@@ -1,0 +1,159 @@
+{
+  "status": "independently authored intended laws, not observed outcomes",
+  "cases": [
+    {
+      "project": "introduce",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "One fresh exact Unit-basis owner, zero axes; coefficient +1; ordinary argument evaluated once.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "eliminate",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Consume exactly the supplied Unit owner; coefficient +1, no observation or partial trace.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "ordinary-roundtrip",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "finish(unit(u)) has coefficient +1 on the one-dimensional space, with arbitrary reference untouched.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "quantum-roundtrip",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "unit(finish(q)) preserves full complex amplitude and reference; logical output is fresh.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "scalar-argument",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Closed ordinary-Unit scalar is zeta8; nesting as unit argument retains it, exactly once.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "controlled-four",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "scalar(q)=unit(finish(phase_eighth(q))) is zeta8; controlled four repetitions is Z on c with q/reference unchanged.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "left-separate-owner",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "left adds Unit before q; remove consumes only Unit; roundtrip coefficient +1 and q/reference order unchanged. Not packaged Q<(Unit,Bit)>.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "right-separate-owner",
+      "kind": "desired",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "right adds Unit after q; remove consumes only Unit; roundtrip coefficient +1 and q/reference order unchanged. Not packaged Q<(Bit,Unit)>.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "observing-argument",
+      "kind": "desired-with-profile-boundary",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "consume(q) must run once before Unit construction/elimination; source effect Observe. Hierarchy instrument-result profile may separately reject an ordinary Unit result.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "wrong-ordinary-types",
+      "kind": "negative-group",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "unit(Bit) and finish(ordinary Unit) reject exact-type mismatches. A first diagnostic can mask the sibling condition.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "wrong-quantum-types",
+      "kind": "negative-group",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "finish rejects Q<Bits<0>> and Q<Bit>; equal dimension/width does not identify Unit. A first diagnostic can mask the sibling condition.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "wrong-runtime-arity",
+      "kind": "negative-group",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Both maps take exactly one runtime argument; test zero and two for each, without flattening argument tuples.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "wrong-static-arity",
+      "kind": "negative-group",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Both maps have zero static parameters; unit[0] and finish[0] reject, not ignored specialization.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "duplicate-revived-owner",
+      "kind": "negative-group",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Duplicate tuple owner and finish-then-reuse both reject; fresh unit creation cannot revive an old binding.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "lost-owner",
+      "kind": "negative",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "A newly created zero-wire Unit owner cannot disappear at return.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "wildcard-owner",
+      "kind": "negative",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Wildcard does not consume a Q<Unit> owner; finish must be explicit.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "effect-violation",
+      "kind": "negative",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "An observing argument cannot be admitted inside a declared unitary caller.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "unused-invalid-body",
+      "kind": "negative",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Complete declarations remain checked; selecting valid f cannot hide a sibling use-after-finish.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "zero-fold-invalid-body",
+      "kind": "negative",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Zero iterations do not suppress checking the body use after finish; no source-owner revival.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "packaged-tree-boundary",
+      "kind": "desired-later-boundary",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Existing finite coherent basis lift removes a packaged Unit with phase +1. Sized Q<tuple>/coherent lift remains separate required work; not supplied by the new maps.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "existing-scalar-control",
+      "kind": "existing-control",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Existing Q<Unit> phase_eighth has exact zeta8; checks here do not independently execute open f or measure its coefficient.",
+      "max_system_qubits": 1
+    },
+    {
+      "project": "existing-ordinary-control",
+      "kind": "existing-control",
+      "selected_entry": "main::f",
+      "intended_law_or_rejection": "Ordinary Unit remains copyable/droppable, with no quantum port.",
+      "max_system_qubits": 1
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/meaning-specialization-v030/attempt-01/wrong-x",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T12:44:02.023676+00:00",
+  "elapsed_seconds": 0.0537035419838503,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "contract",
+        "severity": "error",
+        "message": "static argument does not establish the required phase-fixed meaning",
+        "primary": {
+          "path": "main.qli",
+          "start": 353,
+          "end": 367,
+          "line": 7,
+          "column": 43
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": "",
+  "cli_sha256": "442cfc775e28e6fd96ed584e4a9ea742c29b0dfd7e2546ea6fcf5407b1bd1d37",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "source_sha256": "a7ce6402c38d155db44f044af82ca26fc7064ec98b0994191d8fa7940612255a",
+  "native_invocations": "not instrumented; do not infer a count from exit status"
+}

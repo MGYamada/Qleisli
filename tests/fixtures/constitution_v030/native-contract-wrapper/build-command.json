@@ -1,0 +1,15 @@
+{
+  "command": [
+    "lake",
+    "build",
+    "Qleisli.NativeContract"
+  ],
+  "cwd": "lean",
+  "exit_code": 0,
+  "output_origin": "Exact stdout returned by exec_command session 90483; captured before this record was written.",
+  "lake_options": {
+    "autoImplicit": false,
+    "warningAsError": true
+  },
+  "scope": "Changed modules and dependencies. Full package build/audit/fresh replay is coordinated separately by the parent agent."
+}

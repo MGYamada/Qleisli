@@ -1,0 +1,2 @@
+finite: ok declarations=2
+sized: error unsupported 64..96 sized preparation profile: permits one function per module until declaration-identity cycle checking is available

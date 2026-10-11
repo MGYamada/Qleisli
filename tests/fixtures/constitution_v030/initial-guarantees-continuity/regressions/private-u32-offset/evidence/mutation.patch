@@ -1,0 +1,11 @@
+--- a/lean-kernel/Protocol/Validity.lean
++++ b/lean-kernel/Protocol/Validity.lean
+@@ -44,7 +44,7 @@
+   return ⟨signature,target,sources⟩
+ 
+ private def u32 (bytes : ByteArray) (offset : Nat) : Nat :=
+-  (List.range 4).foldl (fun n i => n + (bytes[offset+i]!).toNat * 256^i) 0
++  (List.range 4).foldl (fun n i => n + (bytes[offset+i+1]!).toNat * 256^i) 0
+ 
+ /-- QLV1, two little-endian u32 lengths, original QIRF bytes, then original
+ request bytes. A zero request length means absent; exact EOF is mandatory. -/

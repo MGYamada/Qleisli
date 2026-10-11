@@ -1,0 +1,41 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/counterexamples/quantum-tuple-pattern",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-04T17:52:21.375599+00:00",
+  "elapsed_seconds": 0.004400333040393889,
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected an identifier\",\"primary\":{\"path\":\"main.qli\",\"start\":91,\"end\":92,\"line\":2,\"column\":18},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "source_sha256": "24e2d2b1242a91fa75fd65b57336a1037adc88238962745d87d0daceb28c8db3",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "74857d08147f27d919021c4eda54b0f7d7edeccba35fa2c17a1bdb19c57e05bd",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "profile": "finite",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: expected an identifier",
+        "primary": {
+          "path": "main.qli",
+          "start": 91,
+          "end": 92,
+          "line": 2,
+          "column": 18
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

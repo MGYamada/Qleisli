@@ -1,0 +1,170 @@
+{
+  "scope": "Twelve original rejected finite-source examples; diagnostic observations, not proofs.",
+  "binary": {
+    "path": "/Users/masa/git/Qleisli/target/debug/qleisli",
+    "sha256": "acb02008b767e92129733d10f7cd5a0423a52966f38546abe57d49b7f5fd4055"
+  },
+  "kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "observations": [
+    {
+      "case": "aliased_owner",
+      "source_sha256": "9bbc8d4e98d0ee507600d0122e6e7d6134058cdb762afed91a9803d53fb3aa83",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-sl0xj_co",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `q` has already been consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":84,\"end\":85,\"line\":2,\"column\":61},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "auxiliary_hh",
+      "source_sha256": "eabb33555e8b370433471d305aa028bc77cc47c40c345fe8be3ad506c7478cd1",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-r1k28ki2",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking\",\"primary\":{\"path\":\"main.qli\",\"start\":137,\"end\":158,\"line\":4,\"column\":32},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "basis_type_parameter",
+      "source_sha256": "dcaa8f5977ca87f396dc97fe028acf5d42d4c9c43ad1c2001ad8c72254416035",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-vkcrao5a",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"parse error: expected `Op`, found identifier\",\"primary\":{\"path\":\"main.qli\",\"start\":27,\"end\":36,\"line\":1,\"column\":28},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "controlled_is_not_apply",
+      "source_sha256": "bca5006ba5e520f0421b537113ab3cb8dc5640a5fd85ee0ce01d48f1c53058be",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-cbu5ykip",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"capability\",\"severity\":\"error\",\"message\":\"missing Apply access in the generic declaration\",\"primary\":{\"path\":\"main.qli\",\"start\":82,\"end\":83,\"line\":2,\"column\":26},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "dropped_owner",
+      "source_sha256": "64b1a71b36894d98258ced7ca015b650ce90e37c32c78097311176f5a3c4aea5",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-inwra91j",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"local quantum ownership `b` escapes neither through the result nor an explicit discard\",\"primary\":{\"path\":\"main.qli\",\"start\":90,\"end\":91,\"line\":4,\"column\":9},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "meaning_pair_predicate",
+      "source_sha256": "ab1a09aa5947fc1fdc490a314f1042bc935b5037905cc1eec497c9aabe46ddc2",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-iko6g636",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"meaning function has the wrong exact basis signature\",\"primary\":{\"path\":\"main.qli\",\"start\":106,\"end\":111,\"line\":2,\"column\":38},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "missing_adjoint",
+      "source_sha256": "b10bddd08cbc205fb4dfc513fa72652b8cd77112295c21727a0fd3d0a897d069",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-4ih8lcsu",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"capability\",\"severity\":\"error\",\"message\":\"missing Adjoint access in the generic declaration\",\"primary\":{\"path\":\"main.qli\",\"start\":84,\"end\":85,\"line\":2,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "missing_import",
+      "source_sha256": "f31003fb0707694b213defc97b85cff1c84519b62c13427dc84c51935fbe91b4",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-gax8vf37",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unknown_name\",\"severity\":\"error\",\"message\":\"unknown function `measure_z`; standard operations require an explicit import\",\"primary\":{\"path\":\"main.qli\",\"start\":28,\"end\":37,\"line\":1,\"column\":29},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "product_association",
+      "source_sha256": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-9pm2pp1a",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"argument `q` has the wrong type: expected `Q<((Bit,Bit),Bit)>`, found `Q<(Bit,(Bit,Bit))>`\",\"primary\":{\"path\":\"main.qli\",\"start\":100,\"end\":101,\"line\":2,\"column\":74},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "sealed_provider",
+      "source_sha256": "b472cbc74b4332b8261aafce6e9673fe09d06885f10b458cb04e16c86618c336",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-pwhcspg3",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"type_mismatch\",\"severity\":\"error\",\"message\":\"static provider requires an ordinary declared unitary function; wrap the gate as `unitary fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { h(q) }` and pass `[wrapped_gate]`\",\"primary\":{\"path\":\"main.qli\",\"start\":153,\"end\":154,\"line\":3,\"column\":49},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "spent_owner",
+      "source_sha256": "877dae7260de9380fb5a19c059a337c0c04a9d90b904d08403d12a64e673785e",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-lor3drjd",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"quantum ownership `q` has already been consumed\",\"primary\":{\"path\":\"main.qli\",\"start\":161,\"end\":162,\"line\":6,\"column\":22},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    },
+    {
+      "case": "static_nat",
+      "source_sha256": "53ab5e74f42dc31892b854ad7039a0910084b6e98b948156644b940661e6b2b3",
+      "argv": [
+        "/Users/masa/git/Qleisli/target/debug/qleisli",
+        "check",
+        "/var/folders/g9/r1bkbtf50wd103y4jjcpkmfw0000gn/T/qleisli-profile-diagnostic-1k0z76n5",
+        "--format=json"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"unsupported\",\"severity\":\"error\",\"message\":\"finite profile does not support static Nat parameters\",\"primary\":{\"path\":\"main.qli\",\"start\":24,\"end\":25,\"line\":1,\"column\":25},\"related\":[]}],\"result\":null}\n",
+      "stderr": ""
+    }
+  ]
+}

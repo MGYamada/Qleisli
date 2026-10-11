@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-desired",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:57:38.412912+00:00",
+  "elapsed_seconds": 0.02798674994846806,
+  "case": "unit-owner-desired",
+  "action": "finite-check",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "ccee9e558fb7e894b16b191e9d17417d012a3d61ff67c3687d667329a532aef3",
+  "raw_stdout": {
+    "path": "observations-after/unit-owner-desired-finite-check.stdout.txt",
+    "sha256": "6d1a7a62dd5a983632fbbeef34b5272cf409103eadcee043d4e453caefaf949b"
+  },
+  "raw_stderr": {
+    "path": "observations-after/unit-owner-desired-finite-check.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "finite lowering profile does not support `std::quantum::unit`",
+        "primary": {
+          "path": "main.qli",
+          "start": 306,
+          "end": 314,
+          "line": 7,
+          "column": 45
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

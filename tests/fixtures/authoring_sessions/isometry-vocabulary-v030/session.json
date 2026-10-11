@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Implement adopted isometry vocabulary through the common source judgment under #57",
+  "author": "Codex assistant; informed maintenance; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "df778cca420b87f4ba06da2ab356b941b37baa62",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve desired isometry preparation and an effect assertion counterexample before changing the shared lexer.",
+      "sha256": {
+        "preparation.qli": "687216c4fe49f1e07192ce84bea8fd48907b90f99a4848c2f792a3a1218c1c9e",
+        "observing-assertion.qli": "529b5502bc84fdb9554bc307f88288d75da151ec7976760b87add78b67900c04"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "before/preparation.json",
+        "before/observing-assertion.json",
+        "after/preparation.json",
+        "after/preparation-raw.json",
+        "after/preparation-run.json",
+        "after/observing-assertion.json",
+        "after-public-names/observing-assertion.json"
+      ]
+    }
+  ]
+}

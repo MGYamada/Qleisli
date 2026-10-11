@@ -1,0 +1,50 @@
+{
+  "existing-identity": {
+    "operation_binding": false,
+    "intent": "Existing first-order identity; +1 quantum action."
+  },
+  "existing-scalar-phase": {
+    "operation_binding": false,
+    "intent": "Existing scalar phase; the intended exact scalar is exp(i*pi/4), not erased by zero physical width."
+  },
+  "existing-prepare-arrow": {
+    "operation_binding": false,
+    "intent": "Existing first-order preparation: alpha maps to alpha|0>. Expected principal Iso, not a Unitarty assertion."
+  },
+  "existing-unitor-arrow": {
+    "operation_binding": false,
+    "intent": "Explicit first-order unitor with different exact type trees and +1 action; no implicit coherence."
+  },
+  "existing-observer-arrow": {
+    "operation_binding": false,
+    "intent": "Existing observation consumes the logical owner and returns an ordinary bit; check success alone is not an instrument proof."
+  },
+  "existing-static-endo": {
+    "operation_binding": true,
+    "intent": "Existing static endomorphism control with explicit Apply; no inferred inverse/control."
+  },
+  "wrong-endo-provider": {
+    "operation_binding": true,
+    "intent": "Exact-type negative: the valid first-order provider has a different output tree despite equal physical width."
+  },
+  "candidate-comma-operator": {
+    "operation_binding": true,
+    "intent": "Unadopted two-interface comma spelling; the current second slot is Meaning, not codomain."
+  },
+  "candidate-arrow-operator": {
+    "operation_binding": true,
+    "intent": "Unadopted explicit arrow spelling. Intended provider is exact non-endomorphic Unitary; parse rejection supplies no later evidence."
+  },
+  "candidate-prepare-operator": {
+    "operation_binding": true,
+    "intent": "Unadopted isometry arrow candidate. The future generic effect constraint must justify Iso without treating the annotation as authority."
+  },
+  "candidate-quantum-capture": {
+    "operation_binding": false,
+    "intent": "Unadopted quantum-capturing closure candidate; a lexical failure does not prove capture checking."
+  },
+  "false-unitary-prepare": {
+    "operation_binding": false,
+    "intent": "False assertion negative. Preparation remains Iso; the optional prefix cannot manufacture Unitary."
+  }
+}

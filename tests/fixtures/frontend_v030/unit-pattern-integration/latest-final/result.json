@@ -1,0 +1,99 @@
+{
+  "driver_sha256": "8ab7bca482d901652122d9d38cb2799cb99fcf48ed421c881d182aca0bf63281",
+  "commands": [
+    {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.021200082963332534,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.040913375036325306,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--version"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 0.040631125040818006,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--test",
+        "unit_patterns",
+        "--test",
+        "ordinary_types",
+        "--test",
+        "frontend_types",
+        "--test",
+        "tuple_shapes"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 8.396441416989546,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--lib",
+        "constructed_ordinary_parameter_patterns_reject_before_name_only_lowering"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 4.691487916978076,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--test",
+        "unit_patterns",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "elapsed_seconds": 3.598045999999158,
+      "stdout": "5.stdout.txt",
+      "stderr": "5.stderr.txt"
+    }
+  ],
+  "source_files": 241,
+  "sources_stable": true,
+  "source_manifest_sha256": "95e266ad7032648593e58341b5ed367bf9e1fdeddb4436029b337b4857772bc7",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "kernel_stable": true,
+  "kernel_status": "Reused existing audited checker; no new Lean build/audit/replay",
+  "cargo_target": "/private/tmp/qleisli-bounded-validation-target",
+  "incremental": false,
+  "debug_information": false,
+  "free_bytes_before": 27648000000,
+  "free_bytes_after": 27648000000,
+  "scope": "Four bounded Rust integration targets, the manual-AST regression and unit_patterns Clippy; not all-target or release validation"
+}

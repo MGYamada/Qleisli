@@ -1,0 +1,3 @@
+use std::quantum::{init0,finish,unit,phase_eighth,h,cnot,split};
+use std::classical::empty_bits;
+pub observe fn entry()->(Bits<0>,Q<Bit>){(empty_bits(),init0())}

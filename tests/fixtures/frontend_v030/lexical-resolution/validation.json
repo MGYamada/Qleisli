@@ -1,0 +1,204 @@
+{
+  "status": "Complete: common and finite regressions, integrated ownership/declaration regressions, exact source-stable replay, latest/MSRV all-target Clippy and formatting passed.",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "cargo": "Homebrew cargo 1.98.1",
+    "test_scope": "common and finite lexical changes; before sized migration"
+  },
+  "runs": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "source_scope",
+        "--test",
+        "compile",
+        "--test",
+        "static_operations",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "authoring_ergonomics"
+      ],
+      "passed": 65,
+      "ignored": 0,
+      "scope": "Initial finite BinderKey migration, before final iterative Index/static Op key changes"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::resolve::locals::tests"
+      ],
+      "passed": 5,
+      "ignored": 0,
+      "scope": "Final iterative Index and static candidate separation"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "with_computed_diagnostics",
+        "--test",
+        "certified_source",
+        "--test",
+        "function_contracts",
+        "--test",
+        "source_scope"
+      ],
+      "passed": 56,
+      "ignored": 0,
+      "by_target": {
+        "operation_parameters": 15,
+        "with_computed_diagnostics": 7,
+        "certified_source": 14,
+        "function_contracts": 17,
+        "source_scope": 3
+      }
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::compile::lower::scope::tests"
+      ],
+      "passed": 1,
+      "ignored": 0,
+      "scope": "7225 cases each compared with historical name keys and current identity keys"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "source_semantics",
+        "--test",
+        "source_ir_correspondence",
+        "--test",
+        "static_semantics"
+      ],
+      "passed": 21,
+      "ignored": 0,
+      "by_target": {
+        "source_semantics": 4,
+        "source_ir_correspondence": 6,
+        "static_semantics": 11
+      },
+      "scope": "Existing finite small-system source/IR, reference-state, scalar-phase and axis checks; growing lift checks 243 five-qubit Pauli settings."
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "shared_resolution",
+        "--test",
+        "frontend_ownership_differential"
+      ],
+      "passed": 4,
+      "ignored": 0,
+      "by_target": {
+        "shared_resolution": 3,
+        "frontend_ownership_differential": 1
+      },
+      "scope": "Integrated tree; fixed seed 0x514c4549534c4932, 4000 small source cases with 1000 expected acceptances and 3000 expected rejections; differential elapsed 416.77 seconds."
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::resolve::locals::tests"
+      ],
+      "passed": 5,
+      "ignored": 0,
+      "scope": "Final source after test-only replace_box correction and sized integration."
+    }
+  ],
+  "excluded": "No ignored suite or new maximum-size generation. These are tests, not formal source-preservation evidence.",
+  "record_kind": "Exact invoked argv and counts transcribed from successful tool output; full suite stdout was not redirected to a fixture.",
+  "initial_study_retention": {
+    "files": 23,
+    "source_hashes": 10,
+    "result": "All copied files are byte-identical to /private/tmp/qleisli-binderid-study-af21; all ten source hashes match the original session record."
+  },
+  "checks": [
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "toolchain": "latest-toolchain.json",
+      "exit_code": 0,
+      "notes": "An earlier latest-Clippy attempt reported replace_box only in the new constructed-AST test; placeholder-box assignment corrected before the recorded final replay."
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "toolchain": "msrv-toolchain.json",
+      "exit_code": 0,
+      "record": "msrv-clippy.json"
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "final_replay": {
+    "argv": [
+      "python3",
+      "tests/fixtures/frontend_v030/lexical-resolution/replay.py",
+      "--tree",
+      "/Users/masa/git/Qleisli",
+      "--kernel",
+      "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "--output-dir",
+      "/private/tmp/qleisli-lexical-after-final"
+    ],
+    "exit_code": 0,
+    "source_identity": "after/source-identity.json",
+    "comparison": "comparison.json",
+    "observations_identical": 24,
+    "proposal_bytes_identical": 6,
+    "native_checks_passed": 6,
+    "one_qubit_runs_passed": 6,
+    "preliminary": "A first replay also matched 24 observations and 6 proposals; final replay followed the test-only Clippy correction and added start/end source-identity checking."
+  },
+  "sized_regressions": {
+    "record": "../sized-lexical/",
+    "passed": 37,
+    "ignored": 3,
+    "executed_by": "review_platform",
+    "scope": "Both generic checking and concrete elaboration, clone/auto-trait/substitution regressions; see its own raw evidence and skip reasons."
+  }
+}

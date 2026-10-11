@@ -6,11 +6,16 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import io
 import json
+import os
 from pathlib import Path
 import subprocess
+import sys
 import tarfile
 import tempfile
 import unittest
+from unittest.mock import patch
+
+import check_distribution
 
 from check_distribution import (
     DistributionError, File, check_package, clean_candidate, compare_files, compare_package_metadata,
@@ -18,6 +23,119 @@ from check_distribution import (
     SOURCE_ROOTS, check_source_roots,
 )
 from check_installation import check_registry_links
+
+
+class CommandDiagnosticsTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.report = {"commands": []}
+        self.commands = check_distribution.Commands(self.root, self.report)
+
+    def invoke(self, stdout, stderr, exit_code=101, **kwargs):
+        def child(argv, **options):
+            options["stdout"].write(stdout)
+            options["stderr"].write(stderr)
+            return subprocess.CompletedProcess(argv, exit_code)
+
+        console = io.StringIO()
+        with patch.object(check_distribution.subprocess, "run", child), \
+                patch.object(sys, "stderr", console):
+            if exit_code:
+                with self.assertRaises(DistributionError) as raised:
+                    self.commands.run(["synthetic", "test"], self.root, **kwargs)
+                result = raised.exception
+            else:
+                result = self.commands.run(["synthetic", "test"], self.root, **kwargs)
+        return result, console.getvalue()
+
+    def test_failure_previews_both_streams_and_retains_exact_bytes_and_exit_code(self):
+        stdout, stderr = b"test panic details\n\xff", b"Cargo failed\n"
+        error, console = self.invoke(stdout, stderr)
+        self.assertIn("stdout preview:", console)
+        self.assertIn("stderr preview:", console)
+        self.assertIn("test panic details\n\ufffd", console)
+        self.assertIn("Cargo failed", console)
+        record = self.report["commands"][0]
+        self.assertEqual(record["exit_code"], 101)
+        self.assertEqual(Path(record["stdout"]).read_bytes(), stdout)
+        self.assertEqual(Path(record["stderr"]).read_bytes(), stderr)
+        self.assertEqual(str(error),
+                         f"command failed (101): ['synthetic', 'test']; see {record['stderr']}")
+
+    def test_large_logs_read_bounded_tails_and_disclose_truncation(self):
+        stdout = b"omitted stdout prefix" + b"x" * 8192 + b"stdout panic tail"
+        stderr = b"omitted stderr prefix" + b"y" * 8192 + b"stderr error tail"
+        reads = []
+        real_open = Path.open
+
+        class PreviewReader(io.BytesIO):
+            def read(self, size=-1):
+                reads.append(size)
+                return super().read(size)
+
+        def open_path(path, mode="r", *args, **kwargs):
+            if mode == "rb":
+                return PreviewReader(stdout if path.suffix == ".stdout" else stderr)
+            return real_open(path, mode, *args, **kwargs)
+
+        with patch.object(Path, "open", open_path):
+            _, console = self.invoke(stdout, stderr)
+        self.assertEqual(reads, [8192, 8192])
+        self.assertEqual(console.count("truncated to last 8192"), 2)
+        self.assertNotIn("omitted stdout prefix", console)
+        self.assertNotIn("omitted stderr prefix", console)
+        self.assertIn("stdout panic tail", console)
+        self.assertIn("stderr error tail", console)
+        self.assertEqual((self.root / "logs/00.stdout").read_bytes(), stdout)
+        self.assertEqual((self.root / "logs/00.stderr").read_bytes(), stderr)
+
+    def test_success_is_silent_and_returns_exact_stdout_bytes(self):
+        stdout = b"success\n\x00\xff"
+        returned, console = self.invoke(stdout, b"successful warning\n", exit_code=0)
+        self.assertEqual(returned, stdout)
+        self.assertEqual(console, "")
+        self.assertEqual(self.report["commands"][0]["exit_code"], 0)
+
+    def test_binary_stdout_artifact_is_retained_without_a_console_dump(self):
+        archive = self.root / "source.tar"
+        payload = b"binary archive payload\x00\xff"
+        _, console = self.invoke(payload, b"archive command failed", stdout_path=archive)
+        self.assertIn(f"stdout retained as binary artifact: {archive}; preview omitted", console)
+        self.assertNotIn("binary archive payload", console)
+        self.assertIn("archive command failed", console)
+        self.assertEqual(archive.read_bytes(), payload)
+        self.assertEqual(self.report["commands"][0]["stdout"], str(archive))
+
+    def test_unreadable_preview_preserves_child_error_and_previews_other_stream(self):
+        real_open = Path.open
+
+        def open_path(path, mode="r", *args, **kwargs):
+            if mode == "rb" and path.suffix == ".stdout":
+                raise OSError("synthetic preview read failure")
+            return real_open(path, mode, *args, **kwargs)
+
+        with patch.object(Path, "open", open_path):
+            error, console = self.invoke(b"retained stdout", b"remaining stderr")
+        self.assertIn("stdout preview unavailable:", console)
+        self.assertIn("synthetic preview read failure", console)
+        self.assertIn("remaining stderr", console)
+        self.assertIn("command failed (101)", str(error))
+        self.assertEqual((self.root / "logs/00.stdout").read_bytes(), b"retained stdout")
+
+    def test_console_write_failure_does_not_mask_child_error(self):
+        class BrokenConsole(io.StringIO):
+            def write(self, text):
+                raise BrokenPipeError("synthetic console failure")
+
+        with patch.object(check_distribution, "sys"), \
+                patch.object(check_distribution.subprocess, "run") as child:
+            check_distribution.sys.stderr = BrokenConsole()
+            child.return_value = subprocess.CompletedProcess(["synthetic"], 101)
+            with self.assertRaisesRegex(DistributionError, "command failed \\(101\\)"):
+                self.commands.run(["synthetic"], self.root)
+        self.assertEqual(self.report["commands"][0]["exit_code"], 101)
 
 
 class ArchiveTests(unittest.TestCase):
@@ -32,10 +150,13 @@ class ArchiveTests(unittest.TestCase):
         (self.root / "README.md").write_text("current")
         self.assertEqual(check_registry_links(self.root,
             f"[current]({prefix}v0.2.8/README.md)", "0.2.8"), [])
-        (self.root / "docs").mkdir()
-        (self.root / "docs/lean-backend-plan-v0.3.md").write_text("requested plan")
+        (self.root / "docs/src").mkdir(parents=True)
+        (self.root / "docs/src/lean-backend-plan-v0.3.md").write_text("requested plan")
         self.assertEqual(check_registry_links(self.root,
-            f"[plan]({prefix}v0.2.9/docs/lean-backend-plan-v0.3.md)", "0.2.9"), [])
+            f"[plan]({prefix}v0.3.0-alpha/docs/src/lean-backend-plan-v0.3.md)", "0.3.0-alpha"), [])
+        (self.root / "docs/new-guide.md").write_text("derived from current code")
+        self.assertEqual(check_registry_links(self.root,
+            f"[guide]({prefix}v0.3.0-alpha/docs/new-guide.md)", "0.3.0-alpha"), [])
         (self.root / "docs-old").mkdir()
         (self.root / "docs-old/design.md").write_text("temporary")
         for target in ["README.md", prefix + "main/README.md", prefix + "v0.2.8/missing.md",
@@ -285,6 +406,8 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual(report["status"], "failed")
         self.assertFalse(report["candidate"]["clean"])
         self.assertEqual(report["commands"], [])
+        self.assertEqual(report["work"],
+                         {"path": None, "status": "not-created", "keep_requested": False})
         self.assertEqual(json.loads(destination.read_text()), report)
 
     def test_report_inside_checkout_or_existing_report_rejected(self):
@@ -295,6 +418,289 @@ class CandidateTests(unittest.TestCase):
         with self.assertRaises(DistributionError):
             validate(self.root, destination)
         self.assertEqual(destination.read_text(), "keep old record")
+
+
+class SyntheticCommands:
+    """Tiny command outputs exercising validate, its archives and real log writer.
+
+    Git uses the local fixture repository. Cargo, Rust and client executions
+    are simulated; no real compiler, installer or Lean process is started.
+    """
+
+    def __init__(self, root, fail=False, fail_package=False):
+        self.root, self.fail, self.fail_package = root, fail, fail_package
+        self.real_run = subprocess.run
+        self.target_paths = set()
+        self.installed = None
+        self.crate_bytes = None
+        self.files = tracked_files(root, "HEAD")
+        self.package = {name: file for name, file in self.files.items()
+                        if not name.startswith("research/")}
+        self.package.update({"Cargo.toml": File(b"normalized manifest"),
+                             "Cargo.toml.orig": self.files["Cargo.toml"],
+                             "Cargo.lock": File(b"generated lock"),
+                             ".cargo_vcs_info.json": File(json.dumps({
+                                 "git": {"sha1": clean_candidate(root)["commit"]},
+                                 "path_in_vcs": ""}).encode())})
+
+    def __call__(self, argv, **kwargs):
+        argv = [str(arg) for arg in argv]
+        if argv[0] == "git":
+            return self.real_run(argv, **kwargs)
+        cwd = Path(kwargs["cwd"])
+        output, error, exit_code = b"synthetic command passed\n", b"", 0
+        if "--target-dir" in argv:
+            target = Path(argv[argv.index("--target-dir") + 1])
+            target.mkdir(parents=True, exist_ok=True)
+            (target / "synthetic-build-output").write_bytes(b"small scratch\n")
+            self.target_paths.add(target)
+        if argv[:2] == ["cargo", "metadata"]:
+            research = "--manifest-path" in argv
+            manifest = cwd / ("research/semantic-kernel/Cargo.toml" if research else "Cargo.toml")
+            output = json.dumps({"packages": [{"manifest_path": str(manifest),
+                "name": "research" if research else "qleisli", "version": "0.0.0-synthetic",
+                "license": "Apache-2.0", "publish": []}]}).encode()
+        elif argv[:2] == ["cargo", "package"]:
+            if "--list" in argv:
+                output = ("\n".join(self.package) + "\n").encode()
+            else:
+                destination = target / "package" / "qleisli-0.0.0-synthetic.crate"
+                destination.parent.mkdir(parents=True, exist_ok=True)
+                with tarfile.open(destination, "w:gz") as archive:
+                    for name, file in self.package.items():
+                        entry = tarfile.TarInfo("qleisli-0.0.0-synthetic/" + name)
+                        entry.size, entry.mode = len(file.data), file.mode
+                        archive.addfile(entry, io.BytesIO(file.data))
+                self.crate_bytes = destination.read_bytes()
+                if self.fail_package:
+                    error, exit_code = b"synthetic package verification failure\n", 23
+        elif argv[:2] == ["cargo", "install"]:
+            self.installed = Path(argv[argv.index("--root") + 1])
+            (self.installed / "bin").mkdir(parents=True)
+            executable = "qleisli.exe" if os.name == "nt" else "qleisli"
+            (self.installed / "bin" / executable).write_bytes(b"synthetic executable\n")
+        elif len(argv) > 1 and Path(argv[1]).name == "check_installation.py":
+            output = json.dumps({"package": "qleisli", "version": "0.0.0-synthetic",
+                                 "checks": ["synthetic-only"]}).encode()
+        if self.fail and argv[:2] == ["cargo", "test"] and "--all-targets" in argv:
+            output, error, exit_code = b"synthetic partial stdout\n", b"synthetic test failure\n", 23
+        kwargs["stdout"].write(output)
+        kwargs["stderr"].write(error)
+        return subprocess.CompletedProcess(argv, exit_code)
+
+
+class ScratchTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.base = Path(self.temporary.name).resolve()
+        self.root = self.base / "repository"
+        files = {name: File(b"synthetic source\n") for name in SOURCE_ROOTS}
+        files.update(fixture_files())
+        extract_checked(files, self.root)
+        for args in [("init", "-q"), ("config", "user.name", "Distribution test"),
+                     ("config", "user.email", "distribution-test@example.invalid"),
+                     ("add", "."), ("-c", "commit.gpgsign=false", "commit", "-qm", "fixture")]:
+            subprocess.run(["git", "-C", str(self.root), *args], check=True,
+                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    def run_validation(self, *, fail=False, fail_package=False, **kwargs):
+        driver = SyntheticCommands(self.root, fail, fail_package)
+        destination = self.base / "report.json"
+        with patch.object(check_distribution.subprocess, "run", driver):
+            report = validate(self.root, destination, **kwargs)
+        self.assertEqual(json.loads(destination.read_text()), report)
+        return report, driver
+
+    def assert_durable_evidence(self, report):
+        artifacts = Path(report["artifacts"])
+        self.assertTrue(artifacts.is_dir())
+        for key in ["crate", "source_archive"]:
+            record = report[key]
+            path = Path(record["path"])
+            self.assertEqual(path.parent, artifacts)
+            self.assertEqual(digest(path.read_bytes()), record["sha256"])
+        for command in report["commands"]:
+            self.assertTrue(Path(command["stdout"]).is_file())
+            self.assertTrue(Path(command["stderr"]).is_file())
+
+    def test_success_removes_owned_work_preserving_evidence(self):
+        report, driver = self.run_validation()
+        self.assertEqual(report["status"], "passed")
+        self.assertEqual(report["work"]["status"], "removed")
+        work = Path(report["work"]["path"])
+        self.assertFalse(work.exists())
+        self.assertEqual(len(driver.target_paths), 5)
+        self.assertTrue(all(path.is_relative_to(work) and not path.exists()
+                            for path in driver.target_paths))
+        self.assertTrue(driver.installed.is_relative_to(work))
+        self.assertEqual(report["cargo_target"]["ownership"], "validator")
+        self.assert_durable_evidence(report)
+
+    def test_failure_removes_owned_work_preserving_failure_and_evidence(self):
+        report, _ = self.run_validation(fail=True)
+        self.assertEqual(report["status"], "failed")
+        self.assertIn("command failed (23)", report["error"])
+        self.assertEqual(report["work"]["status"], "removed")
+        self.assertFalse(Path(report["work"]["path"]).exists())
+        self.assertEqual(Path(report["commands"][-1]["stderr"]).read_bytes(),
+                         b"synthetic test failure\n")
+        self.assert_durable_evidence(report)
+
+    def test_failed_package_preserves_unverified_crate_before_cleanup(self):
+        report, driver = self.run_validation(fail_package=True)
+        self.assertEqual(report["status"], "failed")
+        self.assertIn("command failed (23)", report["error"])
+        self.assertEqual(report["work"]["status"], "removed")
+        self.assertFalse(Path(report["work"]["path"]).exists())
+        self.assertNotIn("crate", report)
+        record = report["unverified_crate"]
+        archive = Path(record["path"])
+        self.assertEqual(archive.parent, Path(report["artifacts"]))
+        self.assertEqual(digest(archive.read_bytes()), record["sha256"])
+        self.assertEqual(archive.read_bytes(), driver.crate_bytes)
+        self.assertEqual(record["cargo_verification"], "failed")
+        self.assertEqual(record["candidate_binding"], "not-verified")
+        self.assertFalse(archive.with_suffix(".crate.partial").exists())
+        self.assertTrue(Path(report["source_archive"]["path"]).is_file())
+        self.assertEqual(Path(report["commands"][-1]["stderr"]).read_bytes(),
+                         b"synthetic package verification failure\n")
+
+    def test_partial_copy_failure_preserves_sole_crate_and_original_failure(self):
+        real_open = Path.open
+
+        class FailedWrite:
+            def __init__(self, handle):
+                self.handle = handle
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_):
+                self.handle.close()
+
+            def write(self, data):
+                self.handle.write(data[:7])
+                self.handle.flush()
+                raise OSError("synthetic artifact storage full")
+
+        def open_path(path, *args, **kwargs):
+            handle = real_open(path, *args, **kwargs)
+            if path.name.endswith(".crate.partial") and args == ("xb",):
+                return FailedWrite(handle)
+            return handle
+
+        for fail_package in [False, True]:
+            with self.subTest(fail_package=fail_package):
+                with patch.object(Path, "open", open_path):
+                    report, _ = self.run_validation(fail_package=fail_package)
+                self.assertEqual(report["status"], "failed")
+                self.assertEqual(report["work"]["status"], "retained")
+                self.assertEqual(report["work"]["retention_reason"], "artifact-preservation-failed")
+                self.assertFalse(report["work"]["keep_requested"])
+                self.assertIn("command failed (23)" if fail_package else "synthetic artifact storage full",
+                              report["error"])
+                self.assertIn("synthetic artifact storage full", report["artifact_preservation_error"])
+                self.assertNotIn("crate", report)
+                self.assertNotIn("unverified_crate", report)
+                original = Path(report["unretained_crate_path"])
+                self.assertTrue(original.is_file())
+                artifacts = Path(report["artifacts"])
+                self.assertFalse((artifacts / original.name).exists())
+                partial = artifacts / (original.name + ".partial")
+                self.assertEqual(partial.read_bytes(), original.read_bytes()[:7])
+                self.assertTrue(Path(report["source_archive"]["path"]).is_file())
+                (self.base / "report.json").unlink()
+
+    def test_failed_crate_preservation_keeps_external_target_without_retaining_work(self):
+        target = self.base / "external-target"
+        target.mkdir()
+        (target / "sentinel").write_bytes(b"caller owned\n")
+        with patch.object(check_distribution, "retain_crate",
+                          side_effect=OSError("synthetic artifact storage full")):
+            report, _ = self.run_validation(fail_package=True, target_dir=target)
+        self.assertEqual(report["status"], "failed")
+        self.assertIn("command failed (23)", report["error"])
+        self.assertIn("synthetic artifact storage full", report["artifact_preservation_error"])
+        self.assertEqual(report["work"]["status"], "removed")
+        self.assertNotIn("retention_reason", report["work"])
+        self.assertEqual((target / "sentinel").read_bytes(), b"caller owned\n")
+        self.assertTrue(Path(report["unretained_crate_path"]).is_file())
+
+    def test_keep_work_retains_success_and_failure(self):
+        for fail in [False, True]:
+            with self.subTest(fail=fail):
+                report, driver = self.run_validation(fail=fail, keep_work=True)
+                self.assertEqual(report["status"], "failed" if fail else "passed")
+                self.assertEqual(report["work"]["status"], "retained")
+                self.assertTrue(report["work"]["keep_requested"])
+                work = Path(report["work"]["path"])
+                self.assertTrue((work / "source").is_dir())
+                self.assertTrue((work / "packaged-source").is_dir())
+                self.assertTrue(driver.installed.is_dir())
+                self.assertTrue(all(path.is_dir() for path in driver.target_paths))
+                self.assert_durable_evidence(report)
+                (self.base / "report.json").unlink()
+
+    def test_caller_target_sentinel_and_build_outputs_survive_both_paths(self):
+        target = self.base / "external-target"
+        target.mkdir()
+        sentinel = target / "sentinel"
+        sentinel.write_bytes(b"caller owned\n")
+        for fail in [False, True]:
+            with self.subTest(fail=fail):
+                report, driver = self.run_validation(fail=fail, target_dir=target)
+                self.assertEqual(report["status"], "failed" if fail else "passed")
+                self.assertEqual(report["work"]["status"], "removed")
+                self.assertEqual(report["cargo_target"], {"path": str(target), "ownership": "caller"})
+                self.assertEqual(sentinel.read_bytes(), b"caller owned\n")
+                self.assertTrue(all(path.is_relative_to(target) and path.is_dir()
+                                    for path in driver.target_paths))
+                self.assert_durable_evidence(report)
+                (self.base / "report.json").unlink()
+
+    def test_cleanup_error_fails_success_and_preserves_original_failure(self):
+        for fail in [False, True]:
+            with self.subTest(fail=fail):
+                with patch.object(check_distribution.shutil, "rmtree",
+                                  side_effect=OSError("synthetic cleanup denied")):
+                    report, _ = self.run_validation(fail=fail)
+                self.assertEqual(report["status"], "failed")
+                self.assertEqual(report["work"]["status"], "cleanup-failed")
+                self.assertIn("synthetic cleanup denied", report["cleanup_error"])
+                self.assertIn("command failed (23)" if fail else "cleanup failed", report["error"])
+                self.assertTrue(Path(report["work"]["path"]).exists())
+                self.assert_durable_evidence(report)
+                (self.base / "report.json").unlink()
+
+    def test_cli_keep_work_reaches_real_validation(self):
+        destination = self.base / "report.json"
+        driver = SyntheticCommands(self.root)
+        with patch.object(check_distribution.subprocess, "run", driver), \
+                patch.object(sys, "argv", ["check_distribution.py", "--root", str(self.root),
+                                          "--report", str(destination), "--keep-work"]), \
+                patch("sys.stdout", new_callable=io.StringIO):
+            self.assertEqual(check_distribution.main(), 0)
+        report = json.loads(destination.read_text())
+        self.assertEqual(report["work"]["status"], "retained")
+        self.assertTrue(Path(report["work"]["path"]).is_dir())
+
+    def test_cli_reports_both_command_and_cleanup_failures(self):
+        destination = self.base / "report.json"
+        driver = SyntheticCommands(self.root, fail=True)
+        with patch.object(check_distribution.subprocess, "run", driver), \
+                patch.object(check_distribution.shutil, "rmtree",
+                             side_effect=OSError("synthetic cleanup denied")), \
+                patch.object(sys, "argv", ["check_distribution.py", "--root", str(self.root),
+                                          "--report", str(destination)]), \
+                patch("sys.stdout", new_callable=io.StringIO), \
+                patch("sys.stderr", new_callable=io.StringIO) as stderr:
+            self.assertEqual(check_distribution.main(), 1)
+        self.assertIn("command failed (23)", stderr.getvalue())
+        self.assertIn("synthetic cleanup denied", stderr.getvalue())
+        report = json.loads(destination.read_text())
+        self.assertEqual(report["status"], "failed")
+        self.assertEqual(report["work"]["status"], "cleanup-failed")
 
 
 if __name__ == "__main__":

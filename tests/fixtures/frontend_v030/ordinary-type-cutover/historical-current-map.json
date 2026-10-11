@@ -1,0 +1,2492 @@
+{
+  "format": "qleisli.source-migration-map",
+  "version": 1,
+  "scope": "Explicit current test inputs; original files are immutable. No runtime repair or accepted legacy aliases.",
+  "files": [
+    {
+      "historical_path": "tests/fixtures/qli_authoring/accepted/auxiliary_hh.qli",
+      "historical_sha256": "804cf040fc83cb9d3f05e821cf0690a9c5fca8fc1996f7798f69cb76530b1107",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/auxiliary_hh.qli",
+      "current_sha256": "c6b7b67f706a9d19d90ef0b9b914a409a5bbdfc096aba23e633c5b92ee70ab2d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "historical_sha256": "3e7869673eb86d630a826291573c58691bc3015e006a4a2a33bbb318799701a6",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current_sha256": "05ba9c6b7b703519e64d3a935d167c5f39a47f6cd6b03e8a0de1b848811ff1d8",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/accepted/nary_tuple.qli",
+      "historical_sha256": "f6c3f213fa86a30294c21984faa790824fbb26478674e3e19f563b60ba1763f9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/nary_tuple.qli",
+      "current_sha256": "6b255212b958986deeb403ea7e8644d5d5fb6daaae04ad0d8727f4ce6270623e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/accepted/pair_contract.qli",
+      "historical_sha256": "3b296e36562630db9f1715dfa888931bda60d19d622b5b02f1ee3899c9c3c428",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/pair_contract.qli",
+      "current_sha256": "835c8c5780f0d339772c8a05f8aaad6ddcde777ec7ddb6cc5839a6f44c6af709",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/accepted/product_reassociation.qli",
+      "historical_sha256": "a9f780cca445b0a54c6185ea41b081e12062d4ec2bb04b82555ca3cbe3ad691c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/accepted/product_reassociation.qli",
+      "current_sha256": "f823f1e57a0f1068b9f6458e3d01ddc4daf5333e9992c1bf52ee29b346135783",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/overlap_imaginary.qli",
+      "historical_sha256": "cf6fc597d7fb4ca4292fb2ff4b5f72938fc6de240f1158e94442cd5b6b4f99f0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/overlap_imaginary.qli",
+      "current_sha256": "e13aa69c7a4e5701bcf4c3d99ec3c6ec47d1b6de0c360eb55ccd3fce7ac9111d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/overlap_imaginary_inverse.qli",
+      "historical_sha256": "fc2e20dbcebfda43a012a9b40ca9a5d2bf268d1d3b4148b0e5032700611acbab",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/overlap_imaginary_inverse.qli",
+      "current_sha256": "b7616f2ceab98bbe79efcd72911e60a1a6c8ff3c504d0ec6ee1737d7a10e71da",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/overlap_real.qli",
+      "historical_sha256": "b2f8163d0b0be14de68b70dd9d78f7c3122cb01cd77d7cfc29c520355eceb35c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/overlap_real.qli",
+      "current_sha256": "0bb0bcf307cbb40001177e42a6b62d40592a236cf1ed255f30b5c3640dd60f2c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/overlap_real_inverse.qli",
+      "historical_sha256": "0d51e0c79c18439cb1ce45ff889a31a6b06ccb3c75d0e2a1a261f60ce6aa4309",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/overlap_real_inverse.qli",
+      "current_sha256": "66e311a530c28bd23718c467399b3ac692d67be9b2c8124aab703bd4dc894701",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase2_between_bins.qli",
+      "historical_sha256": "e46dde1e38d75bb3bc87dd60ee17a14c8832e08cee38247eb753f74c491cda6d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase2_between_bins.qli",
+      "current_sha256": "60cd3bfd62351540aede573a67c62cd1ac962ff9f318e78200bb6125bd7b5e18",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_correlated.qli",
+      "historical_sha256": "250f1739f2f07d26ab6ea280f827476a72a7d8f9be476aa1a2538601e2f20241",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_correlated.qli",
+      "current_sha256": "ee3c6a148dd63e877301b955e7de45831266339aa46e316329cd6402be3faad5",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_identity_reference.qli",
+      "historical_sha256": "4e044362ff3ea44fd10c9ba182f501b5aada5a69e91f85a705956d5c6da24805",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_identity_reference.qli",
+      "current_sha256": "e36673404d7a86a02647b7e7f03981fb654b08bd07dd0d666a0b142133c3a13d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t0.qli",
+      "historical_sha256": "137c4de920120eddf521d47d4940d9ad9716cca8335b4b29b817bd42f07b8739",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t0.qli",
+      "current_sha256": "005a0ecf91e335f9a4d4dbdec7d216590560d3ff6ddb7c3cdcbc559e33a7d036",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t1.qli",
+      "historical_sha256": "310d2db8b0166eb62ee1d5837c5fc512afc27e39b7ff5c18e3047ef23e3d32f5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t1.qli",
+      "current_sha256": "744afadb77db60647360942a2e4fe8606ddcc561828c8f4e181a53b3af53e74e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t2.qli",
+      "historical_sha256": "38a9b940837ffce4eca5da3003969285313d2f54a6694d67d98707911563c194",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t2.qli",
+      "current_sha256": "f2b3ebb8498eadf93f7643f4a3b0546d0065640c227e52f4f88fbedc4d0e26f1",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t3.qli",
+      "historical_sha256": "ea8f01813c3f30975aa602d7cecc00b251f4bafb4dd72f8225b9c1a5e509cb61",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t3.qli",
+      "current_sha256": "c37e0eb111ef4299c917819783cebc8a3b68d9526eed04e44ee8b7db6cd4cc44",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t4.qli",
+      "historical_sha256": "6d4fe3a2db17760fca094541d809e50a6e3a2c3d1397a3d43e4fb082b93ef1cb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t4.qli",
+      "current_sha256": "c243fe9d009d24356348650ad559c9b2bb7736d37878896c313ee9d680d9a59a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t5.qli",
+      "historical_sha256": "3883db99c45cd3082ed1f54692ce24fe49b844ff56ce0b82a0f3899e4ed451ed",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t5.qli",
+      "current_sha256": "1475653afdc4209717c5fc1d38fe9dbd0c14f2a558d17b1ae407cdf65ce6172d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t6.qli",
+      "historical_sha256": "fe01d777fffba522bb7f8a680cddcf34d60ab87b30bbad15f1e23ab600696c22",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t6.qli",
+      "current_sha256": "af05ca94ad89cea311dfaebe3765958d784496d5abcc9c3627af19daf023ac42",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_t7.qli",
+      "historical_sha256": "b0bd4bb7544a77189480e6e2669e36660d9214499aae141e82efd1e6b97da286",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_t7.qli",
+      "current_sha256": "d5200c83bf8c387ecb5d6d9cbfebeb22e08d8173e3255e4f4b1789198751ce5a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_x_minus.qli",
+      "historical_sha256": "36525470ab2f752362c41933e0660e3561758a42ea1c3121da0ecfe1667a92cb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_x_minus.qli",
+      "current_sha256": "2b117471c8c19c163123d88ee46e2399f08bc68dd250c8a2b37876b175d2186a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/phase3_x_plus.qli",
+      "historical_sha256": "b59098e42004a27203aa746c87ef09ab049529e643f2087600d3e4393c4febc0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/phase3_x_plus.qli",
+      "current_sha256": "2519b5c6a0abfc0bd86370bb111bb4e98b1c2f2853f7f4dd17173d057bc3fbb5",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/search_00.qli",
+      "historical_sha256": "f38d6f1179a7a7fbe23d9ba37b4c3b4386dcaad731619b7c6af9790d849e5f25",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_00.qli",
+      "current_sha256": "f644e33f2f6e5a08debe6080679f9cbf780091aa386916ee2aad68e1ba335a5b",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/search_01.qli",
+      "historical_sha256": "e839a50a9326c659eb351eb722b399de91495e366094d90e8adfe678f15664a3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_01.qli",
+      "current_sha256": "d7031d4e6498ec5580fa85198982b3c26186c58c6bb8df1b29d89ccba6493d31",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/search_10.qli",
+      "historical_sha256": "17d335f53dfd64d4b7ee3b782bf6f8a1c57cf701c6cf7d6c374e6d71b737a83b",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_10.qli",
+      "current_sha256": "549c93cb077da4a61bc0fbeeb5f68ab011fcccfc8d5a9e6716f3d2018985479c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/search_11.qli",
+      "historical_sha256": "887ce53af0c87a92e936e17a947f851d5acf39889b32318ce8534cf1e99e2d2b",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_11.qli",
+      "current_sha256": "965650d819b398e05a3242ce0c126211308d86b816c2087eaa5dcccb31bff03f",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/algorithms/search_overshoot.qli",
+      "historical_sha256": "0655e39ecf16df1572bf7feddf4668dcc13d9a3588731b87a0b8b9492d3c21aa",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/algorithms/search_overshoot.qli",
+      "current_sha256": "16be56eeb53df8db86c64be37e775d5bb89b76f2b5b4fe2f584d394cbde6f46d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/faults/phase3_forward_qft.qli",
+      "historical_sha256": "92e0509ff046d055ab6f902d912822cb70f5c095c78fa9be2bbe605837270864",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/faults/phase3_forward_qft.qli",
+      "current_sha256": "fc037432be5ec5de5293a0829b6a7c5784d06ab3613497de7039af47cabb56ce",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/faults/teleport_missing_phase.qli",
+      "historical_sha256": "c4d8d882ace698c936b15d904a163c658249cc780aa21c4870f1db03451f60f7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/faults/teleport_missing_phase.qli",
+      "current_sha256": "7b03edd657cdae260e65e0040b4638f0e35e981714ef0bf7529f56e19295cd2e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/faults/teleport_swapped_message.qli",
+      "historical_sha256": "44aebebd57e6a83f82424bf71beb96bd197ff9d286afd0f9a43cff573d320531",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/faults/teleport_swapped_message.qli",
+      "current_sha256": "ba9c7ba2743371f99f007006d1bdd59123778dd8032927abc53c4022d5033f69",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/dense_coding.qli",
+      "historical_sha256": "5b3fe1af3686dc13cadb734378a2583d0327c00daf20ef0160d58d3f6fe0d0f7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/dense_coding.qli",
+      "current_sha256": "d77c3d3c41e98d3a93731d624473c641684c7d6d404ba531c16cf3104742f3a6",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/swapping_reference.qli",
+      "historical_sha256": "caef39fec30186218deeb10a3e86c44040ac61a49ac549c02869d969b4278094",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/swapping_reference.qli",
+      "current_sha256": "9a7a99c8ac9ee43ee71596c36299d7746abbe9e7ddf90db8b855a5f7c5045e9e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_inline_equivalent.qli",
+      "historical_sha256": "c65e0f0a35e93b46a8cf21d68e96994a27c051f49ab577c7e3608fccc1dbacf9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_inline_equivalent.qli",
+      "current_sha256": "abfa34955383942ca588aa7b80d3e494d9a6a7a1ea660051412671efb00502d3",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_magic.qli",
+      "historical_sha256": "a177fd9940dfe1186f6e884afe111f7b95d459313cfc3375745dc1d26520618c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_magic.qli",
+      "current_sha256": "a975d834bbb31a2685ea4645223762f72065531a3c13aef0d3d297f48a31fa03",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_minus.qli",
+      "historical_sha256": "b05408ce33df9eb491d4ebdc048eed5ed73d99bea92049137ab2434ccdf12448",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_minus.qli",
+      "current_sha256": "09898b322e57117a242599485c8aad2ab1c3bfcd73b9e3c3cd4c570b841231f7",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_one.qli",
+      "historical_sha256": "e20fc708aa428b4ebbe05914aec05a86e015e0178be237c82b17f211c84758b9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_one.qli",
+      "current_sha256": "2bcf06f14c0a9ed15444beb9358a022bd65d21b9338cd4e2e6611b58d6edba04",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_plus.qli",
+      "historical_sha256": "6fd8846b6a8bb77ddca8d62ca6ab363cc3d2d9600f0e1b48573408c30e82a11e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_plus.qli",
+      "current_sha256": "1291cb8e405d214082cf38b58b95dbb28d9c57ebb04eaf0479ba58fa262a3a89",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_reference.qli",
+      "historical_sha256": "731c49aeed7c7382fc828e76c2d18867af29160594ebfc02cb12c50bdd5a74a7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_reference.qli",
+      "current_sha256": "4c6317d8ccd29112603f733d1fec90905a150bcb3f3650a5ef02dbe12fd4e9a4",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_y_minus.qli",
+      "historical_sha256": "45f55f0ae60b44b656111424b73f0ba7d20fb4338294ab17f42f787707dbf1cb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_y_minus.qli",
+      "current_sha256": "e57de0ae94a89d296af35bfc296e8694f71f1c607d7e36dfeda5069d92e1e336",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_y_plus.qli",
+      "historical_sha256": "a03a9bb9c1f8fd7d3000b72734a534f2207c30f9ed3207bd0682aa62792af4e9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_y_plus.qli",
+      "current_sha256": "2b2e441487b9d47bc6bc82bc057a9be5a39b6f529a0eee3ad0fc9e5f014bf036",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/protocols/teleport_zero.qli",
+      "historical_sha256": "74e9ee79c3763bf8f23d12e1a7a44ef5a04f52097a9f958c9ff193986a7750ba",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/protocols/teleport_zero.qli",
+      "current_sha256": "5cc96f44e6c18336ff5e4e1d8f258137e6c7e3e1afc4c6495e184a94fe1a142d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/aliased_owner.qli",
+      "historical_sha256": "9bbc8d4e98d0ee507600d0122e6e7d6134058cdb762afed91a9803d53fb3aa83",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/aliased_owner.qli",
+      "current_sha256": "9bbc8d4e98d0ee507600d0122e6e7d6134058cdb762afed91a9803d53fb3aa83",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/auxiliary_hh.qli",
+      "historical_sha256": "eabb33555e8b370433471d305aa028bc77cc47c40c345fe8be3ad506c7478cd1",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/auxiliary_hh.qli",
+      "current_sha256": "eabb33555e8b370433471d305aa028bc77cc47c40c345fe8be3ad506c7478cd1",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/basis_type_parameter.qli",
+      "historical_sha256": "dcaa8f5977ca87f396dc97fe028acf5d42d4c9c43ad1c2001ad8c72254416035",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/basis_type_parameter.qli",
+      "current_sha256": "dcaa8f5977ca87f396dc97fe028acf5d42d4c9c43ad1c2001ad8c72254416035",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/controlled_is_not_apply.qli",
+      "historical_sha256": "bca5006ba5e520f0421b537113ab3cb8dc5640a5fd85ee0ce01d48f1c53058be",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/controlled_is_not_apply.qli",
+      "current_sha256": "bca5006ba5e520f0421b537113ab3cb8dc5640a5fd85ee0ce01d48f1c53058be",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/dropped_owner.qli",
+      "historical_sha256": "64b1a71b36894d98258ced7ca015b650ce90e37c32c78097311176f5a3c4aea5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/dropped_owner.qli",
+      "current_sha256": "353960556750522fd8e0ffb89cff09dfaf0cec99e0009048972d2cc90e442b23",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/meaning_pair_predicate.qli",
+      "historical_sha256": "ab1a09aa5947fc1fdc490a314f1042bc935b5037905cc1eec497c9aabe46ddc2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/meaning_pair_predicate.qli",
+      "current_sha256": "ab1a09aa5947fc1fdc490a314f1042bc935b5037905cc1eec497c9aabe46ddc2",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/missing_adjoint.qli",
+      "historical_sha256": "b10bddd08cbc205fb4dfc513fa72652b8cd77112295c21727a0fd3d0a897d069",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/missing_adjoint.qli",
+      "current_sha256": "b10bddd08cbc205fb4dfc513fa72652b8cd77112295c21727a0fd3d0a897d069",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/missing_import.qli",
+      "historical_sha256": "f31003fb0707694b213defc97b85cff1c84519b62c13427dc84c51935fbe91b4",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/missing_import.qli",
+      "current_sha256": "0ba075e65414baac5548db194717555fb5ea507786c2d0f56f6cbc4829a6060f",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/product_association.qli",
+      "historical_sha256": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/product_association.qli",
+      "current_sha256": "9d559cd300f59f2b211acae69fa1aa3f68819db45b1e108e2bdec9d43a078ddf",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/sealed_provider.qli",
+      "historical_sha256": "b472cbc74b4332b8261aafce6e9673fe09d06885f10b458cb04e16c86618c336",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/sealed_provider.qli",
+      "current_sha256": "b472cbc74b4332b8261aafce6e9673fe09d06885f10b458cb04e16c86618c336",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/spent_owner.qli",
+      "historical_sha256": "877dae7260de9380fb5a19c059a337c0c04a9d90b904d08403d12a64e673785e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/spent_owner.qli",
+      "current_sha256": "75a601ebd809c304ebe0618461731ef4dc8f7f8718d45cc0704d4a72c53b914e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/qli_authoring/rejected/static_nat.qli",
+      "historical_sha256": "53ab5e74f42dc31892b854ad7039a0910084b6e98b948156644b940661e6b2b3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring/rejected/static_nat.qli",
+      "current_sha256": "53ab5e74f42dc31892b854ad7039a0910084b6e98b948156644b940661e6b2b3",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/basis_call_arity.qli",
+      "historical_sha256": "78adc5d66fecb67ea31620a8a14ba298467dbb39db88d71764a49f9185442ab3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/basis_call_arity.qli",
+      "current_sha256": "78adc5d66fecb67ea31620a8a14ba298467dbb39db88d71764a49f9185442ab3",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/basis_capture.qli",
+      "historical_sha256": "91e2f0f14395164d70f9ad5a801c369158bdf6f7a636d901284a90cdf2d27eb5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/basis_capture.qli",
+      "current_sha256": "91e2f0f14395164d70f9ad5a801c369158bdf6f7a636d901284a90cdf2d27eb5",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/basis_value_not_callable.qli",
+      "historical_sha256": "8816f2076309138557ff63c917e0fb5e3245d0d6bcce165f1d7df1f2556cea3f",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/basis_value_not_callable.qli",
+      "current_sha256": "8816f2076309138557ff63c917e0fb5e3245d0d6bcce165f1d7df1f2556cea3f",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/dropped_auxiliary.qli",
+      "historical_sha256": "75027aa50e6e0d2b0e1a4fd238492998973f571b76e74b73cd26c68fb2a6b5c1",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_auxiliary.qli",
+      "current_sha256": "75027aa50e6e0d2b0e1a4fd238492998973f571b76e74b73cd26c68fb2a6b5c1",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/dropped_nested.qli",
+      "historical_sha256": "25eea48da0afe1a5b414d0c447fb5bd31c9c2f1dea6957d060f2473fd306a6ce",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_nested.qli",
+      "current_sha256": "758ef024c640c96c226aa11f968d5fcc35009e6d8fe5e306608f424538adf6b0",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/dropped_parameter.qli",
+      "historical_sha256": "bad0c788273a15ce5b194a8d2c01a7022b065e83bfced245a63b895e6ec26c04",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_parameter.qli",
+      "current_sha256": "bad0c788273a15ce5b194a8d2c01a7022b065e83bfced245a63b895e6ec26c04",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/dropped_shadow.qli",
+      "historical_sha256": "e65969de383e3d3dcaf837029327794b0cd8784fdc02f3acc057032c99bc91df",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_shadow.qli",
+      "current_sha256": "88eec52953ce2eb4debd16e10ac1ec5ebf64defe54bdb2e0049cd68b66118267",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/dropped_unit.qli",
+      "historical_sha256": "20b8c834ce2a9b516dd57052c7e923128566918d991b76a34e125dd40e432b17",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/dropped_unit.qli",
+      "current_sha256": "20b8c834ce2a9b516dd57052c7e923128566918d991b76a34e125dd40e432b17",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/duplicate_across_parameters.qli",
+      "historical_sha256": "db36b617691aac0a6b4993923469e3dbca884533b970f34776d5032d1b5ce8c7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/duplicate_across_parameters.qli",
+      "current_sha256": "db36b617691aac0a6b4993923469e3dbca884533b970f34776d5032d1b5ce8c7",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/duplicate_pattern.qli",
+      "historical_sha256": "b527fb6d9028f2c6fe70eb6ae67e99b1bf03811b890e8c3115522ff9500f4eef",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/duplicate_pattern.qli",
+      "current_sha256": "b527fb6d9028f2c6fe70eb6ae67e99b1bf03811b890e8c3115522ff9500f4eef",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/flat_is_not_balanced.qli",
+      "historical_sha256": "dc584c1939d9783e1d2abaf06ff17718cb64e6e739c3a2cd729e6bbf6be56a88",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/flat_is_not_balanced.qli",
+      "current_sha256": "dc584c1939d9783e1d2abaf06ff17718cb64e6e739c3a2cd729e6bbf6be56a88",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/multi_parameter.qli",
+      "historical_sha256": "9d325ca14865a908bc625ea60c54b64a53e0bdceff319db18a7d636a7d3f3404",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/multi_parameter.qli",
+      "current_sha256": "4e356f04500a31ca71027f093b63a88001ad4ce73c7c7450b6c47afb5527a209",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/nary_duplicate_binding.qli",
+      "historical_sha256": "e3be46a53c7faeec1649cba7ce466c59aed893c9ab29966a64a5ef13d35e7b8c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/nary_duplicate_binding.qli",
+      "current_sha256": "5dcd1a3ff91136f45ce6cf5ccc3011383cee46daf7c2d91961c67c6eb63c074c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/nary_duplicate_owner.qli",
+      "historical_sha256": "7010beedae7ab68cd599651e56e3d39dc7698cf5618f5b85838d80d47ff92d9e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/nary_duplicate_owner.qli",
+      "current_sha256": "7010beedae7ab68cd599651e56e3d39dc7698cf5618f5b85838d80d47ff92d9e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/nary_lift.qli",
+      "historical_sha256": "033b1fa963dc71dc83de1e3793eadf2585dfe4c9a364c41e32ceaacd45ae65c4",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/nary_lift.qli",
+      "current_sha256": "1be97cd7b3f14a7d631a51c710074b75179d44961447b8f532ddb6bdb4ef597d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/ordinary_parameter_pattern.qli",
+      "historical_sha256": "5590df14b82b224fad81a8d495f3f5c01175e53fbcb9de3bbe25c163a7c3f567",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/ordinary_parameter_pattern.qli",
+      "current_sha256": "5590df14b82b224fad81a8d495f3f5c01175e53fbcb9de3bbe25c163a7c3f567",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/pattern_shape.qli",
+      "historical_sha256": "9dd20a6ce059ae881ea17cae4723dc15e89d1e12edc7a5e80d43ad0825b2dc7c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/pattern_shape.qli",
+      "current_sha256": "9dd20a6ce059ae881ea17cae4723dc15e89d1e12edc7a5e80d43ad0825b2dc7c",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/permutation.qli",
+      "historical_sha256": "516d6e69046790e5e3206456f351cd9bd0a32dac066a5645009a572188771d0f",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/permutation.qli",
+      "current_sha256": "a2cb684b101714947cc1f0079b3ec1f6e6abfb79a922a991fadc3d8a9bf79d6f",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/phase_mismatch.qli",
+      "historical_sha256": "97533a54cbe36689f95b06fd3317be9629b58967d2f5eaa60d3d4aa0d9af91f0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/phase_mismatch.qli",
+      "current_sha256": "cca030c44020f59461059729d38d9b9ab97a28ec59ff71acafb7dfb83b798e58",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/tuple_evaluation.qli",
+      "historical_sha256": "92ff16129f7607c9512687dcd3ccdb960d85ec19127f8f67878d2b43a6f13c68",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/tuple_evaluation.qli",
+      "current_sha256": "ba2a3a43088e9d56e80bcc2f14b55e929250793185b641873a7b58f2a718f27e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/unit_owner_wildcard.qli",
+      "historical_sha256": "bb3be1a65ce5f5ce3d84abb1fd92a36d37109ccd409bd748d2cc3a3e15143ec1",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/unit_owner_wildcard.qli",
+      "current_sha256": "762af8f253044bb19eb9a8caa319b881c7eee0436b99cd9a6855f72942bf0e3a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/unit_pattern_shape.qli",
+      "historical_sha256": "59706b2fe132aee9c2983b46a844c06cfd3a8ed01ecb243f088980612b032c97",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/unit_pattern_shape.qli",
+      "current_sha256": "59706b2fe132aee9c2983b46a844c06cfd3a8ed01ecb243f088980612b032c97",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/unused_pattern_shape.qli",
+      "historical_sha256": "2fd2e6cc9187830160a03c4ae679c622c24416748c7fb5ce899942ea71e0a281",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/unused_pattern_shape.qli",
+      "current_sha256": "2fd2e6cc9187830160a03c4ae679c622c24416748c7fb5ce899942ea71e0a281",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/ergonomics/wildcard_not_injective.qli",
+      "historical_sha256": "18f5af7585be6279d51d2fc14d67f717bef478f6cb2b852282749870acf089d4",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/ergonomics/wildcard_not_injective.qli",
+      "current_sha256": "18f5af7585be6279d51d2fc14d67f717bef478f6cb2b852282749870acf089d4",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/basis_argument.qli",
+      "historical_sha256": "9f66cec131f2a605a1a357fb280e95567abd7487cf55a6e0329249d9ad6cca14",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/basis_argument.qli",
+      "current_sha256": "9f66cec131f2a605a1a357fb280e95567abd7487cf55a6e0329249d9ad6cca14",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/basis_return.qli",
+      "historical_sha256": "c32682a364ef5b538bf2d6f0ebb7181e550c9fdf41b9057d73b1fd3c9bd7c676",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/basis_return.qli",
+      "current_sha256": "c32682a364ef5b538bf2d6f0ebb7181e550c9fdf41b9057d73b1fd3c9bd7c676",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/boolean.qli",
+      "historical_sha256": "58da4a3afe8d5ce6870aefaed8c3a44a498b8adf0cb1d204cc89c59b90a34804",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/boolean.qli",
+      "current_sha256": "ff535860e9d87696ad78717482b040560ea014490d9b3acdb9a415b14e31cbec",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/branch_result.qli",
+      "historical_sha256": "3aa8f748531eef0dbe9199e994b60b25836317dd443077b18828fa3847d07f95",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/branch_result.qli",
+      "current_sha256": "c6d02e6558f3dbc00fd81cd294470480b40f5d531724fc04fb1101f6cb998850",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/certified_predicate.qli",
+      "historical_sha256": "44d140c71a2b4c924e19c191b7e71f65249edb6a866bdff3b2a70f1fe45e4658",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/certified_predicate.qli",
+      "current_sha256": "44d140c71a2b4c924e19c191b7e71f65249edb6a866bdff3b2a70f1fe45e4658",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/condition.qli",
+      "historical_sha256": "9e53e759523262a1aa1118abc31db395ccd00ff1e71672bd45136b5c885843c8",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/condition.qli",
+      "current_sha256": "9e53e759523262a1aa1118abc31db395ccd00ff1e71672bd45136b5c885843c8",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/false_cleanup.qli",
+      "historical_sha256": "6555a04a77809b6a4d89b3df294c280514e5b1788e6e4b45aceb2ed7ad1cd13b",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/false_cleanup.qli",
+      "current_sha256": "6555a04a77809b6a4d89b3df294c280514e5b1788e6e4b45aceb2ed7ad1cd13b",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/ordinary_return.qli",
+      "historical_sha256": "bc87731d6872a9cf434abbf137c0c8174af47e43a788cab38d136b029b43c378",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/ordinary_return.qli",
+      "current_sha256": "bc87731d6872a9cf434abbf137c0c8174af47e43a788cab38d136b029b43c378",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/predicate.qli",
+      "historical_sha256": "4a98b5147766e6cc89314cf98f5d686c777333e4a68ed46c94b2daa9874f910d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/predicate.qli",
+      "current_sha256": "4a98b5147766e6cc89314cf98f5d686c777333e4a68ed46c94b2daa9874f910d",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/primitive.qli",
+      "historical_sha256": "10bb78106540f623cfeddfe1bac28d451696755e5f8fe5750bb8ba68cec37b3b",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/primitive.qli",
+      "current_sha256": "191000f330ee76aa019455e4a0131575a9740a5cb44b685c22b43eacd113b431",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/static_argument.qli",
+      "historical_sha256": "91ba77e074a06353fc6e602808d61610fb17931c58909348bed6be858adf7998",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/static_argument.qli",
+      "current_sha256": "91ba77e074a06353fc6e602808d61610fb17931c58909348bed6be858adf7998",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/static_composition.qli",
+      "historical_sha256": "251d77119f73d19d9c5a497bc2cc2adcc725d5fa11712d3e786e1230515f4940",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/static_composition.qli",
+      "current_sha256": "251d77119f73d19d9c5a497bc2cc2adcc725d5fa11712d3e786e1230515f4940",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/static_input.qli",
+      "historical_sha256": "4a30610b80311d5f5f61bba735a4bd458eb955902b63d1e1817cdc2948d50622",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/static_input.qli",
+      "current_sha256": "4a30610b80311d5f5f61bba735a4bd458eb955902b63d1e1817cdc2948d50622",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/repair_diagnostics/zero_width.qli",
+      "historical_sha256": "71b235372a14a46e3a8cb861b09f263062a0d1fbac766c22399d0767e9c2ff0e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/repair_diagnostics/zero_width.qli",
+      "current_sha256": "71b235372a14a46e3a8cb861b09f263062a0d1fbac766c22399d0767e9c2ff0e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/faults/missing_feedback.qli",
+      "historical_sha256": "1300d32ddafa9d1960b9da4fdfcd65ce7206001bf74a000567c5157ebc01fed5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/missing_feedback.qli",
+      "current_sha256": "2c1fb30359fd37c05ebc504eb179abdb5716057684ee39858c4ae3aec3dbd175",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/faults/swapped_weights.qli",
+      "historical_sha256": "d74bf5ee9210edb95ae6a93b50463a6c1219105949e5af41269a5bb37fb7a33e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/faults/swapped_weights.qli",
+      "current_sha256": "1310a3037f7da9ce28bdd6923f2502014ea4e528d767f50c6fb2ad19fc9e90cf",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/identity_reference.qli",
+      "historical_sha256": "b38035ed8c5f3afc87168bc4fd54222b3826bc90c69bd48bcf020350c56d5293",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/identity_reference.qli",
+      "current_sha256": "e019f83593eeab2ee67c72422a1e3a1a525adba74a1385747a58215da415a8ac",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t0.qli",
+      "historical_sha256": "9763f79a6eaa424ae0976f948553a504d47dc1a034e91ffdec055ec289745d07",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t0.qli",
+      "current_sha256": "63b6fecf237785e902eefca1e522e87302c0d587defdfaba9cd9ee5a44a296d7",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t1.qli",
+      "historical_sha256": "7cacab15e3348adaa490abebd6b6683a85a98e5a9cd9412e5f0e3b308db29e03",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t1.qli",
+      "current_sha256": "efbc54753319cdefb04713f4cc2370b1b31a9823f4833aafc12fd4a984e1b066",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t2.qli",
+      "historical_sha256": "8e9ea930bb736e06541570620059d03e364d220dd0a6e4b37baf3319d5b9dff0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t2.qli",
+      "current_sha256": "ce1eafb711cbc69561750eda3738529a1a593a2eb8b123248ac2c686198e83ac",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t3.qli",
+      "historical_sha256": "2ee4424432f42543f7a1c6bbba994c5d9566247fbdbed046936191d9651115db",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t3.qli",
+      "current_sha256": "0aedb97914b902ae603d5b34226993eb30df47cd2d35a2f28f0e24507b4d9315",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t4.qli",
+      "historical_sha256": "6549edc95200ad9008b44761cb5bde811cba65ebb2cb4a36e2ff91ee1480404e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t4.qli",
+      "current_sha256": "6bec257eb4651e9a6eeb57639253b55cbde2a3238030edcfae59f29c6e7a68eb",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t5.qli",
+      "historical_sha256": "e7cec34da8548579bd130dcaa9e5b337ce2512259e1da6a050d6263dbe5e79ec",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t5.qli",
+      "current_sha256": "9c9532fbec98cb14b18684c5fabe82b40d09689199c55a89855f31df01d32c2c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t6.qli",
+      "historical_sha256": "4cd03b1e2528a921f360017238da2f658887828e1ab218e5ce6bd43780883c3d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t6.qli",
+      "current_sha256": "6be45c038a57dd626e0e1f15d61ada72cfab76bf9e45495087d400c3e0101bb6",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/phase_t7.qli",
+      "historical_sha256": "1bb7263ed1117e4f0fc10ea0c84624ff42f961ce7a78a8473ab83576b069651d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/phase_t7.qli",
+      "current_sha256": "8eea5d1fbefa373a38474eb6b2e59875a4d0da518ebaee8c09b790a949889130",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_xx.qli",
+      "historical_sha256": "04e1f60e7645b9a3b16ca528ab9f2ac653c03f03cb65a44ed2fae75a74bd0a10",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xx.qli",
+      "current_sha256": "b7a5ca39c4d344a834ff4106a3cbf1f0bc6b12666f1c166abd9e678e5e4908c7",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_xy.qli",
+      "historical_sha256": "a2d93b8d27680ce2e5fc8e464f6f7123a1e4e59e33add6efbf0e59b9fd4f70e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xy.qli",
+      "current_sha256": "88cb1c86e6bff01a7dc1acb971ef868bca5e67218836d0c04d0e4de6e342205e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_xz.qli",
+      "historical_sha256": "0234859bfc48c458f82c9fb343667574da5539b0f4eb6915733c9d4f1f540f87",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_xz.qli",
+      "current_sha256": "50014f4d0731e3cbc33925601be8dcd3c77943657abe19e667c96b7271996e1e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_yx.qli",
+      "historical_sha256": "9a61335911d68a97a5ae250f2022962fc5a07f62ce0873a75c9ae4acb4bf9563",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yx.qli",
+      "current_sha256": "67a7d9edc6b9f117544ad76ff99014e61f5361ae0334440619975d9d4c68e56b",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_yy.qli",
+      "historical_sha256": "cef5294647d2b0f63fd1e0397e33e3cd68bfa1360b31ca06793dbe87896dd535",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yy.qli",
+      "current_sha256": "8980662ed8178aecc583ee349a10254d682e0a1740aff4d9edfe5d8626c795c7",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_yz.qli",
+      "historical_sha256": "1cbaaf642d1af39a1d4a111eab2ec9435aa185356d4ab274487e68987932256d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_yz.qli",
+      "current_sha256": "48c4573ac70e089a4eb8059e59fa1ebe224afad6da05b56f57155f6eae500c9d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_zx.qli",
+      "historical_sha256": "627b3cd93faf25481f38e57501173fa7f2ea027bba65cb778a395b64cb814891",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zx.qli",
+      "current_sha256": "3450cf4070b865a033b9799c03b1aff4b093d263e702e5a74456df89603934aa",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_zy.qli",
+      "historical_sha256": "f20f54a5c9c57ebf09550268849d3770efd81668179edc5442f67d24df328b45",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zy.qli",
+      "current_sha256": "7216fe120995ae49bf3f799dcf8de74cc142d5981ad2be6b6c1919df141dd096",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/tilted_bell_zz.qli",
+      "historical_sha256": "a0db61b1bfb83e4756a30435b1b362083cf30876ca40fd63edcb1ce09b47e889",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/tilted_bell_zz.qli",
+      "current_sha256": "e138597517933acf60d05ee0b229bbfa145cbbbaec5ae706580633fb86923d3a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/x_minus.qli",
+      "historical_sha256": "287ca29299991c40a11ba492979eed14754120dde93cacf4c4fc368a91cce918",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/x_minus.qli",
+      "current_sha256": "21d42315e2be8e0f1cf7f79e315624730413dd924532b12af5a4ffb9874bea8e",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/iterative_qpe/x_plus.qli",
+      "historical_sha256": "e47958a511f95e4309da1c853f8c51ee448f4fc82e220b8d51dc767ccb79df26",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/iterative_qpe/x_plus.qli",
+      "current_sha256": "834b6452836388cfbf99de2d91de5a7a97f62150d15a76f75be9adf133f22b93",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/measured_clients/amplitude.qli",
+      "historical_sha256": "248c6fbd0777a2688608f736f4cb7a3996f289a226b543ea89046051a4f601ce",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/amplitude.qli",
+      "current_sha256": "2078afa66fbad8578bff57db4532bbc0ea23250fc5b127507c87f2466080dd27",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/measured_clients/order.qli",
+      "historical_sha256": "1982b7c4285cd91b1aff81c38719fffe0120c8db7ab0661a893da270bf4d3edb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/order.qli",
+      "current_sha256": "db335c8a206b0f56bba80934dbdbe00677a7c5a057eaae9e17420733b0d74015",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/measured_clients/retiming.qli",
+      "historical_sha256": "ba1a204455fdc5d8351848fad29d29f942b3bfd6270d96b2840d9caba1969621",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/measured_clients/retiming.qli",
+      "current_sha256": "715fa7f0a1aeaef5b2189c4f1168f6111b04096af72c990efd6ea7aa02bbb667",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/amplification.qli",
+      "historical_sha256": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplification.qli",
+      "current_sha256": "848e161da29de93710eec816b3213d4f48f98dde0e67ff59a387902b1623da1c",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/amplitude.qli",
+      "historical_sha256": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/amplitude.qli",
+      "current_sha256": "d849e9da26302454a230354b64596e7a08db1f9dbeeaded8b62260cde4c3bbb9",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/delayed_fourier.qli",
+      "historical_sha256": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/delayed_fourier.qli",
+      "current_sha256": "cbfd5845bd5115db0d23397e3e94852bcfdee6f0babc261b6b44f22e23968cc8",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/modular.qli",
+      "historical_sha256": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/modular.qli",
+      "current_sha256": "feb02fbbf6141799163e9b9d8a2046ba04cb5ac6be251cdd8372d11f22822177",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/order.qli",
+      "historical_sha256": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/order.qli",
+      "current_sha256": "c83ef1ed2ff1ba0f570fb709a92688f5076acbf61c1c18d61e5913da608f6d41",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/reflection.qli",
+      "historical_sha256": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/reflection.qli",
+      "current_sha256": "23a20fcc381cd2339d3d4386970334d2c37ba34f83015e58bc1a43d76ad2b01f",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_clients/rotation.qli",
+      "historical_sha256": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_clients/rotation.qli",
+      "current_sha256": "5c1dfc3c535c82adcfbd56bdf4e28d3c4781378370cb6958eb892230a452cc77",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/sized_review/unguarded_take.qli",
+      "historical_sha256": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli",
+      "current_sha256": "fce3cca593232e0624098c38ccc7de06532b8ae20dffbb3a92aff23ebed5443e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v019/bare_cr/main.qli",
+      "historical_sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/bare_cr/main.qli",
+      "current_sha256": "62213fac6c5ad1b60ba6cd9871572bacf060f5f1f48056b5870e107d2b06ebcf",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v019/static_budget/main.qli",
+      "historical_sha256": "318e5ff5f54cb36cd78843b9205ffb05f9f8724fa00750dc3bcd8dfca6c83020",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v019/static_budget/main.qli",
+      "current_sha256": "7f9c58cb530107818424ffe417da0afcf4772e886c81f99cb2a7f7531cdad8b8",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v020/expansion_limit/main.qli",
+      "historical_sha256": "01a2fa46a790c128466a715932c4fc8126e37f6165127ab7490197095f3d7144",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/expansion_limit/main.qli",
+      "current_sha256": "51de8b2eacd52e72566f877cc012f8ceab02a06838e30a0ae922933e2ab3cb8a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v020/long_trajectory/main.qli",
+      "historical_sha256": "8caddea98b90ad71d7e15e1b50bf81923608fb9bb03304cc35929632c403b3cc",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/long_trajectory/main.qli",
+      "current_sha256": "8bfe0dc6ce9b3a3195c883503950d313fb7c8bf43ada692c48999df6fb26a4fa",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v020/repeat_1000/main.qli",
+      "historical_sha256": "e2437d990d6ada542b7ef8f02ebe56a082b9b15d90498421fadb9fce0c0c29aa",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_1000/main.qli",
+      "current_sha256": "594f057818998d8b416aa873755d834422e758fe03ff4695da352b066649a35c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v020/repeat_300/main.qli",
+      "historical_sha256": "9024268280677eaf9ceb8c5909c7eb9637cc81e059e8de53d8694ed28f360369",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/repeat_300/main.qli",
+      "current_sha256": "ac6590da47dffa1b19885cb35b67995ddb30f30ec845bad7f23dc2e8993d5afc",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v020/roundoff_outcome/main.qli",
+      "historical_sha256": "f10291621ee0c53020ff68d19bc3383a9c24ee20b7c07976cbc5280f0fb29844",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/roundoff_outcome/main.qli",
+      "current_sha256": "9f9d1c19d418d1d0458f7902ffc1b11c3bdb689eff58fe125d6c08153ce2a737",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v020/shared_identities/main.qli",
+      "historical_sha256": "49b0c0fd463802affb8a5f2ddc95c71615e2801d748ff0837561038fbc89d4fb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v020/shared_identities/main.qli",
+      "current_sha256": "f3233e21ee35a60c02ba3397dd3fbb2c259a3b13e68d3e320d3b47f2f648b990",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v021/repeat_512/main.qli",
+      "historical_sha256": "dfbb46f42322c721ce663f229701669b78634a2165c59a20071ca9b5234207c2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/repeat_512/main.qli",
+      "current_sha256": "af8f1d7be9894ea82b264cf33946c86b239c285d49be0e81398a2e2110f1492f",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v021/toffoli_flat/main.qli",
+      "historical_sha256": "35081d8bcbf6ad764f0fb7cc389eff0234094498194db4811b0c608880878e39",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v021/toffoli_flat/main.qli",
+      "current_sha256": "35081d8bcbf6ad764f0fb7cc389eff0234094498194db4811b0c608880878e39",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v023/c3x.qli",
+      "historical_sha256": "0a47cf9fdd4a6addf0cae8a9ee7f513d1842b5919cc0161a716a9df0a4ad516a",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v023/c3x.qli",
+      "current_sha256": "0a47cf9fdd4a6addf0cae8a9ee7f513d1842b5919cc0161a716a9df0a4ad516a",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v029/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v029/contract_mismatch/main.qli",
+      "historical_sha256": "3836ef455c4233ab83d1b04b6b1d1255533418c78d17aeec3dd6c4a3b80a03fd",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/contract_mismatch/main.qli",
+      "current_sha256": "3836ef455c4233ab83d1b04b6b1d1255533418c78d17aeec3dd6c4a3b80a03fd",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/review_v029/nested_ensemble/main.qli",
+      "historical_sha256": "a819f9ef550ed3f8dcdd5fdda9fcdddebd136944b7812b91fb927b8e81efe134",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/nested_ensemble/main.qli",
+      "current_sha256": "3ff3eff9c61d19184170113e3b27a00c80b9e4d38def21d268050a400dd1a53b",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/tuple_shapes/explicit_layout.qli",
+      "historical_sha256": "3db4c53ae8ce0fab2b24fa3a9a122916281b3fac0b1cad8666311211f04d1c8f",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/explicit_layout.qli",
+      "current_sha256": "5551c5ecc5d670ceafd9aed9264a576b5cc9036dec30090f49a57c8310f487be",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/tuple_shapes/first_source/main.qli",
+      "historical_sha256": "ca5d6436c41b1993bfcbc1d571f56a584510d5884b202584e222ee222953bd78",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/first_source/main.qli",
+      "current_sha256": "ca5d6436c41b1993bfcbc1d571f56a584510d5884b202584e222ee222953bd78",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/tuple_shapes/wrong_permutation.qli",
+      "historical_sha256": "0aecaaa2f70a1f8b2bdfd55bef3d968c1cb7c035c981b619e691c6bc603a26d7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/tuple_shapes/wrong_permutation.qli",
+      "current_sha256": "df95d8cdd2414cb488e2cc03a221691b8f0710ee20c0151d255b178e60ceba21",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/quick_reference/exact_phase.qli",
+      "historical_sha256": "815e75fadcfade51bb635e06b4bbde99195eec554fc1b3ed0a3f4e1f32d1cba0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/exact_phase.qli",
+      "current_sha256": "3393963f149466aebfd0eb6fab732c110f93bda5e381657f5ede7f5f6b30a764",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/quick_reference/operation_round_trip.qli",
+      "historical_sha256": "6c5a7b66b0fba084d69fef8b4037cf3b79705ef1ce097cab7a0adccee2f6df95",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/operation_round_trip.qli",
+      "current_sha256": "f12096277b6fa91088404b8d0934eb1601ebff5c022dd7594d589a528ecedcb8",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/quick_reference/phase_kickback.qli",
+      "historical_sha256": "9449cba4d4e6b484abdd79fa85173f55fe0e8624f237f77d3c45af90c7bbcc80",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/phase_kickback.qli",
+      "current_sha256": "387b0b5f26a3e005f7629cad2a559d49720312aa31d8e7788ada7081917a2890",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/quick_reference/teleport_minus.qli",
+      "historical_sha256": "469e8c44599738fc437016d557090fb6e0f9166387cfe2493897981b8b9826a9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference/teleport_minus.qli",
+      "current_sha256": "90a9e4c98f222d58440e72403ce6e8801f6c7e7d2af999413a54b391cb0d3d89",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/interop/terminal/main.qli",
+      "historical_sha256": "d6c1e69c7cecf6ed09bae6997ed145c3160afa1b1f54271fc0da41cc0be1ce02",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/interop/terminal/main.qli",
+      "current_sha256": "fad21efbc4ef3c85b8f02c02f0f52c960d5342facd3e232a91ebc0fdf51c490b",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/contextual-type-name.qli",
+      "historical_sha256": "1871ae9bc99b046fdc42a2cf009180f2e08d67b7ec690e4ab8b8cd5c3fcd13b9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/contextual-type-name.qli",
+      "current_sha256": "1871ae9bc99b046fdc42a2cf009180f2e08d67b7ec690e4ab8b8cd5c3fcd13b9",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/counted-control.qli",
+      "historical_sha256": "a9862c48fad185280c3491375efa6c2cec9bf9cbc214d3c1f441f47fb9683894",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/counted-control.qli",
+      "current_sha256": "a9862c48fad185280c3491375efa6c2cec9bf9cbc214d3c1f441f47fb9683894",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/empty-block.qli",
+      "historical_sha256": "de29b74bce633500826de06fec35865d5968aaf55a5b5f4f8fb884c5b661f2f3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-block.qli",
+      "current_sha256": "9393c57cf84e67f407a3194c428543debddc941802adb272497cafec911dbbdd",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/empty-owner.qli",
+      "historical_sha256": "68e1a26f32b5e9353388451841a509635d67c03fc680d2d08447ada826799c5e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/empty-owner.qli",
+      "current_sha256": "68e1a26f32b5e9353388451841a509635d67c03fc680d2d08447ada826799c5e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/independent-review/basis-access.qli",
+      "historical_sha256": "96ec5cb03c5d85c283d0ece79235010fdc3747515059253e7e1a131c601ed2a3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/independent-review/basis-access.qli",
+      "current_sha256": "96ec5cb03c5d85c283d0ece79235010fdc3747515059253e7e1a131c601ed2a3",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/independent-review/basis-predicate.qli",
+      "historical_sha256": "79fd765f5ed1f4802185dc7001869093ccba50934ea0849d735d562e16aa2dd4",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/independent-review/basis-predicate.qli",
+      "current_sha256": "79fd765f5ed1f4802185dc7001869093ccba50934ea0849d735d562e16aa2dd4",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/independent-review/empty-reference.qli",
+      "historical_sha256": "4fb4c95b237947c171b34a9a14b81a0bcd94e51691c17160292e03a4ca505ef2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/independent-review/empty-reference.qli",
+      "current_sha256": "4fb4c95b237947c171b34a9a14b81a0bcd94e51691c17160292e03a4ca505ef2",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/independent-review/empty-yield.qli",
+      "historical_sha256": "b6dbe0615f1e10b4c86799bb375ac9bf8c72cb7f97dfec627ed7c22e0c82ba7c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/independent-review/empty-yield.qli",
+      "current_sha256": "fc1bb64dd8e28b4b46bd0b88e6a38bf1547a76a0fb56ce3a52ca8d36c73978b3",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/misplaced-doc.qli",
+      "historical_sha256": "308185f804dc7a65aab82b7af9510083990861195a0c91bad146fd30f3b0389e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/misplaced-doc.qli",
+      "current_sha256": "308185f804dc7a65aab82b7af9510083990861195a0c91bad146fd30f3b0389e",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/multi-declaration.qli",
+      "historical_sha256": "9dbbdbe1adf9cda96d15f9cb862e6c164354c4647055ec7d88725ece574cce69",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/multi-declaration.qli",
+      "current_sha256": "9dbbdbe1adf9cda96d15f9cb862e6c164354c4647055ec7d88725ece574cce69",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/reserved-name.qli",
+      "historical_sha256": "c10b65391c66eec4f2513c2abb3e0c1051790704035b3c1e913df6572f4ffeb7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/reserved-name.qli",
+      "current_sha256": "c10b65391c66eec4f2513c2abb3e0c1051790704035b3c1e913df6572f4ffeb7",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/runtime-controlled-name.qli",
+      "historical_sha256": "c9acda54fe69a2a175eda501f2c34d44424f9956a5dbc7f7cfd8c5086b22881c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/runtime-controlled-name.qli",
+      "current_sha256": "c9acda54fe69a2a175eda501f2c34d44424f9956a5dbc7f7cfd8c5086b22881c",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/shared.qli",
+      "historical_sha256": "6243bd964fe8689cfbd619db94bda7b73e61feb1b415b36f063fecafd63ea996",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/shared.qli",
+      "current_sha256": "6243bd964fe8689cfbd619db94bda7b73e61feb1b415b36f063fecafd63ea996",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/common-parser/static-fold.qli",
+      "historical_sha256": "a409a31d935afa7209fef23da297c559987aa98e9bf41218105efa1af6297b83",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/common-parser/static-fold.qli",
+      "current_sha256": "a409a31d935afa7209fef23da297c559987aa98e9bf41218105efa1af6297b83",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/declaration-call-cycle/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/declaration-call-cycle/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/declaration-call-cycle/a.qli",
+      "historical_sha256": "736406f1865190d887b734fbe8a32a7f0e847e2dff10047105284686f0017f6c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/declaration-call-cycle/a.qli",
+      "current_sha256": "736406f1865190d887b734fbe8a32a7f0e847e2dff10047105284686f0017f6c",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/duplicate-declarations/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/duplicate-declarations/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/duplicate-declarations/a.qli",
+      "historical_sha256": "4a20b7715c1169be7b141008398717faff0f0c2db2adb973ce2f310763409741",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/duplicate-declarations/a.qli",
+      "current_sha256": "4a20b7715c1169be7b141008398717faff0f0c2db2adb973ce2f310763409741",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/a.qli",
+      "historical_sha256": "bfa4e2283db41fad5e0534689f95b0bad9c7b3581aea99fc2bdb8a990740af90",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/a.qli",
+      "current_sha256": "bfa4e2283db41fad5e0534689f95b0bad9c7b3581aea99fc2bdb8a990740af90",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/b.qli",
+      "historical_sha256": "b3ff8b3137147277aec023d9b4af3f4dfd362537f6722eb09ac84918e9d94ecf",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/moved-local-shadows-import/b.qli",
+      "current_sha256": "b3ff8b3137147277aec023d9b4af3f4dfd362537f6722eb09ac84918e9d94ecf",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/private-unused-import/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/private-unused-import/a.qli",
+      "historical_sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/a.qli",
+      "current_sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/private-unused-import/b.qli",
+      "historical_sha256": "ccf5dfec8bec4ce160322152484fc5f861320dd5e688dd723074696f8cb61337",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/private-unused-import/b.qli",
+      "current_sha256": "ccf5dfec8bec4ce160322152484fc5f861320dd5e688dd723074696f8cb61337",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/reserved-module/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/reserved-module/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/reserved-module/if.qli",
+      "historical_sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/reserved-module/if.qli",
+      "current_sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/same-module-two-declarations/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/same-module-two-declarations/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/same-module-two-declarations/a.qli",
+      "historical_sha256": "3f2e43892390601f779e4d98834e4d599623108378f23eed59920499f9e65d7a",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/same-module-two-declarations/a.qli",
+      "current_sha256": "3f2e43892390601f779e4d98834e4d599623108378f23eed59920499f9e65d7a",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-private/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-private/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-private/a.qli",
+      "historical_sha256": "e989c5dcbbbf458684e7c7f5a7ac6fc185ee8822c24e40471b7838887e8f714a",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-private/a.qli",
+      "current_sha256": "e989c5dcbbbf458684e7c7f5a7ac6fc185ee8822c24e40471b7838887e8f714a",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-public/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-public/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/self-import-public/a.qli",
+      "historical_sha256": "e193c60dda25e72fef7d349bf1cbd4a02b4abed663bd8f1b5f6c3a337c61eafa",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/self-import-public/a.qli",
+      "current_sha256": "e193c60dda25e72fef7d349bf1cbd4a02b4abed663bd8f1b5f6c3a337c61eafa",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/underscore-module/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/underscore-module/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/underscore-module/_.qli",
+      "historical_sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/underscore-module/_.qli",
+      "current_sha256": "db5a8a9b7fd49c194d68822cc349bdb897c592e62e297b74c9a0b65bdfeebdb0",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/unused-import-cycle/Qargo.toml",
+      "historical_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/Qargo.toml",
+      "current_sha256": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/unused-import-cycle/a.qli",
+      "historical_sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/a.qli",
+      "current_sha256": "df5cfbb19519249bec6301ee656ed273e5845e2c6db70b92f111aeb8a9804702",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/shared-resolution/initial-study/unused-import-cycle/b.qli",
+      "historical_sha256": "a877425fe3406b027d8d4d67312cf33511d3646e1d0829224ad5c553281eaa10",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/shared-resolution/initial-study/unused-import-cycle/b.qli",
+      "current_sha256": "a877425fe3406b027d8d4d67312cf33511d3646e1d0829224ad5c553281eaa10",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "historical_sha256": "8969383291a5f3679574e2defe6ee2ff13f61d6f49cff9e92b63a635ea9564d0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/ergonomics/phase_mismatch.qli",
+      "current_sha256": "0cff9708254de8c86749897578fa82e33a106b8e1b0b2bc190e3cb41fe538ad5",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "historical_sha256": "3f44f153a3cc6d4d3343fa5398ce5c72e90953dd444e0be42c5467e8ddec6287",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020/kernel.qli",
+      "current_sha256": "3f44f153a3cc6d4d3343fa5398ce5c72e90953dd444e0be42c5467e8ddec6287",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain/current/grover-trial-v020/main.qli",
+      "historical_sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/grover-trial-v020/main.qli",
+      "current_sha256": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "historical_sha256": "89439ed4aba3a710984a64c04c353598ff0dcd4e40f481d63cf01ca314ef84e8",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring/accepted/basis_tuple_pattern.qli",
+      "current_sha256": "eeba8c026fb04966e6b1f60f971ed7eb5993d2035e293f4106e548f8a9284be3",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain/current/qli_authoring/accepted/pair_contract.qli",
+      "historical_sha256": "c3b060e664e7ff11bbee114ae44c5c5168b2baac63b1088f921c9977142ffa23",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring/accepted/pair_contract.qli",
+      "current_sha256": "cd970331a9b8e1e0afb049fb9124812bc0e6258198e2200deeb721cca3a2e10b",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/and-certified/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/and-certified/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/and-certified/main.qli",
+      "historical_sha256": "e0dccb1f74235b52c468f4719e5f573562f98361b684b1ccd3c19ea8e5fb1685",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/and-certified/main.qli",
+      "current_sha256": "2d41f7cd685e5a8554f43dee90eee0c73b07670fa6a1fe8ce85d300dfe8e644b",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/and-restricted/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/and-restricted/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/and-restricted/main.qli",
+      "historical_sha256": "211bf4b73d3381f0e23cdb58693a93562673ba056a1c3b2ec95b6aea923f07a7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/and-restricted/main.qli",
+      "current_sha256": "28e805e9de81647f7f272e6a1a061a48dccfa9a5371e1e5e11ebc447cd98e439",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/certified-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/certified-flat/main.qli",
+      "historical_sha256": "672dca482fab9f5bb74a4780ec04bfa8ec20e34d2b5a35560404a1d210bd5bc5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-flat/main.qli",
+      "current_sha256": "dac5196a4c59cc33bd912d265a7ecf59b54b291b3b577a375143ad7ba0fcefb0",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/certified-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/certified-left/main.qli",
+      "historical_sha256": "ebd247d995d5bbcc8bd2993ff5abba8ab8a75e397609b3b046bd6ad6ebebfdf4",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-left/main.qli",
+      "current_sha256": "c35dd2b8f8613862fa4c32250a8fb353df1965fb2d398053f8236aecb5640101",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/certified-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/certified-right/main.qli",
+      "historical_sha256": "c9d2cc2a7407be088b769e1e7f3717ef2c7afa0692c4e04364d506128ef47795",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/certified-right/main.qli",
+      "current_sha256": "8b050bc54f00b2436da73e13a6e859e2f2d78388f6e5e316100062ba60ad4654",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/constant-certified/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/constant-certified/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/constant-certified/main.qli",
+      "historical_sha256": "516d7490691c3ca46a224fc3d8dbbc903350c18ead2ef952a89b4816ed4e4cfa",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/constant-certified/main.qli",
+      "current_sha256": "2d97c5020f526a2180c538fab42da6365fd3269e8be5a155bcd659a4f79dfdfd",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/constant-restricted/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/constant-restricted/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/constant-restricted/main.qli",
+      "historical_sha256": "45d2f1a830bd4ac0d064bf4c17864702dd78329e31ae3c3ee5b6686b09dab0e0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/constant-restricted/main.qli",
+      "current_sha256": "72e718843590bf08bceac7338f6e4ee07f391f54025798e7c28c0a46b99d73cb",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/main.qli",
+      "historical_sha256": "c03658e647c0c22cbdf9ec45c18cdc85223e0d6e58fff78535aec607bed68992",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-certified-three/main.qli",
+      "current_sha256": "09b908561b5a22cfd3b14fa954f0870cc01c46a5fda713cbbe895e8e0d6a68b1",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/main.qli",
+      "historical_sha256": "ea46ac8b277b2c77d5b230cdef88552a09da6798a79d5ffe798f6de9d62fab7a",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/legacy-restricted-three/main.qli",
+      "current_sha256": "4437e0dc43905862328454b6a0c65baf661f4cd5fcd472405e739ed6cf67ee2d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/meaning-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/meaning-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/meaning-flat/main.qli",
+      "historical_sha256": "c484aeef58a42d5d356ce3e7b1a435b39219a2abd534b195de30abbf22a1ef0d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/meaning-flat/main.qli",
+      "current_sha256": "c484aeef58a42d5d356ce3e7b1a435b39219a2abd534b195de30abbf22a1ef0d",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/meaning-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/meaning-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/meaning-left/main.qli",
+      "historical_sha256": "8ac6cdfd90a6575ea8ecf9d39119990d3ebeaa55cbfea3db1ffc535f0f7c3898",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/meaning-left/main.qli",
+      "current_sha256": "8ac6cdfd90a6575ea8ecf9d39119990d3ebeaa55cbfea3db1ffc535f0f7c3898",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/meaning-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/meaning-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/meaning-right/main.qli",
+      "historical_sha256": "cd5ff81be7827365fe9c507f4224962d6acedae5602aedc0364bff5eefcb70b7",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/meaning-right/main.qli",
+      "current_sha256": "cd5ff81be7827365fe9c507f4224962d6acedae5602aedc0364bff5eefcb70b7",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-certified/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-certified/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-certified/main.qli",
+      "historical_sha256": "b98125660aa43295138f6ef70af21dd0636fc66b7758507e1e5041ab70edbd20",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-certified/main.qli",
+      "current_sha256": "52249304de3ed6ec55d6339b7f669f79079373b6e4fd66d6278d66c9810b1489",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-meaning/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-meaning/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-meaning/main.qli",
+      "historical_sha256": "9e8b5dad44368ff7e675be1664e6472c5a45551bae792bedab9510c0a5a14b79",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-meaning/main.qli",
+      "current_sha256": "9e8b5dad44368ff7e675be1664e6472c5a45551bae792bedab9510c0a5a14b79",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-restricted/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-restricted/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/nullary-restricted/main.qli",
+      "historical_sha256": "17ff085fc23ca6a48d76bf2c27c00b8f87d7f4b623b0f56326cdacfd6feb5fbc",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/nullary-restricted/main.qli",
+      "current_sha256": "02f2d6ad38ad553894d663ed2600776b63000b4c7a032d918cc01e6edc28df84",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/main.qli",
+      "historical_sha256": "ecfecac9816af0abdbc76cecb838b86bc51852bb62b28715c16e35fcc2e92d66",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-certified-packed/main.qli",
+      "current_sha256": "3d9bcf682641a21b6ce9a23b541ca016ada5b6134825afce60f0de32e64a4d39",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed/main.qli",
+      "historical_sha256": "0cdbc7cc32e1ecd89abef771ff1883b13ca44280c8355e536d8edb35dbdb28fd",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-nullary-packed/main.qli",
+      "current_sha256": "0cdbc7cc32e1ecd89abef771ff1883b13ca44280c8355e536d8edb35dbdb28fd",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/main.qli",
+      "historical_sha256": "6d3c54983c84c875e7222d6445811c32aa1e42fded22dd8875a6fc94a4772305",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-restricted-packed/main.qli",
+      "current_sha256": "15af4091ae30159c8792a78bbdc462beb66d6efbc6751a65436e34f318507638",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted/main.qli",
+      "historical_sha256": "6ae943e57f97d75c90ceddbdb00b29be87d9a06fb0725fe215d15b256f4c80ec",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/ordinary-unit-omitted/main.qli",
+      "current_sha256": "6ae943e57f97d75c90ceddbdb00b29be87d9a06fb0725fe215d15b256f4c80ec",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/restricted-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/restricted-flat/main.qli",
+      "historical_sha256": "c6d5949e9083e6e4eecefaa93a4cfb51c270d4fb088bfcc11b9e91eca06e4e07",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-flat/main.qli",
+      "current_sha256": "c769db14d795acf31ca1e860d482a576f055fe25544a6ad7c956a903465376ed",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/restricted-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/restricted-left/main.qli",
+      "historical_sha256": "dcf1ba00d58b45b57fb0cdab25a383e8f489e91e8a4c8f3a001bad79f9b7b871",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-left/main.qli",
+      "current_sha256": "a764887a0d615fe520c9957e30830eae41e358dc6838d2d6a300b41db6452a05",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/restricted-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/restricted-right/main.qli",
+      "historical_sha256": "e1e66e153d5ae67d39025c0dab2dc801e2aa8be8ecc975468dfe0924adddb9a1",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/restricted-right/main.qli",
+      "current_sha256": "66ff00e93463c344fc3bcc7c9ad9b59f4166d0cb3043147b4bbfb649a9153cca",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-certified/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-certified/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-certified/main.qli",
+      "historical_sha256": "a97a15d747be8c5009955b3c3590071681a0194486252f0cdfe66eb6f5df93c2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-certified/main.qli",
+      "current_sha256": "108e2df6b900292072daba1270d016bd92f637fcd9408093a5ee6854f4630de5",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-meaning/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-meaning/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-meaning/main.qli",
+      "historical_sha256": "e6a5d6755420ef22fcc9322f82c529177c038cd138acbcdd57a5578dcdc70124",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-meaning/main.qli",
+      "current_sha256": "e6a5d6755420ef22fcc9322f82c529177c038cd138acbcdd57a5578dcdc70124",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-restricted/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-restricted/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/unit-restricted/main.qli",
+      "historical_sha256": "8b518950d0985d250012a5503146d349c6fcebfcdfb746155fd9cc005e9dc2fc",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/unit-restricted/main.qli",
+      "current_sha256": "dbc4b528e27892645fa9b4a493371d042c19cb6712aea2083c6be3d2953cea16",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli",
+      "historical_sha256": "85c4cf12c4c2d36d214fbd7061da71c9c0f76084b82f92b3aef3d4b69b58cd34",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-left/main.qli",
+      "current_sha256": "893644e90825ed82f54b79ab68721ff0623b1810cbf35538e38107f15dc70fb1",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli",
+      "historical_sha256": "9c22fb449731bec9a7dab8045a550a4b335fc0b9006c907128570a35a6eb6ebf",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-flat-as-right/main.qli",
+      "current_sha256": "10c19fdc36e038aeac341966dab48d18152ccb57d21a2b1ac4fc75829513ecab",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli",
+      "historical_sha256": "205f2a7d573fa442bd9851fa43ea3b47d1d733e06e201f4f4d15e6e0158d588d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-flat/main.qli",
+      "current_sha256": "1d035148e28cb39a48186b959c021de99f53f4ff4f6780c0e0cc267685ce305d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli",
+      "historical_sha256": "b847dedf2f00a9d811d0c1faae3e28ad1f2270e52b3cc16b65820be56bdec7b2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-left-as-right/main.qli",
+      "current_sha256": "9b7a7c48cf752754afbd2233dae125fe56494a85c2752d3747d95f9a63cc2cc2",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli",
+      "historical_sha256": "282accb4d90e79c295c8f5eec926cf6cfe687696e309483172a4dfc3ba902da2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-flat/main.qli",
+      "current_sha256": "fe8a84cffa4d2e6afbd2c37b85c1f7bffc5ce0184461524e7e885f9f0d8a7396",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli",
+      "historical_sha256": "4c9c26f476e4ed5b5d777b8748f1f6cc036c36d1e3519d5b05e7024989312e88",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-certified-right-as-left/main.qli",
+      "current_sha256": "67e73dd5800f44ed70f02b3a372bb714bd045f4e8c3c2e564e1ce8a51c1e4ed9",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-left/main.qli",
+      "historical_sha256": "6619586e4cdf7b95515e7fc3a67f5491b9a0e311645e13d10c3b8af44ead0f9e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-left/main.qli",
+      "current_sha256": "6619586e4cdf7b95515e7fc3a67f5491b9a0e311645e13d10c3b8af44ead0f9e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-right/main.qli",
+      "historical_sha256": "26301142c14b07fa461e0c52d22ce2558ddc572cb07268a27d5b53face4e70c5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-flat-as-right/main.qli",
+      "current_sha256": "26301142c14b07fa461e0c52d22ce2558ddc572cb07268a27d5b53face4e70c5",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-flat/main.qli",
+      "historical_sha256": "3e3089c6b194657b2abce05f3cef8bf7e10b68bd3f357e1f7f7fc0f38bb7c132",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-flat/main.qli",
+      "current_sha256": "3e3089c6b194657b2abce05f3cef8bf7e10b68bd3f357e1f7f7fc0f38bb7c132",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-right/main.qli",
+      "historical_sha256": "8fcbadd4a4cb443a2a32b79ea54839dfac39c4710dae2c59f2e76e8a84fc9a3c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-left-as-right/main.qli",
+      "current_sha256": "8fcbadd4a4cb443a2a32b79ea54839dfac39c4710dae2c59f2e76e8a84fc9a3c",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-flat/main.qli",
+      "historical_sha256": "61a7635a0ec9c4833024477c414da412c732f2cf192fae314a88456f927873a3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-flat/main.qli",
+      "current_sha256": "61a7635a0ec9c4833024477c414da412c732f2cf192fae314a88456f927873a3",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-left/main.qli",
+      "historical_sha256": "a5c69e7d16b75019085d308e661766f3ae42d326f64ebd43fb0ba1d91e997f3b",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-meaning-right-as-left/main.qli",
+      "current_sha256": "a5c69e7d16b75019085d308e661766f3ae42d326f64ebd43fb0ba1d91e997f3b",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli",
+      "historical_sha256": "7d719bb19069213e052535343b033c60aa64d6b6c9c357eda61c3db10ea48739",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-left/main.qli",
+      "current_sha256": "69e515be2f6b2a33b95ed153ca31dd2c151b9fa20b0ec250d27dedabbf86fe80",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli",
+      "historical_sha256": "8d0b84cbe34a1e12f50fec3fb89abe609f6f80b285a03c8fad85899d83e711b0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-flat-as-right/main.qli",
+      "current_sha256": "1d2ed1bb37f55989a4acb5f12d7459db201f323f4875642dfbce3240255440fe",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli",
+      "historical_sha256": "5b85bf918097bd8852bb714441f38f92691603974d2bda32d7f3d5eac4ffc36b",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-flat/main.qli",
+      "current_sha256": "e9875e1c8c529f8bd0d28ae1e82601e5e12f1d4b516e89bd3a4f963767b5db8c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli",
+      "historical_sha256": "43df28ebe0c18555c22818d4eae49aa0e5cfec236754c34b2fbaf45d64443f55",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-left-as-right/main.qli",
+      "current_sha256": "5473666c1c21a4a2f4d71f0fceeffa5c79680936db46f91f79eef127eae9bd72",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli",
+      "historical_sha256": "86d2a032d712e09de8db98cca9494579a728e5806d09e062e30d6f0b4ad472d3",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-flat/main.qli",
+      "current_sha256": "24e517d6568d76c2a353482187af6888faecd9c51a3dfb5e07ca55da5bb9230c",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli",
+      "historical_sha256": "d0f8de602831ebb0d95e2a0b65203885b31a9a98cece625b3e9603c85aee2124",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/wrong-restricted-right-as-left/main.qli",
+      "current_sha256": "083bde790a829985187d5b41c1291b36e9c1f51f7a67b80864aaed9b89f72c58",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified/main.qli",
+      "historical_sha256": "6e478d0ab6ef5651e95371a8af1ef65b2a227a4f8c93d0688d566d7546398626",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-certified/main.qli",
+      "current_sha256": "6e478d0ab6ef5651e95371a8af1ef65b2a227a4f8c93d0688d566d7546398626",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning/main.qli",
+      "historical_sha256": "3fa86d68322df87566c303a447ec17bdd7ea1ff24ef6d528f3fad98bb03464a0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-meaning/main.qli",
+      "current_sha256": "3fa86d68322df87566c303a447ec17bdd7ea1ff24ef6d528f3fad98bb03464a0",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/main.qli",
+      "historical_sha256": "4bc4596a7afcf5f420f45e2407a416ddff0829b2a75448800d92abb05b41b045",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/sources/zero-width-wrong-restricted/main.qli",
+      "current_sha256": "4bc4596a7afcf5f420f45e2407a416ddff0829b2a75448800d92abb05b41b045",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/main.qli",
+      "historical_sha256": "b37c85897d47883ff09a424dfa1a045ab88c8c0b1d0756a39e525cc863eb9a83",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/legacy-certified-three/main.qli",
+      "current_sha256": "01336d2adff289c786192210a9f12211997af235c5281c854f56bab3038b81f5",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-certified/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-certified/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli",
+      "historical_sha256": "ea2d6080488d15b0dcd1f3ed9f0f94758088ada7ad707a80299d7ebdecc9f40a",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-certified/main.qli",
+      "current_sha256": "ad1e3b3043e3c51662b30aed8229d2d43cf2efaec8699ac741d1fbb318458c97",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli",
+      "historical_sha256": "a490173b246b3895b54903d8d0bc955e8ce01e3b309aaf58ed9b5a25c527d134",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/nullary-meaning/main.qli",
+      "current_sha256": "8ddd118bfdc66660716379cff2ed6c2d808e725dea96d8beeb4e0bf06409028f",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/unit-meaning/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/unit-meaning/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/unit-meaning/main.qli",
+      "historical_sha256": "cecedcfee2b2bbac934e0cfab0c4e946ade1dafdc0893d983dd5fdd821a59347",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/unit-meaning/main.qli",
+      "current_sha256": "889dc1546eca129eca7d61a053d266958cf77c087c935af1f19a077021411d1d",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/main.qli",
+      "historical_sha256": "18aedaf199f953dd12c6d9437fcc9a429e9f125227648f761c40bbdf2bead647",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-left/main.qli",
+      "current_sha256": "656e0ac1cfe69ad49f12f7c99dee04da58eb3fb407a6e32460daf38416cf7dc1",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/main.qli",
+      "historical_sha256": "42ecf993031fa69cc4045e9794779d84fc962dba1a1443303e628612bffc1637",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-flat-as-right/main.qli",
+      "current_sha256": "b14913e67a5aaf2a7ac343c8c92edddf491ae4e3c6abb27e2e2b82d7e3c9d2fe",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/main.qli",
+      "historical_sha256": "216b8f2893f4d20e033061b998fa49a298a66b4d0cdc7fb32724e3a9349ca5d9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-flat/main.qli",
+      "current_sha256": "a62a0f42eda5601ee35510b58645d5fb6a8b15c37320c2c646efc5bf0294a3d8",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/main.qli",
+      "historical_sha256": "df05dc6d631a9df418a6adb6b541173a0514703fb589d0114cb251df04742b4e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-left-as-right/main.qli",
+      "current_sha256": "98b5c54bebc2b18d4d689636d67ec387d0c8461096cdcb4f0dd6c56ae9e352b4",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/main.qli",
+      "historical_sha256": "df5000f837d64a4bdfd6e8143150fdc873182d959252c034b10e070c24791ab1",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-flat/main.qli",
+      "current_sha256": "4c0be1655092c87189f2e65e66973a29d07c3b48068d83a0b3a726737014c437",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli",
+      "historical_sha256": "9f67daa8771a600023452903aae96c3e71869351721bddb8225185ac0b45acfb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain-independent/repaired/wrong-certified-right-as-left/main.qli",
+      "current_sha256": "249cd49ac1859b9805904e9a6a69f63d5fad8663e886926dc8c60df6028aced0",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/ambiguous-import/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/a.qli",
+      "historical_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/ambiguous-import/a.qli",
+      "current_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/b.qli",
+      "historical_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/ambiguous-import/b.qli",
+      "current_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/ambiguous-import/main.qli",
+      "historical_sha256": "4f327d58e0f986773ce7b926ad673208093e1573ff2981653a630edd0fa9caa9",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/ambiguous-import/main.qli",
+      "current_sha256": "4f327d58e0f986773ce7b926ad673208093e1573ff2981653a630edd0fa9caa9",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/collision/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/dep.qli",
+      "historical_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/collision/dep.qli",
+      "current_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/collision/main.qli",
+      "historical_sha256": "7498709e2d7fd3e4f6e13dfa08d9ed94d9d1dbcc0862614122f2887a482b3fdb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/collision/main.qli",
+      "current_sha256": "7498709e2d7fd3e4f6e13dfa08d9ed94d9d1dbcc0862614122f2887a482b3fdb",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/duplicate/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/duplicate/main.qli",
+      "historical_sha256": "a8e938b7a8d12f05a7975725cf56024587847a15e6001a2e43bb42aee6a1ce3e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/duplicate/main.qli",
+      "current_sha256": "a8e938b7a8d12f05a7975725cf56024587847a15e6001a2e43bb42aee6a1ce3e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion/main.qli",
+      "historical_sha256": "76f84f8f9911b3713cc1132235bafa4c31c27ed31c53aec30bf540de74aa1769",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/nondecreasing-recursion/main.qli",
+      "current_sha256": "76f84f8f9911b3713cc1132235bafa4c31c27ed31c53aec30bf540de74aa1769",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-backward/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli",
+      "historical_sha256": "192375d46571c20a4d1e66d211a21ad2ff9e106a9eb182dbdce56d1eba348acb",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-backward/main.qli",
+      "current_sha256": "192375d46571c20a4d1e66d211a21ad2ff9e106a9eb182dbdce56d1eba348acb",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-same/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli",
+      "historical_sha256": "ea0d7ec34d34337c1b160bb94832cb300567d70cb76550a2bebe49343091791f",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-same/main.qli",
+      "current_sha256": "ea0d7ec34d34337c1b160bb94832cb300567d70cb76550a2bebe49343091791f",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-split/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/main.qli",
+      "historical_sha256": "416c43c8312ac828d370b9197de73a05623a5cb9c6c6a1f7e13724d1fabecff2",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-split/main.qli",
+      "current_sha256": "416c43c8312ac828d370b9197de73a05623a5cb9c6c6a1f7e13724d1fabecff2",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/ports.qli",
+      "historical_sha256": "eb5737467d5c5b785693e7c6b436b42fcce01e4a8625d23226d1d520d988ceca",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-split/ports.qli",
+      "current_sha256": "eb5737467d5c5b785693e7c6b436b42fcce01e4a8625d23226d1d520d988ceca",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli",
+      "historical_sha256": "bb5dd51d9e8fdbc5801b8d5de26f086e1e19afe1d75c36715b0e31b41bdeb6e6",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/phase-split/rotation.qli",
+      "current_sha256": "bb5dd51d9e8fdbc5801b8d5de26f086e1e19afe1d75c36715b0e31b41bdeb6e6",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/private-import/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/dep.qli",
+      "historical_sha256": "8bdbd9b10fc18041cc51c585fa49b62ffcbbc1f8b70d6d7138b8369ffdf8e4e6",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/private-import/dep.qli",
+      "current_sha256": "8bdbd9b10fc18041cc51c585fa49b62ffcbbc1f8b70d6d7138b8369ffdf8e4e6",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/private-import/main.qli",
+      "historical_sha256": "a61957287e209aebb921f0e2cdf390863eb74b995f1b626fdfb96997d3aab929",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/private-import/main.qli",
+      "current_sha256": "a61957287e209aebb921f0e2cdf390863eb74b995f1b626fdfb96997d3aab929",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/providers/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/a.qli",
+      "historical_sha256": "d5d32fa2b9623447c4727888804c427a063d68792715a327537f957c4dbc96c5",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/providers/a.qli",
+      "current_sha256": "d5d32fa2b9623447c4727888804c427a063d68792715a327537f957c4dbc96c5",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/b.qli",
+      "historical_sha256": "96db588cc41c57433dd70f12c9544ce975bf424dc6911b19a905d66c0a148781",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/providers/b.qli",
+      "current_sha256": "96db588cc41c57433dd70f12c9544ce975bf424dc6911b19a905d66c0a148781",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/providers/main.qli",
+      "historical_sha256": "ac68fcc200e636b4249fd32531b9395dc8fe935c5a7e7d3e499b50a6b8ae1d56",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/providers/main.qli",
+      "current_sha256": "ac68fcc200e636b4249fd32531b9395dc8fe935c5a7e7d3e499b50a6b8ae1d56",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/rename/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/dep.qli",
+      "historical_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/rename/dep.qli",
+      "current_sha256": "9ffdb84b870a2dcb9405ce3a1060490487949dcbfcb94152f2d5b5773b4cd52e",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/rename/main.qli",
+      "historical_sha256": "aed948bc1bedd352f5150623ef590055f000ce20716cd4e3370b147a88372b87",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/rename/main.qli",
+      "current_sha256": "aed948bc1bedd352f5150623ef590055f000ce20716cd4e3370b147a88372b87",
+      "status": "historical parse rejection retained byte-identical"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/self-recursion/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/self-recursion/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/self-recursion/main.qli",
+      "historical_sha256": "7bd9e44d7b37d2e81df102ace8a315a6d91fee90bf22bf9d81c61762593b8e76",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/self-recursion/main.qli",
+      "current_sha256": "7bd9e44d7b37d2e81df102ace8a315a6d91fee90bf22bf9d81c61762593b8e76",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/sibling-cycle/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle/main.qli",
+      "historical_sha256": "b97a39eea8cca4e7dca9776e12fcfc12abb8054155a5cec65034496cbd45907c",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/sibling-cycle/main.qli",
+      "current_sha256": "b97a39eea8cca4e7dca9776e12fcfc12abb8054155a5cec65034496cbd45907c",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/source-order-errors/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/source-order-errors/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/source-order-errors/main.qli",
+      "historical_sha256": "ff4caafc9a9e0ae51bb5351cf9909250069d5b1346a2ddb77d3759f6503403c6",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/source-order-errors/main.qli",
+      "current_sha256": "ff4caafc9a9e0ae51bb5351cf9909250069d5b1346a2ddb77d3759f6503403c6",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-owner/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-owner/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-owner/main.qli",
+      "historical_sha256": "6f27b53b4e359f6890d8e77089a76620564cb557d2c93984ddc32b4d6796b7ae",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-owner/main.qli",
+      "current_sha256": "6f27b53b4e359f6890d8e77089a76620564cb557d2c93984ddc32b4d6796b7ae",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle/main.qli",
+      "historical_sha256": "b014460d748cc0b09f6f9aec752c15a35891299361bf90b0801dd17bd9ba0d1d",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-provider-cycle/main.qli",
+      "current_sha256": "b014460d748cc0b09f6f9aec752c15a35891299361bf90b0801dd17bd9ba0d1d",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-static-arm/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-static-arm/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-static-arm/main.qli",
+      "historical_sha256": "7f006253c01e58ca1a0a584e08956f242e5de146368910c1afb3a7fb556ce3b0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-static-arm/main.qli",
+      "current_sha256": "7f006253c01e58ca1a0a584e08956f242e5de146368910c1afb3a7fb556ce3b0",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-type/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-type/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/unused-type/main.qli",
+      "historical_sha256": "d29795052f0497f5db3a64c8b23a2b1f7efc9bc787a03ba2ade5b4ed0390eb24",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/unused-type/main.qli",
+      "current_sha256": "d29795052f0497f5db3a64c8b23a2b1f7efc9bc787a03ba2ade5b4ed0390eb24",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/main.qli",
+      "historical_sha256": "02570313cb5e312acc96fcc9a94af7dd32b4c2f47ac96b4b7a7ddf175e411a0f",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/sized-declarations-independent/sources/zero-fold-capture/main.qli",
+      "current_sha256": "02570313cb5e312acc96fcc9a94af7dd32b4c2f47ac96b4b7a7ddf175e411a0f",
+      "status": "unchanged canonical source"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli",
+      "historical_sha256": "a503f27aed646f91db775c7dda0308eaea7bb009f377f6140ca727dfe8001806",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-missing-argument/main.qli",
+      "current_sha256": "4dfcc63c7b4a15fe4720082504f2c403c4b7090a8003358f15b4befb8a5795cb",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli",
+      "historical_sha256": "ace429c5387304b4bd40a89b70a41f4dba61e6b9760b65800e35b617a778c7b0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/lexical-resolution/additional-study/shadow-static-valid-argument/main.qli",
+      "current_sha256": "ce3ee0f06d18ba223ae94bb5863f742302c2c8c521611ded7ab64eb8ce4b6b46",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/authoring_sessions/iterative-qpe/attempt-01/iterative.qli",
+      "historical_sha256": "01621974a64cad924b806bcb818ad41cc0754e549567b693f946818e85aa4605",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01/iterative.qli",
+      "current_sha256": "92c06fa6233e7dad0fce260c3a6fce9727eb67e755828b1fcaa5159b82a06e43",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/authoring_sessions/iterative-qpe/attempt-01/main.qli",
+      "historical_sha256": "407220b2d2dd869f1ae438a14660ecc2c9e3cc134f703a2b68733b081e3329e0",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/iterative-qpe/attempt-01/main.qli",
+      "current_sha256": "398f30de1a0a7aea2431cccb959711ff53ec99924c0209f050eb7a863b9a6fa9",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/authoring_sessions/dual-v028/attempt-02/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/authoring_sessions/dual-v028/attempt-02/main.qli",
+      "historical_sha256": "c65d87c634e3cbb23e62b319199cb3c8d7fcec8b25e56e947911de3a9b11caf4",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/dual-v028/attempt-02/main.qli",
+      "current_sha256": "6cf0bfe86e6fc97e6f5e792fae910a620c3f65ea8aff4b94335efc160da03bcf",
+      "status": "AST-directed source translation"
+    },
+    {
+      "historical_path": "tests/fixtures/authoring_sessions/raw-observing-v026/first/Qargo.toml",
+      "historical_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first/Qargo.toml",
+      "current_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "status": "unchanged companion"
+    },
+    {
+      "historical_path": "tests/fixtures/authoring_sessions/raw-observing-v026/first/main.qli",
+      "historical_sha256": "981b416a86f7e8cdbcc1136d953239f2dbb3b49119314113b43be43ad0fff812",
+      "current_path": "tests/fixtures/frontend_v030/ordinary-type-cutover/current/authoring_sessions/raw-observing-v026/first/main.qli",
+      "current_sha256": "7bb9d32991caeed09d69c9a331f4b35afc52cc342d5c16d2825ec39515f5cfaa",
+      "status": "AST-directed source translation"
+    }
+  ]
+}

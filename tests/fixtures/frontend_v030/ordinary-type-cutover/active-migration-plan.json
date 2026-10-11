@@ -1,0 +1,2478 @@
+{
+  "status": "applied exactly listed current-source migrations; historical sources untouched",
+  "migrator_sha256": "bf647abe7ec00b6dd174ce56cbe9cf681ae4d867a50319d129dd9450065f8bef",
+  "pre_cutover_rlib_sha256": "56b77cafc43aa08986e7ea91c0cfb3f677bfca0b08ad009d8951e60170982c7b",
+  "files": [
+    {
+      "path": "stdlib/src/routines.qli",
+      "before_sha256": "2718c8a13f45e2078bdf830d55e36dfb47489547c8885d4cfedc4662306d0d55",
+      "after_sha256": "a1b5484064a6b9e27bca233e736daf4c61ebddf3ea46c13d658b3dfcc6cf6bb0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/stdlib/src/routines.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/stdlib/src/routines.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/stdlib/src/routines.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/bell/main.qli",
+      "before_sha256": "f97b53c78fd0d604ae577cf3813d79794f7bd30580a2f639c97ea5792f162c47",
+      "after_sha256": "8a661821aa78ca3a3f8ef4c3547838f171bd1a1e74edbf7d248704249e593246",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bell/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/bell/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/bell/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/bernstein_vazirani/main.qli",
+      "before_sha256": "098e8cc452953bfef8ad198b5cf76a9e236f72834b6b2c36d23443b4fd793a66",
+      "after_sha256": "cc8aac10916e546d61c2dc16e90dd8c5458dba8f88d74f9fd5bb1f064bc9777b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bernstein_vazirani/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/bernstein_vazirani/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/bernstein_vazirani/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/bit_flip_code/code.qli",
+      "before_sha256": "df93bcaa2995a2ff20709df60c113a1581ffabe5b9fdcaec3cbf804d7e8ca1c7",
+      "after_sha256": "23f1503f3d0442afc05df01be661251c2e2e875ff8d10436453ac151a5b0fbd9",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bit_flip_code/code.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/bit_flip_code/code.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/bit_flip_code/code.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/bit_flip_code/main.qli",
+      "before_sha256": "4cd1a505634f5edd826c370016db32bdaaac7a406b2ee18df07591c80825d9ae",
+      "after_sha256": "40c917d23cb077f10efddc3ac0bc82ebc474b1921acf84a1f05d3e2210645306",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/bit_flip_code/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/bit_flip_code/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/bit_flip_code/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/feedback/control.qli",
+      "before_sha256": "567adb01ce77dd64827154760304d1eca4a05b0f9fedad684d631dc0463a698b",
+      "after_sha256": "147f16601b9af04f3531d21c5fc22184335aa8a630514a28cb3521d7152a1cd6",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/control.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/feedback/control.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/feedback/control.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/feedback/main.qli",
+      "before_sha256": "5a56941447793c46ca997cd173e625937212f20c85fbc76c0a411e28337dbc97",
+      "after_sha256": "48b64e9a0af9fd34a16018308e9681e55856cc0973e7217d25a12b48511a0ce9",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/feedback/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/feedback/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/feedback/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/function_contracts/main.qli",
+      "before_sha256": "0b9028e9cb2cc279a4a3287a83b11aea2c913323a7067e556e53d9e961796d8b",
+      "after_sha256": "2ee790bc9402b58b159cda02956ac39460896d96c5ef00c0793146e265ee86e6",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/function_contracts/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/function_contracts/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/function_contracts/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/grover/main.qli",
+      "before_sha256": "04e1ac796cec39e3f2bb5598ef6a113ef8ac8512ce1faed94b4e57a46de820c9",
+      "after_sha256": "a79f952fc4a7f2666c08cd235ac18e00b26c188ead8da4a239138455a2405ab5",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/grover/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/grover/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/grover/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/iterative_phase_estimation/iterative.qli",
+      "before_sha256": "01621974a64cad924b806bcb818ad41cc0754e549567b693f946818e85aa4605",
+      "after_sha256": "92c06fa6233e7dad0fce260c3a6fce9727eb67e755828b1fcaa5159b82a06e43",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/iterative_phase_estimation/iterative.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/iterative_phase_estimation/iterative.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/iterative_phase_estimation/iterative.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/iterative_phase_estimation/main.qli",
+      "before_sha256": "407220b2d2dd869f1ae438a14660ecc2c9e3cc134f703a2b68733b081e3329e0",
+      "after_sha256": "398f30de1a0a7aea2431cccb959711ff53ec99924c0209f050eb7a863b9a6fa9",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/iterative_phase_estimation/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/iterative_phase_estimation/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/iterative_phase_estimation/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/operation_algorithms/estimation.qli",
+      "before_sha256": "5c44bbb8713398da6d31b65fb150c961968d9a816cc6281d8db06b1cbf8c6650",
+      "after_sha256": "b1809f07c91020398012ce660efa537a31470668f181b3153da7d2512b68717d",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/operation_algorithms/estimation.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/operation_algorithms/estimation.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/operation_algorithms/estimation.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/operation_algorithms/interference.qli",
+      "before_sha256": "a4475928066448693e033494a8b3e30537c20d53b4b1ed31d507a240bde89eed",
+      "after_sha256": "a1b714bee3ee74fab552449d8302ac0e4df9cbc9f20da6523032a3893d34bc90",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/operation_algorithms/interference.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/operation_algorithms/interference.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/operation_algorithms/interference.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/operation_algorithms/main.qli",
+      "before_sha256": "4acf04026b3d64450ff67731b8f00982f3bc9ee4a95fe99e22bc2b03b4805d59",
+      "after_sha256": "39857de37cfade8388651e3b4d1328ea3cbf681ae8301c11c469d38f23c257b5",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/operation_algorithms/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/operation_algorithms/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/operation_algorithms/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/operation_contracts/main.qli",
+      "before_sha256": "8be303512ebd957e2552fa321d8b32b0f7a20ab3fa4dece9bdae249623d14e59",
+      "after_sha256": "4100885fd6f17f0aac344850e29084dfafaf801107496a97e831bc68ccba8e6c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/operation_contracts/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/operation_contracts/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/operation_contracts/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/order_finding/estimation.qli",
+      "before_sha256": "af64154b86f58c35dbd1d1da7894fbc72a20b85000cf6a63587a3332b35c2484",
+      "after_sha256": "34d446042596192211f972e0d3af3ec785aacffc223c5f9f171307a0e16ac8c2",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/order_finding/estimation.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/order_finding/estimation.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/order_finding/estimation.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/order_finding/main.qli",
+      "before_sha256": "670978d7c5c02e9e91e547bdbfeee3873e8a76b849e41063ce32772c62603954",
+      "after_sha256": "263b79b60ef0b86a46bdd8c85b2f2413c196a51f55b9756d3b4b68f1775d64cf",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/order_finding/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/order_finding/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/order_finding/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/phase_estimation/estimation.qli",
+      "before_sha256": "ac5e0a6b3f74daab8b949812865538bf31a043fe3f84e3efae3253c555f35108",
+      "after_sha256": "1e52e91838eef8a7223286e3cf93d55da985b99648c119be19fcf1e41aec344e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/phase_estimation/estimation.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/phase_estimation/estimation.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/phase_estimation/estimation.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/phase_estimation/main.qli",
+      "before_sha256": "3c25f5941bc987953382055e817cfd76d6300aec6528ad898463df2dc170fa51",
+      "after_sha256": "25e5150052217e8e72f205cfef325589ec09c53770613e28e915cfa5c93131a1",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/phase_estimation/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/phase_estimation/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/phase_estimation/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/phase_oracle/main.qli",
+      "before_sha256": "0eaf9cbf6640e97985d546bbdc7d2e91061862b4d77d5061eeda0a0940ddf6b0",
+      "after_sha256": "644a3b411f043f6cdde990b92330ffcc69525adf10ee947440e3e802de214650",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/phase_oracle/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/phase_oracle/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/phase_oracle/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/bell.qli",
+      "before_sha256": "cee4f96a29289640cb5f7d0d9b922ba0b485b15b46bb109ec3b3e85cef799354",
+      "after_sha256": "7d3665d1f783b67cac871caba6265776042a1c5b0b5e0b6f2af0ba0e455796cf",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/bell.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/bell.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/bell.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/checks.qli",
+      "before_sha256": "d2fac10beae62cd3a328f30f94452907dbb69314adc631c968c5a64ec66dfb35",
+      "after_sha256": "1775e5ed53f9ee79a65f30e1b74fd1f897f4d6d6c7eed67219cf2df73cc12c71",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/checks.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/checks.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/checks.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/corrections.qli",
+      "before_sha256": "fb0b72d01afbd6b5156e7722adb5270eb0211ee0a8b5a318db8a31f4fd2740a0",
+      "after_sha256": "886dcf44e53725f9c5c6cd3c0e9e5b1c0c788d68d6569114d3a9a4997356b341",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/corrections.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/corrections.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/corrections.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/dense_coding.qli",
+      "before_sha256": "4685bb1aa228a93791e2454f40e700c468428b7d1a9e4414d27b9bfd21f22e54",
+      "after_sha256": "e665e49159e4f98e9d17caf68864d9d64c572209d3ca89741c589b23f1f1e169",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/dense_coding.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/dense_coding.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/dense_coding.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/main.qli",
+      "before_sha256": "48f4d073d29a52e90e98d52abfba1da30b691aec10c86d739bd769e5f1016385",
+      "after_sha256": "b356d1436a9c0373dc16cd42ae3cafdeb7e1129a89351cab3de330de1b47ba65",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/swapping.qli",
+      "before_sha256": "14a743ecea875342264e58c6bcf3b83250a5c7d4add9a5616c997775c8e77de2",
+      "after_sha256": "62d3508530e22b08b898b6b90597fc4070f110baeaa7e25ba21b7fd73b3eb9ed",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/swapping.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/swapping.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/swapping.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/protocols/teleportation.qli",
+      "before_sha256": "06d9477a1244f4d96aabf6d68fc7a2803f905c58055f58e362556cacda91b7aa",
+      "after_sha256": "045bd0f0b0a85078c3db02b61df2c8571c7eb38c1847104dbec6f920c5975937",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/protocols/teleportation.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/protocols/teleportation.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/protocols/teleportation.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "examples/semantic_contracts/main.qli",
+      "before_sha256": "afb79b8a5bb953aea12fddbee66a604d2e1de7bc1642523af0afc6a3d245bfe2",
+      "after_sha256": "ae48f9f5f1c325c8bf047a326073441bda6a0459496d60c1d37c5ff161ce329b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/examples/semantic_contracts/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/examples/semantic_contracts/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/examples/semantic_contracts/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/negative/dirty_auxiliary/main.qli",
+      "before_sha256": "ed8a20651e4ccc5ec5282f5bf13686b0143255d54fdb405247b72c31457c6901",
+      "after_sha256": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/dirty_auxiliary/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/negative/dirty_auxiliary/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/negative/dirty_auxiliary/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/negative/duplicate_owner/main.qli",
+      "before_sha256": "38b2f2c65bf3121d53b08aa345e6406abf60dd3857fa24d7dc1337eb5adccc84",
+      "after_sha256": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/duplicate_owner/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/negative/duplicate_owner/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/negative/duplicate_owner/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/negative/measured_owner/main.qli",
+      "before_sha256": "db1265eb5ccb2e2c875ea779c782b85b0335eaae753b968d412880956ccdb223",
+      "after_sha256": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measured_owner/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/negative/measured_owner/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/negative/measured_owner/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/negative/measurement_adjoint/main.qli",
+      "before_sha256": "deba5f0a5c956baf1e65e19d04fae8702f5e28f7ccf80b841aa78204b7b2fe24",
+      "after_sha256": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/negative/measurement_adjoint/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/negative/measurement_adjoint/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/negative/measurement_adjoint/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/classifier_layer/main.qli",
+      "before_sha256": "78eea282bdb75fc4d9c26d74cf42faab028c11eb36b9d9930499eb34835a2584",
+      "after_sha256": "49a5527372ab61ed24c512ed355977f3d3ce4b508ffae6a23e28cf3fc9e9b866",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/classifier_layer/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/classifier_layer/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/classifier_layer/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/ising_zz_half2/main.qli",
+      "before_sha256": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a",
+      "after_sha256": "53fe081a72d9d1dfeba52fb69832de6c3f145c8499a436969b705e46f1ffe298",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/ising_zz_half2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/ising_zz_half2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_half2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/ising_zz_negative2/main.qli",
+      "before_sha256": "2a33c3fe869e32dfa47a5540bbac0a5c6892105faadc7dff2a0e9668bf11bdf9",
+      "after_sha256": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/ising_zz_negative2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/ising_zz_negative2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_negative2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/ising_zz_quarter2/main.qli",
+      "before_sha256": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d",
+      "after_sha256": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/ising_zz_quarter2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/ising_zz_quarter2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ising_zz_quarter2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/kernel_overlap2/main.qli",
+      "before_sha256": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875",
+      "after_sha256": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/kernel_overlap2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/kernel_overlap2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/kernel_overlap2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/lcu_projector/main.qli",
+      "before_sha256": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f",
+      "after_sha256": "9befad3797a547b4f22f57ed0db172af111726d21d368d0e014721216fe54144",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/lcu_projector/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/lcu_projector/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/lcu_projector/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/phase_kickback1/main.qli",
+      "before_sha256": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+      "after_sha256": "05ac25ad9f5c3d4378c53566af0b6733906e442acd3a6159180c7e0c70045440",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/phase_kickback1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/phase_kickback1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/phase_kickback1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/phase_lock/main.qli",
+      "before_sha256": "779911d5b4b3f0fd76fa4467004e9e924d695664fda5ee3e3b198d33675683fa",
+      "after_sha256": "db986d416273f36507749da6b4473dc18dd3b3adbdd42bdceb15f178c351204b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/phase_lock/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/phase_lock/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/phase_lock/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_edge_layer2/main.qli",
+      "before_sha256": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90",
+      "after_sha256": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_edge_layer2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_edge_layer2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_edge_layer2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_maxcut/main.qli",
+      "before_sha256": "af1e74619f4682388feefee7419dceac859cfa5aa5a433f34536acf0c7926945",
+      "after_sha256": "ffd2d561718747c39643f99e61ae7d31fa4afbfb6afcdd56f1f9f7215b2820a8",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_maxcut/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_maxcut/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_maxcut/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_mixer2/main.qli",
+      "before_sha256": "6be799967a57541d8dcb3fa64382d743bb6dc885aa194ead3728aef803df8047",
+      "after_sha256": "19a122dd93e2dd96df20d5fc23eb2745efb940949facbe77b65da0870a5b8d98",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_mixer2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_mixer2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_mixer2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_negative_edge_layer2/main.qli",
+      "before_sha256": "154f59db6baea249e02b1e99f77398a4aae1082b35804216b55ad2b42754abfe",
+      "after_sha256": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_negative_edge_layer2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_negative_edge_layer2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_negative_edge_layer2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_negative_mixer2/main.qli",
+      "before_sha256": "ddea33492e73a3dca5cd456b681c9e9f44ca2229b2837c3fd391c74bf9a11a8e",
+      "after_sha256": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_negative_mixer2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_negative_mixer2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_negative_mixer2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_path_cost3/main.qli",
+      "before_sha256": "266fa60f28dc251f452e541ab33d2da1b1f16deb1e7dd14d2bca9acdcbfa3c51",
+      "after_sha256": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_path_cost3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_path_cost3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_path_cost3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_path_layer3/main.qli",
+      "before_sha256": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15",
+      "after_sha256": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_path_layer3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_path_layer3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_path_layer3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "before_sha256": "9ed1d5273bf06eb266a78c48a5274ef5545e57a644819ff2474e2493d1c68c31",
+      "after_sha256": "ba70d087ed50a1f57f2ba693d15eb9a312706767d31c81f1b868d71f9c0aa10d",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qaoa_vertex_cover/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qaoa_vertex_cover/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qpe3/main.qli",
+      "before_sha256": "d76df3145897833f290ff26660ac0641bff6a699d90aa1d94596db4f365a714e",
+      "after_sha256": "8a9f863e7ee188dd6313929b0b641c084456ea2678d409df3988226d6e3454c8",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qpe3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qpe3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qpe3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/qubit_rotation/main.qli",
+      "before_sha256": "427cc5c47839612ccd79271e851f819e3ed3160d554ba80d85e7dd0bb045654d",
+      "after_sha256": "7357a5aa9e2276267e0d19b1091bfec886002df7ac32e2d2c8b9ffd382718326",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/qubit_rotation/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/qubit_rotation/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/qubit_rotation/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rotation_both_negative/main.qli",
+      "before_sha256": "b566c44bc3a4ddf33fe6b3bcf2742f6a24fa357f5ef17fd43bdb635651347c8d",
+      "after_sha256": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rotation_both_negative/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rotation_both_negative/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_both_negative/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rotation_half_x/main.qli",
+      "before_sha256": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f",
+      "after_sha256": "d56c4488c2c780f2bcffb26857c28d70c1537d329e6a189bbb1dbb74c0fd7dc8",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rotation_half_x/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rotation_half_x/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_half_x/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rotation_half_y/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rotation_half_y/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rotation_half_y/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_half_y/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rotation_mixed_sign/main.qli",
+      "before_sha256": "c5d4421fba7e9b312cac4995313eb62b81076de82671f25a684800fa21fd052b",
+      "after_sha256": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rotation_mixed_sign/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rotation_mixed_sign/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_mixed_sign/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rotation_negative_x_positive_y/main.qli",
+      "before_sha256": "b49d7f82d91c703aa072a8e9fd64a436452b974bb19056c8bdd2f30170aea5af",
+      "after_sha256": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rotation_negative_x_positive_y/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rotation_negative_x_positive_y/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rotation_negative_x_positive_y/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rx_negative_quarter/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rx_negative_quarter/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rx_negative_quarter/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rx_negative_quarter/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/rx_quarter/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/rx_quarter/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/rx_quarter/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/rx_quarter/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/ry_negative_quarter/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/ry_negative_quarter/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/ry_negative_quarter/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ry_negative_quarter/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/ry_quarter/main.qli",
+      "before_sha256": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+      "after_sha256": "f9d90bfeb68b0192a1031e03030c6640078df155b58b95dafb20b0d002ba824e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/ry_quarter/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/ry_quarter/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/ry_quarter/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/teleport/kernel.qli",
+      "before_sha256": "84078ef3a93141f893230fbbadd8d42b1f48ea9e3d9f1eb7fc7f0a034dbfa614",
+      "after_sha256": "88bec7224e7e61f052edbc6f8d33d181c21d81a971485640be6ac9572dbf1387",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/teleport/kernel.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/teleport/kernel.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/teleport/kernel.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/teleport/main.qli",
+      "before_sha256": "5ea3e260683d1483461980f4685f6bddc08d7c55e0aec6cfda413caa7a2f6a57",
+      "after_sha256": "c367460a2e983a5868607dd7903bd5fd5e7ed1539f47d0d0c0c62bc87d7477a7",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/teleport/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/teleport/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/teleport/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/pennylane_demos/vqe_excitation/main.qli",
+      "before_sha256": "daa243dd9cf9df5e9de353d30f6da795095f7bc9337c425f6e92ec86e8331090",
+      "after_sha256": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/pennylane_demos/vqe_excitation/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/pennylane_demos/vqe_excitation/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/pennylane_demos/vqe_excitation/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/add2/main.qli",
+      "before_sha256": "0e5c1c586b546194450bce013d6c98d520ac82f60b111b8e12b72514595e5e73",
+      "after_sha256": "d91dc54ce689f6e39bf11ef5ab7696c34be5db6ace09e0fb7116332ca0e6ff63",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/add2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/add2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/add_constant3/main.qli",
+      "before_sha256": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6",
+      "after_sha256": "84f22d1370e8acc252365240b8b484b54a1c62dbbba7323aa9a69cb42702a529",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/add_constant3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/add_constant3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_constant3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/add_minus_one2/main.qli",
+      "before_sha256": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a",
+      "after_sha256": "66c19a8a4ef00327d2c7b88acd537b6631915a675c417ea5d10a322bcdb3b38b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/add_minus_one2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/add_minus_one2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_minus_one2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/add_minus_one3/main.qli",
+      "before_sha256": "55f978d20f37b58cbd800fe51acb873841ebbf80a02d2ebab964b744e75f3725",
+      "after_sha256": "eb385750b531f871fc8ed6f00dd0f23a5ef40c30e1ae7e6ca6c2687c37db692c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/add_minus_one3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/add_minus_one3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_minus_one3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/add_one3/main.qli",
+      "before_sha256": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304",
+      "after_sha256": "2b1e743d4e2a1f35e5c029a660ed9df616f6401fbc18eee3ca487def82afb49f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/add_one3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/add_one3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/add_one3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/and_phase/main.qli",
+      "before_sha256": "cf0a05c55747d89469d061e61601582182ef833fc42b19392178b8fbdf47cfd8",
+      "after_sha256": "767b429dbf6a28a63c04e878d4a35f2ef2fb26686bc1522028db8ea3cd64d7a9",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/and_phase/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/and_phase/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/and_phase/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/bitwise_not2/main.qli",
+      "before_sha256": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+      "after_sha256": "8c88ca80c6d57a4c8e5334d6d74ac9c3f4092e67b8092cdd95bb48d33bd16c77",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/bitwise_not2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/bitwise_not2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/bitwise_not2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/control_zero_reflection2/main.qli",
+      "before_sha256": "90ebe4370bc4379c82c35b93d7ff4803ac7a3268dd0a9509415c69b21e2f2f80",
+      "after_sha256": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/control_zero_reflection2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/control_zero_reflection2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/control_zero_reflection2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/controlled_increment2/main.qli",
+      "before_sha256": "86e866b479d514262156b275b2d484d582fa9369e959ae117b49b89adecf97d3",
+      "after_sha256": "ee8d9b07856ce3a832b04c74ab275b5482fdb6ff7d0dbdab89aba2e8cd1e383a",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/controlled_increment2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/controlled_increment2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/controlled_increment2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/equals1/main.qli",
+      "before_sha256": "71254aaa03a24453c6942674bde0dbee1f663dd9a6764ebd003dcc9f7d09bc1a",
+      "after_sha256": "6c4bb1f9717f916c8b5bfabac21123b175db715ad98638aa06040115e2c80fce",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/equals1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/equals1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/equals2/main.qli",
+      "before_sha256": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde",
+      "after_sha256": "825ebe84dbd2eaa7e6ae8e81a6f1e9aa1494111f685bdd838fbc5d37bca10b3c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/equals2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/equals2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/equals_constant2/main.qli",
+      "before_sha256": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+      "after_sha256": "9bf57c99a9d85b4910c5ee182bf909b8d5e9935da155ed40c55fae64370ff878",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/equals_constant2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/equals_constant2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/equals_constant2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/greater_constant2/main.qli",
+      "before_sha256": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c",
+      "after_sha256": "86f6c53186e2879872c43bb786e9e92c7ee036f83cecb633def833ad3d28e59f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/greater_constant2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/greater_constant2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_constant2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/greater_than1/main.qli",
+      "before_sha256": "54c322c5d4607c510096c285ec2746387d445a7610bbf4fb302c03485545a0e5",
+      "after_sha256": "9bb5eb20858d8d62c2f90d81498cdc73d8a0436ef0184522d2c307fd5ef77d86",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/greater_than1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/greater_than1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/greater_than1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/less_equal1/main.qli",
+      "before_sha256": "443d835ec94803075145f44746dd2f1603b96efdc2f9f363c04246f6fef886ea",
+      "after_sha256": "da509fb98e6b259a9aa2f3a4f010231dbdd99b2d59d8290900a1080e046d238b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/less_equal1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/less_equal1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_equal1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/less_than2/main.qli",
+      "before_sha256": "b68a775682d106dc41b12e56dbb177e798967a78423ca84ba41f238182b973f1",
+      "after_sha256": "81f55eafcbe2b774ff21603fe97c3a86f95cf8fd3468dbf9556b846a7d18b4ce",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/less_than2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/less_than2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/less_than_constant2/main.qli",
+      "before_sha256": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+      "after_sha256": "c832f5262cbb2a597a968c5133d69ec30d450150f5cba282da8f0d8c21a379cd",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/less_than_constant2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/less_than_constant2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than_constant2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/less_than_one2/main.qli",
+      "before_sha256": "01111ded91255b8661e17537b1f9b2157d429701fc0a4f21368ec67bd7b22cf3",
+      "after_sha256": "c423ce8ba1755e4acf86bbe57e09878fb4b11afde828577699cfcbed6a87a8f0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/less_than_one2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/less_than_one2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/less_than_one2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/qft2/main.qli",
+      "before_sha256": "ece2a088d8ac636a95a388687733ed447994e62e69164267e93241069ff0c747",
+      "after_sha256": "6937e93642473de709f1c277bc4d01522014907707ba0aebd1d4b144c644fd50",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/qft2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/qft2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qft2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/qpe2/main.qli",
+      "before_sha256": "87e2ad98b19655b910309d25426e6c5817fe42974116a9f2d9e774864822e91e",
+      "after_sha256": "f58bd01537aaa3c3751afde811c51fab9d09b76cef2360b5098ec8e3dcca1161",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/qpe2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/qpe2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qpe2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/qrom1/main.qli",
+      "before_sha256": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478",
+      "after_sha256": "0a62eb78bae356cb9ec767a0487fad857624a130aacdd812b499821e17bbffb0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/qrom1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/qrom1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qrom1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/qrom2/main.qli",
+      "before_sha256": "28d39ce78b31897c7837c4722c1e8351b1d908bce8896c9236f13a1b1d694d35",
+      "after_sha256": "9e975e844f3373c5893636b0a7fe137ec297f86ec0a2591d6f123547a0fdddd5",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/qrom2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/qrom2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/qrom2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/reflection2/main.qli",
+      "before_sha256": "6355138d09d8b1e826a91aef1048f1e4ac1bd5574a08514b0059887173209fdf",
+      "after_sha256": "34fccc594f79c3ee598ffc5735f0b7ae54e4c0175350ffc672f7404d9953189a",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/reflection2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/reflection2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/reflection_basis_one2/main.qli",
+      "before_sha256": "4c288ea210e3b2fb8af0bd1470c5826c8e5d9c23a081f9cb20b3003e62ec538a",
+      "after_sha256": "e6282ee846e3b360d28873798d0129b0aad53109822fadf2b0342ed93a93e34b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/reflection_basis_one2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/reflection_basis_one2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_basis_one2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/reflection_minus1/main.qli",
+      "before_sha256": "6fbc46b1eefcb3f4c20191ac36a9a8a869b34108e51d8d325e80323d46812d0c",
+      "after_sha256": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/reflection_minus1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/reflection_minus1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_minus1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/reflection_zero2/main.qli",
+      "before_sha256": "22b088b594aef245ce6debf4b8d3afec37af7ebffd9c790b81ad328d0febfdbb",
+      "after_sha256": "4b357e0a20b1f866cbef2bd14d5b6896ef49a17d51a1bdf4bc40861916d96d8b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/reflection_zero2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/reflection_zero2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/reflection_zero2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/xor2/main.qli",
+      "before_sha256": "5c2d083d13df1a02c6050a91e5630e1d39910eace3be7202de401e8bc0fda74c",
+      "after_sha256": "81b1ed34e2ae289eeb99615397d78516dc99a26b52d2f98a1116c27adeb050d2",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/xor2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/xor2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/xor_constant2/main.qli",
+      "before_sha256": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+      "after_sha256": "a00109e487ce8d13c95802987ebc710c907639f47208376158bdda54b7541a5d",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/xor_constant2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/xor_constant2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor_constant2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/qualtran/xor_constant3/main.qli",
+      "before_sha256": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6",
+      "after_sha256": "0daf41dc717bf58ea8b9e418eb42e6f77dc88ed5edeb52f2cb03ffc028664b9c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/qualtran/xor_constant3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/qualtran/xor_constant3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/qualtran/xor_constant3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/bell_change_zx2/main.qli",
+      "before_sha256": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e",
+      "after_sha256": "2e637d4ffa305dfc326e36764b4c65d0822cd0764230cab2374560168779be8c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/bell_change_zx2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/bell_change_zx2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_change_zx2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/bell_measure/kernel.qli",
+      "before_sha256": "baf84493f7b547bd7dd4e7f67ed8187d1bf238428d9f3c7962fd6c3b084c8287",
+      "after_sha256": "ce25437e324baebaed4b940cbbcf2d31ed55fd8ab08a3fcb743b95e6b790e070",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/bell_measure/kernel.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/bell_measure/kernel.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_measure/kernel.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/bell_measure/main.qli",
+      "before_sha256": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+      "after_sha256": "1e94e885c7e305531e4a91691981ed658e213f8481dd005428bf4b6b14864c4f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/bell_measure/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/bell_measure/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_measure/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/bell_singlet2/main.qli",
+      "before_sha256": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+      "after_sha256": "e6b66a4fd1b65791974688a4970104e8f60de2e0e0ff4c02e53acfd1309266b1",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/bell_singlet2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/bell_singlet2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bell_singlet2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/bernstein_vazirani/main.qli",
+      "before_sha256": "a78dbc690b80d1c2eb94ce5ce07952d4cda3fb5d75280ba0d4188fcdca9cba02",
+      "after_sha256": "c5e9d28174ef1a55627bdae477b9a8f4c6c113cdd855c1c5330a8377b7858310",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/bernstein_vazirani/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/bernstein_vazirani/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/bernstein_vazirani/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/controlled_h2/main.qli",
+      "before_sha256": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12",
+      "after_sha256": "d11976401b0662cbd034f984b73ae0dac9a8c47b5ba355d0d6d1bcc3a3393d89",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/controlled_h2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/controlled_h2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_h2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/controlled_z2/main.qli",
+      "before_sha256": "8cf711b717a8cc2e93caea629d906ed9e00deb89705b36c0b1a80f232cc8fb18",
+      "after_sha256": "7d8b5b26c2eb5ea12fc0e7de64af6cec9eb198e05586d5f9976e427b1986b4ed",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/controlled_z2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/controlled_z2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/controlled_z2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/dense_coding/kernel.qli",
+      "before_sha256": "51fb6ca95d0205223d339df3ddd25df0b67a42f4a59b47ce0ebbc4c7c1fb70c6",
+      "after_sha256": "682515d33cb62eb6dae9cec2ec2a786e2422074bc31386c9985bebba454ce5d2",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/dense_coding/kernel.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/dense_coding/kernel.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/dense_coding/kernel.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/dense_coding/main.qli",
+      "before_sha256": "3337b2794d55a73f52e2583cb1b9c0dfd2c3ac33645eea7a316573e57e0761ba",
+      "after_sha256": "91bfd334337aedb2c1bb4201927107850bf4dd567a69f65f6feb1fc71a4af7d8",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/dense_coding/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/dense_coding/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/dense_coding/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/deutsch_jozsa3/main.qli",
+      "before_sha256": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+      "after_sha256": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/deutsch_jozsa3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/deutsch_jozsa3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/deutsch_jozsa3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/even_numbers3/main.qli",
+      "before_sha256": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8",
+      "after_sha256": "627b37deb00be3af952f9f7c13376c7ddf19feb761346a0e8a65e62b84c3152e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/even_numbers3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/even_numbers3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/even_numbers3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/even_parity3/main.qli",
+      "before_sha256": "c0355ebdd6050340af0dde5803e0d28cfa7968163e700d6fba8c4dffd3809050",
+      "after_sha256": "02f372310d686be5918d4f9986784a97110531570f2ee57a6a598cf3be525f95",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/even_parity3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/even_parity3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/even_parity3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/fredkin3/main.qli",
+      "before_sha256": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+      "after_sha256": "c77cd9b39537aa9bf5e558a7970b87b2d880ab637b8a034f18b542b5024885be",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/fredkin3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/fredkin3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/fredkin3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/ghz3/main.qli",
+      "before_sha256": "f1cd1ca0216398d40a87e6ed7edf924064343ec6fd5a12ed0924b105bb53027a",
+      "after_sha256": "1ce224efb25004520b4f16a1c1d2722d53561c44a9d9a9277c587fce27408f94",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/ghz3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/ghz3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/ghz3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/global_phase/main.qli",
+      "before_sha256": "70c5a477eeb03177ef95e4493c8da6861398487e5d93735697e91fa39891e406",
+      "after_sha256": "a2cf53db86714d7e7dc3698c1acb7447296191b77c4d274db333017d9f30d380",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/global_phase/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/global_phase/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/global_phase/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/graph_state2/main.qli",
+      "before_sha256": "5a4ab8353e2f70ba9e16248c93c58fedd66d381bb79fc57f4bc7fe9defce3373",
+      "after_sha256": "9ec23c8043ec9545e6a18c100d4aaf67d10740d011baa1700482579ea7ecc192",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/graph_state2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/graph_state2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/graph_state2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/grover2/main.qli",
+      "before_sha256": "4dbe21bfe70bd9eb109d67724acf2f21fdaa8c61de575dadba11eead40766e85",
+      "after_sha256": "d9f51f9ba6adb9105c9d81c91db13241164e27773d710b6be6140301d4d97c5a",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/grover2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/grover2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/grover2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/measure_plus/kernel.qli",
+      "before_sha256": "47e1ee57f5449d746e6b2ef88364b6650b2acb426ef90fa495646f50fd38ef57",
+      "after_sha256": "fa67a1f3fd9b663cc04e6326f8b8c3e1226210084ea9885674b8e1b25c41dd3a",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/measure_plus/kernel.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/measure_plus/kernel.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/measure_plus/kernel.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/measure_plus/main.qli",
+      "before_sha256": "0d41c21beaff789f0288e81a26ca15418ffcef7372cbe2cd72feb3c1373f1a0b",
+      "after_sha256": "5cda085524d8a7e1dfdac5f078a6fd975196e2087e302a0bdef7ae322535a11e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/measure_plus/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/measure_plus/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/measure_plus/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/minus_state1/main.qli",
+      "before_sha256": "60211bdbee010c4b1afd5b69d27a285981b08857150ceb5f43b5d2cfc5958382",
+      "after_sha256": "b7b4f37b841e747ae8d945f46461dca272ef7937c467528e1f78825b354da2f7",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/minus_state1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/minus_state1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/minus_state1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/odd_parity3/main.qli",
+      "before_sha256": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+      "after_sha256": "00fdf87f493af1c2adcfc88c66de03ae4a726cb250cdb4659c00016a77bedf76",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/odd_parity3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/odd_parity3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/odd_parity3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/phase_negative_eighth1/main.qli",
+      "before_sha256": "f3c9fc8479f4518528cf1cb1983e6fd4b966d6e3c45cc5a2696b9d84eed2f80c",
+      "after_sha256": "4d5d9ad8988938817eb587723589e50d0cc2a7a235249d458698881f6c908912",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/phase_negative_eighth1/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/phase_negative_eighth1/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/phase_negative_eighth1/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/phased_uniform2/main.qli",
+      "before_sha256": "aed24c38216e9260fa1a914370cf703e6da8b05d4f3c88923a0d8edf8fe2f7f8",
+      "after_sha256": "e58efec3793206a8e58cbe07bc186c22b4b04d64e5cfd8119a896e67b1482154",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/phased_uniform2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/phased_uniform2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/phased_uniform2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/qpe3/main.qli",
+      "before_sha256": "37040c2953de4a97b3ca07a7602c87411aefdff5cce54ee9f178d9f6a57e2fd0",
+      "after_sha256": "14b6858c930b660fc485053f1eaa59bc08797659078745d5b7b21b9ee0b81f01",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/qpe3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/qpe3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/qpe3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/swap2/main.qli",
+      "before_sha256": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+      "after_sha256": "79be6befee79c29ac023cd62e6381fc174e02088cde1919d581e89ac45289e59",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/swap2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/swap2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/swap2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/teleport/kernel.qli",
+      "before_sha256": "1d181d4e8877f22df905571f44300318e71281c78ba5536ed65f64fca6c92f0d",
+      "after_sha256": "d23bfb624702c349be5e869081be22db081e2dc50e24303ea6ed6b15ccb56d13",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/teleport/kernel.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/teleport/kernel.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/teleport/kernel.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/teleport/main.qli",
+      "before_sha256": "d784808cdd07a2bda54e067f5da14027127188ecc7addad038162d4781a9e59d",
+      "after_sha256": "f4c763e771472b761d7dbc9b58626f1ab5275661d8e79711a3b827c7e08fcc85",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/teleport/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/teleport/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/teleport/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/toffoli3/main.qli",
+      "before_sha256": "042b9a11d35e5f3a2d613e47016470bd995745117d570dbc95938d84b633ae9c",
+      "after_sha256": "4df69769fa4cbf303806ce70950cc9989cf8b7e18349484430c100dd1d6ff40f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/toffoli3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/toffoli3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/toffoli3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/two_bitstrings3/main.qli",
+      "before_sha256": "16364cc1eed5f9af1278af681c19cb2c44cc4bd6fe0b9096add00a6c0775d5f8",
+      "after_sha256": "f4f2804f7a3f913d5902adde264e6157a0257bdbab40d0897d239dee88a0d103",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/two_bitstrings3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/two_bitstrings3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/two_bitstrings3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/uniform3/main.qli",
+      "before_sha256": "9ee0c5ca955000c03f0005c3edf1091c280cd0df0375dc122ca0b6ce767a0c06",
+      "after_sha256": "0fe676ed0c88768c274f51240ade90decb5297df28f3589a1907bd27bc421a2d",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/uniform3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/uniform3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/uniform3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/w2_retained3/main.qli",
+      "before_sha256": "f58e50e0462d6e996d5ebbdc601881c50983ccf199591fd37dcc8c8e90903d2e",
+      "after_sha256": "4a091cf7913fce4de0e6507b1dbdfa61863b638e6c90c7166bd4eb67712ded62",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/w2_retained3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/w2_retained3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/w2_retained3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/zero_bitstring3/main.qli",
+      "before_sha256": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3",
+      "after_sha256": "b095a8ef09f2f4a46d6a9de0c294a971464f698beccf20a9e7000c7cdddaa5df",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/zero_bitstring3/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/zero_bitstring3/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/zero_bitstring3/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/quantum_katas/zero_control_x2/main.qli",
+      "before_sha256": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809",
+      "after_sha256": "23fdc6890b58dc653e67ea637ba28533106ab127e6ab9c98c1d83bd4f3655952",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/quantum_katas/zero_control_x2/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/quantum_katas/zero_control_x2/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/quantum_katas/zero_control_x2/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/basis_reflection_wrong_label/main.qli",
+      "before_sha256": "4c288ea210e3b2fb8af0bd1470c5826c8e5d9c23a081f9cb20b3003e62ec538a",
+      "after_sha256": "e6282ee846e3b360d28873798d0129b0aad53109822fadf2b0342ed93a93e34b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/basis_reflection_wrong_label/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/basis_reflection_wrong_label/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/basis_reflection_wrong_label/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/bell_change_reversed_phase/main.qli",
+      "before_sha256": "f9e83d0a35bc2fb2ce89ef41608d36e13120996319ffc43226e5dbbe26f47b8e",
+      "after_sha256": "2e637d4ffa305dfc326e36764b4c65d0822cd0764230cab2374560168779be8c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/bell_change_reversed_phase/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/bell_change_reversed_phase/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/bell_change_reversed_phase/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/bitstring_wrong_target/main.qli",
+      "before_sha256": "224bbb5e6bc3fc0c0d6d5765808b3a585ac7a594c386fd816bfa8b9e9bd286c3",
+      "after_sha256": "b095a8ef09f2f4a46d6a9de0c294a971464f698beccf20a9e7000c7cdddaa5df",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/bitstring_wrong_target/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/bitstring_wrong_target/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/bitstring_wrong_target/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/controlled_h_unconditional/main.qli",
+      "before_sha256": "d7784990512499ff32020b76ce83e77e9a31a22ce0a149aae57d998a87075e12",
+      "after_sha256": "d11976401b0662cbd034f984b73ae0dac9a8c47b5ba355d0d6d1bcc3a3393d89",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/controlled_h_unconditional/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/controlled_h_unconditional/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/controlled_h_unconditional/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/controlled_increment2_fault/main.qli",
+      "before_sha256": "86e866b479d514262156b275b2d484d582fa9369e959ae117b49b89adecf97d3",
+      "after_sha256": "ee8d9b07856ce3a832b04c74ab275b5482fdb6ff7d0dbdab89aba2e8cd1e383a",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/controlled_increment2_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/controlled_increment2_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/controlled_increment2_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/controlled_reflection_missing_phase/main.qli",
+      "before_sha256": "90ebe4370bc4379c82c35b93d7ff4803ac7a3268dd0a9509415c69b21e2f2f80",
+      "after_sha256": "5100668083b0a89cdf0da8cae1d9a410f0cfa223208f2210e80148d787f01884",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/controlled_reflection_missing_phase/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/controlled_reflection_missing_phase/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/controlled_reflection_missing_phase/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/cz_replaced_by_identity/main.qli",
+      "before_sha256": "8cf711b717a8cc2e93caea629d906ed9e00deb89705b36c0b1a80f232cc8fb18",
+      "after_sha256": "7d8b5b26c2eb5ea12fc0e7de64af6cec9eb198e05586d5f9976e427b1986b4ed",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/cz_replaced_by_identity/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/cz_replaced_by_identity/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/cz_replaced_by_identity/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/decrement_lost_high_borrow/main.qli",
+      "before_sha256": "55f978d20f37b58cbd800fe51acb873841ebbf80a02d2ebab964b744e75f3725",
+      "after_sha256": "eb385750b531f871fc8ed6f00dd0f23a5ef40c30e1ae7e6ca6c2687c37db692c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/decrement_lost_high_borrow/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/decrement_lost_high_borrow/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/decrement_lost_high_borrow/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/edge_layer_reversed_order/main.qli",
+      "before_sha256": "d9eaa1a27345cd25c32182e0126a25926916122ea92ab56e80e8e4eb597f0e90",
+      "after_sha256": "07b3b77b31aa2673aaf70d24f3611f6037a1bb49968cb36817b9a24c3c654551",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/edge_layer_reversed_order/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/edge_layer_reversed_order/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/edge_layer_reversed_order/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/equals1_fault/main.qli",
+      "before_sha256": "71254aaa03a24453c6942674bde0dbee1f663dd9a6764ebd003dcc9f7d09bc1a",
+      "after_sha256": "6c4bb1f9717f916c8b5bfabac21123b175db715ad98638aa06040115e2c80fce",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/equals1_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/equals1_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/equals1_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/equals_constant_wrong_endian/main.qli",
+      "before_sha256": "02e8c6379acf7206fe0774709d4e73b9d3abdeab660512ff04b89e930b4b7c4e",
+      "after_sha256": "9bf57c99a9d85b4910c5ee182bf909b8d5e9935da155ed40c55fae64370ff878",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/equals_constant_wrong_endian/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/equals_constant_wrong_endian/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/equals_constant_wrong_endian/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/erased_rotation_scalar/main.qli",
+      "before_sha256": "ebd4a577ecaae7c0c122f3c67be36517dd854780e6a7d14eb0c8233157c6c875",
+      "after_sha256": "fe8345d1afcaaf401de9e7b8f946e5828380c22bdd4cf43b0d321a9833fe6ddf",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/erased_rotation_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/erased_rotation_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/erased_rotation_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/even_numbers_wrong_low_bit/main.qli",
+      "before_sha256": "e5cddce0a5991bb7c034c0d167039078d1acb978a43a441d488ae7827c3c46a8",
+      "after_sha256": "627b37deb00be3af952f9f7c13376c7ddf19feb761346a0e8a65e62b84c3152e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/even_numbers_wrong_low_bit/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/even_numbers_wrong_low_bit/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/even_numbers_wrong_low_bit/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/even_parity3_fault/main.qli",
+      "before_sha256": "c0355ebdd6050340af0dde5803e0d28cfa7968163e700d6fba8c4dffd3809050",
+      "after_sha256": "02f372310d686be5918d4f9986784a97110531570f2ee57a6a598cf3be525f95",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/even_parity3_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/even_parity3_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/even_parity3_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/graph_edge_erased/main.qli",
+      "before_sha256": "5a4ab8353e2f70ba9e16248c93c58fedd66d381bb79fc57f4bc7fe9defce3373",
+      "after_sha256": "9ec23c8043ec9545e6a18c100d4aaf67d10740d011baa1700482579ea7ecc192",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/graph_edge_erased/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/graph_edge_erased/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/graph_edge_erased/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/greater_constant_wrong_threshold/main.qli",
+      "before_sha256": "f803866cc62ce6228babca2fce4e26d70ff523a1dd014e3216133614fd658e5c",
+      "after_sha256": "86f6c53186e2879872c43bb786e9e92c7ee036f83cecb633def833ad3d28e59f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/greater_constant_wrong_threshold/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/greater_constant_wrong_threshold/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/greater_constant_wrong_threshold/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/greater_than_input_not_restored/main.qli",
+      "before_sha256": "54c322c5d4607c510096c285ec2746387d445a7610bbf4fb302c03485545a0e5",
+      "after_sha256": "9bb5eb20858d8d62c2f90d81498cdc73d8a0436ef0184522d2c307fd5ef77d86",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/greater_than_input_not_restored/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/greater_than_input_not_restored/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/greater_than_input_not_restored/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/half_rotation_order_reversed/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/half_rotation_order_reversed/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/half_rotation_order_reversed/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/half_rotation_order_reversed/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/half_rx_missing_scalar/main.qli",
+      "before_sha256": "17b0a0bd813bac71ceddfdeb3696175b94d290fe078753d26d61a519cc02705f",
+      "after_sha256": "d56c4488c2c780f2bcffb26857c28d70c1537d329e6a189bbb1dbb74c0fd7dc8",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/half_rx_missing_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/half_rx_missing_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/half_rx_missing_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/half_zz_missing_scalar/main.qli",
+      "before_sha256": "a47343cd0bb55a4181e8777a7387a5dda31a409a9ba39f2c25344b52dddb4d0a",
+      "after_sha256": "53fe081a72d9d1dfeba52fb69832de6c3f145c8499a436969b705e46f1ffe298",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/half_zz_missing_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/half_zz_missing_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/half_zz_missing_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/incomplete_swap/main.qli",
+      "before_sha256": "95c35f2283539f53634f2f2b00474d1c770829f46aaef4eeec4d61318d9c3992",
+      "after_sha256": "79be6befee79c29ac023cd62e6381fc174e02088cde1919d581e89ac45289e59",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/incomplete_swap/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/incomplete_swap/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/incomplete_swap/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/increment_wrong_carry_order/main.qli",
+      "before_sha256": "6c9cd99d5b5478df49bd1933bb24d5029911155020614e9f8ef793dee1154304",
+      "after_sha256": "2b1e743d4e2a1f35e5c029a660ed9df616f6401fbc18eee3ca487def82afb49f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/increment_wrong_carry_order/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/increment_wrong_carry_order/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/increment_wrong_carry_order/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/kickback_wrong_secret/main.qli",
+      "before_sha256": "10117651636a93f0dadc54c0bb8dd35e7c20f7bf8a8f71dcf4ea73b877b219c3",
+      "after_sha256": "05ac25ad9f5c3d4378c53566af0b6733906e442acd3a6159180c7e0c70045440",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/kickback_wrong_secret/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/kickback_wrong_secret/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/kickback_wrong_secret/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/less_equal_changed_to_strict/main.qli",
+      "before_sha256": "443d835ec94803075145f44746dd2f1603b96efdc2f9f363c04246f6fef886ea",
+      "after_sha256": "da509fb98e6b259a9aa2f3a4f010231dbdd99b2d59d8290900a1080e046d238b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/less_equal_changed_to_strict/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/less_equal_changed_to_strict/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/less_equal_changed_to_strict/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/low_bit_equality_only/main.qli",
+      "before_sha256": "4cb16ed9a766c49c3b80aa24e398bfc2758c71085f962eea87de8c073585ccde",
+      "after_sha256": "825ebe84dbd2eaa7e6ae8e81a6f1e9aa1494111f685bdd838fbc5d37bca10b3c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/low_bit_equality_only/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/low_bit_equality_only/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/low_bit_equality_only/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/majority_replaced_by_parity/main.qli",
+      "before_sha256": "301903fb7e43ad184c5a2b082aaa968cd54f9b01630eb10923c2ec894fc2eeff",
+      "after_sha256": "0caa7dca64f8b9776792073f27ab1679fcddb248bdb09343809e6118bb8c0bb0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/majority_replaced_by_parity/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/majority_replaced_by_parity/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/majority_replaced_by_parity/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/minus_preparation_wrong_extension/main.qli",
+      "before_sha256": "60211bdbee010c4b1afd5b69d27a285981b08857150ceb5f43b5d2cfc5958382",
+      "after_sha256": "b7b4f37b841e747ae8d945f46461dca272ef7937c467528e1f78825b354da2f7",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/minus_preparation_wrong_extension/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/minus_preparation_wrong_extension/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/minus_preparation_wrong_extension/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/missing_add_two/main.qli",
+      "before_sha256": "258819f5163515da35918da15a554e44b3e9235d0f150c5b2208a4c0bd94d7d6",
+      "after_sha256": "84f22d1370e8acc252365240b8b484b54a1c62dbbba7323aa9a69cb42702a529",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/missing_add_two/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/missing_add_two/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/missing_add_two/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/missing_lcu_unprepare/main.qli",
+      "before_sha256": "36af03c3635e67e91431d721852e59a7f50e939741f21e5900cb65dc406bd77f",
+      "after_sha256": "9befad3797a547b4f22f57ed0db172af111726d21d368d0e014721216fe54144",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/missing_lcu_unprepare/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/missing_lcu_unprepare/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/missing_lcu_unprepare/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/mixed_rotation_order_reversed/main.qli",
+      "before_sha256": "c5d4421fba7e9b312cac4995313eb62b81076de82671f25a684800fa21fd052b",
+      "after_sha256": "a28fa95c0ab5f4131363f3f37c8ab1442d98f210407b62a910491511842f6d45",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/mixed_rotation_order_reversed/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/mixed_rotation_order_reversed/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/mixed_rotation_order_reversed/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/mixer_erased_scalar/main.qli",
+      "before_sha256": "6be799967a57541d8dcb3fa64382d743bb6dc885aa194ead3728aef803df8047",
+      "after_sha256": "19a122dd93e2dd96df20d5fc23eb2745efb940949facbe77b65da0870a5b8d98",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/mixer_erased_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/mixer_erased_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/mixer_erased_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_control_changed_to_positive/main.qli",
+      "before_sha256": "ac6cd6eae91f43807e4a5a2cae37f0a77c2553dfb97a688e7fbf860773c00809",
+      "after_sha256": "23fdc6890b58dc653e67ea637ba28533106ab127e6ab9c98c1d83bd4f3655952",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_control_changed_to_positive/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_control_changed_to_positive/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_control_changed_to_positive/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_edge_cost_sign/main.qli",
+      "before_sha256": "154f59db6baea249e02b1e99f77398a4aae1082b35804216b55ad2b42754abfe",
+      "after_sha256": "6cf0e3d6772e558c0ba833d320fc3586688872782390c53361f4ffe5871fc8ef",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_edge_cost_sign/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_edge_cost_sign/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_edge_cost_sign/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_phase_conjugated/main.qli",
+      "before_sha256": "f3c9fc8479f4518528cf1cb1983e6fd4b966d6e3c45cc5a2696b9d84eed2f80c",
+      "after_sha256": "4d5d9ad8988938817eb587723589e50d0cc2a7a235249d458698881f6c908912",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_phase_conjugated/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_phase_conjugated/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_phase_conjugated/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_rotations_reversed/main.qli",
+      "before_sha256": "b566c44bc3a4ddf33fe6b3bcf2742f6a24fa357f5ef17fd43bdb635651347c8d",
+      "after_sha256": "7813386947378a31e5059a1f12ed81742ea488e3a13627dc215cc41e166c4d63",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_rotations_reversed/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_rotations_reversed/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_rotations_reversed/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_rx_missing_scalar/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_rx_missing_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_rx_missing_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_rx_missing_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_ry_wrong_sign/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_ry_wrong_sign/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_ry_wrong_sign/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_ry_wrong_sign/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/negative_zz_missing_scalar/main.qli",
+      "before_sha256": "2a33c3fe869e32dfa47a5540bbac0a5c6892105faadc7dff2a0e9668bf11bdf9",
+      "after_sha256": "796161388c6bdf6f3627e196df5f9344b8e3df9614a09e399d3c34694b8a4897",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/negative_zz_missing_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/negative_zz_missing_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/negative_zz_missing_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/parity_prepared_even/main.qli",
+      "before_sha256": "6d5b4a02f6ec61073f73203701a59498c029c79f8681df2e0a3b50298a56ef75",
+      "after_sha256": "00fdf87f493af1c2adcfc88c66de03ae4a726cb250cdb4659c00016a77bedf76",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/parity_prepared_even/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/parity_prepared_even/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/parity_prepared_even/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/partial_bitwise_not/main.qli",
+      "before_sha256": "6cfc73b553b91434b1fc41047ec9a0dfdb01cb640f243cefdd9e1b84d3f9acbb",
+      "after_sha256": "8c88ca80c6d57a4c8e5334d6d74ac9c3f4092e67b8092cdd95bb48d33bd16c77",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/partial_bitwise_not/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/partial_bitwise_not/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/partial_bitwise_not/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/path_cost_lost_second_phase/main.qli",
+      "before_sha256": "266fa60f28dc251f452e541ab33d2da1b1f16deb1e7dd14d2bca9acdcbfa3c51",
+      "after_sha256": "2d09a4a962360026c84b61c513cb70117ecd84c1bfbc7f39b1aa7b746f89b9d3",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/path_cost_lost_second_phase/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/path_cost_lost_second_phase/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/path_cost_lost_second_phase/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/qaoa_negative_mixer2_fault/main.qli",
+      "before_sha256": "ddea33492e73a3dca5cd456b681c9e9f44ca2229b2837c3fd391c74bf9a11a8e",
+      "after_sha256": "7f4e10e3e9d5189d58dfe9690a3a5d9b9d0c5e445bd82cf9ac5c2863c04d78ad",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/qaoa_negative_mixer2_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/qaoa_negative_mixer2_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/qaoa_negative_mixer2_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/qaoa_path_layer3_fault/main.qli",
+      "before_sha256": "d1c9861ec93b35d9cdb2bed21dc2c92e178893286ce2fab7c22660ce01d92b15",
+      "after_sha256": "e6e431cfc68f9b7bc277b6961afb6aed35f8396dba1078708f403a6f4b837be7",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/qaoa_path_layer3_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/qaoa_path_layer3_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/qaoa_path_layer3_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/qrom_reversed_target_bits/main.qli",
+      "before_sha256": "1251534f89a1da328064c501ee5510b8b9f6b908f5301d8723a754ac127c5478",
+      "after_sha256": "0a62eb78bae356cb9ec767a0487fad857624a130aacdd812b499821e17bbffb0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/qrom_reversed_target_bits/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/qrom_reversed_target_bits/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/qrom_reversed_target_bits/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/reflection_minus_missing_phase/main.qli",
+      "before_sha256": "6fbc46b1eefcb3f4c20191ac36a9a8a869b34108e51d8d325e80323d46812d0c",
+      "after_sha256": "db8161da5369278c4c4d1b011b26eaab2aa815fd4140eb1c2020f6925f923284",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/reflection_minus_missing_phase/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/reflection_minus_missing_phase/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/reflection_minus_missing_phase/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/reflection_zero2_fault/main.qli",
+      "before_sha256": "22b088b594aef245ce6debf4b8d3afec37af7ebffd9c790b81ad328d0febfdbb",
+      "after_sha256": "4b357e0a20b1f866cbef2bd14d5b6896ef49a17d51a1bdf4bc40861916d96d8b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/reflection_zero2_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/reflection_zero2_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/reflection_zero2_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/rotation_negative_x_positive_y_fault/main.qli",
+      "before_sha256": "b49d7f82d91c703aa072a8e9fd64a436452b974bb19056c8bdd2f30170aea5af",
+      "after_sha256": "167015a8037ba2ab5d9b51a141b3661953d54fa2ac59d1cc95388d2d2fced191",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/rotation_negative_x_positive_y_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/rotation_negative_x_positive_y_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/rotation_negative_x_positive_y_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/rx_missing_scalar/main.qli",
+      "before_sha256": "99b0003feef1241054432743d4914f9079880b11a5834bb91da559a91a123c99",
+      "after_sha256": "ebdbbd39333be66f97856810a7ab951ddf9ebc46e85ceaf2e0221ea99bd4cfa4",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/rx_missing_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/rx_missing_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/rx_missing_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/ry_second_column_sign/main.qli",
+      "before_sha256": "5aee3c3349b21409c248b5f166f8bb0fd5e94df9a41b3cff9ebbec35ff915a20",
+      "after_sha256": "f9d90bfeb68b0192a1031e03030c6640078df155b58b95dafb20b0d002ba824e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/ry_second_column_sign/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/ry_second_column_sign/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/ry_second_column_sign/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/singlet_phase_after_flip/main.qli",
+      "before_sha256": "f55f3b9030a6872609f72b0d7946dbc84a4c6c657d49293d8bb0f3dac043e160",
+      "after_sha256": "e6b66a4fd1b65791974688a4970104e8f60de2e0e0ff4c02e53acfd1309266b1",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/singlet_phase_after_flip/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/singlet_phase_after_flip/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/singlet_phase_after_flip/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/subtract_wrong_borrow_order/main.qli",
+      "before_sha256": "50b81a613d466687eb4086ed427dad8899bd91be086f34e926f31c1d32d3406a",
+      "after_sha256": "66c19a8a4ef00327d2c7b88acd537b6631915a675c417ea5d10a322bcdb3b38b",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/subtract_wrong_borrow_order/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/subtract_wrong_borrow_order/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/subtract_wrong_borrow_order/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/swapped_bell_labels/kernel.qli",
+      "before_sha256": "33792a7bea6f0532966be06c041e3fd3f58460082ef366f32169f948598f41b8",
+      "after_sha256": "6d5092d88b8ab81089af990a6273e6c3f61636f0e7f478156c0bfb6622b393fe",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/swapped_bell_labels/kernel.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/swapped_bell_labels/kernel.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/swapped_bell_labels/kernel.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/swapped_bell_labels/main.qli",
+      "before_sha256": "3a9d77ed71ffa1bcda4a21a027abe7d251e51cb74e254b4066c893dcd406e2a0",
+      "after_sha256": "1e94e885c7e305531e4a91691981ed658e213f8481dd005428bf4b6b14864c4f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/swapped_bell_labels/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/swapped_bell_labels/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/swapped_bell_labels/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/threshold_wrong_polarity/main.qli",
+      "before_sha256": "2c91ec96746b0ea70f3e35f6fb125344690100cfff23891db77182977d3dd266",
+      "after_sha256": "c832f5262cbb2a597a968c5133d69ec30d450150f5cba282da8f0d8c21a379cd",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/threshold_wrong_polarity/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/threshold_wrong_polarity/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/threshold_wrong_polarity/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/toffoli_ignored_second_control/main.qli",
+      "before_sha256": "042b9a11d35e5f3a2d613e47016470bd995745117d570dbc95938d84b633ae9c",
+      "after_sha256": "4df69769fa4cbf303806ce70950cc9989cf8b7e18349484430c100dd1d6ff40f",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/toffoli_ignored_second_control/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/toffoli_ignored_second_control/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/toffoli_ignored_second_control/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/two_bitstrings3_fault/main.qli",
+      "before_sha256": "16364cc1eed5f9af1278af681c19cb2c44cc4bd6fe0b9096add00a6c0775d5f8",
+      "after_sha256": "f4f2804f7a3f913d5902adde264e6157a0257bdbab40d0897d239dee88a0d103",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/two_bitstrings3_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/two_bitstrings3_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/two_bitstrings3_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/unconditional_fredkin/main.qli",
+      "before_sha256": "f504269906ebe39643ca603532605360fa9ceb398946865e92092bcd45db4e25",
+      "after_sha256": "c77cd9b39537aa9bf5e558a7970b87b2d880ab637b8a034f18b542b5024885be",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/unconditional_fredkin/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/unconditional_fredkin/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/unconditional_fredkin/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/uniform_missing_middle_h/main.qli",
+      "before_sha256": "9ee0c5ca955000c03f0005c3edf1091c280cd0df0375dc122ca0b6ce767a0c06",
+      "after_sha256": "0fe676ed0c88768c274f51240ade90decb5297df28f3589a1907bd27bc421a2d",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/uniform_missing_middle_h/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/uniform_missing_middle_h/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/uniform_missing_middle_h/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/uniform_phase_conjugated/main.qli",
+      "before_sha256": "aed24c38216e9260fa1a914370cf703e6da8b05d4f3c88923a0d8edf8fe2f7f8",
+      "after_sha256": "e58efec3793206a8e58cbe07bc186c22b4b04d64e5cfd8119a896e67b1482154",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/uniform_phase_conjugated/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/uniform_phase_conjugated/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/uniform_phase_conjugated/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/w2_retained3_fault/main.qli",
+      "before_sha256": "f58e50e0462d6e996d5ebbdc601881c50983ccf199591fd37dcc8c8e90903d2e",
+      "after_sha256": "4a091cf7913fce4de0e6507b1dbdfa61863b638e6c90c7166bd4eb67712ded62",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/w2_retained3_fault/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/w2_retained3_fault/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/w2_retained3_fault/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/xor_constant_missing_high_bit/main.qli",
+      "before_sha256": "336565309a1077d7e439356dd902beddafc6891d4209d0c99d66d24347f12bc6",
+      "after_sha256": "0daf41dc717bf58ea8b9e418eb42e6f77dc88ed5edeb52f2cb03ffc028664b9c",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/xor_constant_missing_high_bit/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/xor_constant_missing_high_bit/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/xor_constant_missing_high_bit/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/xor_constant_wrong_bit/main.qli",
+      "before_sha256": "0f29f80e11a3c79c8a81e6c4c005d2459204e30e8c9ccea41bd15b873eb08943",
+      "after_sha256": "a00109e487ce8d13c95802987ebc710c907639f47208376158bdda54b7541a5d",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/xor_constant_wrong_bit/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/xor_constant_wrong_bit/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/xor_constant_wrong_bit/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/zero_predicate_input_not_restored/main.qli",
+      "before_sha256": "01111ded91255b8661e17537b1f9b2157d429701fc0a4f21368ec67bd7b22cf3",
+      "after_sha256": "c423ce8ba1755e4acf86bbe57e09878fb4b11afde828577699cfcbed6a87a8f0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/zero_predicate_input_not_restored/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/zero_predicate_input_not_restored/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/zero_predicate_input_not_restored/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/semantic_faults/zz_erased_scalar/main.qli",
+      "before_sha256": "2abcdb4502eb42dfa842803c6ad3b0165e8842eaacd8aa642a9f33143bc4060d",
+      "after_sha256": "1cca2f8df509ada58458cb80a1d4721d7aeb8c4fd73e3607ad5512a97e1127a0",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/semantic_faults/zz_erased_scalar/main.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/semantic_faults/zz_erased_scalar/main.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/semantic_faults/zz_erased_scalar/main.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/sized/measured_qpe/measurement.qli",
+      "before_sha256": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+      "after_sha256": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/sized/measured_qpe/measurement.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/sized/measured_qpe/measurement.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/sized/measured_qpe/measurement.qli"
+      ],
+      "exit_code": 0
+    },
+    {
+      "path": "corpus/sized/measured_qpe/readout.qli",
+      "before_sha256": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+      "after_sha256": "ea7ded07d1871d095bcccefda81edf9959930a50f94470a6abf851f3188f1801",
+      "before": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-before/corpus/sized/measured_qpe/readout.qli",
+      "after": "tests/fixtures/frontend_v030/ordinary-type-cutover/active-current/corpus/sized/measured_qpe/readout.qli",
+      "method": "pre-cutover common AST type spans + lexer Boolean literal spans; comments unmodified",
+      "argv": [
+        "/private/tmp/qleisli-migrate-canonical-types",
+        "/Users/masa/git/Qleisli/corpus/sized/measured_qpe/readout.qli"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "invalid_source_candidates_unmodified": []
+}

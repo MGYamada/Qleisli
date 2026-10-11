@@ -1,0 +1,92 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#82 checked_op first sources before common surface-name migration",
+  "baseline_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex subagent; exact deployed model/sampling unavailable; informed repository/code/Issue access",
+  "context": "context.md",
+  "record_status": "actual-before-observations-registered",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Eight separately authored desired/legacy pairs preserve original static Bind semantics, exact phase/tree/owner/capture boundaries and current public selected limitation; no source repair.",
+      "sha256": {
+        "providers-reference-control-desired/main.qli": "0d9605e632a4d5433bda61f0cdb021e165d965a6eae8aee2b5560b5fa8c6f5ec",
+        "providers-reference-control-legacy/main.qli": "7f201a11ae9fb0a9f467d799be9149b2a542ec8b171695660175e584e60aaa6e",
+        "wrong-phase-desired/main.qli": "d8cbce7105d5040d8052ac547d6c582089be0da40be10e98392461a25aa3e71a",
+        "wrong-phase-legacy/main.qli": "54fb03a515baed9c96da4ce42a1204e048328ff0ec02aa69ba371edbb53ae47d",
+        "wrong-tree-desired/main.qli": "adfdba1d7399cbd833cd0565782c9a7245ec1bdcd8982adcd91b8298c60b58be",
+        "wrong-tree-legacy/main.qli": "a85e539c6c4b035f53d5a351d954b46de8269d1ced48941a2c891714eb815fa3",
+        "runtime-provider-capture-desired/main.qli": "8c4f2163719e95d5e7a2ea6b7634a6f7af593e67f3dd2caea83d49227cbedfa5",
+        "runtime-provider-capture-legacy/main.qli": "2535e6ffdbbfedead7da6d2dbab8f2d080a5a9293fbc52d217794c03541d61c2",
+        "quantum-provider-capture-desired/main.qli": "4f0db1cd6166529e9ce9e6bcd37acd986c3c5c6ee67e3ecc3327cd50064aba1a",
+        "quantum-provider-capture-legacy/main.qli": "6237d95aeb5eb161ff422157358cbf4f4d2eb11bc4a1eba472a94bf18be79c35",
+        "formal-provider-capture-desired/main.qli": "3b8ea77f59b93639fa2714f0dc96987141b779dd8494ac5207f762c03b5f2a6e",
+        "formal-provider-capture-legacy/main.qli": "b957114478e52ff7bfab8226bb0691227b1e2ed2b72fef3b9f7540e97cdca349",
+        "spent-owner-reuse-desired/main.qli": "3f5201e068c8f1cdf0ba0bd600c258159d58e818e14dd4c7b8343e69fdc8154a",
+        "spent-owner-reuse-legacy/main.qli": "6de17bd2461d64d6e7725392a9da74da2c664322b78aafece9ca9707e73529c8",
+        "nested-constructors-desired/main.qli": "bfa650927537acb6cae28978f39f7958e9f0d66210dfdfe3d79441c6fd6ae57c",
+        "nested-constructors-legacy/main.qli": "92e776ea3a0c64ab00aeac64ce45bf50cb81affb97e466cd500fe516e997747c"
+      },
+      "observations": [
+        "observations-before/providers-reference-control-desired-finite-check-json.json",
+        "observations-before/providers-reference-control-desired-finite-check-text.json",
+        "observations-before/providers-reference-control-desired-public-selected-check-json.json",
+        "observations-before/providers-reference-control-legacy-finite-check-json.json",
+        "observations-before/providers-reference-control-legacy-finite-check-text.json",
+        "observations-before/providers-reference-control-legacy-public-selected-check-json.json",
+        "observations-before/providers-reference-control-legacy-finite-run-json.json",
+        "observations-before/providers-reference-control-legacy-finite-emit-ir-json.json",
+        "observations-before/wrong-phase-desired-finite-check-json.json",
+        "observations-before/wrong-phase-desired-finite-check-text.json",
+        "observations-before/wrong-phase-legacy-finite-check-json.json",
+        "observations-before/wrong-phase-legacy-finite-check-text.json",
+        "observations-before/wrong-tree-desired-finite-check-json.json",
+        "observations-before/wrong-tree-legacy-finite-check-json.json",
+        "observations-before/runtime-provider-capture-desired-finite-check-json.json",
+        "observations-before/runtime-provider-capture-legacy-finite-check-json.json",
+        "observations-before/quantum-provider-capture-desired-finite-check-json.json",
+        "observations-before/quantum-provider-capture-legacy-finite-check-json.json",
+        "observations-before/formal-provider-capture-desired-finite-check-json.json",
+        "observations-before/formal-provider-capture-legacy-finite-check-json.json",
+        "observations-before/spent-owner-reuse-desired-finite-check-json.json",
+        "observations-before/spent-owner-reuse-legacy-finite-check-json.json",
+        "observations-before/nested-constructors-desired-finite-check-json.json",
+        "observations-before/nested-constructors-legacy-finite-check-json.json",
+        "observations-before/nested-constructors-legacy-finite-run-json.json",
+        "observations-before/nested-constructors-legacy-finite-emit-ir-json.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "providers-reference-control-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "providers-reference-control-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-phase-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-phase-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-tree-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "wrong-tree-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "runtime-provider-capture-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "runtime-provider-capture-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-provider-capture-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-provider-capture-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "formal-provider-capture-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "formal-provider-capture-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "spent-owner-reuse-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "spent-owner-reuse-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-constructors-desired/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "nested-constructors-legacy/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  },
+  "reports": [
+    "first-files.json",
+    "observations-before/capture.json"
+  ],
+  "scope": "Bounded naming and diagnostic observations at no more than three declared/prepared source qubits; no source-preservation theorem, Guardian act, guarantee admission or Issue completion.",
+  "registration": {
+    "recorded_utc": "2026-10-06T04:20:16.649521+00:00",
+    "pending_file": "session.pending.json",
+    "pending_sha256": "aac15b788ce9643b2402e304acaf463fafc4acbf6ef88efb838f5b07f980b9fe",
+    "actual_capture": "observations-before/capture.json",
+    "capture_sha256": "dd863291650b05ce3f0d9d138288b45cd533e90d5eb233d322b6f327309642d5"
+  }
+}

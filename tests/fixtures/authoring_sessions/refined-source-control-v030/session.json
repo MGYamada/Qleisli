@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Join source ctrl sector checking and original Meaning binding under #83/#46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "6cd6e6f112aec46685710ca6d8d161339bda6f28",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Preserve source ctrl plus independent Meaning requests, including latent audit bodies and a control-bearing provider, before joining the existing native gates.",
+      "sha256": {
+        "valid-combined.qli": "b2cccfb0b248369388c8066da54bb07025c34cc1316985dba82bd2c3639fa634",
+        "bad-control.qli": "5c1ae156329404590c64ae8593969020fd77b959d7cfa611c64852413f50e98d",
+        "false-meaning.qli": "504eda493573a1cd4bd3bdaa7f9ce5579895f22776b002cf83b3a72979227503",
+        "unused-valid.qli": "831cea44ed05dec23ea8f310396f22b4f1e850d6ce4f9d57a0063b53c335000f",
+        "unused-false.qli": "49cee22fbc58276c614ee0b2b9761d43d224ab3f8668ef4f733f3305a47758cc",
+        "control-provider.qli": "50411040a4a81169831025d91152e2677195fef95444c3779426aa503f1a942a"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/valid-combined-before.json",
+        "observations/bad-control-before.json",
+        "observations/false-meaning-before.json",
+        "observations/unused-valid-before.json",
+        "observations/unused-false-before.json",
+        "observations/control-provider-before.json",
+        "observations/valid-combined-after.json",
+        "observations/bad-control-after.json",
+        "observations/false-meaning-after.json",
+        "observations/unused-valid-after.json",
+        "observations/unused-false-after.json",
+        "observations/control-provider-after.json"
+      ]
+    }
+  ]
+}

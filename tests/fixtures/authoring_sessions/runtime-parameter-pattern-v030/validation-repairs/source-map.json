@@ -1,0 +1,47 @@
+{
+  "format": 1,
+  "mappings": [
+    {
+      "original": "validation-sources/static-forwarding.qli",
+      "original_sha256": "785862414bf0ff3f9ff3dec3e2447c1e1b74df1faa780eaf0226212a765c7493",
+      "current": "validation-repairs/static-forwarding.qli",
+      "current_sha256": "b02edb9d03a2ca4765ce248f358742b70b18c26945416eb1370d3fbaef195d2d",
+      "reason": "Required static qualifier for both original Nat declarations."
+    },
+    {
+      "original": "validation-sources/operation-binding.qli",
+      "original_sha256": "0950d5638ebcebeefcaff05ba697f384f123810b84f0e7f0b664e123f4947eb1",
+      "current": "validation-repairs/operation-binding.qli",
+      "current_sha256": "ab25a3f4dfd8f95f002bba05586640d687fbc8b3a848de3923b18ad59f362423",
+      "reason": "Required static qualifier and existing Apply(U) requirement syntax."
+    },
+    {
+      "original": "validation-sources/static-operation-collision.qli",
+      "original_sha256": "e7fbae4258c22f3614001c70166a28cce91c25fecf8890fc864308c135d4aa2b",
+      "current": "validation-repairs/static-operation-collision.qli",
+      "current_sha256": "8e85acfcb1df1d58c13b950fa34502fca34d32063d96964c33ccc403acd44d89",
+      "reason": "Reach the intended duplicate-binder judgment using valid static declaration and requirement syntax."
+    },
+    {
+      "original": "validation-sources/unitary-argument-effect.qli",
+      "original_sha256": "012ac4225f42f9132b1b994ad1a6222821daab279f7730c95381507b6fb5a52b",
+      "current": "validation-repairs/unitary-argument-effect.qli",
+      "current_sha256": "a016b5561f03f33f8f14998cf9b41b9c9555c1b84bc39b1a54517c8790d66f76",
+      "reason": "Keep valid observe main; use a separate unitary leak helper so entry validation cannot mask body effect rejection."
+    },
+    {
+      "original": "counterexamples/static-collision/main.qli",
+      "original_sha256": "db62624787f77d76b0bb677abfb0eb6adf09fcb36f42034b12bff6f57243dca7",
+      "current": "validation-repairs/static-collision.qli",
+      "current_sha256": "89b77c91bbeeb122cf39fc513c35ed42baa9130b439162e912a2b2f6bc7ecd19",
+      "reason": "Correct the first-source missing-static authoring error separately; preserve original parser diagnostic."
+    },
+    {
+      "original": "attempt-01/static-mixed/main.qli",
+      "original_sha256": "99678803900677a6b0739346365affae2f7cb6f472a9f5073b9187e790286604",
+      "current": "validation-repairs/static-mixed.qli",
+      "current_sha256": "29ee337d11c9453e4e4045658f3a4d4afb6c9ac30ab82a54f8b21b1f4c71ca78",
+      "reason": "Correct the first-source missing-static authoring error separately; original diagnostic alone did not isolate parameter-pattern support."
+    }
+  ]
+}

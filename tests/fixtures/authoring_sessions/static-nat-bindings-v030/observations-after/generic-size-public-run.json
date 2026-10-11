@@ -1,0 +1,29 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "run",
+    "--entry=main::main",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/static-nat-bindings-v030/attempt-02/generic-size/main.qli",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T09:35:13.243030+00:00",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "run",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "kernel",
+        "severity": "error",
+        "message": "select the matching Lean checker with --lean-kernel=PATH or QLEISLI_KERNEL",
+        "primary": null,
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

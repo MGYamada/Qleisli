@@ -1,0 +1,15 @@
+{
+  "scope": "Separate active sized local composition identities, not upstream authoring overlays. Runtime checks are recorded by the independent canonical Unit/readout fixture and remain separate from this identity update.",
+  "files": [
+    {
+      "path": "sized/measured_qpe/readout.qli",
+      "before": "3ceefbefc03d726da182e609304dd91de19e7646bb644e463a69617aaac36f1e",
+      "after": "ea7ded07d1871d095bcccefda81edf9959930a50f94470a6abf851f3188f1801"
+    },
+    {
+      "path": "sized/measured_qpe/measurement.qli",
+      "before": "3505d1e6cd8d453f3bbe37fbc7eac1d9ab8dda1fc39dae9afad766747b8dd01c",
+      "after": "0ff423eda60e7c10c1c91370f104c39dc37fd4d0b158d09564e1c47c9025bf9e"
+    }
+  ]
+}

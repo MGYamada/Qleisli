@@ -1,0 +1,17 @@
+{
+  "kind": "mutable-evidence-dispatch-substitution-probe",
+  "result": null,
+  "error": "fixed verifier validated different evidence than the ledger binding: qlv1-structural-identity-v1",
+  "profile_input_digests": [
+    "bbe98914fa2bcc17a1d508c2763048d9a3fea8c8b4400d3d5e092f60e4d199e4"
+  ],
+  "ledger_input_digest": "9385f041c14c6712755058ca2aa45f5a61066049fc973212756b9db814b49741",
+  "retained_invalid_evidence": true,
+  "accepted_invalid_snapshot": false,
+  "source_files": {
+    "scripts/check_constitution.py": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "scripts/check_guarantee_ledger.py": "6bc1911bb0c4b8cff7357ff804f6dcc4c50fb99cce1318c0c2e6140bdbeb099c",
+    "scripts/check_initial_guarantees.py": "73cce808ddedca4571211e546f9d381cc7a00ddbb06958a82ed81573b91e5702"
+  },
+  "scope": "Only timing of the actual initial checker read_file is mocked; validation and fixed verifier otherwise execute normally in an isolated historical-source fixture. No repository or Lean file is mutated."
+}

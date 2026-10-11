@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/existing-prepare-arrow/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:53..62: name: unresolved function finish\n",
+  "native_invocations": 0,
+  "seconds": 0.005700375011656433,
+  "transcript": "main:53..62: name: unresolved function finish\n"
+}

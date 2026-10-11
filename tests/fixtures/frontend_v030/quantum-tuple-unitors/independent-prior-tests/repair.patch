@@ -1,0 +1,76 @@
+--- a/tests/frontend_types.rs
++++ b/tests/frontend_types.rs
+@@ -69,12 +69,15 @@
+         "pub unitary fn f(x: Bit) -> Bit { x }",
+         "pub unitary fn f(x: Bits<1>) -> Bits<1> { x }",
+         "pub unitary fn f(q: Q<Unit>) -> Q<Unit> { q }",
++        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<(Unit,Unit)> { q }",
+     ] {
+         parsed(source);
+     }
+     let error = ParsedProgram::parse(BTreeMap::from([(
+         "main".into(),
+-        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<(Unit,Unit)> { q }".into(),
++        // Exact packaged products are supported; selected-source coherent
++        // lifting remains a separate capability from explicit split/join.
++        "pub unitary fn f(q: Q<(Unit,Unit)>) -> Q<Unit> { do ((),u) <- q; pure u }".into(),
+     )]))
+     .unwrap_err();
+     assert_eq!(error.code(), "unsupported");
+--- a/tests/quantum_unit_maps.rs
++++ b/tests/quantum_unit_maps.rs
+@@ -778,11 +778,25 @@
+ }
+ 
+ #[test]
+-fn packaged_quantum_tuple_maps_remain_a_distinct_unsupported_profile() {
++fn selected_coherent_lifts_remain_separate_from_explicit_packaged_maps() {
+     for (input, pattern, output) in [
+         ("Q<(Unit,Bit)>", "((),x)", "x"),
+         ("Q<(Bit,Unit)>", "(x,())", "x"),
+     ] {
++        let identity = format!("pub unitary fn f(q:{input})->{input}{{q}}");
++        let graph = ParsedProgram::parse(BTreeMap::from([("main".into(), identity)]))
++            .unwrap()
++            .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
++            .unwrap()
++            .elaborate()
++            .unwrap();
++        let body = &graph.definitions()[graph.root()];
++        assert_eq!(body.inputs()[0].identity(), body.output().identity());
++        assert!(body.output().fields().is_empty());
++        assert_eq!(
++            body.output().ty().quantum_basis().unwrap().fields().len(),
++            2
++        );
+         let text =
+             format!("pub unitary fn f(q:{input})->Q<Bit>{{do {pattern} <- q; pure {output}}}");
+         let error =
+--- a/tests/sized_source.rs
++++ b/tests/sized_source.rs
+@@ -1974,9 +1974,22 @@
+     reject(source, "ownership");
+     let source = "pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{q}";
+     let ast = parse_module(source).unwrap();
+-    let error = ParsedProgram::parse(sources(source)).unwrap_err();
+-    assert_eq!(error.code(), "unsupported");
+-    assert!(error.span().start >= ast.decls[0].params[0].ty.span.start);
++    let parsed = ParsedProgram::parse(sources(source)).unwrap();
++    assert_eq!(parsed.syntax("main"), Some(&ast));
++    let graph = parsed
++        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
++        .unwrap()
++        .elaborate()
++        .unwrap();
++    let body = &graph.definitions()[graph.root()];
++    let owner = &body.inputs()[0];
++    assert!(owner.identity().is_some());
++    assert_eq!(owner.identity(), body.output().identity());
++    assert!(owner.fields().is_empty() && owner.ty().fields().is_empty());
++    let basis = owner.ty().quantum_basis().unwrap();
++    assert_eq!(basis.kind(), "tuple");
++    assert_eq!(basis.fields().len(), 2);
++    assert!(basis.fields().iter().all(|field| field.kind() == "unit"));
+ }
+ 
+ #[test]

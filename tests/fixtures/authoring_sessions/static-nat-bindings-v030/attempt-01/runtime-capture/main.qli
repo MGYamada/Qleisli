@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+observe fn main()->Bit{let runtime=1;static let width=runtime+1;0}

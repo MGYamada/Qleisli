@@ -1,0 +1,2 @@
+unitary fn keep(q: Q<Q<Bit>>) -> Q<Q<Bit>> { q }
+observe fn main() -> Unit { () }

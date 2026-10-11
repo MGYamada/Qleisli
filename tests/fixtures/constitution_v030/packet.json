@@ -1,0 +1,31 @@
+{
+  "format": "qleisli.ratification-candidate",
+  "version": 1,
+  "edition": "2026",
+  "status": "awaiting-human-ratification",
+  "proposed_guardian": "Masahiko G. Yamada",
+  "source_issue": {
+    "number": 129,
+    "url": "https://github.com/MGYamada/Qleisli/issues/129",
+    "updated_at": "2026-10-04T01:45:16Z",
+    "body_path": "tests/fixtures/constitution_v030/issue-129.json",
+    "body_sha256": "0ea191e99ca9b3d22336f3ba82e76b2650ac91ec6039fbe6e66d0c5d17bcb58c"
+  },
+  "artifacts": [
+    {
+      "path": "CONSTITUTION.md",
+      "sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b"
+    },
+    {
+      "path": "GOVERNANCE.md",
+      "sha256": "60e8e6640ccbaccb08ecaca7507956e89458846dc532d5e50084e0e8ca079721"
+    }
+  ],
+  "baseline": {
+    "manifest_path": "tests/fixtures/constitution_v030/baseline.json",
+    "manifest_sha256": "dd8c5ac9da3947fa0798d71f725978ebb0ebd2e0b2712824be2243b5681ed538"
+  },
+  "human_ratification": null,
+  "binding_interpretations": [],
+  "discharged_guarantees": []
+}

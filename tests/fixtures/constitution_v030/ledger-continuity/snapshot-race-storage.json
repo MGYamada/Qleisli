@@ -1,0 +1,55 @@
+{
+  "format": "qleisli.ledger-snapshot-race-storage",
+  "version": 1,
+  "scope": "Read-timing-only counterexample to the initial v4 enforcer, and identical isolated probe rejecting after captured-byte authentication. No constitutional text, live record, Lean source or human admission was changed by these probes.",
+  "stored_files": {
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/before.stdout.json": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/before.stdout.json",
+      "sha256": "3845d9554d3ab003a6411ffba5b4e3cb38a6ae1bd4a7d79fcae84d3f44ed4bdb"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/check_guarantee_ledger.py.after.txt": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/check_guarantee_ledger.py.after.txt",
+      "sha256": "3e58e592f4a691091e91b8fd5b281c3dfceb56e8adf12a59c7f77d620a9ec46b"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/check_constitution.py.after.txt": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/check_constitution.py.after.txt",
+      "sha256": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/after.stderr.txt": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/after.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/before.stderr.txt": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/before.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/command.json": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/command.json",
+      "sha256": "ababb2ecf75254e4858a36cbcde6aaaa95ef0394a159972ea8a76a26813e6c4b"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/after.stdout.json": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/after.stdout.json",
+      "sha256": "01a34c835ea73e846684b87444f286c1715de5de2e3f5e6f00c49a1c2fca8ec1"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/check_guarantee_ledger.py.before.txt": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/check_guarantee_ledger.py.before.txt",
+      "sha256": "63994f6043c18141b363726c2c45901803e39b6824adaedd49bbaacf334bc722"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/check_constitution.py.before.txt": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/check_constitution.py.before.txt",
+      "sha256": "b2cd45b9431f063decbccba7f4e660c8a1a1ed7ce6ca9111d7cfd35737c4f5e9"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/after-command.json": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race-evidence/after-command.json",
+      "sha256": "ee5034a7d1988b8caaf1cb01f208655325bcf2633d81ce23df7639ff1ee3786b"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/qleisli-ledger-initial-snapshot-race.py": {
+      "original_path": "/private/tmp/qleisli-ledger-initial-snapshot-race.py",
+      "sha256": "b9b6940b82e97682c3575b37445a491ce6468b961fe99cdaa192f579699d4464"
+    },
+    "tests/fixtures/constitution_v030/ledger-continuity/snapshot-race/test_check_constitution.py.before.txt": {
+      "original_path": "scripts/test_check_constitution.py before the three independent-review regressions",
+      "sha256": "592e3fa523eb164b59539c4507b18c859d406ee6a3d6072d6c501324b65c75ab"
+    }
+  }
+}

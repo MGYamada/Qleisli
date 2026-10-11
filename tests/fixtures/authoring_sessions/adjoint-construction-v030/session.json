@@ -1,0 +1,30 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "status": "actual-first-observations-retained",
+  "task": "Issue #45 adopted Adjointable precondition for static adjoint construction",
+  "baseline_commit": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository study; exact deployed model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Two original complete probes saved before baseline checks; exact copies and records transcribed afterward, before production repair. No source repairs.",
+      "sha256": {
+        "controlled-adjoint/main.qli": "3f3788d08b98e60130e846e6e136085162c48a2887e561b26a540cea35aa4001",
+        "unused-adjoint/main.qli": "298aac5c6b11cb4551b17a85bcf04323923fbbab6451cb7b8482c5db4f1a6f1d"
+      },
+      "manifest_sha256": {
+        "controlled-adjoint/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2",
+        "unused-adjoint/Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+      },
+      "observations": [
+        "before/controlled-adjoint.json",
+        "before/unused-adjoint.json",
+        "after/controlled-adjoint.json",
+        "after/unused-adjoint.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "scope": "Nine actual first probes reject at parsing; no later constraint/ownership check or native invocation is claimed. The intended concrete control failed because its original static fold omitted yield; the preserved observer stopped on its erroneous success expectation.",
+  "results": [
+    {
+      "project": "abstract-split",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/abstract-split/main.qli",
+            "start": 51,
+            "end": 56
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "assumed-unit",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/assumed-unit/main.qli",
+            "start": 50,
+            "end": 55
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "concrete-control",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "static fold requires yield",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/concrete-control/main.qli",
+            "start": 185,
+            "end": 194
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "duplicate-owner",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/duplicate-owner/main.qli",
+            "start": 26,
+            "end": 31
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "forward-kind",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `(`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/forward-kind/main.qli",
+            "start": 29,
+            "end": 30
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "missing-access",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/missing-access/main.qli",
+            "start": 26,
+            "end": 31
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "opaque-forward",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/opaque-forward/main.qli",
+            "start": 30,
+            "end": 35
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "opaque-repeat",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/opaque-repeat/main.qli",
+            "start": 142,
+            "end": 147
+          },
+          "related": []
+        }
+      ]
+    },
+    {
+      "project": "unknown-basis",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "diagnostics": [
+        {
+          "code": "parse",
+          "severity": "error",
+          "message": "expected `Op`, found identifier",
+          "primary": {
+            "module": "main",
+            "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/basis-polymorphism-v030/attempt-01/unknown-basis/main.qli",
+            "start": 26,
+            "end": 31
+          },
+          "related": []
+        }
+      ]
+    }
+  ]
+}

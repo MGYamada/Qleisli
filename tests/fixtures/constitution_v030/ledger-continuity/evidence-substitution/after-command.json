@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "python3",
+    "/private/tmp/qleisli-ledger-evidence-substitution.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 2.593941042025108,
+  "stdout_sha256": "e58812c4d72c8e71718b15aa948b23c5a4f1a9e28e99a0952376c2d7c0dbeb71",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "/opt/homebrew/bin/cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "sized_source",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 3.265535083017312,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stdout.txt",
+      "sha256": "6b25c715b3ecf222034d4e229ddd890943e7ea7e8fb063d666652b938a3e7558"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/sized-source-latest-01.stderr.txt",
+      "sha256": "bf53b223f41a807b6272053fcac9645150877d0330ba07b81a5af5bcd2350c0c"
+    }
+  }
+}

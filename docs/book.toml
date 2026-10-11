@@ -1,0 +1,17 @@
+[book]
+title = "The Qleisli Programming Language"
+authors = ["Masahiko G. Yamada"]
+description = "A guide to structured quantum programming in Qleisli."
+language = "en"
+src = "src"
+
+[build]
+build-dir = "../target/mdbook"
+create-missing = false
+
+[output.html]
+git-repository-url = "https://github.com/MGYamada/Qleisli"
+input-404 = "404.md"
+
+[output.html.playground]
+runnable = false

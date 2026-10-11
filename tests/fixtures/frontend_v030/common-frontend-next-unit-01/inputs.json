@@ -1,0 +1,144 @@
+{
+  "format": "qleisli.read-only-common-frontend-next-unit-inputs",
+  "version": 1,
+  "author": "/root/isometry_cli_tests",
+  "status": "local-non-normative-architecture-candidate",
+  "observed_utc": "2026-10-05T17:50:55.259928+00:00",
+  "parent_reported_production_commit": "6d95189960f78e51ea13db2ce85822b8ccabbd55",
+  "commit_role": "Prior parent report only; no Git query, CLI execution or compiled-source attestation in this task.",
+  "inspected_scope": "Selected actual declaration/type/resolution source slices, current Reference sections, retained before-code contract/candidate/Issue32 snapshot sections and existing test sources. Not complete source/runtime closure or a fresh Issue retrieval.",
+  "files": [
+    {
+      "path": "src/frontend/ast.rs",
+      "bytes": 7260,
+      "sha256": "1af389d48896cf035ec1d00fe8fe28c40a5e0be131d4a9d7cc2e065ee6f34f03"
+    },
+    {
+      "path": "src/frontend/types.rs",
+      "bytes": 17970,
+      "sha256": "7a0a76703fbe2b1f7024ccad0f9d12a9e05fcb7bdd3fbc2109339a4a97684677"
+    },
+    {
+      "path": "src/frontend/compile/mod.rs",
+      "bytes": 41710,
+      "sha256": "bca57dab7010e7dd75597ff805c5707a7cfd7b66febce04fe8fa827faa5aa5d1"
+    },
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 32732,
+      "sha256": "ab9352c91b75562ebe0fc516b60bbf4bbdd5bbd73e0dc1dd8111226ae3d49703"
+    },
+    {
+      "path": "src/frontend/compile/profile.rs",
+      "bytes": 5886,
+      "sha256": "a98b93c0932cb8baba49b6b5dce33d8c9c9f91f6f3d0c1bab9616dc6f30d2984"
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "bytes": 8339,
+      "sha256": "a7033fd313d0f69227a1acce76fba47d376dedc18ff995b88a48f925a72a7bbc"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4754,
+      "sha256": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 52569,
+      "sha256": "b21f7c1623e553336854a2343fab8ce8ac602307f9171536d5fbc3830a0a40c1"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15956,
+      "sha256": "4f6e0ccf964c51937509778616e77a2e45217878addd8041227c759388c54c6c"
+    },
+    {
+      "path": "src/frontend/sized.rs",
+      "bytes": 20355,
+      "sha256": "3483c275feb2ba2fb1d7086b2141d5023daac74167d6063f21f086e77c4b31b6"
+    },
+    {
+      "path": "src/frontend/resolve.rs",
+      "bytes": 15766,
+      "sha256": "1ae27f14d74b4e9e81b08795645951777af32da8d352a98bc6382127ec646330"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "bytes": 29846,
+      "sha256": "4e10a783f332ebfaaa64038d2076d7c524e8454fa12c5912a68b317eb3cb882b"
+    },
+    {
+      "path": "src/frontend/source.rs",
+      "bytes": 6142,
+      "sha256": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3"
+    },
+    {
+      "path": "docs/src/reference/type-model.md",
+      "bytes": 28181,
+      "sha256": "a202266d4336921e6b2232201312418e3c12aa0f7c6f69dc55bcc710f839a608"
+    },
+    {
+      "path": "docs/src/reference/source-text.md",
+      "bytes": 18322,
+      "sha256": "b7f2f42461ced27417e24f5038e0aba42cccc4c04fc53c534ba0f4d317715449"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/contract-before-code.md",
+      "bytes": 5501,
+      "sha256": "558ec3f68f6c7f84a248ed30039eb8655625a08fe61a48d3c32f975100bd1ad1"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/candidate-01.md",
+      "bytes": 16142,
+      "sha256": "477bc835331e8aa46c85e267408a24ada18403ca2cb3ebcbff5ea5c6e028f3b4"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-bundled-source-design/issue-32.md",
+      "bytes": 63009,
+      "sha256": "47d93dc78ecd16b21319b1aea6ea6e08238fc41601ff1b1296dc8b26c883d691"
+    },
+    {
+      "path": "tests/basis_polymorphism.rs",
+      "bytes": 14174,
+      "sha256": "6b8ef7cddeb8a8312ec2da66a7a417f24c26440a9a23d555d4db181bef6a1c76"
+    },
+    {
+      "path": "tests/sized_source.rs",
+      "bytes": 82412,
+      "sha256": "974b97a3f1dcae425ded45d29ad9212351187fa5c5b54edc8b697918eae0c4c2"
+    },
+    {
+      "path": "tests/operation_parameters.rs",
+      "bytes": 19631,
+      "sha256": "2862444c8d92dfcab9fa05b6ab13bef6cde411400ac9d3e0d9582e13d268de6e"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/runtime-parameter-pattern-v030/validation-repairs/static-operation-collision.qli",
+      "bytes": 162,
+      "sha256": "8e85acfcb1df1d58c13b950fa34502fca34d32063d96964c33ccc403acd44d89"
+    }
+  ],
+  "note": {
+    "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/next-unit.md",
+    "bytes": 9975,
+    "sha256": "1e8e80ad3195a07c6ac8537326734dcd41ea1b848e9b32831b701e6febdb006b"
+  },
+  "performed": [
+    "Read-only source/contract/test-source inspection",
+    "File SHA-256 and local metadata serialization"
+  ],
+  "not_performed": [
+    "Production/source/old-packet edits",
+    "Desired .qli generation or execution",
+    "CLI/native invocation",
+    "Cargo/Lean build",
+    "Tests or proof replay",
+    "Git command",
+    "GitHub mutation",
+    "Human adoption",
+    "Issue completion"
+  ],
+  "stability_scope": "The inspected subset was rehashed after metadata serialization; this is a current file identity guard, not execution or proof.",
+  "discovery_limits": "Nonexistent guessed frontend/profile and provider/test paths were discovery failures; actual paths were found via rg and inspected. Truncated discovery listings and selected Issue text are not claimed as a full inventory/read."
+}

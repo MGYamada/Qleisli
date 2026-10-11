@@ -1,0 +1,9 @@
+{
+  "format": "qleisli.active-protocol-migration-comparison",
+  "version": 1,
+  "active_sources": "All eight QLI sources and the edition manifest match the prepared complete desired derivative.",
+  "cli_sha256": "2a2dd77b16005a8ab72477b3934fa1c730081fb47b1a2da5ed306c70c100fff2",
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+  "outcomes": "Active check/run match original and desired-snapshot decoded JSON exactly. The unchanged closed inline entry has four output branches; this comparison alone does not establish behavior of all helper preparations.",
+  "limits": "The independent full-operator and seven-state/reference/fault Rust oracles remain separate from these CLI observations. No general source preservation, algorithm theorem or constitutional admission."
+}

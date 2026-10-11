@@ -1,0 +1,76 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/functional-boundary-v030/attempt-01/ordinary-local-callee",
+    "--format=json"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment_overrides": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "case": "ordinary-local-callee",
+  "mode": "finite",
+  "exit_code": 1,
+  "started_utc": "2026-10-06T04:46:29.125887+00:00",
+  "recorded_utc": "2026-10-06T04:46:29.131535+00:00",
+  "seconds": 0.005631082982290536,
+  "binary_before": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_after": {
+    "cli": {
+      "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+      "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+    },
+    "kernel": {
+      "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+    }
+  },
+  "binary_identity_stable": true,
+  "source_sha256": "db1fdf0c2b549cacee2cc018c55dbb1f454e23c73193593227da17c5124f5b50",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "raw_streams": {
+    "stdout": {
+      "path": "observations-first/ordinary-local-callee-finite-check-json.stdout.txt",
+      "sha256": "f36886dc6fff5aed65d91d83ccbf3455bc465e6e91f4eb1fd28fc3be448dcfe4",
+      "bytes": 278
+    },
+    "stderr": {
+      "path": "observations-first/ordinary-local-callee-finite-check-json.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  },
+  "scope": "Actual bounded public CLI observation. Native selected bytes recorded, not child-start/completion attestation or source/runtime theorem.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "type_mismatch",
+        "severity": "error",
+        "message": "a local value is not callable",
+        "primary": {
+          "path": "main.qli",
+          "start": 242,
+          "end": 246,
+          "line": 7,
+          "column": 15
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

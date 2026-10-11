@@ -1,0 +1,78 @@
+{
+  "case": "proof-maintenance",
+  "source": "lean/Qleisli/NativeValidity.lean",
+  "baseline_source_sha256": "f71992f9e9521def99a20bda9b44b1a94aeadc00fd3b9d27eb417a238957f664",
+  "mutated_source_sha256": "69bdfd219078bfbfb69977ff84f253cf004195e327f8be463cd384d8d914ba40",
+  "extractor_sha256": "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a",
+  "historical_expression_sha256": "d092e65a2bbfaa810e3508a04d255ca25116960f805c82e993c9ca7f4d477480",
+  "environment": "Copy of independently fresh-built historical source and project oleans; only this recorded source mutation is applied, then Lake rebuilds its dependencies. External dependency symlinks are unchanged pinned caches.",
+  "expected_continuity": "same",
+  "commands": [
+    {
+      "step": "build",
+      "argv": [
+        "lake",
+        "build",
+        "Qleisli.NativeValidity"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/proof-maintenance/lean",
+      "started_at": "2026-10-04T13:13:14.463446+00:00",
+      "elapsed_seconds": 29.962,
+      "exit_code": 0,
+      "stdout": "build.stdout.txt",
+      "stderr": "build.stderr.txt"
+    },
+    {
+      "step": "extract",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../evidence/Extract.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/proof-maintenance/lean",
+      "started_at": "2026-10-04T13:13:44.426040+00:00",
+      "elapsed_seconds": 6.462,
+      "exit_code": 0,
+      "stdout": "extract.stdout.txt",
+      "stderr": "extract.stderr.txt"
+    },
+    {
+      "step": "review",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../evidence/Review.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/proof-maintenance/lean",
+      "started_at": "2026-10-04T13:13:50.888063+00:00",
+      "elapsed_seconds": 5.646,
+      "exit_code": 0,
+      "stdout": "review.stdout.txt",
+      "stderr": "review.stderr.txt"
+    }
+  ],
+  "status": "checked",
+  "actual_expression_sha256": "d092e65a2bbfaa810e3508a04d255ca25116960f805c82e993c9ca7f4d477480",
+  "expressions_equal_to_historical": true,
+  "review_output_equal_to_historical": true,
+  "changed_declarations": [],
+  "added_declarations": [],
+  "removed_declarations": [],
+  "files": {
+    "Extract.lean": "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a",
+    "Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
+    "build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.stdout.txt": "243863917f555187750b3c3427aee2f9e3b38d562d78c89a7b9b0a341d1203c2",
+    "extract.json.gz": "e0a53b1592cc3dc1591539e0da7a78ec4fcb5747d0a2053b955718225b68ef6c",
+    "extract.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "extract.stdout.txt": "d092e65a2bbfaa810e3508a04d255ca25116960f805c82e993c9ca7f4d477480",
+    "mutated-source.lean.txt": "69bdfd219078bfbfb69977ff84f253cf004195e327f8be463cd384d8d914ba40",
+    "mutation.patch": "7627a6edaa3d8ae6ad1bf9e62119e762c3c0d1029c29260bad64de8c4f61ae52",
+    "review.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b"
+  }
+}

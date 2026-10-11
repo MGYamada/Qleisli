@@ -1,0 +1,51 @@
+{
+  "format": "qleisli.namespace-native-selection-validation",
+  "version": 1,
+  "attempt": "before-01",
+  "command": [
+    "cargo",
+    "+1.98.1",
+    "test",
+    "--offline",
+    "--test",
+    "native_roundtrip",
+    "compiled_programs_reencode_exactly_and_caches_match_implementations",
+    "--",
+    "--exact",
+    "--nocapture"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "env": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "CARGO_BUILD_JOBS": "2",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "started_utc": "2026-10-06T03:15:17.970831+00:00",
+  "source_sha256": {
+    "tests/native_roundtrip.rs": "94d528ce0d2b8c3f7165585bdb3f09c77f6f9a195173a9f546efbb13e7482722",
+    "tests/input_corpus.rs": "967ce12e6a2644c4bbfecafa698f76587ad12a58e3aaec266fb1fef5a9e5f775",
+    "tests/common/mod.rs": "10d30a8169c010b7f9f1cd0fa26074f6e403f8146c32790ebf6b59f044d38cab",
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "corpus/manifest.json": "9b49f12afe413dca69f18fb2549b3bd3fd8653e7d3910168e283049309c34916",
+    "corpus/migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+    "Cargo.toml": "02c6f27caec4bc22b2f489b1217d8d65868c1c647b64b95807efe48fe1e71ea7",
+    "Cargo.lock": "1d9cc017bc0183933e1f3a301b5df909407d53a32a262362c46a1e43ae1c8080"
+  },
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "scope": "Actual first failure of unchanged native_roundtrip source against current namespace source; one existing test only, no new Lean or maximum cases.",
+  "exit_code": 101,
+  "elapsed_seconds": 0.037,
+  "stdout": {
+    "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-01.stdout.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  },
+  "stderr": {
+    "path": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-roundtrip-selection-before-01.stderr.txt",
+    "sha256": "e202f95f83cf4f2a903f8b3218e5737d03b1ce046e1d839fee79783001c51bf5",
+    "bytes": 107
+  }
+}

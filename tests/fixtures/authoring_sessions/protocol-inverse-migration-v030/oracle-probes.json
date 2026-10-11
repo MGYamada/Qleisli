@@ -1,0 +1,19 @@
+{
+  "phase_fault.qli": "use states::y_minus; use std::quantum::phase_eighth;\npub unitary fn shifted(q:Q<Bit>)->Q<Bit>{phase_eighth(y_minus(q))}\n",
+  "probes": [
+    {
+      "provider": "y_minus",
+      "main.qli": "use states::{y_minus,y_plus}; use phase_fault::shifted;\nuse std::quantum::init0; use std::observe::measure_z;\nunitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}\nobserve fn main()->Bit{measure_z(use_op[y_minus](init0()))}\n"
+    },
+    {
+      "provider": "y_plus",
+      "main.qli": "use states::{y_minus,y_plus}; use phase_fault::shifted;\nuse std::quantum::init0; use std::observe::measure_z;\nunitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}\nobserve fn main()->Bit{measure_z(use_op[y_plus](init0()))}\n"
+    },
+    {
+      "provider": "shifted",
+      "main.qli": "use states::{y_minus,y_plus}; use phase_fault::shifted;\nuse std::quantum::init0; use std::observe::measure_z;\nunitary fn use_op[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}\nobserve fn main()->Bit{measure_z(use_op[shifted](init0()))}\n"
+    }
+  ],
+  "intended_matrix": "[[s,s],[-i*s,i*s]], s=1/sqrt(2); complete phase, not just prepared-state probabilities.",
+  "negative_controls": "y_plus changes relative phase; shifted changes the complete scalar phase. Both are independently checked ordinary unitary source, without a requested y_minus Meaning."
+}

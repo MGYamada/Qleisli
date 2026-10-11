@@ -1,0 +1,17 @@
+{
+  "scope": "Presentation-only second correction following root observed maintain_release applied-02 EXIT1. Markdown checker still recognized bracket/call notation inside a code span. The declaration, specialization and argument are now written separately; no checker rule, language/source/API/proof/acceptance change. No validator executed by this agent.",
+  "path": "tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/README.md",
+  "before": {
+    "bytes": 14587,
+    "sha256": "7c1399d849dd075cbe796bae7b6c6ef68341e9582362a1ec024ce7a1d5861629",
+    "mode": 420
+  },
+  "after": {
+    "bytes": 14634,
+    "sha256": "45500d9400895de78eddd59f9ead44607ac8da5661fa651a799d8617a349c6d1",
+    "mode": 420
+  },
+  "original_retained_at": "tests/fixtures/frontend_v030/stdlib-semantic-design/audit-01/presentation-repair-02/before.md.txt",
+  "first_frozen_readme": "presentation-repair-01/before.md.txt",
+  "original_maps": "All original audit maps and first repair records unchanged historical evidence."
+}

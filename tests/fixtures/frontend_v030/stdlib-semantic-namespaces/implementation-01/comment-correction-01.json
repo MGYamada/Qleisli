@@ -1,0 +1,13 @@
+{
+  "format": "qleisli.namespace-source-comment-correction",
+  "version": 1,
+  "path": "stdlib/src/transform.qli",
+  "before_sha256": "3b097e71dc74b51c0e1e09b66b33aa319fed599c14a1b96769e5076c2a8aff40",
+  "after_sha256": "5b7534bf3b07ccbc36453b1aa3ce48a7263780a3df8415d3570d4bcbf5cdf116",
+  "old_line": "//! Basis labels are little-endian and each circuit includes output-bit reversal.",
+  "new_line": "//! Fourier basis labels are little-endian; Fourier circuits include output-bit reversal.",
+  "reason": "Merged module also contains ordered hadamard2, which has no reversal. Scope module comment to Fourier circuits. Independent completion audit found the wording error; signatures and function bodies remain unchanged.",
+  "before_surface_sha256": "eeea8a160d7a59fbdf897436a2d59e8988dcec014157bafeb6ad02e7617e99dd",
+  "after_surface_sha256": "63fef1b359985205508d32f3824406ecaeb5de4230a8cc27ef4d1e4b631646e0",
+  "scope": "Documentation in embedded source only; recompile/embed and fresh source checks recorded separately. Earlier mathematical oracle results bind prior embedded comment bytes, with identical operators."
+}

@@ -89,6 +89,12 @@ private def usage (value : Json) : Except String Use := do
 
 def operation (value : Json) : Except String Op := do
   match ← text value "tag" with
+  | "pack_unit" =>
+    fields value ["tag","output"]
+    return .packUnit (← n value "output")
+  | "unpack_unit" =>
+    fields value ["tag","input"]
+    return .unpackUnit (← n value "input")
   | "init0" =>
     fields value ["tag","output","wire"]
     return .init0 (← n value "output") (← n value "wire")

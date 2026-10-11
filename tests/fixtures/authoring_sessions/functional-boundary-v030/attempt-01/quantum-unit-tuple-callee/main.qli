@@ -1,0 +1,7 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+pub unitary fn move_package(q: Q<Unit>) -> (Unit,Q<Unit>) { ((),q) }
+pub unitary fn hidden(q: Q<Unit>) -> Q<Unit> {
+    let captured = ((),q);
+    captured(())
+}
+pub observe fn main() -> Unit { () }

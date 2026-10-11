@@ -1,0 +1,2 @@
+[qrate]
+edition = "2026"

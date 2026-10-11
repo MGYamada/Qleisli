@@ -1,0 +1,365 @@
+{
+  "format": "qleisli.read-only-formal-validation-audit-selected-inputs",
+  "version": 1,
+  "recorded_utc": "2026-10-05T18:57:00.427538+00:00",
+  "reviewer": "/root/isometry_cli_tests",
+  "status": "actual-read-only-audit-completed",
+  "files": [
+    {
+      "path": "src/frontend/compile/operations.rs",
+      "bytes": 33453,
+      "sha256": "9e77a9745cf166a055c4fec5b009d46132dda460751042919f38af84f03fe23a"
+    },
+    {
+      "path": "src/frontend/formals.rs",
+      "bytes": 3523,
+      "sha256": "39d64fe7c6090de81b2afa1b6e6b8b8454151b9514138dbba93eed5e3dff322d"
+    },
+    {
+      "path": "src/frontend/mod.rs",
+      "bytes": 712,
+      "sha256": "5aa13633507fbc405a126b432f13bc62f480e8c7784e50f0a94beb1f58bbf7df"
+    },
+    {
+      "path": "src/frontend/sized/ast.rs",
+      "bytes": 4764,
+      "sha256": "a8b31ab0f612fc7513ae62103ae050874f64b591d0c3af0b99c0747554ac7fe1"
+    },
+    {
+      "path": "src/frontend/sized/check.rs",
+      "bytes": 56513,
+      "sha256": "1099273ca442b33e67c99fc33efc73aaecef448b222c656455b931d0dbaeeb17"
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "bytes": 12700,
+      "sha256": "c9840b426f33976824c0f9a20fefb4f7e84bb23cca9e58e5aa3c4d53580a0979"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "bytes": 15670,
+      "sha256": "cb028400f3dfcb698e3682a2ebb3937c1774fdf1a2fc36fe09362b401c99aee0"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/files.json",
+      "bytes": 34868,
+      "sha256": "b04f3792ab02a6ad4ea15e7562274b92cb2c6f1f6ac3b13af35556c1eb54a86b"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/identity.final.json",
+      "bytes": 39483,
+      "sha256": "21cb5b5058d585aba559f086750317c4b6b4de1a4f793911604447be61e62060"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-attempt-01/summary.json",
+      "bytes": 18469,
+      "sha256": "41ccc86663b8d11065fb011a03e6cba843979f275a9f392209c2a414acc5ff99"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/inputs.json",
+      "bytes": 126278,
+      "sha256": "87c408960956464f8cbbd6c48a626da3642ecc37aabf58fcdd8ea4022a0fbac5"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/after-design-01/observe-after.py",
+      "bytes": 11026,
+      "sha256": "ecd3c6c89b7b00ca9683eede78ae936c25d7a0be919a4602acd0bcf5e3571296"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/identity.final.json",
+      "bytes": 39284,
+      "sha256": "1fbd09e2829bac505169492f73bb010691785bce8546b8cc6c70db70a1bef0ac"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/before/summary.json",
+      "bytes": 10082,
+      "sha256": "c5faa44191e9041148681b60d9f24de4d0fc982875f54c8d1d9076ef8c5dfcc2"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/commands-before.json",
+      "bytes": 24210,
+      "sha256": "3887d877f89a35aac37b6a961d40610660efb7a36f52c26febf62033d22455e9"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/first-files.json",
+      "bytes": 12186,
+      "sha256": "140bc0e555d23460d6f8c523627c8cba643ca3ddc2aaa3d95533e06234a2e454"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/identity-prepared.json",
+      "bytes": 39624,
+      "sha256": "503f2a06aa507edfd83c056afea9f84b39598a01d72cec99b88e3fe6174ae28f"
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-formal-access-v030/terminal-after-attempt-01.json",
+      "bytes": 893,
+      "sha256": "e218f0e9ced5bb7aef5daf51937e780845440bd82f4e7696dcc2d1f6d9edf7bd"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/formal-slot-postimplementation-controls-01.inputs.json",
+      "bytes": 3358,
+      "sha256": "13319d1ee82d9e731665f60f9c4ad5b10a0ca62edb5f1685f38547cea393e3a4"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/formal-slot-postimplementation-controls-01.md",
+      "bytes": 4609,
+      "sha256": "70ef83cb786fd1a5211d991fc10b517191bab7ae848a8075f37af4b7da60014f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/phased-contract-01.md",
+      "bytes": 9623,
+      "sha256": "1f113b273841607d62ca9107f1919f825f7ea95a4576721b023f487e932e6d09"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/results.md",
+      "bytes": 4581,
+      "sha256": "05bb68af0bd9e867c96864de7afe5bdc5239fbd25e8f226cb9f81753bf8ab798"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/driver.py",
+      "bytes": 1681,
+      "sha256": "07a2635d631b626e75b1033b93a9787fc704b09b193ef263d450fa619ef9babb"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/format-repair-01.json",
+      "bytes": 576,
+      "sha256": "b371a4ca2ebeb56fa38c448f5a35ac7ced7709bf9c0158c9b229fc0790f57441"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/02-format.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/02-format.stdout.txt",
+      "bytes": 1143,
+      "sha256": "efc21ad948fdca7a47aefc6b179035c99c2fe150c709b83780d4ac964357b5e6"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-01/results.json",
+      "bytes": 3893,
+      "sha256": "5d2b2b86ae6ec20e44710fb5b2c9d66dd6949be4ce3fd095764b27bd9e2de01b"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/00-cargo-version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/00-cargo-version.stdout.txt",
+      "bytes": 47,
+      "sha256": "ab2420b0e6982384e7f8129000f8a073ed209725387afafa99b80f039b0ecd20"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/01-rustc-version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/01-rustc-version.stdout.txt",
+      "bytes": 47,
+      "sha256": "4c7fa6b57f453d9573be23fa156c53771e00e423cea0c5f68f62ae6342b9d01d"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/02-format.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/02-format.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/03-check-all-targets.stderr.txt",
+      "bytes": 120,
+      "sha256": "5509be9802be58ed2aa3a4a880e5e7d5073e34155731f7a85d02821a37a1e64f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/03-check-all-targets.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/04-shared-type-tests.stderr.txt",
+      "bytes": 659,
+      "sha256": "70885dd22e62612ebcb42d8b06e65c94161c00f7f0df84610aa77b8e35b42013"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/04-shared-type-tests.stdout.txt",
+      "bytes": 491,
+      "sha256": "b01b0be4490efb84a316f9a70a6f3aea861eca47499486a938e8181add46bc8a"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/05-focused-integration-tests.stderr.txt",
+      "bytes": 1848,
+      "sha256": "318de7e01482dc57d795ec0e11ebc6c38b2c8868a4ef0cf6073250c34b6d70f4"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/05-focused-integration-tests.stdout.txt",
+      "bytes": 12867,
+      "sha256": "246b29c8c6cdec687e4a7114a0089ebd99ea14cecec3cc4c7ace6dcbfccce3c6"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/06-clippy-all-targets.stderr.txt",
+      "bytes": 120,
+      "sha256": "44753826e0b3b37d8c56ffba21f81945dffa615b80fd015af128eb379b42cb07"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/06-clippy-all-targets.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/07-rebuilt-cli.stderr.txt",
+      "bytes": 60,
+      "sha256": "fcce12e8e9a3743502ec98eb1888a43a32489c10219b715f931aa40675ed5311"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/07-rebuilt-cli.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/inputs-after.json",
+      "bytes": 110516,
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/inputs-before.json",
+      "bytes": 110516,
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/planned-commands.json",
+      "bytes": 1751,
+      "sha256": "267048d03946adf60af9dbfff4fbfedc6454ec1db97fdb45de37b9a18545a241"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/latest-attempt-02/results.json",
+      "bytes": 12561,
+      "sha256": "552714804303102dfb344b12aeb82ed0050b221ff4497a170f38bd4c3dd3358f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/00-cargo-version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/00-cargo-version.stdout.txt",
+      "bytes": 36,
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/01-rustc-version.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/01-rustc-version.stdout.txt",
+      "bytes": 36,
+      "sha256": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/02-format.stderr.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/02-format.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/03-check-all-targets.stderr.txt",
+      "bytes": 539,
+      "sha256": "f0811fb02e18c6891e7f06f29f24e23a84b50bb7725a42e7ddd6662001bc0866"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/03-check-all-targets.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/04-shared-type-tests.stderr.txt",
+      "bytes": 659,
+      "sha256": "2269b340eb064871bb4868b016608617d37796af65b7f76e2e2dcba9af6adbef"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/04-shared-type-tests.stdout.txt",
+      "bytes": 491,
+      "sha256": "fbac058aa5ce598cd2f0822ea7d47a58c2119204aa51999c6d38c15fe207cd5a"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/05-focused-integration-tests.stderr.txt",
+      "bytes": 1848,
+      "sha256": "e10b926a669a1e44d9c95cfbe23222107e5bb10c5fc8dfa88acabcbf9dbfcb7b"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/05-focused-integration-tests.stdout.txt",
+      "bytes": 12867,
+      "sha256": "0fcde1462b9baa822b933881b2ad119c48be53b434ec3460b0a1fe1d6b0c4c3b"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/06-clippy-all-targets.stderr.txt",
+      "bytes": 120,
+      "sha256": "da4301f20337a9b326dd0f7681deda3c9557ca417532253b182d1f65fc6a1433"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/06-clippy-all-targets.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/07-rebuilt-cli.stderr.txt",
+      "bytes": 60,
+      "sha256": "4b395c9c76c7f7fb5221d30df7320c7a2387ff3842c426dbee6a59a54b5cffab"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/07-rebuilt-cli.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/inputs-after.json",
+      "bytes": 110516,
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/inputs-before.json",
+      "bytes": 110516,
+      "sha256": "38ee8f09014f1d7ae5b06a1973ac36fde34310d98d5c0d50a3539723ffc7206c"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/planned-commands.json",
+      "bytes": 2111,
+      "sha256": "05b42c94629d42909599154fd05e763caf9e5738c62418b20575104822888128"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/msrv-attempt-01/results.json",
+      "bytes": 12967,
+      "sha256": "52d39b3fcb9f3ce618910ede307a944a5d903930ef1e2f655cec585ae8102551"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/result-count-correction-01.json",
+      "bytes": 1150,
+      "sha256": "cc4b8ad667769daa2dd9c420bd4e6a3832a1f0ccde87eb180238088e50f12e7e"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-frontend-next-unit-01/formal-access-candidate-01/validation/selection.json",
+      "bytes": 1682,
+      "sha256": "bbe8eb44a3f83b091d8ddcc09a2bddccbfe949f2936b2f1fe48b5c4c220afc68"
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/validation/driver.py",
+      "bytes": 12621,
+      "sha256": "a9c33268c544dd12817f186472fd065ef76df82a617067e5605ac65267a78433"
+    },
+    {
+      "path": "tests/sized_declarations.rs",
+      "bytes": 19084,
+      "sha256": "ca9bf6d1cbcbd0b7eeab044bfc511026e4f489f09f8957e8c6059d703953f4d8"
+    }
+  ],
+  "scope": "Selected read-only inputs. Existing frozen FIRST/after-design/files maps bind all original and replay observations; result records bind all eight stages and raw logs. Not complete build/runtime/fixture closure or compiled-HEAD attestation."
+}

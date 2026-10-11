@@ -1,0 +1,1 @@
+VM-22: 263 constructors, 247 source snapshots, 20 boundaries; native authority selected by #276; full Soundness remains open.

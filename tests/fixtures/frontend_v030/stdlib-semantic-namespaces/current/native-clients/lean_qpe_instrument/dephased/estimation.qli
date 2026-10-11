@@ -1,0 +1,36 @@
+//! Shared fixed-precision QPE bodies with an explicit operation argument.
+//! Inputs need not be eigenstates; the returned target retains conditional state.
+use gates::identity;
+use std::quantum::init0;
+use std::quantum::h;
+use std::quantum::join;
+use std::quantum::split;
+use std::observe::measure_z;
+use std::transform::qft2;
+use std::transform::qft3;
+
+/// Return control and target after a phase-preserving controlled application.
+unitary fn controlled[static U: Op<Bit>](c: Q<Bit>, q: Q<Bit>) -> (Q<Bit>, Q<Bit>)
+requires Controlled(U) {
+    qif(c, q) { 0 => identity, 1 => U }
+}
+
+/// Two-bit QPE: ((weight-1 bit, weight-2 bit), target).
+pub observe fn phase2[static U: Op<Bit>](q: Q<Bit>) -> ((Bit, Bit), Q<Bit>)
+requires Controlled(U) {
+    let (a, q) = controlled[U](h(init0()), q);
+    let (b, q) = controlled[repeat_op(2,U)](h(init0()), q);
+    let (a, b) = split(adjoint(qft2, join(a, b)));
+    ((measure_z(a), measure_z(b)), q)
+}
+
+/// Three-bit QPE: ((weight-1 bit, weight-2 bit, weight-4 bit), target).
+pub observe fn phase3[static U: Op<Bit>](q: Q<Bit>) -> ((Bit, Bit, Bit), Q<Bit>)
+requires Controlled(U) {
+    let (a, q) = controlled[U](h(init0()), q);
+    let (b, q) = controlled[repeat_op(2,U)](h(init0()), q);
+    let (c, q) = controlled[repeat_op(4,U)](h(init0()), q);
+    let (ab, c) = split(adjoint(qft3, join(join(a, b), c)));
+    let (a, b) = split(ab);
+    ((measure_z(a), measure_z(b), measure_z(c)), q)
+}

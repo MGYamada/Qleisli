@@ -1,0 +1,54 @@
+{
+  "format": "qleisli.roundtrip-supplement-checks",
+  "version": 1,
+  "status": "passed-on-isolated-0605d71-plus-test-additions",
+  "issue": 288,
+  "evidence": {
+    "path": "tests/fixtures/review_v030alpha/roundtrip-coverage/isolated/results.json",
+    "sha256": "2b617517856c515fb2fac7b882020fc52233e08be4a1361e22ecb52d4f856a4c"
+  },
+  "isolated_source": {
+    "path": "tests/fixtures/review_v030alpha/roundtrip-coverage/isolated-source.json",
+    "sha256": "930a87f76c93576aab8f6cb5b6f9ef5f5d5e190a9280b309cefab41ac5706779"
+  },
+  "checks": [
+    {
+      "command": "cargo test --locked --test native_roundtrip -- --nocapture --test-threads=1",
+      "cwd": "isolated source snapshot",
+      "exit_code": 0,
+      "result": "4 passed, 0 failed; 58.09 seconds; exact stdout/stderr retained in isolated/"
+    },
+    {
+      "command": "direct QLV1 --qirf-native 0.3.0-alpha replay of every supplemental artifact",
+      "exit_code": 0,
+      "result": "11/11 accepted, with individual responses and work counts retained"
+    },
+    {
+      "command": "cargo clippy --locked --test native_roundtrip -- -D warnings",
+      "cwd": "isolated source snapshot",
+      "exit_code": 0,
+      "result": "passed; no warnings; 4.15 seconds"
+    },
+    {
+      "command": "rustfmt --edition 2024 --check tests/native_roundtrip.rs",
+      "exit_code": 0
+    },
+    {
+      "command": "git diff --check -- tests/native_roundtrip.rs tests/fixtures/review_v030alpha/roundtrip-coverage",
+      "exit_code": 0
+    },
+    {
+      "command": "parse recorder with Python ast.parse",
+      "exit_code": 0
+    },
+    {
+      "command": "verify every isolated output hash and both added source hashes against live owned files",
+      "exit_code": 0
+    }
+  ],
+  "not_performed": [
+    "Fresh current-tree integration after the concurrent frontend AST migration; root will run it after the migration builds.",
+    "Full hosted CI, maximum-size checks, release or publication.",
+    "No new semantic proof or guarantee admission is claimed."
+  ]
+}

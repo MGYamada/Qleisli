@@ -6,12 +6,14 @@ Status: the design principles are fixed. Goal 1: a quantum language for the AI e
 
 This is the English development plan. Current targets and implementation boundaries do not adopt future syntax or imply completed proofs. The verification migration plan and fixture records distinguish bounded checks from pending guarantees; source validation, tagging and publication remain separate.
 
-## Selected v0.2.9: contributor instructions and maintenance
+## Selected v0.3.0-alpha: prerelease preparation and documentation cleanup
 
-Selected 2026-10-03: synchronize the product versions, give Codex and Claude
-identical checked working rules, and rename the trust policy to TRUSTBOUNDARY.md.
-Add nine small translations from frozen corpus sources (87 total) and move
-retiring documents to `docs-old/` without active links or checker dependencies.
+Selected 2026-10-04: synchronize the product versions to `0.3.0-alpha` and
+complete the planned documentation cleanup. This is an unpublished prerelease
+development version; the latest published release is 0.2.9. Its implementation
+and validation records remain the baseline,
+including identical checked Codex/Claude rules, TRUSTBOUNDARY.md and nine small
+translations from frozen corpus sources (87 total).
 Local validation and publication remain separate. Selected source/raw/foreign/
 Python paths now reach Lean, and sized hierarchy execution no longer repeats
 Rust finite-leaf acceptance. Actual native acceptance also implies independent
@@ -34,14 +36,46 @@ schema has been enabled.
 
 ## v0.3.0: Qleisli type-system specification
 
-**docs/ cleanup boundary at v0.3.0:** exactly two exceptions survive this boundary
-in `docs/`: the entire `imaginary-v1/` tree and
-[lean-backend-plan-v0.3.md](docs/lean-backend-plan-v0.3.md). Preserve both during
-and after the cleanup. Other former documents are stored
-in `docs-old/` until that entire tree is deleted at v0.3.0. Links and active
-validation dependencies are removed now. New documentation will follow adopted
-decisions, code, proofs and executable examples. The
-[cleanup policy](AGENTS.md#docs-cleanup-boundary-at-v030) governs this transition.
+The [Constitution and governance adoption](docs/src/design/ratification.md)
+took effect on 2026-10-04 (Asia/Tokyo), including the initial Guardian appointment.
+Work now proceeds through the [authority hierarchy](docs/src/reference/authority.md).
+The initial QS/PR/RS interpretations were separately adopted as three binding
+pending obligations. Two narrower QLV1 ownership and classical-scope guarantees
+were subsequently admitted after proof review and explicit human approval; the
+[guarantee record](docs/src/design/initial-guarantees.md) states their exact
+scope and assumptions. The three broader obligations remain pending. The
+[release-readiness umbrella](https://github.com/MGYamada/Qleisli/issues/142)
+tracks 109 active Issues from the original 111 selected Issues, including the exactness interpretation in #311,
+ordinary-body effect inference in #315 and semantic stdlib namespaces in #317.
+#39 and #83 are outside the current goal. The historical release inventory
+retains all 111 entries and records approved deferrals separately.
+The maintainer has deferred general operation arrows beyond all of v0.3.0,
+including remaining differing-port project integration and rectangular Meaning.
+[#83](https://github.com/MGYamada/Qleisli/issues/83) stays open without a future
+release target; no completion credit is awarded. Already committed bounded
+support, ordinary function-return syntax and regression evidence remain.
+Endomorphic/reference and instrument Meaning work under #46 retains its
+remaining scope; it must not reintroduce deferred general-arrow requirements.
+The maintainer has excluded QFT implementation completion, generic QFT public
+integration and fixed/generic QFT equivalence from v0.3.0 and the current
+development goal. No future target is selected. #317 retains its namespace and
+admission work; existing fixed-QFT code, proofs and regression records remain.
+The current scope override is recorded in #317 and #142. It earns no completion
+credit and does not itself change the Issue count.
+Trial code and historical experiment archives are retained only under
+experimental/qft; this directory does not expose a canonical stdlib API.
+Edition 2026 identifies the constitutional
+regime and remains unchanged by the syntax, type-system and CLI migration.
+
+**Documentation cleanup completed for v0.3.0-alpha:** `docs/` retains the entire
+`imaginary-v1/` tree and
+[lean-backend-plan-v0.3.md](docs/src/lean-backend-plan-v0.3.md). The temporary
+`docs-old/` tree is deleted, with no redirects or replacement copies of retired
+prose. Executable source, proofs, counterexamples, validation artifacts and
+notices remain in their source/fixture locations. Write new documentation in
+`docs/` from adopted decisions, code, proofs and executable examples; consult
+Git history for retired documents. The
+[documentation policy](AGENTS.md#documentation-after-the-v030-cleanup) governs new work.
 
 **User-selected plan, 2026-09-29:** formulate the Qleisli type system as part
 of the v0.3.0 breaking-change release. Specify concrete rules, checking
@@ -50,11 +84,13 @@ current finite contract remains in force. This target
 builds on the migrated checker and requires corresponding rule/proof updates
 before adoption.
 QLT implementation moves to **v0.4.0 or later**, after the type-system work.
-Current development version is 0.2.9; the type-system decision remains future work.
+Current development version is `0.3.0-alpha`; selecting it and completing the
+documentation cleanup do not complete the type-system specification or its
+implementation/proof gates.
 
 ## v0.3.1–v0.3.9: proposed accelerated Lean backend expansion
 
-The [backend plan](docs/lean-backend-plan-v0.3.md) targets earlier retirement of
+The [backend plan](docs/src/lean-backend-plan-v0.3.md) targets earlier retirement of
 Rust transformations, hierarchy construction, target lowering, emitters and
 duplicate execution dispatch. Each stage requires a checked input/output
 relation, independent bounded validation and an explicit Rust deletion list;
@@ -148,7 +184,7 @@ The finite-core v0 specification and normative grammar align with Stage 0 module
 
 - Formalize effectful transformations of classical values and quantum resources from the design philosophy using input/output contexts and composition. Investigate the precise structure of Kleisli-inspired composition and its relationship/limits with free-vector-space `bind`.
 - Specify grammar and name resolution for all examples.
-- Give inferable type/effect rules for `basis`, `iso`, `unitary`, and `observe`, and ownership rules for classical branches and `qif`.
+- Give inferable type/effect rules for `basis`, `isometry`, `unitary`, and `observe`, and ownership rules for classical branches and `qif`.
 - Specify `split/join`, restricted `with_computed` protection, measurement's termination of logical ownership, and auxiliary evidence. General borrowing syntax/signatures belong to a later specification.
 - Address the central open problem: separate ownership contexts from global-state correlations and specify function-boundary checks for local operations, partial measurement, discard, and pure release. Initial support does not require general entanglement inference.
 - Specify pure isometries, measurement-bearing instruments, and translation to typed IR.

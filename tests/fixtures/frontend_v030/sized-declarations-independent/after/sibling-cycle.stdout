@@ -1,0 +1,3 @@
+finite.load: ok, 1 local modules
+sized.parse: main:0..0: cycle: mutually recursive dependency cycle is unsupported
+finite.check: Diagnostic { code: "recursive_call", message: "recursive function calls are not supported", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/sized-declarations-independent/sources/sibling-cycle/main.qli", span: Span { start: 15, end: 16 }, line: 1, column: 16 }) }

@@ -1,0 +1,163 @@
+{
+  "format": "qleisli.corpus-selection-repair",
+  "version": 1,
+  "recorded_utc": "2026-10-07T05:41:22.611551+00:00",
+  "first_failure": "current_project refused selected migration snapshot changed: quantum_katas/qpe3. Both Rust input_corpus runs then refused the same extra-manifest inventory condition at pennylane_demos/ising_zz_half2. The source-selection format binds QLI files only and rejects an extra local Qargo.toml. No source semantic oracle failed.",
+  "first_rust_results": {
+    "latest": {
+      "exit_code": 101,
+      "log": {
+        "external_path": "/private/tmp/qleisli-operation-corpus-rust-latest.log",
+        "bytes": 1616,
+        "sha256": "be53a8a2236d02199d34f243cd10009bb858cfb5a83a3e83423783c7b9b18f2a"
+      }
+    },
+    "msrv": {
+      "exit_code": 101,
+      "log": {
+        "external_path": "/private/tmp/qleisli-operation-corpus-rust-msrv.log",
+        "bytes": 1610,
+        "sha256": "4ad9d5ff37e80e3a9f0a01941aa09e4f5c828a7d98e7fe4b6827e4efb3d26782"
+      }
+    }
+  },
+  "repair": "Preserve all 25 originally copied edition manifests separately; selected derivatives inherit the unchanged corpus/Qargo.toml, whose bytes match each first manifest. All 50 QLI files and original raw CLI observations remain unchanged. The source-selection checker, native acceptance, expectations and budgets are unchanged. Revalidate actual public selection and execution separately.",
+  "manifests": {
+    "quantum_katas/qpe3": {
+      "first_manifest": "initial-manifests/quantum_katas/qpe3/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "qualtran/qpe2": {
+      "first_manifest": "initial-manifests/qualtran/qpe2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qubit_rotation": {
+      "first_manifest": "initial-manifests/pennylane_demos/qubit_rotation/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_vertex_cover": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_vertex_cover/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_maxcut": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_maxcut/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qpe3": {
+      "first_manifest": "initial-manifests/pennylane_demos/qpe3/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/kernel_overlap2": {
+      "first_manifest": "initial-manifests/pennylane_demos/kernel_overlap2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rx_quarter": {
+      "first_manifest": "initial-manifests/pennylane_demos/rx_quarter/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/ising_zz_quarter2": {
+      "first_manifest": "initial-manifests/pennylane_demos/ising_zz_quarter2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rx_negative_quarter": {
+      "first_manifest": "initial-manifests/pennylane_demos/rx_negative_quarter/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rotation_mixed_sign": {
+      "first_manifest": "initial-manifests/pennylane_demos/rotation_mixed_sign/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_mixer2": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_mixer2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "qualtran/reflection_minus1": {
+      "first_manifest": "initial-manifests/qualtran/reflection_minus1/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "qualtran/control_zero_reflection2": {
+      "first_manifest": "initial-manifests/qualtran/control_zero_reflection2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rotation_half_y": {
+      "first_manifest": "initial-manifests/pennylane_demos/rotation_half_y/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/ising_zz_negative2": {
+      "first_manifest": "initial-manifests/pennylane_demos/ising_zz_negative2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rotation_half_x": {
+      "first_manifest": "initial-manifests/pennylane_demos/rotation_half_x/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/ising_zz_half2": {
+      "first_manifest": "initial-manifests/pennylane_demos/ising_zz_half2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_edge_layer2": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_edge_layer2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rotation_negative_x_positive_y": {
+      "first_manifest": "initial-manifests/pennylane_demos/rotation_negative_x_positive_y/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_negative_mixer2": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_negative_mixer2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_path_layer3": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_path_layer3/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/rotation_both_negative": {
+      "first_manifest": "initial-manifests/pennylane_demos/rotation_both_negative/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_path_cost3": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_path_cost3/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "pennylane_demos/qaoa_negative_edge_layer2": {
+      "first_manifest": "initial-manifests/pennylane_demos/qaoa_negative_edge_layer2/Qargo.toml",
+      "active_inherited_manifest": "corpus/Qargo.toml",
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  },
+  "first_provenance_tests": {
+    "exit_code": 1,
+    "tests": 77,
+    "failures": 1,
+    "cause": "The quick-report test also refused the extra local manifest in selected snapshot inventory; the other 76 tests completed without failure.",
+    "log": {
+      "external_path": "/private/tmp/qleisli-operation-corpus-provenance-tests.log",
+      "bytes": 2705,
+      "sha256": "d5a35de169570d43acf9cdafcaec110e821a8b1c05729b88e8a9192a8a84a2bc"
+    }
+  }
+}

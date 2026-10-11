@@ -1,0 +1,155 @@
+{
+  "format": "qleisli.current-type-unit-checkpoint.v1",
+  "implementation_commit": "7c27ab50e5726aeaa2985d49beac7763171e5f2d",
+  "review_kind": "Development-agent revalidation of original #27/#43 criteria; no human Guardian or independent author judgment",
+  "previous_reviews": {
+    "43": {
+      "previous_record": "tests/fixtures/review_v030alpha/issue-43-unit-review.json",
+      "changed_since_previous_review": [
+        "docs/src/reference/type-model.md",
+        "src/frontend/sized/lower.rs",
+        "src/frontend/sized/raw/preservation.rs",
+        "tests/quantum_tuple_unitors.rs"
+      ],
+      "criterion_numbers_retained": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    "27": {
+      "previous_record": "tests/fixtures/review_v030alpha/issue-27-type-synthesis.json",
+      "changed_since_previous_review": [
+        "docs/src/reference/type-model.md",
+        "tests/ordinary_types.rs",
+        "tests/basis_polymorphism.rs",
+        "tests/quantum_unit_source.rs",
+        "tests/quantum_tuple_unitors.rs"
+      ],
+      "criterion_numbers_retained": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    }
+  },
+  "current_source_sha256": {
+    "docs/src/reference/type-model.md": "fa0927ee52a8cca8f5216348f060cf9da06ceaf50139cce199f18a5f1c30fd58",
+    "src/frontend/sized/lower.rs": "b4ffbfe63f34abd5b77d0dc2e0004f84dd9c962e6f1038f845fa7e3975aa555b",
+    "src/frontend/sized/raw/preservation.rs": "18c0376bf36c9ed6808389a2afdb19e078d68ac9a54fee185561e61a99d35226",
+    "src/frontend/types.rs": "7ecb70d63535c3aed4083979c9ca1140831f150e52f80e155a07403d511229c1",
+    "tests/quantum_tuple_unitors.rs": "cac26463d0cf2a5fae40c9f6783473d833e99ba6b3bfb582a42cd0d172d1d27d",
+    "tests/quantum_unit_maps.rs": "97a7174bae2452369bd268670d53e9c5bc42568ef77a9888a06e6576bd5c4783",
+    "tests/quantum_unit_source.rs": "6363ea4f78c60487aa2a4681772fa67c59b337cbb665027614b8ea717a65671e",
+    "tests/unit_patterns.rs": "0e7b6ce04fd284bf2ea9ac213d2e624d9319c3dca96accf0c7c0e1ab01deca45",
+    "src/frontend/check.rs": "c85f5f62fcab1340703c6e5eaaf5028a44dde7c4e3fa73fb46518ecd3a1f2dec",
+    "src/frontend/check/body.rs": "a78a248323f3fd72e55ee83eeb2d547e6adbb4ecf5bef86cd93871108eb82777",
+    "src/frontend/check/body/special.rs": "60ff2e3935ec9a5943e560a40ead2b31d9c3d544fd6487351e9e852670da8195",
+    "src/frontend/effects.rs": "61fa01297c302881c52f951202f304198e80e1f70c88c4bdb22398f101d57909",
+    "tests/ordinary_types.rs": "0d02f73d2634552312616e0644ca7f627e811cb87d86df56fdc19e4c8376f99a",
+    "tests/source_judgments.rs": "a8284448bada4e95fe810f77d9c404a49ff83b5e6404a794f14714724bb053d4",
+    "tests/body_effects.rs": "3b906375921767dde842d5955c86563a2c7608c98ecd0b2f6a93ce5cd9c2d30d",
+    "tests/inference_law.rs": "eb0ba203ed4390ecd71b35e568b8c4c0acb5debaf65b377dd7114d45df521935",
+    "tests/frontend_types.rs": "fb5d5604afd483e4beff0ef2973943d69586a814d15e92128b64880cb020de33",
+    "tests/basis_polymorphism.rs": "9df85febbf63598bdfff772eab3cb50a18eadf7be70e13e3a08bfa5b208cc79f"
+  },
+  "verification": {
+    "targets": {
+      "basis_polymorphism": 11,
+      "body_effects": 13,
+      "frontend_types": 3,
+      "inference_law": 6,
+      "ordinary_types": 14,
+      "quantum_tuple_unitors": 12,
+      "quantum_unit_maps": 12,
+      "quantum_unit_source": 16,
+      "source_judgments": 8,
+      "unit_patterns": 9
+    },
+    "commands": [
+      {
+        "session": 37619,
+        "command": "cargo test --locked --test basis_polymorphism --test body_effects --test frontend_types --test inference_law --test ordinary_types --test quantum_tuple_unitors --test quantum_unit_maps --test quantum_unit_source --test source_judgments --test unit_patterns",
+        "toolchain": "1.98.1",
+        "passed": 104,
+        "failed": 0,
+        "ignored": 0,
+        "exit_code": 0
+      },
+      {
+        "session": 17367,
+        "command": "python3 scripts/run_msrv.py test --locked --test basis_polymorphism --test body_effects --test frontend_types --test inference_law --test ordinary_types --test quantum_tuple_unitors --test quantum_unit_maps --test quantum_unit_source --test source_judgments --test unit_patterns",
+        "toolchain": "1.85.0",
+        "passed": 104,
+        "failed": 0,
+        "ignored": 0,
+        "exit_code": 0
+      }
+    ],
+    "environment": {
+      "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+      "CARGO_INCREMENTAL": "0",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_BUILD_JOBS": "2",
+      "latest_target": "/private/tmp/qleisli-bounded-validation-target",
+      "msrv_target": "/private/tmp/qleisli-bounded-validation-msrv-target"
+    },
+    "native_binary_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "transcripts": "Actual terminal tool outputs retained in the current chat; this record summarizes observations and does not reconstruct missing raw logs."
+  },
+  "reference_corrections": [
+    "Finite Meaning checks admit exact Unit/Bit/product quantum bases, not only Unit/Bit atoms.",
+    "Actual closed Definition/Repeat bindings support forwarding through ordinary helpers and existing adjoint/controlled access in the exact pure-circuit profile.",
+    "All original requests remain mandatory. Unsupported Bits/constructors/opaque assertions, refined Raw root emission and independent native acceptance barriers remain explicit."
+  ],
+  "review_findings": {
+    "43": "All ten original criteria retain local evidence: singleton/modal distinction, exact scalar action/control, independently checked explicit introduction/elimination/unitors and reference behavior, retained zero-width owners and distinct Bits0 tags. Current target differences remain under #32/#44; no original #43 criterion is removed.",
+    "27": "All eleven original conceptual/type-boundary criteria retain local conformance evidence. General Basis Meaning/profile work under #44 and future constructs are not completed by this review."
+  },
+  "documentation_validation": {
+    "source_links": 2201,
+    "markdown_anchors": 31,
+    "lean_root_modules": 206,
+    "check_docs_exit_code": 0,
+    "mdbook_version": "0.5.4",
+    "build_exit_code": 0,
+    "rendered_html_files": 29,
+    "rendered_local_links": 1226,
+    "rendered_anchors": 473,
+    "check_book_exit_code": 0
+  },
+  "hosted_ci": {
+    "run": 37522735109,
+    "head": "7c27ab50e5726aeaa2985d49beac7763171e5f2d",
+    "observed_status": "in_progress",
+    "scope": "Exact implementation checkpoint; subsequent Reference corrections are local and not included in this run."
+  },
+  "limits": [
+    "Original review packets are historical and unchanged.",
+    "This checkpoint does not close Issues or supply a new interpretation, guarantee admission, source-preservation theorem, full QS/PR/RS/EXACT discharge, fresh Lean replay or release approval.",
+    "Full integrated hosted CI remains pending; focused local results cannot substitute for it.",
+    "Bits native finite representation needs an exact tagged extension with matching independent codec/semantic/proof checks; no width-only conversion is implemented here."
+  ],
+  "completion": {
+    "closed": 22,
+    "total": 111,
+    "percent": 19.82
+  }
+}

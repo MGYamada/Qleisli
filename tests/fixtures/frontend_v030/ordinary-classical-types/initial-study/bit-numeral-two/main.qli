@@ -1,0 +1,1 @@
+pub unitary fn main() -> Bit { 2 }

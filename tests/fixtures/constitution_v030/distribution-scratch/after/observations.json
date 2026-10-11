@@ -1,0 +1,110 @@
+{
+  "scope": "Synthetic Rust/Cargo/client commands; real local Git, archives and validator. No compiler, installer or Lean execution. Harness removes its tiny fixture after recording; original report paths are historical locations.",
+  "argv": [
+    "tests/fixtures/constitution_v030/distribution-scratch/record.py",
+    "--output",
+    "tests/fixtures/constitution_v030/distribution-scratch/after"
+  ],
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "validator": "/Users/masa/git/Qleisli/scripts/check_distribution.py",
+  "validator_sha256": "062020e85affce94baa5cd834aae626341b473cef18407a9dd6c0013c5a95a97",
+  "driver_sha256": "98ce492c7cf78102800e20a8d2010f6557b4ad72bf3f3ac8e0bd2032a42f9f16",
+  "observations": [
+    {
+      "case": "success",
+      "result": "passed",
+      "work_status": "removed",
+      "source_present_after_validate": false,
+      "package_present_after_validate": false,
+      "installation_present_after_validate": false,
+      "target_count": 5,
+      "targets_present_after_validate": 0,
+      "external_sentinel_unchanged": null,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "failure",
+      "result": "failed",
+      "work_status": "removed",
+      "source_present_after_validate": false,
+      "package_present_after_validate": false,
+      "installation_present_after_validate": false,
+      "target_count": 4,
+      "targets_present_after_validate": 0,
+      "external_sentinel_unchanged": null,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "keep-success",
+      "result": "passed",
+      "work_status": "retained",
+      "source_present_after_validate": true,
+      "package_present_after_validate": true,
+      "installation_present_after_validate": true,
+      "target_count": 5,
+      "targets_present_after_validate": 5,
+      "external_sentinel_unchanged": null,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "keep-failure",
+      "result": "failed",
+      "work_status": "retained",
+      "source_present_after_validate": true,
+      "package_present_after_validate": true,
+      "installation_present_after_validate": true,
+      "target_count": 4,
+      "targets_present_after_validate": 4,
+      "external_sentinel_unchanged": null,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "external-success",
+      "result": "passed",
+      "work_status": "removed",
+      "source_present_after_validate": false,
+      "package_present_after_validate": false,
+      "installation_present_after_validate": false,
+      "target_count": 5,
+      "targets_present_after_validate": 5,
+      "external_sentinel_unchanged": true,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "external-failure",
+      "result": "failed",
+      "work_status": "removed",
+      "source_present_after_validate": false,
+      "package_present_after_validate": false,
+      "installation_present_after_validate": false,
+      "target_count": 4,
+      "targets_present_after_validate": 4,
+      "external_sentinel_unchanged": true,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "cleanup-error",
+      "result": "failed",
+      "work_status": "cleanup-failed",
+      "source_present_after_validate": true,
+      "package_present_after_validate": true,
+      "installation_present_after_validate": true,
+      "target_count": 5,
+      "targets_present_after_validate": 5,
+      "external_sentinel_unchanged": null,
+      "durable_evidence_verified": true
+    },
+    {
+      "case": "failure-and-cleanup-error",
+      "result": "failed",
+      "work_status": "cleanup-failed",
+      "source_present_after_validate": true,
+      "package_present_after_validate": true,
+      "installation_present_after_validate": true,
+      "target_count": 4,
+      "targets_present_after_validate": 4,
+      "external_sentinel_unchanged": null,
+      "durable_evidence_verified": true
+    }
+  ]
+}

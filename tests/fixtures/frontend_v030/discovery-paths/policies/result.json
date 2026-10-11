@@ -1,0 +1,82 @@
+{
+  "inputs_stable": true,
+  "mdbook_binary_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "exit_code": 0,
+      "seconds": 2.1047150830272585
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.011986833007540554
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "exit_code": 0,
+      "seconds": 0.10368066601222381
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.344170291966293
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_verification_inventory.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4352074589696713
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.13000458298483863
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/test_check_production_coverage.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.081047750019934
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.19248962501296774
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "7cc6b5f7f659859b01c74966bea3dc31285ada3e"
+      ],
+      "exit_code": 0,
+      "seconds": 1.2767774579697289
+    }
+  ],
+  "passed": true
+}

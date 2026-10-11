@@ -1,0 +1,5 @@
+{
+  "status": "read-only-consumer-schema-mismatch-found-before-execution",
+  "recorded_utc": "2026-10-05T18:16:35.784431+00:00",
+  "reason": "check_authoring_sessions.py requires embedded qleisli.result stdout or a nonempty transcript. The unexecuted draft recorded only raw paths/JSON shape. Retain earlier draft/map and add bounded labelled transcript plus actual decoded result where present. No actual CLI/checker/test failure occurred, no source/manifest/command/input changes."
+}

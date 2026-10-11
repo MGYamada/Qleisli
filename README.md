@@ -8,8 +8,19 @@ It combines **linear quantum ownership**, **explicit measurement effects**, and
 **exact semantic contracts** so that reusable operations carry checkable meaning.
 Human-written and AI-generated programs go through the same independent IR verifier.
 
-**Development version: 0.2.9 (unpublished). Latest published version: 0.2.8.**
+**Qleisli is pronounced exactly like Kleisli.** The initial Q is semantic,
+not phonetic; see the [canonical name and ecosystem naming principle](docs/src/reference/project-identity.md).
+
+**Policy as Theorem. Constitution as Harness. Compiler as Executor.**
+The [architecture principle](docs/src/reference/architecture.md) connects human
+interpretation, independent proof and execution of the authorized boundaries.
+
+**Development version: 0.3.0-alpha (prerelease preparation; unpublished). Latest published version: 0.2.9.**
 **Qleisli language edition: `"2026"`.**
+Edition identifies the constitutional regime, not a syntax generation.
+The [Constitution](CONSTITUTION.md) was ratified on 2026-10-04 (Asia/Tokyo);
+the [adoption record](docs/src/design/ratification.md) identifies the exact text
+and initial Guardian appointment. The 0.3.0 language migration stays in edition 2026.
 All current `.qli` sources and `.qlt` drafts use edition 2026; every source tree
 explicitly declares it in `Qargo.toml`. Compatible changes are recorded in the
 [changelog](CHANGELOG.md).
@@ -21,24 +32,24 @@ verifier and dual API have been removed under the approved
 Missing, incompatible or failing checkers reject without fallback or download.
 Start with [installation and a Bell-pair program](#try-it).
 Python connections and QIR input have optional requirements below.
-The experimental sized-source pipeline uses an explicitly selected Lean kernel;
+Explicit source specialization uses an explicitly selected Lean kernel;
 [executable clients and validation records](corpus/sized/README.md) describe
 the supported experiments.
 The three theorem pillars below are project goals. The
 [Migration decision](https://github.com/MGYamada/Qleisli/issues/276) records implementation and proof scope.
-Version 0.2.8 was published on 2026-10-03 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.8)
-and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.8).
-[Publication evidence](tests/fixtures/releases/v0.2.8/publication.json) binds the immutable source,
+Version 0.2.9 was published on 2026-10-04 (Asia/Tokyo): [crates.io](https://crates.io/crates/qleisli/0.2.9)
+and [GitHub Release](https://github.com/MGYamada/Qleisli/releases/tag/v0.2.9).
+[Publication evidence](tests/fixtures/releases/v0.2.9/publication.json) binds the immutable source,
 registry artifact, fresh installation, hosted docs and complete GitHub downloads.
 
 [Quick reference](tests/fixtures/quick_reference/README.md) · [Trust boundary](TRUSTBOUNDARY.md) ·
 [Roadmap](ROADMAP.md) · [Verification migration](https://github.com/MGYamada/Qleisli/issues/276) ·
-[Algorithm drafts](docs/imaginary-v1/README.md)
+[Algorithm drafts](docs/src/imaginary-v1/index.md)
 
 ## Language edition and qrate management
 
 The closest enclosing `Qargo.toml` explicitly selects edition `"2026"` for
-each source. Compiler version `0.2.9`, Qleisli edition `"2026"` and the Rust
+each source. Compiler version `0.3.0-alpha`, Qleisli edition `"2026"` and the Rust
 implementation's Cargo edition `"2024"` are independent. Missing manifests,
 unsupported editions and malformed schema-2 manifests are rejected.
 
@@ -64,7 +75,7 @@ use std::quantum::h;
 use std::quantum::cnot;
 use std::observe::measure_z;
 
-observe fn main() -> (CBit, CBit) {
+observe fn main() -> (Bit, Bit) {
     let (a, b) = cnot(h(init0()), init0());
     (measure_z(a), measure_z(b))
 }
@@ -92,10 +103,10 @@ Install from a source checkout:
 cargo install --path . --locked --bin qleisli
 ```
 
-Once 0.2.9 is published, install this version from the registry:
+Once 0.3.0-alpha is published, install this version from the registry:
 
 ```sh
-cargo install qleisli --version 0.2.9 --locked
+cargo install qleisli --version 0.3.0-alpha --locked
 ```
 
 For this unpublished checkout, build the checker with Lean 4.30.0 and select it:
@@ -116,9 +127,9 @@ above. For this unpublished version, build from source until its matching assets
 appear on [GitHub Releases](https://github.com/MGYamada/Qleisli/releases).
 
 
-For the latest published release, use `--version 0.2.8` instead.
-The [0.2.8 publication evidence](tests/fixtures/releases/v0.2.8/publication.json)
-records its completed publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.8/qleisli/)
+For the latest published release, use `--version 0.2.9` instead.
+The [0.2.9 publication evidence](tests/fixtures/releases/v0.2.9/publication.json)
+records its completed publication. The registry command and [API documentation](https://docs.rs/qleisli/0.2.9/qleisli/)
 were verified after publication, including a fresh exact-version registry install.
 
 Put Cargo's installation `bin` directory on PATH (normally `$HOME/.cargo/bin`).
@@ -181,7 +192,7 @@ ideally impossible outcome may appear with a tiny positive rounding residue
 in text or JSON output; interpret these values with a numerical tolerance.
 
 Add `--format=json` to `check` or `run` for structured results and diagnostics.
-Use `cargo run --bin qleisli -- doc stdlib/src/transforms.qli` to render source
+Use `cargo run --bin qleisli -- doc stdlib/src/transform.qli` to render source
 documentation; comments are isolated as fenced text so unfinished Markdown or
 HTML cannot hide subsequent declarations. `qleisli --help` lists available commands.
 
@@ -248,22 +259,21 @@ native failure blocks checking, execution and output.
 
 ## Status and direction
 
-**0.2.9** selects the next development version, adds identical contributor
-instructions for Codex and Claude with automated equality/size checks, and
-renames the trust policy to [TRUSTBOUNDARY.md](TRUSTBOUNDARY.md).
-Nine additional small corpus translations bring the finite inventory to 87.
-The [session](corpus/authoring/v029-small/README.md) retains source and validation.
-Selected Lean checking now covers source libraries, unused concrete bodies,
-raw Rust adapters, foreign CLI operations and Python. Sized hierarchy execution
-uses native-checked artifacts without repeating Rust leaf acceptance. The
+**0.3.0-alpha** starts preparation for the next prerelease. It selects the
+new product version and completes the planned documentation cleanup; the
+v0.3.0 type-system work remains in progress. [CHANGELOG](CHANGELOG.md) records
+the unpublished changes.
+
+The published v0.2.9 baseline uses Lean acceptance for source libraries,
+unused concrete bodies, raw Rust adapters, foreign CLI operations and Python.
+Sized hierarchy execution uses native-checked artifacts without repeating
+Rust leaf acceptance. The
 [VM29 record](tests/fixtures/verification_v029/README.md) gives exact scope and
 remaining gates. [Decision #276](https://github.com/MGYamada/Qleisli/issues/276)
 approves the exceptional v0.2.9 single-verifier migration. All production
 acceptance now uses Lean, including function evidence and encoded contracts;
 the Rust verifier and dual API are removed. Full Soundness remains a v0.5.0 obligation.
-[CHANGELOG](CHANGELOG.md) records this unpublished scope.
-
-The published 0.2.8 baseline is retained in its validation fixtures. The
+The published baselines are retained in their validation fixtures. The
 [adopted cutover criteria](https://github.com/MGYamada/Qleisli/issues/276)
 separate implementation, release validation and proof completion;
 external schemas remain disabled. The [VM-25 pure raw-IR profile](tests/fixtures/verification_v025/completion/README.md)
@@ -274,11 +284,11 @@ refine original complex instruments and prove CP/TNI/TP for finite references.
 Hierarchy semantics, source/native/runtime correspondence and full-profile
 Soundness retain their explicitly scoped proof obligations.
 
-Future type-system breaks use v0.3.0; QLT implementation remains deferred to
+The v0.3.0 type-system goals remain open; QLT implementation remains deferred to
 v0.4.0 or later. These targets do not establish the three general theorems or
 completion of the v1 algorithms.
 
-The requested [v0.3.1–v0.3.9 backend plan](docs/lean-backend-plan-v0.3.md)
+The requested [v0.3.1–v0.3.9 backend plan](docs/src/lean-backend-plan-v0.3.md)
 proposes earlier Lean backend expansion and staged Rust retirement, with local
 pass relations, independent validation and explicit compatibility/deletion gates.
 
@@ -292,12 +302,12 @@ components and explicit contracts. These are goals; the general theorems and
 all six general algorithm implementations are not complete.
 
 The active [v0.2.x migration goals](https://github.com/MGYamada/Qleisli/issues/276) remain
-in force. Exactly two exceptions remain in `docs/` across the v0.3.0 cleanup:
+in force. The v0.3.0 cleanup retains two existing entries in `docs/`:
 the entire `imaginary-v1/` tree and
-[lean-backend-plan-v0.3.md](docs/lean-backend-plan-v0.3.md).
-Other former documents are temporarily in `docs-old/`, with their links
-and active checking dependencies removed now. Delete that tree at the v0.3.0
-cleanup boundary; write future documentation from adopted decisions and code.
+[lean-backend-plan-v0.3.md](docs/src/lean-backend-plan-v0.3.md).
+The retired `docs-old/` tree has been deleted. New documentation belongs in
+`docs/` and must follow adopted decisions, actual code, proofs and executable
+examples. Retired prose remains available through Git history.
 
 The standard-library goal is a
 **BLAS/LAPACK-like foundation for quantum computing, integrated with a textbook

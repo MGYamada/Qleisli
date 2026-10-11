@@ -1,0 +1,15 @@
+{
+  "format": "qleisli.ordinary-classical-type-observations",
+  "version": 1,
+  "processes": 34,
+  "session_sha256": "713e407f58251c405b545666381271addce0d2a5de793a755fbec9b8b3c6d1b3",
+  "observations_sha256": "755ac7c07f5f58a6f8df788092299fdd0e6633a8b32c450b9f36ea924b795617",
+  "executables_and_linked_library": {
+    "/private/tmp/qleisli-ordinary-classical-type-study/library-observer": "3aff816b5e67b6a0292cdac22fd8d6f72276fd818fa4684e1190cca62c538395",
+    "/Users/masa/git/Qleisli/target/debug/libqleisli.rlib": "56b77cafc43aa08986e7ea91c0cfb3f677bfca0b08ad009d8951e60170982c7b",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "all_exit_zero": true,
+  "sources_and_executables_unchanged_during_observation": true,
+  "scope": "Observer exit zero includes diagnostic rejection. Native kernel results were not requested for hierarchy proposals; source check, elaboration and lowering are distinct observations."
+}

@@ -1,0 +1,1 @@
+main:149..172: static: wrong number of static arguments for main::g: expected [U: Op], received 2

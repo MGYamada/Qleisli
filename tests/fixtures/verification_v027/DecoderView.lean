@@ -37,6 +37,8 @@ def usage : Semantics.Raw.Use → Json
       [("controls",protectedControls cs),("target_index",toJson i),("gate",toJson (gate g))]
   | .phase cs p => tag "controlled_phase" [("controls",protectedControls cs),("phase",toJson (phase p))]
 def rawOp : Semantics.Raw.Op → Json
+  | .packUnit o => tag "pack_unit" [("output",toJson o)]
+  | .unpackUnit i => tag "unpack_unit" [("input",toJson i)]
   | .init0 o w => tag "init0" [("output",toJson o),("wire",toJson w)]
   | .gate g i o => tag "gate" [("gate",toJson (gate g)),("input",toJson i),("output",toJson o)]
   | .cnot c t co tout => tag "cnot" [("control",toJson c),("target",toJson t),("control_out",toJson co),("target_out",toJson tout)]
@@ -77,6 +79,7 @@ def finiteBasis (b : Semantics.Finite.Basis) : Json :=
   js (b.map fun a => match a with
     | .unit => tag "unit"
     | .bit => tag "bit"
+    | .bits n => tag "bits" [("width",toJson n)]
     | .pair => tag "tuple" [("arity",toJson (2 : Nat))]
     | .tuple n => tag "tuple" [("arity",toJson n)])
 def qirf (a : Qirf.Artifact) : Json :=

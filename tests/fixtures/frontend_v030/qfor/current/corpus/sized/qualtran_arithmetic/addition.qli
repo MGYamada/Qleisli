@@ -1,0 +1,13 @@
+// Copyright 2023 Google LLC
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Adapted from retained Qualtran AddK/Equals; see README.md.
+use increment::increment;
+
+/// Add K modulo 2^n, retaining arbitrary phases and correlations.
+/// This reference construction repeats a shared increment; its cost depends on K.
+pub unitary fn add_k[static n: Nat, static K: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {
+    qfor static k in 0..K carry register = q {
+        yield increment[n](register);
+    }
+}

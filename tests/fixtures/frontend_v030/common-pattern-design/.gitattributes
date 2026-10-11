@@ -1,0 +1,8 @@
+# Exact retained patch context and genuine harness EOF bytes.
+implementation.patch -text -whitespace
+validation/latest-attempt-02/04-shared-type-tests.stdout.txt -text -whitespace
+validation/latest-attempt-02/05-focused-integration-tests.stdout.txt -text -whitespace
+validation/msrv-attempt-01/04-shared-type-tests.stdout.txt -text -whitespace
+validation/msrv-attempt-01/05-focused-integration-tests.stdout.txt -text -whitespace
+whitespace-review/before.stdout.txt -text -whitespace
+whitespace-review/after.stdout.txt -text -whitespace

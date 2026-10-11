@@ -1,13 +1,13 @@
 {
   "format": "qleisli.vm29-coverage",
-  "version": 1,
+  "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "ecbe727c23b61a32346d55350ad1669268901c47c39b3b705e836309cfbd60e3",
+  "surface_sha256": "55f3d94d0745af549e31a187c551b65c67c83d11520ba042461d65943ebaca5c",
   "groups": [
     {
       "id": "raw-core",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/native_raw.rs"
@@ -51,7 +51,7 @@
     },
     {
       "id": "finite-contract",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/semantic_contracts.rs"
@@ -73,7 +73,7 @@
     },
     {
       "id": "function-evidence",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/function_evidence.rs"
@@ -95,10 +95,13 @@
     },
     {
       "id": "finite-meaning",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/meaning_evidence.rs"
+        "tests/meaning_evidence.rs",
+        "lean-kernel/QleisliKernel/Semantics/ControlAccess.lean",
+        "lean/Qleisli/ControlAccess.lean",
+        "tests/reference_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -117,7 +120,7 @@
     },
     {
       "id": "transport",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/interchange.rs"
@@ -139,10 +142,12 @@
     },
     {
       "id": "finite-leaf",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/finite_leaf.rs"
+        "tests/finite_leaf.rs",
+        "lean-kernel/QleisliKernel/Qirf/ControlAccess.lean",
+        "lean-kernel/Tests.lean"
       ],
       "proof_gates": [
         "S05-C1",
@@ -161,11 +166,18 @@
     },
     {
       "id": "source",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/review_v021.rs",
-        "tests/static_operations.rs"
+        "tests/static_operations.rs",
+        "tests/ordinary_booleans.rs",
+        "stdlib/src/gate.qli",
+        "tests/axis_routing_boundary.rs",
+        "tests/rust_boundary_diagnostics.rs",
+        "tests/selected_source_cli.rs",
+        "tests/fixtures/authoring_sessions/closure-capture-v030/README.md",
+        "tests/reference_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -184,7 +196,7 @@
     },
     {
       "id": "foreign",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/interop.rs"
@@ -206,7 +218,7 @@
     },
     {
       "id": "hierarchy",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/hierarchical_host.rs"
@@ -740,7 +752,7 @@
     },
     {
       "id": "hierarchical-execution",
-      "status": "native-execution",
+      "status": "untrusted-host",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/hierarchical_execution.rs",
@@ -763,10 +775,13 @@
     },
     {
       "id": "sized-source",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
-        "tests/sized_source.rs"
+        "tests/sized_source.rs",
+        "tests/ordinary_booleans.rs",
+        "tests/basis_polymorphism.rs",
+        "tests/reference_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -785,10 +800,112 @@
     },
     {
       "id": "named-qpe-host",
-      "status": "native-execution",
+      "status": "mixed-boundary",
       "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
       "evidence": [
         "tests/hierarchical_qpe_host.rs"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "finite-bits-interface",
+      "status": "mixed-boundary",
+      "blocker": "Atomic Bits use the existing native finite/QIRF acceptance paths. Checked legacy-basis transport retains old register action, original decoded roots and scoped ownership/scope meanings. Full source/compiler/native/runtime correspondence, independent specification review and quantitative obligations remain open; this is neither a new guarantee admission nor S05 closure.",
+      "evidence": [
+        "tests/meaning_evidence.rs",
+        "tests/interchange.rs",
+        "tests/ordinary_booleans.rs",
+        "tests/bits_cli.rs",
+        "lean/Qleisli/FiniteBasisTransport.lean",
+        "tests/fixtures/constitution_v030/initial-guarantees-continuity/BasisTransportReview.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "source-excl",
+      "status": "mixed-boundary",
+      "blocker": "Untrusted whole-owner call elaboration uses the existing fresh native gates. Lookup-level scope proofs retain binder/type embedding and update-provenance premises; full source preservation, general footprints/lifetimes, ctrl source binding and quantitative resource correspondence remain open. This component admits no constitutional guarantee.",
+      "evidence": [
+        "tests/exclusive_access.rs",
+        "lean/Qleisli/ExclusiveScope.lean",
+        "docs/src/reference/elaboration.md",
+        "docs/src/reference/rust-boundary.md"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-PackUnit",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/quantum_unit_maps.rs",
+        "lean-kernel/QleisliKernel/Raw/Unit.lean",
+        "lean-kernel/QleisliKernel/Raw/Trace.lean",
+        "lean-kernel/QleisliKernel/Raw/Ownership.lean"
+      ],
+      "proof_gates": [
+        "S05-C1",
+        "S05-C2",
+        "S05-C3",
+        "S05-C4",
+        "S05-C5"
+      ],
+      "cutover_gates": [
+        "MIG-1",
+        "MIG-2",
+        "MIG-3",
+        "MIG-4",
+        "MIG-5"
+      ]
+    },
+    {
+      "id": "raw-UnpackUnit",
+      "status": "native-execution",
+      "blocker": "Full-profile Soundness, source/native/decoder/runtime correspondence and independent specification review remain open; release checks are separate from implementation authority.",
+      "evidence": [
+        "tests/quantum_unit_maps.rs",
+        "lean-kernel/QleisliKernel/Raw/Unit.lean",
+        "lean-kernel/QleisliKernel/Raw/Trace.lean",
+        "lean-kernel/QleisliKernel/Raw/Ownership.lean"
       ],
       "proof_gates": [
         "S05-C1",
@@ -813,13 +930,13 @@
         "interchange::native::Kernel::{accept_raw,accept,check_raw,check_program}",
         "RawProgram/RawOp untrusted Rust proposals"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/native_raw.rs",
         "tests/native_paths.rs"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "tests/native_paths.rs",
@@ -838,6 +955,10 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "ordinary-acceptance",
+        "raw-proposal"
       ]
     },
     {
@@ -849,8 +970,8 @@
         "CheckedContract::{check,identity,then,tensor,adjoint,controlled,check_binding,check_entry}",
         "check_computed"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/semantic_contracts.rs"
       ],
@@ -872,8 +993,13 @@
         "path": "tests/semantic_contracts.rs",
         "test": "primitive_evidence_preserves_exact_phase"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "checked-views",
+        "contract-acceptance",
+        "finite-proposal"
+      ]
     },
     {
       "id": "function",
@@ -882,8 +1008,8 @@
         "FiniteMeaning::{permutation,phase,matrix,target_ir}",
         "MeaningEvidence::{check,check_binding}"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/function_evidence.rs"
       ],
@@ -905,8 +1031,13 @@
         "path": "tests/function_evidence.rs",
         "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "checked-views",
+        "finite-proposal",
+        "ordinary-acceptance"
+      ]
     },
     {
       "id": "qirf",
@@ -916,12 +1047,12 @@
         "interchange::native::Kernel::{inspect,check_raw,check_with_meanings,convert}"
       ],
       "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/interchange.rs",
         "tests/native_paths.rs"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "tests/native_paths.rs",
@@ -940,6 +1071,9 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "ordinary-acceptance"
       ]
     },
     {
@@ -949,8 +1083,8 @@
         "finite_matrix::{encode,decode}",
         "finite_leaf::{check_unitary,check_serialized_unitary}"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/finite_leaf.rs"
       ],
@@ -972,8 +1106,13 @@
         "path": "tests/finite_leaf.rs",
         "test": "reconstruct_hadamard_in_both_formats_and_bind_complete_bytes"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "contract-acceptance",
+        "finite-proposal",
+        "source-meaning-check"
+      ]
     },
     {
       "id": "source",
@@ -985,14 +1124,15 @@
         "compile/check_project_with_kernel",
         "QrateSource::{compile_with_kernel,check_with_kernel}"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/review_v021.rs",
         "tests/static_operations.rs",
-        "scripts/test_source_kernel.py"
+        "scripts/test_source_kernel.py",
+        "tests/ordinary_booleans.rs"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "scripts/test_source_kernel.py",
@@ -1011,6 +1151,10 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "ordinary-acceptance",
+        "source-documentation"
       ]
     },
     {
@@ -1023,13 +1167,13 @@
         "Python Client(lean_kernel=PATH), Program methods and python -m qleisli --lean-kernel=PATH",
         "interop::import_openqasm3_with_kernel"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/interop.rs",
         "scripts/test_interop_native.py"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "scripts/test_interop_native.py",
@@ -1048,6 +1192,10 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "foreign-export",
+        "ordinary-acceptance"
       ]
     },
     {
@@ -1057,7 +1205,7 @@
         "phase DAG/layout/layout DAG/phase-layout native protocols"
       ],
       "status": "lean-component",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/hierarchical_host.rs"
       ],
@@ -1079,8 +1227,11 @@
         "path": "tests/hierarchical_host.rs",
         "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "phase-components"
+      ]
     },
     {
       "id": "hierarchy-inspect",
@@ -1090,8 +1241,8 @@
         "Kernel::check_against (ordinary root and Fourier)",
         "Hierarchical.RoutedPower.inspect (Lean component only)"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/hierarchical_host.rs"
       ],
@@ -1113,8 +1264,14 @@
         "path": "tests/hierarchical_host.rs",
         "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "hierarchy-configuration",
+        "hierarchy-fourier",
+        "hierarchy-inspect",
+        "hierarchy-request"
+      ]
     },
     {
       "id": "execution",
@@ -1124,7 +1281,7 @@
         "CLI run/sample and Python Program methods"
       ],
       "status": "untrusted-host",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/sampling.rs"
       ],
@@ -1146,8 +1303,11 @@
         "path": "tests/sampling.rs",
         "test": "stochastic_samples_match_independent_bell_and_reset_feedback_contracts"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "host-execution"
+      ]
     },
     {
       "id": "readout-component",
@@ -1156,7 +1316,7 @@
         "qleisli-kernel --readout-check (private QLM1 framing)"
       ],
       "status": "lean-component",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "scripts/test_hierarchical_readout.py"
       ],
@@ -1178,8 +1338,11 @@
         "path": "scripts/test_hierarchical_readout.py",
         "test": "test_native_branches"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "readout-component"
+      ]
     },
     {
       "id": "preparation-component",
@@ -1188,7 +1351,7 @@
         "qleisli-kernel --preparation-check (private QLZ1 framing)"
       ],
       "status": "lean-component",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "scripts/test_hierarchical_preparation.py"
       ],
@@ -1210,8 +1373,11 @@
         "path": "scripts/test_hierarchical_preparation.py",
         "test": "test_zero_reference"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "preparation-component"
+      ]
     },
     {
       "id": "instrument-composition",
@@ -1222,7 +1388,7 @@
         "--instrument-pending"
       ],
       "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/hierarchical_host.rs"
       ],
@@ -1244,8 +1410,11 @@
         "path": "tests/hierarchical_host.rs",
         "test": "native_instrument_binds_all_stages_and_reconstructs_finite_obligations"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "hierarchy-instrument"
+      ]
     },
     {
       "id": "hierarchy-execution",
@@ -1255,13 +1424,13 @@
         "CheckedInstrument::sample_normalized_shots",
         "NativeChecked::{execute_pure,execute_instrument,sample_normalized_shots}"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "untrusted-host",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/hierarchical_execution.rs",
         "src/interchange/hierarchical/execution.rs"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "tests/hierarchical_execution.rs",
@@ -1280,6 +1449,9 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "hierarchy-execution"
       ]
     },
     {
@@ -1292,16 +1464,26 @@
         "ElaboratedProgram::lower",
         "HierarchyProposal::validate_initialization_moves",
         "HierarchyProposal::qpe_binding",
-        "qleisli sized check/run/sample/emit-proposal",
+        "qleisli check/run/sample/emit-proposal --entry/--module",
         "HierarchyProposal::validate_initialization_moves_native",
-        "sized check/run/sample through native-only reports"
+        "sized check/run/sample through native-only reports",
+        "ElaboratedProgram::lower_raw",
+        "RawSourceProposal::validate_source_steps",
+        "ElaboratedProgram::hierarchy_eligibility",
+        "qleisli check/run/sample/emit-proposal with explicit module/entry bindings",
+        "BasisBinding::parse",
+        "ParsedProgram::instantiate_with_types",
+        "OperationBinding::with_types",
+        "selected --type/--operation-type explicit closed Basis bindings"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
-        "tests/sized_source.rs"
+        "tests/sized_source.rs",
+        "tests/ordinary_booleans.rs",
+        "tests/mixed_booleans.rs"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "tests/sized_source.rs",
@@ -1320,6 +1502,15 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "hierarchy-execution",
+        "hierarchy-fourier",
+        "hierarchy-instrument",
+        "hierarchy-qpe",
+        "hierarchy-request",
+        "sized-proposal",
+        "source-meaning-check"
       ]
     },
     {
@@ -1333,8 +1524,8 @@
         "CheckedQpeInstrument::instrument",
         "CheckedQpeInstrument::candidate"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/hierarchical_qpe_host.rs"
       ],
@@ -1356,8 +1547,12 @@
         "path": "tests/hierarchical_qpe_host.rs",
         "test": "native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "checked-views",
+        "hierarchy-qpe"
+      ]
     },
     {
       "id": "source-edition-configuration",
@@ -1368,7 +1563,7 @@
         "ParsedProgram::load"
       ],
       "status": "untrusted-host",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/review_v021.rs",
         "tests/static_operations.rs"
@@ -1391,8 +1586,11 @@
         "path": "tests/review_v021.rs",
         "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "source-configuration"
+      ]
     },
     {
       "id": "lean-finite-component-v024",
@@ -1403,7 +1601,7 @@
         "QleisliKernel.Protocol.FiniteCodec.readMatrix"
       ],
       "status": "lean-component",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "tests/semantic_contracts.rs"
       ],
@@ -1425,8 +1623,11 @@
         "path": "tests/semantic_contracts.rs",
         "test": "primitive_evidence_preserves_exact_phase"
       },
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
-      "legacy": "removed; no Rust acceptance fallback"
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
+      "legacy": "removed; no Rust acceptance fallback",
+      "paths": [
+        "finite-component"
+      ]
     },
     {
       "id": "qirf-native-v028",
@@ -1436,14 +1637,14 @@
         "interchange::native::Kernel::{inspect,verify,check_program,check_raw,check_with_meanings,convert}"
       ],
       "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "evidence": [
         "src/interchange/native.rs",
         "scripts/test_native_verification.py",
         "tests/fixtures/verification_v028/dual-validation.json",
         "tests/native_paths.rs"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "tests/native_paths.rs",
@@ -1462,6 +1663,9 @@
         "MIG-3",
         "MIG-4",
         "MIG-5"
+      ],
+      "paths": [
+        "ordinary-acceptance"
       ]
     },
     {
@@ -1470,8 +1674,8 @@
         "interchange::native::{Proposal,AcceptedProgram,Kernel::accept}",
         "sim::{run_closed,sample_closed} on AcceptedProgram"
       ],
-      "status": "native-execution",
-      "blocker": "Full Soundness/source-runtime proof and release platform validation remain open.",
+      "status": "mixed-boundary",
+      "blocker": "S05 full-profile proof/review and source/export/runtime preservation remain open. Published 0.2.9 validation and current unpublished development are recorded separately.",
       "proof_gates": [
         "S05-C1",
         "S05-C2",
@@ -1492,12 +1696,17 @@
         "scripts/test_native_acceptance_replay.py",
         "tests/fixtures/verification_v029/native/README.md"
       ],
-      "selection": "Matching explicit native executable for acceptance; proposal and host work cannot issue an accepted handle",
+      "selection": "See classified paths for native acceptance or dedicated native hierarchy checks. Proposals, documentation, views and host execution cannot issue a fresh native decision.",
       "legacy": "removed; no Rust acceptance fallback",
       "route_test": {
         "path": "tests/native_acceptance.rs",
         "test": "native_handles_execute_bell_and_feedback_without_legacy_receipts"
-      }
+      },
+      "paths": [
+        "host-execution",
+        "ordinary-acceptance",
+        "raw-proposal"
+      ]
     }
   ],
   "gates": [
@@ -1531,7 +1740,7 @@
     "decision": "https://github.com/MGYamada/Qleisli/issues/276",
     "target_version": "0.2.9",
     "target_authority": "Lean",
-    "status": "in-progress",
+    "status": "single-lean-acceptance-implemented",
     "soundness_target": "0.5.0",
     "cutover_criteria": [
       "MIG-1",
@@ -1540,5 +1749,1758 @@
       "MIG-4",
       "MIG-5"
     ]
-  }
+  },
+  "validation": {
+    "published_baseline": {
+      "version": "0.2.9",
+      "status": "published and verified",
+      "record": "tests/fixtures/releases/v0.2.9/publication.json",
+      "source_commit": "a77e68f4d3942cd75cb4c4710350aab9a99f8c8b"
+    },
+    "current_development": {
+      "version": "0.3.0-alpha",
+      "status": "unpublished",
+      "validation": "separate current-tree checks; no inherited release certification"
+    },
+    "proof_status": "S05-C1-C5 open; no constitutional guarantee discharged by this inventory"
+  },
+  "classification_scope": "Boundary rows may contain multiple paths. Native acceptance and dedicated native hierarchy checks have different report/handle scopes. Constructors, documentation, checked views, configuration, transformations and execution do not issue fresh semantic acceptance. RawOp constructor groups retain their native checking coverage, not constructor authority.",
+  "paths": [
+    {
+      "id": "raw-proposal",
+      "classification": "untrusted-proposal",
+      "boundaries": [
+        "raw",
+        "qirf-native-v029"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/interchange/native.rs",
+          "markers": [
+            "pub struct Proposal",
+            "pub fn from_raw("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/native_acceptance.rs",
+          "test": "native_handles_execute_bell_and_feedback_without_legacy_receipts"
+        }
+      ],
+      "entry_path": "RawProgram/RawOp and native::Proposal::{new,from_raw}",
+      "checked_artifact": "Untrusted raw IR or serialized QIRF/request bytes",
+      "checker": "Structural proposal checks only; no Lean invocation",
+      "proof_scope": "No acceptance or preservation theorem is asserted for proposal construction.",
+      "gaps": "A well-formed proposal may still be rejected by Lean."
+    },
+    {
+      "id": "finite-proposal",
+      "classification": "untrusted-proposal",
+      "boundaries": [
+        "contract",
+        "function",
+        "finite-leaf"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/contract/mod.rs",
+          "markers": [
+            "pub struct Circuit",
+            "pub struct Encoding",
+            "pub struct Contract"
+          ]
+        },
+        {
+          "path": "src/contract/meaning.rs",
+          "markers": [
+            "pub fn permutation(",
+            "pub fn phase(",
+            "pub fn matrix(",
+            "pub fn target_ir("
+          ]
+        },
+        {
+          "path": "src/interchange/finite_leaf.rs",
+          "markers": [
+            "pub struct UnitaryBoundary"
+          ]
+        },
+        {
+          "path": "src/interchange/finite_matrix.rs",
+          "markers": [
+            "pub fn encode(",
+            "pub fn decode("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/semantic_contracts.rs",
+          "test": "primitive_evidence_preserves_exact_phase"
+        }
+      ],
+      "entry_path": "Circuit::new, Encoding::{new,identity}, Contract::new, FiniteMeaning::{permutation,phase,matrix,target_ir}, UnitaryBoundary::new, finite_matrix::{encode,decode}",
+      "checked_artifact": "Untrusted circuit/encoding/meaning/boundary descriptions and matrix bytes",
+      "checker": "Host structural construction and exact arithmetic only; no fresh Lean acceptance",
+      "proof_scope": "These constructors and matrix codecs do not establish the described circuit contract.",
+      "gaps": "Every proposed meaning or contract still needs independent checking of the actual artifact."
+    },
+    {
+      "id": "ordinary-acceptance",
+      "classification": "native-acceptance",
+      "boundaries": [
+        "raw",
+        "function",
+        "qirf",
+        "source",
+        "foreign",
+        "qirf-native-v028",
+        "qirf-native-v029"
+      ],
+      "native_modes": [
+        "--qirf-native"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/native.rs",
+          "markers": [
+            "pub fn accept(",
+            "pub fn inspect(",
+            "\"--qirf-native\""
+          ]
+        },
+        {
+          "path": "src/contract/function.rs",
+          "markers": [
+            "pub fn check(",
+            ".function_evidence("
+          ]
+        },
+        {
+          "path": "src/contract/meaning.rs",
+          "markers": [
+            "pub fn check(",
+            "FunctionEvidence::"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "markers": [
+            "pub fn compile_project_with_kernel(",
+            "pub fn check_project_with_kernel("
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/function_contract.rs",
+          "markers": [
+            "fn function_contract_evidence(",
+            "FunctionEvidence::check_retained_with_kernel"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan.rs",
+          "markers": [
+            "fn raw_execute(",
+            "native::Kernel::new(kernel).accept(proposal.proposal())",
+            "proposal.validate_source_steps(&checked)"
+          ]
+        },
+        {
+          "path": "src/interchange/mod.rs",
+          "markers": [
+            "pub fn import(",
+            "pub fn convert("
+          ]
+        },
+        {
+          "path": "src/interop/openqasm.rs",
+          "markers": [
+            "pub fn import_openqasm3_with_kernel("
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Validity.lean",
+          "markers": [
+            "Protocol.Validity.check"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/Validity.lean",
+          "markers": [
+            "def check ",
+            "theorem check_acceptance",
+            "theorem check_ownershipSafe"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeValidity.lean",
+          "markers": [
+            "theorem check_sound",
+            "theorem check_scopeSafe"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/native_paths.rs",
+          "test": "native_report_retains_the_exact_artifact_request_and_reconstructed_program"
+        },
+        {
+          "path": "tests/function_evidence.rs",
+          "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "unused_generic_body_keeps_its_closed_function_contract_in_both_adapters"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "declared_finite_meaning_keeps_its_request_on_both_adapters"
+        },
+        {
+          "path": "scripts/test_source_kernel.py",
+          "test": "test_unused_body_native_rejection_blocks_every_source_action"
+        },
+        {
+          "path": "scripts/test_interop_native.py",
+          "test": "test_all_actions_formats_use_real_native_checker"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_mixed_sources_keep_independent_distributions_and_scope"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_inverse_application_preserves_ordinary_names_and_both_consumers"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_power_literal_execution_keeps_ordinary_names_in_both_consumers"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_control_finite_keeps_ordered_axes_and_ordinary_names"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_control_finite_preserves_zero_width_phase_and_owner"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_constructed_inverse_finite_keeps_order_and_zero_power_effects"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_constructed_inverse_finite_preserves_scalar_and_refuses_false_meaning"
+        },
+        {
+          "path": "tests/qli_corpus.rs",
+          "test": "canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_power_original_program_and_symbolic_counts_preserve_z_phase"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_power_noncommuting_order_and_nested_inverse_have_independent_action"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_power_zero_width_scalar_and_control_keep_exact_phase"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "selected_z_direct_inverse_and_control_preserve_reference_phase"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "selected_z_interference_matches_finite_and_rejects_wrong_interfaces"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "complete_preserved_z_operation_probe_passes_raw_with_explicit_hierarchy_limit"
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "test": "source_z_replay_rejects_native_valid_x_substitution"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "reassembled_owner_and_callee_binders_do_not_restore_old_snapshot"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "exact_owner_shape_and_actual_body_effect_are_required"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "both_source_paths_preserve_ctrl_phase_kickback_and_an_entangled_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "finite_ctrl_rejects_actual_sector_changes_and_unused_lying_calls"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "finite_ctrl_checks_nested_calls_and_keeps_zero_width_phase"
+        }
+      ],
+      "entry_path": "Source/project/qrate compilation, raw IR, function/meaning evidence, QIRF import/export/conversion/verify-ir, foreign/Python imports -> native::Kernel",
+      "checked_artifact": "Original QLV1 packet: QIRF artifact and optional finite request; source lowering and evidence generation produce these bytes",
+      "checker": "Main --qirf-native -> Cli.runValidity -> Protocol.Validity.check -> Qirf.Validity.inspect",
+      "proof_scope": "Qleisli.NativeValidity.check_sound and check_scopeSafe bind native packet success to ordinary-root VerifiedMeaning and classical scope. Protocol.Validity.check_acceptance/check_ownershipSafe bind the parsed packet and ownership.",
+      "gaps": "Full ordinary EffectSound/CPTP, source/foreign translation, export and runtime preservation, compilation assumptions and S05 composition/review remain open. Ownership safety is not the constitutional Resource Safety theorem."
+    },
+    {
+      "id": "contract-acceptance",
+      "classification": "native-acceptance",
+      "boundaries": [
+        "contract",
+        "finite-leaf"
+      ],
+      "native_modes": [
+        "--qirf-contract"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/native/contracts.rs",
+          "markers": [
+            "fn check_encoded(",
+            "fn check_leaf(",
+            "fn check_instrument(",
+            "\"--qirf-contract\""
+          ]
+        },
+        {
+          "path": "src/contract/instrument.rs",
+          "markers": [
+            "struct InstrumentEvidence ",
+            "struct InstrumentCall ",
+            "fn check_call(",
+            "implementation.artifact()",
+            "specification.artifact()"
+          ]
+        },
+        {
+          "path": "src/frontend/instrument.rs",
+          "markers": [
+            "fn signature<N>",
+            "ResultAtom::Quantum",
+            "signature.validate(budget)"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/lower/function_contract.rs",
+          "markers": [
+            "fn apply_instrument_contract(",
+            "self.raw.operations[first..].to_vec()",
+            ".check_call(",
+            "fn instrument_contract_evidence("
+          ]
+        },
+        {
+          "path": "src/interchange/native.rs",
+          "markers": [
+            "source_instruments:",
+            "source_instrument_calls:",
+            "fn retain_instruments(",
+            "fn retain_instrument_calls("
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Validity.lean",
+          "markers": [
+            "Protocol.NativeContract.check"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/NativeContract.lean",
+          "markers": [
+            "def check ",
+            "QleisliKernel.Qirf.checkContract",
+            "QleisliKernel.Qirf.check ",
+            "structure Acceptance ",
+            "structure LeafAcceptance ",
+            "structure ControlAcceptance ",
+            "QleisliKernel.Qirf.ControlAccess.check",
+            "theorem check_acceptance"
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/InstrumentContract.lean",
+          "markers": [
+            "def decode ",
+            "def check ",
+            "structure Acceptance ",
+            "expectedText.toUTF8",
+            "theorem check_acceptance"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean",
+          "markers": [
+            "def interface ",
+            "def check ",
+            "Validity.checkRoot actual actualOrder",
+            "Validity.checkRoot expected expectedOrder",
+            "Raw.InstrumentEquality.compare",
+            "theorem check_acceptance"
+          ]
+        },
+        {
+          "path": "lean-kernel/QleisliKernel/Qirf/Contract.lean",
+          "markers": [
+            "theorem checkContract_bound"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/Qirf.lean",
+          "markers": [
+            "theorem reconstruct_semantics",
+            "theorem check_semantics"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeContract.lean",
+          "markers": [
+            "structure LeafMeaning ",
+            "theorem check_root_meaning",
+            "theorem leaf_meaning",
+            "theorem leaf_reference_laws",
+            "theorem check_sound",
+            "structure EncodedMeaning ",
+            "theorem encoded_meaning",
+            "theorem check_encoded_sound",
+            "theorem encoded_reference",
+            "structure ControlMeaning ",
+            "theorem control_meaning",
+            "theorem control_reference",
+            "structure InstrumentMeaning ",
+            "theorem instrument_meaning"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/QirfInstrumentContract.lean",
+          "markers": [
+            "theorem reconstruct_denotes",
+            "theorem reconstruct_kraus_complete",
+            "theorem check_dimensions",
+            "theorem check_instrument"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeContractWrapper.lean",
+          "markers": [
+            "theorem circuitMatrix_entries",
+            "theorem check_encoded_original",
+            "theorem check_reference_original"
+          ]
+        },
+        {
+          "path": "tests/fixtures/constitution_v030/native-contract-wrapper/Review.lean",
+          "markers": [
+            "#check @Qleisli.NativeContract.Wrapper.circuitMatrix_entries",
+            "#check @Qleisli.NativeContract.check_encoded_sound"
+          ]
+        },
+        {
+          "path": "tests/fixtures/constitution_v030/native-contract-bridge/Review.lean",
+          "markers": [
+            "#check @QleisliKernel.Protocol.NativeContract.check_acceptance",
+            "#check @Qleisli.NativeContract.check_sound",
+            "#print Qleisli.NativeContract.LeafMeaning"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/semantic_contracts.rs",
+          "test": "primitive_evidence_preserves_exact_phase"
+        },
+        {
+          "path": "tests/finite_leaf.rs",
+          "test": "reconstruct_hadamard_in_both_formats_and_bind_complete_bytes"
+        },
+        {
+          "path": "scripts/test_native_verification.py",
+          "test": "test_control_requests"
+        },
+        {
+          "path": "scripts/test_native_verification.py",
+          "test": "test_instrument_requests"
+        },
+        {
+          "path": "src/contract/instrument.rs",
+          "test": "instrument_receipts_bind_original_bytes_and_fresh_call_decisions"
+        },
+        {
+          "path": "src/contract/instrument.rs",
+          "test": "instrument_signature_preflights_frontiers_depth_and_zero_width_types"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contracts_compare_complete_instruments_on_the_emitted_call"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contracts_reject_public_relabeling_and_wrong_residual_channels"
+        },
+        {
+          "path": "tests/function_contracts.rs",
+          "test": "observing_contracts_check_nested_calls_branches_and_hidden_discard_histories"
+        }
+      ],
+      "entry_path": "CheckedContract and derived contracts; check_computed; finite_leaf::{check_unitary,check_serialized_unitary} -> native::Kernel::{check_encoded,check_leaf}; finite-project control calls and original-byte control requests through the same version-paired native mode (selected-source ctrl remains unsupported)",
+      "checked_artifact": "QLV1 original QIRF plus strict native-contract request: encoded, leaf, control, control-owners, or observing instrument with both complete signatures, original expected QIRF text and source identity",
+      "checker": "Main --qirf-contract -> Cli.runValidity true -> Protocol.NativeContract.check; instrument -> Protocol.InstrumentContract.check -> Qirf.InstrumentContract.check with both fresh original graphs and complete exact coefficient comparison",
+      "proof_scope": "Protocol.NativeContract.check_acceptance binds original QLV1 body/request bytes, decoded artifact and request, and continuous checking states. Qleisli.NativeContract.check_root_meaning and check_sound establish RootMeaning for all request kinds. For leaf requests, leaf_meaning establishes original-body instrument meaning for the bounded closed unitary fragment, exact requested matrix/signature/ordered ports, and an actual verification of the output port; leaf_reference_laws extends both whole-space inverse laws to any finite reference. For encoded requests, check_encoded_sound and encoded_meaning bind the original root BodyMeaning, exact Basis interface and Encoded equation; Wrapper.circuitMatrix_entries proves actual wrapper coefficients equal the original reconstructed matrix, including zero-width phase and axis order. encoded_reference extends the equation to every reference amplitude function. For control requests, ControlAcceptance binds decoded signature/axes to the reconstructed original action; control_meaning establishes original BodyMeaning, exact interface, unitarity and sector preservation. control_reference proves projector commutation for every joint amplitude and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted call intervals and original ordered owner interfaces; selected-source integration, general source preservation and alias/resource obligations remain open. For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, complete Kraus sums, untruncated dimensions and requested complete signature equality to exact unnormalized public outcome maps on every joint matrix and finite external reference. A private Rust paired handle retains original accepted artifacts, complete types and source identity. Ordinary concrete observing calls freshly check actual emitted intervals and retain private pair/call sidecars without changing whole-root request disclosure. Explicit specialization and independent observing source replay remain open.",
+      "gaps": "This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler preservation, deployed-binary correspondence, Rust rematerialization, target/runtime preservation, clean-release and quantitative RS claims remain separate. These bridge theorems are not a new guarantee admission or S05 closure."
+    },
+    {
+      "id": "source-documentation",
+      "classification": "documentation",
+      "boundaries": [
+        "source"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/bin/qleisli.rs",
+          "markers": [
+            "if options.command == \"doc\"",
+            "render_markdown(&source)"
+          ]
+        },
+        {
+          "path": "src/frontend/documentation.rs",
+          "markers": [
+            "pub fn render_markdown("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/cli.rs",
+          "test": "doc_reads_one_file_and_does_not_claim_type_checking"
+        }
+      ],
+      "entry_path": "qleisli doc -> read_source_file -> frontend::render_markdown",
+      "checked_artifact": "Source text and documentation AST",
+      "checker": "Host parsing/rendering; no native checker",
+      "proof_scope": "No typing, acceptance or semantic guarantee follows from rendered documentation.",
+      "gaps": "Successful doc output may describe a program that compilation or native verification rejects."
+    },
+    {
+      "id": "foreign-export",
+      "classification": "host-transformation",
+      "boundaries": [
+        "foreign"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/interop/mod.rs",
+          "markers": [
+            "pub fn export_openqasm3(program: &AcceptedProgram)",
+            "pub fn export_qir_base(program: &AcceptedProgram)"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/test_interop_native.py",
+          "test": "test_all_actions_formats_use_real_native_checker"
+        }
+      ],
+      "entry_path": "interop::{export_openqasm3,export_qir_base}; corresponding CLI/Python exports",
+      "checked_artifact": "AcceptedProgram input; generated foreign text",
+      "checker": "Host profile extraction and emission; upstream native acceptance concerns the input artifact",
+      "proof_scope": "Existing round-trip and independent native tests provide bounded validation.",
+      "gaps": "No theorem currently derives foreign output equivalence, LLVM/target support or runtime preservation from input acceptance."
+    },
+    {
+      "id": "source-configuration",
+      "classification": "configuration",
+      "boundaries": [
+        "source-edition-configuration"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/frontend/project.rs",
+          "markers": [
+            "pub fn load(",
+            "pub fn load_with_policy(",
+            "pub fn read_source_file("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/review_v021.rs",
+          "test": "grouped_imports_expand_to_existing_leaves_with_docs_spans_and_resolution"
+        }
+      ],
+      "entry_path": "Project::{load,load_with_policy}, read_source_file, ParsedProgram::load",
+      "checked_artifact": "Files and schema-2 source-tree edition configuration",
+      "checker": "Host source/configuration checks; no semantic acceptance",
+      "proof_scope": "Source loader and edition regression tests only.",
+      "gaps": "Edition identifies the constitutional regime; loading neither checks quantum meaning nor discharges guarantees."
+    },
+    {
+      "id": "hierarchy-configuration",
+      "classification": "configuration",
+      "boundaries": [
+        "hierarchy-inspect"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn new("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_host.rs",
+          "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+        }
+      ],
+      "entry_path": "hierarchical::Kernel::new",
+      "checked_artifact": "Explicit native executable path",
+      "checker": "Host configuration only; native checks occur on later calls",
+      "proof_scope": "No accepted report is created by this constructor.",
+      "gaps": "Availability, product-version compatibility and artifact acceptance must still be checked."
+    },
+    {
+      "id": "host-execution",
+      "classification": "host-execution",
+      "boundaries": [
+        "execution",
+        "qirf-native-v029"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/sim.rs",
+          "markers": [
+            "pub fn run_closed("
+          ]
+        },
+        {
+          "path": "src/sim/sampling.rs",
+          "markers": [
+            "pub fn sample_closed<"
+          ]
+        },
+        {
+          "path": "src/host.rs",
+          "markers": [
+            "pub fn run_trials<"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/sampling.rs",
+          "test": "stochastic_samples_match_independent_bell_and_reset_feedback_contracts"
+        }
+      ],
+      "entry_path": "sim::{run_closed,sample_closed}, host::run_trials, ordinary CLI/Python run/sample",
+      "checked_artifact": "Already accepted immutable execution view and host input/RNG/limits",
+      "checker": "Rust numerical execution; does not mint a fresh accepted handle",
+      "proof_scope": "Bounded independent sampling/reference tests; accepted-input binding is enforced by private/sealed handles.",
+      "gaps": "Numerical, decoder and execution preservation remain separate from native IR acceptance."
+    },
+    {
+      "id": "hierarchy-execution",
+      "classification": "host-execution",
+      "boundaries": [
+        "hierarchy-execution",
+        "sized-source-proposal"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical/execution.rs",
+          "markers": [
+            "pub fn execute_pure(",
+            "pub fn execute_instrument(",
+            "pub fn sample_normalized_shots<"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_execution.rs",
+          "test": "small_source_clients_match_independent_complex_reference_branches"
+        }
+      ],
+      "entry_path": "CheckedRequest/CheckedInstrument execution; hierarchical::NativeChecked::{execute_pure,execute_instrument,sample_normalized_shots}; sized run/sample",
+      "checked_artifact": "Hierarchy checked payload/request/candidate and numerical inputs",
+      "checker": "Rust numerical execution over checked descriptions",
+      "proof_scope": "Small independent complex-reference tests; no runtime preservation theorem is asserted.",
+      "gaps": "Native finite leaf checking does not prove host execution, source lowering or floating-point equivalence."
+    },
+    {
+      "id": "sized-proposal",
+      "classification": "untrusted-proposal",
+      "boundaries": [
+        "sized-source-proposal"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/frontend/check/body/places.rs",
+          "markers": [
+            "fn selected_place(",
+            "fn disjoint_places(",
+            "self.require_access_unitary(name, scope, span)?",
+            "CallArguments::Places(&prepared)",
+            "self.obligation(span, ObligationKind::ControlSectors)?"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/elaborate/places.rs",
+          "markers": [
+            "fn partition_step(",
+            "fn place_call(",
+            "RuntimeInputs::Values(values)",
+            "records.into_iter().zip(returned).rev()"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli.rs",
+          "markers": [
+            "source_plan::run(&args)"
+          ]
+        },
+        {
+          "path": "src/frontend/compile/mod.rs",
+          "markers": [
+            "pub use super::specialize::{"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan.rs",
+          "markers": [
+            "fn prepare(",
+            "fn execute(",
+            "prepared.payload()",
+            "untrusted-proposal",
+            "source_meaning_verified"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize.rs",
+          "markers": [
+            "pub fn parse(",
+            "pub fn instantiate(",
+            "pub struct BasisBinding",
+            "pub fn instantiate_with_types(",
+            "pub fn with_types(",
+            "pub fn finite_meaning_target("
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan/options.rs",
+          "markers": [
+            "\"type\" =>",
+            "\"operation-type\" =>",
+            "never ordinary input"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "markers": [
+            "pub struct RawSourceProposal",
+            "pub fn validate_source_steps(",
+            "native::Proposal::from_raw",
+            "fn register_bit(",
+            "self.reserve_operations(3, span)?"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/lower.rs",
+          "markers": [
+            "fn native_operation(",
+            "leaf.payload()",
+            "finite_matrix::encode(leaf.meaning())",
+            "entry.key == key"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "markers": [
+            "pub fn lower_raw_operation(",
+            "pub fn lower_raw_operation_at(",
+            "pub fn lower_raw_with_kernel(",
+            "definitions: Arc<[SourceDefinition]>"
+          ]
+        },
+        {
+          "path": "src/frontend/raw_state.rs",
+          "markers": [
+            "pub(crate) struct RawState",
+            "pub(crate) fn cnot(",
+            "pub(crate) fn measure_z("
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "markers": [
+            "pub(super) fn validate_subject(",
+            "fn operation(",
+            "RawOp::ClassicalAnd",
+            "RawOp::ClassicalXor"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/sized_source.rs",
+          "test": "untrusted_lowering_retains_source_and_rejects_unproved_effect_retiming"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_register_access_preserves_exact_axes_and_untouched_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_register_replay_rejects_native_valid_wrong_partitions_and_axis_order"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_generic_register_access_retains_original_static_bounds"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "indexed_places_retain_original_axis_and_owner_occurrences"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "indexed_places_check_symbolic_bounds_and_ordered_selected_types"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "indexed_places_refuse_unproved_bounds_overlap_and_changed_interfaces"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "indexed_place_obligations_cover_unused_branches_and_empty_loops"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "indexed_place_profiles_preserve_the_common_judgment_before_transport"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_place_replay_rejects_native_valid_paired_partition_faults"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_place_inverse_keeps_original_phase_axis"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_indexed_places_preserve_exact_axis_phase_and_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "joint_places_reassemble_updated_values_in_original_axis_order"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "slices_keep_empty_views_and_scalar_phase_during_joint_access"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_slices_apply_nontrivial_actions_in_half_open_axis_order"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_place_control_rechecks_bound_provider_and_shared_work"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_places_thread_updated_parents_through_static_branches_and_folds"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_places_mix_distinct_whole_parents_and_selected_owners"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_places_apply_original_bound_operations_and_check_actual_ctrl_body"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_static_places_choose_raw_before_native_acceptance"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "symbolic_place_overlap_requires_original_binder_guards"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_register_access_keeps_zero_width_phase_and_inverse_axis"
+        },
+        {
+          "path": "tests/sized_cli.rs",
+          "test": "sized_cli_emits_only_an_untrusted_proposal_without_a_kernel"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_open_signature_checks_and_proposals_do_not_claim_closed_execution"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_caller_h_request_rejects_x_once_without_a_raw_retry"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "all_four_truth_rows_match_independent_constants_in_both_profiles"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "ordinary_register_pack_rows_and_nested_copies_have_independent_ordered_results"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "zero_register_and_nat_helpers_copy_and_drop_without_quantum_owners"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "copied_measured_registers_preserve_bell_correlation_and_eager_effects"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "ordinary_basis_substitutions_keep_register_and_product_tags"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "quantum_provider_calls_retain_unused_ordinary_register_computation"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "register_type_coercions_and_quantum_copy_drop_still_reject"
+        },
+        {
+          "path": "tests/ordinary_booleans.rs",
+          "test": "retained_register_source_rejects_another_native_accepted_artifact"
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "test": "ordinary_register_replay_rejects_native_valid_order_and_computation_faults"
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "test": "ordinary_register_storage_is_charged_before_emission"
+        },
+        {
+          "path": "tests/mixed_booleans.rs",
+          "test": "pending_first_argument_keeps_entangled_owner_during_later_argument_measurement"
+        },
+        {
+          "path": "tests/mixed_booleans.rs",
+          "test": "representable_phases_match_independent_exact_targets_and_interference"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "raw_source_replay_rejects_native_valid_semantic_and_structural_mutations"
+        },
+        {
+          "path": "tests/basis_polymorphism.rs",
+          "test": "all_first_opaque_rejections_reach_their_actual_rules_before_binding"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_inverse_checks_unused_zero_count_generic_access"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_power_zero_and_unused_still_require_apply_and_a_valid_count"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_power_zero_evaluates_its_argument_and_bounded_counts_reject"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_control_rejects_alias_arity_type_and_missing_access"
+        },
+        {
+          "path": "tests/checked_operations.rs",
+          "test": "canonical_control_zero_power_evaluates_effectful_arguments_in_source_order"
+        },
+        {
+          "path": "tests/quantum_unit_source.rs",
+          "test": "canonical_inverse_unit_scalar_retains_independent_reference_request"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "finite_source_targets_preserve_product_tree_and_refuse_width_substitution"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "source_meaning_signature_effect_and_budget_guards_precede_native_io"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "repeated_unused_binding_checks_composite_action_and_preserves_its_original_caller"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "repeated_scalar_binding_keeps_exact_phase_and_zero_repeat_capability_preflight"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "checked_operation_bytes_are_used_by_the_actual_emitted_hierarchy"
+        },
+        {
+          "path": "tests/basis_polymorphism.rs",
+          "test": "selected_cli_type_and_provider_bindings_are_separate_from_runtime_basis"
+        },
+        {
+          "path": "tests/basis_polymorphism.rs",
+          "test": "same_algorithm_retains_small_reference_action_and_unit_scalar_phase"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "global_calls_preserve_exact_coefficient_and_external_reference"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "zero_width_owner_keeps_phase_and_cannot_be_duplicated"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "closed_static_branches_and_empty_fold_thread_updated_carry"
+        }
+      ],
+      "entry_path": "ParsedProgram parse/load/instantiate -> elaborate -> lower; proposal binding helpers; qleisli emit-proposal --entry/--module; ElaboratedProgram::lower_raw produces a source-bound mixed finite proposal for explicit native acceptance; explicit closed Basis bindings pass through instantiate_with_types before the unchanged native hierarchy modes",
+      "checked_artifact": "Untrusted hierarchy payload/comparison request or explicit finite Raw proposal, bound to retained source metadata; complete exact type/provider substitutions and original generic module bytes are retained",
+      "checker": "Host elaboration/lowering; emit-proposal writes before Kernel construction and reports untrusted-proposal",
+      "proof_scope": "Existing source/proposal counterexamples and bounded translation tests; no source preservation theorem.; independent Raw source-step replay is an untrusted bounded correspondence check, not AST-to-step preservation",
+      "gaps": "Producer consistency is not independent source meaning. Initialization-move binding and mixed source-step replay are bounded additional checks, not general AST-to-IR preservation. General target/provider/branch capabilities, open runtime invocation and CLI integration remain incomplete. Opaque type checking and bounded phase/reference tests do not prove generic/source preservation or admit a guarantee; Op<A,M> and final project-profile integration remain pending."
+    },
+    {
+      "id": "checked-views",
+      "classification": "checked-view",
+      "boundaries": [
+        "contract",
+        "function",
+        "named-qpe-components"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "src/contract/mod.rs",
+          "markers": [
+            "pub fn check_binding(",
+            "pub fn check_entry("
+          ]
+        },
+        {
+          "path": "src/contract/function.rs",
+          "markers": [
+            "pub fn check_binding("
+          ]
+        },
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn instrument(",
+            "pub fn candidate("
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/function_evidence.rs",
+          "test": "checks_two_raw_functions_and_retains_their_full_snapshots"
+        }
+      ],
+      "entry_path": "CheckedContract::{check_binding,check_entry}, FunctionEvidence/MeaningEvidence::check_binding, CheckedQpeInstrument::{instrument,candidate}",
+      "checked_artifact": "Existing checked report and retained artifact/object identity",
+      "checker": "Host binding/accessor checks; no fresh semantic acceptance",
+      "proof_scope": "Existing immutable snapshot/binding regressions.",
+      "gaps": "A binding check or accessor cannot widen the original native report scope or create a new semantic guarantee."
+    },
+    {
+      "id": "finite-component",
+      "classification": "lean-component",
+      "boundaries": [
+        "lean-finite-component-v024"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "lean-kernel/QleisliKernel/Finite.lean",
+          "markers": [
+            "def check ",
+            "def checkAll "
+          ]
+        },
+        {
+          "path": "lean-kernel/Protocol/FiniteCodec.lean",
+          "markers": [
+            "def readMatrix "
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/semantic_contracts.rs",
+          "test": "primitive_evidence_preserves_exact_phase"
+        }
+      ],
+      "entry_path": "QleisliKernel.Finite.{circuitMatrix,check,checkAll}; Protocol.FiniteCodec.readMatrix",
+      "checked_artifact": "Finite circuit/contracts or exact matrix descriptions",
+      "checker": "Finite.check/checkAll; readMatrix is a decoder, not acceptance",
+      "proof_scope": "Finite component soundness and exact arithmetic lemmas under their stated inputs.",
+      "gaps": "Component theorems must be composed with the actual production request/parser and whole-profile semantics."
+    },
+    {
+      "id": "phase-components",
+      "classification": "lean-component",
+      "boundaries": [
+        "native-components"
+      ],
+      "native_modes": [],
+      "source_bindings": [
+        {
+          "path": "lean-kernel/Cli/Finite.lean",
+          "markers": [
+            "def run ",
+            "def runDag ",
+            "def runLayout ",
+            "def runLayoutDag ",
+            "def runPhaseLayout "
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_host.rs",
+          "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+        }
+      ],
+      "entry_path": "Phase-word, phase DAG, layout, layout DAG and phase-layout experimental file protocols",
+      "checked_artifact": "Separate phase/layout artifacts and requirements",
+      "checker": "Cli.Finite run/runDag/runLayout/runLayoutDag/runPhaseLayout -> verify/Hierarchy.check/Layout.check/LayoutDag.check/PhaseLayout.check",
+      "proof_scope": "Existing bounded phase/layout component theorems and tests.",
+      "gaps": "These experimental component profiles do not issue ordinary AcceptedProgram handles or establish complete language soundness."
+    },
+    {
+      "id": "hierarchy-inspect",
+      "classification": "native-hierarchy-check",
+      "boundaries": [
+        "hierarchy-inspect"
+      ],
+      "native_modes": [
+        "--hierarchy-pending"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn inspect_native(",
+            "pub struct NativeChecked"
+          ]
+        },
+        {
+          "path": "src/interchange/hierarchical/runtime.rs",
+          "markers": [
+            "\"--hierarchy-pending\""
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "def runHierarchy ",
+            "Hierarchical.Conditional.checkAll",
+            "Protocol.HierarchicalFinite.checkLeaves"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeHierarchy.lean",
+          "markers": [
+            "theorem checkLeaves_semantics"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_host.rs",
+          "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+        }
+      ],
+      "entry_path": "hierarchical::Kernel::{inspect,inspect_native}",
+      "checked_artifact": "Dedicated hierarchy payload; no ordinary QLV1 root",
+      "checker": "Main --hierarchy-pending -> Cli.runHierarchy -> Conditional.checkAll plus HierarchicalFinite.checkLeaves",
+      "proof_scope": "NativeHierarchy.conditional_derives and checkLeaves_semantics cover structural derivation and finite premises.",
+      "gaps": "Dedicated hierarchical::NativeChecked/reconstructed report, not native::AcceptedProgram. Full analytic Operator bridge, source and execution preservation remain open."
+    },
+    {
+      "id": "hierarchy-request",
+      "classification": "native-hierarchy-check",
+      "boundaries": [
+        "hierarchy-inspect",
+        "sized-source-proposal"
+      ],
+      "native_modes": [
+        "--hierarchy-request-pending"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn check_against_native(",
+            "pub struct NativeChecked"
+          ]
+        },
+        {
+          "path": "src/interchange/hierarchical/runtime.rs",
+          "markers": [
+            "\"--hierarchy-request-pending\""
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "def runHierarchyRequest ",
+            "Hierarchical.Root.checkAll",
+            "Protocol.HierarchicalFinite.checkLeaves"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeHierarchy.lean",
+          "markers": [
+            "theorem checkLeaves_semantics"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_host.rs",
+          "test": "native_request_binds_reindexed_shared_powers_and_exact_meaning_bytes"
+        }
+      ],
+      "entry_path": "hierarchical::Kernel::{check_against,check_against_native}; sized pure checks",
+      "checked_artifact": "Hierarchy payload and composition request",
+      "checker": "Main --hierarchy-request-pending -> Cli.runHierarchyRequest -> Root.checkAll plus checkLeaves/checkPairs",
+      "proof_scope": "NativeHierarchy.requested_pairs and checkLeaves_semantics retain explicit finite/structural premises.",
+      "gaps": "Dedicated hierarchy report; producer comparison is only consistency, caller request changes scope but does not prove source preservation or full analytic semantics."
+    },
+    {
+      "id": "hierarchy-fourier",
+      "classification": "native-hierarchy-check",
+      "boundaries": [
+        "hierarchy-inspect",
+        "sized-source-proposal"
+      ],
+      "native_modes": [
+        "--hierarchy-fourier-pending"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn check_against_native(",
+            "pub struct NativeChecked"
+          ]
+        },
+        {
+          "path": "src/interchange/hierarchical/runtime.rs",
+          "markers": [
+            "\"--hierarchy-fourier-pending\""
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "def runHierarchyFourier ",
+            "Hierarchical.FourierRoot.checkAll",
+            "Protocol.HierarchicalFinite.checkLeaves"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeHierarchy.lean",
+          "markers": [
+            "theorem checkLeaves_semantics"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/sized_source.rs",
+          "test": "reordered_fourier_roots_and_inverses_preserve_native_phase_and_reference"
+        }
+      ],
+      "entry_path": "hierarchical::Kernel::{check_against,check_against_native} Fourier request branch; sized Fourier checks",
+      "checked_artifact": "Hierarchy payload and Fourier request including Hadamard obligations",
+      "checker": "Main --hierarchy-fourier-pending -> Cli.runHierarchyFourier -> FourierRoot.checkAll plus checkLeaves/checkHadamards",
+      "proof_scope": "NativeHierarchy.hadamard_semantics/checkHadamards_semantics and finite-leaf theorems.",
+      "gaps": "Named structure and finite obligations do not close full native analytic Operator/source/runtime composition."
+    },
+    {
+      "id": "hierarchy-instrument",
+      "classification": "native-hierarchy-check",
+      "boundaries": [
+        "instrument-composition",
+        "sized-source-proposal"
+      ],
+      "native_modes": [
+        "--instrument-pending"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn check_instrument_native(",
+            "pub struct NativeChecked"
+          ]
+        },
+        {
+          "path": "src/interchange/hierarchical/runtime.rs",
+          "markers": [
+            "\"--instrument-pending\""
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "def runInstrument ",
+            "Hierarchical.Instrument.checkAll",
+            "Protocol.HierarchicalFinite.checkLeaves"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeHierarchy.lean",
+          "markers": [
+            "theorem checkLeaves_semantics"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_host.rs",
+          "test": "native_instrument_binds_all_stages_and_reconstructs_finite_obligations"
+        }
+      ],
+      "entry_path": "hierarchical::Kernel::{check_instrument,check_instrument_native}; sized instrument checks",
+      "checked_artifact": "Private instrument payload and preparation/evolution/readout request",
+      "checker": "Main --instrument-pending -> Cli.runInstrument -> Instrument.checkAll plus checkLeaves/checkPairs",
+      "proof_scope": "Instrument.checkAll_stages/checkAll_boundary and native finite component theorems.",
+      "gaps": "NativeChecked has instrument scope and retained bytes; full analytic composition, source and host runtime correspondence remain open."
+    },
+    {
+      "id": "hierarchy-qpe",
+      "classification": "native-hierarchy-check",
+      "boundaries": [
+        "named-qpe-components",
+        "sized-source-proposal"
+      ],
+      "native_modes": [
+        "--qpe-instrument-pending"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/interchange/hierarchical.rs",
+          "markers": [
+            "pub fn check_qpe_instrument_native(",
+            "pub struct NativeChecked"
+          ]
+        },
+        {
+          "path": "src/interchange/hierarchical/runtime.rs",
+          "markers": [
+            "\"--qpe-instrument-pending\""
+          ]
+        },
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "def runQpeInstrument ",
+            "Hierarchical.QpeInstrument.checkAll",
+            "Protocol.HierarchicalFinite.checkLeaves"
+          ]
+        },
+        {
+          "path": "lean/Qleisli/NativeHierarchy.lean",
+          "markers": [
+            "theorem checkLeaves_semantics"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "tests/hierarchical_qpe_host.rs",
+          "test": "native_qpe_instrument_binds_provider_phase_hadamards_and_all_boundaries"
+        }
+      ],
+      "entry_path": "hierarchical::Kernel::{check_qpe_instrument,check_qpe_instrument_native}; sized named-QPE checks",
+      "checked_artifact": "Instrument payload, named provider request and candidate binding",
+      "checker": "Main --qpe-instrument-pending -> Cli.runQpeInstrument -> QpeInstrument.checkAll plus checkLeaves/checkPairs/checkHadamards",
+      "proof_scope": "Named QPE structural and finite component results with explicit premises; bounded independent QPE tests.",
+      "gaps": "This dedicated report does not establish arbitrary source QPE meaning, the complete Operator bridge or runtime preservation."
+    },
+    {
+      "id": "readout-component",
+      "classification": "lean-component",
+      "boundaries": [
+        "readout-component"
+      ],
+      "native_modes": [
+        "--readout-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "Protocol.Hierarchical.parseReadout",
+            "Hierarchical.Readout.check"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/test_hierarchical_readout.py",
+          "test": "test_native_branches"
+        }
+      ],
+      "entry_path": "qleisli-kernel --readout-check",
+      "checked_artifact": "Private QLM1 readout request/packet",
+      "checker": "Cli.runReadout -> Protocol.Hierarchical.parseReadout -> Hierarchical.Readout.check",
+      "proof_scope": "Readout.check_reference/check_boundary retain their explicit reference and packet premises.",
+      "gaps": "A component report is not a complete program handle, full instrument composition or runtime guarantee."
+    },
+    {
+      "id": "preparation-component",
+      "classification": "lean-component",
+      "boundaries": [
+        "preparation-component"
+      ],
+      "native_modes": [
+        "--preparation-check"
+      ],
+      "source_bindings": [
+        {
+          "path": "lean-kernel/Cli/Hierarchical.lean",
+          "markers": [
+            "Protocol.Hierarchical.parsePreparation",
+            "Hierarchical.Preparation.check"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "scripts/test_hierarchical_preparation.py",
+          "test": "test_zero_reference"
+        }
+      ],
+      "entry_path": "qleisli-kernel --preparation-check",
+      "checked_artifact": "Private QLZ1 preparation request/packet",
+      "checker": "Cli.runPreparation -> Protocol.Hierarchical.parsePreparation -> Hierarchical.Preparation.check",
+      "proof_scope": "Preparation.check_reference/check_boundary retain their explicit reference and packet premises.",
+      "gaps": "A component report is not a complete program handle, full instrument composition or runtime guarantee."
+    },
+    {
+      "id": "source-meaning-check",
+      "classification": "native-acceptance",
+      "boundaries": [
+        "finite-leaf",
+        "sized-source-proposal"
+      ],
+      "native_modes": [
+        "--qirf-contract"
+      ],
+      "source_bindings": [
+        {
+          "path": "src/frontend/specialize/raw/contracts.rs",
+          "markers": [
+            "ObligationKind::FunctionEquality",
+            "FunctionEvidence::check_retained_with_kernel",
+            "MeaningEvidence::check_retained_with_kernel",
+            "RetainedIdentity::shared",
+            "finite_leaf::check_with_kernel"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "markers": [
+            "pub struct SourceMeaningCheck",
+            "pub fn check_finite_meaning",
+            "pub struct CheckedSourceMeanings",
+            "program.checked.interface(definition.original).statics",
+            "program.meaning_targets[&id].expression(span)?",
+            "target.finite()",
+            "budget",
+            "OperationSite::Step(caller, step)",
+            "operation.meanings.iter()",
+            "lower_operation_site(source, site.clone(), depth, checking)?",
+            "finite_leaf::check_with_kernel",
+            "self.replay_with_work(leaf.program(), budget)?",
+            "original operation binding is absent during replay",
+            "accepted.artifact() != self.payload",
+            "self.replay(accepted)",
+            "self.meanings.as_deref().map_or(&[], Vec::as_slice)",
+            "pub(super) fn lower_with_kernel(",
+            "retained.entry(definition.original).or_default().push(calls)",
+            "covered &= calls.contains",
+            "accepted.native_exact_work()",
+            "preservation::validate_subject_with_meanings(",
+            "fn lower_refined_with_control(",
+            "fn lower_controlled_source(",
+            "let meanings = check_operation_meanings(source, kernel, budget)?.leaves",
+            "proposal.meanings = Some(meanings)"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "markers": [
+            "Quantum(TokenId, Arc<[WireId]>)",
+            "Primitive::Split",
+            "Primitive::Join",
+            "Raw split changes its owner or exact ordered partition",
+            "Raw join changes or aliases its ordered owners",
+            "register repartition changes its source owner or split axis",
+            "register repartition changes or aliases its ordered owners",
+            "self.control_call(step, &inputs, &output, first_instruction, site)?",
+            "self.raw.operations[first..self.cursor].to_vec()",
+            ".check_control_owners(&call, &signatures, &axes, self.control_work)"
+          ]
+        },
+        {
+          "path": "src/interchange/finite_leaf.rs",
+          "markers": [
+            "pub(crate) fn check_with_kernel(",
+            "kernel.check_leaf(payload, boundary, meaning)"
+          ]
+        },
+        {
+          "path": "src/frontend/check/body/operations.rs",
+          "markers": [
+            "self.obligation(span, ObligationKind::ControlSectors)?"
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "markers": [
+            "pub fn check_operation_meanings",
+            "pub(super) fn require_unrefined",
+            "pub(super) fn require_control_evidence",
+            "checked.obligations.iter().find",
+            "pub fn check_function_contracts(",
+            "pub fn has_function_contracts(",
+            "fn require_function_contracts("
+          ]
+        },
+        {
+          "path": "src/frontend/specialize/lower.rs",
+          "markers": [
+            "source.require_control_evidence()?"
+          ]
+        },
+        {
+          "path": "src/bin/qleisli/source_plan.rs",
+          "markers": [
+            "source.has_operation_meanings()",
+            ".check_operation_meanings("
+          ]
+        },
+        {
+          "path": "src/frontend/meaning.rs",
+          "markers": [
+            "pub(super) fn materialize(",
+            "Node::Reference",
+            "FunctionEvidence::check_retained_with_kernel",
+            "original reference artifact is absent"
+          ]
+        }
+      ],
+      "tests": [
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "control_audit_collects_new_meanings_in_the_expanded_original_graph"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "reference_operation_bindings_retain_requests_in_raw_and_hierarchy"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "mixed_composition_and_tensor_keep_order_and_low_axes"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "reference_does_not_erase_unused_generic_or_zero_repeat_lying_contracts"
+        },
+        {
+          "path": "src/frontend/specialize/raw/contracts.rs",
+          "test": "reference_operation_replay_rejects_equal_matrix_receipt_substitution"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "first_hhh_source_runs_unchanged_through_both_adapters_and_cli"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "identity_and_negative_h_fail_exact_equations_in_both_adapters"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "unused_and_zero_count_contracts_are_not_erased"
+        },
+        {
+          "path": "tests/selected_function_contracts.rs",
+          "test": "absent_kernel_exhausted_budget_and_wrong_tree_fail_closed"
+        },
+        {
+          "path": "src/frontend/specialize/raw/contracts.rs",
+          "test": "source_contract_replay_rejects_same_matrix_different_native_pair"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "finite_meaning_replay_charges_control_sectors_to_the_callers_budget"
+        },
+        {
+          "path": "tests/general_operation_arrows.rs",
+          "test": "source_control_and_meaning_share_actual_audit_bodies_and_exact_requests"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_meaning_request_checks_the_actual_provider_bytes_and_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_annotations_check_every_nested_and_unused_provider_before_lowering"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "original_meaning_ids_do_not_unify_same_named_targets_in_distinct_modules"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "nested_repeated_binding_is_compared_with_its_own_original_annotation"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "selected_cli_checks_original_annotations_and_rejects_raw_bypass"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "explicit_checked_op_checks_unused_and_zero_repeat_children"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "explicit_checked_op_direct_step_and_forwarded_requests_are_not_overwritten"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "selected_cli_checks_explicit_requests_without_a_refined_formal"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "explicit_scalar_request_is_checked_before_adjoint_and_keeps_exact_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "packaged_product_meanings_preserve_swapped_axes_and_zero_width_factor_phase"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "packaged_zero_and_nary_bases_keep_their_exact_native_signature"
+        },
+        {
+          "path": "src/frontend/specialize/raw/preservation.rs",
+          "test": "packaged_product_replay_rejects_native_valid_axis_and_owner_substitutions"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "unused_provider_leaf_checks_its_body_without_replacing_caller_identity"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "repeated_subject_replay_rejects_its_native_valid_base_artifact"
+        },
+        {
+          "path": "tests/classical_functions.rs",
+          "test": "source_meaning_signature_effect_and_budget_guards_precede_native_io"
+        },
+        {
+          "path": "src/frontend/specialize/raw.rs",
+          "test": "source_meaning_gate_rejects_a_native_valid_replaced_provider"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "public_source_control_roles_reach_replay_as_obligations_not_authority"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "transformed_source_replay_cannot_erase_control_obligations"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_nonexecuted_control_obligations_refuse_before_transport"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_control_requires_checker_and_one_bounded_budget"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_control_cannot_erase_inactive_original_calls_or_bad_zero_power_providers"
+        },
+        {
+          "path": "tests/exclusive_access.rs",
+          "test": "selected_control_retains_exact_scalar_phase_and_diagonal_meaning"
+        },
+        {
+          "path": "tests/selected_source_cli.rs",
+          "test": "selected_raw_control_checks_without_weakening_emission"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "native_replay_checks_actual_call_sectors_instead_of_effect_annotation"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "native_control_replay_checks_only_the_consumed_call_and_has_no_fallback"
+        },
+        {
+          "path": "src/frontend/specialize/elaborate.rs",
+          "test": "native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase"
+        }
+      ],
+      "entry_path": "ElaboratedProgram::check_function_contracts, ElaboratedProgram::check_operation_meanings and RawSourceProposal::check_finite_meaning",
+      "checked_artifact": "Actual QIRF source proposal and dependency bytes, exact requested finite boundary and monomial matrix or original reference artifact, and immutable retained source-step program",
+      "checker": "Fresh FunctionEvidence/MeaningEvidence equations and Kernel.check_leaf through existing native contract checks, followed by independent Rust source-step replay",
+      "proof_scope": "Existing native finite/function contract theorems bind original implementation/request artifacts and dependencies, complete interfaces and exact operators. Both adapters check closed operation bindings, including unused and zero-count providers. Source-step replay is an independent Rust check; no AST-to-step theorem is supplied.",
+      "gaps": "Unclosed generic contracts, general hierarchical operator closure, general AST/source preservation, native compiler/decoder/runtime proof and quantitative RS remain separate obligations. Retained source/request identity and finite reference checks are not a constitutional guarantee."
+    }
+  ]
 }

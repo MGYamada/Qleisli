@@ -1,0 +1,9 @@
+
+running 4 tests
+test distinct_contract_pairs_and_static_providers_share_one_project_snapshot ... ignored, historical 256-receipt stress exceeds aggregate fresh-native work; batching is tracked in #274
+test full_256_specializations_survive_a_100kb_project_and_unrelated_comments ... ignored, historical 256-specialization stress exceeds aggregate fresh-native work; batching is tracked in #274
+test shared_receipts_keep_exact_bindings_and_outlive_source_changes ... ok
+test small_native_specializations_retain_exact_shared_sources ... ok
+
+test result: ok. 2 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 3.50s
+

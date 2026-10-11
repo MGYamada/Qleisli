@@ -1,0 +1,1 @@
+use a::gate;use b::gate;pub unitary fn entry(q:Q<Bit>)->Q<Bit>{q}

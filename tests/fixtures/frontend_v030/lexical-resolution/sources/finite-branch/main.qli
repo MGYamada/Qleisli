@@ -1,0 +1,1 @@
+use std::quantum::init0;use std::quantum::h;use std::observe::measure_z;unitary fn f(q:Q<Bit>,c:CBit)->Q<Bit>{if c {let q=h(q);q}else{let q=h(q);q}}observe fn main()->CBit{measure_z(f(init0(),true))}

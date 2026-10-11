@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{split,join};
+pub unitary fn f(q:Q<(Unit,Unit)>)->Q<(Unit,Unit)>{for static k in 0..0 carry r=q {let(a,b)=split(r);yield join(a,a);}}
+unitary fn unused(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(q);a}
+
+observe fn main()->Unit{()}

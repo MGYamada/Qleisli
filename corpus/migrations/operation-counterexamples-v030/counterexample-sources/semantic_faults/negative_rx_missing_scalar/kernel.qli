@@ -1,0 +1,20 @@
+// Upstream authors (repository usernames): josh. See upstream metadata.
+// QLI translation/modifications: Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+// Modified from https://github.com/PennyLaneAI/demos/blob/3a04df83a16af3a2f0fd9398c0b5cc2c060ebedd/demonstrations_v2/tutorial_qubit_rotation/demo.py
+// Selected symbol(s): circuit(params)
+// Fixed-scope adaptation; see README.md and corpus/POLICY.md.
+
+use std::quantum::h;
+use std::quantum::t;
+
+classical fn one(a: Bit) -> Bit { 1 }
+unitary fn scalar(q: Q<Bit>) -> Q<Bit> {
+    with_computed(q, one) { |flag| t(t(t(t(t(t(t(flag))))))) }
+}
+unitary fn rz_quarter(q: Q<Bit>) -> Q<Bit> { power(migration_t, 2)(q) }
+pub unitary fn kernel(q: Q<Bit>) -> Q<Bit> { h(inverse(rz_quarter)(h(q))) }
+
+// Deliberate local semantic mutation: Erase the RZ completion scalar: basis probabilities still agree, but controlled phase differs.
+
+unitary fn migration_t(q: Q<Bit>) -> Q<Bit> { t(q) }

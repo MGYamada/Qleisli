@@ -1,0 +1,623 @@
+//! Existing Rust-boundary refusals and permitted ordinary/explicit consumption.
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+mod common;
+
+use common::SourceRoot;
+use qleisli::frontend::ast::Span;
+use qleisli::frontend::compile::ParsedProgram;
+use qleisli::frontend::compile::{check_project, check_project_with_kernel, compile_project};
+use qleisli::frontend::project::SourcePolicy;
+use qleisli::interchange::native::Kernel;
+use qleisli::ir::Effect;
+use qleisli::sim::{SimulationLimits, run_closed};
+use std::collections::BTreeMap;
+
+fn sources(source: &str) -> BTreeMap<String, String> {
+    BTreeMap::from([("main".into(), source.into())])
+}
+
+fn at(source: &str, marker: &str, offset: usize, length: usize) -> Span {
+    let start = source.rfind(marker).unwrap() + offset;
+    Span::new(start, start + length)
+}
+
+fn shared_rejection(
+    source: &str,
+    common_code: &str,
+    finite_code: &str,
+    span: Span,
+    prefix: &str,
+) -> String {
+    let common = ParsedProgram::parse(sources(source)).unwrap_err();
+    assert_eq!(common.code(), common_code, "{source}\n{common}");
+    assert_eq!(common.module(), Some("main"));
+    assert_eq!(common.span(), span, "{source}\n{common}");
+    assert!(common.message().starts_with(prefix), "{common}");
+
+    let root = SourceRoot::new(source);
+    let absent = root.0.join("must-not-start-a-native-checker");
+    assert!(!absent.exists());
+    // Use the public explicit gate, without changing process environment.
+    // An accidental acceptance would reach the absent checker and report a
+    // different category rather than the expected first source judgment.
+    let finite = check_project_with_kernel(&root.0, SourcePolicy::default(), &Kernel::new(absent))
+        .unwrap_err();
+    assert_eq!(finite.code, finite_code, "{source}\n{finite:?}");
+    if common_code == "parse" {
+        assert_eq!(
+            finite.message,
+            format!("parse error: {}", common.message()),
+            "{source}"
+        );
+    } else {
+        assert_eq!(finite.message, common.message(), "{source}");
+    }
+    let location = finite.primary.unwrap();
+    assert_eq!(
+        location.path,
+        root.0.join("main.qli").canonicalize().unwrap()
+    );
+    assert_eq!(location.span, span, "{source}");
+    common.message().into()
+}
+
+fn implicit_loss(message: &str) {
+    assert!(
+        message.contains("implicit quantum destruction is forbidden"),
+        "{message}"
+    );
+    assert!(
+        message.contains("Measurement, discard, reset and checked clean discharge are distinct"),
+        "{message}"
+    );
+    assert!(
+        message.contains("reset returns a fresh quantum owner"),
+        "{message}"
+    );
+}
+
+fn no_rust_name_hint(message: &str) {
+    assert!(!message.contains("built-in Rust"), "{message}");
+    assert!(
+        !message.contains("implicit quantum destruction"),
+        "{message}"
+    );
+}
+
+fn common_and_finite(source: &str) -> ParsedProgram {
+    let common = ParsedProgram::parse(sources(source)).unwrap();
+    check_project(&SourceRoot::new(source).0).unwrap();
+    common
+}
+
+fn closed_bit(source: &str, expected: bool) -> ParsedProgram {
+    let common = ParsedProgram::parse(sources(source)).unwrap();
+    let program = compile_project(&SourceRoot::new(source).0).unwrap();
+    let actual = run_closed(&program, SimulationLimits::default()).unwrap();
+    let desired = BTreeMap::from([(vec![expected], 1.0)]);
+    for outcome in actual.keys().chain(desired.keys()) {
+        let got = actual.get(outcome).copied().unwrap_or(0.0);
+        let want = desired.get(outcome).copied().unwrap_or(0.0);
+        assert!((got - want).abs() < 1e-12, "{source}\n{actual:?}");
+    }
+    common
+}
+
+#[test]
+fn borrow_resource_spelling_has_no_builtin_or_type_inferred_semantics() {
+    for ty in ["Bit", "Q<Bit>", "Q<Unit>", "(Bit,Q<Bits<0>>)"] {
+        let source = format!("// 日本語\r\npub fn client(q:{ty})->{ty}{{borrow q;q}}");
+        let message = shared_rejection(
+            &source,
+            "parse",
+            "parse",
+            at(&source, "borrow q", 0, "borrow".len()),
+            "Qleisli has no builtin `borrow` resource form",
+        );
+        assert!(message.contains("explicit `excl` or `ctrl` arguments"));
+        assert!(message.contains("independent workspace restoration contracts"));
+        assert!(message.contains("general source forms remain unsupported"));
+        assert!(!message.contains("https://"));
+    }
+    closed_bit(
+        "fn borrow(q:Bit)->Bit{q}pub fn main()->Bit{borrow(1)}",
+        true,
+    );
+    closed_bit("pub fn main()->Bit{let borrow=1;borrow}", true);
+    closed_bit(
+        "use std::quantum::{init0,h};use std::observe::measure_z;
+        unitary fn borrow(q:Q<Bit>)->Q<Bit>{h(h(q))}
+        pub observe fn main()->Bit{measure_z(borrow(init0()))}",
+        false,
+    );
+}
+
+#[test]
+fn unrestricted_closures_locate_actual_live_captures_before_native_dispatch() {
+    for ty in ["Q<Bit>", "Q<Unit>", "Q<Bits<0>>", "(Bit,(Unit,Q<Bit>))"] {
+        for body in [
+            "|| packet",
+            "move || packet",
+            "|x| packet",
+            "|x:Bit| packet",
+            "|| -> Bit { packet }",
+            "|(x,y)| packet",
+            "|| { packet }",
+            "|| { if 0 { packet } else { packet } }",
+            "|| || packet",
+            "|| { let packet=packet; packet }",
+        ] {
+            let source =
+                format!("// 日本語\r\npub fn client(packet:{ty})->{ty}{{let f={body};packet}}");
+            let start =
+                source.find("let f=").unwrap() + "let f=".len() + body.find("packet").unwrap();
+            // The declaration in let packet=packet is not a captured use.
+            let start = if body.contains("let packet=") {
+                start + "packet=".len()
+            } else {
+                start
+            };
+            let message = shared_rejection(
+                &source,
+                "ownership",
+                "ownership",
+                Span::new(start, start + "packet".len()),
+                "unrestricted closure cannot capture live quantum ownership in `packet`",
+            );
+            assert!(message.contains("first-order function"));
+            assert!(!message.contains("https://"));
+        }
+    }
+}
+
+#[test]
+fn unsupported_closures_do_not_invent_capture_from_names_or_shadowing() {
+    for (ty, body) in [
+        ("Bit", "|| q"),
+        ("Unit", "move || q"),
+        ("Q<Bit>", "|q| q"),
+        ("Q<Bit>", "|q:Q<Bit>| q"),
+        ("Q<Bit>", "|x:q| x"),
+        ("Bit", "|| -> Q<Bit> { q }"),
+        ("Q<Bit>", "|(q,other)| q"),
+        ("Q<Bit>", "|| { let q=0; q }"),
+        ("Q<Bit>", "|| { let (q,other)=(0,1); q }"),
+    ] {
+        let source = format!("pub fn client(q:{ty})->{ty}{{let f={body};q}}");
+        let start = source.find("let f=").unwrap() + "let f=".len();
+        let message = shared_rejection(
+            &source,
+            "unsupported",
+            "unsupported",
+            Span::new(start, start + body.len()),
+            "runtime closure values are unsupported",
+        );
+        assert!(!message.contains("cannot capture live quantum"));
+    }
+    let source = "pub fn client(q:Q<Bit>)->Q<Bit>{let saved=q;let f=||q;saved}";
+    shared_rejection(
+        source,
+        "ownership",
+        "ownership",
+        at(source, "||q", 2, 1),
+        "quantum ownership `q` has already been consumed",
+    );
+    let control = "use std::quantum::{init0,h};use std::observe::measure_z;
+        unitary fn move(q:Q<Bit>)->Q<Bit>{h(h(q))}
+        pub observe fn main()->Bit{measure_z(move(init0()))}";
+    closed_bit(control, false);
+}
+
+#[test]
+fn rejected_closure_syntax_keeps_existing_depth_and_parameter_limits() {
+    use qleisli::frontend::parser::parse_module;
+    let ordinary = |body: &str| format!("pub fn client(q:Bit)->Bit{{let f={body};q}}");
+    // These bounded diagnostic forms parse, but neither source checker accepts
+    // them. A parsed AST is not callable execution authority.
+    for body in ["||q", "|x:Bit|->Bit{x}"] {
+        parse_module(&ordinary(body)).unwrap();
+        assert!(ParsedProgram::parse(sources(&ordinary(body))).is_err());
+    }
+    let parameters = (0..65).map(|i| format!("p{i}")).collect::<Vec<_>>();
+    for count in [64, 65] {
+        let body = format!("|{}|q", parameters[..count].join(","));
+        let parsed = parse_module(&ordinary(&body));
+        assert_eq!(parsed.is_ok(), count == 64);
+        if let Err(error) = parsed {
+            assert!(error.message.contains("64"));
+        }
+    }
+    let body = format!("{}q", "||".repeat(65));
+    assert!(
+        parse_module(&ordinary(&body))
+            .unwrap_err()
+            .message
+            .contains("64")
+    );
+}
+
+#[test]
+fn unsupported_references_explain_control_without_guessing_the_expression_type() {
+    for ty in ["Q<Bit>", "Bit"] {
+        for argument in ["&q", "&mut q", "&ctrl q"] {
+            let source = format!("// π &q\r\npub fn main(q:{ty})->{ty}{{identity({argument});q}}");
+            let span = at(&source, argument, 0, 1);
+            let message =
+                shared_rejection(&source, "parse", "parse", span, "unexpected character `&`");
+            assert!(message.contains("Rust-style references are not supported"));
+            assert!(message.contains("for quantum access"));
+            assert!(message.contains("excl grants arbitrary coherent access"));
+            assert!(message.contains("computational-basis sector preservation"));
+            assert!(message.contains("Phase kickback and entanglement are permitted"));
+            assert!(message.contains("do not mechanically replace & with ctrl"));
+            assert!(!message.contains("https://"));
+        }
+    }
+    let source = "// &q is only comment text\npub fn main()->Bit{0}";
+    common_and_finite(source);
+}
+
+#[test]
+fn method_receivers_never_infer_access_or_guess_the_receiver_type() {
+    for ty in ["Bit", "Q<Bit>", "(Bit,Q<Unit>)"] {
+        for receiver in ["q.h()", "q.controlled_u(q)", "q.inner.h()"] {
+            let source =
+                format!("// 日本語\r\npub unitary fn client(q:{ty})->{ty}{{{receiver};q}}");
+            let message = shared_rejection(
+                &source,
+                "parse",
+                "parse",
+                at(&source, receiver, 1, 1),
+                "unexpected character `.`",
+            );
+            assert!(message.contains("field and method receiver syntax is unsupported"));
+            assert!(message.contains("For quantum access"));
+            assert!(message.contains("explicit `excl ...` or `ctrl ...`"));
+            assert!(message.contains("cannot infer or forward quantum access"));
+            assert!(!message.contains("https://"));
+        }
+    }
+    // The ordinary function spelling and comments containing methods retain
+    // normal rules. No classical receiver syntax was supported before this.
+    closed_bit(
+        "// q.flip() is a comment\nclassical fn flip(q:Bit)->Bit{not q}
+         pub observe fn main()->Bit{flip(0)}",
+        true,
+    );
+    closed_bit(
+        "use std::quantum::{init0,h};use std::observe::measure_z;
+         pub observe fn main()->Bit{let q=init0();h(excl q);h(excl q);measure_z(q)}",
+        false,
+    );
+}
+
+#[test]
+fn unresolved_drop_keeps_callee_priority_without_inspecting_its_argument() {
+    let mut messages = Vec::new();
+    // The Unicode/CRLF prefix also keeps the common and filesystem locations
+    // accountable to source byte offsets. `not q` would be a type error if its
+    // argument were checked, but unresolved callee lookup must win first.
+    for argument in ["0", "q", "not q"] {
+        let source =
+            format!("// 日本語\r\npub unitary fn client(q:Q<Bit>)->Q<Bit>{{drop({argument});q}}");
+        let message = shared_rejection(
+            &source,
+            "name",
+            "unknown_name",
+            at(&source, "drop(", 0, 4),
+            "unresolved function drop",
+        );
+        assert!(
+            message.contains("there is no built-in Rust drop or forget operation"),
+            "{message}"
+        );
+        assert!(
+            message.contains("Ordinary Bit/Unit may be unused or matched by _"),
+            "{message}"
+        );
+        assert!(
+            message.contains("If a value contains live Q<T>"),
+            "{message}"
+        );
+        assert!(
+            message.contains("scope exit is not destruction"),
+            "{message}"
+        );
+        messages.push(message);
+    }
+    assert_eq!(messages[0], messages[1]);
+    assert_eq!(messages[1], messages[2]);
+
+    let ordinary = "pub unitary fn client(q:Q<Bit>)->Q<Bit>{missing(not q);q}";
+    let message = shared_rejection(
+        ordinary,
+        "name",
+        "unknown_name",
+        at(ordinary, "missing(", 0, 7),
+        "unresolved function missing",
+    );
+    assert_eq!(message, "unresolved function missing");
+}
+
+#[test]
+fn user_helpers_and_local_categories_do_not_acquire_rust_name_privileges() {
+    let classical = "unitary fn drop(b:Bit)->Unit{()}
+        pub observe fn main()->Bit{drop(0);1}";
+    let common = closed_bit(classical, true);
+    assert_eq!(
+        common.function_effect("main::drop").unwrap().inferred(),
+        Effect::Unitary
+    );
+
+    let observing = "use std::quantum::init0; use std::observe::discard;
+        observe fn drop(q:Q<Bit>)->Unit{discard(q)}
+        pub observe fn main()->Bit{drop(init0());1}";
+    let common = closed_bit(observing, true);
+    assert_eq!(
+        common.function_effect("main::drop").unwrap().inferred(),
+        Effect::Observe
+    );
+
+    let wrong_argument = "unitary fn drop(b:Bit)->Unit{()}
+        pub unitary fn client(q:Q<Bit>)->Q<Bit>{drop(q);q}";
+    let message = shared_rejection(
+        wrong_argument,
+        "type",
+        "type_mismatch",
+        at(wrong_argument, "drop(q)", "drop(".len(), 1),
+        "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`",
+    );
+    no_rust_name_hint(&message);
+
+    let local = "unitary fn drop(b:Bit)->Unit{()}
+        pub unitary fn client(q:Q<Bit>)->Q<Bit>{let drop=0;drop(q)}";
+    let message = shared_rejection(
+        local,
+        "type",
+        "type_mismatch",
+        at(local, "drop(", 0, 4),
+        "a local value is not callable",
+    );
+    assert_eq!(message, "a local value is not callable");
+    no_rust_name_hint(&message);
+
+    // An ordinary function named clone may transfer one owner, but cannot
+    // confer a second use of its consumed input by virtue of that spelling.
+    let transfer = "unitary fn clone(q:Q<Bit>)->Q<Bit>{q}
+        pub unitary fn client(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(clone(q),q)}";
+    let message = shared_rejection(
+        transfer,
+        "ownership",
+        "ownership",
+        at(transfer, ",q)", 1, 1),
+        "quantum ownership `q` has already been consumed",
+    );
+    no_rust_name_hint(&message);
+}
+
+#[test]
+fn ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear() {
+    // Pair each existing loss site with the same ordinary tuple shape. Unit
+    // adds no wire; replacing one ordinary field with Q<Unit> still creates
+    // a live owner and must preserve each site's original diagnostic span.
+    for (body, marker, length, prefix) in [
+        (
+            "()",
+            "env:",
+            3,
+            "quantum ownership `env` was not returned or explicitly consumed",
+        ),
+        (
+            "let _=env;()",
+            "_",
+            1,
+            "wildcard would discard quantum ownership",
+        ),
+        (
+            "env;()",
+            "env;",
+            3,
+            "expression statement would discard quantum ownership",
+        ),
+        (
+            "let packet=env;()",
+            "packet",
+            6,
+            "local quantum ownership `packet` escapes neither through the result nor an explicit discard",
+        ),
+        (
+            "let env=0;()",
+            "env=0",
+            3,
+            "binding env would drop a live quantum owner",
+        ),
+    ] {
+        let classical = format!("pub unitary fn client(env:(Bit,(Unit,Bit)))->Unit{{{body}}}");
+        common_and_finite(&classical);
+
+        let quantum = format!("pub unitary fn client(env:(Bit,(Unit,Q<Unit>)))->Unit{{{body}}}");
+        let message = shared_rejection(
+            &quantum,
+            "ownership",
+            "ownership",
+            at(&quantum, marker, 0, length),
+            prefix,
+        );
+        implicit_loss(&message);
+    }
+}
+
+#[test]
+fn reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement() {
+    let lost = "use std::observe::reset;
+        pub observe fn client(q:Q<Bit>)->Unit{reset(q);()}";
+    let message = shared_rejection(
+        lost,
+        "ownership",
+        "ownership",
+        at(lost, "reset(q)", 0, "reset(q)".len()),
+        "expression statement would discard quantum ownership",
+    );
+    implicit_loss(&message);
+
+    let retained = "use std::quantum::init0; use std::quantum::h;
+        use std::observe::reset; use std::observe::measure_z;
+        pub observe fn reset_owner(q:Q<Bit>)->Q<Bit>{reset(q)}
+        pub unitary fn linear_owner(q:Q<Bit>)->Q<Bit>{let q=h(q);q}
+        pub observe fn main()->Bit{measure_z(reset_owner(linear_owner(init0())))}";
+    // One qubit: H prepares |+>; reset returns |0> as a new logical owner;
+    // returning/observing that owner is valid and must read zero with weight 1.
+    let common = closed_bit(retained, false);
+    assert_eq!(
+        common
+            .function_effect("main::reset_owner")
+            .unwrap()
+            .inferred(),
+        Effect::Observe
+    );
+    assert_eq!(
+        common
+            .function_effect("main::linear_owner")
+            .unwrap()
+            .inferred(),
+        Effect::Unitary
+    );
+}
+
+#[test]
+fn assignment_classifies_the_original_destination_before_its_rhs() {
+    for ty in ["Q<Bit>", "Q<Unit>", "Q<Bits<0>>", "(Bit,(Unit,Q<Unit>))"] {
+        let source = format!(
+            "// 日本語\r\npub unitary fn client(packet:{ty})->{ty}{{packet=missing(0);packet}}"
+        );
+        let message = shared_rejection(
+            &source,
+            "ownership",
+            "ownership",
+            at(&source, "packet=", 0, 6),
+            "assignment would replace a live quantum owner",
+        );
+        assert!(message.contains("Consume the owner explicitly"));
+        assert!(message.contains("'let'"));
+        assert!(!message.contains("mut"));
+    }
+    for ty in ["Bit", "Unit", "Bits<0>", "(Bit,(Unit,Bit))"] {
+        // The name q supplies no quantum evidence; the checked type does.
+        let source = format!("pub unitary fn client(q:{ty})->{ty}{{q=missing(0);q}}");
+        shared_rejection(
+            &source,
+            "unsupported",
+            "unsupported",
+            at(&source, "q=", 0, 1),
+            "ordinary place assignment is unsupported",
+        );
+    }
+    let source = "use std::quantum::h;pub unitary fn client(q:Q<Bit>)->Q<Bit>{q=h(q);q}";
+    shared_rejection(
+        source,
+        "ownership",
+        "ownership",
+        at(source, "q=h", 0, 1),
+        "assignment would replace a live quantum owner",
+    );
+}
+
+#[test]
+fn mutable_marker_uses_transitive_quantum_type_and_original_byte_span() {
+    for (ty, code, prefix) in [
+        ("Q<Bit>", "ownership", "'mut' does not grant quantum access"),
+        (
+            "Q<Unit>",
+            "ownership",
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "Q<Bits<0>>",
+            "ownership",
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "(Bit,(Unit,Q<Unit>))",
+            "ownership",
+            "'mut' does not grant quantum access",
+        ),
+        (
+            "Bit",
+            "unsupported",
+            "ordinary mutable bindings are unsupported",
+        ),
+        (
+            "(Bit,Unit)",
+            "unsupported",
+            "ordinary mutable bindings are unsupported",
+        ),
+    ] {
+        let source = format!(
+            "// 日本語 mut\r\npub unitary fn client(q:{ty})->{ty}{{let mut packet=q;packet}}"
+        );
+        let message =
+            shared_rejection(&source, code, code, at(&source, "mut packet", 0, 3), prefix);
+        assert!(!message.contains("https://"));
+    }
+}
+
+#[test]
+fn assignment_cannot_refill_spent_or_static_bindings_or_create_unknown_ones() {
+    for (source, code, finite_code, marker, prefix) in [
+        (
+            "pub unitary fn client(q:Q<Bit>)->Q<Bit>{let r=q;q=r;r}",
+            "ownership",
+            "ownership",
+            "q=r",
+            "assignment cannot refill a consumed quantum binding",
+        ),
+        (
+            "pub unitary fn client()->Unit{static let n=0;n=1;()}",
+            "unsupported",
+            "unsupported",
+            "n=1",
+            "static place assignment is unsupported",
+        ),
+        (
+            "pub unitary fn client()->Unit{q=missing(0);()}",
+            "name",
+            "unknown_name",
+            "q=missing",
+            "assignment requires a lexical binding",
+        ),
+    ] {
+        shared_rejection(source, code, finite_code, at(source, marker, 0, 1), prefix);
+    }
+}
+
+#[test]
+fn forbidden_replacement_is_checked_in_unused_branches_and_empty_folds() {
+    for body in [
+        "if 0 {q=q;q}else{q}",
+        "if 0 {q}else{q=q;q}",
+        "qfor static i in 0..0 carry r=q {r=r;yield r;}",
+    ] {
+        // This definition is unused by main, but its original body still has
+        // to pass. A zero trip count or unselected arm grants no exemption.
+        let source =
+            format!("unitary fn unused(q:Q<Bit>)->Q<Bit>{{{body}}}pub fn main()->Bit{{0}}");
+        let marker = if body.contains("r=r") { "r=r" } else { "q=q" };
+        shared_rejection(
+            &source,
+            "ownership",
+            "ownership",
+            at(&source, marker, 0, 1),
+            "assignment would replace a live quantum owner",
+        );
+    }
+}
+
+#[test]
+fn contextual_mut_name_and_explicit_consuming_rebinding_remain_ordinary_rules() {
+    closed_bit("pub fn main()->Bit{let mut=0;mut}", false);
+    let source = "use std::quantum::init0;use std::quantum::h;use std::quantum::z;
+        use std::observe::measure_z;
+        pub observe fn main()->Bit{let q=init0();let q=h(q);z(ctrl q);h(excl q);measure_z(q)}";
+    // H Z H is X: neither consuming rebinding nor explicit access needs mut.
+    closed_bit(source, true);
+}

@@ -11,8 +11,10 @@ from pathlib import Path
 import struct
 import subprocess
 import time
+import tomllib
 
 ROOT = Path(__file__).resolve().parent.parent
+PRODUCT_VERSION = tomllib.loads((ROOT / 'Cargo.toml').read_text())['package']['version']
 
 
 def phase_bridge():
@@ -49,7 +51,7 @@ def main():
     cases.append(('schedule-reversed', good[:-20] + struct.pack('<5I', 4, 3, 2, 1, 0), 'invalid_ir'))
     start = time.monotonic()
     for name, data, expected in cases:
-        result = subprocess.run([str(binary), '--hierarchy-pending'], input=data,
+        result = subprocess.run([str(binary), '--hierarchy-pending', PRODUCT_VERSION], input=data,
                                 capture_output=True, timeout=30)
         lines = result.stdout.decode().splitlines()
         if lines[:2] == ['qleisli.hierarchy-pending 3', 'pending']:

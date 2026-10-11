@@ -1,0 +1,35 @@
+{
+  "format": "qleisli.namespace-python-regressions",
+  "version": 1,
+  "source_sha256": {
+    "scripts/check_input_corpus.py": "189573cbedbe8d094173bc4558350285927dba2aac27f31a613e3a9d6fdd9c56",
+    "scripts/test_check_input_corpus.py": "70f4dc412f9a01749ebc21664251144ffbf0f18be6a6cc4463f840a2977c8a62",
+    "scripts/current_source_fixtures.py": "82360f66a35341af473c33424d6d5fd59909499c8c1ba3ac9ee8616f4ce560e0",
+    "scripts/test_current_source_fixtures.py": "4e255dca81be955b59212770693f7b6aa5029b8e52d53541ee6fbe2d9511e8a9"
+  },
+  "records": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_check_input_corpus.py"
+      ],
+      "exit_code": 0,
+      "seconds": 13.755,
+      "stdout": "corpus-regressions-02.stdout.txt",
+      "stderr": "corpus-regressions-02.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_current_source_fixtures.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.568,
+      "stdout": "fixture-regressions-02.stdout.txt",
+      "stderr": "fixture-regressions-02.stderr.txt"
+    }
+  ],
+  "scope": "Final pure selector/provenance/oracle regression suite after missing-map and escaped-snapshot review fixes; no native/Lean execution."
+}

@@ -1,0 +1,9 @@
+
+running 4 tests
+test python_concrete_execution_does_not_replace_generic_size_obligations ... ok
+test python_static_comparisons_keep_type_angles_separate_in_both_dialects ... ok
+test python_common_quantum_subset_has_matching_acceptance_under_seeded_mutations ... ok
+test python_ghz_and_arithmetic_corpus_agree_with_rust_preparation ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.34s
+

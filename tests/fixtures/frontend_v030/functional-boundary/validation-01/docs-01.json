@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/check_docs.py"
+  ],
+  "exit_code": 0,
+  "seconds": 2.886747792013921,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-bounded-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-01.stdout.txt",
+      "sha256": "f14a0fb2696f6c8d083cef2c950649e84b21c12c460f111065168caea5f19462"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/docs-01.stderr.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

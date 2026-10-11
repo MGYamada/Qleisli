@@ -1,0 +1,4 @@
+common.parse: ParseError { message: "expected `(`, found `1`", span: Span { start: 86, end: 87 } }
+finite.check: Diagnostic { code: "parse", message: "parse error: expected `(`, found `1`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions-keywords/main.qli", span: Span { start: 86, end: 87 }, line: 1, column: 87 }) }
+finite.compile: Diagnostic { code: "parse", message: "parse error: expected `(`, found `1`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/canonical-actions-keywords/main.qli", span: Span { start: 86, end: 87 }, line: 1, column: 87 }) }
+sized.generic: Error { code: "parse", module: Some("main"), span: Span { start: 86, end: 87 }, message: "expected `(`, found `1`" }

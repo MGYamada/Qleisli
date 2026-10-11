@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-05/unused-sector-change/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-09T09:37:00.474070+00:00",
+  "cli_sha256_before": "1d480c0cdfe62a3c0f0dd6f664bd12518a08d16bd0a3a0982b61db4eac60afe0",
+  "cli_sha256_after": "1d480c0cdfe62a3c0f0dd6f664bd12518a08d16bd0a3a0982b61db4eac60afe0",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "unsupported",
+        "severity": "error",
+        "message": "ctrl source access has no retained concrete call interval; independent sector checking is not yet supported for this original obligation",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-access-v030/attempt-05/unused-sector-change/main.qli",
+          "start": 57,
+          "end": 66
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

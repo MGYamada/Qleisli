@@ -1,0 +1,17 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+
+use std::transform::init0;
+use std::observe::measure_z;
+
+fn observe_pair(a: Q<Bit>, b: Q<Bit>) -> (Bit, Bit) {
+    let first = measure_z(a);
+    let second = measure_z(b);
+    (first, second)
+}
+
+pub fn main() -> (Bit, Bit) {
+    let a = init0();
+    let b = init0();
+    observe_pair(a, b)
+}

@@ -1,0 +1,710 @@
+{
+  "format": 2,
+  "groups": {
+    "ci-preflight": {
+      "lanes": [
+        "changes"
+      ],
+      "tools": [
+        "python",
+        "git"
+      ],
+      "prerequisites": [],
+      "environment": {},
+      "timeout_seconds": 900,
+      "commands": [
+        [
+          "python3",
+          "scripts/check_whitespace.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_whitespace.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_pr_size.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_fixture_budget.py"
+        ],
+        [
+          "python3",
+          "scripts/test_ci_profiles.py"
+        ],
+        [
+          "python3",
+          "scripts/test_ci_source_checks.py"
+        ],
+        [
+          "python3",
+          "scripts/test_ci_actions.py"
+        ],
+        [
+          "python3",
+          "scripts/test_measure_ci.py"
+        ],
+        [
+          "python3",
+          "scripts/test_run_native_ci.py"
+        ],
+        [
+          "python3",
+          "scripts/test_package_lean_kernel.py"
+        ],
+        [
+          "python3",
+          "scripts/test_archive_lean_kernel.py"
+        ]
+      ],
+      "prepare": []
+    },
+    "source-integrity": {
+      "lanes": [
+        "changes"
+      ],
+      "tools": [
+        "python",
+        "git"
+      ],
+      "prerequisites": [],
+      "environment": {},
+      "timeout_seconds": 900,
+      "commands": [
+        [
+          "python3",
+          "scripts/check_verification_inventory.py"
+        ],
+        [
+          "python3",
+          "scripts/check_production_coverage.py"
+        ],
+        [
+          "python3",
+          "scripts/check_input_corpus.py"
+        ],
+        [
+          "python3",
+          "scripts/test_current_source_fixtures.py"
+        ],
+        [
+          "python3",
+          "scripts/test_observation_sources.py"
+        ]
+      ],
+      "prepare": []
+    },
+    "source-contracts": {
+      "lanes": [
+        "check-rust",
+        "check-rust-msrv"
+      ],
+      "tools": [
+        "python",
+        "git"
+      ],
+      "prerequisites": [
+        "Build the selected compiler and audit the matching native checker."
+      ],
+      "environment": {},
+      "timeout_seconds": 900,
+      "commands": [
+        [
+          "{compiler}",
+          "check",
+          "tests/fixtures/lean_layout/first_source"
+        ],
+        [
+          "{compiler}",
+          "check",
+          "tests/fixtures/lean_layout_dag/first_source"
+        ],
+        [
+          "{compiler}",
+          "check",
+          "tests/fixtures/lean_phase_layout/first_source"
+        ],
+        [
+          "python3",
+          "scripts/test_lean_phase_layout.py",
+          "--source-only",
+          "{compiler}"
+        ],
+        [
+          "python3",
+          "scripts/test_lean_interference.py",
+          "--source-only",
+          "{compiler}"
+        ],
+        [
+          "python3",
+          "scripts/test_lean_qft.py",
+          "--source-only",
+          "{compiler}"
+        ],
+        [
+          "python3",
+          "scripts/test_lean_qpe.py",
+          "--source-only",
+          "{compiler}"
+        ],
+        [
+          "python3",
+          "scripts/test_lean_controlled_power.py",
+          "--source-only",
+          "{compiler}"
+        ],
+        [
+          "python3",
+          "scripts/test_cli_json.py",
+          "{compiler}"
+        ]
+      ],
+      "prepare": []
+    },
+    "repository-integrity": {
+      "lanes": [
+        "check-docs"
+      ],
+      "tools": [
+        "python",
+        "git"
+      ],
+      "prerequisites": [],
+      "environment": {},
+      "timeout_seconds": 900,
+      "commands": [
+        [
+          "python3",
+          "scripts/test_check_editions.py"
+        ],
+        [
+          "python3",
+          "scripts/check_editions.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_docs.py"
+        ],
+        [
+          "python3",
+          "scripts/test_current_source_fixtures.py"
+        ],
+        [
+          "python3",
+          "scripts/test_observation_sources.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_ratification_packet.py"
+        ],
+        [
+          "python3",
+          "scripts/check_ratification_packet.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_constitution.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_release_ready.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_initial_guarantees.py"
+        ],
+        [
+          "python3",
+          "scripts/check_initial_guarantees.py"
+        ],
+        [
+          "python3",
+          "scripts/test_maintain_release.py"
+        ],
+        [
+          "python3",
+          "scripts/test_native_harness.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_production_coverage.py"
+        ],
+        [
+          "python3",
+          "scripts/test_test_native_acceptance_replay.py"
+        ],
+        [
+          "python3",
+          "scripts/check_production_coverage.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_lean_kernel.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_schema_registry.py"
+        ],
+        [
+          "python3",
+          "scripts/check_schema_registry.py",
+          "--source-only"
+        ],
+        [
+          "python3",
+          "scripts/test_check_fixture_archives.py"
+        ],
+        [
+          "python3",
+          "scripts/check_fixture_archives.py",
+          "--git-baseline"
+        ],
+        [
+          "python3",
+          "scripts/check_docs.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_verification_inventory.py"
+        ],
+        [
+          "python3",
+          "scripts/check_verification_inventory.py"
+        ],
+        [
+          "python3",
+          "scripts/test_test_verification_baseline.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_authoring_sessions.py"
+        ],
+        [
+          "python3",
+          "scripts/check_authoring_sessions.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_input_corpus.py"
+        ],
+        [
+          "python3",
+          "scripts/check_input_corpus.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_distribution.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_imaginary_v1_examples.py"
+        ],
+        [
+          "python3",
+          "scripts/check_imaginary_v1_examples.py"
+        ],
+        [
+          "python3",
+          "scripts/test_check_semantic_contract_examples.py"
+        ],
+        [
+          "python3",
+          "scripts/check_semantic_contract_examples.py"
+        ]
+      ],
+      "prepare": []
+    },
+    "rust-latest": {
+      "lanes": [
+        "check-rust"
+      ],
+      "tools": [
+        "python",
+        "rust-latest",
+        "cargo-latest",
+        "lean",
+        "git"
+      ],
+      "prerequisites": [
+        "Install the listed toolchains; native preparation runs before Rust tests."
+      ],
+      "environment": {
+        "RUSTUP_TOOLCHAIN": "1.98.1",
+        "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0",
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "timeout_seconds": 3600,
+      "commands": [
+        [
+          "cargo",
+          "+1.98.1",
+          "fmt",
+          "--check"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--all-targets"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--test",
+          "sized_review_dialects",
+          "--",
+          "--ignored",
+          "--skip",
+          "native"
+        ],
+        [
+          "python3",
+          "scripts/test_sized_primitive_catalog.py"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "doc",
+          "--no-deps"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--doc"
+        ]
+      ],
+      "prepare": [
+        "native-runtime"
+      ]
+    },
+    "rust-latest-lint-research": {
+      "lanes": [
+        "check-rust"
+      ],
+      "tools": [
+        "python",
+        "rust-latest",
+        "cargo-latest",
+        "lean",
+        "git"
+      ],
+      "prerequisites": [
+        "Build lean-kernel and run its Audit.lean before Rust tests; select that checker with QLEISLI_KERNEL."
+      ],
+      "environment": {
+        "RUSTUP_TOOLCHAIN": "1.98.1",
+        "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0",
+        "RUSTDOCFLAGS": "-D warnings"
+      },
+      "timeout_seconds": 3600,
+      "commands": [
+        [
+          "cargo",
+          "+1.98.1",
+          "clippy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "fmt",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml",
+          "--check"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "test",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml",
+          "--all-targets"
+        ],
+        [
+          "cargo",
+          "+1.98.1",
+          "clippy",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      "prepare": []
+    },
+    "rust-msrv": {
+      "lanes": [
+        "check-rust-msrv"
+      ],
+      "tools": [
+        "python",
+        "cargo-msrv",
+        "clippy-msrv",
+        "lean",
+        "git",
+        "rust-msrv"
+      ],
+      "prerequisites": [
+        "Install the listed toolchains; native preparation runs before Rust tests."
+      ],
+      "environment": {
+        "RUSTUP_TOOLCHAIN": "1.85.0",
+        "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0"
+      },
+      "timeout_seconds": 3600,
+      "commands": [
+        [
+          "python3",
+          "scripts/run_msrv.py",
+          "test",
+          "--all-targets"
+        ]
+      ],
+      "prepare": [
+        "native-runtime"
+      ]
+    },
+    "rust-msrv-lint-research": {
+      "lanes": [
+        "check-rust-msrv"
+      ],
+      "tools": [
+        "python",
+        "cargo-msrv",
+        "clippy-msrv",
+        "lean",
+        "git",
+        "rust-msrv"
+      ],
+      "prerequisites": [
+        "Build lean-kernel and run its Audit.lean before Rust tests; select that checker with QLEISLI_KERNEL."
+      ],
+      "environment": {
+        "RUSTUP_TOOLCHAIN": "1.85.0",
+        "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0"
+      },
+      "timeout_seconds": 3600,
+      "commands": [
+        [
+          "python3",
+          "scripts/run_msrv.py",
+          "clippy",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ],
+        [
+          "python3",
+          "scripts/run_msrv.py",
+          "test",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml",
+          "--all-targets"
+        ],
+        [
+          "python3",
+          "scripts/run_msrv.py",
+          "clippy",
+          "--manifest-path",
+          "research/semantic-kernel/Cargo.toml",
+          "--all-targets",
+          "--",
+          "-D",
+          "warnings"
+        ]
+      ],
+      "prepare": []
+    },
+    "source-semantics": {
+      "lanes": [
+        "check-rust"
+      ],
+      "tools": [
+        "python",
+        "git"
+      ],
+      "prerequisites": [
+        "Build lean-kernel and run its Audit.lean before Rust tests; select that checker with QLEISLI_KERNEL."
+      ],
+      "environment": {},
+      "timeout_seconds": 1800,
+      "commands": [
+        [
+          "python3",
+          "scripts/test_test_qli_differential.py"
+        ],
+        [
+          "python3",
+          "scripts/test_qli_differential.py",
+          "{compiler}",
+          "--cases=96"
+        ],
+        [
+          "python3",
+          "scripts/test_verification_baseline.py",
+          "{compiler}"
+        ]
+      ],
+      "prepare": []
+    },
+    "book": {
+      "lanes": [
+        "check-docs"
+      ],
+      "tools": [
+        "python",
+        "mdbook",
+        "git"
+      ],
+      "prerequisites": [],
+      "environment": {},
+      "timeout_seconds": 900,
+      "commands": [
+        [
+          "mdbook",
+          "build",
+          "docs"
+        ],
+        [
+          "python3",
+          "scripts/test_check_book.py"
+        ],
+        [
+          "python3",
+          "scripts/check_book.py"
+        ]
+      ],
+      "prepare": []
+    },
+    "native-runtime": {
+      "lanes": [
+        "check-rust",
+        "check-rust-msrv",
+        "check-macos-source",
+        "check-interop",
+        "check-distribution",
+        "check-lean-kernel"
+      ],
+      "tools": [
+        "python",
+        "lean",
+        "git"
+      ],
+      "prerequisites": [
+        "Install the pinned Lean toolchain."
+      ],
+      "prepare": [],
+      "environment": {
+        "ELAN_TOOLCHAIN": "leanprover/lean4:v4.30.0",
+        "QLEISLI_KERNEL": "{root}/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "timeout_seconds": 3600,
+      "commands": [
+        [
+          "python3",
+          "scripts/check_lean_kernel.py"
+        ],
+        [
+          "lake",
+          "-d",
+          "lean-kernel",
+          "build"
+        ],
+        [
+          "lake",
+          "-d",
+          "lean-kernel",
+          "env",
+          "lean",
+          "-DwarningAsError=true",
+          "lean-kernel/Audit.lean"
+        ]
+      ]
+    }
+  },
+  "tools": {
+    "python": {
+      "command": [
+        "python3",
+        "--version"
+      ],
+      "pattern": "Python 3\\.(1[1-9]|[2-9][0-9])\\.[0-9]+"
+    },
+    "rust-latest": {
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "pattern": "rustc 1\\.98\\.1 .*"
+    },
+    "cargo-latest": {
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "pattern": "cargo 1\\.98\\.1 .*"
+    },
+    "cargo-msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "--version"
+      ],
+      "pattern": "cargo 1\\.85\\.0 .*"
+    },
+    "clippy-msrv": {
+      "command": [
+        "python3",
+        "scripts/run_msrv.py",
+        "clippy",
+        "--version"
+      ],
+      "pattern": "clippy 0\\.1\\.85 .*"
+    },
+    "lean": {
+      "command": [
+        "lake",
+        "-d",
+        "lean-kernel",
+        "env",
+        "lean",
+        "--version"
+      ],
+      "pattern": "Lean \\(version 4\\.30\\.0,.*"
+    },
+    "mdbook": {
+      "command": [
+        "mdbook",
+        "--version"
+      ],
+      "pattern": "mdbook v0\\.5\\.4"
+    },
+    "git": {
+      "command": [
+        "git",
+        "--version"
+      ],
+      "pattern": "git version .*"
+    },
+    "rust-msrv": {
+      "command": [
+        "rustup",
+        "run",
+        "1.85.0",
+        "rustc",
+        "--version"
+      ],
+      "pattern": "rustc 1\\.85\\.0 .*"
+    }
+  }
+}

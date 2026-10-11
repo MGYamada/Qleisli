@@ -1,0 +1,172 @@
+{
+  "format": "qleisli.parser-stack-repair.v1",
+  "issue": 33,
+  "previous_head": "93aff07ee58fb64ea72d48009fbec98a6238028a",
+  "ci_run": 37562617996,
+  "ci_url": "https://github.com/MGYamada/Qleisli/actions/runs/37562617996",
+  "ci_conclusion": "failure",
+  "failed_producers": [
+    "check-rust",
+    "check-distribution"
+  ],
+  "successful_producers": [
+    "check-interop",
+    "check-macos-source",
+    "check-rust-msrv",
+    "check-lean",
+    "check-lean-kernel",
+    "check-docs"
+  ],
+  "aggregate_contexts": "All eight required aggregation contexts failed because selected producer failures reject readiness; these are not eight additional independent defects.",
+  "original_failure_lines": [
+    "check-rust\tRun cargo +1.98.1 test --all-targets\t2026-10-07T02:58:18.9772513Z thread 'deep_syntax_is_rejected_without_exhausting_the_stack' (147714) has overflowed its stack",
+    "check-rust\tRun cargo +1.98.1 test --all-targets\t2026-10-07T02:58:18.9773072Z fatal runtime error: stack overflow, aborting",
+    "check-rust\tRun cargo +1.98.1 test --all-targets\t2026-10-07T02:58:19.1809880Z   process didn't exit successfully: `/home/runner/work/Qleisli/Qleisli/target/debug/deps/parser-2d1eefb3246a8d1c` (signal: 6, SIGABRT: process abort signal)",
+    "check-distribution\tVerify clean package and complete source archive\t2026-10-07T02:53:53.1500095Z thread 'deep_syntax_is_rejected_without_exhausting_the_stack' (149565) has overflowed its stack",
+    "check-distribution\tVerify clean package and complete source archive\t2026-10-07T02:53:53.1500366Z fatal runtime error: stack overflow, aborting",
+    "check-distribution\tVerify clean package and complete source archive\t2026-10-07T02:53:53.1501421Z   process didn't exit successfully: `/home/runner/work/_temp/qleisli-distribution-target/source-production/debug/deps/parser-2d1eefb3246a8d1c` (signal: 6, SIGABRT: process abort signal)"
+  ],
+  "full_failed_log_sha256": "10ce35c8de0d5ebe36060680ca7774d7883b88a851691272dc8dbcd2e1bcbbb5",
+  "full_failed_log_policy": "Full failed-job log remains in /private/tmp; focused original failure lines are retained here without copying successful output into fixtures.",
+  "local_reproduction": {
+    "head": "93aff07ee58fb64ea72d48009fbec98a6238028a",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)",
+    "environment": {
+      "RUST_MIN_STACK": "2097152",
+      "CARGO_PROFILE_DEV_DEBUG": "0",
+      "CARGO_PROFILE_TEST_DEBUG": "0",
+      "CARGO_INCREMENTAL": "0"
+    },
+    "argv": [
+      "cargo",
+      "test",
+      "--test",
+      "parser",
+      "deep_syntax_is_rejected_without_exhausting_the_stack",
+      "-j2",
+      "--",
+      "--exact",
+      "--nocapture"
+    ],
+    "exit_code": 101,
+    "result": "The named parser test overflowed its stack; fatal runtime error and signal 6 SIGABRT. This actual reproduction preceded extraction of power_application."
+  },
+  "repair": {
+    "behavior": "Move the same power parse branch to a non-inlined private helper. Preserve token consumption, AST, source spans, errors, public API, counts and the existing 64-level limit.",
+    "regression": "The existing deep-syntax test explicitly uses a 2 MiB thread stack on every platform. It retains 10,000-level refusal cases and the 62-parenthesis positive case; add near-limit power/inverse/controlled inputs and deeply nested static power refusal. Also retain an accepted 60-deep runtime power chain and a 10,000-deep runtime power refusal on the same bounded stack.",
+    "source_hashes": {
+      "src/frontend/parser.rs": "02a955a50771572bac6382fe608f1ee4b21f0d64614a65cca17ec03f4cd956a1",
+      "tests/parser.rs": "e337b72876462a3817a209d81632a293cf1c28a1cdfb46bb5a962189e20acc48"
+    },
+    "inventory_review": "Confirmed exact equality of the stored public surface before updating only the parser source hash; no constructor, API or capacity change."
+  },
+  "validation": {
+    "parser_latest": {
+      "passed": 27,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0
+    },
+    "msrv_targeted": {
+      "compiler": "1.85.0",
+      "targets": [
+        "parser",
+        "checked_operations",
+        "quantum_unit_source"
+      ],
+      "passed": 65,
+      "failed": 0,
+      "ignored": 0,
+      "exit_code": 0
+    },
+    "harness_notes": [
+      "The first MSRV operation-test command omitted QLEISLI_KERNEL and failed; the corrected explicit-kernel command passed all 65 tests.",
+      "The initial latest all-target run in the sandbox stopped at the existing process-descendant ps permission restriction: 134 library tests passed, one PermissionDenied failure, three existing ignored. The unrestricted rerun is recorded separately."
+    ],
+    "constitution_continuity": {
+      "base": "38baae7d19535602b21270e11e97617d45205b37",
+      "exit_code": 0,
+      "scope": "Current source/evidence identity and adopted-record continuity, not fresh Lean replay or general discharge."
+    },
+    "pending": [
+      "Fresh hosted CI on the repaired committed tree",
+      "Clean source/package/fresh-install distribution gate on that same hosted checkout"
+    ],
+    "latest_nested_power": {
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "clippy": {
+      "latest": "passed",
+      "msrv": "passed",
+      "scope": "all targets with warnings denied"
+    },
+    "msrv_nested_power": {
+      "exit_code": 0,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    "review_checks": {
+      "format": 0,
+      "diff_whitespace": 0,
+      "verification_inventory": 0,
+      "production_coverage": 0,
+      "docs": 0,
+      "authoring_sessions": 0,
+      "fixture_budget": 0,
+      "verification_inventory_regressions": {
+        "passed": 17,
+        "failed": 0
+      },
+      "production_coverage_regressions": {
+        "passed": 14,
+        "failed": 0
+      },
+      "docs_regressions": {
+        "passed": 36,
+        "failed": 0
+      }
+    },
+    "all_targets_unrestricted": {
+      "compiler": "1.98.1",
+      "argv": [
+        "cargo",
+        "test",
+        "--all-targets",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "completed_targets": 102,
+      "passed": 952,
+      "failed": 0,
+      "existing_ignored": 52,
+      "log_sha256": "538923615ba3e71f06ef5fd5ed8fa8b598bb971c37a72238e0576abc41ebbe29",
+      "scope": "Actual normal-permission all-target test run on the repaired production sources; the final expanded parser regression also passed separately on this compiler."
+    },
+    "all_targets_msrv": {
+      "compiler": "1.85.0",
+      "argv": [
+        "scripts/run_msrv.py",
+        "test",
+        "--all-targets",
+        "-j2"
+      ],
+      "exit_code": 0,
+      "completed_targets": 102,
+      "passed": 952,
+      "failed": 0,
+      "existing_ignored": 52,
+      "log_sha256": "59a1f6493b9bb5679dd37d73c96e7ee89d6d69598ef792de926c8beebca24714",
+      "scope": "Actual normal-permission all-target test run on the repaired production sources; the final expanded parser regression also passed separately on this compiler."
+    }
+  },
+  "limits": [
+    "No Lean definition, native acceptance or proof changed. No new guarantee admission or completed Issue is claimed.",
+    "Full QS, PR, quantitative RS, source-preservation proofs and release approval remain distinct outstanding obligations.",
+    "The historical failing CI run remains failed. Local repair success cannot relabel it or certify a future hosted run."
+  ],
+  "ci_checkout": "9d7d890ce2c864f8aa691f5890e350d251de5bd3"
+}

@@ -147,6 +147,19 @@ theorem dispatch_histories (dependencies : List Basis) (state : Raw.State) (op :
     result.state.seenTokens = state.seenTokens ++ Semantics.Ownership.outputs op ∧
     result.state.seenWires = state.seenWires ++ Semantics.Ownership.allocated (view state) op := by
   cases op with
+  | packUnit output =>
+    obtain ⟨_,_,h⟩ := except_bind_success _ _ _ ok
+    obtain ⟨next,inserted,h⟩ := except_bind_success _ _ _ h
+    obtain ⟨_,_,h⟩ := except_bind_success _ _ _ h
+    cases Except.ok.inj h
+    simp [insert_state _ _ _ _ inserted,Semantics.Ownership.outputs,Semantics.Ownership.allocated]
+  | unpackUnit input =>
+    obtain ⟨_,_,h⟩ := except_bind_success _ _ _ ok
+    obtain ⟨⟨port,next⟩,taken,h⟩ := except_bind_success _ _ _ h
+    obtain ⟨_,_,h⟩ := except_bind_success _ _ _ h
+    obtain ⟨_,_,h⟩ := except_bind_success _ _ _ h
+    cases Except.ok.inj h
+    simp [(take_state _ _ _ _ taken).2,Semantics.Ownership.outputs,Semantics.Ownership.allocated]
   | init0 output wire =>
     obtain ⟨reserved,hr,h⟩ := except_bind_success _ _ _ ok
     obtain ⟨inserted,hi,h⟩ := except_bind_success _ _ _ h
@@ -353,6 +366,14 @@ it consumes, including protected source/target/scratch regions. -/
 theorem dispatch_access (dependencies : List Basis) (state : Raw.State) (op : Op) (result : Raw.Transition)
     (ok : Raw.dispatch dependencies state op = .ok result) : Semantics.Ownership.Access (view state) op := by
   cases op with
+  | packUnit output => trivial
+  | unpackUnit input =>
+    obtain ⟨_,_,h⟩ := except_bind_success _ _ _ ok
+    obtain ⟨⟨port,next⟩,taken,h⟩ := except_bind_success _ _ _ h
+    obtain ⟨_,zero,_⟩ := except_bind_success _ _ _ h
+    have good := Raw.require_success _ zero
+    simp only [Bool.and_eq_true,beq_iff_eq,List.isEmpty_iff] at good
+    exact ⟨port,(take_access _ _ _ _ taken).1,good.1,good.2⟩
   | init0 output wire | join left right output => trivial
   | gate gate input output =>
     obtain ⟨⟨port,next⟩,ht,h⟩ := except_bind_success _ _ _ ok
@@ -439,9 +460,9 @@ theorem trace_ownership (dependencies : List Basis) (initial final : Raw.State) 
       (ih (valid _ (Raw.step_conditions _ _ _ _ head).2.2))
 
 /-- The earlier straight-line raw API reaches the same independent property. -/
-theorem prepare_resourceSafe (dependencies : List Basis) (program : Program) (prepared : Raw.Prepared)
+theorem prepare_ownershipSafe (dependencies : List Basis) (program : Program) (prepared : Raw.Prepared)
     (ok : Raw.prepare dependencies program = .ok prepared) :
-    Semantics.Ownership.ResourceSafe (Semantics.Ownership.pureProgram program) := by
+    Semantics.Ownership.OwnershipSafe (Semantics.Ownership.pureProgram program) := by
   obtain ⟨initial,body,hi,_,ho,same,trace⟩ := Raw.prepare_conditions _ _ _ ok
   have initialized := Raw.inputs_valid _ _ _ (by decide) hi
   have coverage := Raw.output_coverage _ _ ho

@@ -1,0 +1,16 @@
+{
+  "captured_ledger_sha256": "811576ce9bd268d85243ac48a160b8a222501f63cfedf08853245803a56852bf",
+  "exception": "PacketError",
+  "final_ledger_unchanged": true,
+  "inner_result": {
+    "admitted_guarantees": 2,
+    "ledger_sha256": "414886a52578eb288248db4d8ee1997b338d2c1b6f5a137d9f839a795b0b8f8c",
+    "mode": "source-identity-only",
+    "pending_obligations": 3,
+    "supplemental_pending_obligations": 1
+  },
+  "message": "constitutional verifier validated different ledger bytes",
+  "outcome": "rejected",
+  "scope": "explicit mocked constitutional service; no real release/proof/adoption claim",
+  "validated_ledger_sha256": "414886a52578eb288248db4d8ee1997b338d2c1b6f5a137d9f839a795b0b8f8c"
+}

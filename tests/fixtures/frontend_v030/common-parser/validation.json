@@ -1,0 +1,165 @@
+{
+  "scope": "Selected frontend/parser/profile integration tests and compilation of all Rust test targets; no full Rust execution or new maximum-size quantum cases. No Lean source changed by this parser work. Existing native binary used where tests request acceptance.",
+  "commands": [
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--no-fail-fast",
+        "--test",
+        "parser",
+        "--test",
+        "documentation",
+        "--test",
+        "sized_source",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "static_operations",
+        "--test",
+        "project",
+        "--test",
+        "compile",
+        "--test",
+        "sized_cli",
+        "--test",
+        "sized_review_diagnostics",
+        "--test",
+        "sized_review_dialects",
+        "--test",
+        "diagnostics"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 37.212,
+      "stdout": "integration.stdout.txt",
+      "stderr": "integration.stderr.txt",
+      "summaries": [
+        {
+          "result": "ok",
+          "passed": 30,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 6,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 14,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 20,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 11,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 5,
+          "failed": 0,
+          "ignored": 2,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 3,
+          "failed": 0,
+          "ignored": 5,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 34,
+          "failed": 0,
+          "ignored": 3,
+          "filtered_out": 0
+        },
+        {
+          "result": "ok",
+          "passed": 12,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 0
+        }
+      ]
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::lexer::common_token_tests"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 2.14,
+      "stdout": "unit.stdout.txt",
+      "stderr": "unit.stderr.txt",
+      "summaries": [
+        {
+          "result": "ok",
+          "passed": 2,
+          "failed": 0,
+          "ignored": 0,
+          "filtered_out": 80
+        }
+      ]
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--no-run"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "environment_overrides": {
+        "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      },
+      "exit_code": 0,
+      "elapsed_seconds": 7.409,
+      "stdout": "all-targets-compile.stdout.txt",
+      "stderr": "all-targets-compile.stderr.txt",
+      "summaries": []
+    }
+  ]
+}

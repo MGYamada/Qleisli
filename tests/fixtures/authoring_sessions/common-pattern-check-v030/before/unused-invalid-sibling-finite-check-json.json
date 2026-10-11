@@ -1,0 +1,40 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/attempt-01/unused-invalid-sibling",
+    "--lean-kernel=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/common-pattern-check-v030/native-log.py",
+    "--format=json"
+  ],
+  "exit_code": 1,
+  "seconds": 0.0470003749942407,
+  "recorded_utc": "2026-10-05T16:34:00.678331+00:00",
+  "timestamp_note": "Clock after completion; not authenticated provenance.",
+  "native_invocations": 1,
+  "stdout_raw": "unused-invalid-sibling-finite-check-json.stdout.txt",
+  "stderr_raw": "unused-invalid-sibling-finite-check-json.stderr.txt",
+  "stderr": "",
+  "proposal_emitted": false,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "quantum ownership `q` has already been consumed",
+        "primary": {
+          "path": "main.qli",
+          "start": 172,
+          "end": 173,
+          "line": 7,
+          "column": 9
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

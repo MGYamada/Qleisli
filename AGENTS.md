@@ -3,19 +3,20 @@
 ## Keep this file small
 
 Keep AGENTS.md and CLAUDE.md identical: **100 lines / 6,000 UTF-8 bytes** each.
-`scripts/check_docs.py` checks limits and equality. Replace or shorten rules;
-keep rules/links here, specifications in docs, decisions in Issues, results
-beside fixtures and history in Git. No release/publication histories.
-Raise limits only on explicit user instruction.
+`scripts/check_docs.py` checks limits and equality. Keep rules/links here,
+specs in docs, decisions in Issues, results beside fixtures, history
+in Git. No release/publication histories. Shorten rules; only explicit user instruction may raise limits.
 
 ## Start from the design
 
-The user's latest instructions take precedence. Before working, read
-[README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
+User instructions prevail. At startup, model change or context reset,
+follow [constitutional handoff](governance/README.md#agent-startup-and-handoff).
+AI cannot adopt interpretations or guarantees.
+Read [README](README.md), [ROADMAP](ROADMAP.md), [trust boundary](TRUSTBOUNDARY.md),
 [adopted cutover](https://github.com/MGYamada/Qleisli/issues/276) and
-[algorithm drafts](docs/imaginary-v1/README.md).
-Read relevant specifications before changing behavior; English is authoritative
-for production specifications, public library contracts, comments and examples.
+[algorithm drafts](docs/src/imaginary-v1/index.md).
+Read specs before behavior changes; English is authoritative
+for production specs, public library contracts, comments and examples.
 
 - Start with desired `.qli` programs and a bounded contract/checking experiment.
   Preserve first sources, real diagnostics and counterexamples under the
@@ -41,16 +42,16 @@ meanings independent of acceptance and under specification review.
 New M2 acceptance logic belongs in Mathlib-free `lean-kernel/`; Rust handles
 parsing, diagnostics, transport, evidence generation and simulation. Independently
 check IR at every Rust/Lean boundary; prove actual executable definitions.
-Follow [the adopted v0.2.9 cutover](https://github.com/MGYamada/Qleisli/issues/276):
+Follow the adopted cutover above:
 Lean alone issues new accepted handles; remove legacy paths after replacement
 checks. Full Soundness remains v0.5.0; external schemas await binding gates.
 
-Keep Lean/Mathlib at 4.30.0 and development Python at 3.11+. Follow the
-[test-oriented CI lanes](.github/ci/README.md): build/audit native checkers and run
-independent tests; compile changed proofs; full replay for releases,
-manual full runs and policy risks. Reject project axioms, unsafe/
+Pin Lean/Mathlib 4.30.0 and development Python 3.11+. Validate locally via
+[shared checks](.github/ci/README.md); hosted CI only for Issue completion/release.
+Build/audit native checkers, run independent tests and compile changed proofs;
+full replay for releases, full checks and policy risks. Reject project axioms, unsafe/
 partial definitions and runtime overrides, including private/generated helpers.
-Label temporary proofs with TP-ID, priority P0/P1/P2 and replacement/removal
+Mark temporary proofs TP-ID, P0/P1/P2 and replacement/removal
 conditions; keep them built/audited until callers and obligations migrate.
 Distinguish code, tests, proof, preservation and specification review.
 
@@ -60,37 +61,38 @@ Until v0.5.0, add algorithms to `corpus` rather than generally expand `stdlib`.
 Follow [corpus policy](corpus/POLICY.md): only QuantumKatas, Qualtran Bloqs and
 PennyLane Demos; source changes need explicit approval. Pin commits/file hashes
 and preserve licenses/notices (Katas MIT; the other two Apache-2.0).
-Library work follows [STDLIB.md](STDLIB.md) and existing source contracts.
+Library work follows [STDLIB.md](STDLIB.md) and source contracts.
 
-Prioritize shared executable corpus source without waiting for general proofs.
-Follow [the adopted cutover](https://github.com/MGYamada/Qleisli/issues/276)
-and [sized evidence](corpus/sized/README.md). Validate small qubit systems only;
+Prioritize shared executable corpus source; do not wait for general proofs.
+Follow the adopted cutover and [sized evidence](corpus/sized/README.md).
+Validate small qubit systems only;
 do not newly generate/check maximum-size cases. A version or bounded component
 does not complete feature/R14/H1–H5 or theorem gates.
 
-## docs/ cleanup boundary at v0.3.0
+## Documentation after the v0.3.0 cleanup
 
-Only `imaginary-v1/` and [backend plan](docs/lean-backend-plan-v0.3.md) survive
-the v0.3.0 cleanup in `docs/`. Migration decisions live in Issues.
-Delete `docs-old/` at v0.3.0. Remove its links now, including pinned web links;
-do not add redirects, replacement copies or active build/check dependencies.
-Preserve executable source, proofs, counterexamples, validation artifacts and
-notices outside that tree. Use Git history after deletion. Derive new docs
-from adopted decisions, actual code and proofs. Regenerate corpus counts with
+Keep book sources in `docs/src/`, including the [backend plan](docs/src/lean-backend-plan-v0.3.md).
+Write new chapters from adopted decisions, actual code and proofs;
+migration decisions live in Issues. The retired `docs-old/` tree is deleted.
+Do not restore it, its links (including pinned web links), redirects, replacement
+copies of retired prose or active build/check dependencies; use Git history.
+Keep executable source, proofs, counterexamples, validation artifacts and
+notices outside retired docs. Regenerate corpus counts with
 `python3 scripts/check_docs.py --write-corpus`; do not hand-edit generated views.
 
 ## Changes, versions and licensing
 
+Enforce [size budgets](.github/ci/README.md#size-budgets); never raise them to pass.
 Use GitHub Issues for decisions/friction; no duplicate backlog. Breaking changes
 need an Issue with target, contracts, reason, migration and acceptance criteria
 before implementation. Compatible changes use PATCH, breaks MINOR, except the
 explicitly approved v0.2.9 verifier migration (#276). Cargo.toml is authoritative; synchronize
-Cargo.lock, both lakefiles, Python metadata/__version__ and std Qargo via
-`scripts/maintain_release.py`; inspect its plan and source-review requirements. Never change dependency versions as part of synchronization. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
+Cargo.lock, lakefiles, Python metadata/runtime, std Qargo and research Cargo via
+`scripts/maintain_release.py`; inspect its plan and source-review requirements. Synchronization must not change dependency versions. Require schema-2 `[qrate].edition = "2026"` per source tree; no root
 Qargo.toml. Accumulate changes in [CHANGELOG](CHANGELOG.md), not per-task bumps.
-Run relevant checks and record performed/skipped results accurately. For releases
+Record performed/skipped checks accurately. For releases
 validate source, packages, installation and full CI; tag the exact checked commit.
 Selection, tagging, pushing and publication are distinct; published artifacts
-are immutable. Documentation-only work need not rerun Rust/Lean tests.
+are immutable. Docs-only work need not rerun Rust/Lean tests.
 Preserve Apache-2.0, [LICENSE](LICENSE), [NOTICE](NOTICE), third-party attribution
 and Masahiko G. Yamada's copyright; public Rust packages declare Apache-2.0.

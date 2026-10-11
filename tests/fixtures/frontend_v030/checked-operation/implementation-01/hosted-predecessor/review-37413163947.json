@@ -1,0 +1,158 @@
+{
+  "format": "qleisli.hosted-predecessor-ci-review",
+  "version": 1,
+  "observed_utc": "2026-10-06T04:35:25Z",
+  "repository": "MGYamada/Qleisli",
+  "run_id": 37413163947,
+  "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37413163947",
+  "tested_merge_commit": "18997543f87b254063d65e60394b26f999d261ab",
+  "merge_head_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "merge_base_commit": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "rust_failure": {
+    "job_id": 112105960708,
+    "job": "check-rust",
+    "argv": [
+      "cargo",
+      "+1.98.1",
+      "test",
+      "--all-targets"
+    ],
+    "exit_code": 101,
+    "test": "all_reviewed_corpus_projects_compile_verify_and_execute",
+    "source": "tests/input_corpus.rs",
+    "panic_line": 29,
+    "assertion": "current corpus snapshots not selected",
+    "observed_selected_snapshot_count": 8,
+    "recorded_expected_snapshot_count": 6,
+    "cause": "The unchanged fixed-count migration-selection assertion still expects six snapshots after #81 adds two explicit coherent-basis project snapshots. The actual selection returns eight. This assertion fails before the loop compiling/verifying/executing the reviewed corpus.",
+    "corroboration": {
+      "tested_source": {
+        "path": "tests/input_corpus.rs",
+        "git_blob_sha1": "a1bda9fb8c1c5593ae7ec9f0904a72ff958036e8",
+        "url": "https://github.com/MGYamada/Qleisli/blob/18997543f87b254063d65e60394b26f999d261ab/tests/input_corpus.rs"
+      },
+      "tested_migration": {
+        "path": "corpus/migrations/coherent-basis-v030/migration.json",
+        "git_blob_sha1": "106bdcefe7357a3bf5097bbb05a141c0c647496c",
+        "url": "https://github.com/MGYamada/Qleisli/blob/18997543f87b254063d65e60394b26f999d261ab/corpus/migrations/coherent-basis-v030/migration.json",
+        "projects": [
+          "qualtran/less_than2",
+          "pennylane_demos/vqe_excitation"
+        ]
+      }
+    },
+    "limits": "The failure is an observed stale selection assertion, not an observed mathematical-oracle, compiler-acceptance or runtime failure. This failed test does not establish success of its skipped corpus loop."
+  },
+  "exact_excerpt": {
+    "path": "check-rust-37413163947.exact-excerpt.txt",
+    "sha256": "c79a016040b288f8a51c5265ae4ddc3a4c65c644da5c54404c8d61d9406090d7",
+    "source": "github_fetch_workflow_job_logs",
+    "source_job_id": 112105960708,
+    "source_line_ranges": [
+      {
+        "first_line": 122,
+        "last_line": 125
+      },
+      {
+        "first_line": 472,
+        "last_line": 473
+      },
+      {
+        "first_line": 1018,
+        "last_line": 1041
+      }
+    ],
+    "selection": "Exact returned decoded-log lines from the three listed ranges, concatenated in their original order; timestamps, whitespace and command escape bytes preserved. No complete log or workflow artifact downloaded to disk."
+  },
+  "job_snapshot": [
+    {
+      "id": 112105898151,
+      "name": "changes",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": [],
+      "running_steps": []
+    },
+    {
+      "id": 112105960608,
+      "name": "check-docs",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Check whitespace throughout the committed tree"
+      ],
+      "running_steps": []
+    },
+    {
+      "id": 112105960621,
+      "name": "check-macos-source",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": [],
+      "running_steps": []
+    },
+    {
+      "id": 112105960664,
+      "name": "check-distribution",
+      "status": "in_progress",
+      "conclusion": null,
+      "failed_steps": [],
+      "running_steps": [
+        "Verify clean package and complete source archive"
+      ]
+    },
+    {
+      "id": 112105960669,
+      "name": "check-interop",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": [],
+      "running_steps": []
+    },
+    {
+      "id": 112105960692,
+      "name": "check-rust-msrv",
+      "status": "in_progress",
+      "conclusion": null,
+      "failed_steps": [],
+      "running_steps": [
+        "Run cargo +1.85.0 test --all-targets"
+      ]
+    },
+    {
+      "id": 112105960708,
+      "name": "check-rust",
+      "status": "completed",
+      "conclusion": "failure",
+      "failed_steps": [
+        "Run cargo +1.98.1 test --all-targets"
+      ],
+      "running_steps": []
+    },
+    {
+      "id": 112105960762,
+      "name": "check-lean-kernel",
+      "status": "in_progress",
+      "conclusion": null,
+      "failed_steps": [],
+      "running_steps": [
+        "Run all retained native comparisons with bounded parallelism"
+      ]
+    },
+    {
+      "id": 112105960766,
+      "name": "check-lean",
+      "status": "completed",
+      "conclusion": "success",
+      "failed_steps": [],
+      "running_steps": []
+    }
+  ],
+  "distinct_docs_failure": {
+    "job_id": 112105960608,
+    "failed_step": "Check whitespace throughout the committed tree",
+    "cause": "Whitespace in preserved #81 raw command logs.",
+    "local_repair_status": "The integration owner reports a local raw-log attributes repair; this predecessor run still failed and this review does not validate that repair."
+  },
+  "scope": "One read-only connector snapshot plus small exact excerpt and cause review. No source/test edit, local compiler/Cargo execution, CI rerun/mutation, GitHub comment, acceptance waiver, #82 completion, fresh Lean replay or release approval. Remaining lanes were checked once and were not polled again."
+}

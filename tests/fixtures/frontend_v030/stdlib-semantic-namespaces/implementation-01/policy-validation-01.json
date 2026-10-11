@@ -1,0 +1,129 @@
+{
+  "format": "qleisli.namespace-policy-validation",
+  "version": 1,
+  "records": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 2.99,
+      "stdout": "docs-01.stdout.txt",
+      "stderr": "docs-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_authoring_sessions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.671,
+      "stdout": "authoring-01.stdout.txt",
+      "stderr": "authoring-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_editions.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 3.809,
+      "stdout": "editions-01.stdout.txt",
+      "stderr": "editions-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_input_corpus.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.268,
+      "stdout": "corpus-metadata-01.stdout.txt",
+      "stderr": "corpus-metadata-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_verification_inventory.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.49,
+      "stdout": "inventory-01.stdout.txt",
+      "stderr": "inventory-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.137,
+      "stdout": "coverage-01.stdout.txt",
+      "stderr": "coverage-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/check_constitution.py",
+        "--base-ref",
+        "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 1.228,
+      "stdout": "constitution-01.stdout.txt",
+      "stderr": "constitution-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_check_constitution.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 139.918,
+      "stdout": "constitution-regressions-01.stdout.txt",
+      "stderr": "constitution-regressions-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_check_production_coverage.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 1.246,
+      "stdout": "coverage-regressions-01.stdout.txt",
+      "stderr": "coverage-regressions-01.stderr.txt"
+    },
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "scripts/test_ci_profiles.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "seconds": 0.834,
+      "stdout": "ci-profiles-01.stdout.txt",
+      "stderr": "ci-profiles-01.stderr.txt"
+    }
+  ],
+  "scope": "Policy/source identities and regression suites only; not a fresh Lean build/replay, full CI, guarantee admission or release gate."
+}

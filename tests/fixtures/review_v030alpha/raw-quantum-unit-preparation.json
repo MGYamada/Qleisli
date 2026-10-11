@@ -1,0 +1,132 @@
+{
+  "format": "qleisli.bounded-raw-unit-review",
+  "version": 1,
+  "issues": [
+    43,
+    44
+  ],
+  "base_commit": "815a053b4ebdacceb71c4fdfde66ea8471bf224e",
+  "contract_comment": "https://github.com/MGYamada/Qleisli/issues/43#issuecomment-6017112286",
+  "changes": [
+    "Retain Q<Unit> inputs/returns as distinct owners with no physical wires through ordinary calls/products.",
+    "Independently replay exact Unit/Bit ownership and ordered output; native-valid zero-owner reordering fails source comparison.",
+    "Retain exact unary quantum root interfaces on actual QIRF bytes for independent native finite requests.",
+    "Enforce the existing 16 live physical wires and unchanged call/depth/operation/value capacities; logical owner storage is separately charged."
+  ],
+  "sources": {
+    "src/frontend/sized/raw.rs": "5868a6af7503bd60db9bbd0b32485301aabc0f92b92eaa8c6480c0f5dba09bc9",
+    "src/frontend/sized/raw/preservation.rs": "78c20dcfcae6097ec82d9af81a071bc4a0dd2f462eb350aff4a81346b68be780",
+    "tests/quantum_unit_source.rs": "2aca58b3e117249566fe7957535772d49612a581def62527a0b71625c039c80e",
+    "tests/selected_source_cli.rs": "fb2670e1c5129fa56993c9a266b8a987626b49ff89a95081c595e7f3f45f144a",
+    "docs/src/reference/type-model.md": "fbbe35b2c4b63c51dbf0b6cd9b46021dcd1c2359abfe2f6b01857e5da430a555",
+    "experimental/static-nat-tables/.gitattributes": "b483ae89481a4205115c78e39fa94d52ee87b6889b7e6a3269dd1466cfbf65c1"
+  },
+  "native_kernel": {
+    "path": "lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+    "fresh_calls": "Tests invoke the selected existing native binary. Invocation count was not instrumented. No fresh Lean build/audit/replay is claimed."
+  },
+  "validation": [
+    {
+      "session": 99775,
+      "command": "cargo test --locked --test quantum_unit_source unused_and_zero_count_bodies_check_ownership_and_raw_target_stays_explicit",
+      "state": "before edits",
+      "exit_code": 0,
+      "passed": 1
+    },
+    {
+      "session": 96451,
+      "command": "cargo check --locked --all-targets",
+      "state": "initial owner representation",
+      "exit_code": 0
+    },
+    {
+      "session": 42162,
+      "command": "cargo test --locked --test quantum_unit_source --test quantum_unit_maps --test quantum_tuple_unitors --test unit_patterns",
+      "exit_code": 101,
+      "failure": "New +1 finite request rejected because actual proposed QIRF omitted root_interface; preceding tuple/unit-map tests passed. Fixed by source-derived exact unary root header, not fallback."
+    },
+    {
+      "command": "cargo test --locked ... --test source_plan",
+      "exit_code": 101,
+      "failure": "No test target named source_plan; no tests executed. Corrected to selected_source_cli."
+    },
+    {
+      "session": 79286,
+      "command": "cargo test --locked --test quantum_unit_source --test quantum_unit_maps --test quantum_tuple_unitors --test unit_patterns --test classical_functions --test selected_source_cli",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 69,
+      "state": "before final nested-product and CLI tests"
+    },
+    {
+      "session": 35817,
+      "command": "cargo test --locked --lib frontend::sized::raw",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 7
+    },
+    {
+      "session": 43121,
+      "command": "rustup run 1.85.0 cargo test --locked --lib frontend::sized::raw",
+      "rust": "1.85.0",
+      "exit_code": 0,
+      "passed": 7
+    },
+    {
+      "session": 76652,
+      "command": "rustup run 1.85.0 cargo test --locked --test quantum_unit_source --test quantum_unit_maps --test quantum_tuple_unitors --test unit_patterns --test classical_functions --test selected_source_cli",
+      "rust": "1.85.0",
+      "exit_code": 0,
+      "passed": 70,
+      "state": "before final CLI test"
+    },
+    {
+      "session": 5980,
+      "command": "rustup run 1.85.0 cargo test --locked --test selected_source_cli selected_explicit_raw_checks_a_retained_zero_width_quantum_owner",
+      "rust": "1.85.0",
+      "exit_code": 0,
+      "passed": 1
+    },
+    {
+      "session": 54252,
+      "command": "cargo test --locked --test quantum_unit_source --test selected_source_cli",
+      "rust": "1.98.1",
+      "exit_code": 0,
+      "passed": 24
+    },
+    {
+      "session": 66998,
+      "command": "rustup run 1.85.0 cargo clippy --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    },
+    {
+      "session": 49508,
+      "command": "cargo clippy --locked --all-targets -- -D warnings",
+      "exit_code": 0
+    }
+  ],
+  "checks": {
+    "docs": "2186 links / 30 anchors / 206 Lean root modules",
+    "book": "Pinned mdBook 0.5.4 built; 29 HTML files / 1224 links / 471 anchors checked",
+    "inventory": "Reviewed exactly two changed source hashes; declarations/signatures/capacity constants unchanged; VM29 aggregate rebound without changing route/proof classifications",
+    "authoring": "50 records / 73 snapshots / 1231 observations, original recorded commands not executed",
+    "constitution": "Passed against trusted 38baae7d19535602b21270e11e97617d45205b37; identity/continuity only",
+    "fixture_budget_before_this_record": {
+      "files": 17835,
+      "bytes": 133507830
+    }
+  },
+  "hosted_predecessor": {
+    "run": 37468828239,
+    "commit": "815a053b4ebdacceb71c4fdfde66ea8471bf224e",
+    "observed_status": "in_progress",
+    "docs_failure": "Committed-tree whitespace check flags single-space empty context lines of preserved experimental/static-nat-tables/attempt-01.patch. Narrow file attribute preserves hashed patch bytes; identical local whole-tree check passed. No rerun success is claimed."
+  },
+  "limits": [
+    "No source-preservation theorem, new native primitive, guarantee admission, release approval, package/install validation or full CI completion.",
+    "Raw phase_eighth, Unit introduction/elimination/structural maps, Bits and Meaning/provider binding remain unfinished. #43 and #44 remain open.",
+    "New quantum validation uses at most one system qubit; no maximum-size cases generated.",
+    "No issue completion added: 22/111 (19.82%)."
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "mode": "latest-all-escalated",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.12934416701318696,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03846562502440065,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    }
+  ],
+  "sources_stable": true,
+  "scope": "Bounded current consumers. Existing ignores retained. No new maximum-size quantum case, fresh Lean replay or release certificate.",
+  "termination": {
+    "status": "incomplete-harness-timeout",
+    "driver_exit_code": 1,
+    "configured_seconds": 600,
+    "attempted_command": [
+      "cargo",
+      "test",
+      "--offline",
+      "--all-targets"
+    ],
+    "original_tool_output_note": "Unified exec reported subprocess.TimeoutExpired after 600 seconds. Retained Rust stdout/stderr are actual partial test output, not full-suite success.",
+    "residual_process_check": "Subsequent escalated ps inspection found zero processes matching the dedicated validation target debug directory."
+  },
+  "partial_results": [
+    {
+      "passed": 107,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "passed": 4,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 10,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 13,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 14,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 30,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 11,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 16,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 17,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 20,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "passed": 0,
+      "failed": 0,
+      "ignored": 3
+    },
+    {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 12
+    },
+    {
+      "passed": 0,
+      "failed": 0,
+      "ignored": 2
+    },
+    {
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 7,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "passed": 8,
+      "failed": 0,
+      "ignored": 1
+    },
+    {
+      "passed": 5,
+      "failed": 0,
+      "ignored": 0
+    }
+  ]
+}

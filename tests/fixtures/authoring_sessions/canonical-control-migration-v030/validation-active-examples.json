@@ -1,0 +1,70 @@
+{
+  "format": "qleisli.bounded-example-migration",
+  "version": 1,
+  "issue": 33,
+  "edition": "2026",
+  "base_commit": "84c7e6388f09583f8722fdc8bf35f2764b1ab04b",
+  "before_edit_contract": "https://github.com/MGYamada/Qleisli/issues/33#issuecomment-6030889219",
+  "migration": {
+    "examples/operation_algorithms/estimation.qli": "Remove the private one-active-arm qif helper; use controlled(U), controlled(power(U,k)) and inverse(qft2/qft3) with the same ordered inputs, exact output products and Controlled premise.",
+    "examples/operation_algorithms/interference.qli": "Use canonical controlled(U) and two nested inverse(t) applications; preserve the real/imaginary overlap instrument and returned target.",
+    "examples/operation_algorithms/amplification.qli": "Replace repeat_op(2,...) with power(...,2); retain the same Then/Conjugate description, exact pair interface and Apply/Adjoint requirements."
+  },
+  "complete_snapshot": "attempt-02",
+  "source_sha256": {
+    "amplification.qli": "37afc386f26d13f7ba79359afaadce32d5dc480b2770c7ee543c82f65788248f",
+    "estimation.qli": "4489c14c5911fb258a83c846e19561bbaf0c8f0e13ec4d84b03710af8f935b93",
+    "gates.qli": "95941c10a91ff00d13a4ed34971fa76b7e873ffe79682eae9e5daf064f62b7bf",
+    "interference.qli": "e1dc2ea3a9c451d18f7317ed7e9a007f96e551b02bf60a493f3be7addc11b123",
+    "main.qli": "39857de37cfade8388651e3b4d1328ea3cbf681ae8301c11c469d38f23c257b5",
+    "oracles.qli": "ff8228c32ea52db92e3df47ee56510d3508d64c896424fde6e742634c12d276f"
+  },
+  "readme_correction": "Current flat (Bit,Bit,Bit) is distinct from ((Bit,Bit),Bit); the previous CBit and type-equivalence claims were stale. The original README remains byte-for-byte in both snapshots as README.before.txt.",
+  "actual_observations": [
+    "observation-attempt-02-snapshot-check.json",
+    "observation-attempt-02-snapshot-run.json",
+    "observation-attempt-02-active-check.json",
+    "observation-attempt-02-active-run.json"
+  ],
+  "checks": {
+    "Rust1.98.1": "18 existing integration tests passed across qli_corpus and iterative_qpe; 0 failed/ignored.",
+    "Rust1.85.0": "Same 18 tests passed; 0 failed/ignored.",
+    "Python": "All four source/native tests passed, including retained evidence DAG/source tables, missing/rejecting native checker and unused-body coverage.",
+    "authoring": "54 records, 82 snapshots, 1301 observations passed identity/record checking; recorded commands were not replayed.",
+    "docs": "2205 local links and 31 Markdown anchors passed."
+  },
+  "independent_oracles": "Unchanged expectations cover all eighth-root phases and X eigenstates, off-grid distributions, Bell/reference branch tomography, identity degeneracy, all four Grover marks/overshoot, real and imaginary Hadamard overlaps, and type-correct forward-QFT/feedback/weight faults.",
+  "logs": {
+    "qleisli-canonical-example-migration-latest.log": {
+      "external_path": "/private/tmp/qleisli-canonical-example-migration-latest.log",
+      "sha256": "e120978bdadc3141452bb29f4bc93d51d623642bf568427ec534a03d5a002717",
+      "passed": 13
+    },
+    "qleisli-canonical-example-migration-msrv.log": {
+      "external_path": "/private/tmp/qleisli-canonical-example-migration-msrv.log",
+      "sha256": "ceffcf742fe744e2c7613ab4fe29df96853d74123ce38b0ce621b9ac57881020",
+      "passed": 13
+    },
+    "qleisli-canonical-example-migration-iterative-latest.log": {
+      "external_path": "/private/tmp/qleisli-canonical-example-migration-iterative-latest.log",
+      "sha256": "e8c045207226b338b6cb1bd76d1ea9423e43d4e0aa0ad0df6746b12c90890a5f",
+      "passed": 5
+    },
+    "qleisli-canonical-example-migration-iterative-msrv.log": {
+      "external_path": "/private/tmp/qleisli-canonical-example-migration-iterative-msrv.log",
+      "sha256": "a8bbd055b98349c5e1b91eb6f0f91222aafab7ff2f1aca43caf30042632caec7",
+      "passed": 5
+    },
+    "qleisli-canonical-example-source-native.log": {
+      "external_path": "/private/tmp/qleisli-canonical-example-source-native.log",
+      "sha256": "43404bae31964eb6821363648151e290f510fb218b8c3ecb84ccec7ecf436ccd",
+      "passed": 4
+    }
+  },
+  "limitations": [
+    "Only existing small fixed QFT2/QFT3 regressions; generic QFT remains outside the goal.",
+    "No production Rust/Lean implementation changes in this example migration. Native IR acceptance and finite/reference observations are not a universal source-preservation or algorithm proof.",
+    "No full all-target Rust run, fresh Lean replay, full hosted validation, package, clean installation, new guarantee or release approval is claimed for this source checkpoint.",
+    "Legacy parser retirement and wider active source/corpus/stdlib migration remain unfinished; #33/#250 remain open. QS/PR/RS/EXACT and both admitted scoped guarantees retain their statuses."
+  ]
+}

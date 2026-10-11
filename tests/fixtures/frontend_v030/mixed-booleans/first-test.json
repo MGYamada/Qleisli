@@ -1,0 +1,8 @@
+{
+  "source_path": "tests/mixed_booleans.rs",
+  "sha256": "3fa6f50fb33114f27972fe29f706bc6957d84a109c729df23775f867576ff8c1",
+  "snapshot": "tests/fixtures/frontend_v030/mixed-booleans/first-test.rs.txt",
+  "execution_status": "unexecuted",
+  "review_finding": "The proposed positive phase[9,3] violates the existing concrete source precondition j < 2^k. Review found this before any test execution; no failed command or output is claimed.",
+  "required_repair": "Retain existing source domain; turn only that candidate into an explicit located elaboration rejection and preserve four representable phase positives."
+}

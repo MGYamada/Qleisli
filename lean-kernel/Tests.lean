@@ -1,8 +1,91 @@
 import QleisliKernel
+import QleisliKernel.Qirf.ControlAccess
 
 /-! Pure kernel regressions. Copyright 2026 Masahiko G. Yamada. Apache-2.0. -/
 
 open QleisliKernel
+
+namespace IsometryVocabularyTests
+
+-- Use the real public aliases in exhaustive patterns. Historical constructor
+-- spellings below test compatibility; they are not a second canonical name.
+namespace Raw
+open QleisliKernel.Semantics.Raw
+private def classify : Effect → Nat
+  | .unitary => 0
+  | .isometry => 1
+  | .observe => 2
+example : Effect.isometry = Effect.iso := rfl
+example : classify .iso = 1 := rfl
+example : classify .isometry = 1 := rfl
+example : classify .unitary = 0 := rfl
+example : classify .observe = 2 := rfl
+end Raw
+
+namespace Hierarchical
+open QleisliKernel.Hierarchical.Artifact
+private def classify : Effect → Nat
+  | .unitary => 0
+  | .isometry => 1
+  | .observe => 2
+example : Effect.isometry = Effect.iso := rfl
+example : classify .iso = 1 := rfl
+example : classify .isometry = 1 := rfl
+example : classify .unitary = 0 := rfl
+example : classify .observe = 2 := rfl
+end Hierarchical
+
+namespace QftGraph
+open QleisliKernel.QftGraph
+private def classify : Effect → Nat
+  | .unitary => 0
+  | .isometry => 1
+  | .observe => 2
+example : Effect.isometry = Effect.iso := rfl
+example : classify .iso = 1 := rfl
+example : classify .isometry = 1 := rfl
+example : classify .unitary = 0 := rfl
+example : classify .observe = 2 := rfl
+end QftGraph
+
+end IsometryVocabularyTests
+
+namespace RawUnitTests
+open QleisliKernel.Raw
+
+-- One suspended physical owner, one empty owner and a consumed identity.
+private def frame : Raw.State :=
+  ⟨[⟨7,[3],1⟩,⟨8,[],0⟩],[7,8,5],[3],[3],true⟩
+
+example : (Unit.pack {} 0).map (fun t => (t.state,t.events)) =
+    .ok (⟨[⟨0,[],0⟩],[0],[],[],false⟩,[]) := by cbv
+example : Unit.pack frame 5 = .error .invalid := by rfl
+example : Unit.pack frame 7 = .error .invalid := by rfl
+example : Unit.pack frame 4294967296 = .error .invalid := by rfl
+example : Unit.unpack frame 7 = .error .invalid := by rfl
+example : Unit.unpack frame 5 = .error .invalid := by rfl
+example : (Unit.unpack frame 8).map (fun t => (t.state,t.events)) =
+    .ok (⟨[⟨7,[3],1⟩],[7,8,5],[3],[3],true⟩,[]) := by cbv
+example : ((Unit.pack frame 9).bind (fun t => Unit.unpack t.state 9)).map (·.state) =
+    .ok {frame with seenTokens := [7,8,5,9]} := by cbv
+-- An empty wire list never justifies an invalid recorded bit count.
+example : Unit.unpack ⟨[⟨0,[],1⟩],[0],[],[],false⟩ 0 = .error .invalid := by rfl
+
+-- The real dispatcher, including globally issued empty owners.
+example : (Raw.dispatch [] frame (.packUnit 9)).map (fun t => (t.state,t.events)) =
+    .ok (⟨[⟨7,[3],1⟩,⟨8,[],0⟩,⟨9,[],0⟩],[7,8,5,9],[3],[3],true⟩,[]) := by cbv
+example : Raw.dispatch [] frame (.packUnit 5) = .error .invalid := by rfl
+example : Raw.dispatch [] frame (.unpackUnit 7) = .error .invalid := by rfl
+example : (Raw.dispatch [] frame (.unpackUnit 8)).map (·.state) =
+    .ok (⟨[⟨7,[3],1⟩],[7,8,5],[3],[3],true⟩) := by cbv
+example : (Raw.prepare [] ⟨[],[.packUnit 0,.unpackUnit 0],[],.unitary⟩).map (·.state.iso) =
+    .ok false := by cbv
+example : Raw.prepare [] ⟨[],[.packUnit 0,.unpackUnit 0,.packUnit 0],[0],.unitary⟩ =
+    .error .invalid := by rfl
+example : Raw.prepare [] ⟨[],[.packUnit 0,.unpackUnit 0,.unpackUnit 0],[],.unitary⟩ =
+    .error .invalid := by rfl
+
+end RawUnitTests
 
 namespace ExactTests
 open QleisliKernel.Semantics.Exact QleisliKernel.Exact
@@ -18,6 +101,92 @@ example : Scalar.phase 4 ≠ Scalar.one := by decide
 example : Matrix.identity 0 = .error .dimension := by cbv
 
 end ExactTests
+
+namespace ControlAccessTests
+open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Finite
+open QleisliKernel.Semantics.Observation QleisliKernel.Qirf
+
+-- These original bodies pass graph, ownership, interface and reconstruction
+-- checks. No proposed matrix or producer acceptance flag is supplied.
+private def body (bits : Nat) (steps : List Step) : Program :=
+  ⟨[⟨0,List.range bits,bits⟩],[],[.pure (.applyUnitary 0 1 steps)],
+    [1],[],.unitary⟩
+
+private def original (signature : Basis) (steps : List Step) : Qirf.Artifact :=
+  ⟨#[body (width signature) steps],#[],#[],0,some (signature,signature)⟩
+
+private def accepts (artifact : Qirf.Artifact) (signature : Basis) (axes : List Nat) : Bool :=
+  ((Qirf.ControlAccess.check artifact #[0] signature axes).run 2000000).1.isOk
+
+private def pair : Basis := [.pair,.bit,.bit]
+private def cnot : List Step := [⟨[],.monomial [0,1] [0,3,2,1] [0,0,0,0]⟩]
+private def phase : List Step := [⟨[],.monomial [0,1] [0,1,2,3] [0,0,0,4]⟩]
+
+example : accepts (original pair cnot) pair [0] = true := by decide +kernel
+-- The target sector changes even though the complete operation is unitary.
+example : accepts (original pair cnot) pair [1] = false := by decide +kernel
+example : accepts (original pair phase) pair [0,1] = true := by decide +kernel
+example : accepts (original [.bit] [⟨[],.hadamard 0⟩]) [.bit] [0] = false := by decide +kernel
+example : accepts (original pair cnot) pair [0,0] = false := by decide +kernel
+example : accepts (original pair cnot) pair [2] = false := by decide +kernel
+example : accepts (original pair cnot) [.bits 2] [0] = false := by decide +kernel
+-- A quantum Unit retains its logical owner and exact nontrivial phase.
+example : accepts (original [.unit] [⟨[],.monomial [] [0] [4]⟩]) [.unit] [] = true := by decide +kernel
+example : accepts {(original pair cnot) with root := 1} pair [0] = false := by decide +kernel
+example : accepts {(original pair cnot) with programs := #[body 2 [⟨[],.hadamard 0⟩]]}
+    pair [0] = false := by decide +kernel
+
+-- A closed dependency is freshly checked against its original specification.
+private def dependency (implementation : List Step) : Qirf.Artifact :=
+  ⟨#[body 2 implementation,body 2 cnot,body 2 [⟨[],.contract [0,1] 0 false⟩]],
+    #[⟨pair,0,.circuit 1,"implementation","specification",[]⟩],#[],2,some (pair,pair)⟩
+example : ((Qirf.ControlAccess.check (dependency cnot) #[0,1,3,2] pair [0]).run 2000000).1.isOk = true :=
+  by decide +kernel
+example : ((Qirf.ControlAccess.check (dependency [⟨[],.hadamard 0⟩]) #[0,1,3,2] pair [0]).run 2000000).1.isOk = false :=
+  by decide +kernel
+example : ((Qirf.ControlAccess.check (original pair cnot) #[0] pair [0]).run 0).1.isOk = false := by cbv
+example : ((Qirf.ControlAccess.check (original pair cnot) #[] pair [0]).run 2000000).1.isOk = false := by decide +kernel
+
+-- Matrix cardinality and coordinate checks precede the sector traversal.
+example : ((Qirf.ControlAccess.checkMatrix 1 ⟨2,2,[]⟩ [0]).run 2000000).1.isOk = false := by cbv
+example : ((Qirf.ControlAccess.checkMatrix 0 ⟨1,1,[Scalar.one]⟩ [0]).run 2000000).1.isOk = false := by cbv
+
+-- Multi-owner checks retain original ports; no packing wrapper is constructed.
+private def separateCnot : Qirf.Artifact :=
+  ⟨#[⟨[⟨0,[7],1⟩,⟨1,[19],1⟩],[],[.pure (.cnot 0 1 2 3)],
+    [2,3],[],.unitary⟩],#[],#[],0,none⟩
+private def acceptsOwners (artifact : Qirf.Artifact) (signatures : List Basis)
+    (axes : List Nat) : Bool :=
+  ((Qirf.ControlAccess.checkOwners artifact #[0] signatures axes).run 2000000).1.isOk
+example : acceptsOwners separateCnot [[.bit],[.bit]] [0] = true := by decide +kernel
+example : acceptsOwners separateCnot [[.bit],[.bit]] [1] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.bit],[.bit]] [0,0] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.bit],[.bit]] [2] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.pair,.bit,.bit]] [0] = false := by decide +kernel
+example : acceptsOwners separateCnot [[.unit],[.bits 2]] [0] = false := by decide +kernel
+example : acceptsOwners separateCnot [] [0] = false := by decide +kernel
+example : acceptsOwners {separateCnot with programs :=
+    #[⟨[⟨0,[7],1⟩,⟨1,[19],1⟩],[],[.pure (.cnot 0 1 2 3)],
+      [3,2],[],.unitary⟩]} [[.bit],[.bit]] [0] = false := by decide +kernel
+example : acceptsOwners {separateCnot with rootInterface := some (pair,pair)}
+    [[.bit],[.bit]] [0] = false := by decide +kernel
+example : acceptsOwners {separateCnot with programs :=
+    #[⟨[⟨0,[7],1⟩,⟨1,[19],1⟩],[],[.pure (.gate .h 0 2)],
+      [2,1],[],.unitary⟩]} [[.bit],[.bit]] [0] = false := by decide +kernel
+-- Logical zero-width owners and their ordered partition are retained.
+private def unitControl : Qirf.Artifact :=
+  ⟨#[⟨[⟨0,[],0⟩,⟨1,[19],1⟩],[],
+    [.pure (.applyUnitary 0 2 [⟨[],.monomial [] [0] [4]⟩])],
+    [2,1],[],.unitary⟩],#[],#[],0,none⟩
+example : acceptsOwners unitControl [[.unit],[.bit]] [] = true := by decide +kernel
+example : acceptsOwners unitControl [[.bit],[.unit]] [] = false := by decide +kernel
+example : acceptsOwners {unitControl with programs :=
+    #[⟨[⟨0,[],0⟩,⟨1,[19],1⟩],[],
+      [.pure (.applyUnitary 0 2 [⟨[],.monomial [] [0] [4]⟩])],
+      [1,2],[],.unitary⟩]} [[.unit],[.bit]] [] = false := by decide +kernel
+example : ((Qirf.ControlAccess.checkOwners separateCnot #[0] [[.bit],[.bit]] [0]).run 0).1.isOk = false := by cbv
+
+end ControlAccessTests
 
 namespace InterferenceTests
 open QleisliKernel.Interference
@@ -460,6 +629,15 @@ end RawPureTests
 
 namespace RawObservationTests
 open QleisliKernel.Semantics.Observation
+-- Fast append-only histories and the old membership fallback agree even on
+-- reordered/duplicate identities; scope pairs must remain exactly equal.
+example : Raw.Observation.historySubset ([] : List Nat) [1] = true := by decide
+example : Raw.Observation.historySubset [1,2] [1,2,3] = true := by decide
+example : Raw.Observation.historySubset [1,2] [2,1,3] = true := by decide
+example : Raw.Observation.historySubset [1,1] [1] = true := by decide
+example : Raw.Observation.historySubset [1,2] [1,3] = false := by decide
+example : Raw.Observation.historySubset [(1,0),(2,1)] [(2,1),(1,0)] = true := by decide
+example : Raw.Observation.historySubset [(1,0)] [(1,1)] = false := by decide
 private def nested : Nat → List Op
   | 0 => []
   | n+1 => [.branch 0 (nested n) [] [] []]

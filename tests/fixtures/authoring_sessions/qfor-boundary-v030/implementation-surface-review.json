@@ -1,0 +1,88 @@
+{
+  "format": "qleisli.qfor-surface-review",
+  "version": 1,
+  "reviewed_base": "1647bb656b2d8db2ee063fa8243eec32785d453d",
+  "sources": [
+    {
+      "path": "src/frontend/ast.rs",
+      "before_sha256": "bb7ea3cc28bb2b969a1c7602bde5d4e6bf8e28a8c30c6e60af22a7c90c78e40f",
+      "after_sha256": "5cd24a228babe6f076433713be0d274cd1d39c9da1ccd5bcd73e3aa8bdae981d",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/check/body.rs",
+      "before_sha256": "d4ec4985555042a47ef277a25f75cd1623c16cbb651810b9068674434a754d37",
+      "after_sha256": "a78a248323f3fd72e55ee83eeb2d547e6adbb4ecf5bef86cd93871108eb82777",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/lexer.rs",
+      "before_sha256": "14b909af00445d0cc016b5a1aaefbc80007abc4b3a3a03d52c00853303cb45a5",
+      "after_sha256": "ce0dc7865c3e9a7447dfa0af2e2d758b405cda563e2d721c97775c6b42a66967",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/parser.rs",
+      "before_sha256": "1d02163d967c1e0967ca2af64a060f12a065e8340f3e18267bad8a50b90b0331",
+      "after_sha256": "4767aabe6472a5b77434260cf4e16cc635782d41ba4ad8a2561b813a491aa3b5",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/parser/tests.rs",
+      "before_sha256": "d5b3c2a4c1ab4236dabdf06fa8f00180035999b0f786008f4b6cda58071ccd21",
+      "after_sha256": "ed367dcc004146deb8798ae2bca73a1ffb8afe897e52577f46b70bcaa4ec120c",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/resolve/locals.rs",
+      "before_sha256": "b7d980c8b3e850e29b2336a863548d6016fbb67e71b264c410a89373e40ba434",
+      "after_sha256": "1e9feac634f376de5eb35a97fbdb1031d42c811ed2a323ae125353dc11eb5d19",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/sized/fourier.rs",
+      "before_sha256": "a0742c45503a91cbc7402d749fe607efe7c257fbcfc310b5aac6be173a3cbaee",
+      "after_sha256": "94a854e37c304403fc58fe1607d0144b63af8face5ba1538e2b6aae80d02eced",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/sized/parser.rs",
+      "before_sha256": "672ff7948f04504bfa68eb3d897b566278255356b59f94f8d14e8104e5982982",
+      "after_sha256": "03d566cc0bc198f9612020a54185693f73c1ecfae8562ebdc152356938a69132",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    },
+    {
+      "path": "src/frontend/sized/qpe.rs",
+      "before_sha256": "29b885f78594049550d423621c90f313fc5014566cb25b0f9297d732d7437d83",
+      "after_sha256": "4f464baf7eed5024531f1fcbc4d092127c78a7d1d89b13ec65e42642068ea8ff",
+      "public_signatures_and_capacity_constants": "unchanged; constructor field/token changes reviewed separately"
+    }
+  ],
+  "constructors": [
+    {
+      "enum": "TokenKind",
+      "tag": "Qfor",
+      "change": "New reserved keyword token in common scanner/parser"
+    },
+    {
+      "enum": "ExprKind",
+      "tag": "StaticFold",
+      "change": "Explicit quantum bool; checked against exact carry type before profile projection"
+    }
+  ],
+  "boundary_review": "Common untrusted source checker and same checked fold projection. No Lean definitions, accepted handles, primitive meaning, schema, public acceptance paths or capacities change. Source preservation and broader QS/PR/RS/EXACT obligations remain pending.",
+  "coverage_surface_before": "9fe5607668841483f717c16a636f2023b789565ab80c102a1f4ef4cca7a25440",
+  "coverage_surface_after": "41bfea1c7f37d599c4f29e2789b2ed5f81339a556eb6af4cffc10aed3e802f2d",
+  "counts": {
+    "sources": 263,
+    "constructors": 275
+  },
+  "comparison_scripts": [
+    {
+      "path": "scripts/test_sized_qft.py",
+      "before_sha256": "6633ff32da8abfab826c5291212dbdc09e3b2ad03f832444f2768db83894df86",
+      "after_sha256": "f616763147d07fff2f2d461113a093759f348c1d04b35cb4b25e154c79c21318",
+      "review": "Canonical quantum fold spelling and independent proposal-parser support only; frozen original corpus/oracle artifacts and equations retained. Python also recognizes historical for for frozen comparisons, never authorizes production source."
+    }
+  ]
+}

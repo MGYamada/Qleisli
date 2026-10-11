@@ -1,0 +1,76 @@
+{
+  "format": 1,
+  "status": "passed",
+  "failures": [],
+  "cases": [
+    {
+      "id": "pennylane_demos/vqe_excitation",
+      "semantic_probes": 528,
+      "shipped_main": "passed",
+      "host_observables": {
+        "Z0": 1
+      }
+    }
+  ],
+  "semantic_faults": [],
+  "negative_cases": [
+    {
+      "id": "dirty_auxiliary",
+      "code": "unsupported",
+      "exit_code": 1
+    },
+    {
+      "id": "duplicate_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measured_owner",
+      "code": "ownership",
+      "exit_code": 1
+    },
+    {
+      "id": "measurement_adjoint",
+      "code": "type_mismatch",
+      "exit_code": 1
+    }
+  ],
+  "created_utc": "2026-10-06T03:59:30.879464+00:00",
+  "exhaustive_unitary_entries": true,
+  "upstream_frameworks_executed": false,
+  "tolerance": 1e-11,
+  "manifest_sha256": "f09738400d4a695d9532fb0e361b0a70fa2889d60dd1601cfe350cad31defaa5",
+  "compiler_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "oracle_script_sha256": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+  "source_sha256": {
+    "migrations/coherent-basis-v030/sources/pennylane_demos/vqe_excitation/kernel.qli": "90e3ba606a272a76bdca01fc692ad7a13a3c6cfe3d12ecd49884d13f644adadd",
+    "migrations/coherent-basis-v030/sources/pennylane_demos/vqe_excitation/main.qli": "d662dfd164ba668d87e5759bfd98cb9e28f566f3913af078b3fb125556b9b9bd",
+    "negative/duplicate_owner/main.qli": "10798675b56ecba50e512bc1e0e68c59b989697578187651ba0a8d4429d890cd",
+    "negative/measured_owner/main.qli": "d13121c50072c2a31d15215fb16ffc35f31f2430469c501d772d9f7067126586",
+    "negative/measurement_adjoint/main.qli": "c9132e18ad7604c1b8b498a1e79bbd7ae03ef9ae0e877aa6ca963d0013f5e48a",
+    "negative/dirty_auxiliary/main.qli": "b76e40b6eb33e533a5a4689734a3f85a1dd14d060baf3a17619a7e7d40290d18"
+  },
+  "source_migration_sha256": {
+    "migrations/predicate-domain-v030/migration.json": "184cacf740cff5d348d5e82930d4606b28b53d08adbe44528f5dd33b53f11099",
+    "migrations/ordinary-type-v030/migration.json": "265e9ae62be9ff93847c6e9cf55300b3cf6e1f55f10aedd011e7897c2629c538",
+    "migrations/semantic-namespace-v030/migration.json": "c54ea7bab2666d92a79ffcae59231757d4229ae2e3e467973f3305fc01dfea9b",
+    "migrations/coherent-basis-v030/migration.json": "e361f862196c8f05e82ae877aa70e112c9bd163844dd7e5de57f97ec0694c0bb"
+  },
+  "semantic_fault_manifest_sha256": "ae1ec1f10ceb3457a82a1e99f11d62608f7cc466e1270e9ec6b4a7d861567c3e",
+  "negative_manifest_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29",
+  "current_negative_manifest_sha256": "5bc85b9c8a230fc08e1fcc5ee9bb16f2cadf959653c0bc2da532ee4ae21810d4",
+  "semantic_fault_source_sha256": {},
+  "expected_ids": {
+    "cases": [
+      "pennylane_demos/vqe_excitation"
+    ],
+    "semantic_faults": [],
+    "negative_cases": [
+      "duplicate_owner",
+      "measured_owner",
+      "measurement_adjoint",
+      "dirty_auxiliary"
+    ]
+  },
+  "project_version": "0.3.0-alpha"
+}

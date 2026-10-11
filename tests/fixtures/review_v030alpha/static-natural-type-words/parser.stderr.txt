@@ -1,0 +1,30 @@
+warning: method `bind_globals` is never used
+  --> src/frontend/resolve/locals.rs:85:12
+   |
+82 | impl Table {
+   | ---------- method in this implementation
+...
+85 |     pub fn bind_globals(&mut self, global: impl Fn(&str) -> Option<Target>) {
+   |            ^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `binder`, `usage`, and `natural_usage` are never used
+   --> src/frontend/resolve/locals.rs:156:12
+    |
+123 | impl<'ast> Index<'ast> {
+    | ---------------------- methods in this implementation
+...
+156 |     pub fn binder(&self, name: &Ident) -> BinderId {
+    |            ^^^^^^
+...
+159 |     pub fn usage(&self, name: &Ident) -> UseSiteId {
+    |            ^^^^^
+...
+162 |     pub fn natural_usage(&self, natural: &Natural) -> UseSiteId {
+    |            ^^^^^^^^^^^^^
+
+warning: `qleisli` (lib) generated 2 warnings
+   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s
+     Running tests/parser.rs (target/debug/deps/parser-9b127f065bfaef57)

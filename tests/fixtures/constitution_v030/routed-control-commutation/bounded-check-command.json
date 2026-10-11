@@ -1,0 +1,12 @@
+{
+  "argv": [
+    "python3",
+    "/Users/masa/git/Qleisli/tests/fixtures/constitution_v030/routed-control-commutation/check_examples.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at": "2026-10-04T15:32:55.901895+00:00",
+  "elapsed_seconds": 0.058113374980166554,
+  "exit_code": 0,
+  "stdout": "bounded-check.stdout.json",
+  "stderr": "bounded-check.stderr.txt"
+}

@@ -1,0 +1,9 @@
+{
+  "recorded_utc": "2026-10-06T06:24:48.890275+00:00",
+  "human_instruction": "basis fnは既存のbasisと衝突するので導入しないでください",
+  "effect": "Withdraw the proposed ordinary Basis-function reuse unit before production changes. Existing explicit basis syntax is preserved.",
+  "production_files_changed": [],
+  "baseline_observations": 8,
+  "first_source_projects": 4,
+  "authority_limit": "Direct ordinary maintainer steering; no Guardian interpretation or proof-status change."
+}

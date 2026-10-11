@@ -1,0 +1,6 @@
+use std::quantum::x;
+classical fn flip(b:Bit)->Bit{not b}
+meaning Flip:Bit=permutation_by(flip);
+pub unitary fn implementation(q:Q<Bit>)->Q<Bit>{x(q)}
+unitary fn unused[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){q}
+pub unitary fn client(q:Q<Bit>)->Q<Bit>{unused[checked_op(implementation,Flip)](q)}

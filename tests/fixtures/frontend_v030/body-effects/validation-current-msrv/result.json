@@ -1,0 +1,108 @@
+{
+  "mode": "msrv",
+  "commands": [
+    {
+      "argv": [
+        "rustc",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.14099183399230242,
+      "stdout": "0.stdout.txt",
+      "stderr": "0.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "--version"
+      ],
+      "exit_code": 0,
+      "seconds": 0.38018704199930653,
+      "stdout": "1.stdout.txt",
+      "stderr": "1.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--test",
+        "body_effects",
+        "--test",
+        "sized_source",
+        "--test",
+        "basis_polymorphism",
+        "--test",
+        "compile",
+        "--test",
+        "diagnostics",
+        "--test",
+        "cli_json",
+        "--test",
+        "documentation",
+        "--test",
+        "parser",
+        "--test",
+        "project",
+        "--test",
+        "algorithms",
+        "--test",
+        "order_finding",
+        "--test",
+        "static_operations",
+        "--test",
+        "static_semantics",
+        "--test",
+        "source_semantics",
+        "--test",
+        "function_contracts",
+        "--test",
+        "selected_source_cli",
+        "--test",
+        "sized_review_dialects",
+        "--test",
+        "sized_review_diagnostics",
+        "--test",
+        "certified_source",
+        "--test",
+        "operation_parameters",
+        "--test",
+        "source_judgments"
+      ],
+      "exit_code": 0,
+      "seconds": 156.02692566701444,
+      "stdout": "2.stdout.txt",
+      "stderr": "2.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "test",
+        "--offline",
+        "--lib",
+        "frontend::"
+      ],
+      "exit_code": 0,
+      "seconds": 7.116769000014756,
+      "stdout": "3.stdout.txt",
+      "stderr": "3.stderr.txt"
+    },
+    {
+      "argv": [
+        "cargo",
+        "clippy",
+        "--offline",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 101,
+      "seconds": 4.03568837500643,
+      "stdout": "4.stdout.txt",
+      "stderr": "4.stderr.txt"
+    }
+  ],
+  "sources_stable": true,
+  "scope": "Bounded existing and new source tests; ignored cases stay ignored. No new maximum-size quantum case, full Lean replay, source-preservation theorem or release claim."
+}

@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"unknown_name","severity":"error","message":"unbound basis value","primary":{"path":"main.qli","start":228,"end":229,"line":4,"column":89},"related":[]}],"result":null}

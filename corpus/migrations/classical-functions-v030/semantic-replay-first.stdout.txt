@@ -1,0 +1,23 @@
+cases quantum_katas/grover2 passed
+cases quantum_katas/deutsch_jozsa3 passed
+cases qualtran/less_than2 passed
+cases qualtran/and_phase passed
+cases qualtran/reflection2 passed
+cases qualtran/reflection_minus1 passed
+cases qualtran/control_zero_reflection2 passed
+cases pennylane_demos/vqe_excitation passed
+cases pennylane_demos/phase_lock passed
+cases pennylane_demos/rx_quarter passed
+semantic_faults majority_replaced_by_parity passed
+semantic_faults erased_rotation_scalar passed
+semantic_faults rx_missing_scalar passed
+semantic_faults zz_erased_scalar passed
+semantic_faults negative_rx_missing_scalar passed
+semantic_faults reflection_minus_missing_phase passed
+semantic_faults controlled_reflection_missing_phase passed
+negative_cases duplicate_owner passed
+negative_cases measured_owner passed
+negative_cases measurement_adjoint passed
+negative_cases dirty_auxiliary passed
+status passed probes 716 seconds 355.3136509999749
+

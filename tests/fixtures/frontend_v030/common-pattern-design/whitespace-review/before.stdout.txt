@@ -1,0 +1,16 @@
+tests/fixtures/frontend_v030/common-pattern-design/implementation.patch:7: trailing whitespace.
++ 
+tests/fixtures/frontend_v030/common-pattern-design/implementation.patch:13: trailing whitespace.
++ 
+tests/fixtures/frontend_v030/common-pattern-design/implementation.patch:19: trailing whitespace.
++ 
+tests/fixtures/frontend_v030/common-pattern-design/implementation.patch:216: trailing whitespace.
++ 
+tests/fixtures/frontend_v030/common-pattern-design/implementation.patch:235: trailing whitespace.
++ 
+tests/fixtures/frontend_v030/common-pattern-design/implementation.patch:278: trailing whitespace.
++ 
+tests/fixtures/frontend_v030/common-pattern-design/validation/latest-attempt-02/04-shared-type-tests.stdout.txt:9: new blank line at EOF.
+tests/fixtures/frontend_v030/common-pattern-design/validation/latest-attempt-02/05-focused-integration-tests.stdout.txt:172: new blank line at EOF.
+tests/fixtures/frontend_v030/common-pattern-design/validation/msrv-attempt-01/04-shared-type-tests.stdout.txt:9: new blank line at EOF.
+tests/fixtures/frontend_v030/common-pattern-design/validation/msrv-attempt-01/05-focused-integration-tests.stdout.txt:172: new blank line at EOF.

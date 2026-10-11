@@ -1,0 +1,2 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::classical::{empty_bits,prepend_bit}; classical fn identity[n:Nat](b:Bits<n>)->Bits<n>{b} pub unitary fn main()->Bits<1>{identity[1](prepend_bit[0](1,empty_bits()))}

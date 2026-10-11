@@ -1,0 +1,8 @@
+{
+  "format": "qleisli.namespace-harness-stage",
+  "version": 1,
+  "exit_code": 1,
+  "failure": "initial driver asserted qubits<=3; retained qpe3 projects have three estimate qubits plus one target (four total).",
+  "checks_run": 0,
+  "scope": "Harness guard failure before any source or native semantic check; corrected bound to the six existing cases (2..4 qubits), no new case generated."
+}

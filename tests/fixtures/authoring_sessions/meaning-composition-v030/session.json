@@ -1,0 +1,75 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "Implement exact composition and tensoring of independently declared finite Meanings under #46",
+  "author": "Codex assistant; informed repository work; no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "f1dcaed2b4edc8878b3cb9407c1c843a615b4c81",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze desired compositions and exact wrong-provider controls before production changes.",
+      "sha256": {
+        "compose.qli": "01883bac0966b07951806557f8043f2639517fe16956fd780b51db65d518d829",
+        "compose-wrong-order.qli": "d9ce2287ab91224b10027698552341ea6e1b55c21d966a7f3db955640bf3b21c",
+        "tensor.qli": "87440abd54d348e9b29342aec6d961482a7cf62f6b89b79ba8312579efd9d274",
+        "tensor-wrong-axes.qli": "39dfd006c581381ec432e3b1e44030a793081b76f6c34ad4bc486ca85f2de784"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/compose-before.json",
+        "observations/compose-wrong-order-before.json",
+        "observations/tensor-before.json",
+        "observations/tensor-wrong-axes-before.json",
+        "observations/compose-attempt-01-implemented.json",
+        "observations/compose-wrong-order-attempt-01-implemented.json",
+        "observations/tensor-attempt-01-implemented.json",
+        "observations/tensor-wrong-axes-attempt-01-implemented.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "The first real selected-native integration run exposed private main visibility after grammar implementation; make only the four entry declarations public, preserving all Meaning and provider bodies. The initial parse refusals and original sources remain unchanged.",
+      "sha256": {
+        "compose-wrong-order.qli": "610fd7c890b2775c8d2bc8fc4815ad0d8358d9d02d6d5e31f8dffc3535bb6ac3",
+        "compose.qli": "e4487196d10f4615751035b35f352be5ea15ff8bd9b869e98384b45ddf2e04c3",
+        "tensor-wrong-axes.qli": "4444cc05f26db86439f36d9bf9c45cd726652ae2af2860ad981de4dbf87fe2ec",
+        "tensor.qli": "946a8b88f739e69356d8a5537e95fbe49f7347a397f1a337fd7bac8a61e182c6"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/compose-attempt-02-implemented.json",
+        "observations/compose-wrong-order-attempt-02-implemented.json",
+        "observations/tensor-attempt-02-implemented.json",
+        "observations/tensor-wrong-axes-attempt-02-implemented.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "The public observing entries hit the existing selected readout/Raw-Meaning profile boundaries; expose the same providers and Meaning obligations through a pure public input/output entry. No Meaning or provider body is changed. Complete observing Meaning emission remains open.",
+      "sha256": {
+        "compose-wrong-order.qli": "c592757ecd865859c26bbf1e37907a084dac796406228c4338d49b16a5d90b9f",
+        "compose.qli": "421a0c8ad21d41ac58c6b80a87ea8da168d73c03cc78c76d75eb41f8c5761026",
+        "tensor-wrong-axes.qli": "19fa3f41ba9ecc0d571fd11bbbc691743ebeaca6e20545e5d49ecdc7340896c5",
+        "tensor.qli": "8d0adf4288b0fcb8b0c25bb2e738018683355a5da767abd772bd7f5f2fb35242"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "observations": [
+        "observations/compose-attempt-03-implemented.json",
+        "observations/compose-wrong-order-attempt-03-implemented.json",
+        "observations/tensor-attempt-03-implemented.json",
+        "observations/tensor-wrong-axes-attempt-03-implemented.json"
+      ],
+      "reports": [
+        "observations/integration-failures.json"
+      ]
+    }
+  ]
+}

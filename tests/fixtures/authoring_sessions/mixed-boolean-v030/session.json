@@ -1,0 +1,85 @@
+{
+  "format": 1,
+  "task": "Bounded mixed ordinary Boolean and Q<Bit> Raw API convergence with source order, effects and exact phase",
+  "baseline_commit": "af26fad37060c8008682c7e0d124897c12d13f89",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository context; deployed model and sampling unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Seven desired small complete projects preserved before observations.",
+      "sha256": {
+        "eager-zero/main.qli": "16f73b4cfdae748d95704f67921a9fdd19654cc6d11417eaf3ef10895b0642a8",
+        "bell-xor/main.qli": "9bf16e0c714679ea89f195242b24ca90649f60e7d13f5c6dfa0d0dfb1843af6f",
+        "pending-argument/main.qli": "ae0b4b65e575b130007993a9da6c7499fe62333939d947fe1402f7b581cd629e",
+        "repeated-helper/main.qli": "f881e56854ea81f7927d567ca95ebe28df1eea1dcdc2532f11bdf61aa5ccb812",
+        "static-fold/main.qli": "7e4c9b607d6e1444f148b6ef208433af4274ee996c65348ece70385e8fdfb376",
+        "exact-phase/main.qli": "079e719e08dc6eaad32e80240fae5762f58a6a88fc44e7d076f8ba649f0303bb",
+        "unit-effect/main.qli": "dc3911335c36bda4a0c0c6322cc2a4d15cd8cf01c384e7f9bad9e5b182d26310"
+      },
+      "observations": [
+        "observations/finite-eager-zero.json",
+        "observations/finite-bell-xor.json",
+        "observations/finite-pending-argument.json",
+        "observations/finite-repeated-helper.json",
+        "observations/finite-static-fold.json",
+        "observations/finite-exact-phase.json",
+        "observations/finite-unit-effect.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "finite-t",
+      "reason": "Known finite spelling: exact same T operator; H-T-H has P1=(2-sqrt(2))/4. Current sized primitive catalog may reject t alias.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/mixed-boolean-v030/controls/finite-t/main.qli": "76a1279e11880127f8762d8be399f08a80d3792417f7534bc4ec2263735865ff"
+      },
+      "reports": [
+        "observations/finite-finite-t.json"
+      ]
+    },
+    {
+      "id": "fine-phase",
+      "reason": "Fine phase pi/8 is not approximated into the finite eighth-turn target. Existing hierarchy can support it; selected new Raw target must explicitly reject.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/fine-phase/main.qli": "ae2259a7df92b06a812a641200f7110fbc80695c62ddb2b089145217f6bdc800"
+      },
+      "reports": [
+        "observations/finite-fine-phase.json"
+      ]
+    },
+    {
+      "id": "runtime-if",
+      "reason": "Existing finite branch yields0/1 half; sized dynamic branch convergence is outside this unit and remains an explicit rejection.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/runtime-if/main.qli": "ae4b1c37c1794abd8fe845edcde06435416b0165d1e3a0d942c7ba3b3a1e4b1c"
+      },
+      "reports": [
+        "observations/finite-runtime-if.json"
+      ]
+    },
+    {
+      "id": "provider",
+      "reason": "Provider invocation is well-typed but this first mixed Raw adapter must reject it explicitly; finite control returns1.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/provider/main.qli": "a3cb251a195520e6843ce5b58a29f29c3efbc0dbfec5d46cd5a2d03df0fac83f"
+      },
+      "reports": [
+        "observations/finite-provider.json"
+      ]
+    },
+    {
+      "id": "packed-bits",
+      "reason": "Ordinary Bits0 is neither Unit nor ordinary Bit; its transport support remains explicit and does not silently flatten via width0.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/mixed-boolean-v030/counterexamples/packed-bits/main.qli": "ae4d7b426b646b418c99df02541c04c1f7999859928af6daa32308a2c3983dd3"
+      },
+      "reports": [
+        "observations/finite-packed-bits.json"
+      ]
+    }
+  ]
+}

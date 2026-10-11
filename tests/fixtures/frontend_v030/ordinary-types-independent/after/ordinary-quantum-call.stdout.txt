@@ -1,0 +1,3 @@
+common.parse: ok declarations=2
+finite.check: Diagnostic { code: "type_mismatch", message: "argument `q` has the wrong type: expected `Q<Bit>`, found `Bit`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-types-independent/sources/ordinary-quantum-call/main.qli", span: Span { start: 81, end: 82 }, line: 1, column: 82 }) }
+sized.generic: Error { code: "type", module: Some("main"), span: Span { start: 81, end: 82 }, message: "type or tuple/size shape mismatch: expected Q(Bit), found Bit" }

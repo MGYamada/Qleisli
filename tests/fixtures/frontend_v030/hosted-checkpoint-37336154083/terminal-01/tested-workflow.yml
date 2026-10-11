@@ -1,0 +1,698 @@
+name: Specification and implementation checks
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      validation:
+        description: Test harness or fresh full proof validation
+        type: choice
+        options: [full, tests]
+        default: full
+      release_readiness:
+        description: Require scoped release readiness (does not tag or publish)
+        type: boolean
+        default: false
+      release_base:
+        description: Exact reviewed requirements and guarantee base commit
+        type: string
+        default: ''
+      cache:
+        description: Cargo dependency archives (all validation still runs)
+        type: choice
+        options: [enabled, disabled]
+        default: enabled
+      native_workers:
+        description: Native comparison concurrency (1 retains the fresh serial route)
+        type: choice
+        options: ['4', '2', '1']
+        default: '4'
+
+# Only ordinary PRs supersede each other. Release PRs, tags and manual full runs
+# have unique groups, so even pending exact-source validation is never cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'codex/release-') && !startsWith(github.head_ref, 'release/') && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' && !startsWith(github.head_ref, 'codex/release-') && !startsWith(github.head_ref, 'release/') }}
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      profile: ${{ steps.select.outputs.profile }}
+      proof_lane: ${{ steps.select.outputs.proof_lane }}
+      head: ${{ steps.select.outputs.head }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 2
+      - name: Test fail-closed routing and required-check aggregation
+        run: |
+          python3 scripts/test_ci_profiles.py
+          python3 scripts/test_measure_ci.py
+          python3 scripts/test_run_native_ci.py
+          python3 scripts/test_package_lean_kernel.py
+          python3 scripts/test_archive_lean_kernel.py
+      - name: Select validation from the exact commit and both sides of its diff
+        id: select
+        run: python3 scripts/ci_profiles.py --report "$RUNNER_TEMP/ci-selection.json"
+      - name: Retain selection inputs and exact commit binding
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ci-selection-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ci-selection.json
+          if-no-files-found: error
+  check-rust:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
+      - name: Install the tested Rust toolchain
+        run: rustup toolchain install 1.98.1 --profile minimal --component rustfmt --component clippy
+      - run: cargo +1.98.1 fmt --check
+      - run: cargo +1.98.1 test --all-targets
+      - name: Sized Rust and Python source dialect comparisons on small inputs
+        run: cargo +1.98.1 test --test sized_review_dialects -- --ignored --skip native
+      - name: Sized primitive omissions must fail compilation
+        run: python3 scripts/test_sized_primitive_catalog.py
+      - name: Build public API documentation without warnings
+        env:
+          RUSTDOCFLAGS: -D warnings
+        run: cargo +1.98.1 doc --no-deps
+      - name: Execute public API documentation examples
+        run: cargo +1.98.1 test --doc
+      - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
+      - run: python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_interference.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qft.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_cli_json.py target/debug/qleisli
+      - name: Seeded source differential checks with an independent complex oracle
+        run: |
+          python3 scripts/test_test_qli_differential.py
+          python3 scripts/test_qli_differential.py target/debug/qleisli --cases=96
+      - name: Frozen VM-22 finite/source comparison inputs
+        run: python3 scripts/test_verification_baseline.py target/debug/qleisli
+      - run: python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive
+      - run: cargo +1.98.1 clippy --all-targets -- -D warnings
+      - run: cargo +1.98.1 fmt --manifest-path research/semantic-kernel/Cargo.toml --check
+      - run: cargo +1.98.1 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
+      - run: cargo +1.98.1 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-rust --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-rust-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-rust-msrv:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.85.0-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
+      - name: Install the minimum supported Rust toolchain
+        run: rustup toolchain install 1.85.0 --profile minimal --component clippy
+      - run: cargo +1.85.0 test --all-targets
+      - run: target/debug/qleisli check tests/fixtures/lean_layout/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_layout_dag/first_source
+      - run: target/debug/qleisli check tests/fixtures/lean_phase_layout/first_source
+      - run: python3 scripts/test_lean_phase_layout.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_interference.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qft.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_qpe.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_lean_controlled_power.py --source-only target/debug/qleisli
+      - run: python3 scripts/test_cli_json.py target/debug/qleisli
+      - run: cargo +1.85.0 clippy --all-targets -- -D warnings
+      - run: cargo +1.85.0 test --manifest-path research/semantic-kernel/Cargo.toml --all-targets
+      - run: cargo +1.85.0 clippy --manifest-path research/semantic-kernel/Cargo.toml --all-targets -- -D warnings
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-rust-msrv --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-rust-msrv-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-macos-source:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.85.0-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
+      - name: Install MSRV and Intel macOS compilation target
+        run: rustup toolchain install 1.85.0 --profile minimal --target x86_64-apple-darwin
+      - name: Exercise descriptor-relative source loading on macOS
+        run: cargo +1.85.0 test --locked --lib source_file::tests
+      - name: Check source budgets, project loading and edition manifests
+        run: cargo +1.85.0 test --locked --test source_capacities --test project --test editions --test review_v028
+      - name: Build with Rust's existing Intel macOS minimum
+        env:
+          MACOSX_DEPLOYMENT_TARGET: '10.12'
+        run: cargo +1.85.0 build --locked --target x86_64-apple-darwin --bin qleisli
+
+      - name: Install the pinned native kernel toolchain
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'false'
+          use-mathlib-cache: 'false'
+      - name: Build and audit a clean relocated macOS native bundle
+        run: |
+          python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
+          cargo +1.85.0 build --locked --bin qleisli
+          python3 scripts/test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos"
+          QLEISLI_KERNEL="$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" python3 scripts/test_source_kernel.py
+          python3 scripts/test_interop_native.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-macos/interop-native.json"
+      - name: Archive the freshly replayed macOS checker for distribution
+        if: needs.changes.outputs.proof_lane == 'full'
+        run: python3 scripts/archive_lean_kernel.py --bundle "$RUNNER_TEMP/qleisli-native-bundle" --output "$RUNNER_TEMP/native-distribution"
+      - name: Retain macOS native distribution and validation records
+        if: needs.changes.outputs.proof_lane == 'full'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qleisli-kernel-macos-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/native-distribution/
+            ${{ runner.temp }}/native-macos/
+          if-no-files-found: error
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-macos-source --output "$RUNNER_TEMP/release-receipt" --native "$RUNNER_TEMP/native-distribution"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-macos-source-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-interop:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
+      - name: Install validators and the tested Rust toolchain
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal
+          sudo apt-get update
+          sudo apt-get install -y llvm-18 python3-venv
+          python3 -m venv /tmp/qleisli-interop-validation
+          /tmp/qleisli-interop-validation/bin/pip install -r scripts/interop-validation-requirements.txt
+          /tmp/qleisli-interop-validation/bin/pip install -r scripts/qir-reader-requirements.txt
+          /tmp/qleisli-interop-validation/bin/pip install setuptools==80.9.0
+          /tmp/qleisli-interop-validation/bin/pip install --no-build-isolation --no-deps ./python
+      - run: cargo +1.98.1 build --example interop --bin qleisli
+      - name: Independently parse OpenQASM and verify QIR with LLVM
+        run: /tmp/qleisli-interop-validation/bin/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as-18 --opt opt-18
+      - name: Installed Python API and independently authored QIR input
+        run: |
+          /tmp/qleisli-interop-validation/bin/python scripts/test_connections.py
+          python3 scripts/test_python_host.py
+          llvm-as-18 tests/fixtures/interop/independent.ll -o /tmp/qleisli-independent.bc
+          opt-18 -passes=verify -disable-output /tmp/qleisli-independent.bc
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-interop --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-interop-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-lean:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Test registry policy and bind the exact shipped source inventory
+        run: |
+          python3 scripts/test_check_schema_registry.py
+          python3 scripts/check_schema_registry.py --source-only
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        if: needs.changes.outputs.proof_lane != 'tests'
+        with:
+          lake-package-directory: lean
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'false'
+      - name: Compile changed mathematical proofs and audit their declarations
+        if: needs.changes.outputs.proof_lane == 'model'
+        working-directory: lean
+        run: |
+          lake build
+          lake env lean -DwarningAsError=true Audit.lean
+      - name: Bind shipped schema types to rebuilt declarations and audited executable sources
+        if: needs.changes.outputs.proof_lane == 'full'
+        run: python3 scripts/check_schema_registry.py
+      - name: Replay every registered guarantee verifier against the built and audited environment
+        if: needs.changes.outputs.proof_lane != 'tests'
+        run: python3 scripts/check_release_ready.py --record-constitution --output "$RUNNER_TEMP/release-constitution.json"
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-lean --output "$RUNNER_TEMP/release-receipt" --constitution "$RUNNER_TEMP/release-constitution.json"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-lean-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-lean-kernel:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+    runs-on: ubuntu-latest
+    env:
+      RUSTUP_TOOLCHAIN: 1.98.1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
+      - name: Install the tested Rust toolchain for native host comparisons
+        run: rustup toolchain install 1.98.1 --profile minimal
+      - name: Fetch Rust dependencies before offline native host comparisons
+        run: cargo +1.98.1 fetch
+      - name: Reject kernel/backend source escape hatches and unaudited imports
+        run: python3 scripts/check_lean_kernel.py
+      - uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit axioms, unsafe/partial declarations and runtime replacements
+        working-directory: lean-kernel
+        run: lake env lean -DwarningAsError=true Audit.lean
+      - name: Replay retained proof reductions and refactoring equivalence
+        if: needs.changes.outputs.proof_lane == 'full'
+        working-directory: lean-kernel
+        run: |
+          lake env lean -DwarningAsError=true Tests.lean
+          lake env lean -DwarningAsError=true ../tests/fixtures/releases/v0.2.5/kernel-refactoring-equivalence.lean
+      - name: Replay the compiled project definitions through Lean's kernel
+        if: needs.changes.outputs.proof_lane == 'full'
+        working-directory: lean-kernel
+        run: |
+          lake env leanchecker --fresh QleisliKernel
+          lake env leanchecker --fresh Main
+      - name: Reject backend unsafe, implemented_by, extern and partial counterexamples
+        run: python3 scripts/test_check_lean_kernel.py --compiled
+      - name: Run all retained native comparisons with bounded parallelism
+        run: python3 scripts/run_native_ci.py --workers "${{ inputs.native_workers || '4' }}" --output "$RUNNER_TEMP/native-comparisons"
+      - name: Build and audit a clean relocated Linux native bundle
+        run: |
+          python3 scripts/package_lean_kernel.py --validation "${{ needs.changes.outputs.proof_lane }}" --output "$RUNNER_TEMP/qleisli-native-bundle"
+          python3 scripts/test_native_verification.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/native-bundle"
+          QLEISLI_KERNEL="$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" python3 scripts/test_source_kernel.py
+      - name: Exercise optional QIR/Python paths against the same audited bundle
+        run: |
+          python3 -m venv "$RUNNER_TEMP/native-qir"
+          "$RUNNER_TEMP/native-qir/bin/pip" install -r scripts/qir-reader-requirements.txt
+          "$RUNNER_TEMP/native-qir/bin/python" scripts/test_interop_native.py --kernel "$RUNNER_TEMP/qleisli-native-bundle/bin/qleisli-kernel" --record "$RUNNER_TEMP/native-comparisons/native-bundle/interop-native.json"
+      - name: Archive the freshly replayed Linux checker for distribution
+        if: needs.changes.outputs.proof_lane == 'full'
+        run: python3 scripts/archive_lean_kernel.py --bundle "$RUNNER_TEMP/qleisli-native-bundle" --output "$RUNNER_TEMP/native-distribution"
+      - name: Retain Linux native distribution
+        if: needs.changes.outputs.proof_lane == 'full'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qleisli-kernel-linux-${{ github.sha }}
+          path: ${{ runner.temp }}/native-distribution/
+          if-no-files-found: error
+      - name: Retain complete coverage, per-command timings and independent logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: native-comparisons-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-comparisons/
+          if-no-files-found: error
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-lean-kernel --output "$RUNNER_TEMP/release-receipt" --native "$RUNNER_TEMP/native-distribution"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-lean-kernel-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-distribution:
+    needs: changes
+    if: needs.changes.outputs.profile == 'full'
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+      dependency-cache: ${{ steps.cargo-cache.outputs.cache-hit == 'true' && 'hit' || steps.cargo-cache.outcome == 'success' && 'miss' || steps.cargo-cache.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build the required native acceptance runtime
+        uses: leanprover/lean-action@50fcf42d2e460296f1a34b402e990d1b24f8b596 # v1
+        with:
+          lake-package-directory: lean-kernel
+          auto-config: 'false'
+          use-github-cache: 'false'
+          build: 'true'
+          use-mathlib-cache: 'false'
+      - name: Audit and select the matching native checker
+        run: |
+          (cd lean-kernel && lake env lean -DwarningAsError=true Audit.lean)
+          echo "QLEISLI_KERNEL=$GITHUB_WORKSPACE/lean-kernel/.lake/build/bin/qleisli-kernel" >> "$GITHUB_ENV"
+      - name: Restore dependency archives (never source, target or Lean project outputs)
+        id: cargo-cache
+        if: github.event_name != 'workflow_dispatch' || inputs.cache != 'disabled'
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+          key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-1.98.1-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}
+      - name: Install the tested Rust toolchain
+        run: |
+          rustup toolchain install 1.98.1 --profile minimal
+          rustup default 1.98.1
+      - name: Fetch package dependencies before offline distribution checks
+        run: cargo +1.98.1 fetch
+      - name: Verify clean package and complete source archive
+        run: python3 scripts/check_distribution.py --report "$RUNNER_TEMP/qleisli-distribution.json" --target-dir "$RUNNER_TEMP/qleisli-distribution-target"
+      - name: Retain candidate hashes, archives and command logs
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: distribution-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/qleisli-distribution.json
+            ${{ runner.temp }}/qleisli-distribution-artifacts-*/logs/
+            ${{ runner.temp }}/qleisli-distribution-artifacts-*/*.crate
+            ${{ runner.temp }}/qleisli-distribution-artifacts-*/*-source.tar
+          if-no-files-found: error
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-distribution --output "$RUNNER_TEMP/release-receipt" --distribution "$RUNNER_TEMP/qleisli-distribution.json"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-distribution-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  check-docs:
+    needs: changes
+    outputs:
+      release_receipt_sha256: ${{ steps.release-receipt.outputs.release_receipt_sha256 }}
+    runs-on: ubuntu-latest
+    # External presentation toolchain; independent of Qleisli/Cargo/Qargo versions.
+    env:
+      MDBOOK_VERSION: '0.5.4'
+      MDBOOK_LINUX_SHA256: '3f28de05dafca9d0f2eab99c662116b0e37b89b1d96a08f8f430b9eeae958cd7'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Install the pinned official mdBook binary
+        run: |
+          archive="$RUNNER_TEMP/mdbook.tar.gz"
+          tool_dir="$RUNNER_TEMP/mdbook-bin"
+          curl --fail --location --retry 3 \
+            "https://github.com/rust-lang/mdBook/releases/download/v${MDBOOK_VERSION}/mdbook-v${MDBOOK_VERSION}-x86_64-unknown-linux-gnu.tar.gz" \
+            --output "$archive"
+          printf '%s  %s\n' "$MDBOOK_LINUX_SHA256" "$archive" | sha256sum --check --strict
+          mkdir -p "$tool_dir"
+          tar -xzf "$archive" -C "$tool_dir" mdbook
+          echo "$tool_dir" >> "$GITHUB_PATH"
+      - name: Build the book with the selected mdBook version
+        run: |
+          test "$(mdbook --version)" = "mdbook v${MDBOOK_VERSION}"
+          mdbook build docs
+          python3 scripts/test_check_book.py
+          python3 scripts/check_book.py
+      - name: Retain the rendered book for review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: qleisli-book-${{ github.sha }}-${{ github.run_attempt }}
+          path: target/mdbook/
+          if-no-files-found: error
+      - name: Check edition 2026 coverage of every Qleisli source and QLT draft
+        run: |
+          python3 scripts/test_check_editions.py
+          python3 scripts/check_editions.py
+      - run: python3 scripts/test_check_docs.py
+      - run: python3 scripts/test_current_source_fixtures.py
+      - name: Check constitutional identity and the historical candidate packet
+        env:
+          CONSTITUTION_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          python3 scripts/test_check_ratification_packet.py
+          python3 scripts/check_ratification_packet.py
+          python3 scripts/test_check_constitution.py
+          python3 scripts/test_check_release_ready.py
+          base_args=()
+          if [[ -n "$CONSTITUTION_BASE" && "$CONSTITUTION_BASE" != '0000000000000000000000000000000000000000' ]]; then
+            base_args=(--base-ref "$CONSTITUTION_BASE")
+          fi
+          python3 scripts/check_constitution.py "${base_args[@]}"
+      - name: Check recorded scoped QS admission and current evidence identities
+        run: |
+          python3 scripts/test_check_initial_guarantees.py
+          python3 scripts/check_initial_guarantees.py
+      - run: python3 scripts/test_maintain_release.py
+      - run: python3 scripts/test_native_harness.py
+      - run: |
+          python3 scripts/test_check_production_coverage.py
+          python3 scripts/test_test_native_acceptance_replay.py
+      - run: python3 scripts/check_production_coverage.py
+      - run: python3 scripts/test_check_lean_kernel.py
+      - run: python3 scripts/test_check_schema_registry.py
+      - run: python3 scripts/check_schema_registry.py --source-only
+      - run: python3 scripts/check_docs.py
+      - name: Verification inventory coverage and independent oracle calibration
+        run: |
+          python3 scripts/test_check_verification_inventory.py
+          python3 scripts/check_verification_inventory.py
+          python3 scripts/test_test_verification_baseline.py
+      - run: python3 scripts/test_check_authoring_sessions.py
+      - run: python3 scripts/check_authoring_sessions.py
+      - run: python3 scripts/test_check_input_corpus.py
+      - run: python3 scripts/check_input_corpus.py
+      - run: python3 scripts/test_check_distribution.py
+      - run: python3 scripts/test_check_imaginary_v1_examples.py
+      - run: python3 scripts/check_imaginary_v1_examples.py
+      - run: python3 scripts/test_check_semantic_contract_examples.py
+      - run: python3 scripts/check_semantic_contract_examples.py
+      - name: Check whitespace throughout the committed tree
+        run: git diff --check "$(git hash-object -t tree /dev/null)" HEAD
+      - name: Bind successful producer evidence for scoped release readiness
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        id: release-receipt
+        env:
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+        run: python3 scripts/check_release_ready.py --record-job check-docs --output "$RUNNER_TEMP/release-receipt"
+      - name: Retain exact producer receipt and planned artifact bytes
+        if: startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-receipt-check-docs-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-receipt/
+          if-no-files-found: error
+
+  required:
+    # Stable public check names preserve the existing branch-protection contexts.
+    # Every context fails if selection or ANY required suite fails/is missing.
+    name: ${{ matrix.check }}
+    if: always()
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [rust, rust-msrv, macos-source, interop, lean, lean-kernel, distribution, docs]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Enforce complete selected validation and exact commit binding
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: python3 scripts/ci_profiles.py --gate --report "$RUNNER_TEMP/required-results.json"
+      - name: Retain required-check and dependency-cache observations
+        if: always() && matrix.check == 'docs'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: ci-validation-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/required-results.json
+          if-no-files-found: error
+
+  release-readiness:
+    # A later gate: never make a producer depend on its own aggregate result.
+    if: always() && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.release_readiness))
+    needs: [changes, check-rust, check-rust-msrv, check-macos-source, check-interop, check-lean, check-lean-kernel, check-distribution, check-docs]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Fetch same-run producer evidence (never select a run from candidate JSON)
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: release-receipt-*-${{ github.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-evidence
+      - name: Require exact-commit scoped readiness
+        env:
+          RELEASE_NEEDS_JSON: ${{ toJSON(needs) }}
+          RELEASE_READINESS: ${{ inputs.release_readiness && 'true' || 'false' }}
+          RELEASE_TRUSTED_BASE: ${{ inputs.release_base || vars.QLEISLI_RELEASE_BASE }}
+          RELEASE_EVIDENCE: ${{ runner.temp }}/release-evidence
+        run: python3 scripts/check_constitution.py --require-release-ready

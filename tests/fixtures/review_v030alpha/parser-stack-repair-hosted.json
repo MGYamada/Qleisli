@@ -1,0 +1,59 @@
+{
+  "format": "qleisli.hosted-validation-checkpoint",
+  "version": 1,
+  "run": 37568723802,
+  "url": "https://github.com/MGYamada/Qleisli/actions/runs/37568723802",
+  "conclusion": "success",
+  "reported_pr_head": "05316883e16fbe94b3be0d4a963642a0300269aa",
+  "checked_merge_commit": "8eabad81e922f0d82fdf300a881e88ef4d0f3b88",
+  "merge_base_parent": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+  "merge_tree": "f28412f23112945030a7dafd9b33b107fdee3228",
+  "profile": "full",
+  "proof_lane": "full",
+  "actual_producers": {
+    "check-rust": "success",
+    "check-rust-msrv": "success",
+    "check-lean": "success",
+    "check-lean-kernel": "success",
+    "check-distribution": "success",
+    "check-macos-source": "success",
+    "check-interop": "success",
+    "check-docs": "success"
+  },
+  "required_contexts": {
+    "rust": "success",
+    "rust-msrv": "success",
+    "lean": "success",
+    "lean-kernel": "success",
+    "distribution": "success",
+    "macos-source": "success",
+    "interop": "success",
+    "docs": "success"
+  },
+  "release_readiness": "skipped for ordinary PR validation",
+  "evidence": [
+    {
+      "external_path": "/private/tmp/qleisli-parser-repair-ci-status-final6.json",
+      "sha256": "ba1ef57f8d7ae22e0e0bdd29d0fa94697f2718ffc2feb0779ffa4d631d8f95db",
+      "bytes": 48674
+    },
+    {
+      "external_path": "/private/tmp/qleisli-parser-repair-hosted-selection/ci-selection.json",
+      "sha256": "cb2f4e402fa7ef8c824c93c08e98e457889628718ed59b018bba6343988f310a",
+      "bytes": 1654193
+    },
+    {
+      "external_path": "/private/tmp/qleisli-parser-repair-hosted-validation/required-results.json",
+      "sha256": "43c78cbfcd65e9a143a6abbe239d7a224059a7f78a7eb2f0e4f986663c77b3f4",
+      "bytes": 1152
+    },
+    {
+      "external_path": "/private/tmp/qleisli-parser-repair-merge-binding.json",
+      "sha256": "76d552eafdb2230a337070a397830ae1e90e25bc7612e68422390cb42e098775",
+      "bytes": 199
+    }
+  ],
+  "previous_failed_run": 37562617996,
+  "scope": "This successful run verifies the parser repair at its exact PR head and recorded merge; the earlier SIGABRT run remains failed. Workflow selection and aggregate result artifacts were downloaded separately and match the GitHub-reported merge parents. They are observed hosted provenance, not cryptographic authentication or release approval.",
+  "limits": "Later canonical-control, active-example and constructed-inverse commits have separate local evidence and require their own fresh hosted validation. No completion of #33, #141, #142, the full plan, new guarantee, tag or publication is implied."
+}

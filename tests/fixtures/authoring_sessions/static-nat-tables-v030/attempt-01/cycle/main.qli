@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+static fn first()->[Nat;1]{second()}
+static fn second()->[Nat;1]{first()}
+pub observe fn main() -> Bit { 0 }

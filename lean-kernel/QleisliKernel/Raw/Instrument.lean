@@ -108,14 +108,11 @@ structure Checked where
   structureCheck : Observation.Checked
   histories : List History
 
-/-- Ordinary checking fixes classical inputs, freshly reconstructs dependencies,
-reads the original body and checks the complete instrument equation. It does
-not require a caller-supplied algorithm specification. Dense evaluation is a
-separate six-bit component; general structural checking keeps twelve-bit owners. -/
-def inspect (inputs : List Semantics.Function.Input) (bindings : List Semantics.Function.Binding)
+/-- Reconstruct an original body using the dependency snapshot freshly checked
+by its enclosing graph. This function issues no independent dependency receipt.
+Dense evaluation retains its six-bit bound and complete Kraus/Gram checking. -/
+def reconstruct (dependencies : List Dependency)
     (program : Semantics.Observation.Program) (classical : List Bool) : WorkM Checked := do
-  let receipts ← Raw.Function.checkAll inputs bindings
-  let dependencies := receipts.map Semantics.Function.Receipt.dependency
   let checked ← Observation.verify dependencies program
   guard (classical.length == program.classicalInputs.length)
   guard (checked.prepared.inputBits ≤ 6 && checked.state.quantum.frame.length ≤ 6) .limit
@@ -128,6 +125,82 @@ def inspect (inputs : List Semantics.Function.Input) (bindings : List Semantics.
   let identity ← lift (arithmetic (Exact.Matrix.identity (2^checked.prepared.inputBits)))
   guard (total == identity) .equation
   return ⟨checked,histories⟩
+
+/-- Ordinary checking fixes classical inputs and freshly reconstructs all
+dependencies before reading the original complete instrument. QIRF callers use
+the same reconstruction after checking their own original indexed graph. -/
+def inspect (inputs : List Semantics.Function.Input) (bindings : List Semantics.Function.Binding)
+    (program : Semantics.Observation.Program) (classical : List Bool) : WorkM Checked := do
+  let receipts ← Raw.Function.checkAll inputs bindings
+  reconstruct (receipts.map Semantics.Function.Receipt.dependency) program classical
+
+/-- Factoring reconstruction preserves the entire previous WorkM recipe,
+including every failure and remaining-work value, by definitional equality. -/
+theorem inspect_recipe (inputs : List Semantics.Function.Input) (bindings : List Semantics.Function.Binding)
+    (program : Semantics.Observation.Program) (classical : List Bool) :
+    inspect inputs bindings program classical = (do
+      let receipts ← Raw.Function.checkAll inputs bindings
+      let dependencies := receipts.map Semantics.Function.Receipt.dependency
+      let checked ← Observation.verify dependencies program
+      guard (classical.length == program.classicalInputs.length)
+      guard (checked.prepared.inputBits ≤ 6 && checked.state.quantum.frame.length ≤ 6) .limit
+      let initial ← lift (arithmetic (Exact.Matrix.identity (2^checked.prepared.inputBits)))
+      let histories ← runEvents dependencies 65 checked.prepared.events
+        ⟨program.classicalInputs.zip classical,[],initial⟩
+      guard (!histories.isEmpty && histories.all fun h =>
+        h.operator.rows == 2^checked.state.quantum.frame.length && h.operator.cols == 2^checked.prepared.inputBits)
+      let total ← gram checked.prepared.inputBits histories
+      let identity ← lift (arithmetic (Exact.Matrix.identity (2^checked.prepared.inputBits)))
+      guard (total == identity) .equation
+      return ⟨checked,histories⟩) := rfl
+
+theorem reconstruct_execution (dependencies : List Dependency)
+    (program : Semantics.Observation.Program) (classical : List Bool)
+    (checked : Checked) (work left : Nat)
+    (ok : (reconstruct dependencies program classical).run work = (.ok checked,left)) :
+    ∃ initial afterVerification beforeEvents afterEvents,
+      (Observation.verify dependencies program).run work = (.ok checked.structureCheck,afterVerification) ∧
+      Exact.Matrix.identity (2^checked.structureCheck.prepared.inputBits) = .ok initial ∧
+      (runEvents dependencies 65 checked.structureCheck.prepared.events
+        ⟨program.classicalInputs.zip classical,[],initial⟩).run beforeEvents = (.ok checked.histories,afterEvents) ∧
+      checked.histories.all (fun h => h.operator.rows == 2^checked.structureCheck.state.quantum.frame.length &&
+        h.operator.cols == 2^checked.structureCheck.prepared.inputBits) = true := by
+  obtain ⟨structureCheck,w₁,hs,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨initial,w₂,hi,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨histories,w₃,he,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,hg,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  have same := (pure_success _ _ _ _ h).1
+  subst checked
+  have shape := (guard_success _ _ _ _ hg).1
+  simp only [Bool.and_eq_true] at shape
+  exact ⟨initial,w₁,w₂,w₃,hs,arithmetic_success _ _ (lift_success _ _ _ _ hi).1,he,shape.2⟩
+
+theorem reconstruct_conditions (dependencies : List Dependency)
+    (program : Semantics.Observation.Program) (classical : List Bool)
+    (checked : Checked) (work left : Nat)
+    (ok : (reconstruct dependencies program classical).run work = (.ok checked,left)) :
+    ∃ afterVerification beforeGram afterGram total identity,
+      (Observation.verify dependencies program).run work = (.ok checked.structureCheck,afterVerification) ∧
+      (gram checked.structureCheck.prepared.inputBits checked.histories).run beforeGram = (.ok total,afterGram) ∧
+      Exact.Matrix.identity (2^checked.structureCheck.prepared.inputBits) = .ok identity ∧ total = identity := by
+  obtain ⟨structureCheck,w₁,hs,h⟩ := bind_success _ _ _ _ _ ok
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨histories,w₂,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,w₃,_,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨total,w₄,hg,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨identity,_,hi,h⟩ := bind_success _ _ _ _ _ h
+  obtain ⟨_,_,he,h⟩ := bind_success _ _ _ _ _ h
+  have same := (pure_success _ _ _ _ h).1
+  subst checked
+  exact ⟨w₁,w₃,w₄,total,identity,hs,hg,
+    arithmetic_success _ _ (lift_success _ _ _ _ hi).1,beq_iff_eq.mp (guard_success _ _ _ _ he).1⟩
 
 theorem erase_value (bits : Nat) (axes : List Nat) (outcome : Nat) (actual : Matrix)
     (work left : Nat) (ok : (erase bits axes outcome).run work = (.ok actual,left)) :

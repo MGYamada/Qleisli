@@ -1,0 +1,7 @@
+use std::quantum::{finish,init0,h,split};
+fn prepare(q:Q<Unit>)->Q<Bit>{finish(q);init0()}
+fn had(q:Q<Bit>)->Q<Bit>{h(q)}
+fn id(q:Q<Bit>)->Q<Bit>{q}
+fn unitor(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,b)=split(q);finish(u);b}
+fn invoke[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
+pub fn entry(q:Q<Bit>)->Q<Bit>{invoke[then_op(adjoint(unitor),unitor)](q)}

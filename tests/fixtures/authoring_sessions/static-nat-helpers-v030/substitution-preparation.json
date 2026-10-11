@@ -1,0 +1,116 @@
+{
+  "format": "qleisli.static-nat-substitution-preparation",
+  "version": 1,
+  "baseline": "0318931e733abba335601eb67b359dc78997b495",
+  "issue": 63,
+  "implementation": "Extract simultaneous exact affine substitution into the shared bounded Linear algebra; existing common type specialization uses it. Original BinderKeys remain mandatory; replacements are caller expressions and are not substituted recursively. Missing binding, arithmetic overflow and work/storage refusal remain failures.",
+  "review": [
+    {
+      "path": "src/frontend/check/normalize.rs",
+      "old_sha256": "bd8dfc2f928bee5415a232d4b220b03e2200cc88ebf27886aaaa850291a8c68f",
+      "new_sha256": "2c855048816114eaf2e37d9442d06024f09e9ae21d8c5853a36deb339a51020b",
+      "old_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
+    },
+    {
+      "path": "src/frontend/sized/linear.rs",
+      "old_sha256": "98a0d14d0052e2281cc4c4b07e41f92c933ff836eb43cb0eda285cc07a66874e",
+      "new_sha256": "e99445b222ceaaa6413b209a6ec3584819466f0da04c34ff0e6ddda2398806ef",
+      "old_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn add_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn compare_budgeted( &self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn constant(n: i128) -> Self",
+          "pub fn constant_budgeted( n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn feasible_budgeted( &self, span: Span, obligation: &str, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<bool>",
+          "pub fn natural_refs_budgeted<'a>( names: impl IntoIterator<Item = &'a BinderKey>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn proves_le_budgeted( &self, a: &Linear, b: &Linear, span: Span, obligation: &str, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<bool>",
+          "pub fn push_budgeted( &self, inequalities: &[Linear], span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn scale_budgeted( &self, n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn storage_cells(&self) -> Result<usize>",
+          "pub fn sub_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn variable_budgeted( name: &BinderKey, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>"
+        ],
+        "capacity_constants": []
+      },
+      "new_surface": {
+        "declarations": [],
+        "functions": [
+          "pub fn add_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn compare_budgeted( &self, left: Linear, op: Compare, right: Linear, truth: bool, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn constant(n: i128) -> Self",
+          "pub fn constant_budgeted( n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn copy_budgeted( &self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn feasible_budgeted( &self, span: Span, obligation: &str, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<bool>",
+          "pub fn natural_refs_budgeted<'a>( names: impl IntoIterator<Item = &'a BinderKey>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn proves_le_budgeted( &self, a: &Linear, b: &Linear, span: Span, obligation: &str, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<bool>",
+          "pub fn push_budgeted( &self, inequalities: &[Linear], span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn scale_budgeted( &self, n: i128, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn storage_cells(&self) -> Result<usize>",
+          "pub fn sub_budgeted( &self, b: &Self, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn substitute_budgeted( &self, values: &BTreeMap<BinderKey, Self>, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>",
+          "pub fn variable_budgeted( name: &BinderKey, span: Span, charge: &mut impl FnMut(Span, usize) -> Result<()>, ) -> Result<Self>"
+        ],
+        "capacity_constants": []
+      }
+    }
+  ],
+  "production_surface": {
+    "before": "de3d793d9ba82d3df09464052b562b0839bb5c09d931f7edbedef2f15412929a",
+    "after": "d16bee58e61ff055404c6097209084742faf37323262365c23898b900207c53d",
+    "scope": "One internal affine method added. No public acceptance route, native schema, primitive, capacity, proof status or edition changed. S05-C1-C5 remain open."
+  },
+  "verification": {
+    "latest_frontend_library": {
+      "passed": 68,
+      "ignored": 2,
+      "filtered": 52
+    },
+    "latest_static_naturals_and_sized_declarations": {
+      "passed": 16,
+      "ignored": 0
+    },
+    "msrv_substitution": {
+      "passed": 5,
+      "ignored": 0
+    },
+    "latest_unique_passes": 84,
+    "latest_all_targets_clippy": "passed",
+    "first_attempt": {
+      "exit_code": 101,
+      "passed": 4,
+      "failed": 1,
+      "reason": "The budget test expected exactly five accounting visits, but refusal occurred earlier on the fourth. Replace the implementation-mirroring exact count with an upper bound on work after refusal; retain the semantic failure/category/span requirements."
+    },
+    "msrv_all_targets_clippy": "passed",
+    "python_inventory_tests": 17,
+    "python_production_coverage_tests": 14,
+    "checks": [
+      "cargo fmt --check",
+      "VM-22 inventory",
+      "VM-29 coverage",
+      "docs: 2172 local links",
+      "authoring sessions: 47 records / 64 snapshots / 1096 observations",
+      "git diff --check",
+      "constitutional continuity against 38baae7d19535602b21270e11e97617d45205b37"
+    ]
+  },
+  "limits": [
+    "No static helper declaration/call syntax is implemented by this preparation.",
+    "No helper concrete evaluator, phase-table completion or #63 closure is claimed.",
+    "Hosted run 37443178912 binds remote 38baae7d, not this local change.",
+    "No full all-target Rust rerun or new local Lean replay performed for this refactor."
+  ]
+}

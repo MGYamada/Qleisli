@@ -5,19 +5,17 @@ mod common;
 
 use common::SourceRoot;
 #[cfg(unix)]
-use qleisli::frontend::sized::ParsedProgram;
+use qleisli::frontend::compile::ParsedProgram;
 #[cfg(unix)]
 use std::collections::BTreeMap;
 use std::process::Command;
 
 fn cli(root: &SourceRoot) -> Command {
     let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
-    command
-        .args(["sized", "check", "--entry=main::f"])
-        .arg(format!(
-            "--module=main={}",
-            root.0.join("main.qli").display()
-        ));
+    command.args(["check", "--entry=main::f"]).arg(format!(
+        "--module=main={}",
+        root.0.join("main.qli").display()
+    ));
     command
 }
 
@@ -25,16 +23,17 @@ fn cli(root: &SourceRoot) -> Command {
 fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
     for (source, reason) in [
         (
-            "use std::quantum::h; pub iso fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
-            "iso roots",
+            "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
+            "at most one ordinary Bits<0> result",
         ),
         (
-            "pub unitary fn f(q: Q<Bit>, c: CBit) -> (Q<Bit>,CBit) { (q,c) }",
+            "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
             "classical entry",
         ),
     ] {
         let root = SourceRoot::new(source);
         let output = cli(&root)
+            .arg("--ir-profile=hierarchy")
             .arg(format!(
                 "--kernel={}",
                 root.0.join("absent-kernel").display()
@@ -45,10 +44,32 @@ fn sized_cli_reports_unsupported_lowering_before_starting_a_kernel() {
         assert_eq!(output.status.code(), Some(1));
         assert!(output.stdout.is_empty());
         assert!(message.contains("unsupported"), "{message}");
-        assert!(message.contains("lowering profile"), "{message}");
+        assert!(message.contains("lowering"), "{message}");
         assert!(message.contains(reason), "{message}");
-        assert!(!message.contains("cannot start Lean runtime"), "{message}");
+        assert!(!message.contains("cannot start Lean"), "{message}");
     }
+    // The original preparation example is now eligible. Its missing checker
+    // must still reject instead of bypassing the native acceptance boundary.
+    let root = SourceRoot::new(
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}",
+    );
+    let output = cli(&root)
+        .arg("--ir-profile=hierarchy")
+        .arg(format!(
+            "--kernel={}",
+            root.0.join("absent-kernel").display()
+        ))
+        .output()
+        .unwrap();
+    let message = String::from_utf8(output.stderr).unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    assert!(output.stdout.is_empty());
+    assert!(message.starts_with("io:"), "{message}");
+    assert!(
+        message.contains("cannot start Lean native checker"),
+        "{message}"
+    );
+    assert!(message.contains("sized isometry profile"), "{message}");
 }
 
 #[cfg(unix)]
@@ -116,7 +137,7 @@ fn native_failure_diagnostics_preserve_codes_profile_and_producer_or_caller_scop
             "--hierarchy-request-pending",
         ),
         (
-            "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>) -> CBits<1> { prepend_bit[0](measure_z(q),empty_bits()) }",
+            "use std::observe::measure_z; use std::classical::empty_bits; use std::classical::prepend_bit; pub observe fn f(q: Q<Bit>) -> Bits<1> { prepend_bit[0](measure_z(q),empty_bits()) }",
             "instrument",
             "composition-instrument checking",
             "--instrument-pending",

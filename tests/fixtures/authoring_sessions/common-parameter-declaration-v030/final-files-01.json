@@ -1,0 +1,1488 @@
+{
+  "format": "qleisli.additive-file-map",
+  "version": 1,
+  "files": {
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/README.md": {
+      "sha256": "ef061e17d5b3a12371cdebf6ee0123633ad88eca9ebfc043da83c4f68f7f47d9",
+      "bytes": 2454
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-json.json": {
+      "sha256": "53510cb2bf41bafc426716abe43f80c93a50823d76b9bcc3b250c46eec57bbce",
+      "bytes": 1070
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-json.stdout.txt": {
+      "sha256": "57ff3f89625a8739a648bf1f0f168891c9070921cb5670517f3792efc28e508b",
+      "bytes": 301
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-text.json": {
+      "sha256": "c225839f018f4cc63421eb63a57904d344333af04df5bf6ef60e53e264c0396e",
+      "bytes": 1050
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-text.stderr.txt": {
+      "sha256": "c18c16021450f996197e11e332cae654b3baaa700d18aa3a1d2a514e97db1898",
+      "bytes": 218
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-json.json": {
+      "sha256": "a76bbb5b677d07b1218c1183ebbb4b7b17229baefee9fe3498acb66f50fc9f9c",
+      "bytes": 1167
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-json.stdout.txt": {
+      "sha256": "730229bc07898f73b75448a58ac689073e30d97f4715fcefbb28ad39f55f6e5b",
+      "bytes": 397
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-text.json": {
+      "sha256": "f66f1f50438b5bdfca66ef08753fbf98fe7c12682704a5b64ce9cc1c10bab3c2",
+      "bytes": 1145
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-text.stderr.txt": {
+      "sha256": "e3fdae0824dcfeff2bf8417197cb48fa2e4562683d6d6e498169ffe622dc9b42",
+      "bytes": 49
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-before-empty-register-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-json.json": {
+      "sha256": "9edea5f775fc3cf1816d6476537264d95c3aeb6d3663e76d89727e6b4a8068a8",
+      "bytes": 1043
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-json.stdout.txt": {
+      "sha256": "87fbe00256d46900cac65a2d590e50f7f574203476346f9f513ab59598ac07b5",
+      "bytes": 300
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-text.json": {
+      "sha256": "4470af9c69ead8a3fc357f4cdd574bf77acebd5d8d364f5b0fd57e6408788db2",
+      "bytes": 1020
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-text.stderr.txt": {
+      "sha256": "aa7bc4865563e218040a8f30ce209949049b6b3dbcaa55ed67b6bae6ba35ff74",
+      "bytes": 210
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-json.json": {
+      "sha256": "d6f5087be0f706051bef7de8560ba92c5939faac00e7fa1f8f7485f0690048b6",
+      "bytes": 1139
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-json.stdout.txt": {
+      "sha256": "7d0a661086048dad9b0a8dade79e27fcb855ca61968e7937b3b270705c309080",
+      "bytes": 391
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-text.json": {
+      "sha256": "553a55ae74480128d2f9dfefaedf0a6890f846e60e3fd922db60990ef9a31b22",
+      "bytes": 1118
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-text.stderr.txt": {
+      "sha256": "af211cc0d31429387a1894ff74db6155ccf798918946a14b7dc944193c3eb2df",
+      "bytes": 50
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-natural-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-json.json": {
+      "sha256": "f330f97cf9dea329ec3c1a9588ced6bd4f15712fcda6135b5321763b8d9c926a",
+      "bytes": 1071
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-json.stdout.txt": {
+      "sha256": "8ea80a2225ae147245d331d44498054eb786a06a8663676f479b43c4765203d3",
+      "bytes": 271
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-text.json": {
+      "sha256": "e3a515b1940bf0de258b5d8484c597f2853fd347d9473a7fdd6c7ffdd35577fd",
+      "bytes": 1050
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-text.stderr.txt": {
+      "sha256": "db79ebc329e13af7a5d89efe563fc4004e54e9e2d24c5f08f5453ea0222c7e65",
+      "bytes": 188
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-json.json": {
+      "sha256": "b10ae1985ae10c52be5d65cad9753b5f7c4a1c51564aa16ec9518c8885b7c52b",
+      "bytes": 1168
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-json.stdout.txt": {
+      "sha256": "73b40d7e32e583bb02ce4937ff5e4437b7e964aabdef5add657541f57bbb1c1c",
+      "bytes": 398
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-text.json": {
+      "sha256": "25fc34a6a987a2d16e45f75e67341afb4014139f6ae21bb2d6335b18baa486b4",
+      "bytes": 1146
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-text.stderr.txt": {
+      "sha256": "4befab5363a6612070101d50b4cd75cd781eaeb0b7943220241777b4c038409b",
+      "bytes": 50
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/duplicate-static-operation-unit-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/executed-driver.py.txt": {
+      "sha256": "d091ebd76f199fb659ab3a5d8759972b35fe32f8af11d572c8ee63ff339662fe",
+      "bytes": 10608
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/files.json": {
+      "sha256": "d6a4ec21a1a52f4b0e2c7eea2977b90c89fde20cda80aa42a71f12716f69984d",
+      "bytes": 29085
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-json.json": {
+      "sha256": "2422dbf5c08d0f291f700031c9c3ddec85ceb9c6aaa0803100f5ba8b1328f790",
+      "bytes": 1079
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-json.stdout.txt": {
+      "sha256": "dfccdad1fb4b74d964fa06151738840101bd5ed055e6058d6a0cf9d3d7190972",
+      "bytes": 304
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-text.json": {
+      "sha256": "b314b135ee83aa414b4099a62bd4cdc1360197dc4249cbc1bd864417fabade1a",
+      "bytes": 1058
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-text.stderr.txt": {
+      "sha256": "9b06430bd89f44f72036b24777dadb5fdbb2f6e819b09002c035c65d254cdf54",
+      "bytes": 223
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-json.json": {
+      "sha256": "873194fd42ba066096584f2e842b6284f5dd2373c5c57b2f3044b5dc496f6328",
+      "bytes": 1175
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-json.stdout.txt": {
+      "sha256": "7d66938d489573d9749f85dc2c00a8dd94e89cb628efa9e7861ec458e94b9aef",
+      "bytes": 404
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-text.json": {
+      "sha256": "dbcbd5fb8d0fce322fd93011cbe42af97081d5e62d1eaf565549e77e6c04c7cf",
+      "bytes": 1154
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-text.stderr.txt": {
+      "sha256": "e3b69ec4e73abf18b2f31bf5d74f5748cbbc9acd2617ea38524eeaa46293e810",
+      "bytes": 54
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/first-type-before-later-duplicate-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-json.json": {
+      "sha256": "015d869f93955e983c9a5352f11d4621cef8b2765f291ca65baafd86a2005b8d",
+      "bytes": 1035
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-json.stdout.txt": {
+      "sha256": "5eda170edd5504ca2781294e5b53add4ff64101ed7cfc6d921105ce574dfec18",
+      "bytes": 301
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-text.json": {
+      "sha256": "73201b7ff908dc80408d92dcd354727a5bbfa444c5297506d3064006c2cee252",
+      "bytes": 1014
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-text.stderr.txt": {
+      "sha256": "ee9975d59bb43a695d2cc1cd411337c4e08cf7f337fe43c5ecb9701f5b32e2c5",
+      "bytes": 209
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-json.json": {
+      "sha256": "73237a17fc9000f4577f6a10fefcb3bc9d201ab8f6cee5b82b02c8102d627637",
+      "bytes": 1131
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-json.stdout.txt": {
+      "sha256": "2fecdb859f4b2bbdc6b2eae222e95abb18f9729a0a00e1bc039b845cd3494bac",
+      "bytes": 385
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-text.json": {
+      "sha256": "4aaf96bbdce05249768329e58f0c7938eb5dcdd9cd8f74109b9ccd72e9396c06",
+      "bytes": 1110
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-text.stderr.txt": {
+      "sha256": "89298d6f1ed78ff3a80b396b9e21a9336cfb90620f10bccad6fe96e9d578449b",
+      "bytes": 46
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/forward-operation-kind-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/identity.before.json": {
+      "sha256": "23a27398ab3393e4c7a508e866a3907a0d2319fbb97edc2aba68bfd6546dc2c8",
+      "bytes": 29080
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/identity.final.json": {
+      "sha256": "de98dedf25251bcf7c8ceb1e7a986f1eeb374d2079da14723900d20d4d545fb4",
+      "bytes": 28139
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-json.json": {
+      "sha256": "c4605eae7bb4fbee392a8ee0609775bff9540d0b6707e49e53b374742d98f3a1",
+      "bytes": 1043
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-json.stdout.txt": {
+      "sha256": "ed9fe06ae2fa91d137cabe58b0f9103df09cde23ad30d6ce3d0b54b34586ea49",
+      "bytes": 269
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-text.json": {
+      "sha256": "375b51cc3107ddae02415c5d98f2614e02fac583b02e21cc9ff8c0f86394efd2",
+      "bytes": 1022
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-text.stderr.txt": {
+      "sha256": "b2c0c2aad784aa22aaf875149eb673ff512e16db3a79db82459b492b60c10745",
+      "bytes": 179
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-json.json": {
+      "sha256": "f6f7e82b116eb15d95783c5a96502e3a9056e5f633526f1134fb69cea5d2e76d",
+      "bytes": 1140
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-json.stdout.txt": {
+      "sha256": "0d6cb64f1b3ec54646bbd6251c2dac064bb8778c7eb16c96a34e2181dc9dd7d0",
+      "bytes": 390
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-text.json": {
+      "sha256": "36c315504bd85ca1be6f8ab22372d21c56a83d3232d9f7ba4b70ca76cde3682f",
+      "bytes": 1118
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-text.stderr.txt": {
+      "sha256": "3e489f64d46e4afc0e58207f21b52d82fff9baf6e2cc7040e9a7c1c6c465fda7",
+      "bytes": 49
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/nested-runtime-duplicate-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-json.json": {
+      "sha256": "2f73cac04e1fc885d4d33cd20b6365858e7e0fe001dea395a74ab2c6e6f846a7",
+      "bytes": 1042
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-json.stdout.txt": {
+      "sha256": "3b3bc1f391fe2c7c1a6a1c06d855fc623fdac0534dc856a6a0c8923494e2ccd2",
+      "bytes": 269
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-text.json": {
+      "sha256": "b82c0a7c7a695bafdadbb5514ba4f92ca4a1878cd37aac87016c0f615d93923f",
+      "bytes": 1022
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-text.stderr.txt": {
+      "sha256": "7452d25615a49f93e6e1b1d09d0b9f76438be41022eddb3f50ae71f92c8ab8eb",
+      "bytes": 179
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.json": {
+      "sha256": "82467e54ba0abe49340361f72ca6d16a8316a756fb95d6bcb87b62728947c7a0",
+      "bytes": 1139
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-json.stdout.txt": {
+      "sha256": "27a77926f91605b8edc226a09df6a582e3b4c44502d3fbf344b9d01dff80497a",
+      "bytes": 425
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.json": {
+      "sha256": "bf63caa94fa47a4f6ef0ede6bd6caa00c8f8da0192029eefd26af90921fc166b",
+      "bytes": 1118
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.stderr.txt": {
+      "sha256": "5d9469225648f2ed504fa8ae792dbd906ba06a0124b8be85bb9995280bb1092b",
+      "bytes": 84
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/static-runtime-collision-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/summary.json": {
+      "sha256": "e9617bb6d6acc872cf25b6a87665cdc943634e63ec89da9d2cf84723221a8208",
+      "bytes": 19236
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-json.json": {
+      "sha256": "b63f82837a87c1791ba3bf0240777f58411791581c4b56de3e254dfb0d5b43e6",
+      "bytes": 1091
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-json.stdout.txt": {
+      "sha256": "304ee6dfef6e9c2b0ada9e35cc69f11c627f545e3e257a37af14985c093b3307",
+      "bytes": 300
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-text.json": {
+      "sha256": "a37e1a1e025d1dc5212f1be6776682b898e1eb8fbd73e9d4f19d4dadddb0dca1",
+      "bytes": 1070
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-text.stderr.txt": {
+      "sha256": "61ec81c73dd8218b4c12b717a4b3af9f7402f28d5e472f18e0998bb37e4a6cba",
+      "bytes": 222
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-json.json": {
+      "sha256": "ea925818423c1c75b663a4d80308b2fdfc84832994a2ca8b332240f5ed36293f",
+      "bytes": 1188
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-json.stdout.txt": {
+      "sha256": "818514cb01a2748d9ce3dd21fbb7a60b45791b078177062b837c25063bfe2944",
+      "bytes": 412
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-text.json": {
+      "sha256": "75f3ceca59dc4613998025a77b3a65656de7660ce7e483cff7f67c5e6eed986f",
+      "bytes": 1166
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-text.stderr.txt": {
+      "sha256": "71d76aa0a9c3abcc2e8ca81faa0fedb2e93cbfcafcfb2a0e34c0c778a40726e5",
+      "bytes": 59
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/symbolic-type-before-later-duplicate-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-json.json": {
+      "sha256": "4e3bf01ccbf8a1e2ea605cd75558a7ae415519715b41e8fb958c79ca0fa36b2e",
+      "bytes": 1034
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-json.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-json.stdout.txt": {
+      "sha256": "9e42565a65e1bc1570f7be5101bec660261e6267180b1f82b49f2ec7322a2617",
+      "bytes": 269
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-text.json": {
+      "sha256": "d0693b43c08eb74c719e2e48011e8e58779f945e0253889f963c5a083ee65657",
+      "bytes": 1012
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-text.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-text.stderr.txt": {
+      "sha256": "997a5650f77a63660a1a58baef12755232d81b7a3843de76cc8f97d064a3189e",
+      "bytes": 177
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-json.json": {
+      "sha256": "a1a607018b622b8e7942ed5f383d5733e0c6dbf5d735c930fa00b2cba0056f22",
+      "bytes": 1131
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-json.stdout.txt": {
+      "sha256": "2be2a15c005b872e3f250c18ff0044aa9f92fb71fa65da4674e0b8bed4f0fb48",
+      "bytes": 388
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-text.json": {
+      "sha256": "f9e2df5b8c78cc67cf9f44e2305741e916d1db2d4d2cc79856e72c3c83ab287e",
+      "bytes": 1110
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-text.stderr.txt": {
+      "sha256": "7149da22410bf92d579474a46eab70f67732da1d417837e58236c99e9d6721bb",
+      "bytes": 49
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/unused-invalid-sibling-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-json.json": {
+      "sha256": "cb1c943ac673cbc5c4a25010e298eaad17a8d31a76c7d3ac248397ad6183cca5",
+      "bytes": 1046
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-json.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-json.stdout.txt": {
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "bytes": 117
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-text.json": {
+      "sha256": "f4f13715717be82c62b660b2de3b3bf988e3414d172e4d4809d9fca222cbad54",
+      "bytes": 1025
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-text.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-text.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-finite-check-text.stdout.txt": {
+      "sha256": "0ff2bc8b107ece2bc1afe18b832f4b401d8a91bc7b13bdd49602e483748b7f94",
+      "bytes": 161
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-json.json": {
+      "sha256": "52b9e9cc67f97aeb91e1ab9b610668b1082f4ba5d8f5346911146f1e0f83dbaa",
+      "bytes": 1142
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-json.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-json.stdout.txt": {
+      "sha256": "03dff55b92a509b4fe91b3ba558632d2cd814b959e15e091e464588bb0421291",
+      "bytes": 473
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-text.json": {
+      "sha256": "6969479da36b8434e98ff065c47562314fd5ca9482c87f0e3f166fbb7eb43be6",
+      "bytes": 1121
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-text.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-text.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/after-attempt-01/valid-nested-unit-quantum-selected-auto-check-text.stdout.txt": {
+      "sha256": "534a6bbf42800fca3d4c6d949193cea4c234f1f996b61693c7cb6b8c2b0a2f65",
+      "bytes": 374
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-before-empty-register/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-before-empty-register/main.qli": {
+      "sha256": "a19c19836d41bae5b2e59b49a227483e999592e85819ed2979d6dc6b4e8ff4c8",
+      "bytes": 188
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-natural/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-natural/main.qli": {
+      "sha256": "cace87151b58f17a99d68ab73175f41e31c66a039a74fe6d031d671f8a561617",
+      "bytes": 206
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-operation-unit/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/duplicate-static-operation-unit/main.qli": {
+      "sha256": "f7c9342f0bcf4afa689310f016edf645fc38b24879e45a12bd3fe73ff8d63d40",
+      "bytes": 220
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/first-type-before-later-duplicate/main.qli": {
+      "sha256": "54d0814ae3c702e1da20a7e0bad97ce1b276a84a8263b82fcaeb79da2e996a0e",
+      "bytes": 154
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/forward-operation-kind/main.qli": {
+      "sha256": "754a9b1c0e96a2380c4a0e3798feb7c14a98215245433ed372c5da5a7ad53d24",
+      "bytes": 232
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/nested-runtime-duplicate/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/nested-runtime-duplicate/main.qli": {
+      "sha256": "810627da0e72e7fd5d555a459f96b66be76f823dc7087c799c5b4a83b1512799",
+      "bytes": 156
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/static-runtime-collision/main.qli": {
+      "sha256": "d46af92834b9cdefea18f73bfdc74ead9eb2e347fc5d4be4d1751f58d9c1d3f0",
+      "bytes": 217
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/symbolic-type-before-later-duplicate/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/symbolic-type-before-later-duplicate/main.qli": {
+      "sha256": "d35213938f7bbf9daf22629d377870b576eb52881f7b85178d3455ac67f77557",
+      "bytes": 243
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/unused-invalid-sibling/main.qli": {
+      "sha256": "2fc43241bd48565eb368d8290fdfc69439f89ac334498b9e84a51c4c8ef57384",
+      "bytes": 184
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/valid-nested-unit-quantum/Qargo.toml": {
+      "sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+      "bytes": 45
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/attempt-01/valid-nested-unit-quantum/main.qli": {
+      "sha256": "5be9684a8b093d39392eaedf1e0faf8b74ee271e8f96ac6b7917446474b4dd97",
+      "bytes": 185
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.json": {
+      "sha256": "b48419744535cdce912a71941db83e4433dc7b32d103207d2d093b997942f8a8",
+      "bytes": 1563
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-json.stdout.txt": {
+      "sha256": "57ff3f89625a8739a648bf1f0f168891c9070921cb5670517f3792efc28e508b",
+      "bytes": 301
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-text.json": {
+      "sha256": "23081c30782b8b84887109a523965b90731145340cc02cbd7bd90d9e57425edd",
+      "bytes": 1289
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-text.stderr.txt": {
+      "sha256": "c18c16021450f996197e11e332cae654b3baaa700d18aa3a1d2a514e97db1898",
+      "bytes": 218
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.json": {
+      "sha256": "945d11eb60cd359cb642a14626ffe1f261f14b36f629113f1924436576b617f6",
+      "bytes": 1742
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-json.stdout.txt": {
+      "sha256": "730229bc07898f73b75448a58ac689073e30d97f4715fcefbb28ad39f55f6e5b",
+      "bytes": 397
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-text.json": {
+      "sha256": "0fb4fb0d552c6748360433bf4ed8946cd502f05d877c8f16fa385106281f72c7",
+      "bytes": 1216
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-text.stderr.txt": {
+      "sha256": "e3fdae0824dcfeff2bf8417197cb48fa2e4562683d6d6e498169ffe622dc9b42",
+      "bytes": 49
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-before-empty-register-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.json": {
+      "sha256": "532d3aa045f341f1e3d11769a12a21537bb98847a6baee457ebcd1276b6d5ecc",
+      "bytes": 1533
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-json.stdout.txt": {
+      "sha256": "87fbe00256d46900cac65a2d590e50f7f574203476346f9f513ab59598ac07b5",
+      "bytes": 300
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-text.json": {
+      "sha256": "1c9cba1a37f1f0124bb694c5bdd7db3afe226da18c9b1961c9b4060c654dae48",
+      "bytes": 1251
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-text.stderr.txt": {
+      "sha256": "aa7bc4865563e218040a8f30ce209949049b6b3dbcaa55ed67b6bae6ba35ff74",
+      "bytes": 210
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.json": {
+      "sha256": "e22d90e1705acf4b2b1d29ec1897764472fc15ddae1aeef052a7e685cb361fab",
+      "bytes": 1708
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-json.stdout.txt": {
+      "sha256": "7d0a661086048dad9b0a8dade79e27fcb855ca61968e7937b3b270705c309080",
+      "bytes": 391
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-text.json": {
+      "sha256": "b05cedd957fecfa3feb89635544cb619867054087824800e348ca1df6b85f83a",
+      "bytes": 1190
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-text.stderr.txt": {
+      "sha256": "af211cc0d31429387a1894ff74db6155ccf798918946a14b7dc944193c3eb2df",
+      "bytes": 50
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-natural-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.json": {
+      "sha256": "9bfb456881329e0d3d305caad1b95593826c9d4788eb250df67fabcb3b4573a6",
+      "bytes": 1531
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-json.stdout.txt": {
+      "sha256": "8ea80a2225ae147245d331d44498054eb786a06a8663676f479b43c4765203d3",
+      "bytes": 271
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-text.json": {
+      "sha256": "eb73625dca20d11a5d1e3fde4f7b51292349775d421b48867d18d527ad2389d4",
+      "bytes": 1259
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-text.stderr.txt": {
+      "sha256": "db79ebc329e13af7a5d89efe563fc4004e54e9e2d24c5f08f5453ea0222c7e65",
+      "bytes": 188
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.json": {
+      "sha256": "6831499ae9cfa0b4c2a627a3856eb0989452e328b0d347fc8a4d60a2286ec6a6",
+      "bytes": 1744
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-json.stdout.txt": {
+      "sha256": "73b40d7e32e583bb02ce4937ff5e4437b7e964aabdef5add657541f57bbb1c1c",
+      "bytes": 398
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-text.json": {
+      "sha256": "a391b59dde73b90ac8adcc6fb3da39b23958addeaaa92a843bb22cff17658c54",
+      "bytes": 1218
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-text.stderr.txt": {
+      "sha256": "4befab5363a6612070101d50b4cd75cd781eaeb0b7943220241777b4c038409b",
+      "bytes": 50
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/duplicate-static-operation-unit-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/executed-driver.py.txt": {
+      "sha256": "472756feaf2c8ef3c8ec97df25216885708ac8aaea0221147742cfa2c9a2f426",
+      "bytes": 10126
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.json": {
+      "sha256": "b7e205ae503c09809422958e925862e36b5868d9a296eefdb81494ccc4c0890f",
+      "bytes": 1573
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-json.stdout.txt": {
+      "sha256": "dfccdad1fb4b74d964fa06151738840101bd5ed055e6058d6a0cf9d3d7190972",
+      "bytes": 304
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-text.json": {
+      "sha256": "85876da06e5611e9f7b8983fdea42b169852d14565f15e6cd1b36ddfd72aadfb",
+      "bytes": 1302
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-text.stderr.txt": {
+      "sha256": "9b06430bd89f44f72036b24777dadb5fdbb2f6e819b09002c035c65d254cdf54",
+      "bytes": 223
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.json": {
+      "sha256": "ec6b441a2871572c53ec5a2a999d0f0281f67f9a4bc4ffb0e02e51a3d9336bd6",
+      "bytes": 1757
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-json.stdout.txt": {
+      "sha256": "7d66938d489573d9749f85dc2c00a8dd94e89cb628efa9e7861ec458e94b9aef",
+      "bytes": 404
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-text.json": {
+      "sha256": "8161a890d3f5722e24cda88ae39ad5f131721419d727e6f2af76e269c412e750",
+      "bytes": 1228
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-text.stderr.txt": {
+      "sha256": "e3b69ec4e73abf18b2f31bf5d74f5748cbbc9acd2617ea38524eeaa46293e810",
+      "bytes": 54
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/first-type-before-later-duplicate-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.json": {
+      "sha256": "56285825e6d3eee372ebb4a3645b0d708c0beb6beca02555a5ff0b8f0d12b530",
+      "bytes": 1526
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-json.stdout.txt": {
+      "sha256": "5eda170edd5504ca2781294e5b53add4ff64101ed7cfc6d921105ce574dfec18",
+      "bytes": 301
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-text.json": {
+      "sha256": "a28436cf685266909f38e809918ec345c2dac952c57511d9bcdf0834b724a985",
+      "bytes": 1244
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-text.stderr.txt": {
+      "sha256": "ee9975d59bb43a695d2cc1cd411337c4e08cf7f337fe43c5ecb9701f5b32e2c5",
+      "bytes": 209
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.json": {
+      "sha256": "50c7bcf6371131d7719d5594d4a873847fcf9e220f58622516caa59c824c45bc",
+      "bytes": 1694
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-json.stdout.txt": {
+      "sha256": "2fecdb859f4b2bbdc6b2eae222e95abb18f9729a0a00e1bc039b845cd3494bac",
+      "bytes": 385
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-text.json": {
+      "sha256": "ffc9193a1cde96881a83ef2700a77f1b331e318864fb86ccb04e633ac46a5030",
+      "bytes": 1177
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-text.stderr.txt": {
+      "sha256": "89298d6f1ed78ff3a80b396b9e21a9336cfb90620f10bccad6fe96e9d578449b",
+      "bytes": 46
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/forward-operation-kind-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/identity.before.json": {
+      "sha256": "ddc4ee7f27a806a1e2174720f17b2b445f9827b6dc032bc967f04cc0802e015b",
+      "bytes": 28074
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/identity.final.json": {
+      "sha256": "4d26e327032aaed90a9dd438f8c85d27746e4ae7e70297b680cd927f8a3e2c92",
+      "bytes": 27828
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.json": {
+      "sha256": "1549216995e9e8f72c112222ee6517ad5b9b58c235bd538a492950ee8ac794fd",
+      "bytes": 1500
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-json.stdout.txt": {
+      "sha256": "ed9fe06ae2fa91d137cabe58b0f9103df09cde23ad30d6ce3d0b54b34586ea49",
+      "bytes": 269
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-text.json": {
+      "sha256": "e92ee235a7eeb97e12090b9285f0af4a38696906259df3fc3250afc9e17da0fb",
+      "bytes": 1222
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-text.stderr.txt": {
+      "sha256": "b2c0c2aad784aa22aaf875149eb673ff512e16db3a79db82459b492b60c10745",
+      "bytes": 179
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.json": {
+      "sha256": "8d052ba8f3007a7bf3aa622abe78d367292a529c22257c40bc43525e0ceed556",
+      "bytes": 1707
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-json.stdout.txt": {
+      "sha256": "0d6cb64f1b3ec54646bbd6251c2dac064bb8778c7eb16c96a34e2181dc9dd7d0",
+      "bytes": 390
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-text.json": {
+      "sha256": "c2a013692835a829904c7c510b0301ed8b33612b3ddc30f9903765f262373cdb",
+      "bytes": 1188
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-text.stderr.txt": {
+      "sha256": "3e489f64d46e4afc0e58207f21b52d82fff9baf6e2cc7040e9a7c1c6c465fda7",
+      "bytes": 49
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/nested-runtime-duplicate-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.json": {
+      "sha256": "eac8b1a54e00d7bd7636436711fb6846bb810ba0781ba528009da5a9fbeea175",
+      "bytes": 1502
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-json.stdout.txt": {
+      "sha256": "3b3bc1f391fe2c7c1a6a1c06d855fc623fdac0534dc856a6a0c8923494e2ccd2",
+      "bytes": 269
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-text.json": {
+      "sha256": "e4807226d857f1db2a958f0d23ff69acf5503da3c13b1231035f3908a9925b9b",
+      "bytes": 1222
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-text.stderr.txt": {
+      "sha256": "7452d25615a49f93e6e1b1d09d0b9f76438be41022eddb3f50ae71f92c8ab8eb",
+      "bytes": 179
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.json": {
+      "sha256": "f3c6eefc99bdf6f1b416370ab757578188e84553746bd629321ccb84d9615cbc",
+      "bytes": 1742
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-json.stdout.txt": {
+      "sha256": "27a77926f91605b8edc226a09df6a582e3b4c44502d3fbf344b9d01dff80497a",
+      "bytes": 425
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-text.json": {
+      "sha256": "5c58e36f2212119bdc628fac8265c00fbf97074cf2aff1e09fd2473984dfb6a6",
+      "bytes": 1223
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-text.stderr.txt": {
+      "sha256": "5d9469225648f2ed504fa8ae792dbd906ba06a0124b8be85bb9995280bb1092b",
+      "bytes": 84
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/static-runtime-collision-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/summary.json": {
+      "sha256": "dc0d33503555865ea79232aee9ce8cd3f3330f19de004a5a934a85f12345098d",
+      "bytes": 10476
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.json": {
+      "sha256": "91e014b7868e8e050a23e9873bff35ea82db9ee50faa414e75d0c0641c47a5e0",
+      "bytes": 1581
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-json.stdout.txt": {
+      "sha256": "304ee6dfef6e9c2b0ada9e35cc69f11c627f545e3e257a37af14985c093b3307",
+      "bytes": 300
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-text.json": {
+      "sha256": "1cd66c2b5828b9a96e0e2d5b3be415c8477813d6f7402999524c369f376f1e32",
+      "bytes": 1313
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-text.stderr.txt": {
+      "sha256": "61ec81c73dd8218b4c12b717a4b3af9f7402f28d5e472f18e0998bb37e4a6cba",
+      "bytes": 222
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.json": {
+      "sha256": "a88ede4898b7ddf5b69bfa15c20fdd3c56cf830d58a5e68c903f007308201a1b",
+      "bytes": 1777
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-json.stdout.txt": {
+      "sha256": "818514cb01a2748d9ce3dd21fbb7a60b45791b078177062b837c25063bfe2944",
+      "bytes": 412
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-text.json": {
+      "sha256": "1783e137755c01d18e2be7652d663822b74e8822d55c2b1d05353c3162ded650",
+      "bytes": 1246
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-text.stderr.txt": {
+      "sha256": "71d76aa0a9c3abcc2e8ca81faa0fedb2e93cbfcafcfb2a0e34c0c778a40726e5",
+      "bytes": 59
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/symbolic-type-before-later-duplicate-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.json": {
+      "sha256": "77fb3fb4e5953b8dbb420c97354338d19756aaee79df29c59510ae59b6db8042",
+      "bytes": 1493
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-json.stdout.txt": {
+      "sha256": "9e42565a65e1bc1570f7be5101bec660261e6267180b1f82b49f2ec7322a2617",
+      "bytes": 269
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-text.json": {
+      "sha256": "3cedf7e5c787b6a74afe33b2c07a0815f25f8d309863b35a30e8253286e35d95",
+      "bytes": 1211
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-text.native.jsonl": {
+      "sha256": "0e3c4a1bff131619ab5b5d6cd102ac5ab6c9a6c5745d2eefaa1b205eceac9275",
+      "bytes": 33
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-text.stderr.txt": {
+      "sha256": "997a5650f77a63660a1a58baef12755232d81b7a3843de76cc8f97d064a3189e",
+      "bytes": 177
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-finite-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.json": {
+      "sha256": "25747be5e7898d7788e79052a012dbca7328ab26e22ec8a39cb08c5835be737b",
+      "bytes": 1697
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-json.stdout.txt": {
+      "sha256": "2be2a15c005b872e3f250c18ff0044aa9f92fb71fa65da4674e0b8bed4f0fb48",
+      "bytes": 388
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-text.json": {
+      "sha256": "8c1a5ac69775549385a6cb9b1a7c038f83357c1464aa886fa44babbfb0ccd16f",
+      "bytes": 1180
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-text.native.jsonl": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-text.stderr.txt": {
+      "sha256": "7149da22410bf92d579474a46eab70f67732da1d417837e58236c99e9d6721bb",
+      "bytes": 49
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/unused-invalid-sibling-selected-auto-check-text.stdout.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.json": {
+      "sha256": "8bb52a7ce5d43b708bbc7cf4ee60f22b7e7024b6a0d5387c246cbf12437b42cd",
+      "bytes": 1228
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-json.stdout.txt": {
+      "sha256": "bbce7026221e0bee896d4c1a61c99a7a7732965adb9e6c3fd641eda34146162e",
+      "bytes": 117
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-text.json": {
+      "sha256": "eba39a0d99df82cb600c6487c7a8d0cb3f6031fb4883477dcf590a8faa00b722",
+      "bytes": 1207
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-text.native.jsonl": {
+      "sha256": "7bd23e3ec5d0e4f46afa7ab1e875c175bac23c0b5dc5f66bdd030d1718eb0f10",
+      "bytes": 660
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-text.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-finite-check-text.stdout.txt": {
+      "sha256": "0ff2bc8b107ece2bc1afe18b832f4b401d8a91bc7b13bdd49602e483748b7f94",
+      "bytes": 161
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.json": {
+      "sha256": "bfbcf47638b2b04dba31834c81cdf573e8922588a384d6e5d11a0633a7130d5f",
+      "bytes": 1781
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-json.stdout.txt": {
+      "sha256": "03dff55b92a509b4fe91b3ba558632d2cd814b959e15e091e464588bb0421291",
+      "bytes": 473
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-text.json": {
+      "sha256": "4eaa816efbf4157c33a68e5d19c4758a0027ad4b76009fd2f0d823d4333fe84b",
+      "bytes": 1560
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-text.native.jsonl": {
+      "sha256": "9f0a6fb30700c13c0c7de090af1c426198e110c73d844ef2d82e08170dcd4702",
+      "bytes": 47
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-text.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/before/valid-nested-unit-quantum-selected-auto-check-text.stdout.txt": {
+      "sha256": "534a6bbf42800fca3d4c6d949193cea4c234f1f996b61693c7cb6b8c2b0a2f65",
+      "bytes": 374
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/context.md": {
+      "sha256": "68da2fa5d6f0393eb032a1477169d9da450f4ded7d207d0794ed2006dbb95a1d",
+      "bytes": 3362
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/driver.py": {
+      "sha256": "472756feaf2c8ef3c8ec97df25216885708ac8aaea0221147742cfa2c9a2f426",
+      "bytes": 10126
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/files-before.json": {
+      "sha256": "d40022d2d61500baff63e7b97439e47637b6a2f745c936174fa27d5d98f3c936",
+      "bytes": 35855
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/first-files.json": {
+      "sha256": "b7babe5509ef85fd2aa10b27d07b346083645971a7d26a608d3915f5dda6e2a2",
+      "bytes": 4254
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/identity-prepared.json": {
+      "sha256": "ce51900492c615bc7fba86fd296874badbd6c75d1892886d31d470a2674cdcb8",
+      "bytes": 28120
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/native-log.py": {
+      "sha256": "3b249471941bf1ec91c0d7506c7ba38b39d7c365efdc23b45ba4e195a486f3fd",
+      "bytes": 465
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/observe-after.py": {
+      "sha256": "d091ebd76f199fb659ab3a5d8759972b35fe32f8af11d572c8ee63ff339662fe",
+      "bytes": 10608
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/planned-commands.json": {
+      "sha256": "25aff2e2bea6e5c09b8e6016920ca381867d10e9ad27b2a0e91f26d8a0465d34",
+      "bytes": 22872
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/preparation/constitution.json": {
+      "sha256": "8eff913738efaa8dd64c2af167664c6dd44be37d5b98a68f63531085de41048b",
+      "bytes": 605
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/preparation/constitution.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/preparation/constitution.stdout.txt": {
+      "sha256": "122cbf8c20c1d36fc8a80e031828e9ba754bcd6150f025aee2b0e6fe34c2fd35",
+      "bytes": 420
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/preparation/discovery-note-02.json": {
+      "sha256": "1f38d0d3c45a2e0474db81254e4de8c03846c25e1142157fbe2c0c7f009bcb81",
+      "bytes": 741
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/preparation/discovery-note.json": {
+      "sha256": "2e65cd2f47c1ad31743f5fc2de7c2c56fb05ab0721f85a869a0402f3575291ba",
+      "bytes": 640
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/prerequisites.md": {
+      "sha256": "389ac35ef9ee3ed7a35fa76409e6d3ae8d71357f05519295cdebc4417e999a20",
+      "bytes": 5436
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/project-inputs.json": {
+      "sha256": "ab7a60944015e58085c9d2fcdb3284ebbe2e03356d473e7af7a52f1735ebb8f4",
+      "bytes": 2730
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/results-after-plan.md": {
+      "sha256": "dd5d53febaa5cb4a5a148fbbb8178f56c996e793a482c790a9b8ad032c4fd0ff",
+      "bytes": 2311
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/results-after.md": {
+      "sha256": "6fb6101935328f227dc693b44c33033d5f362595a4972b98367ff19edfe5fd5c",
+      "bytes": 2386
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/results-before.md": {
+      "sha256": "cc2ac246e1eac8edfeffc39a215b24c8dc039a074c57b246423f03fa9c4daf26",
+      "bytes": 3278
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/session.before.json": {
+      "sha256": "20cc2595e59a020693701c7aa77176e650b6e707fc796f53fdf0efce7b05b1bf",
+      "bytes": 1999
+    },
+    "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/session.json": {
+      "sha256": "be0cbced4bc70ee196135f40caaf6ad06e3d73df6f9e1057822326bbadd262ef",
+      "bytes": 4928
+    }
+  },
+  "self_excluded": "tests/fixtures/authoring_sessions/common-parameter-declaration-v030/final-files-01.json",
+  "scope": "Additive final packet; earlier frozen first/before/attempt maps remain unchanged."
+}

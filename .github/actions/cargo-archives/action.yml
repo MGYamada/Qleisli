@@ -1,0 +1,25 @@
+name: Restore Cargo dependency archives
+description: Cache only downloaded registry inputs, never project build or validation outputs
+inputs:
+  toolchain:
+    description: Exact Rust toolchain used in the cache key
+    required: true
+  enabled:
+    description: Whether dependency caching is enabled for this invocation
+    default: 'true'
+outputs:
+  status:
+    description: Observed hit, miss, disabled or unavailable cache status
+    value: ${{ steps.restore.outputs.cache-hit == 'true' && 'hit' || steps.restore.outcome == 'success' && 'miss' || steps.restore.outcome == 'skipped' && 'disabled' || 'unavailable' }}
+runs:
+  using: composite
+  steps:
+    - name: Restore registry index and archives
+      id: restore
+      if: inputs.enabled == 'true'
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+      with:
+        path: |
+          ~/.cargo/registry/index
+          ~/.cargo/registry/cache
+        key: cargo-archives-v1-${{ runner.os }}-${{ runner.arch }}-${{ inputs.toolchain }}-${{ hashFiles('Cargo.toml', 'Cargo.lock', 'research/semantic-kernel/Cargo.toml', 'research/semantic-kernel/Cargo.lock') }}

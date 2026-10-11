@@ -1,0 +1,9 @@
+common.parse: ok declarations=1
+finite.check: ok
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Unit }, identity: None, fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Unit }, identity: None, fields: [] }
+sized.lower: proposed instrument=false
+sized.native: pure accepted

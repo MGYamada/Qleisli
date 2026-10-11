@@ -1,0 +1,6 @@
+// Copyright 2026 Masahiko G. Yamada
+// SPDX-License-Identifier: Apache-2.0
+
+use std::transform::init0;
+
+pub fn main() -> Bit { init0() }

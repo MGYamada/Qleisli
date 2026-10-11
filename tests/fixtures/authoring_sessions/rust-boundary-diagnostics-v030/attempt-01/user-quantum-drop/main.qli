@@ -1,0 +1,10 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::quantum::x;
+use std::observe::discard;
+use std::observe::measure_z;
+observe fn drop(q: Q<Bit>) -> Unit { discard(q) }
+observe fn main() -> Bit {
+    drop(x(init0()));
+    measure_z(init0())
+}

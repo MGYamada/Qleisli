@@ -1,0 +1,98 @@
+{
+  "status": "performed-artifact-identity-review-passed",
+  "observed_utc": "2026-10-05T17:00:16.474677+00:00",
+  "checks": [
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/first-files.json",
+      "members": 5,
+      "sha256": "959167bf7fe35f0c54aa7ae3ef3e5dface031e89d3157322c2e601551914ba90",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/metadata-review/files.json",
+      "members": 22,
+      "sha256": "c4e7435165498b70f23db8d2516f1e68f0ae31aa70b3925aa7073f2553df8a5e",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/policy-validation/prepared-files.json",
+      "members": 2,
+      "sha256": "2d3db80658fd47c31f6dbe40c28693e9afc856539960362cd6347ad80970f732",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/policy-validation/attempt-01/files.json",
+      "members": 46,
+      "sha256": "f3331f4fbb573808aec30d78160f804e77000623d7598bd3fb9aff21c591f958",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/files-before.json",
+      "members": 191,
+      "sha256": "a8620894684e6cbd05b43225d41d108d7cdf9434a699b41b109eba85458f02d4",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/addendum-files.json",
+      "members": 212,
+      "sha256": "68a950346ce0ad0466444aee5483a656c984d4cee7a2db70fc5894f5474c2ed4",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/authoring_sessions/common-pattern-check-v030/after/files.json",
+      "members": 166,
+      "sha256": "fbdd64d2f78178f87b8d3fe978327c3e3e0fee20a00e5d6c53a15bebb2c9e889",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-source-collection-checkpoint/files.json",
+      "members": 7,
+      "sha256": "25d68fcee9f8b2e63853b59b300be87a139e6220786c024b6650dd548c265953",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/hosted-checkpoint-37336154083/files.json",
+      "members": 18,
+      "sha256": "112ea61732c1848521e52e5e9b7baa5587f9a7a9748842f13694531086926828",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/qft-exact-request-design/packet-files.json",
+      "members": 8,
+      "sha256": "831d44a6451cc2f7a5a3dd4cb143faac3ae2b424ac609ba8bc3a58f8c6bba46c",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-parameter-declaration-design/first-files.json",
+      "members": 5,
+      "sha256": "c631c7ae5adc3c42220af2580318d68a6df3e95071beb954d23dde1d3762a999",
+      "all_retained_bytes_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/validation/latest-attempt-02/results.json",
+      "actual_stage_count": 8,
+      "actual_test_passes": 118,
+      "source_inputs_unchanged": true,
+      "raw_logs_match": true
+    },
+    {
+      "path": "tests/fixtures/frontend_v030/common-pattern-design/validation/msrv-attempt-01/results.json",
+      "actual_stage_count": 8,
+      "actual_test_passes": 118,
+      "source_inputs_unchanged": true,
+      "raw_logs_match": true
+    }
+  ],
+  "current_production_files": {
+    "src/frontend/compile/lower/mod.rs": "890fccfc2dcf8762c6de3387a589925df5b267f53c642d0e6fc713ce1cc5ad9a",
+    "src/frontend/mod.rs": "7302134df5900aba92f1dbaec3240382abb98b2160c5c3c3136e00bb814e3422",
+    "src/frontend/sized/ast.rs": "42ddd4d545865611ba9bc7838ad6600e06879140cd4e689e89c8194891ed78eb",
+    "src/frontend/sized/check.rs": "89b3cfb37250e672cefcc0c0ce6bb68aa868bcfad8f03776074f3bf607ed48da",
+    "src/frontend/pattern.rs": "5f9882d36769d4d3966108fb34ca6f743b17b78d4ed40595b4d82b28bacabede"
+  },
+  "earlier_ad_hoc_inspection": {
+    "status": "failed-before-map-verification",
+    "cause": "Assumed dictionary .items() on first-files list; inspected actual two schema shapes and corrected this audit. No source/record writes or success claim from failed inspection."
+  },
+  "scope": "Byte identity and actual existing bounded run records; not human adequacy, complete closure, source preservation, new proof/guarantee, full CI or release readiness."
+}

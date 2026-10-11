@@ -1,0 +1,38 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "check",
+    "--entry=study::entry",
+    "--module=study=/private/tmp/qleisli-const-parameter-study/attempt-02/no-marker/main.qli",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "recorded_utc": "2026-10-07T21:39:15.778667+00:00",
+  "exit_code": 1,
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "expected `static`, found identifier",
+        "primary": {
+          "module": "study",
+          "path": "/private/tmp/qleisli-const-parameter-study/attempt-02/no-marker/main.qli",
+          "start": 96,
+          "end": 97
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stdout_raw": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"parse\",\"severity\":\"error\",\"message\":\"expected `static`, found identifier\",\"primary\":{\"module\":\"study\",\"path\":\"/private/tmp/qleisli-const-parameter-study/attempt-02/no-marker/main.qli\",\"start\":96,\"end\":97},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "seconds": 0.004133207956328988,
+  "compiler_sha256": "692ee588cd58d029d00b5e48e35fb9d2012782448c851eee167296bc1d3d03f4",
+  "kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e"
+}

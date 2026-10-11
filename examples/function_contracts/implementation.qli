@@ -2,7 +2,7 @@ use std::quantum::z;
 use std::quantum::h;
 use specification::phase;
 
-basis fn copy_label(value: Bit) -> Bit { value }
+classical fn copy_label(value: Bit) -> Bit { value }
 
 unitary fn direct(q: Q<Bit>) -> Q<Bit> { z(q) }
 

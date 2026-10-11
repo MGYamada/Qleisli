@@ -1,0 +1,15 @@
+{
+  "format": "qleisli.adjoint-construction-source-review",
+  "version": 1,
+  "baseline_commit": "e2ad4dc5813ac1828aed3e58c1055949c9fc0f9b",
+  "path": "src/frontend/check/body/operations.rs",
+  "before_sha256": "4c9ccbc45fceebd9c6d44cac3a23c80f8041c092a46dae956132187588283dcd",
+  "current_sha256": "026bf44cd2935285a108b45e8d8e6291dd72319b2471192509558fd8d22ff196",
+  "public_surface_unchanged": true,
+  "review": "One explicit Adjointable access check before exchanging static adjoint paths. This enforces the adopted #45 construction premise rather than granting a new path. Successful basis/effect/meaning/phase logic, native representations, source limits and two QLV1 guarantee meanings are unchanged. Current provider derivation rejects missing construction access even when masked by nesting or an unused actual.",
+  "unexecuted": [
+    "Full latest/MSRV, source/native and exact-head hosted CI for this new unit remain pending at this review point."
+  ],
+  "coverage_before_sha256": "aa6095f14d94b5fa2c85202bb8d41e840acb4e6f684b0a628be03ac3ddb11acf",
+  "coverage_current_sha256": "92cb7402fdeb984206a00518d69214216f56c123d439f8a138613c03adba1a6d"
+}

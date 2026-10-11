@@ -1,0 +1,56 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/ordinary-capture-legacy",
+    "--format=json",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-06T03:57:40.971471+00:00",
+  "elapsed_seconds": 0.005138415959663689,
+  "case": "ordinary-capture-legacy",
+  "action": "finite-check",
+  "cwd": "/Users/masa/git/Qleisli",
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50"
+  },
+  "native_selection": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "source_sha256": "155253765c30bffefb32218c026074dea857fa9c9849f22664f30fba923eac79",
+  "raw_stdout": {
+    "path": "observations-after/ordinary-capture-legacy-finite-check.stdout.txt",
+    "sha256": "88bbaf494107f333542197f1b3f983ac05574e9cb80c9a81b8c313cb0c394769"
+  },
+  "raw_stderr": {
+    "path": "observations-after/ordinary-capture-legacy-finite-check.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "identity_checked_before_and_after": true,
+  "native_attestation_limit": "Explicit selected bytes are checked; native child start/exit counts and compiled-HEAD correspondence are not independently attested.",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "parse error: Haskell-style coherent `do ... pure ...` was removed in Qleisli 0.3.0. Write `basis q as p { e }`. This is a coherent basis map, not monadic bind or measurement; `pure` does not prepare a state.",
+        "primary": {
+          "path": "main.qli",
+          "start": 190,
+          "end": 192,
+          "line": 4,
+          "column": 51
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  }
+}

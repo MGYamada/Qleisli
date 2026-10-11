@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"type_mismatch","severity":"error","message":"type or tuple/size shape mismatch: expected `(Bit,Bit,Bit)`, found `((Bit,Bit),Bit)`","primary":{"path":"main.qli","start":1029,"end":1068,"line":21,"column":16},"related":[]}],"result":null}

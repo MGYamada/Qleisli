@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "python3",
+    "tests/fixtures/frontend_v030/sized-declarations-independent/replay.py",
+    "--tree",
+    "/Users/masa/git/Qleisli",
+    "--kernel",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--output-dir",
+    "/private/tmp/qleisli-multidecl-independent-final",
+    "--msrv-bin",
+    "/Users/masa/.rustup/toolchains/1.85.0-aarch64-apple-darwin/bin"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "stdout": "Saved 18 source observations, 7 tests on each toolchain, and both all-target Clippy checks.\n",
+  "stderr": "",
+  "source_stable_at_end": true
+}

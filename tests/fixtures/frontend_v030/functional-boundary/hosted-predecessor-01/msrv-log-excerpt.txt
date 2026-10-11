@@ -1,0 +1,16 @@
+2026-10-06T04:20:30.1506643Z HEAD is now at 1899754 Merge a6e09a5960d9615b1f4356dcbf32bc33fd608e1f into ba83c5c97a9c67bf3904423745b3e9c019a083cb
+2026-10-06T04:20:30.1583452Z [command]/usr/bin/git log -1 --format=%H
+2026-10-06T04:20:30.1610708Z 18997543f87b254063d65e60394b26f999d261ab
+2026-10-06T04:38:04.0329981Z      Running tests/input_corpus.rs (target/debug/deps/input_corpus-d45b59e180924deb)
+2026-10-06T04:38:04.0343752Z running 2 tests
+2026-10-06T04:38:04.0478607Z test local_corpus_counterexamples_reject ... ok
+2026-10-06T04:38:04.8049530Z test all_reviewed_corpus_projects_compile_verify_and_execute ... FAILED
+2026-10-06T04:38:04.8050376Z ---- all_reviewed_corpus_projects_compile_verify_and_execute stdout ----
+2026-10-06T04:38:04.8051083Z thread 'all_reviewed_corpus_projects_compile_verify_and_execute' panicked at tests/input_corpus.rs:29:5:
+2026-10-06T04:38:04.8051761Z assertion `left == right` failed: current corpus snapshots not selected
+2026-10-06T04:38:04.8052163Z   left: 8
+2026-10-06T04:38:04.8052393Z  right: 6
+2026-10-06T04:38:04.8053521Z     all_reviewed_corpus_projects_compile_verify_and_execute
+2026-10-06T04:38:04.8054078Z test result: FAILED. 1 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.77s
+2026-10-06T04:38:04.8055768Z error: test failed, to rerun pass `--test input_corpus`
+2026-10-06T04:38:04.8078953Z ##[error]Process completed with exit code 101.

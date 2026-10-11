@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "issue-acceptance-criterion-change",
+  "issue": 134,
+  "issue_url": "https://github.com/MGYamada/Qleisli/issues/134",
+  "status": "approved-by-human",
+  "implementation_commit": "9ef1593a7a777de58455f1a9cc4dcb97bcfe8c76",
+  "old_criterion": "Cross-reference this model from the Constitution and Language Reference.",
+  "approved_criterion": "Cross-reference the authority model from the Language Reference and the ratification companion maintained outside the immutable constitutional text; link both documents to the exact ratified Constitution without modifying its protected bytes.",
+  "reason": "The complete ratified Constitution has no excluded editable navigation area. The companion provides navigation without modifying the protected text, authority hierarchy, interpretations or guarantees. The approved implementation plan requires human judgment for issue acceptance-criterion changes.",
+  "question": "[#134](https://github.com/MGYamada/Qleisli/issues/134)の最後の条件を「憲法本文から参照」から「本文外の批准記録とLanguage Referenceから、権威階層と正確な憲法本文を参照」に変更することを承認しますか？ [批准記録](/Users/masa/git/Qleisli/docs/src/design/ratification.md)と[Reference](/Users/masa/git/Qleisli/docs/src/reference/authority.md)は実装・検査済みです。憲法本文は変更しません。確認が必要なのは、[憲法第II条](/Users/masa/git/Qleisli/CONSTITUTION.md:37)が本文を固定し、承認済み計画が受入条件の変更を人間の判断に留保しているためです。",
+  "answer": "本文を固定したまま、この条件変更を承認",
+  "provenance": {
+    "channel": "human user message",
+    "format": "send_user_message_question_reply",
+    "question_item_id": "[\"request_user_input_async\",\"call_C225Thxz4AaIcl812MtK2toS\",0]",
+    "transcription": "Assistant transcription of the actual affirmative answer, not a cryptographic authentication or an inferred approval.",
+    "message_timestamp": null
+  },
+  "constitution_sha256": "40777370ec860891991bc89ef283f01a5db9a6be5480143f2e09e6014407452b",
+  "source_sha256": {
+    "docs/src/reference/authority.md": "c3c2872931f778bfa076cddea390cbcb688ba26ccf1f4c6852e6876ac192e292",
+    "docs/src/design/ratification.md": "6470f21e5f0c0162ffa36cfaafd3f69aa51c2a45c4b160dae9ab9ff6404fcbd9"
+  },
+  "validation_sha256": "843a9fed5fa2597d042123f42ce67875881eb49e2d57f8fd3ec22be266a13c87",
+  "scope": "Ordinary project acceptance-criterion decision only. No constitutional amendment, new Guardian interpretation, guarantee discharge, release approval or publication is recorded by this event."
+}

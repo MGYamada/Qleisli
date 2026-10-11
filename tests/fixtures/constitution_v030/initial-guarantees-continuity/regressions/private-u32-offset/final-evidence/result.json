@@ -1,0 +1,42 @@
+{
+  "case": "private-u32-offset",
+  "previous_evidence": "../evidence/result.json",
+  "previous_evidence_sha256": "c94fc156d86402aa725b81d7aff8476409643ab620512edf31c805c1cfc7d3cc",
+  "extractor_sha256": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+  "baseline_sha256": "b188c3290182fea743b35aa1e79c1a6815fbfcbfbe7223c063bd7395786c7ad0",
+  "historical_expression_sha256": "720cabb37cfd75fb3d9fc509c9d84cace6ccb9776872e5df8361e878890c857b",
+  "comparator_source_sha256": "7997ecf7c6d11921b9d485cf91acef74fea8b2f8395438571f33948446793e92",
+  "commands": [
+    {
+      "step": "extract",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../final-evidence/Extract.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/private-u32-offset/lean",
+      "started_at": "2026-10-04T13:39:17.348936+00:00",
+      "elapsed_seconds": 20.314,
+      "exit_code": 0,
+      "stdout": "extract.stdout.txt",
+      "stderr": "extract.stderr.txt"
+    }
+  ],
+  "actual_expression_sha256": "f7e8f6e909ca4d761f54b93dc20f8fd6ed9f94f09b59271fdf3b290ba73e309b",
+  "expressions_equal_to_historical": false,
+  "final_status": "identity-rejected",
+  "diagnostic": "current elaborated meaning, witness, or checker theorem type differs from the admitted identity baseline; representation-changing semantic transport is not implemented",
+  "changed_declarations": [
+    "_private.Protocol.Validity.0.QleisliKernel.Protocol.Validity.u32"
+  ],
+  "added_declarations": [],
+  "removed_declarations": [],
+  "files": {
+    "Extract.lean": "6668a374da66c2e6ead95da7da5a7b367cc847c8e8a966654ec46433704e9a77",
+    "extract.json.gz": "d3dc73b4c7ffbb9ab8d548c65d30a476f9834d8d59edfe17bebf405b226d98fe",
+    "extract.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "extract.stdout.txt": "f7e8f6e909ca4d761f54b93dc20f8fd6ed9f94f09b59271fdf3b290ba73e309b"
+  }
+}

@@ -1,0 +1,113 @@
+structure QleisliKernel.Protocol.Validity.Acceptance (bytes : ByteArray) (hasRequest : Bool) (work left : Nat) : Type
+number of parameters: 4
+fields:
+  QleisliKernel.Protocol.Validity.Acceptance.body : ByteArray
+  QleisliKernel.Protocol.Validity.Acceptance.requestBytes : Option.{0} ByteArray
+  QleisliKernel.Protocol.Validity.Acceptance.artifact : QleisliKernel.Qirf.Artifact
+  QleisliKernel.Protocol.Validity.Acceptance.order : Array.{0} Nat
+  QleisliKernel.Protocol.Validity.Acceptance.requirement : Option.{0} QleisliKernel.Qirf.Validity.Request
+  QleisliKernel.Protocol.Validity.Acceptance.afterArtifact : Nat
+  QleisliKernel.Protocol.Validity.Acceptance.afterRequest : Nat
+  QleisliKernel.Protocol.Validity.Acceptance.packetBound : @Eq.{1}
+      (Except.{0, 0} String (Prod.{0, 0} ByteArray (Option.{0} ByteArray)))
+      (QleisliKernel.Protocol.Validity.packet bytes)
+      (@Except.ok.{0, 0} String (Prod.{0, 0} ByteArray (Option.{0} ByteArray))
+        (@Prod.mk.{0, 0} ByteArray (Option.{0} ByteArray)
+          (@QleisliKernel.Protocol.Validity.Acceptance.body bytes hasRequest work left self)
+          (@QleisliKernel.Protocol.Validity.Acceptance.requestBytes bytes hasRequest work left self)))
+  QleisliKernel.Protocol.Validity.Acceptance.artifactBound : @Eq.{1}
+      (Id.{0}
+        (Prod.{0, 0}
+          (Except.{0, 0} QleisliKernel.Finite.Error (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))) Nat))
+      (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat)
+        (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))
+        (QleisliKernel.Protocol.Qirf.read
+          (@QleisliKernel.Protocol.Validity.Acceptance.body bytes hasRequest work left self))
+        work)
+      (@Prod.mk.{0, 0}
+        (Except.{0, 0} QleisliKernel.Finite.Error (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))) Nat
+        (@Except.ok.{0, 0} QleisliKernel.Finite.Error (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))
+          (@Prod.mk.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat)
+            (@QleisliKernel.Protocol.Validity.Acceptance.artifact bytes hasRequest work left self)
+            (@QleisliKernel.Protocol.Validity.Acceptance.order bytes hasRequest work left self)))
+        (@QleisliKernel.Protocol.Validity.Acceptance.afterArtifact bytes hasRequest work left self))
+  QleisliKernel.Protocol.Validity.Acceptance.requestBound : @Eq.{1}
+      (Id.{0}
+        (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error (Option.{0} QleisliKernel.Qirf.Validity.Request)) Nat))
+      (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat) (Option.{0} QleisliKernel.Qirf.Validity.Request)
+        (QleisliKernel.Protocol.Validity.readRequest
+          (@QleisliKernel.Protocol.Validity.Acceptance.requestBytes bytes hasRequest work left self))
+        (@QleisliKernel.Protocol.Validity.Acceptance.afterArtifact bytes hasRequest work left self))
+      (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error (Option.{0} QleisliKernel.Qirf.Validity.Request)) Nat
+        (@Except.ok.{0, 0} QleisliKernel.Finite.Error (Option.{0} QleisliKernel.Qirf.Validity.Request)
+          (@QleisliKernel.Protocol.Validity.Acceptance.requirement bytes hasRequest work left self))
+        (@QleisliKernel.Protocol.Validity.Acceptance.afterRequest bytes hasRequest work left self))
+  QleisliKernel.Protocol.Validity.Acceptance.accepted : @Eq.{1}
+      (Id.{0} (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Unit) Nat))
+      (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat) Unit
+        (QleisliKernel.Qirf.Validity.inspect
+          (@QleisliKernel.Protocol.Validity.Acceptance.artifact bytes hasRequest work left self)
+          (@QleisliKernel.Protocol.Validity.Acceptance.order bytes hasRequest work left self)
+          (@QleisliKernel.Protocol.Validity.Acceptance.requirement bytes hasRequest work left self))
+        (@QleisliKernel.Protocol.Validity.Acceptance.afterRequest bytes hasRequest work left self))
+      (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Unit) Nat
+        (@Except.ok.{0, 0} QleisliKernel.Finite.Error Unit Unit.unit) left)
+  QleisliKernel.Protocol.Validity.Acceptance.requested : @Eq.{1} Bool
+      (@Option.isSome.{0} QleisliKernel.Qirf.Validity.Request
+        (@QleisliKernel.Protocol.Validity.Acceptance.requirement bytes hasRequest work left self))
+      hasRequest
+constructor:
+  QleisliKernel.Protocol.Validity.Acceptance.mk {bytes : ByteArray} {hasRequest : Bool} {work left : Nat}
+    (body : ByteArray) (requestBytes : Option.{0} ByteArray) (artifact : QleisliKernel.Qirf.Artifact)
+    (order : Array.{0} Nat) (requirement : Option.{0} QleisliKernel.Qirf.Validity.Request)
+    (afterArtifact afterRequest : Nat)
+    (packetBound :
+      @Eq.{1} (Except.{0, 0} String (Prod.{0, 0} ByteArray (Option.{0} ByteArray)))
+        (QleisliKernel.Protocol.Validity.packet bytes)
+        (@Except.ok.{0, 0} String (Prod.{0, 0} ByteArray (Option.{0} ByteArray))
+          (@Prod.mk.{0, 0} ByteArray (Option.{0} ByteArray) body requestBytes)))
+    (artifactBound :
+      @Eq.{1}
+        (Id.{0}
+          (Prod.{0, 0}
+            (Except.{0, 0} QleisliKernel.Finite.Error (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))) Nat))
+        (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat)
+          (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat)) (QleisliKernel.Protocol.Qirf.read body) work)
+        (@Prod.mk.{0, 0}
+          (Except.{0, 0} QleisliKernel.Finite.Error (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))) Nat
+          (@Except.ok.{0, 0} QleisliKernel.Finite.Error (Prod.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat))
+            (@Prod.mk.{0, 0} QleisliKernel.Qirf.Artifact (Array.{0} Nat) artifact order))
+          afterArtifact))
+    (requestBound :
+      @Eq.{1}
+        (Id.{0}
+          (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error (Option.{0} QleisliKernel.Qirf.Validity.Request)) Nat))
+        (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat)
+          (Option.{0} QleisliKernel.Qirf.Validity.Request) (QleisliKernel.Protocol.Validity.readRequest requestBytes)
+          afterArtifact)
+        (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error (Option.{0} QleisliKernel.Qirf.Validity.Request)) Nat
+          (@Except.ok.{0, 0} QleisliKernel.Finite.Error (Option.{0} QleisliKernel.Qirf.Validity.Request) requirement)
+          afterRequest))
+    (accepted :
+      @Eq.{1} (Id.{0} (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Unit) Nat))
+        (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat) Unit
+          (QleisliKernel.Qirf.Validity.inspect artifact order requirement) afterRequest)
+        (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Unit) Nat
+          (@Except.ok.{0, 0} QleisliKernel.Finite.Error Unit Unit.unit) left))
+    (requested : @Eq.{1} Bool (@Option.isSome.{0} QleisliKernel.Qirf.Validity.Request requirement) hasRequest) :
+    QleisliKernel.Protocol.Validity.Acceptance bytes hasRequest work left
+structure QleisliKernel.Qirf.Artifact : Type
+number of parameters: 0
+fields:
+  QleisliKernel.Qirf.Artifact.programs : Array.{0} QleisliKernel.Semantics.Observation.Program
+  QleisliKernel.Qirf.Artifact.entries : Array.{0} QleisliKernel.Qirf.Entry
+  QleisliKernel.Qirf.Artifact.sources : Array.{0} (Prod.{0, 0} String String)
+  QleisliKernel.Qirf.Artifact.root : Nat
+  QleisliKernel.Qirf.Artifact.rootInterface : Option.{0}
+      (Prod.{0, 0} QleisliKernel.Semantics.Finite.Basis QleisliKernel.Semantics.Finite.Basis)
+constructor:
+  QleisliKernel.Qirf.Artifact.mk (programs : Array.{0} QleisliKernel.Semantics.Observation.Program)
+    (entries : Array.{0} QleisliKernel.Qirf.Entry) (sources : Array.{0} (Prod.{0, 0} String String)) (root : Nat)
+    (rootInterface :
+      Option.{0} (Prod.{0, 0} QleisliKernel.Semantics.Finite.Basis QleisliKernel.Semantics.Finite.Basis)) :
+    QleisliKernel.Qirf.Artifact

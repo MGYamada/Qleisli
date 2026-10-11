@@ -1,0 +1,3 @@
+use std::quantum::split;
+pub unitary fn f[const A:Basis](q:Q<A>)->(Q<Bit>,Q<Bit>){split(q)}
+

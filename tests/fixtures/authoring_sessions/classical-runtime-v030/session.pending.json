@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#22 classical fn ordinary/static/coherent reuse with the human-selected name",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed specification/code access, exact model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Human-selected classical fn first-source derivatives; no production edits yet.",
+      "sha256": {
+        "nested-label/main.qli": "2508c13a742c4103f2f073a416cdafffa7b441329f4a2da7663e366ec79458a9",
+        "ordinary-and/main.qli": "f29e5137689495936d010ced6db137625015faf161496c6dc261cd4c13c58aa8",
+        "quantum-argument/main.qli": "30ffb4906c9c77ca44ddfd1b961e5c6dec7f977416ff0a0a0936b3e5b7f65ee7",
+        "shared-flip/main.qli": "4d630bdb5026205aa180150cb9decf6336cf2a722b659850bc9d6e304c206ecc"
+      },
+      "observations": [],
+      "reports": [
+        "first-files.json"
+      ]
+    }
+  ],
+  "manifest_sha256": {
+    "nested-label/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "ordinary-and/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "quantum-argument/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "shared-flip/Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+  }
+}

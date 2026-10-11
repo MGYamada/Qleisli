@@ -17,7 +17,7 @@ theorem Inputs.live {before after : State} {ports : List Port}
 /-- Omitting the returned owner is forbidden even when all ports have width 0. -/
 theorem no_implicit_drop (ports : List Port) (classicalInputs classicalOutputs : List Nat)
     (effect : Effect) (nonempty : ports ≠ []) :
-    ¬ ResourceSafe ⟨ports,classicalInputs,[],[],classicalOutputs,effect⟩ := by
+    ¬ OwnershipSafe ⟨ports,classicalInputs,[],[],classicalOutputs,effect⟩ := by
   rintro ⟨initial,final,inputs,run,returned⟩
   have equal : final = initial := by cases run; rfl
   subst final
@@ -39,7 +39,7 @@ theorem Pure.no_reuse {before after : State} {op : Raw.Op} (step : Pure before o
   fun output => (step.fresh valid).1 token output issued
 
 /-- A zero-width owner's empty wire list does not make it droppable. -/
-theorem unit_drop : ¬ ResourceSafe ⟨[⟨0,[],0⟩],[],[],[],[],.unitary⟩ :=
+theorem unit_drop : ¬ OwnershipSafe ⟨[⟨0,[],0⟩],[],[],[],[],.unitary⟩ :=
   no_implicit_drop _ _ _ _ (by decide)
 
 /-- A local index cannot fall back to axis 0 of a different live owner. -/
@@ -52,7 +52,7 @@ theorem unit_has_no_bit_access : ¬ Access ⟨[⟨0,[],0⟩],[0],[],[]⟩ (.gate
   subst port
   cases bit
 
-theorem unit_return : ResourceSafe ⟨[⟨0,[],0⟩],[],[],[0],[],.unitary⟩ := by
+theorem unit_return : OwnershipSafe ⟨[⟨0,[],0⟩],[],[],[0],[],.unitary⟩ := by
   let state : State := ⟨[⟨0,[],0⟩],[0],[],[]⟩
   refine ⟨state,state,.cons _ _ _ _ _ ?_ (.nil _),.nil _ ?_,?_⟩
   · exact ⟨rfl,by simp,by simp,by simp,rfl⟩

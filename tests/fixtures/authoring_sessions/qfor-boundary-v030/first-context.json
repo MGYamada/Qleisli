@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#194 explicit qfor quantum threading and ordinary for boundary",
+  "baseline_commit": "ce59bbb1463f30ea4162ef8facd82cb3f0695e69",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/specification access; exact model and sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Twelve complete desired/control/negative sources retained before qfor implementation. No generic QFT source.",
+      "sha256": {
+        "zero-owner/main.qli": "852bc5585596abafc831498d6d88f667feed337c27459608e95fee5508443749",
+        "ghz/main.qli": "1bcd781baa4ec95243b05fcfc5f9ec5f315156713802b761b447820e206754e5",
+        "qpe/main.qli": "6786dc2e1d5bc6c1cef15515017b279b9a7b8f4e0fee5beaf7253fa167c8e1db",
+        "arithmetic/main.qli": "ad5e16fea352fea92475c04c1eb199bae407aca15a07c927561101214fcfd46c",
+        "mixed-carry/main.qli": "73b9e1a682f40ce8f5b55063b1984e26388726f467e4c28a656bdfcb1a01c22e",
+        "unit-owner/main.qli": "6b52893b323cc31f41f30766b7c7ee19b33d828f1c5ce74ac39cee61c303ecb0",
+        "ordinary-control/main.qli": "39a3d1c3af7d2db6df6c747e020f1125db14a66f29f548e20928052f2a7a4036",
+        "old-quantum-for/main.qli": "e69dd2410a29b90a9101c3b95dde5c08e438f9a657507f32850854bbbc61b6d4",
+        "ordinary-qfor/main.qli": "4978ed4f6fd3dac5f1e25bbac1b6e20b70c2148db658e20a00d4b064622e4959",
+        "hidden-owner/main.qli": "0d570cbca3056545ccfcc15434db18e089503f5c3c282ddea39d6ef9c6918995",
+        "carry-shape/main.qli": "28451650b3322ddc437a3227113472c569fcc7b739fe2b82d82e216b7f04b427",
+        "zero-missing-yield/main.qli": "19467567808f4bab3a8891b4418a547e784f2a380362b6ebf45b0d3b2328668a"
+      },
+      "observations": []
+    }
+  ],
+  "scope": "Original desired sources and actual baseline observations, not blind model success, qfor semantics, source-preservation proof or Issue completion."
+}

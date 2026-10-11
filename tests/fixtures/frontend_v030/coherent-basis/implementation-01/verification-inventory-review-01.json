@@ -1,0 +1,18 @@
+{
+  "format": "qleisli.coherent-basis-inventory-review",
+  "version": 1,
+  "issue": 81,
+  "before_inventory": "tests/fixtures/frontend_v030/coherent-basis/implementation-01/verification-inventory-before.json",
+  "before_inventory_sha256": "559f45eb1bf9c7df8cd62c2672a6efd01543bf00e8db7b2e6be32cde688eea1f",
+  "current_inventory": "tests/fixtures/verification_v022/inventory.json",
+  "current_inventory_sha256": "4d5208be7aaefb6216f85a98b7ef9fc59859a6ebfc73d3f4ab57132551ff3c28",
+  "changes": [
+    {
+      "path": "src/frontend/parser.rs",
+      "before_sha256": "e1125ac9d3d5d1ce517e538b72c8bad124fc57f21aaddc73aeb6d1f528e33c67",
+      "current_sha256": "264e8ec2c5b10cc4b016ab2054788bb5d061cda2190f293a475a9d8dbe8cc6e0",
+      "public_surface_unchanged": true
+    }
+  ],
+  "scope": "One parser source identity refreshed after review of the adopted spelling migration. Public Rust signatures/constructors, acceptance/proof status, native schema and frozen comparison fixture bytes remain unchanged."
+}

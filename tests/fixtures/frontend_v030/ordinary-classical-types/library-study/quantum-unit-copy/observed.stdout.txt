@@ -1,0 +1,3 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "ownership", message: "quantum ownership `q` has already been consumed", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/library-study/quantum-unit-copy/main.qli", span: Span { start: 55, end: 56 }, line: 1, column: 56 }) }
+sized.generic: Error { code: "unsupported", module: Some("main"), span: Span { start: 22, end: 26 }, message: "sized preparation profile: operation/quantum basis must be Bit or Bits<n>" }

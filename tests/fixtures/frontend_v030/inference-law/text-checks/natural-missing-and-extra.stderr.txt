@@ -1,0 +1,1 @@
+main:0..64: static: concrete natural bindings for entry main::f must exactly match the declaration; missing [m]; unexpected [z]

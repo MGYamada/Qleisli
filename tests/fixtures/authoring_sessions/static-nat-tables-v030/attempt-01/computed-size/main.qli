@@ -1,0 +1,5 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+static fn widths[static n:Nat]()->[Nat;2]{[n,n+1]}
+pub unitary fn identity[static n:Nat](q:Q<Bits<n>>)->Q<Bits<n>>{q}
+pub unitary fn caller[static n:Nat](q:Q<Bits<n+1>>)->Q<Bits<n+1>>{static let sizes=widths[n]();identity[sizes[1]](q)}
+pub observe fn main() -> Bit { 0 }

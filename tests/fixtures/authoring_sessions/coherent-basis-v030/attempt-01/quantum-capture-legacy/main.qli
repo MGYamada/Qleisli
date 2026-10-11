@@ -1,0 +1,5 @@
+//! Informed before-code #81 source, not a benchmark or proof.
+//! Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+
+pub unitary fn bad(q: Q<Bit>, r: Q<Bit>) -> (Q<Bit>,Q<Bit>) { let mapped=do x <- q; pure r; (mapped,r) }
+observe fn main() -> Unit { () }

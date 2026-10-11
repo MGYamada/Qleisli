@@ -1,0 +1,18 @@
+{
+  "kind": "informed read-only BinderId design study",
+  "source_commit": "af21dd5d3e4373083edcf207ef9890967d4c7dab",
+  "status": "sources saved before observations",
+  "scope": "10 small programs; no new production implementation or syntax adoption",
+  "sources": {
+    "initializer-rebind": "5b11801650d6db46686696b5988777016fd92b8cf0e5a9c539676da357d16522",
+    "moved-shadows-import": "f7bb05c23248fb5441f36ae71d4c0dc876d4a377f5ab0ad1aee8395bd6514510",
+    "hide-live-owner": "16365d478dcf960dac851fa8168dbfbe3b50535bc7baaaf1b4c76b88222f73c4",
+    "duplicate-pattern": "0a00f8ad2586e94c8c019b8dd07b2c9eb46ca775e4fea9b69f483bffd36eac61",
+    "shadow-static-operation": "ac20f5ef18c528cc5b3c1d4d3ecb3c95758146b4111772f5593505697b7de56c",
+    "static-branch-rebind": "fa413ab45d778d7f7f03bc4ea246ae81c878b39a46f63d4f7acb7fe9829d1502",
+    "fold-two-activations": "fd21c0bed0d38d43c3660af044f79d04be8650611992a7aef0b7c6765626d86b",
+    "zero-fold-capture": "fb58f378f1463b815391d795dee29993e5513892bb0fe0891d2664c7d23e2eba",
+    "multiple-acyclic": "2a1fae780988974285d576c71c7ab8446397c89bf1163e2de8ed1559d9c14375",
+    "multiple-unused-invalid": "5343ee3009d3f299f025aa642f8a24288c8d2638209def206a753020e57bd38a"
+  }
+}

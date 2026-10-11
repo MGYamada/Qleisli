@@ -1,0 +1,1 @@
+main:275..276: ownership: wildcard would discard quantum ownership; implicit quantum destruction is forbidden. Measurement, discard, reset and checked clean discharge are distinct; reset returns a fresh quantum owner.

@@ -1,0 +1,186 @@
+[
+  {
+    "category": "attempt-01",
+    "name": "unit",
+    "path": "attempt-01/unit",
+    "source_sha256": "5bccf667e1986ef914ce4f923ac471b47fe0315e9e68778918ff92e08302bb56",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Exact empty pattern on ordinary Unit; one source parameter remains one argument."
+  },
+  {
+    "category": "attempt-01",
+    "name": "nested-copy-wildcard",
+    "path": "attempt-01/nested-copy-wildcard",
+    "source_sha256": "6af544573c4e3f5c95bc1a77621ac328fefd72ecc670961edf78826aaf803617",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Ordinary nested shape, copied Bit and ignored ordinary Bit; sized classical lowering remains separate."
+  },
+  {
+    "category": "attempt-01",
+    "name": "mixed-swap",
+    "path": "attempt-01/mixed-swap",
+    "source_sha256": "1b798bcffeca283bdd37f16ef306e3b53a7f665c44088186444e686b2b334c17",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Two retained owners in one exact product parameter; swap labelled output axes."
+  },
+  {
+    "category": "attempt-01",
+    "name": "wildcard-ordinary",
+    "path": "attempt-01/wildcard-ordinary",
+    "source_sha256": "e2c5ac6bc70e802f4eaca9eeaa065b9f0574d090b324423713eb86e6f18a9edb",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Wildcard introduces no runtime name; ordinary Unit may be dropped."
+  },
+  {
+    "category": "attempt-01",
+    "name": "static-mixed",
+    "path": "attempt-01/static-mixed",
+    "source_sha256": "99678803900677a6b0739346365affae2f7cb6f472a9f5073b9187e790286604",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [
+      "--nat=n=1"
+    ],
+    "purpose": "Static n remains a declaration-scoped natural while nested q receives a runtime binder."
+  },
+  {
+    "category": "attempt-01",
+    "name": "effectful-unit",
+    "path": "attempt-01/effectful-unit",
+    "source_sha256": "e5c79a9d494bc5c3a1df462e5c0ca61c7fbbbde7fdd118dde870659e697e1e5e",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": false,
+    "sized_arguments": [],
+    "purpose": "Call argument evaluation must retain observation/discard before empty parameter binding."
+  },
+  {
+    "category": "counterexamples",
+    "name": "quantum-wildcard",
+    "path": "counterexamples/quantum-wildcard",
+    "source_sha256": "85d582fdada66e34e05a2b0481c337eb2ed2c397f43bae3b22ce7943af29c384",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Wildcard must not consume an owner implicitly."
+  },
+  {
+    "category": "counterexamples",
+    "name": "quantum-tuple-pattern",
+    "path": "counterexamples/quantum-tuple-pattern",
+    "source_sha256": "24e2d2b1242a91fa75fd65b57336a1037adc88238962745d87d0daceb28c8db3",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Tuple pattern must not split one quantum product owner; sized product basis remains unsupported."
+  },
+  {
+    "category": "counterexamples",
+    "name": "unit-shape",
+    "path": "counterexamples/unit-shape",
+    "source_sha256": "a7e4f4a0a07242d64e916ccf5a099b7f235a0cdbf09600cb39a5627034633e92",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Equal zero width does not equate Unit and a product of Units."
+  },
+  {
+    "category": "counterexamples",
+    "name": "duplicate-across-parameters",
+    "path": "counterexamples/duplicate-across-parameters",
+    "source_sha256": "3e6f2e96713f61214fbd641fe5bee4b040f536a97696a5138d2a6c9bbb9143c6",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Duplicate binder across distinct nested parameters must reject, including when declaration is unused."
+  },
+  {
+    "category": "counterexamples",
+    "name": "static-collision",
+    "path": "counterexamples/static-collision",
+    "source_sha256": "db62624787f77d76b0bb677abfb0eb6adf09fcb36f42034b12bff6f57243dca7",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [
+      "--nat=n=1"
+    ],
+    "purpose": "Runtime binder must not shadow static Nat; annotation lookup must not be rebound to runtime data."
+  },
+  {
+    "category": "counterexamples",
+    "name": "unused-bad",
+    "path": "counterexamples/unused-bad",
+    "source_sha256": "f0fd47465ade5cd842f0bf011509f48c4d3d8d268a4b2249eb26f298b7d5255a",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Every declaration must be checked before selecting f."
+  },
+  {
+    "category": "counterexamples",
+    "name": "lost-owner",
+    "path": "counterexamples/lost-owner",
+    "source_sha256": "6788d8619066c465190a50233bfc69f507dc36f69a20277c0901d391f630a3ad",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Destructuring must not hide the unreturned r owner from function exit checks."
+  },
+  {
+    "category": "counterexamples",
+    "name": "call-arity",
+    "path": "counterexamples/call-arity",
+    "source_sha256": "e1af24b59c5ffa38032c986a5468a993de4a381795ce234196c770eb4ef5d38c",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": false,
+    "sized_arguments": [],
+    "purpose": "Two bound leaves do not change one product parameter into two call arguments."
+  },
+  {
+    "category": "counterexamples",
+    "name": "zero-owner-wildcard",
+    "path": "counterexamples/zero-owner-wildcard",
+    "source_sha256": "94de3fc725651b4c92bf3025ee3a5b8bb930568e60d957ca5c10fbec5ce18500",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Zero-width Q<Bits<0>> remains linear; finite Bits profile rejection remains explicit."
+  },
+  {
+    "category": "controls",
+    "name": "named-unit",
+    "path": "controls/named-unit",
+    "source_sha256": "3e0cbe845f797e3d720cf47e1e4ae787c689e75bd78f83b775495a32f2c4e887",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Existing named argument with exact Unit let-pattern."
+  },
+  {
+    "category": "controls",
+    "name": "named-mixed-swap",
+    "path": "controls/named-mixed-swap",
+    "source_sha256": "3ff72eb6c3f16f903d83ab51ad2d9e7c8cc337a9105b1cbd69376f5993ae29ad",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": true,
+    "sized_arguments": [],
+    "purpose": "Existing named argument and exact nested let-pattern; same independent swap meaning."
+  },
+  {
+    "category": "controls",
+    "name": "named-effectful-unit",
+    "path": "controls/named-effectful-unit",
+    "source_sha256": "04104ccbe7168e598053c027c0980e9df0a95070f3be0168117bcbb2002e77b9",
+    "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+    "sized": false,
+    "sized_arguments": [],
+    "purpose": "Existing named parameter control for retained argument effects."
+  }
+]

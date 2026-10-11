@@ -1,0 +1,16 @@
+PASS: unit-scalar-minus-times-t/original; rows=1; remaining_work=999994
+PASS: unit-scalar-minus-times-t/swapped; rows=1; remaining_work=999994
+PASS: shared-source-controls-zero-target/original; rows=4; remaining_work=999832
+PASS: shared-source-controls-zero-target/swapped; rows=4; remaining_work=999832
+PASS: shared-computed-ancilla-control-zero-target/original; rows=2; remaining_work=999972
+PASS: shared-computed-ancilla-control-zero-target/swapped; rows=2; remaining_work=999972
+PASS: retained-h-prefix-x-suffix/original; rows=4; remaining_work=999792
+PASS: retained-h-prefix-x-suffix/swapped; rows=4; remaining_work=999792
+PASS: phase-then-x/noncommuting; rows=2; remaining_work=999952
+PASS: x-then-phase/noncommuting; rows=2; remaining_work=999952
+'Qleisli.Raw.ProtectedCommutation.Examples.phase_x_do_not_commute' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'Qleisli.Raw.ProtectedCommutation.Examples.correlated_phase_kickback' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]

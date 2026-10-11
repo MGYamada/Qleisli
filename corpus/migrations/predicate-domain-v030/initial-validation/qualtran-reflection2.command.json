@@ -1,0 +1,17 @@
+{
+  "case": "qualtran/reflection2",
+  "argv": [
+    "python3",
+    "scripts/check_input_corpus.py",
+    "/private/tmp/qleisli-ordinary-types-before-20261005/target/debug/qleisli",
+    "--case",
+    "qualtran/reflection2",
+    "--report",
+    "/private/tmp/qleisli-predicate-corpus-replay/qualtran-reflection2.json"
+  ],
+  "cwd": "/private/tmp/qleisli-predicate-domain-staged",
+  "exit_code": 1,
+  "seconds": 0.14696500002173707,
+  "stdout": "qualtran-reflection2.stdout",
+  "stderr": "qualtran-reflection2.stderr"
+}

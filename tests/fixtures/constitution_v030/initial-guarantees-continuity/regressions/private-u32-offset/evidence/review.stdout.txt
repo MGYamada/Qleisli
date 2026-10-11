@@ -1,0 +1,60 @@
+QleisliKernel.Protocol.Validity.check : ByteArray → QleisliKernel.Finite.WorkM Bool
+QleisliKernel.Protocol.Validity.Acceptance : ByteArray → Bool → Nat → Nat → Type
+QleisliKernel.Protocol.Validity.check_acceptance : ∀ (bytes : ByteArray) (hasRequest : Bool) (work left : Nat),
+  @Eq.{1} (Id.{0} (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Bool) Nat))
+      (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat) Bool
+        (QleisliKernel.Protocol.Validity.check bytes) work)
+      (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Bool) Nat
+        (@Except.ok.{0, 0} QleisliKernel.Finite.Error Bool hasRequest) left) →
+    Nonempty.{1} (QleisliKernel.Protocol.Validity.Acceptance bytes hasRequest work left)
+QleisliKernel.Protocol.Validity.check_ownershipSafe : ∀ (bytes : ByteArray) (hasRequest : Bool) (work left : Nat),
+  @Eq.{1} (Id.{0} (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Bool) Nat))
+      (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat) Bool
+        (QleisliKernel.Protocol.Validity.check bytes) work)
+      (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Bool) Nat
+        (@Except.ok.{0, 0} QleisliKernel.Finite.Error Bool hasRequest) left) →
+    ∃ binding program,
+      And
+        (@Eq.{1} (Option.{0} QleisliKernel.Semantics.Observation.Program)
+          (@GetElem?.getElem?.{0, 0, 0} (Array.{0} QleisliKernel.Semantics.Observation.Program) Nat
+            QleisliKernel.Semantics.Observation.Program
+            (fun xs i => @LT.lt.{0} Nat instLTNat i (@Array.size.{0} QleisliKernel.Semantics.Observation.Program xs))
+            (@Array.instGetElem?NatLtSize.{0} QleisliKernel.Semantics.Observation.Program)
+            (@QleisliKernel.Protocol.Validity.Acceptance.artifact bytes hasRequest work left binding).programs
+            (@QleisliKernel.Protocol.Validity.Acceptance.artifact bytes hasRequest work left binding).root)
+          (@Option.some.{0} QleisliKernel.Semantics.Observation.Program program))
+        (QleisliKernel.Semantics.Ownership.OwnershipSafe program)
+Qleisli.NativeValidity.check_scopeSafe : ∀ (bytes : ByteArray) (hasRequest : Bool) (work left : Nat),
+  @Eq.{1} (Id.{0} (Prod.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Bool) Nat))
+      (@ExceptT.run.{0, 0} QleisliKernel.Finite.Error (StateM.{0} Nat) Bool
+        (QleisliKernel.Protocol.Validity.check bytes) work)
+      (@Prod.mk.{0, 0} (Except.{0, 0} QleisliKernel.Finite.Error Bool) Nat
+        (@Except.ok.{0, 0} QleisliKernel.Finite.Error Bool hasRequest) left) →
+    ∃ binding program,
+      And
+        (@Eq.{1} (Option.{0} QleisliKernel.Semantics.Observation.Program)
+          (@GetElem?.getElem?.{0, 0, 0} (Array.{0} QleisliKernel.Semantics.Observation.Program) Nat
+            QleisliKernel.Semantics.Observation.Program
+            (fun xs i => @LT.lt.{0} Nat instLTNat i (@Array.size.{0} QleisliKernel.Semantics.Observation.Program xs))
+            (@Array.instGetElem?NatLtSize.{0} QleisliKernel.Semantics.Observation.Program)
+            (@QleisliKernel.Protocol.Validity.Acceptance.artifact bytes hasRequest work left binding).programs
+            (@QleisliKernel.Protocol.Validity.Acceptance.artifact bytes hasRequest work left binding).root)
+          (@Option.some.{0} QleisliKernel.Semantics.Observation.Program program))
+        (QleisliKernel.Semantics.ClassicalScope.ScopeSafe program)
+def QleisliKernel.Semantics.Ownership.OwnershipSafe : QleisliKernel.Semantics.Observation.Program → Prop :=
+fun program =>
+  ∃ initial final,
+    And (QleisliKernel.Semantics.Ownership.Inputs { } program.inputs initial)
+      (And (QleisliKernel.Semantics.Ownership.Run initial program.operations final)
+        (QleisliKernel.Semantics.Ownership.Returned final program.outputs))
+def QleisliKernel.Semantics.ClassicalScope.ScopeSafe : QleisliKernel.Semantics.Observation.Program → Prop :=
+fun program =>
+  ∃ initial final,
+    And (QleisliKernel.Semantics.ClassicalScope.Inserts { } program.classicalInputs initial)
+      (And (QleisliKernel.Semantics.ClassicalScope.Run initial program.operations final)
+        (∀ (value : Nat),
+          @Membership.mem.{0, 0} Nat (List.{0} Nat) (@List.instMembership.{0} Nat) program.classicalOutputs value →
+            QleisliKernel.Semantics.ClassicalScope.Visible final value))
+'QleisliKernel.Protocol.Validity.check_acceptance' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'QleisliKernel.Protocol.Validity.check_ownershipSafe' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]
+'Qleisli.NativeValidity.check_scopeSafe' depends on axioms: [propext, Classical.choice.{u}, Quot.sound.{u}]

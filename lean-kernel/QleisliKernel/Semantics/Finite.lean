@@ -6,13 +6,15 @@ Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
 namespace QleisliKernel.Semantics.Finite
 open Exact
 
-/-- Prefix spelling of the legacy Unit/Bit/Pair/arity-preserving Tuple tree. -/
+/-- Exact prefix tree with atomic Bits registers and arity-preserving products. -/
 inductive Atom where
-  | unit | bit | pair | tuple (arity : Nat)
+  | unit | bit | pair | tuple (arity : Nat) | bits (width : Nat)
   deriving BEq, DecidableEq, Repr
 abbrev Basis := List Atom
 
-def width (basis : Basis) : Nat := (basis.filter (· == .bit)).length
+def width (basis : Basis) : Nat :=
+  (basis.map fun atom => match atom with
+    | .bit => 1 | .bits n => n | _ => 0).sum
 
 structure Control where
   index : Nat
@@ -78,6 +80,20 @@ def enabled (controls : List Control) (label : Nat) : Bool :=
   controls.all fun c => (bit label c.index == 1) == c.whenOne
 
 deriving instance ReflBEq, LawfulBEq for Atom, Control, Action, Step, Circuit, Encoding, Contract, Dependency
+
+/-- The original Unit/Bit/product profile retains its physical width. -/
+theorem width_legacy (basis : Basis)
+    (h : ∀ n, Atom.bits n ∉ basis) :
+    width basis = (basis.filter (· == .bit)).length := by
+  induction basis with
+  | nil => rfl
+  | cons atom tail ih =>
+    have ht : ∀ n, Atom.bits n ∉ tail := by
+      intro n hn
+      exact h n (List.mem_cons_of_mem atom hn)
+    have hw := ih ht
+    cases atom <;> simp_all [width, Nat.add_comm]
+
 structure Evidence where
   circuit : Circuit
   claim : Contract

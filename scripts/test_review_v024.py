@@ -75,7 +75,7 @@ def program(width, body, column):
     join = "join(a,b)" if width == 2 else "join(join(a,b),c)"
     split = "let (a,b)=split(q);" if width == 2 else "let (ab,c)=split(q);let (a,b)=split(ab);"
     result = "(measure_z(a),measure_z(b))" if width == 2 else "((measure_z(a),measure_z(b)),measure_z(c))"
-    result_ty = "(CBit,CBit)" if width == 2 else "((CBit,CBit),CBit)"
+    result_ty = "(Bit,Bit)" if width == 2 else "((Bit,Bit),Bit)"
     return f"{IMPORTS}\n{body}\nobserve fn main()->{result_ty}{{{prepare}let q=apply({join});{split}{result}}}"
 
 
@@ -117,7 +117,7 @@ def cases():
     for width in [2, 3]:
         size = 1 << width
         ty = "Q<(Bit,Bit)>" if width == 2 else "Q<((Bit,Bit),Bit)>"
-        yield f"QFT{width}", width, f"use std::transforms::qft{width}; unitary fn apply(q:{ty})->{ty}{{qft{width}(q)}}", lambda row, col, size=size: cmath.exp(2j * math.pi * row * col / size) / math.sqrt(size)
+        yield f"QFT{width}", width, f"use std::transform::qft{width}; unitary fn apply(q:{ty})->{ty}{{qft{width}(q)}}", lambda row, col, size=size: cmath.exp(2j * math.pi * row * col / size) / math.sqrt(size)
     for negative in [False, True]:
         for gate, k in [("s", 2), ("sdg", 6), ("t", 1), ("tdg", 7), ("phase_eighth", 1)]:
             arms = f"0=>{gate},1=>id" if negative else f"0=>id,1=>{gate}"

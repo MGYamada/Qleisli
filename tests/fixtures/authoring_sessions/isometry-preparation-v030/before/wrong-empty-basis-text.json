@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "check",
+    "--entry=main::entry",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/isometry-preparation-v030/attempt-01/wrong-empty-basis/main.qli"
+  ],
+  "exit_code": 1,
+  "stderr": "main:107..108: type: type or tuple/size shape mismatch: expected Q(Unit), found Q(Bits(Linear { constant: 0, terms: {} }))\n",
+  "native_invocations": 0,
+  "seconds": 0.004656083998270333,
+  "recorded_utc": "2026-10-05T13:00:37.564902+00:00",
+  "timestamp_note": "Clock after completion, not authenticated provenance.",
+  "transcript": "main:107..108: type: type or tuple/size shape mismatch: expected Q(Unit), found Q(Bits(Linear { constant: 0, terms: {} }))\n"
+}

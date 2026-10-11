@@ -1,7 +1,9 @@
 //! Small source-level comparisons of the generic Rust frontend and the
 //! experimental concrete Python oracle. Neither result supplies IR evidence.
 // Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
-use qleisli::frontend::sized::ParsedProgram;
+mod common;
+
+use qleisli::frontend::compile::ParsedProgram;
 use std::collections::BTreeMap;
 use std::io::Write;
 use std::path::PathBuf;
@@ -84,13 +86,13 @@ fn python_static_comparisons_keep_type_angles_separate_in_both_dialects() {
     for comparison in ["<", ">", "!=", "<=", ">=", "=="] {
         for n in [0, 1, 3] {
             cases.push((
-                format!("pub unitary fn f[static n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {{ if static 1 {comparison} n {{ q }} else {{ q }} }}"),
+                format!("pub unitary fn f[const n: Nat](q: Q<Bits<n>>) -> Q<Bits<n>> {{ if static 1 {comparison} n {{ q }} else {{ q }} }}"),
                 BTreeMap::from([("n".into(), n)]),
             ));
         }
     }
     for name in ["Q", "Bits", "CBits", "Op"] {
-        cases.push((format!("pub unitary fn f[static {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} < 2 {{ q }} else {{ q }} }}"), BTreeMap::from([(name.into(), 1)])));
+        cases.push((format!("pub unitary fn f[const {name}: Nat](q: Q<Bit>) -> Q<Bit> {{ if static {name} < 2 {{ q }} else {{ q }} }}"), BTreeMap::from([(name.into(), 1)])));
     }
     let oracle = python(&cases);
     for ((source, values), oracle) in cases.iter().zip(oracle) {
@@ -102,9 +104,9 @@ fn python_static_comparisons_keep_type_angles_separate_in_both_dialects() {
 #[test]
 fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
     for source in [
-        "use std::quantum::h; pub iso fn f(q: Q<Bit>) -> Q<Bit> { h(q) }",
-        "pub unitary fn f(q: Q<Bit>, c: CBit) -> (Q<Bit>,CBit) { (q,c) }",
-        "use std::classical::empty_bits; pub unitary fn f() -> CBits<0> { empty_bits() }",
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>,Bit){(q,init0(),0)}",
+        "pub unitary fn f(q: Q<Bit>, c: Bit) -> (Q<Bit>,Bit) { (q,c) }",
+        "use std::classical::empty_bits; pub unitary fn f() -> Bits<0> { empty_bits() }",
     ] {
         let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
             .unwrap()
@@ -117,9 +119,23 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
         assert_eq!(profile.module(), Some("main"));
         assert_eq!(profile.span().start, source.find("pub ").unwrap());
         assert_eq!(profile.span().end, source.len());
-        assert!(profile.message().contains("lowering profile"), "{profile}");
+        assert!(profile.message().contains("lowering"), "{profile}");
         assert_eq!(profile, elaborated.lower().unwrap_err());
     }
+    let source =
+        "use std::quantum::init0; pub isometry fn f(q:Q<Bit>)->(Q<Bit>,Q<Bit>){(q,init0())}";
+    let preparation = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
+        .unwrap()
+        .instantiate("main::f", BTreeMap::new(), BTreeMap::new())
+        .unwrap()
+        .elaborate()
+        .unwrap();
+    preparation.check_lowering_profile().unwrap();
+    assert_eq!(
+        preparation.definitions()[preparation.root()].effect(),
+        "iso"
+    );
+    assert!(preparation.lower().unwrap().is_instrument());
     let source = "use std::quantum::h; pub unitary fn f(q: Q<Bit>) -> Q<Bit> { h(q) }";
     let elaborated = ParsedProgram::parse(BTreeMap::from([("main".into(), source.into())]))
         .unwrap()
@@ -134,11 +150,13 @@ fn lowering_profile_diagnostics_are_available_before_proposal_generation() {
 #[test]
 #[ignore = "requires the development Python 3.11+ oracle"]
 fn python_concrete_execution_does_not_replace_generic_size_obligations() {
-    let first = include_str!("fixtures/sized_review/unguarded_take.qli");
+    let first = common::current_source_text(
+        "tests/fixtures/frontend_v030/ordinary-type-cutover/current/sized_review/unguarded_take.qli",
+    );
     let corrected = first.replace("Q<Bits<n>> {", "Q<Bits<n>> requires n >= 1 {");
     let cases = vec![
-        (first.into(), BTreeMap::from([("n".into(), 1)])),
-        (first.into(), BTreeMap::from([("n".into(), 3)])),
+        (first.clone(), BTreeMap::from([("n".into(), 1)])),
+        (first.clone(), BTreeMap::from([("n".into(), 3)])),
         (corrected.clone(), BTreeMap::from([("n".into(), 1)])),
         (corrected, BTreeMap::from([("n".into(), 3)])),
     ];
@@ -206,7 +224,10 @@ fn corpus_modules() -> BTreeMap<String, String> {
     .map(|(module, path)| {
         (
             module.into(),
-            std::fs::read_to_string(root.join("corpus/sized").join(path)).unwrap(),
+            std::fs::read_to_string(common::current_namespace_fixture(
+                &root.join("corpus/sized").join(path),
+            ))
+            .unwrap(),
         )
     })
     .collect()
@@ -264,10 +285,11 @@ import sys
 from pathlib import Path
 sys.path.insert(0, 'scripts')
 from compile_sized_corpus import compile_source
+from current_source_fixtures import current_source_file
 root = Path('corpus/sized')
-modules = {path.stem: path.read_text() for path in (root/'qualtran_arithmetic').glob('*.qli')}
-modules['prepare'] = (root/'katas_ghz/prepare.qli').read_text()
-modules['bitwise'] = (root/'qualtran_xor/bitwise.qli').read_text()
+modules = {path.stem: current_source_file(path).read_text() for path in (root/'qualtran_arithmetic').glob('*.qli')}
+modules['prepare'] = current_source_file(root/'katas_ghz/prepare.qli').read_text()
+modules['bitwise'] = current_source_file(root/'qualtran_xor/bitwise.qli').read_text()
 count = 0
 for n in range(4):
     for module, entry in [('controls','all_ones'), ('increment','increment'),
@@ -298,7 +320,7 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
     let template = "use dep::flip; pub unitary fn f(c: Q<Bit>, a: Q<Bit>, b: Q<Bit>) -> (Q<Bit>,Q<Bit>,Q<Bit>) { let (c,(a,b)) = controlled(flip)(c,(a,b)); (c,a,b) }";
     for main in [
         template.to_string(),
-        template.replace("controlled(flip)(c,(a,b))", "(c,adjoint(flip,(a,b)))"),
+        template.replace("controlled(flip)(c,(a,b))", "(c,adjoint(flip)((a,b)))"),
     ] {
         ParsedProgram::parse(BTreeMap::from([
             ("main".into(), main),
@@ -324,7 +346,7 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
             .is_err()
         );
     }
-    let classical = "pub unitary fn flip(a: Q<Bit>, b: CBit) -> (Q<Bit>,CBit) { (a,b) }";
+    let classical = "pub unitary fn flip(a: Q<Bit>, b: Bit) -> (Q<Bit>,Bit) { (a,b) }";
     assert!(
         ParsedProgram::parse(BTreeMap::from([
             ("main".into(), template.into()),
@@ -345,7 +367,7 @@ fn transparent_operation_groups_keep_tuple_shapes_and_quantum_ownership() {
     .unwrap()
     .lower()
     .unwrap();
-    let copyable_unit = "pub unitary fn identity(q: ()) -> () { q }";
+    let copyable_unit = "pub unitary fn identity(q: Unit) -> Unit { q }";
     let unit_client = "use dep::identity; pub unitary fn f(c: Q<Bit>) -> Q<Bit> { let (c,()) = controlled(identity)(c,()); c }";
     assert!(
         ParsedProgram::parse(BTreeMap::from([

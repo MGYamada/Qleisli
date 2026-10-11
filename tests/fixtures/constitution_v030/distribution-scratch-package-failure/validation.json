@@ -1,0 +1,42 @@
+{
+  "scope": "Small synthetic distribution lifecycle regressions only; no compiler/Cargo/Lean/installer execution",
+  "python": "3.14.5 (main, May 10 2026, 10:21:34) [Clang 21.0.0 (clang-2100.0.123.102)]",
+  "sources": {
+    "scripts/check_distribution.py": "3e5b1f343843cfe3149c538dde7fb618dbad0b723dc17ebd67421a6c1f471a8e",
+    "scripts/test_check_distribution.py": "473d255f6dedcb46cb2076e097e9b2705902aa42dfb3147838e3479de9dc990a",
+    "tests/fixtures/constitution_v030/distribution-scratch-package-failure/record.py": "e05d6c3e14fd51276eaa3bc2d66d09fffe19e2f548fda5072e4aa0c4716734d7"
+  },
+  "commands": [
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "tests/fixtures/constitution_v030/distribution-scratch-package-failure/record.py",
+        "--output",
+        "tests/fixtures/constitution_v030/distribution-scratch-package-failure/after"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 1.337,
+      "stdout": "after-record.stdout",
+      "stderr": "after-record.stderr"
+    },
+    {
+      "argv": [
+        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts",
+        "-p",
+        "test_check_distribution.py",
+        "-v"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "elapsed_seconds": 5.765,
+      "stdout": "unit-tests.stdout",
+      "stderr": "unit-tests.stderr"
+    }
+  ]
+}

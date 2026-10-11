@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+use std::quantum::{unit,finish,split,join,phase_eighth};
+unitary fn effect(q:Q<(Unit,Bit)>)->Q<(Unit,Bit)>{let(u,a)=split(q);let u=phase_eighth(u);join(u,a)}
+pub unitary fn f(q:Q<(Unit,Bit)>)->Q<Bit>{let(u,a)=split(effect(q));let()=finish(u);a}

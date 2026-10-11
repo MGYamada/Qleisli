@@ -1,0 +1,25 @@
+{
+  "cli": {
+    "path": "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "sha256": "bd9219f7847f1a7a52a3bd1346d39e8455edf0988e04582595471ae439b5feef"
+  },
+  "kernel": {
+    "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "inventory_changes": [
+    {
+      "path": "src/frontend/lexer.rs",
+      "before_sha256": "ffdfa9a8ebf0e04f36637a89873f5e67ab0f8b1c9a25012f060c04702b9295e5",
+      "after_sha256": "7afd0432e860adbe70044971fe7315ca972cb0efe3f2f751a0a41f977622b70c",
+      "public_surface": "unchanged"
+    },
+    {
+      "path": "src/frontend/compile/lower/operations.rs",
+      "before_sha256": "ddbc4bc299fabe07d85306430960bd6d1cf10fa34cb69309431f9117dce73ed1",
+      "after_sha256": "c71bd144ebedab0ef1b27c0d0f28385816a341a6c94597c31f4023fa576468d1",
+      "public_surface": "unchanged"
+    }
+  ],
+  "limits": "Review identifies the vocabulary-only source changes. Public signatures/enum shape and native/proof sources are unchanged; these checks do not discharge source preservation."
+}

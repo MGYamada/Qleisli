@@ -1,0 +1,40 @@
+{
+  "format": "qleisli.ordinary-maintainer-scope-decision",
+  "version": 1,
+  "recorded_after_reply_utc": "2026-10-05T23:51:02Z",
+  "timezone": "Asia/Tokyo",
+  "provenance": {
+    "kind": "direct-user-message",
+    "conversation_id": "01a1058b-0f5e-7cc2-b186-005cd11ba4b1",
+    "request": "QFTの実装完了は諦めてください。0.3.0-alphaのターゲットから外して完全に今回のgoalの外に出します",
+    "timestamp_note": "The tool observation follows the reply; it is not an independently authenticated timestamp of the human message."
+  },
+  "decision": {
+    "excluded_work": [
+      "QFT implementation completion",
+      "canonical generic QFT public integration",
+      "fixed/generic QFT semantic-equivalence completion",
+      "new QFT-specific proofs for this goal"
+    ],
+    "scope": [
+      "0.3.0-alpha",
+      "current development goal"
+    ],
+    "future_target": null,
+    "selected_issue_count": 111,
+    "issue_317_applicable_criteria": "original20 plus final general family-naming rule (21)",
+    "issue_317_excluded_criteria": "three QFT-specific appended criteria (21–23 in the historical 24-row sequence)",
+    "completion_credit": 0
+  },
+  "preserve": [
+    "existing fixed-QFT functionality and regression checks",
+    "historical sources, failures, validation records, proofs, licenses and notices",
+    "all other applicable Issue criteria",
+    "edition2026, QS/PR/RS/EXACT and both admitted scoped QLV1 guarantees"
+  ],
+  "recording": {
+    "transcriber": "Codex assistant",
+    "authority": "The direct human instruction changes the ordinary goal scope. This transcript records it; AI does not adopt a constitutional interpretation or guarantee.",
+    "authentication_limit": "Reviewable provenance, not a cryptographic signature."
+  }
+}

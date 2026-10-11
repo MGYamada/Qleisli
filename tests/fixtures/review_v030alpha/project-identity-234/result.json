@@ -1,0 +1,77 @@
+{
+  "scope": "Issue234 documentation checks only; no Rust/Lean build or runtime test",
+  "inputs_before": {
+    "docs/src/reference/project-identity.md": "1bf2a22e2a433da786132ada8604951e2290b354a83fe3cf97601425996ada75",
+    "README.md": "fa99126943e912e5228a835dc5dfe1e5ae1a09ad6cad7233e93462bf9bbd03c9",
+    "docs/src/introduction.md": "c55782bf0705b622fb2291a993f840813f31ccf0b54e70b91c559ec7d1616954",
+    "docs/src/SUMMARY.md": "124fdf7909c5d90e2da6ce1cf087007c1d2e8328f770cd0e313fcbf82c80f426",
+    "docs/book.toml": "f1f0bb0a3c62340f3483574c2da6b13358a7b84db1cf5bc473575eae0a68b14d",
+    "scripts/check_docs.py": "874b243a5d416e37a01a1a7a8ccf0f51f647f6d5c039e7ad3d859c88b27f8fdd",
+    "scripts/check_book.py": "d42efc605088b42a2d5678faffd662266b3558b97ae09463f8f75792c5c01f23"
+  },
+  "inputs_after": {
+    "docs/src/reference/project-identity.md": "1bf2a22e2a433da786132ada8604951e2290b354a83fe3cf97601425996ada75",
+    "README.md": "fa99126943e912e5228a835dc5dfe1e5ae1a09ad6cad7233e93462bf9bbd03c9",
+    "docs/src/introduction.md": "c55782bf0705b622fb2291a993f840813f31ccf0b54e70b91c559ec7d1616954",
+    "docs/src/SUMMARY.md": "124fdf7909c5d90e2da6ce1cf087007c1d2e8328f770cd0e313fcbf82c80f426",
+    "docs/book.toml": "f1f0bb0a3c62340f3483574c2da6b13358a7b84db1cf5bc473575eae0a68b14d",
+    "scripts/check_docs.py": "874b243a5d416e37a01a1a7a8ccf0f51f647f6d5c039e7ad3d859c88b27f8fdd",
+    "scripts/check_book.py": "d42efc605088b42a2d5678faffd662266b3558b97ae09463f8f75792c5c01f23"
+  },
+  "mdbook_binary_sha256": "49f163c7a5a9d0a4fc9cacf34bd0b96b11801458effddb1b7e951377af909d8e",
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "scripts/check_docs.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "duration_seconds": 1.49169204197824,
+      "stdout": "/private/tmp/qleisli-issue234-docs/0.stdout.txt",
+      "stdout_sha256": "06f721a9aa0d537b6e634caf51c6ef529e67dbe321432c0895e412f5dc4116a1",
+      "stderr": "/private/tmp/qleisli-issue234-docs/0.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "--version"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "duration_seconds": 0.004579666012432426,
+      "stdout": "/private/tmp/qleisli-issue234-docs/1.stdout.txt",
+      "stdout_sha256": "55fcc1f0a87eaca3970d2531d588deb8b7a9373280e0e5915c01c8c5ec9d9b96",
+      "stderr": "/private/tmp/qleisli-issue234-docs/1.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+        "build",
+        "docs"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "duration_seconds": 0.07047425000928342,
+      "stdout": "/private/tmp/qleisli-issue234-docs/2.stdout.txt",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr": "/private/tmp/qleisli-issue234-docs/2.stderr.txt",
+      "stderr_sha256": "7cb07bc59324e9af47e2d5f3ad9a6677f3a9929a5b99444ecb3d4b0bc8f091fb"
+    },
+    {
+      "argv": [
+        "python3",
+        "scripts/check_book.py"
+      ],
+      "cwd": "/Users/masa/git/Qleisli",
+      "exit_code": 0,
+      "duration_seconds": 0.3800792919937521,
+      "stdout": "/private/tmp/qleisli-issue234-docs/3.stdout.txt",
+      "stdout_sha256": "6ae145b73f6bab801deb2a701bb00293c557f19e7fb6f5989fde423d71adb79c",
+      "stderr": "/private/tmp/qleisli-issue234-docs/3.stderr.txt",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ]
+}

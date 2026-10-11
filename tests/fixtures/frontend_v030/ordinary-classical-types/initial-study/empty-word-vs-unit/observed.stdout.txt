@@ -1,0 +1,3 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "unsupported", message: "register types are outside the finite lowering profile", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/empty-word-vs-unit/main.qli", span: Span { start: 23, end: 31 }, line: 1, column: 24 }) }
+sized.generic: Error { code: "type", module: Some("main"), span: Span { start: 41, end: 42 }, message: "type or tuple/size shape mismatch: expected Tuple([]), found CBits(Linear { constant: 0, terms: {} })" }

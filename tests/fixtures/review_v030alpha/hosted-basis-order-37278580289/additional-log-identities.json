@@ -1,0 +1,10 @@
+{
+  "hosted-rust.decoded.log": {
+    "decoded_text_sha256": "776cf6927d82c7d43df113703d8cda8d45c29b1de6be18fdcabf8a018241c278",
+    "gzip_sha256": "aa98dd7afdd6c0786d645a5b52d42d61ef47bf918c5a86966b44b86028ea710e"
+  },
+  "hosted-distribution.decoded.log": {
+    "decoded_text_sha256": "732afa9a1a3eafb681a530788fa887a8dcec16808780460cce9ac3926f8cec4e",
+    "gzip_sha256": "af30d797f525401b6207ae95067051605968ced54984914bde0fe1680ef6edb6"
+  }
+}

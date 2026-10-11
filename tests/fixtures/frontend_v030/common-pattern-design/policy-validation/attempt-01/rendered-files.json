@@ -1,0 +1,236 @@
+{
+  "files": {
+    ".DS_Store": {
+      "sha256": "79f2b877de6a6df9a4e64070487cc3d9aed91bbf09d3072f4cf8f3cdfc87fb92",
+      "bytes": 10244
+    },
+    ".nojekyll": {
+      "sha256": "235d4f83c4c71612f43995dbda167720cd0c5384bf9ea64f9328b187c409b51d",
+      "bytes": 72
+    },
+    "404.html": {
+      "sha256": "ecf9fe3152426aebc51447b669eb3e9731da305021b5110a75999075fb6b916e",
+      "bytes": 19404
+    },
+    "ayu-highlight-3fdfc3ac.css": {
+      "sha256": "3fdfc3ac5e435e0cef96dafee74da487e4846ffce4dff5973bb45d68b678dd7f",
+      "bytes": 907
+    },
+    "book-609e4cb8.js": {
+      "sha256": "609e4cb80f92aa954a3f48869c751f6f8848433604f1297bb70fde0e3e58a569",
+      "bytes": 30932
+    },
+    "building.html": {
+      "sha256": "992404e192c56ddb7c5ad477053682d12fd01dbd65fbdb682dc73ef7b6ae3b56",
+      "bytes": 26256
+    },
+    "clipboard-1626706a.min.js": {
+      "sha256": "1626706afc88d95ebe1173b553ec732c6dc82a576989315fdf5e7779af738a44",
+      "bytes": 10754
+    },
+    "css/chrome-d279d366.css": {
+      "sha256": "d279d366359c0d588c9c10cb46afe2b543fc731dea722803639b4e45016d5fe2",
+      "bytes": 18032
+    },
+    "css/general-e96d0476.css": {
+      "sha256": "e96d0476741bfcbe8cc0ac02db00187c45a63946834361d0eab846016787c646",
+      "bytes": 11478
+    },
+    "css/print-9e4910d8.css": {
+      "sha256": "9e4910d8eb508863172430c60d49fd3b442e9e7f5963a18cd1d655c386ffeae9",
+      "bytes": 689
+    },
+    "css/variables-8adf115d.css": {
+      "sha256": "8adf115df892369c90b830767c4651a9e058b79273e219935f7c8a96c6eab9c0",
+      "bytes": 10422
+    },
+    "design/initial-guarantees.html": {
+      "sha256": "e189c0746e06c6f92d39c0ddeaf5767315f2d3bd3387829e11e8d8ba3a51276e",
+      "bytes": 48555
+    },
+    "design/initial-interpretations.html": {
+      "sha256": "54043dd58ff18724b6a9adfcad8c13ad54a4fa4461a173510d9482f574986f3d",
+      "bytes": 43831
+    },
+    "design/operations.html": {
+      "sha256": "a962ef33ab38a27c847d6c243a7bd39d20922db1f401eb288dc04060ebb01ad4",
+      "bytes": 59534
+    },
+    "design/ratification.html": {
+      "sha256": "e9f548fc755e9a6f7893c66d8a6fe2688a212d7eef522625eecf9cc8da4f6d4e",
+      "bytes": 31140
+    },
+    "design/type-foundation.html": {
+      "sha256": "33570cee344a72c7d92d6b95e934225cb9afe653d96d2441e4530dd94ea8fd53",
+      "bytes": 74418
+    },
+    "elasticlunr-ef4e11c1.min.js": {
+      "sha256": "ef4e11c157b1e2e89782d30bd726f2d5ff7834ea5e26ad02474325f8b1f126c9",
+      "bytes": 18051
+    },
+    "favicon-8114d1fc.png": {
+      "sha256": "8114d1fc74f4b5621ad9afde7746ed9cf7e420be317a6e29023d2298d58aa15b",
+      "bytes": 5679
+    },
+    "favicon-de23e50b.svg": {
+      "sha256": "de23e50b1c4dd6e052b3e21d444fcd4b13568b3840ac3c99d9be4e9263c0ef59",
+      "bytes": 1835
+    },
+    "fonts/OPEN-SANS-LICENSE.txt": {
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "bytes": 11358
+    },
+    "fonts/SOURCE-CODE-PRO-LICENSE.txt": {
+      "sha256": "d1e6d465a83ba1a3be52db6484868cf5812ae9bbf91abdad3900ba0165afcf93",
+      "bytes": 4528
+    },
+    "fonts/fonts-9644e21d.css": {
+      "sha256": "94b5131beb9b75a55f9649fcf12de167350feae0fab2bab26c2703cd75c0c781",
+      "bytes": 3818
+    },
+    "fonts/open-sans-v17-all-charsets-300-7736aa35.woff2": {
+      "sha256": "7736aa3596c468515c3209f2f9d68cfae96d94c05689bcc11a5dce426a6ee2e8",
+      "bytes": 44352
+    },
+    "fonts/open-sans-v17-all-charsets-300italic-2c7b95c0.woff2": {
+      "sha256": "2c7b95c08df0d228caec6d4bfed06da0f7ab6b76ea5cc3f75b5c6ae416bc571b",
+      "bytes": 40656
+    },
+    "fonts/open-sans-v17-all-charsets-600-486c6759.woff2": {
+      "sha256": "486c67592731a0b36a89dba1fd0b97aeb73f236bbf60dbf28d7c6b5723c07989",
+      "bytes": 44936
+    },
+    "fonts/open-sans-v17-all-charsets-600italic-1a3e8659.woff2": {
+      "sha256": "1a3e865977024f444834a75a1b33b89b93134c93007ae3d6e14f24e6c88d8dfb",
+      "bytes": 42120
+    },
+    "fonts/open-sans-v17-all-charsets-700-c22fe8c7.woff2": {
+      "sha256": "c22fe8c70c36f1d862903b772eaed864d3a8fa849473c9caff224fdb852428e4",
+      "bytes": 44988
+    },
+    "fonts/open-sans-v17-all-charsets-700italic-238ae959.woff2": {
+      "sha256": "238ae9593944112bee8dd65f8ebc5f3d3862160a8a245fbe1ee3150bc9a2fd81",
+      "bytes": 40800
+    },
+    "fonts/open-sans-v17-all-charsets-800-3d2c812a.woff2": {
+      "sha256": "3d2c812adf74deb36fead3ff8469800d3c0b23eb2c858ae49310291f89490146",
+      "bytes": 44536
+    },
+    "fonts/open-sans-v17-all-charsets-800italic-ba1521ec.woff2": {
+      "sha256": "ba1521ec219db9bc5bfec0e3e7a897369d98b30d4e853ee4aa525322784428b8",
+      "bytes": 40812
+    },
+    "fonts/open-sans-v17-all-charsets-italic-6c9463f7.woff2": {
+      "sha256": "6c9463f7096c0b9d610e095ed248ac1e8a8da7e92d17e9be544f3baced7b62b2",
+      "bytes": 41076
+    },
+    "fonts/open-sans-v17-all-charsets-regular-2e3b1d34.woff2": {
+      "sha256": "2e3b1d34ac67763ab50652da19305d4b3694c6b6e6bf35f4b98411ce4af646d2",
+      "bytes": 43236
+    },
+    "fonts/source-code-pro-v11-all-charsets-500-2bdd9410.woff2": {
+      "sha256": "2bdd9410b0141db3cbbf4cfc3818cc6fad279e8e63940940e06cd6af76ccbfcf",
+      "bytes": 59140
+    },
+    "highlight-493f70e1.css": {
+      "sha256": "493f70e1527d895653b5ac7157abba8e2c656e43698da93b6c1997e2855a5059",
+      "bytes": 1209
+    },
+    "highlight-abc7f01d.js": {
+      "sha256": "abc7f01d0ce8c64e4ba9e131d651e48ae1a567b2a1254fea8aab03502288de58",
+      "bytes": 137537
+    },
+    "imaginary-v1/.DS_Store": {
+      "sha256": "5f5c6690394967d7bfa3b2f17c8a19a19c5d5b1235a48e9034e4a3d75c68aaf9",
+      "bytes": 6148
+    },
+    "imaginary-v1/index.html": {
+      "sha256": "2ac2fd4dda9ccf8e86224cc03954809f7e8df14e89320562285bcbc2dda29396",
+      "bytes": 24684
+    },
+    "imaginary-v1/requirements.html": {
+      "sha256": "5874663698d87aff344b829d5b18741daa14f8f131eb1eab2f65b04007da27df",
+      "bytes": 31152
+    },
+    "index.html": {
+      "sha256": "0af7ea9cfa0a63ef7600efa53099cd2d459e17c486cb57ce58376ac38c477f4d",
+      "bytes": 22301
+    },
+    "introduction.html": {
+      "sha256": "0af7ea9cfa0a63ef7600efa53099cd2d459e17c486cb57ce58376ac38c477f4d",
+      "bytes": 22301
+    },
+    "lean-backend-plan-v0.3.html": {
+      "sha256": "a2db73c2af267dd65d3bd86f1b524bd544d19dc15683ead086541cf6131e235d",
+      "bytes": 56224
+    },
+    "mark-09e88c2c.min.js": {
+      "sha256": "09e88c2cfaf23ea8a37b5681433eafea97033af632ecc948c8c1ee9944647743",
+      "bytes": 17320
+    },
+    "print.html": {
+      "sha256": "81eb6219ae1f77dde5e35bec6e28a796073684c854567e00651e18c8986c5aed",
+      "bytes": 385075
+    },
+    "reference/architecture.html": {
+      "sha256": "2008877447caa293461924a3c2f4212f8f8f0a350b3ce6be2e184495a58579e5",
+      "bytes": 33666
+    },
+    "reference/authority.html": {
+      "sha256": "b00437caa23656b204a47c92fc743097f5985cf76f988c90d10b8213b1a8ffef",
+      "bytes": 40294
+    },
+    "reference/discovery.html": {
+      "sha256": "6e4a74e4d8de8783d21d2698e0af054be8ce81c6094668f6813e78e635509c2b",
+      "bytes": 35343
+    },
+    "reference/primitive-boundary.html": {
+      "sha256": "edcf0b305b57b2427cfa9dac58b8489b814034be73dbde787e53f4155490225c",
+      "bytes": 56756
+    },
+    "reference/production-boundary.html": {
+      "sha256": "2f09aaf669749e16bd7a8a87b5824e02ad3a10f238ba55c63be5ae95523a0605",
+      "bytes": 40674
+    },
+    "reference/project-identity.html": {
+      "sha256": "a156c44ff4011fab662a7f1cdc4cd9b258ddf4a67f567a7dbf0468d6cce08dca",
+      "bytes": 24676
+    },
+    "reference/realization.html": {
+      "sha256": "fea9bf31a17a1c4dd916958fb85cdf10de25e6b807958ecd6db7828172fc8b9c",
+      "bytes": 36086
+    },
+    "reference/source-text.html": {
+      "sha256": "7bfd61005cab23d9c573585eb57aa2d097167779a9fdc88932fe88d02d4f507a",
+      "bytes": 42925
+    },
+    "reference/type-model.html": {
+      "sha256": "549a06920c533b845911b307af386d1430c4e13b70423f0fd4b76cf50b7183a7",
+      "bytes": 55264
+    },
+    "searcher-09f2665d.js": {
+      "sha256": "a86af23ca6d52394abdbc8705b0358dc9e8283b097d6997d146c56e4a737638d",
+      "bytes": 20294
+    },
+    "searchindex-479a3548.js": {
+      "sha256": "479a3548f94009bb588bb8284287a07b996d6a52a128cf556371c57b1528d640",
+      "bytes": 1803718
+    },
+    "toc-6a7a00e7.js": {
+      "sha256": "6a7a00e7b918660993b564cab3d3c04be26d2a6050a0d5f5b11afd16a33d9030",
+      "bytes": 23405
+    },
+    "toc.html": {
+      "sha256": "8f4a90a24cfe27bc1ac568ea0651aec6a49bb4a18a1f45598ea3f1232d62771e",
+      "bytes": 5945
+    },
+    "tomorrow-night-4c0ae647.css": {
+      "sha256": "4c0ae647a06ef1699806fb9b4b6d0ef72de026708c6e8581362641c9298cb5f7",
+      "bytes": 1694
+    }
+  },
+  "total_bytes": 3853280,
+  "output_root": "/private/tmp/qleisli-pattern-policy-book-zh6cvozt/book",
+  "temporary_output_cleaned_after_check": true,
+  "limit": "Generated HTML/assets and local links/anchors only; external URLs are not fetched."
+}

@@ -1,0 +1,1 @@
+classical fn bad((a,b): Unit) -> Unit { () }

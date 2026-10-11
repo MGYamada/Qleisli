@@ -1,0 +1,12 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.
+use std::quantum::init0;
+use std::observe::measure_z;
+
+classical fn flip_label(x: Bit) -> Bit { not x }
+unitary fn lifted(q: Q<Bit>) -> Q<Bit> {
+    basis q as b { flip_label(b) }
+}
+pub observe fn main() -> (Bit, Bit) {
+    let b = measure_z(lifted(init0()));
+    (b, flip_label(b))
+}

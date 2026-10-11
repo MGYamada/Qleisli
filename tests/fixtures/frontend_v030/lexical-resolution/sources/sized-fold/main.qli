@@ -1,0 +1,1 @@
+use std::quantum::h;pub unitary fn f(q:Q<Bit>)->Q<Bit>{for static i in 0..2 carry q=q {let q=h(q);yield q;}}

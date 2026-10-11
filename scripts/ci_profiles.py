@@ -26,7 +26,7 @@ SUITES = (
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 PROTECTED_ROOTS = {
     "Cargo.toml", "Cargo.lock", "LICENSE", "NOTICE", "TRUSTBOUNDARY.md",
-    "CONSTITUTION.md", "STDLIB.md", "README.crates.md",
+    "CONSTITUTION.md", "GOVERNANCE.md", "STDLIB.md", "README.crates.md",
 }
 NORMATIVE_DOCS = {"TRUSTBOUNDARY.md"}
 
@@ -54,7 +54,7 @@ def classify(paths: list[str], policy: dict) -> tuple[str, str]:
     for path in paths:
         if not valid_path(path):
             return "full", "unrecognized path; full validation required"
-        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/", "docs/", "docs-old/")):
+        if path in PROTECTED_ROOTS | NORMATIVE_DOCS or PurePosixPath(path).suffix in {".rs", ".lean", ".qli", ".qlt", ".toml", ".lock"} or path.startswith((".github/", "scripts/", "src/", "lean/", "lean-kernel/", "corpus/", "stdlib/", "python/", "research/", "examples/", "docs/", "docs-old/", "governance/", "tests/fixtures/constitution_v030/")):
             return "full", f"protected executable/policy input: {path}"
         if path in policy["documentation_only"]:
             continue
@@ -80,11 +80,12 @@ def proof_lane(paths: list[str], policy: dict | None = None,
     for path in paths:
         if path == "lean/schema-registry.json" and registry_source_only:
             continue
-        if not valid_path(path) or path.startswith(".github/") or path in {
-            "TRUSTBOUNDARY.md", "CONSTITUTION.md",
+        if not valid_path(path) or path.startswith((".github/", "governance/", "tests/fixtures/constitution_v030/")) or path in {
+            "TRUSTBOUNDARY.md", "CONSTITUTION.md", "GOVERNANCE.md",
             "scripts/ci_profiles.py", "scripts/run_native_ci.py",
             "scripts/package_lean_kernel.py",
             "scripts/check_lean_kernel.py", "scripts/check_schema_registry.py",
+            "lean/Audit.lean", "lean-kernel/Audit.lean",
             "lean/schema-registry.json",
         } or path.endswith(("lean-toolchain", "lakefile.toml", "lake-manifest.json")):
             return "full"
@@ -131,18 +132,47 @@ def plan(root: Path, event_name: str, event: dict, expected_sha: str, ref: str) 
                   profile="full", proof_lane="full", reason="release, manual or unrecognized event", paths=[],
                   dependency_cache=event.get("inputs", {}).get("cache", "enabled"),
                   project_build_cache="disabled")
+    manual_base = None
     if ref.startswith(("refs/tags/", "refs/heads/codex/release-", "refs/heads/release/")):
         result["reason"] = "release ref; fresh full validation"
         return result
     if event_name == "workflow_dispatch":
-        requested = event.get("inputs", {}).get("validation", "full")
+        inputs = event.get("inputs", {})
+        requested = inputs.get("validation", "full")
         if requested not in {"tests", "full"}:
             raise ValueError("unknown manual validation lane")
-        result["proof_lane"] = requested
+        if inputs.get("release_readiness") in (True, "true"):
+            result["reason"] = "explicit scoped release-readiness validation"
+            result["proof_lane"] = requested
+            return result
+        else:
+            issues = inputs.get("completion_issues", "")
+            if not isinstance(issues, str) or len(issues) > 1024 or not re.fullmatch(
+                    r"[1-9][0-9]*(,[1-9][0-9]*)*", issues):
+                raise ValueError("manual Issue completion requires comma-separated positive Issue numbers")
+            numbers = [int(number) for number in issues.split(",")]
+            if len(set(numbers)) != len(numbers) or any(
+                    number > 2**31 - 1 for number in numbers):
+                raise ValueError("duplicate, excessive or out-of-range completion Issues")
+            result.update(completion_issues=numbers, reason="explicit Issue completion validation")
+            if inputs.get("completion_pr"):
+                from check_pr_size import hosted_context
+                context = hosted_context(root, event_name, event, expected_sha, ref,
+                                         event.get("repository", {}).get("full_name"))
+                manual_base = context["base"]
+                result["completion_pr"] = context["pull_request"]
+            else:
+                if ref != "refs/heads/main":
+                    raise ValueError("branch Issue completion requires completion_pr to retain exact PR size gates")
+                manual_base = inputs.get("release_base")
+                if not isinstance(manual_base, str) or not SHA.fullmatch(manual_base) or manual_base == "0" * 40:
+                    raise ValueError("non-PR Issue completion requires an exact reviewed release_base")
+                git(root, "cat-file", "-e", f"{manual_base}^{{commit}}")
+    if event_name not in {"pull_request", "push"} and manual_base is None:
         return result
-    if event_name not in {"pull_request", "push"}:
-        return result
-    if event_name == "pull_request":
+    if manual_base is not None:
+        base = manual_base
+    elif event_name == "pull_request":
         base = event.get("pull_request", {}).get("base", {}).get("sha")
     else:
         if event.get("forced"):
@@ -170,6 +200,10 @@ def plan(root: Path, event_name: str, event: dict, expected_sha: str, ref: str) 
     source_only = "lean/schema-registry.json" in result["paths"] and registry_binding_only(root, base, head)
     result["registry_source_only_change"] = source_only
     result["proof_lane"] = "tests" if result["profile"] == "docs" else proof_lane(result["paths"], policy, source_only)
+    if manual_base is not None:
+        result["reason"] = "explicit Issue completion; " + result["reason"]
+        if requested == "full":
+            result.update(profile="full", proof_lane="full")
     if event_name == "pull_request" and event.get("pull_request", {}).get("head", {}).get("ref", "").startswith(("codex/release-", "release/")):
         result.update(profile="full", proof_lane="full", reason="release branch; fresh full validation")
     result["policy_sha256"] = hashlib.sha256((root / ".github/ci/profiles.json").read_bytes()).hexdigest()
@@ -202,12 +236,38 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--gate", action="store_true")
     parser.add_argument("--report", type=Path)
+    parser.add_argument("--checks", help="execute a group from the shared check manifest")
+    parser.add_argument("--plan", action="store_true")
+    parser.add_argument("--compiler", type=Path)
+    parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
+        if args.checks:
+            import ci_source_checks
+            if args.gate:
+                raise ValueError("--checks and --gate are separate operations")
+            if args.plan:
+                print(json.dumps(dict(status="not-run", group=args.checks,
+                                      **{k: v for k, v in ci_source_checks.describe(args.checks).items() if k != 'commands'},
+                                      commands=ci_source_checks.plan(args.checks, args.compiler)), indent=2))
+                return 0
+            if args.output is None:
+                raise ValueError("executing --checks requires --output")
+            return ci_source_checks.execute(args.checks, args.compiler, args.output)
+        if args.plan or args.compiler is not None or args.output is not None:
+            raise ValueError("source-check options require --checks")
         if args.gate:
             needs = json.loads(os.environ["NEEDS_JSON"])
             if args.report:
                 args.report.write_text(json.dumps(dict(format=1, head=os.environ["GITHUB_SHA"], needs=needs), indent=2) + "\n", encoding="utf-8")
+            if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
+                with Path(summary).open("a", encoding="utf-8") as output:
+                    output.write("Producer results for commit `" + os.environ["GITHUB_SHA"] + "`.\n\n")
+                    output.write("| Producer | Result |\n| --- | --- |\n")
+                    for name in ("changes", *SUITES):
+                        result = needs.get(name, {}).get("result", "missing")
+                        output.write(f"| {name} | {result} |\n")
+                    output.write("\nEach required context reports this complete gate; a failed context is not an additional producer failure.\n")
             profile = check_needs(needs, os.environ["GITHUB_SHA"])
             lane = needs["changes"]["outputs"]["proof_lane"]
             print(f"Required checks passed for exact commit {os.environ['GITHUB_SHA']} (suites: {profile}; proof lane: {lane}).")
@@ -218,11 +278,17 @@ def main() -> int:
         if args.report:
             args.report.write_text(encoded, encoding="utf-8")
         with Path(os.environ["GITHUB_OUTPUT"]).open("a", encoding="utf-8") as output:
-            output.write(f"profile={result['profile']}\nproof_lane={result['proof_lane']}\nhead={result['head']}\n")
+            output.write(f"profile={result['profile']}\nproof_lane={result['proof_lane']}\nhead={result['head']}\nbase={result['base'] or ''}\n")
         if summary := os.environ.get("GITHUB_STEP_SUMMARY"):
             with Path(summary).open("a", encoding="utf-8") as output:
                 output.write(f"CI profile: **{result['profile']}**. Commit `{result['head']}`.\n\n")
-                output.write("```json\n" + encoded + "```\n")
+                # Long-lived PRs can exceed GitHub's 1 MiB step-summary limit.
+                # Keep every path in the report/log, never in this display view.
+                display = {key: value for key, value in result.items() if key != "paths"}
+                display["changed_path_count"] = len(result["paths"])
+                output.write("```json\n" + json.dumps(display, indent=2) + "\n```\n")
+                output.write("\nThe complete selection, including every changed path, is retained "
+                             "in the ci-selection artifact and this step's log.\n")
         print(encoded, end="")
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.CalledProcessError) as failure:

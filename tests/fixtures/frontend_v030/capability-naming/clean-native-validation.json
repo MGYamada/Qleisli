@@ -1,0 +1,303 @@
+{
+  "format": "qleisli.operation-naming-clean-native-validation",
+  "version": 1,
+  "status": "checked-selected-local-groups",
+  "binding": {
+    "head": "2cfe37f29dec2567b6db7d2cb8ad613acd67da34",
+    "lean_pin": "leanprover/lean4:v4.30.0",
+    "lean_version": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)",
+    "rust_version": "rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)",
+    "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)"
+  },
+  "manifest_sha256": "18ed49fe1ba30a76b84d0257e6cda7d6718477f6147be59ecc6bd0686870db95",
+  "selected_ids": [
+    "lean-raw",
+    "lean-observation",
+    "sized-corpus",
+    "sized-qpe",
+    "sized-arithmetic",
+    "sized-qpe-clients"
+  ],
+  "omitted_ids": [
+    "lean-hierarchy",
+    "lean-layout",
+    "lean-layout-dag",
+    "lean-phase-layout",
+    "lean-phase-operations",
+    "hierarchical-gradient",
+    "hierarchical-fourier-stage",
+    "lean-interference",
+    "lean-exact",
+    "lean-finite",
+    "lean-raw-completion",
+    "lean-branch-function",
+    "lean-streamed-instrument",
+    "lean-qft",
+    "lean-qft-semantic",
+    "lean-qft-graph",
+    "lean-qpe",
+    "lean-controlled-power",
+    "hierarchical-graph",
+    "hierarchical-artifact",
+    "hierarchical-typing",
+    "hierarchical-contract-typing",
+    "hierarchical-structural",
+    "lean-reshape",
+    "hierarchical-readout",
+    "hierarchical-preparation",
+    "hierarchical-instrument",
+    "instrument-host",
+    "hierarchical-execution",
+    "compact-sized-graph",
+    "sized-instrument",
+    "sized-qpe-readout",
+    "hierarchical-power",
+    "hierarchical-routed-power",
+    "hierarchical-circuit-trace",
+    "hierarchical-qpe-schedule",
+    "hierarchical-qpe-root",
+    "hierarchical-qpe-instrument",
+    "sized-source-native",
+    "sized-review-dialects-native",
+    "sized-cli-native",
+    "named-qpe-native",
+    "hierarchical-derivation",
+    "hierarchical-calls",
+    "hierarchical-finite",
+    "hierarchical-conditional",
+    "hierarchical-request",
+    "hierarchical-host",
+    "verification-baseline",
+    "hierarchical-fourier-base",
+    "hierarchical-fourier-body",
+    "hierarchical-wiring",
+    "hierarchical-fourier-root",
+    "hierarchical-fourier-host",
+    "sized-qft",
+    "rust-fourier-factoring",
+    "hierarchical-qft",
+    "hierarchical-qft-shared-gradient",
+    "native-paths",
+    "lean-kernel-self-test",
+    "native-acceptance"
+  ],
+  "workers": 1,
+  "elapsed_seconds": 96.71490433299914,
+  "preparation": {
+    "native_build_commands": [
+      {
+        "command": [
+          "lake",
+          "build",
+          "QleisliKernel:static"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "Build completed successfully (220 jobs).\n",
+        "stderr": "",
+        "seconds": 0.1574870409676805
+      },
+      {
+        "command": [
+          "lake",
+          "env",
+          "lean",
+          "--version"
+        ],
+        "cwd": "/Users/masa/git/Qleisli/lean-kernel",
+        "exit": 0,
+        "stdout": "Lean (version 4.30.0, arm64-apple-darwin24.6.0, commit d024af099ca4bf2c86f649261ebf59565dc8c622, Release)\n",
+        "stderr": "",
+        "seconds": 0.10875545907765627
+      }
+    ],
+    "native_build_record_sha256": "24e1548d5a8b7734f77a824ff2bdf0f5e2bb30f29d7b82754fc652bcfb926077",
+    "host_build": {
+      "id": "host-build",
+      "status": "passed",
+      "seconds": 10.74819779198151,
+      "commands": [
+        {
+          "command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--all-targets"
+          ],
+          "executed_command": [
+            "cargo",
+            "build",
+            "--locked",
+            "--all-targets"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 10.747251750086434
+        }
+      ],
+      "log_sha256": "099d49c971dcad964f647d8f9988d2a7f9079f570714bb46eb74de51fac7741d",
+      "observed_output": "{\"command\": [\"cargo\", \"build\", \"--locked\", \"--all-targets\"], \"executed_command\": [\"cargo\", \"build\", \"--locked\", \"--all-targets\"]}\n   Compiling qleisli v0.3.0-alpha (/Users/masa/git/Qleisli)\n    Finished `dev` profile [unoptimized] target(s) in 10.65s\n"
+    }
+  },
+  "checks": [
+    {
+      "id": "lean-observation",
+      "status": "passed",
+      "seconds": 28.11649779207073,
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_observation.py",
+            "--record",
+            "/private/tmp/qleisli-capability-naming-native-clean/lean-observation/record.json"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_observation.py",
+            "--record",
+            "/private/tmp/qleisli-capability-naming-native-clean/lean-observation/record.json"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 28.115477832965553
+        }
+      ],
+      "log_sha256": "ebb8604cb46cd04baddec9ac18d905b58b23080e27ecc6778a8d25309ed0ceef",
+      "observed_output": "{\"command\": [\"python3\", \"scripts/test_lean_observation.py\", \"--record\", \"/private/tmp/qleisli-capability-naming-native-clean/lean-observation/record.json\"], \"executed_command\": [\"python3\", \"scripts/test_lean_observation.py\", \"--record\", \"/private/tmp/qleisli-capability-naming-native-clean/lean-observation/record.json\"]}\n150 native cases; 143 Rust comparisons; 145 exact Kraus operators; 145 retained histories\n"
+    },
+    {
+      "id": "lean-raw",
+      "status": "passed",
+      "seconds": 36.98891258297954,
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_lean_raw.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_lean_raw.py"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 36.988000082899816
+        }
+      ],
+      "log_sha256": "48eda736ba1f01ef2bc213fdaed7b58b47cbafc5cadb0469f06cd2c965bcea8b",
+      "observed_output": "{\"command\": [\"python3\", \"scripts/test_lean_raw.py\"], \"executed_command\": [\"python3\", \"scripts/test_lean_raw.py\"]}\n121 native raw cases; 104 Rust comparisons; 85 independent rational matrices; 180 independent raw trace comparisons\n"
+    },
+    {
+      "id": "sized-arithmetic",
+      "status": "passed",
+      "seconds": 6.030503665911965,
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_arithmetic.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_arithmetic.py"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 6.0296985829481855
+        }
+      ],
+      "log_sha256": "61996f2fa9e468476102da1985b240d325911d0da0ac6de5c1c2e93f4aabd328",
+      "observed_output": "{\"command\": [\"python3\", \"scripts/test_sized_arithmetic.py\"], \"executed_command\": [\"python3\", \"scripts/test_sized_arithmetic.py\"]}\nFresh small-system native arithmetic checks passed.\n{\"format\": \"qleisli.sized-arithmetic-experiment\", \"version\": 1, \"status\": \"passed-small-source-path\", \"scope\": \"Small-system source path; no maximum-size checks, named arithmetic contract proof or production integration claim.\", \"source_sha256\": {\"comparison\": \"9ff7175ac22b691a6ab8fecbfc1a653ee639c1de73e2e6aa842cc21908956686\", \"negation\": \"4b11e41eb99061037322d7eb0767bd3461ec9a3de65cc2b9bb8bf77d6755bcd2\", \"controls\": \"6786a9399ba8c636e2ac9a5f4d6b900075fe5bbe2cbb650cd7a03c269df188e4\", \"increment\": \"0bafa4c28d22f376ba359f8b8aedbba35562b11405ef9b68ea6c181cb61113b2\", \"addition\": \"bc4396107cfd3550100da70a31bc88d98ac3d7881464e3b91be5bd2f78f30fbd\", \"bitwise\": \"c18d04d844bf108a4b3fc3cbcc3afb57c17b77771e99a2c67456b6626777f74b\"}, \"producer_sha256\": \"85f6a53d7a31e7dd0689723e9dbb9a62d0cac34c45759c21b750da261725b146\", \"kernel_sha256\": \"75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e\", \"command\": [\"cargo\", \"test\", \"--test\", \"sized_corpus\", \"inspect_source_produced_corpus\", \"--\", \"--ignored\", \"--nocapture\"], \"exit_code\": 0, \"native\": [[\"controls-0\", \"ok\", \"67883\", \"171\", \"1\"], [\"increment-0\", \"ok\", \"5670\", \"0\", \"0\"], [\"negation-0\", \"ok\", \"5670\", \"0\", \"0\"], [\"comparison-0\", \"ok\", \"279747\", \"171\", \"1\"], [\"add-0-0\", \"ok\", \"5670\", \"0\", \"0\"], [\"add-0-1\", \"ok\", \"12500\", \"0\", \"0\"], [\"add-0-2\", \"ok\", \"24774\", \"0\", \"0\"], [\"add-0-3\", \"ok\", \"34689\", \"0\", \"0\"], [\"controls-1\", \"ok\", \"142734\", \"171\", \"1\"], [\"increment-1\", \"ok\", \"144062\", \"171\", \"1\"], [\"negation-1\", \"ok\", \"42539\", \"171\", \"1\"], [\"comparison-1\", \"ok\", \"491928\", \"513\", \"3\"], [\"add-1-0\", \"ok\", \"7253\", \"0\", \"0\"], [\"add-1-1\", \"ok\", \"155468\", \"171\", \"1\"], [\"add-1-2\", \"ok\", \"171224\", \"171\", \"1\"], [\"add-1-3\", \"ok\", \"184125\", \"171\", \"1\"], [\"controls-2\", \"ok\", \"231715\", \"171\", \"1\"], [\"increment-2\", \"ok\", \"303549\", \"171\", \"1\"], [\"negation-2\", \"ok\", \"79960\", \"342\", \"2\"], [\"comparison-2\", \"ok\", \"790570\", \"855\", \"5\"], [\"add-2-0\", \"ok\", \"8996\", \"0\", \"0\"], [\"add-2-1\", \"ok\", \"317905\", \"171\", \"1\"], [\"add-2-3\", \"ok\", \"353598\", \"171\", \"1\"], [\"add-2-4\", \"ok\", \"369769\", \"171\", \"1\"], [\"add-2-5\", \"ok\", \"385940\", \"171\", \"1\"], [\"controls-3\", \"ok\", \"330549\", \"171\", \"1\"], [\"increment-3\", \"ok\", \"490456\", \"171\", \"1\"], [\"negation-3\", \"ok\", \"120245\", \"513\", \"3\"], [\"comparison-3\", \"ok\", \"1121383\", \"1197\", \"7\"], [\"add-3-0\", \"ok\", \"10899\", \"0\", \"0\"], [\"add-3-1\", \"ok\", \"508082\", \"171\", \"1\"], [\"add-3-3\", \"ok\", \"551451\", \"171\", \"1\"], [\"add-3-7\", \"ok\", \"630101\", \"171\", \"1\"], [\"add-3-8\", \"ok\", \"649862\", \"171\", \"1\"], [\"add-3-9\", \"ok\", \"669623\", \"171\", \"1\"], [\"inverse-add-0\", \"ok\", \"41631\", \"0\", \"0\"], [\"inverse-equals-0\", \"ok\", \"321274\", \"171\", \"1\"], [\"controlled-add-0\", \"ok\", \"48605\", \"0\", \"0\"], [\"inverse-add-1\", \"ok\", \"197973\", \"171\", \"1\"], [\"inverse-equals-1\", \"ok\", \"542971\", \"513\", \"3\"], [\"controlled-add-1\", \"ok\", \"206844\", \"171\", \"1\"], [\"inverse-add-2\", \"ok\", \"370852\", \"171\", \"1\"], [\"inverse-equals-2\", \"ok\", \"852409\", \"855\", \"5\"], [\"controlled-add-2\", \"ok\", \"381506\", \"171\", \"1\"], [\"inverse-add-3\", \"ok\", \"572431\", \"171\", \"1\"], [\"inverse-equals-3\", \"ok\", \"1195298\", \"1197\", \"7\"], [\"controlled-add-3\", \"ok\", \"585028\", \"171\", \"1\"], [\"shared-equals-twice\", \"ok\", \"910512\", \"855\", \"5\"], [\"wrong-carry-order\", \"ok\", \"347696\", \"171\", \"1\"], [\"missing-carry\", \"ok\", \"161647\", \"0\", \"0\"], [\"reversed-bit-order\", \"ok\", \"350647\", \"171\", \"1\"], [\"wrong-count\", \"ok\", \"337427\", \"171\", \"1\"], [\"missing-restore\", \"ok\", \"738476\", \"855\", \"5\"], [\"wrong-predicate\", \"ok\", \"730458\", \"855\", \"5\"], [\"extra-target-phase\", \"ok\", \"857969\", \"855\", \"5\"], [\"false-finite-x\", \"contract\", \"Lean artifact inspection: the native checker rejected the artifact or request\"]], \"semantic_faults\": {\"wrong-carry-order\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 1.0, \"executed_instructions\": 6}, \"missing-carry\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 1.0, \"executed_instructions\": 0}, \"reversed-bit-order\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 1, \"executed_instructions\": 6}, \"wrong-count\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 1.0, \"executed_instructions\": 4}, \"missing-restore\": {\"basis_columns\": 32, \"reference_columns\": 2, \"maximum_error\": 1, \"executed_instructions\": 7}, \"wrong-predicate\": {\"basis_columns\": 32, \"reference_columns\": 2, \"maximum_error\": 1, \"executed_instructions\": 7}, \"extra-target-phase\": {\"basis_columns\": 32, \"reference_columns\": 2, \"maximum_error\": 2.0, \"executed_instructions\": 10}}, \"totals\": {\"basis_columns\": 557, \"reference_columns\": 96}}\n"
+    },
+    {
+      "id": "sized-corpus",
+      "status": "passed",
+      "seconds": 2.1277179579483345,
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_local_resolution.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_local_resolution.py"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 0.29365179198794067
+        },
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_corpus.py",
+            "--small"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_corpus.py",
+            "--small"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 1.8330179159529507
+        }
+      ],
+      "log_sha256": "45de00a48db33660f1fb24b1eaea3e12b4d1957f4d89fe3336536962f2dee1dd",
+      "observed_output": "{\"command\": [\"python3\", \"scripts/test_sized_local_resolution.py\"], \"executed_command\": [\"python3\", \"scripts/test_sized_local_resolution.py\"]}\n......................\n----------------------------------------------------------------------\nRan 22 tests in 0.010s\n\nOK\n{\"command\": [\"python3\", \"scripts/test_sized_corpus.py\", \"--small\"], \"executed_command\": [\"python3\", \"scripts/test_sized_corpus.py\", \"--small\"]}\n{\"format\": \"qleisli.sized-corpus-experiment\", \"version\": 1, \"status\": \"passed-experimental-source-path\", \"scope\": \"small-system\", \"native\": [[\"xor-0\", \"ok\", \"11427\", \"0\", \"0\"], [\"xor-1\", \"ok\", \"61347\", \"171\", \"1\"], [\"xor-2\", \"ok\", \"181376\", \"342\", \"2\"], [\"ghz-1\", \"ok\", \"60965\", \"171\", \"1\"], [\"ghz-2\", \"ok\", \"138508\", \"342\", \"2\"], [\"ghz-3\", \"ok\", \"221047\", \"513\", \"3\"], [\"xor-wrong-axis\", \"ok\", \"318413\", \"342\", \"2\"], [\"xor-phase\", \"ok\", \"741870\", \"1368\", \"8\"], [\"ghz-no-superposition\", \"ok\", \"138508\", \"342\", \"2\"], [\"ghz-missing-fanout\", \"ok\", \"47625\", \"171\", \"1\"], [\"ir-empty-owner\", \"invalid_ir\", \"Lean artifact inspection: the native checker rejected the artifact or request\"], [\"ir-wrong-leaf\", \"contract\", \"Lean artifact inspection: the native checker rejected the artifact or request\"]], \"source_rejections\": [{\"case\": \"alias\", \"diagnostic\": \"unknown, captured or already moved quantum value x\"}, {\"case\": \"empty-alias\", \"diagnostic\": \"unknown, captured or already moved quantum value x\"}, {\"case\": \"dropped-zero-owner\", \"diagnostic\": \"unreturned quantum owners: y\"}, {\"case\": \"empty-body-alias\", \"diagnostic\": \"unknown, captured or already moved quantum value a\"}, {\"case\": \"out-of-range\", \"diagnostic\": \"bit index outside register\"}, {\"case\": \"wrong-width\", \"diagnostic\": \"take_bit width/type mismatch\"}, {\"case\": \"wrong-reinsert-width\", \"diagnostic\": \"put_bit width/type mismatch\"}, {\"case\": \"owner-shadow\", \"diagnostic\": \"binding would discard live owner y\"}, {\"case\": \"tuple-shape\", \"diagnostic\": \"tuple pattern has the wrong shape\"}, {\"case\": \"unknown-import\", \"diagnostic\": \"unsupported or duplicate import other::quantum::cnot\"}, {\"case\": \"nonlinear-size\", \"diagnostic\": \"unexpected character at byte/character offset 561\"}, {\"case\": \"underflow\", \"diagnostic\": \"static arithmetic underflow/overflow\"}, {\"case\": \"zero-ghz\", \"diagnostic\": \"static entry premise is false\"}, {\"case\": \"register-capacity\", \"diagnostic\": \"register width exceeds the eight-bit register profile\"}, {\"case\": \"implicit-bit-view\", \"diagnostic\": \"h requires Q<Bit>; conversions are explicit\"}, {\"case\": \"total-capacity\", \"diagnostic\": \"input exceeds the 16-wire profile\"}], \"source_sha256\": {\"xor\": \"c18d04d844bf108a4b3fc3cbcc3afb57c17b77771e99a2c67456b6626777f74b\", \"ghz\": \"7e02bde81a1ac7553879bf3ca001db63dcf6b85e3270c66f54f60f3ce75eafe5\"}, \"kernel_sha256\": \"75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e\", \"semantics\": {\"xor-0\": {\"basis_columns\": 1, \"reference_columns\": 2, \"maximum_error\": 0.0, \"executed_gates\": 0}, \"xor-1\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 0.0, \"executed_gates\": 1}, \"xor-2\": {\"basis_columns\": 16, \"reference_columns\": 2, \"maximum_error\": 0.0, \"executed_gates\": 2}, \"ghz-1\": {\"basis_columns\": 2, \"reference_columns\": 2, \"maximum_error\": 0.0, \"executed_gates\": 1}, \"ghz-2\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 0.0, \"executed_gates\": 2}, \"ghz-3\": {\"basis_columns\": 8, \"reference_columns\": 2, \"maximum_error\": 0.0, \"executed_gates\": 3}}, \"semantic_faults\": {\"xor-wrong-axis\": {\"basis_columns\": 16, \"reference_columns\": 2, \"maximum_error\": 1.0, \"executed_gates\": 2}, \"xor-phase\": {\"basis_columns\": 16, \"reference_columns\": 2, \"maximum_error\": 1.9999999999999996, \"executed_gates\": 8}, \"ghz-no-superposition\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 0.7071067811865475, \"executed_gates\": 2}, \"ghz-missing-fanout\": {\"basis_columns\": 4, \"reference_columns\": 2, \"maximum_error\": 0.7071067811865475, \"executed_gates\": 1}}}\n"
+    },
+    {
+      "id": "sized-qpe",
+      "status": "passed",
+      "seconds": 3.474387958063744,
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe.py"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 3.473581915954128
+        }
+      ],
+      "log_sha256": "ed625e8fd5c8ee1c862d331812232dfaddca2c7096c2b37e24d931d4287c567a",
+      "observed_output": "{\"command\": [\"python3\", \"scripts/test_sized_qpe.py\"], \"executed_command\": [\"python3\", \"scripts/test_sized_qpe.py\"]}\nSmall-system native coherent source checks completed; maximum-size checks omitted by user decision.\n{\"format\": \"qleisli.sized-qpe-experiment\", \"version\": 1, \"status\": \"passed-small-coherent-source-path\", \"scope\": \"Unitary coherent core only; measured Bits API, named QPE contract and production execution remain open.\", \"validation_selection\": \"Small qubit systems only, as requested on 2026-09-30; no new maximum-size generation or check. Earlier (8,8) limit is retained in the authoring history.\", \"source_sha256\": {\"evolution\": \"3c6ff3e06b02a18b108ea11d89cab2c9f4ede69b2404221b01046be91ff2742a\", \"estimation\": \"5606bc82ca37faa21f865d32af87da8add4286d3d9440e9d99e6c41674c2c698\", \"preparation\": \"03411fa8cfcd57ba8c05608240892001585407c54c86d9b5cdd4149a07e4232c\", \"fourier\": \"be8901bfbe1fb9a4bd0d63c43a57bb6f0c980dee2f930abc821fbfbfb8c58122\"}, \"producer_sha256\": \"85f6a53d7a31e7dd0689723e9dbb9a62d0cac34c45759c21b750da261725b146\", \"diagnostic_sha256\": \"63c720f6f0da7ca2a07d1edc58ed7fb58830ddfb7df8b1835c98f3b53c4e14b8\", \"kernel_sha256\": \"75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e\", \"command\": [\"cargo\", \"test\", \"--test\", \"sized_corpus\", \"inspect_source_produced_corpus\", \"--\", \"--ignored\", \"--nocapture\"], \"exit_code\": 0, \"native\": [[\"qpe-1-3\", \"ok\", \"821300\", \"1026\", \"6\"], [\"qpe-2-4\", \"ok\", \"1195659\", \"1368\", \"8\"], [\"off-grid\", \"ok\", \"821300\", \"1026\", \"6\"], [\"non-basis\", \"ok\", \"840418\", \"1197\", \"7\"], [\"global-phase\", \"ok\", \"852235\", \"1368\", \"8\"], [\"permuted-target\", \"ok\", \"902321\", \"1026\", \"6\"], [\"cyclic-target\", \"ok\", \"673468\", \"684\", \"4\"], [\"wrong-power-order\", \"ok\", \"821300\", \"1026\", \"6\"], [\"missing-high-power\", \"ok\", \"719173\", \"1026\", \"6\"], [\"wrong-fourier-sign\", \"ok\", \"817525\", \"1026\", \"6\"], [\"missing-hadamards\", \"ok\", \"673896\", \"513\", \"3\"], [\"wrong-provider-phase\", \"ok\", \"821300\", \"1026\", \"6\"], [\"zero-repeat\", \"ok\", \"804170\", \"1026\", \"6\"], [\"false-finite-equation\", \"contract\", \"Lean artifact inspection: the native checker rejected the artifact or request\"], [\"false-repeat-equation\", \"contract\", \"Lean artifact inspection: the native checker rejected the artifact or request\"]], \"semantics\": {\"qpe-1-3\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.032645612729812e-15, \"executed_instructions\": 17}, \"qpe-2-4\": {\"basis_columns\": 64, \"reference_columns\": 2, \"diagnostic_phase_branches\": 16, \"maximum_error\": 2.6255072761184257e-15, \"executed_instructions\": 34}, \"off-grid\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 9.305364597889227e-16, \"executed_instructions\": 17}, \"non-basis\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 8.441528768080325e-16, \"executed_instructions\": 31}, \"global-phase\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.032645612729812e-15, \"executed_instructions\": 38}, \"permuted-target\": {\"basis_columns\": 32, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 8.473409486550036e-16, \"executed_instructions\": 11}, \"cyclic-target\": {\"basis_columns\": 32, \"reference_columns\": 2, \"diagnostic_phase_branches\": 4, \"maximum_error\": 3.803658237888843e-16, \"executed_instructions\": 7}}, \"semantic_faults\": {\"wrong-power-order\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 0.853553390593274, \"executed_instructions\": 17}, \"missing-high-power\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.0, \"executed_instructions\": 13}, \"wrong-fourier-sign\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.2071067811865475, \"executed_instructions\": 17}, \"missing-hadamards\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.3535533905932737, \"executed_instructions\": 14}, \"wrong-provider-phase\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.207106781186547, \"executed_instructions\": 17}, \"zero-repeat\": {\"basis_columns\": 16, \"reference_columns\": 2, \"diagnostic_phase_branches\": 8, \"maximum_error\": 1.0, \"executed_instructions\": 10}}, \"generated_artifacts\": {\"qpe-1-3\": {\"definitions\": 135, \"bytes\": 143579}, \"qpe-2-4\": {\"definitions\": 174, \"bytes\": 187505}, \"off-grid\": {\"definitions\": 135, \"bytes\": 143579}, \"non-basis\": {\"definitions\": 139, \"bytes\": 148018}, \"global-phase\": {\"definitions\": 141, \"bytes\": 150764}, \"permuted-target\": {\"definitions\": 140, \"bytes\": 150371}, \"cyclic-target\": {\"definitions\": 105, \"bytes\": 113442}, \"wrong-power-order\": {\"definitions\": 135, \"bytes\": 143579}, \"missing-high-power\": {\"definitions\": 124, \"bytes\": 130372}, \"wrong-fourier-sign\": {\"definitions\": 134, \"bytes\": 142844}, \"missing-hadamards\": {\"definitions\": 107, \"bytes\": 113023}, \"wrong-provider-phase\": {\"definitions\": 135, \"bytes\": 143579}, \"zero-repeat\": {\"definitions\": 131, \"bytes\": 140587}, \"false-finite-equation\": {\"definitions\": 135, \"bytes\": 143579}, \"false-repeat-equation\": {\"definitions\": 135, \"bytes\": 143579}}}\n"
+    },
+    {
+      "id": "sized-qpe-clients",
+      "status": "passed",
+      "seconds": 5.733210291946307,
+      "commands": [
+        {
+          "command": [
+            "python3",
+            "scripts/test_sized_qpe_clients.py"
+          ],
+          "executed_command": [
+            "python3",
+            "scripts/test_sized_qpe_clients.py"
+          ],
+          "status": "passed",
+          "exit_code": 0,
+          "seconds": 5.73236241703853
+        }
+      ],
+      "log_sha256": "34da318283e81d9f205167b035d7a1d09b6cccc8ea6527a09550b27fa9a90ddf",
+      "observed_output": "{\"command\": [\"python3\", \"scripts/test_sized_qpe_clients.py\"], \"executed_command\": [\"python3\", \"scripts/test_sized_qpe_clients.py\"]}\n{\"status\": \"passed-small-coherent-clients\", \"totals\": {\"basis_columns\": 432, \"reference_columns\": 31}, \"provider_cache\": {\"maximum_error\": 2.220446049250313e-16, \"basis_columns\": 8, \"reference_columns\": 1}}\nNative outcomes: 23; source rejections: 18; semantic faults: 6\n"
+    }
+  ],
+  "artifacts": {
+    "compiler_sha256": "2e376d128f1a5eb534e9feb318a0cfd949b2b35010e022595f7dfa58a1d20180",
+    "selected_kernel_sha256": "75601c7d9188a4f146d1931ca4119b6725d2c296256c56a49855989cf5b6281e",
+    "observation_record_sha256": "68c80466180bf11eb3f403b9d518b83e842d55ec00710b0fa19ae7867c5a29a1",
+    "full_local_report_sha256": "9f9a2a78ded341ed5fa80b72307194d1d41f4987d1e1ee2a553b7d6bd19b9727"
+  },
+  "source_identity": "The runner required the same clean commit, pinned tools and manifest before and after execution. This evidence record is a subsequent data-only addition; it is not a claim that later commits ran these local groups.",
+  "scope": "Six selected affected groups executed through the unchanged shared runner with independent small-system oracles and fresh artifact acceptance. The other 61 groups were not run locally here. Existing Rust latest/MSRV, build/audit and ownership results remain separately recorded. Full hosted exact-head CI, broader QS/PR/quantitative RS/EXACT obligations, proof replay, release readiness and publication remain separate; no new guarantee or approval is claimed."
+}

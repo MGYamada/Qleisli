@@ -1,4 +1,4 @@
-"""Untrusted host adapters to the Rust verifier; no Python proof authority.
+"""Untrusted host adapters to the Rust CLI and native Lean acceptance gate.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
@@ -7,10 +7,12 @@ import json
 import math
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
+import time
 
-__version__ = "0.2.9"
+__version__ = "0.3.0-alpha"
 __all__ = ["Client", "Program", "QleisliError"]
 
 
@@ -26,6 +28,28 @@ def _error(code, message):
                           "primary": None, "related": []}])
 
 
+def _document(data):
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate response field")
+            result[key] = value
+        return result
+
+    def invalid_constant(value):
+        raise ValueError("non-JSON response constant: " + value)
+
+    def finite_number(value):
+        number = float(value)
+        if not math.isfinite(number):
+            raise ValueError("response number exceeds finite host range")
+        return number
+
+    return json.loads(data, object_pairs_hook=unique, parse_constant=invalid_constant,
+                      parse_float=finite_number)
+
+
 def _bytes(value, limit):
     if not isinstance(value, (str, bytes)):
         raise TypeError("expected source text or bytes")
@@ -36,6 +60,60 @@ def _bytes(value, limit):
     if len(data) > limit:
         raise _error("limit", "input byte limit exceeded")
     return data
+
+
+def _finish_process(process):
+    """Stop the owned POSIX session, including the checker's separate group.
+
+    This contains ordinary descendants, not a program deliberately escaping
+    its session. Windows retains direct-child cleanup pending a job-object API.
+    """
+    stopped = set()
+    try:
+        if os.name == "posix":
+            deadline = time.monotonic() + 2
+            while True:
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise OSError("connection descendants did not stop")
+                listing = subprocess.run(["ps", "-e", "-o", "pid=,stat="],
+                    capture_output=True, text=True, check=True, timeout=remaining)
+                members = []
+                for line in listing.stdout.splitlines():
+                    pid, state = line.split()
+                    pid = int(pid)
+                    try:
+                        if os.getsid(pid) == process.pid:
+                            members.append((pid, state))
+                    except ProcessLookupError:
+                        pass
+                    except PermissionError:
+                        # A process belonging to another user is not ours.
+                        pass
+                # communicate() may have reaped the leader. If that PID now
+                # exists again, its session is new and must not be signalled.
+                if process.returncode is not None and any(pid == process.pid for pid, _ in members):
+                    break
+                for pid, _ in members:
+                    try:
+                        if os.getsid(pid) == process.pid:
+                            os.kill(pid, signal.SIGSTOP)
+                            stopped.add(pid)
+                    except ProcessLookupError:
+                        pass
+                # Re-scan after stopping every member. A child can start its
+                # own group or fork before receiving STOP, but not after it.
+                if all(state.startswith(("T", "Z")) for _, state in members):
+                    break
+    finally:
+        for pid in stopped:
+            try:
+                if os.getsid(pid) == process.pid:
+                    os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        process.kill()
+        process.wait()
 
 
 class Client:
@@ -50,11 +128,16 @@ class Client:
 
     def _process(self, args, data=None):
         try:
-            return subprocess.run(args, input=data, capture_output=True, timeout=self.timeout,
-                                  check=False)
+            with subprocess.Popen(args, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+                                  stderr=subprocess.PIPE, start_new_session=os.name == "posix") as process:
+                try:
+                    stdout, stderr = process.communicate(data, timeout=self.timeout)
+                    return subprocess.CompletedProcess(args, process.returncode, stdout, stderr)
+                finally:
+                    _finish_process(process)
         except subprocess.TimeoutExpired as e:
             raise _error("limit", "connection process timed out") from e
-        except OSError as e:
+        except (OSError, subprocess.SubprocessError) as e:
             raise _error("connection", str(e)) from e
 
     def _call(self, action, format, *, data=None, path="-", shots=None, seed=None):
@@ -69,8 +152,9 @@ class Client:
             args.extend([f"--shots={shots}", f"--seed={seed}"])
         result = self._process(args, data)
         try:
-            document = json.loads(result.stdout)
-            if (document["format"] != "qleisli.result" or document["version"] != 1
+            document = _document(result.stdout)
+            if (document["format"] != "qleisli.result" or type(document["version"]) is not int
+                    or document["version"] != 1
                     or document["command"] != f"interop {action}"
                     or document["outcome"] != ("ok" if result.returncode == 0 else "error")
                     or not isinstance(document["diagnostics"], list)):
@@ -82,7 +166,7 @@ class Client:
             if document["diagnostics"] or not isinstance(document["result"], dict):
                 raise ValueError("inconsistent success envelope")
             return document["result"]
-        except (ValueError, KeyError, TypeError, UnicodeError) as e:
+        except (ValueError, KeyError, TypeError, UnicodeError, RecursionError) as e:
             raise _error("connection", "invalid Rust connection response") from e
 
     def from_openqasm(self, source):
@@ -104,13 +188,13 @@ class Client:
         # the child's import path. Keep the environment's optional PyQIR extra.
         result = self._process([sys.executable, "-P", str(Path(__file__).with_name("_qir.py").resolve())], data)
         try:
-            document = json.loads(result.stdout)
+            document = _document(result.stdout)
             if result.returncode:
                 raise _error(document["code"], document["message"])
             qasm = document["qasm"]
             if not isinstance(qasm, str):
                 raise ValueError("invalid reader output")
-        except (ValueError, KeyError, TypeError, UnicodeError) as e:
+        except (ValueError, KeyError, TypeError, UnicodeError, RecursionError) as e:
             raise _error("qir", "QIR reader failed or returned an invalid response") from e
         return self.from_openqasm(qasm)
 

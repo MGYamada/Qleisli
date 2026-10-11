@@ -1,0 +1,139 @@
+{
+  "format": "qleisli.hosted-terminal-packet-files",
+  "version": 1,
+  "files": {
+    "README.md": {
+      "sha256": "4735534c441947c9029e738b3b5bc6932e0915213a2deb4d4165828d33c390de",
+      "bytes": 4555,
+      "mode": 420
+    },
+    "checkout-and-gates.json": {
+      "sha256": "ae0998d42f5ba77737261a9e8efe2838239c8c66fea9eece785eb16d75e676e1",
+      "bytes": 16827,
+      "mode": 420
+    },
+    "connector-returned-identities.json": {
+      "sha256": "3f5236ee6bcc0be88af6d0fdc165880408c493c6f10bc031918389d03290ab25",
+      "bytes": 7237,
+      "mode": 420
+    },
+    "data-audit-attempt-01.json": {
+      "sha256": "c523fb8cb95d9a1ac1e4ad0d6cb38d78b8bb2338c2e0b7e068529e29d8465b67",
+      "bytes": 1310,
+      "mode": 420
+    },
+    "data-audit-attempt-02.json": {
+      "sha256": "d7f54b12638931646bdf492ef7512d5f9ce083cd09d3abf4182a12e463923998",
+      "bytes": 654,
+      "mode": 420
+    },
+    "historical.after.json": {
+      "sha256": "5a84d08bde73975cc1946f098e52f07eb614fc4dc566ed984928b7ff4c5a1f06",
+      "bytes": 3259,
+      "mode": 420
+    },
+    "historical.before.json": {
+      "sha256": "4a896a09187f91def2bee81d23b5dd2a522b0cb22de88e69bf59533a7b999dd7",
+      "bytes": 3319,
+      "mode": 420
+    },
+    "jobs.api.json": {
+      "sha256": "d8056dda58c12afbbfb28bba81967b28e2b6b9676fd4ccdc857e7507cca5f07f",
+      "bytes": 84124,
+      "mode": 420
+    },
+    "jobs.connector.json": {
+      "sha256": "4517d78ab92099b30499288a816f9a782e0d8564693df04dcafd2557f45d3715",
+      "bytes": 45363,
+      "mode": 420
+    },
+    "log-artifacts.json": {
+      "sha256": "248d4d7d7ef8d68d0ee9a6af2eb626628a3f5b9bae1c87ec7ad6ec120c2a6feb",
+      "bytes": 8453,
+      "mode": 420
+    },
+    "logs/check-distribution-111851435909.log.txt.gz": {
+      "sha256": "9abac0c509e055f8cc2101f4b03e1ba0c7572598c0ed9f8044ce5ce9e66c60bb",
+      "bytes": 11278,
+      "mode": 420
+    },
+    "logs/check-rust-111851435989.log.txt.gz": {
+      "sha256": "e17f269818c70934ebff2f5bf647e13da4f0ad57d16092bc38d87b6b9e566df7",
+      "bytes": 49451,
+      "mode": 420
+    },
+    "logs/check-rust-msrv-111851435782.log.txt.gz": {
+      "sha256": "b8e5f0cb41b1a9adc51398531369c69a8b208e18dabce224b634bfc0af515c22",
+      "bytes": 47838,
+      "mode": 420
+    },
+    "logs/distribution-111932054082.log.txt.gz": {
+      "sha256": "d15effc1026fa374709e6b8acb5c56160e92f7604cf1e5775f46a9ff01b04c6f",
+      "bytes": 3532,
+      "mode": 420
+    },
+    "logs/docs-111932054253.log.txt.gz": {
+      "sha256": "a0527e7345280f4eb414e9f4644c59c0e271ca39d850e04c28342b6a93102763",
+      "bytes": 4247,
+      "mode": 420
+    },
+    "logs/interop-111932054080.log.txt.gz": {
+      "sha256": "c61992b84287ba40059bcaa66628fe044bffaa462b9a4ecb73526fcf5f58000c",
+      "bytes": 3539,
+      "mode": 420
+    },
+    "logs/lean-111932054276.log.txt.gz": {
+      "sha256": "8d3d08bc81c09d49af6b552d7bced1fea7726ead7bba1f259520d8dc570c42a4",
+      "bytes": 3532,
+      "mode": 420
+    },
+    "logs/lean-kernel-111932054171.log.txt.gz": {
+      "sha256": "08c941cbfe173d3f2645faa15db6454019988ad08cdce6f6a1acbb63e7980b03",
+      "bytes": 3538,
+      "mode": 420
+    },
+    "logs/macos-source-111932054245.log.txt.gz": {
+      "sha256": "bae8b92173100f6057cabb604bb9cbd6555f233d538d43067ef41de111b438a2",
+      "bytes": 3535,
+      "mode": 420
+    },
+    "logs/rust-111932054087.log.txt.gz": {
+      "sha256": "5801860819a82764f1fe51fac28441ac203167798cdd7df977201a3ff03400dd",
+      "bytes": 3510,
+      "mode": 420
+    },
+    "logs/rust-msrv-111932054098.log.txt.gz": {
+      "sha256": "4f453cb66563552bef0b477aed66825d8c854ffc0297b845ec4fbef89c44b83c",
+      "bytes": 3519,
+      "mode": 420
+    },
+    "merge.binding.json": {
+      "sha256": "610f355a5a5a85540f677fc87c0cd1b7f01681ee9fe09580cbf2de6ac863a46e",
+      "bytes": 3335,
+      "mode": 420
+    },
+    "observed-results-and-skips.json": {
+      "sha256": "c78000816fa882639c5e4e33c60253366e3d9699ce9a8d9cce0327c3bb51c3e0",
+      "bytes": 44148,
+      "mode": 420
+    },
+    "requests.json": {
+      "sha256": "72af62345836a0c7498c6ad2a0ddf5d9dde380a9dc45f390aac5bcd53532d201",
+      "bytes": 7770,
+      "mode": 420
+    },
+    "run.api.json": {
+      "sha256": "a4994f280b813324892b7548c763bcbf44d325f88a92bb737dd7f64257f9586d",
+      "bytes": 13952,
+      "mode": 420
+    },
+    "tested-workflow.yml": {
+      "sha256": "a2b64c61efce2acf37eb5baa6f20c16c0461accc2c6ad9e49e1ae181a186c25c",
+      "bytes": 40360,
+      "mode": 420
+    }
+  },
+  "self_excluded": "files.json",
+  "historical_files_are_external_references": true,
+  "scope": "Identity map for this additive packet only; no release or proof authority."
+}

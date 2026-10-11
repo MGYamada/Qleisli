@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"ownership","severity":"error","message":"unbound or consumed value a","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-tuple-unitors-v030/attempt-01/unused-zero-fold/main.qli","start":220,"end":221},"related":[]}],"result":null}

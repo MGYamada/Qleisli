@@ -1,0 +1,42 @@
+{
+  "argv": [
+    "rustup",
+    "run",
+    "1.85.0",
+    "cargo",
+    "test",
+    "--offline",
+    "--locked",
+    "--jobs=2",
+    "--test",
+    "functional_boundary",
+    "--test",
+    "body_effects",
+    "--test",
+    "operation_parameters",
+    "--test",
+    "quantum_unit_maps",
+    "--",
+    "--test-threads=2"
+  ],
+  "exit_code": 0,
+  "seconds": 21.288693125010468,
+  "cwd": "/Users/masa/git/Qleisli",
+  "environment": {
+    "CARGO_TARGET_DIR": "/private/tmp/qleisli-ci-repair-validation-target",
+    "CARGO_INCREMENTAL": "0",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_PROFILE_TEST_DEBUG": "0",
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "streams": {
+    "stdout": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-msrv-01.stdout.txt",
+      "sha256": "d1370ef744b5c5dcf891dec5e388b6c672b964b25a83e14188a087f504ebee30"
+    },
+    "stderr": {
+      "path": "tests/fixtures/frontend_v030/functional-boundary/validation-01/rust-msrv-01.stderr.txt",
+      "sha256": "0cddc6c8eaa656722d13ef6d1f211d4d76ae9c854669adac137d644b1bde0637"
+    }
+  }
+}

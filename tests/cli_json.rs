@@ -12,7 +12,7 @@ fn cli(args: &[&std::ffi::OsStr]) -> Output {
 
 #[test]
 fn native_transport_failures_use_the_closed_v1_project_code() {
-    let root = SourceRoot::new("observe fn main()->CBit{true}");
+    let root = SourceRoot::new("observe fn main()->Bit{1}");
     let artifact = root.0.join("valid.qirf");
     let emitted = cli(&[
         "emit-ir".as_ref(),
@@ -51,7 +51,7 @@ fn native_transport_failures_use_the_closed_v1_project_code() {
 #[test]
 fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
     let root = SourceRoot::new(include_str!(
-        "fixtures/review_v029/contract_mismatch/main.qli"
+        "fixtures/frontend_v030/ordinary-type-cutover/current/review_v029/contract_mismatch/main.qli"
     ));
     for json in [false, true] {
         let mut command = Command::new(env!("CARGO_BIN_EXE_qleisli"));
@@ -78,7 +78,7 @@ fn function_equation_mismatch_has_the_same_contract_code_in_text_and_json() {
 fn truncated_static_arguments_emit_one_located_json_parse_error() {
     for source in [
         "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[",
-        "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[repeat_op(0,",
+        "unitary fn f(q: Q<Bit>) -> Q<Bit> { g[power(",
     ] {
         let root = SourceRoot::new(source);
         let end = source.len();
@@ -102,8 +102,75 @@ fn truncated_static_arguments_emit_one_located_json_parse_error() {
 }
 
 #[test]
+fn retired_operation_diagnostics_preserve_utf8_crlf_spans_without_native_setup() {
+    for (body, token, replacement) in [
+        ("adjoint(U,q)", "adjoint", "adjoint(U)(q)"),
+        ("g[repeat_op(2,U)](q)", "repeat_op", "power(U, k)"),
+        ("repeat_static(2,U,q)", "repeat_static", "power(U, k)(q)"),
+        ("inverse(U)(q)", "inverse", "adjoint(U)(q)"),
+        ("g[inverse_op(U)](q)", "inverse_op", "adjoint(U)"),
+        ("g[controlled_op(U)](q)", "controlled_op", "controlled(U)"),
+    ] {
+        let source = format!("// 位相\r\nunitary fn f(q:Q<Bit>)->Q<Bit>{{{body}}}");
+        let root = SourceRoot::new(&source);
+        let kernel = root.0.join("absent");
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            // If parsing accidentally probes/spawns the checker, record it.
+            root.write(
+                "absent",
+                "#!/bin/sh\nprintf called > \"$0.called\"\nexit 91\n",
+            );
+            std::fs::set_permissions(&kernel, std::fs::Permissions::from_mode(0o700)).unwrap();
+        }
+        let start = source.find(token).unwrap();
+        let end = start + token.len();
+        let column = source[source.find('\n').unwrap() + 1..start]
+            .chars()
+            .count()
+            + 1;
+        for command in ["check", "run"] {
+            for json in [false, true] {
+                let mut process = Command::new(env!("CARGO_BIN_EXE_qleisli"));
+                process
+                    .arg(command)
+                    .arg(&root.0)
+                    .arg(format!("--lean-kernel={}", kernel.display()));
+                if json {
+                    process.arg("--format=json");
+                }
+                let output = process.output().unwrap();
+                assert_eq!(output.status.code(), Some(1));
+                let text =
+                    String::from_utf8(if json { output.stdout } else { output.stderr }).unwrap();
+                assert!(
+                    text.contains("is retired") && text.contains(replacement),
+                    "{text}"
+                );
+                if json {
+                    assert!(text.contains("\"code\":\"parse\""), "{text}");
+                    assert!(
+                        text.contains(&format!(
+                            "\"start\":{start},\"end\":{end},\"line\":2,\"column\":{column}"
+                        )),
+                        "{text}"
+                    );
+                } else {
+                    assert!(
+                        text.contains(&format!("main.qli:2:{column}: parse:")),
+                        "{text}"
+                    );
+                }
+            }
+        }
+        assert!(!kernel.with_file_name("absent.called").exists());
+    }
+}
+
+#[test]
 fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
-    let root = SourceRoot::new("observe fn main() -> CBit { true }");
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
     for (command, result) in [
         ("check", "{\"verified\":true}"),
         (
@@ -128,8 +195,48 @@ fn json_check_and_run_have_golden_envelopes_in_every_flag_position() {
 }
 
 #[test]
+fn json_command_identity_is_independent_of_leading_options() {
+    let root = SourceRoot::new("observe fn main() -> Bit { 1 }");
+    for (command, flags, status) in [
+        ("check", vec!["--source-bytes=1048576"], 0),
+        ("run", vec!["--legacy-source-limits"], 0),
+        ("sample", vec!["--shots=2", "--seed=0"], 0),
+        ("check", vec!["--project-bytes=1"], 1),
+    ] {
+        let trailing = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .arg(command)
+            .arg(&root.0)
+            .args(&flags)
+            .arg("--format=json")
+            .output()
+            .unwrap();
+        let leading = Command::new(env!("CARGO_BIN_EXE_qleisli"))
+            .args(&flags)
+            .arg(command)
+            .arg(&root.0)
+            .arg("--format=json")
+            .output()
+            .unwrap();
+        assert_eq!(trailing.status.code(), Some(status), "{trailing:?}");
+        assert_eq!(leading.status.code(), Some(status), "{leading:?}");
+        assert!(trailing.stderr.is_empty() && leading.stderr.is_empty());
+        assert!(
+            String::from_utf8_lossy(&trailing.stdout)
+                .contains(&format!("\"command\":\"{command}\"")),
+            "{trailing:?}"
+        );
+        assert_eq!(leading.stdout, trailing.stdout);
+    }
+}
+
+#[test]
 fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
-    let usage = include_str!("fixtures/verification_v029/usage.txt")
+    // Preserve the historical golden; only the retired command leaves current help.
+    let historical = include_str!("fixtures/frontend_v030/basis-polymorphism/current-usage.txt");
+    let retired = "  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n";
+    assert_eq!(historical.matches(retired).count(), 1);
+    let usage = historical
+        .replace(retired, "")
         .trim_end()
         .replace('\n', "\\u000a");
     for args in [
@@ -139,6 +246,9 @@ fn json_usage_is_atomic_and_keeps_the_usage_exit_code() {
         vec!["check", ".", "--format", "--format=json"],
         vec!["check", ".", "--format=xml", "--format=json"],
         vec!["check", "--unknown", "--format=json"],
+        vec!["--source-bytes=0", "check", ".", "--format=json"],
+        vec!["--unknown", "check", ".", "--format=json"],
+        vec!["--format=json", "--shots=01", "check", "."],
     ] {
         let args: Vec<_> = args.iter().map(std::ffi::OsStr::new).collect();
         let output = cli(&args);
@@ -185,7 +295,7 @@ fn json_runtime_limit_does_not_emit_a_partial_distribution() {
 
 #[test]
 fn json_type_failure_is_located_in_the_original_source() {
-    let root = SourceRoot::new("observe fn main() -> CBit { () }");
+    let root = SourceRoot::new("observe fn main() -> Bit { () }");
     let output = cli(&[
         "check".as_ref(),
         "--format=json".as_ref(),

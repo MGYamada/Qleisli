@@ -1,0 +1,4 @@
+// Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
+pub unitary fn f(q: Q<Unit>, b: Q<Bit>) -> (Q<Bit>,Q<Unit>) { (b,q) }
+
+observe fn main() -> Unit { () }

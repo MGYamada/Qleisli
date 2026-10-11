@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "task": "Bounded ordinary Boolean convergence with explicit classical entries, effects, owners and staging",
+  "baseline_commit": "10553a9f94f6fd6a4555961244e0e9be41154f8f",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository context; deployed model and sampling unrecorded",
+  "context": "context.md",
+  "kind": "informed_first_attempt",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Ten desired small complete projects preserved before any diagnostic/execution observation.",
+      "sha256": {
+        "constants/main.qli": "4759a8848d928d55e74d9112ed230dcec935e25f41a41044d16a58810dfc400f",
+        "truth-operations/main.qli": "f8964f79d7745305ff83e65ef6434b378b5b8436188822fcf02d0e7b4bee4902",
+        "copy-drop/main.qli": "36dff8355b3d5403e5188982c6d8f129d2654f0946908ada8418af94e250a844",
+        "mixed-passthrough/main.qli": "8b39ed1d6ab7800075081b9f00692c393ece461495600108bc44e256466524c6",
+        "classical-control/main.qli": "e53a0582a51a784b0fed2c6ef778b07dab550deb6d90cc63daad7f576941db41",
+        "measured-feedback/main.qli": "a8c318147ae20ca1e43dfaa06d5310d6e490a6698a6866e2ab6e7edb7c72ddc3",
+        "measured-logic/main.qli": "73c7fa8a6a601eb37c6d7b58fad7a99b42267e3543fd02b54e75b2d520ed77c1",
+        "unit-observation-retention/main.qli": "a98fc31a3ee396544000c1f70b6ee188d74bfe4d384934037d74661dd1f1ff6c",
+        "eager-and-observation/main.qli": "ab2271d973b26496e5ff1e7b4eee8c8c7dfa7b921c4b765f4f76d95bb0d1e9d5",
+        "static-selection/main.qli": "067e0362211c67766b9a604d0e7a7d1cfe7a57ece2c68ee79a8ef5a957accddb"
+      },
+      "observations": [
+        "observations/finite-constants.json",
+        "observations/finite-truth-operations.json",
+        "observations/finite-copy-drop.json",
+        "observations/finite-mixed-passthrough.json",
+        "observations/finite-classical-control.json",
+        "observations/finite-measured-feedback.json",
+        "observations/finite-measured-logic.json",
+        "observations/finite-unit-observation-retention.json",
+        "observations/finite-eager-and-observation.json",
+        "observations/finite-static-selection.json"
+      ]
+    }
+  ],
+  "source_records": [
+    {
+      "id": "static-as-runtime",
+      "reason": "Static Nat is not an ordinary runtime Bit, even when the supplied n is1.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/ordinary-boolean-v030/counterexamples/static-as-runtime/main.qli": "c5f0b02b84bbb165b6fe2a9912b07f9256ea97005df90aacc20f2b8f6f7f15fb"
+      },
+      "reports": [
+        "observations/finite-static-as-runtime.json"
+      ]
+    },
+    {
+      "id": "runtime-as-static",
+      "reason": "Runtime Bit cannot supply a static Nat. Finite Bits/Nat rejection may precede this judgment; do not conflate that with sized staging evidence.",
+      "sha256": {
+        "tests/fixtures/authoring_sessions/ordinary-boolean-v030/counterexamples/runtime-as-static/main.qli": "9ee126b2fe564a423c8bd5e63196b9aee01525fa034439e287aa416718c36cf0"
+      },
+      "reports": [
+        "observations/finite-runtime-as-static.json"
+      ]
+    }
+  ]
+}

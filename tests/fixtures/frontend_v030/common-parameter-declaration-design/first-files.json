@@ -1,0 +1,36 @@
+{
+  "format": "qleisli.read-only-design-first-file-map",
+  "version": 1,
+  "status": "first-candidate-frozen",
+  "excluded": [
+    "first-files.json"
+  ],
+  "scope": "Local draft/readback/hash/context only; no executable experiment, adoption or proof.",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 981,
+      "sha256": "f18bad865242795ac2cde82ff56ba7015f137fa44a47d3b06bc887f1c4d21e00"
+    },
+    {
+      "path": "candidate-01.md",
+      "bytes": 16142,
+      "sha256": "477bc835331e8aa46c85e267408a24ada18403ca2cb3ebcbff5ea5c6e028f3b4"
+    },
+    {
+      "path": "context.json",
+      "bytes": 3460,
+      "sha256": "07b35732e5ff00e94fcd804a22a935401a71a4fd4e9b6dcf51f05a4154e6bb51"
+    },
+    {
+      "path": "issue-32.connector.json",
+      "bytes": 93221,
+      "sha256": "69f3924259aa33f2a2642416fa65414ca8057038697ef0a0d8279e6db9e2c02e"
+    },
+    {
+      "path": "source-inputs.json",
+      "bytes": 7576,
+      "sha256": "fd48c72e6b89472d7b9d071d8925e5cf67dc5b37841e852e9306d23e9b98419d"
+    }
+  ]
+}

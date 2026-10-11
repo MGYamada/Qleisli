@@ -1,0 +1,63 @@
+{
+  "format": "qleisli.rust-boundary-diagnostics-prepared-test-plan",
+  "version": 1,
+  "status": "prepared-before-first-execution-not-run",
+  "ordinary_decision": "https://github.com/MGYamada/Qleisli/issues/68#issuecomment-6009785277",
+  "source_baseline_supplied_by_root": "f5081d175bb6287107b4feea3ffac0538501851f",
+  "constitutional_trusted_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "active_test_source": {
+    "path": "tests/rust_boundary_diagnostics.rs",
+    "sha256": "d24e5db0c28aa04a6af608fc87f37de2c9aded41026caef9b4e695fd920b80cd"
+  },
+  "prepared_original": {
+    "path": "tests/fixtures/frontend_v030/rust-boundary-diagnostics/prepared-01.rs.txt",
+    "sha256": "d24e5db0c28aa04a6af608fc87f37de2c9aded41026caef9b4e695fd920b80cd"
+  },
+  "author_context": "Informed independent regression preparation after source/API and prior test inspection; not a blind model attempt. Root supplied the ordinary contract and essential diagnostic phrases. Reviewer owns this test file, not production hint implementation or the separate actual CLI first-source study.",
+  "test_groups": [
+    {
+      "name": "unresolved_drop_keeps_callee_priority_without_inspecting_its_argument",
+      "expectation": "drop(0), drop(q) and drop(not q) fail common name / finite unknown_name at exactly the callee span with identical conditional name hints. Unresolved missing(not q) keeps its old unhinted callee diagnostic. Unicode/CRLF source prefix does not change byte-span semantics."
+    },
+    {
+      "name": "user_helpers_and_local_categories_do_not_acquire_rust_name_privileges",
+      "expectation": "User drop(Bit)->Unit stays Unitary and native closed execution returns 1. User drop(Q<Bit>)->Unit via explicit discard stays Observe and also returns 1. A quantum argument to the classical helper remains an argument type error; a runtime local drop remains a local-category error; an ordinary owner-transferring clone cannot permit the input owner to be used again. Those refusals gain no unresolved-name privilege or hint."
+    },
+    {
+      "name": "ordinary_loss_remains_permitted_but_nested_zero_width_owners_cannot_disappear",
+      "expectation": "The same unused-parameter, wildcard, expression-statement, new-local-leak and live-shadow cases accept for (Bit,(Unit,Bit)) but reject for (Bit,(Unit,Q<Unit>)) at their original owner/pattern/expression spans with ownership category and preserved prefixes. Q<Unit> has zero wires but remains owned."
+    },
+    {
+      "name": "reset_returns_an_owner_and_linear_shadowing_can_return_the_replacement",
+      "expectation": "reset(q); () remains an expression-statement ownership loss. Returning reset(q), and let q=h(q); q after consuming the previous binding, stay valid. A one-qubit H then reset then Z-readout has deterministic zero outcome and retains Observe versus Unitary inferred helper effects."
+    }
+  ],
+  "expected_project_counts": {
+    "rejected": 13,
+    "accepted": 8,
+    "test_functions": 4
+  },
+  "oracle": {
+    "independent_execution_expectations": [
+      "Pure ordinary drop returns explicitly authored Bit 1.",
+      "Explicit observing user drop consumes an initialized qubit through discard; subsequent ordinary Bit 1 is unchanged.",
+      "H prepares |+>; reset returns |0> as a fresh owner; observing it reads 0 with probability 1."
+    ],
+    "tolerance": 1e-12,
+    "maximum_physical_qubits_per_positive": 1,
+    "qualifications": "Distribution controls are bounded execution checks, not exact phase/source-preservation or constitutional proof claims. No emitted probability or compiler-generated law was used as expected output."
+  },
+  "negative_gate": "Both public common ParsedProgram and finite check_project_with_kernel paths are exercised. Finite negatives configure Kernel::new with an owned absent path, without process environment mutation or unsafe Rust; expected source categories/spans must occur before an accidental native invocation could replace them.",
+  "stage_limits": "ParsedProgram success is common source judgment, not selected projection/acceptance. Tests do not claim generic selected lowering, abstract owner destructibility, standalone release support or unimplemented Rust features.",
+  "constitutional_scope": "Root reports original-record reconstruction and trusted-base continuity PASS. This preparation does not rerun that check, adopt any interpretation or register a guarantee. Broad QS/PR/RS/EXACT remain pending; both scoped QLV1 guarantees retain their exact scopes. Generic QFT is excluded.",
+  "performed": [
+    "Read existing public source/checking/native APIs and relevant ownership/evaluation code.",
+    "Prepared the new test source and formatted only this file with rustfmt --edition 2024.",
+    "Archived the complete formatted first test source and this first plan before any execution."
+  ],
+  "not_performed": [
+    "No Cargo build/test, CLI command, Lean work, native checker invocation, test execution or Git/GitHub mutation."
+  ],
+  "first_failure_policy": "Preserve this prepared original and every actual first test result. Any correction requires a separate record/revision reason; never replace a first failure or weaken the intended owner/category/order law merely to pass.",
+  "separate_authoring_study": "The root-assigned independent study agent preserves desired first .qli projects and real CLI diagnostics; this test preparation does not stand in for or modify that session."
+}

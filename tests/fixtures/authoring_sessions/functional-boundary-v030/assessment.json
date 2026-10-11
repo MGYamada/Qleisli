@@ -1,0 +1,619 @@
+{
+  "format": "qleisli.informed-public-source-assessment",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:48:35.133362+00:00",
+  "actual_cli_commands": 44,
+  "first_commands": 27,
+  "append_commands": 17,
+  "source_projects": {
+    "attempt-01": 10,
+    "attempt-02": 2
+  },
+  "qubit_bound": 2,
+  "source_repairs": {
+    "count": 2,
+    "reason": "Ordinary wrapped_x provider required; original primitive provider refusals preserved. Corrected command argv does not change sources."
+  },
+  "binary_identity": "Selected CLI/native before/after every44 command and final capture unchanged. No native-child attestation or compiled-HEAD proof. Parent may build later without changing these historical facts.",
+  "first_finite_prediction_assessment": {
+    "intended_boundary_matches": [
+      "complete-call",
+      "partial-call",
+      "ordinary-local-callee",
+      "quantum-unit-tuple-callee",
+      "quantum-unit-tuple-provider",
+      "classical-condition",
+      "quantum-condition",
+      "explicit-observation"
+    ],
+    "earlier_refusal": [
+      "static-description-reuse",
+      "owner-duplication"
+    ],
+    "earlier_refusal_reason": "Primitive x is not an ordinary source provider; this did not establish owner reuse or duplication behavior."
+  },
+  "command_authoring_errors": {
+    "count": 12,
+    "observations": "Ten JSON and two text check --sized project commands rejected as usage before any source judgment. They remain immutable."
+  },
+  "corrected_sized_adapter_assessment": {
+    "intended_boundary_matches": [
+      "complete-call",
+      "partial-call",
+      "ordinary-local-callee",
+      "quantum-unit-tuple-callee",
+      "quantum-unit-tuple-provider",
+      "quantum-condition"
+    ],
+    "earlier_provider_refusal": [
+      "static-description-reuse",
+      "owner-duplication"
+    ],
+    "selected_lowering_limits": [
+      "classical-condition",
+      "explicit-observation"
+    ],
+    "selected_lowering_message": "sized preparation profile: unsupported runtime expression"
+  },
+  "attempt_02_finite_assessment": {
+    "static-description-reuse": "accept; independent00 distribution matches",
+    "owner-duplication": "ownership: quantum ownership `q` has already been consumed"
+  },
+  "attempt_02_sized_adapter_assessment": {
+    "static-description-reuse": "unsupported: sized preparation profile: unsupported static operation constructor",
+    "owner-duplication": "ownership: quantum ownership `q` has already been consumed"
+  },
+  "real_text_and_json": {
+    "arity": "finite line6,column19; selected main:239..254; code arity and runtime argument arity mismatch",
+    "ordinary-local": "finite line7,column15/code type_mismatch; selected main:242..246/code type; a local value is not callable"
+  },
+  "run_comparisons": [
+    {
+      "observation": "observations-first/complete-call-finite-run-json.json",
+      "independent_expected_distribution": {
+        "1": 1
+      },
+      "actual_distribution": {
+        "1": 1
+      },
+      "exact_reported_match": true,
+      "limit": "Tiny reported numerical distribution; no phase/reference/axis/source-runtime preservation theorem."
+    },
+    {
+      "observation": "observations-first/classical-condition-finite-run-json.json",
+      "independent_expected_distribution": {
+        "1": 1
+      },
+      "actual_distribution": {
+        "1": 1
+      },
+      "exact_reported_match": true,
+      "limit": "Tiny reported numerical distribution; no phase/reference/axis/source-runtime preservation theorem."
+    },
+    {
+      "observation": "observations-first/explicit-observation-finite-run-json.json",
+      "independent_expected_distribution": {
+        "0": 1
+      },
+      "actual_distribution": {
+        "0": 1
+      },
+      "exact_reported_match": true,
+      "limit": "Tiny reported numerical distribution; no phase/reference/axis/source-runtime preservation theorem."
+    },
+    {
+      "observation": "observations-followup/attempt-02-static-description-reuse-finite-run-json.json",
+      "independent_expected_distribution": {
+        "00": 1
+      },
+      "actual_distribution": {
+        "00": 1
+      },
+      "exact_reported_match": true,
+      "limit": "Tiny reported numerical distribution; no phase/reference/axis/source-runtime preservation theorem."
+    }
+  ],
+  "production_defect_found": false,
+  "production_defect_assessment": "No observed violation of an admitted boundary. Primitive-provider refusal and selected concrete refusals are implementation limits; corrected observer command and wrappers are authoring repairs. Broader cross-profile/body/theorem obligations remain pending and are not waived.",
+  "negative_controls_limit": "Actual resolved categories/arity/type/ownership observed. No closure grammar test, universal capture guard or Q<Unit> phase/reference theorem inferred. Open Unit controls were not executed.",
+  "all_observations": [
+    {
+      "observation": "observations-first/complete-call-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "complete-call",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/complete-call-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "complete-call",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/partial-call-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "partial-call",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "arity",
+          "message": "runtime argument arity mismatch"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/partial-call-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "partial-call",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/ordinary-local-callee-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "ordinary-local-callee",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "a local value is not callable"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/ordinary-local-callee-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "ordinary-local-callee",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/quantum-unit-tuple-callee-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-unit-tuple-callee",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "a local value is not callable"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/quantum-unit-tuple-callee-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-unit-tuple-callee",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/quantum-unit-tuple-provider-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-unit-tuple-provider",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "a local or spent runtime value cannot be a static operation"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/quantum-unit-tuple-provider-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-unit-tuple-provider",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/static-description-reuse-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "static-description-reuse",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "static provider requires an ordinary fn with inferred Unitary body effect; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/static-description-reuse-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "static-description-reuse",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/owner-duplication-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "owner-duplication",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "static provider requires an ordinary fn with inferred Unitary body effect; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/owner-duplication-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "owner-duplication",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/classical-condition-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "classical-condition",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/classical-condition-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "classical-condition",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/quantum-condition-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-condition",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type_mismatch",
+          "message": "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`"
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/quantum-condition-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-condition",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/explicit-observation-finite-check-json.json",
+      "attempt": "attempt-01",
+      "case": "explicit-observation",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/explicit-observation-sized-check-json.json",
+      "attempt": "attempt-01",
+      "case": "explicit-observation",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": [
+        {
+          "code": "usage",
+          "message": "usage:\n  qleisli --help | qleisli help\n  qleisli help ecosystem\n  qleisli check <source-root> [--format=json] [source-options]\n  qleisli run <source-root> [--format=json] [source-options]\n  qleisli sample <source-root> --shots=N --seed=S [--format=json] [source-options]\n  qleisli emit-ir <source-root> --output=PATH [--format=json] [source-options]\n  qleisli verify-ir <artifact-file> [--against=REQUEST] [--lean-kernel=PATH] [--format=json]\n  qleisli doc <source-file> [--source-bytes=N --project-bytes=N | --legacy-source-limits]\n  qleisli <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION --module=NAME=PATH [selected-source-options]\n  qleisli sized <check|run|sample|emit-proposal> --entry=MODULE::FUNCTION [sized-options]\n  qleisli interop <check|run|sample|emit-ir|emit-qasm|emit-qir> <file|-> --input=<qasm|qirf|qli> [--shots=N --seed=S] [--lean-kernel=PATH]\n  interop always returns JSON; qli input takes a project directory.\nsource-options: --source-bytes=N --project-bytes=N, or --legacy-source-limits; --qrate\n  --lean-kernel=PATH selects the required native Lean verifier (or set QLEISLI_KERNEL).\n  Use an explicitly built/audited native kernel. No automatic download or fallback.\n  --qrate selects the explicit [source].root in the selected directory's Qargo.toml.\n  Byte limits are positive decimal integers; defaults: 1048576/file, 16777216/project.\n  Bounded projects allow max(64, project byte limit / 1024) directory entries.\n  --legacy-source-limits cannot be combined with explicit byte limits.\nselected-source-options: --type=NAME=TYPE --nat=NAME=N --operation=NAME=MODULE::FUNCTION\n  --operation-nat=NAME.PARAMETER=N --ir-profile=auto|raw|hierarchy\n  --operation-type=NAME.PARAMETER=TYPE binds a provider's own Basis parameters.\n  --type binds exact ordinary Basis types; it is distinct from runtime --basis.\n  --lean-kernel=PATH (alias --kernel=PATH), or QLEISLI_KERNEL\n  --request=PATH or --qpe-provider=PATH lock the hierarchy route.\n  --basis=N is hierarchy run/sample quantum input; Raw requires a closed source entry.\n  Selected-source samples are bounded to 1024 shots. emit-proposal is untrusted.\n  Project --shots: 1..1000000; --seed: 0..18446744073709551615 (decimal, no leading zeros).\n  doc produces Markdown text; verify-ir does not accept source-options.\ndiscovery: qleisli help ecosystem introduces language/tools without a project/kernel.\n  QLT: mathematical tests; QDB: failure/obligation navigation; QCP: circuit/resource profiling.\n  These analysis tools are planned, not executable commands in this alpha.\n  qargo/qlippy/qlifmt/qlidoc are separate tooling; names grant no semantic authority.\n  Canonical contract: docs/src/reference/discovery.md\n  https://github.com/MGYamada/Qleisli/blob/main/docs/src/reference/discovery.md\n  Help is text-only; invalid/extra flags, including --format=json, remain usage errors."
+        }
+      ]
+    },
+    {
+      "observation": "observations-first/partial-call-finite-check-text.json",
+      "attempt": "attempt-01",
+      "case": "partial-call",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/partial-call-sized-check-text.json",
+      "attempt": "attempt-01",
+      "case": "partial-call",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/ordinary-local-callee-finite-check-text.json",
+      "attempt": "attempt-01",
+      "case": "ordinary-local-callee",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/ordinary-local-callee-sized-check-text.json",
+      "attempt": "attempt-01",
+      "case": "ordinary-local-callee",
+      "mode": "sized",
+      "exit_code": 2,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/complete-call-finite-run-json.json",
+      "attempt": "attempt-01",
+      "case": "complete-call",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/classical-condition-finite-run-json.json",
+      "attempt": "attempt-01",
+      "case": "classical-condition",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-first/explicit-observation-finite-run-json.json",
+      "attempt": "attempt-01",
+      "case": "explicit-observation",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-followup/attempt-01-complete-call-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "complete-call",
+      "mode": "sized-adapter",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-followup/attempt-01-partial-call-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "partial-call",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "arity",
+          "message": "runtime argument arity mismatch"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-ordinary-local-callee-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "ordinary-local-callee",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type",
+          "message": "a local value is not callable"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-quantum-unit-tuple-callee-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-unit-tuple-callee",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type",
+          "message": "a local value is not callable"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-quantum-unit-tuple-provider-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-unit-tuple-provider",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type",
+          "message": "a local or spent runtime value cannot be a static operation"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-static-description-reuse-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "static-description-reuse",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type",
+          "message": "static provider requires an ordinary fn with inferred Unitary body effect; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-owner-duplication-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "owner-duplication",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type",
+          "message": "static provider requires an ordinary fn with inferred Unitary body effect; wrap the gate as `fn wrapped_gate(q: Q<Bit>) -> Q<Bit> { x(q) }` and pass `[wrapped_gate]`"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-classical-condition-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "classical-condition",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-quantum-condition-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "quantum-condition",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "type",
+          "message": "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-explicit-observation-sized-adapter-check-json.json",
+      "attempt": "attempt-01",
+      "case": "explicit-observation",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported runtime expression"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-01-partial-call-sized-adapter-check-text.json",
+      "attempt": "attempt-01",
+      "case": "partial-call",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-followup/attempt-01-ordinary-local-callee-sized-adapter-check-text.json",
+      "attempt": "attempt-01",
+      "case": "ordinary-local-callee",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-followup/attempt-02-static-description-reuse-finite-check-json.json",
+      "attempt": "attempt-02",
+      "case": "static-description-reuse",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-followup/attempt-02-static-description-reuse-sized-adapter-check-json.json",
+      "attempt": "attempt-02",
+      "case": "static-description-reuse",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "unsupported",
+          "message": "sized preparation profile: unsupported static operation constructor"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-02-static-description-reuse-finite-run-json.json",
+      "attempt": "attempt-02",
+      "case": "static-description-reuse",
+      "mode": "finite",
+      "exit_code": 0,
+      "diagnostics": []
+    },
+    {
+      "observation": "observations-followup/attempt-02-owner-duplication-finite-check-json.json",
+      "attempt": "attempt-02",
+      "case": "owner-duplication",
+      "mode": "finite",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "message": "quantum ownership `q` has already been consumed"
+        }
+      ]
+    },
+    {
+      "observation": "observations-followup/attempt-02-owner-duplication-sized-adapter-check-json.json",
+      "attempt": "attempt-02",
+      "case": "owner-duplication",
+      "mode": "sized-adapter",
+      "exit_code": 1,
+      "diagnostics": [
+        {
+          "code": "ownership",
+          "message": "quantum ownership `q` has already been consumed"
+        }
+      ]
+    }
+  ],
+  "scope": "Independent bounded informed observations, not Issue completion, formal discharge, release readiness, universal semantics or model benchmark."
+}

@@ -1,0 +1,23 @@
+{
+  "id": "06.editions",
+  "argv": [
+    "/opt/homebrew/opt/python@3.14/bin/python3.14",
+    "scripts/check_editions.py"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "started_at_utc": "2026-10-05T19:20:20.507739+00:00",
+  "elapsed_seconds": 4.505417666980065,
+  "exit_code": 0,
+  "launch_error": null,
+  "timed_out": false,
+  "stdout": {
+    "path": "06.editions.stdout.txt",
+    "sha256": "2c960bff8b723f8491d25e630dd72098545128ee520726b7c3bb9e5549969862",
+    "bytes": 236
+  },
+  "stderr": {
+    "path": "06.editions.stderr.txt",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+  }
+}

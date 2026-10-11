@@ -1,0 +1,8 @@
+n	ACCEPT
+Q	REJECT: main:24..25: parse: expected an identifier
+Bits	ACCEPT
+CBits	ACCEPT
+Op	REJECT: main:24..26: parse: expected an identifier
+Unit	REJECT: main:24..28: parse: expected an identifier
+Bit	REJECT: main:24..27: parse: expected an identifier
+CBit	REJECT: main:24..28: parse: expected an identifier

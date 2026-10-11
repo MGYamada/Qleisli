@@ -1,0 +1,51 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::f",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/duplicate-owner/main.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "working_directory": "/Users/masa/git/Qleisli",
+  "environment": {
+    "QLEISLI_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "QLEISLI_HIERARCHY_KERNEL": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  },
+  "exit_code": 1,
+  "recorded_utc": "2026-10-05T00:06:07.829085+00:00",
+  "elapsed_seconds": 0.0034740419941954315,
+  "stdout_text": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"ownership\",\"severity\":\"error\",\"message\":\"unbound or consumed value q\",\"primary\":{\"module\":\"main\",\"path\":\"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/duplicate-owner/main.qli\",\"start\":129,\"end\":130},\"related\":[]}],\"result\":null}\n",
+  "stderr": "",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "ownership",
+        "severity": "error",
+        "message": "unbound or consumed value q",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/quantum-unit-v030/attempt-01/duplicate-owner/main.qli",
+          "start": 129,
+          "end": 130
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "baseline_observation": "tests/fixtures/authoring_sessions/quantum-unit-v030/observations/duplicate-owner-selected.json",
+  "baseline_observation_sha256": "bc14e7429f3e75a10907aa6384e45dbd12b730987eb233df9cc2a7507b9a0232",
+  "source_sha256": "3d2db4dbe528ac58229239619f419a391cd6476e74d3c8f4c10c5c8563d583e0",
+  "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37",
+  "binary_sha256": "25ee7a6e03d7c7b4e2c6b67754c5ad62dd40cc98aaf93a7bba09b77a5d23f280",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "same_argv_and_explicit_environment": true,
+  "baseline_exit_stdout_stderr_unchanged": false,
+  "classification": "intended exact-type/ownership rejection",
+  "expected_current_result": true
+}

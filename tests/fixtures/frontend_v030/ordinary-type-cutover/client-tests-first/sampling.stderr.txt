@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s
+     Running tests/sampling.rs (target/debug/deps/sampling-b3ba95d0f74dcc69)

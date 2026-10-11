@@ -1,0 +1,21 @@
+{
+  "format": "qleisli.hosted-terminal-data-audit",
+  "version": 1,
+  "status": "bounded-data-audit-passed",
+  "recorded_utc": "2026-10-05T19:25:38.362783+00:00",
+  "actual_tool_exit_code": 0,
+  "jobs": 18,
+  "completed_success": 17,
+  "release_skipped": 1,
+  "logs": 17,
+  "reused_logs": 6,
+  "new_logs": 11,
+  "decoded_bytes": 2071956,
+  "new_compressed_bytes": 137519,
+  "all17checkout_bindings": true,
+  "all8required_gates": true,
+  "original19files_unchanged": true,
+  "first_assertion_failure_preserved": "data-audit-attempt-01.json",
+  "no_stored_commands_executed": true,
+  "local_executions": "Data reading/writing/hashing/compression only."
+}

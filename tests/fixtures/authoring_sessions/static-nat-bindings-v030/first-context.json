@@ -1,0 +1,27 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#28/#63 lexical static Nat bindings, original identities and bounded evaluation",
+  "baseline_commit": "38baae7d19535602b21270e11e97617d45205b37",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed repository/specification access, exact model and sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Eight desired first sources preserved before implementation; later checks append without source repair.",
+      "sha256": {
+        "finite-unused/main.qli": "564dfd20b88ac773fcfaff75db9d9f3a65e0fea15a142906c8440494f753502a",
+        "fold-count/main.qli": "be602285d86e2eacee9bbc8a14ebe6bfae8faad0bfaeaf235d0287bb517c2148",
+        "generic-size/main.qli": "1065c2b7838d080713476b0f25fada2a445057c3b4c20065df083faeeddcbe18",
+        "runtime-capture/main.qli": "324437dab012b1f2e6fa2a12da0a76b870f941d9e42035ff4ca8de17c01d7b10",
+        "quantum-capture/main.qli": "379324c5aff801a88397176edb202b9a7b326b590b7237210cb239c61fd0cebe",
+        "zero-body-invalid/main.qli": "6a70eca04ec096185e53cc4ea5de5763ab9f406c87ab0ff9adc8801697f95641",
+        "scope-escape/main.qli": "a0ce7125ddd0b66d4b37efbba22a38b205e2df2168c10b4e574373b4b1de541c",
+        "shadow/main.qli": "37551e22c5690e479452a4b647c3b5ad18957f0e08d66ee433195e92398aecf4"
+      },
+      "observations": []
+    }
+  ],
+  "scope": "Bounded source observations; no mathematical proof, new guarantee or Issue completion."
+}

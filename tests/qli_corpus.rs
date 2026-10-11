@@ -2,8 +2,10 @@
 //! Exhaustive finite simulation is a regression oracle, not a general proof.
 mod common;
 
-use common::SourceRoot;
+use common::{SourceRoot, current_namespace_fixture};
+use qleisli::frontend::ast::StaticParamKind;
 use qleisli::frontend::compile::{check_project_diagnostic, compile_project};
+use qleisli::frontend::parser::parse_module;
 use qleisli::sim::{SimulationLimits, run_closed};
 use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
@@ -13,7 +15,8 @@ type Distribution = BTreeMap<Vec<bool>, f64>;
 const STATES: &[&str] = &["zero", "one", "plus", "minus", "y_plus", "y_minus", "magic"];
 const REJECTED: &[(&str, &str)] = &[
     ("basis_type_parameter", "parse"),
-    ("static_nat", "parse"),
+    // Shared syntax represents Nat; the finite lowering profile still rejects it.
+    ("static_nat", "unsupported"),
     ("meaning_pair_predicate", "type_mismatch"),
     ("product_association", "type_mismatch"),
     ("sealed_provider", "type_mismatch"),
@@ -27,11 +30,22 @@ const REJECTED: &[(&str, &str)] = &[
 ];
 
 fn fixture(name: &str) -> String {
-    fs::read_to_string(
-        Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("tests/fixtures/qli_authoring")
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring")
             .join(format!("{name}.qli")),
-    )
+    ))
+    .unwrap()
+}
+
+// #25 retains historical authoring bytes. Explicit predicate and namespace
+// translations are selected from recorded copies; neither is auto-repaired.
+fn current_predicate_fixture(name: &str) -> String {
+    fs::read_to_string(current_namespace_fixture(
+        &Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/frontend_v030/predicate-domain/current/qli_authoring")
+            .join(format!("{name}.qli")),
+    ))
     .unwrap()
 }
 
@@ -114,6 +128,64 @@ fn teleportation_recovers_seven_states_and_an_entangled_reference() {
 }
 
 #[test]
+fn protocol_y_minus_has_the_full_independent_operator_phase() {
+    use qleisli::contract::exact::{Budget, Exact, Matrix};
+    use qleisli::contract::{BasisType, Circuit, DEFAULT_EXACT_WORK};
+    use qleisli::ir::RawOp;
+
+    let root = project("protocols");
+    // This whole-space equation is independent of preparing a state and then
+    // undoing it with the same provider: S†H = [[s,s],[-i*s,i*s]]. It fixes
+    // both columns and the complete phase, including under external reference.
+    let s = Exact::inv_sqrt2();
+    let expected = Matrix::new(
+        2,
+        2,
+        vec![
+            s,
+            s,
+            Exact::new([0, 0, 0, -1], 1).unwrap(),
+            Exact::new([0, 0, 0, 1], 1).unwrap(),
+        ],
+    )
+    .unwrap();
+    root.write(
+        "phase_fault.qli",
+        "use states::y_minus; use std::quantum::phase_eighth;\n\
+         pub unitary fn shifted(q:Q<Bit>)->Q<Bit>{phase_eighth(y_minus(q))}\n",
+    );
+    for provider in ["y_minus", "y_plus", "shifted"] {
+        root.write(
+            "main.qli",
+            &format!(
+                "use states::{{y_minus,y_plus}}; use phase_fault::shifted;\n\
+                 use std::quantum::init0; use std::observe::measure_z;\n\
+                 unitary fn use_op[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){{U(q)}}\n\
+                 observe fn main()->Bit{{measure_z(use_op[{provider}](init0()))}}\n"
+            ),
+        );
+        let accepted = compile_project(&root.0).unwrap();
+        let applications: Vec<_> = accepted
+            .raw()
+            .operations
+            .iter()
+            .filter_map(|op| match op {
+                RawOp::ApplyUnitary { steps, .. } => Some(steps.clone()),
+                _ => None,
+            })
+            .collect();
+        assert_eq!(applications.len(), 1, "{provider}");
+        let actual = Circuit::new(BasisType::Bit, applications[0].clone())
+            .unwrap()
+            .matrix(&mut Budget::new(DEFAULT_EXACT_WORK))
+            .unwrap();
+        // Both fault controls are native-valid unitaries. Admission alone
+        // supplies no claim that either matches the intended y_minus meaning.
+        assert_eq!(actual == expected, provider == "y_minus", "{provider}");
+    }
+}
+
+#[test]
 fn bell_components_support_dense_coding_and_entanglement_swapping() {
     let root = project("protocols");
     distribution(
@@ -145,6 +217,29 @@ fn phase_estimation_reuses_one_body_for_all_eighth_roots_and_x_eigenstates() {
             &[(vec![false, false, last_phase_bit, false], 1.0)],
         );
     }
+}
+
+#[test]
+fn canonical_control_migration_keeps_fixed_qpe_phase_and_reference_outcomes() {
+    let root = project("operation_algorithms");
+    root.write(
+        "estimation.qli",
+        &common::current_source_text(
+            "tests/fixtures/authoring_sessions/canonical-control-migration-v030/attempt-01/estimation.qli",
+        ),
+    );
+    distribution(&execute(&root), &[(vec![true, false, false, true], 1.0)]);
+    distribution(
+        &run(&root, "algorithms/phase3_identity_reference"),
+        &[(vec![false; 5], 1.0)],
+    );
+    distribution(
+        &run(&root, "algorithms/phase3_correlated"),
+        &[
+            (vec![false; 5], 0.5),
+            (vec![true, false, false, true, true], 0.5),
+        ],
+    );
 }
 
 #[test]
@@ -264,23 +359,43 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
             root.0.join("main.qli").canonicalize().unwrap()
         );
         assert!(source.get(location.span.start..location.span.end).is_some());
+        if name == "static_nat" {
+            // Preserve the source limitation without requiring a second parser.
+            let module = parse_module(&source).unwrap();
+            let parameter = &module.decls[0].static_params[0];
+            assert_eq!(parameter.kind, StaticParamKind::Natural);
+            assert_eq!(parameter.name.text, "n");
+            assert_eq!(location.span, parameter.name.span);
+            assert_eq!((location.line, location.column), (1, 24));
+            assert_eq!(&source[location.span.start..location.span.end], "n");
+            assert_eq!(
+                error.message,
+                "finite profile does not support static Nat parameters"
+            );
+        }
         // Precise binding provenance is tested in authoring_ergonomics.rs.
     }
     distribution(
         &execute(&SourceRoot::new(&fixture("accepted/nary_tuple"))),
         &[(vec![false; 3], 1.0)],
     );
-    distribution(
-        &execute(&SourceRoot::new(&fixture("accepted/basis_tuple_pattern"))),
-        &[(vec![true, true], 1.0)],
-    );
+    for name in ["accepted/basis_tuple_pattern", "accepted/pair_contract"] {
+        let original = SourceRoot::new(&fixture(name));
+        let error = check_project_diagnostic(&original.0).unwrap_err();
+        assert_eq!(error.code, "arity", "historical {name}: {error:?}");
+        assert!(
+            error
+                .message
+                .contains("exactly one explicit basis parameter")
+        );
+        distribution(
+            &execute(&SourceRoot::new(&current_predicate_fixture(name))),
+            &[(vec![true, true], 1.0)],
+        );
+    }
     distribution(
         &execute(&SourceRoot::new(&fixture("accepted/auxiliary_hh"))),
         &[(vec![false], 1.0)],
-    );
-    distribution(
-        &execute(&SourceRoot::new(&fixture("accepted/pair_contract"))),
-        &[(vec![true, true], 1.0)],
     );
     distribution(
         &execute(&SourceRoot::new(&fixture("accepted/product_reassociation"))),
@@ -290,7 +405,8 @@ fn authoring_limitations_and_useful_guardrails_have_source_reproductions() {
 
 #[test]
 fn every_quick_reference_program_compiles_and_executes() {
-    let directory = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/quick_reference");
+    let directory = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/quick_reference");
     let programs = [
         "exact_phase.qli",
         "teleport_minus.qli",
@@ -318,7 +434,8 @@ fn every_quick_reference_program_compiles_and_executes() {
         "each program needs an output oracle"
     );
     for (program, expected) in programs.into_iter().zip(expected) {
-        let source = fs::read_to_string(directory.join(program)).unwrap();
+        let source =
+            fs::read_to_string(current_namespace_fixture(&directory.join(program))).unwrap();
         distribution(&execute(&SourceRoot::new(&source)), &expected);
     }
 }
@@ -373,7 +490,8 @@ fn every_source_fixture_belongs_to_an_exercised_case() {
     expected.insert("accepted/auxiliary_hh".into());
     expected.insert("accepted/pair_contract".into());
     expected.insert("accepted/product_reassociation".into());
-    let root = Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/qli_authoring");
+    let root = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("tests/fixtures/frontend_v030/ordinary-type-cutover/current/qli_authoring");
     fn sources(root: &Path, path: &Path, found: &mut BTreeSet<String>) {
         for entry in fs::read_dir(path).unwrap() {
             let path = entry.unwrap().path();

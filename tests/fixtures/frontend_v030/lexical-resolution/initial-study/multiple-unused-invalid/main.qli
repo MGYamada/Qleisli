@@ -1,0 +1,1 @@
+unitary fn unused(q:Q<Bit>)->CBit{false} pub unitary fn f(q:Q<Bit>)->Q<Bit>{q}

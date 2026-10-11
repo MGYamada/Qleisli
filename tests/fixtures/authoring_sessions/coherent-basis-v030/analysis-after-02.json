@@ -1,0 +1,267 @@
+{
+  "format": "qleisli.coherent-basis-after-supplement",
+  "version": 1,
+  "recorded_utc": "2026-10-06T04:00:27.700508+00:00",
+  "driver": {
+    "path": "observations-after/oracle_projection_02.py",
+    "sha256": "88f14bbced40ad0ef4893a986fab9331e9b20ee327d380eaf740a79e962d0908"
+  },
+  "original_capture_sha256": "dadbec7479ca94025cb8e1c1b714da007a4ee95c7b8ef519fff761390a3c371d",
+  "original_analysis_sha256": "4b381f638281b14588129be8755c346433cd43071a9516c220e8d3030c84b8b5",
+  "original_driver_sha256": "591a42a638d2b58bc7bcfb730e0547d9b42bae76734a186083df59bf070336ad",
+  "first_sources_sha256": "e1b9a175b4221bf2eb52ebbec0f84c6d725fa21398c905e1f73cda262133f755",
+  "cli_sha256": "4c58a0b51360b99433ea75259967875c40d0caf872e2dc2981616c08d9c7db50",
+  "native_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "predictions": {
+    "path": "observations-after/public-entry-predictions-02.json",
+    "sha256": "874d24c3c6e5e4862a7e4ca9626dce4e8d4dfacdbb9e1d25a8d1e72f33598b75"
+  },
+  "observations": [
+    "observations-after/entangle-desired-public-selected-check-02.json",
+    "observations-after/phase-reference-desired-public-selected-check-02.json",
+    "observations-after/permutation-desired-public-selected-check-02.json",
+    "observations-after/unit-owner-desired-public-selected-check-02.json"
+  ],
+  "assertions": [
+    {
+      "name": "entangle-desired-public-CoherentLift-projection-refusal",
+      "passed": true,
+      "details": {
+        "entry": "main::entangle",
+        "source_sha256": "30f66e367d7b45e0a68a92b1b8e7f37f5f6ae575a17e5294955d77d7c5d26fb8",
+        "actual_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "sized preparation profile: unsupported runtime expression",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/entangle-desired/main.qli",
+              "start": 313,
+              "end": 335
+            },
+            "related": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "phase-reference-desired-public-CoherentLift-projection-refusal",
+      "passed": true,
+      "details": {
+        "entry": "main::entangle",
+        "source_sha256": "b4b044a949d7234c67a6861f27e3ef4d31c486d207c9cbfb3ebeda0b77124f05",
+        "actual_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "sized preparation profile: unsupported runtime expression",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/phase-reference-desired/main.qli",
+              "start": 357,
+              "end": 379
+            },
+            "related": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "permutation-desired-public-CoherentLift-projection-refusal",
+      "passed": true,
+      "details": {
+        "entry": "main::map",
+        "source_sha256": "72ce1def6345ec1bea4a5dc9a401492d381b8893da53b9608bf88e68e0a79004",
+        "actual_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "sized preparation profile: unsupported runtime expression",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/permutation-desired/main.qli",
+              "start": 342,
+              "end": 374
+            },
+            "related": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "unit-owner-desired-public-CoherentLift-projection-refusal",
+      "passed": true,
+      "details": {
+        "entry": "main::identity",
+        "source_sha256": "ccee9e558fb7e894b16b191e9d17417d012a3d61ff67c3687d667329a532aef3",
+        "actual_diagnostics": [
+          {
+            "code": "unsupported",
+            "severity": "error",
+            "message": "sized preparation profile: unsupported runtime expression",
+            "primary": {
+              "module": "main",
+              "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/coherent-basis-v030/attempt-01/unit-owner-desired/main.qli",
+              "start": 239,
+              "end": 259
+            },
+            "related": []
+          }
+        ]
+      }
+    },
+    {
+      "name": "permutation-independent-final-distribution-with-ordered-join",
+      "passed": true,
+      "details": {
+        "specified_exact_distribution": {
+          "00": 0.5,
+          "11": 0.5
+        },
+        "actual_numeric_distribution": {
+          "00": 0.5000000000000001,
+          "11": 0.5000000000000001
+        },
+        "independent_numeric_distribution": {
+          "00": 0.4999999999999999,
+          "10": 0.0,
+          "01": 0.0,
+          "11": 0.4999999999999999
+        },
+        "tolerance": 1e-12,
+        "normalization_or_pruning": false
+      }
+    },
+    {
+      "name": "permutation-independent-complex-lift-amplitudes-with-ordered-join",
+      "passed": true,
+      "details": {
+        "specified_amplitudes": {
+          "00": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          },
+          "11": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          }
+        },
+        "actual_ir_reference_amplitudes": {
+          "00": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          },
+          "10": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "01": {
+            "real": 0.0,
+            "imaginary": 0.0
+          },
+          "11": {
+            "real": 0.7071067811865475,
+            "imaginary": 0.0
+          }
+        },
+        "tolerance": 1e-12
+      }
+    },
+    {
+      "name": "permutation-all-four-ordered-basis-labels-with-ordered-join",
+      "passed": true,
+      "details": {
+        "input_axis_order": [
+          "a",
+          "b"
+        ],
+        "derived_labels": [
+          0,
+          3,
+          2,
+          1
+        ],
+        "actual_table": [
+          0,
+          3,
+          2,
+          1
+        ],
+        "ordered_joins": [
+          {
+            "left_axes": [
+              0
+            ],
+            "right_axes": [
+              1
+            ],
+            "output_axes": [
+              0,
+              1
+            ],
+            "amplitude_action": "identity; ordered owner concatenation only"
+          }
+        ]
+      }
+    }
+  ],
+  "passed_assertions": 7,
+  "failed_assertions": [],
+  "permutation_oracle": {
+    "distribution": {
+      "00": 0.4999999999999999,
+      "10": 0.0,
+      "01": 0.0,
+      "11": 0.4999999999999999
+    },
+    "after_lift": {
+      "00": {
+        "real": 0.7071067811865475,
+        "imaginary": 0.0
+      },
+      "10": {
+        "real": 0.0,
+        "imaginary": 0.0
+      },
+      "01": {
+        "real": 0.0,
+        "imaginary": 0.0
+      },
+      "11": {
+        "real": 0.7071067811865475,
+        "imaginary": 0.0
+      }
+    },
+    "table": [
+      0,
+      3,
+      2,
+      1
+    ],
+    "ordered_joins": [
+      {
+        "left_axes": [
+          0
+        ],
+        "right_axes": [
+          1
+        ],
+        "output_axes": [
+          0,
+          1
+        ],
+        "amplitude_action": "identity; ordered owner concatenation only"
+      }
+    ],
+    "coefficient_contract": "+1",
+    "source_qubits": 2
+  },
+  "artifact_sha256": "aa8dece56bb70aa47d0c9609859654b41f1e1c96f398f5eee25e2caa275151b7",
+  "historical_and_first_source_identities_preserved": true,
+  "corrigenda": [
+    "The initial AFTER analysis has 64 passed assertions and one oracle omission: join was unsupported by that authored oracle. The failure and original driver remain unchanged; the ordered-join oracle here completes the missing permutation comparison using the actual captured artifact.",
+    "The initial README overstates selected CoherentLift refusals. Its frozen selected commands target private main::main; the actual original and first AFTER positive selected observations return visibility, not projection. These additional commands select existing public helpers with unchanged source and explicitly recorded before-command predictions."
+  ],
+  "scope": "Four additional public-entry CLI observations and a literal two-qubit permutation oracle; no original source/command-record rewriting, command replay, compiler/Lean rebuild, fresh replay, independent parser review, new admission, mathematical certification or release validation."
+}

@@ -1,0 +1,17 @@
+{
+  "scope": "Additional bounded integration-oracle inputs, saved before executing the new Rust target; original first-source observations remain unchanged.",
+  "sha256": {
+    "copy-result.qli": "60b3efb62d24883652c2f7497741ede7caec2a968e6da090765ac687ca345639",
+    "operation-binding.qli": "0950d5638ebcebeefcaff05ba697f384f123810b84f0e7f0b664e123f4947eb1",
+    "ordinary-bits-wildcard.qli": "aa88d1bd60caa8a662a90090bf32dd0508ef0f5645ce19feed73cdf1fddf3aa6",
+    "phase-through-product.qli": "9b2a605afe277cc114668a8214edbac4d6149646169f6d2df3679b900e88e678",
+    "quantum-tuple-wildcard.qli": "e4dee7bd90a8780cadc866e0f1c678fca34ad6940f44c9b9a318353b1d83fd9c",
+    "quantum-unit-wildcard.qli": "0a89e16e6646a76461e69622f069ab07628df1735685ce7380f8d0c15a2d0d66",
+    "repeated-ordinary-wildcards.qli": "c3df9cf92f218b1c48d022a0ec21f9343366ef866d66364ccf4cb26bf087cc86",
+    "static-forwarding.qli": "785862414bf0ff3f9ff3dec3e2447c1e1b74df1faa780eaf0226212a765c7493",
+    "unit-explicit-call.qli": "4d067c71c948e442ac1b9c779fdab0a898559387805c5fa78b4e53688da53f99",
+    "unit-nullary-call.qli": "b0ee634ff5dac2337a41e5288cd9d27099eb913d2ed5ae67ee4379b1f3635092",
+    "unit-wildcard-effects.qli": "5983148db1cb7cdd715704097e2e55fc734d948c6395ae4fef2f66b3f6917b94",
+    "unitary-argument-effect.qli": "012ac4225f42f9132b1b994ad1a6222821daab279f7730c95381507b6fb5a52b"
+  }
+}

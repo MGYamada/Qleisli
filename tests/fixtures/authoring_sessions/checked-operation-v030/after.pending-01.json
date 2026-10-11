@@ -1,0 +1,219 @@
+{
+  "format": "qleisli.checked-operation-after-predictions",
+  "version": 1,
+  "record_status": "pending-before-first-after-command",
+  "recorded_utc": "2026-10-06T04:28:25.038919+00:00",
+  "decision": "https://github.com/MGYamada/Qleisli/issues/82#issuecomment-6009162442",
+  "lexical_clarification": "https://github.com/MGYamada/Qleisli/issues/82#issuecomment-6009306100",
+  "source_baseline_commit": "a6e09a5960d9615b1f4356dcbf32bc33fd608e1f",
+  "constitutional_continuity_base": "faa5cfb5e7ea1cf3b39a43b80f7f2345e89197c2",
+  "first_files_sha256": "4b61f2321d9a54c87bc45782039cbb6fed0ea530de3e331c1585a2f0aa3a238d",
+  "immutable_before_inventory_sha256": "0f6fc7326d68ff3bcaebb277723df7c5d59ddc101c78078ad7cffcf3576721fa",
+  "contract_sha256": "6cb719e25f9d5b8642fadf201351d4ac8dff1b9b15a85ac781e5670b24d87da1",
+  "cases": {
+    "providers-reference-control-desired": {
+      "finite_exit": 0,
+      "distribution": {
+        "000": 1.0
+      },
+      "meaning_expectation": {
+        "distribution": {
+          "000": 1.0
+        },
+        "exact_provider_matrix": [
+          [
+            1,
+            0
+          ],
+          [
+            0,
+            -1
+          ]
+        ],
+        "second_provider_equation": "T^4 = diag(1,-1) = Z exactly",
+        "input_reference_equation": "Before candidate action: |+>_c tensor (|00> + omega|11>)_r,q / sqrt(2), omega = exp(i*pi/4).",
+        "interference_equation": "Candidate Z_q and controlled Z_c,q, followed by independently specified controlled Z_c,q and Z_q, undo exactly on every c,q basis label; CNOT_r,q, Tdag_r and H_r,H_c return |000> in c,r,q order."
+      },
+      "selected_exit": 1,
+      "selected_code": "unsupported",
+      "source_sha256": "0d9605e632a4d5433bda61f0cdb021e165d965a6eae8aee2b5560b5fa8c6f5ec",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "providers-reference-control-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 680,
+      "first_legacy_token_end": 687,
+      "selected_exit": 1,
+      "selected_code": "parse",
+      "source_sha256": "7f201a11ae9fb0a9f467d799be9149b2a542ec8b171695660175e584e60aaa6e",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "wrong-phase-desired": {
+      "finite_exit": 1,
+      "code": "contract",
+      "message_fragments": [
+        "exact equation U E_in = E_out u does not hold"
+      ],
+      "scope": "Existing negative semantic condition; unchanged first source now reaches checking.",
+      "source_sha256": "d8cbce7105d5040d8052ac547d6c582089be0da40be10e98392461a25aa3e71a",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "wrong-phase-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 735,
+      "first_legacy_token_end": 742,
+      "source_sha256": "54fb03a515baed9c96da4ce42a1204e048328ff0ec02aa69ba371edbb53ae47d",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "wrong-tree-desired": {
+      "finite_exit": 1,
+      "code": "type_mismatch",
+      "message_fragments": [
+        "(Bit,Bit,Bit)",
+        "((Bit,Bit),Bit)"
+      ],
+      "scope": "Existing negative semantic condition; unchanged first source now reaches checking.",
+      "source_sha256": "adfdba1d7399cbd833cd0565782c9a7245ec1bdcd8982adcd91b8298c60b58be",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "wrong-tree-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 1029,
+      "first_legacy_token_end": 1036,
+      "source_sha256": "a85e539c6c4b035f53d5a351d954b46de8269d1ced48941a2c891714eb815fa3",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "runtime-provider-capture-desired": {
+      "finite_exit": 1,
+      "code": "type_mismatch",
+      "message_fragments": [
+        "a local or spent runtime value cannot be a static operation"
+      ],
+      "scope": "Existing negative semantic condition; unchanged first source now reaches checking.",
+      "source_sha256": "8c4f2163719e95d5e7a2ea6b7634a6f7af593e67f3dd2caea83d49227cbedfa5",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "runtime-provider-capture-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 695,
+      "first_legacy_token_end": 702,
+      "source_sha256": "2535e6ffdbbfedead7da6d2dbab8f2d080a5a9293fbc52d217794c03541d61c2",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "quantum-provider-capture-desired": {
+      "finite_exit": 1,
+      "code": "type_mismatch",
+      "message_fragments": [
+        "a local or spent runtime value cannot be a static operation"
+      ],
+      "scope": "Existing negative semantic condition; unchanged first source now reaches checking.",
+      "source_sha256": "4f0db1cd6166529e9ce9e6bcd37acd986c3c5c6ee67e3ecc3327cd50064aba1a",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "quantum-provider-capture-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 698,
+      "first_legacy_token_end": 705,
+      "source_sha256": "6237d95aeb5eb161ff422157358cbf4f4d2eb11bc4a1eba472a94bf18be79c35",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "formal-provider-capture-desired": {
+      "finite_exit": 1,
+      "code": "type_mismatch",
+      "message_fragments": [
+        "requires closed declarations"
+      ],
+      "scope": "Existing negative semantic condition; unchanged first source now reaches checking.",
+      "source_sha256": "3b8ea77f59b93639fa2714f0dc96987141b779dd8494ac5207f762c03b5f2a6e",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "formal-provider-capture-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 713,
+      "first_legacy_token_end": 720,
+      "source_sha256": "b957114478e52ff7bfab8226bb0691227b1e2ed2b72fef3b9f7540e97cdca349",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "spent-owner-reuse-desired": {
+      "finite_exit": 1,
+      "code": "ownership",
+      "message_fragments": [
+        "quantum ownership `q` has already been consumed"
+      ],
+      "scope": "Existing negative semantic condition; unchanged first source now reaches checking.",
+      "source_sha256": "3f5201e068c8f1cdf0ba0bd600c258159d58e818e14dd4c7b8343e69fdc8154a",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "spent-owner-reuse-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 704,
+      "first_legacy_token_end": 711,
+      "source_sha256": "6de17bd2461d64d6e7725392a9da74da2c664322b78aafece9ca9707e73529c8",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "nested-constructors-desired": {
+      "finite_exit": 0,
+      "distribution": {
+        "00": 1.0
+      },
+      "meaning_expectation": {
+        "distribution": {
+          "00": 1.0
+        },
+        "exact_equation": "controlled(inverse(Z then Z^3)) = controlled(I) = I exactly; Tdag and H unprepare the target, H unprepares control."
+      },
+      "source_sha256": "bfa650927537acb6cae28978f39f7958e9f0d66210dfdfe3d79441c6fd6ae57c",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    },
+    "nested-constructors-legacy": {
+      "finite_exit": 1,
+      "code": "parse",
+      "message_fragments": [
+        "bind_op",
+        "checked_op"
+      ],
+      "first_legacy_token_start": 725,
+      "first_legacy_token_end": 732,
+      "source_sha256": "92e776ea3a0c64ab00aeac64ce45bf50cb81affb97e466cd500fe516e997747c",
+      "manifest_sha256": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+    }
+  },
+  "planned_actual_commands": 26,
+  "maximum_source_qubits": 3,
+  "scope": "Predictions on unchanged first sources, no actual AFTER outcomes. Exact prescribed interference and ordered ports, not whole source-bearing QIRF equality, numerical oracle execution, proof or completion."
+}

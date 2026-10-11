@@ -1,0 +1,37 @@
+[
+  {
+    "command": [
+      "python3",
+      "scripts/check_constitution.py",
+      "--base-ref",
+      "9a1ecef79f2f1e42f94093b6f4822f282f6e9129"
+    ],
+    "exit": 0,
+    "seconds": 1.2117836250108667
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_docs.py"
+    ],
+    "exit": 0,
+    "seconds": 1.687963874952402
+  },
+  {
+    "command": [
+      "/private/tmp/qleisli-mdbook-0.5.4-bin/mdbook",
+      "build",
+      "docs"
+    ],
+    "exit": 0,
+    "seconds": 0.20511079201241955
+  },
+  {
+    "command": [
+      "python3",
+      "scripts/check_book.py"
+    ],
+    "exit": 0,
+    "seconds": 0.4905587499961257
+  }
+]

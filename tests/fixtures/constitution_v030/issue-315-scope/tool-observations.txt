@@ -1,0 +1,14 @@
+Command: python3 scripts/test_check_release_ready.py
+Working directory: /Users/masa/git/Qleisli
+Tool chunk cbc336:
+.
+Tool chunk b29ac0:
+.....
+Tool chunk e80905:
+........................
+----------------------------------------------------------------------
+Ran 30 tests in 72.162s
+
+OK
+Final observed exit code: 0
+

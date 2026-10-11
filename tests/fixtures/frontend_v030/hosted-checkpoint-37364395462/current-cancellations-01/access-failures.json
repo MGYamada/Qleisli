@@ -1,0 +1,157 @@
+{
+  "format": "qleisli.read-only-ci-access-failures",
+  "note": "Exact unsuccessful connector responses; unavailable logs/annotations are not passing checks or established cancellation causes.",
+  "failures": [
+    {
+      "attempt": "ci_cancellation_2",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:53732964-101e-005e-3714-55cbe2000000\nTime:2026-10-05T21:55:31.2162808Z</Message></Error>"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:53732964-101e-005e-3714-55cbe2000000\nTime:2026-10-05T21:55:31.2162808Z</Message></Error>",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "error_str": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:53732964-101e-005e-3714-55cbe2000000\nTime:2026-10-05T21:55:31.2162808Z</Message></Error>"
+          }
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_cancellation_3",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:89637d57-b01e-0068-2e14-554692000000\nTime:2026-10-05T21:55:31.2163620Z</Message></Error>"
+          }
+        ],
+        "structuredContent": {
+          "error": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:89637d57-b01e-0068-2e14-554692000000\nTime:2026-10-05T21:55:31.2163620Z</Message></Error>",
+          "error_code": "NOT_FOUND",
+          "error_data": {
+            "error_str": "GitHub API error 404: ﻿<?xml version=\"1.0\" encoding=\"utf-8\"?><Error><Code>BlobNotFound</Code><Message>The specified blob does not exist.\nRequestId:89637d57-b01e-0068-2e14-554692000000\nTime:2026-10-05T21:55:31.2163620Z</Message></Error>"
+          }
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_job_0",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_job_1",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_job_2",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_annotations_0",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_annotations_1",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_more_0",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    },
+    {
+      "attempt": "ci_more_1",
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)"
+          }
+        ],
+        "structuredContent": {
+          "error": "HTTPError: 400: GitHub Fetch URL is not an allowed public GitHub repository or search endpoint. (Response: None)",
+          "error_code": "INVALID_ARGUMENT"
+        },
+        "isError": true
+      }
+    }
+  ],
+  "public_job_reader": "Internal Error ()\nciteturn17view0 [wordlim: 200] Source: open({\"ref_id\":\"https://github.com/MGYamada/Qleisli/actions/runs/37364395462/job/111949519787\",\"lineno\":null}); Total lines: 1\nL0: Failed to fetch https://github.com/MGYamada/Qleisli/actions/runs/37364395462/job/111949519787: Cache miss\n--------------------------------------------------------------------------------\nInternal Error ()\nciteturn17view1 [wordlim: 200] Source: open({\"ref_id\":\"https://github.com/MGYamada/Qleisli/actions/runs/37364395462/job/111949519998\",\"lineno\":null}); Total lines: 1\nL0: Failed to fetch https://github.com/MGYamada/Qleisli/actions/runs/37364395462/job/111949519998: Cache miss\n"
+}

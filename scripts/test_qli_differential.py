@@ -21,7 +21,7 @@ IMPORTS = """use std::quantum::{init0,h,x,z,t,cnot,toffoli,split,join};
 use std::observe::{measure_z,reset};
 unitary fn pa(q:Q<Bit>)->Q<Bit>{t(h(q))}
 unitary fn pb(q:Q<Bit>)->Q<Bit>{z(x(q))}
-unitary fn apply[static U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Apply(U){U(q)}
+unitary fn apply[const U:Op<Bit>](q:Q<Bit>)->Q<Bit> requires Applicable(U){U(q)}
 """
 
 
@@ -78,7 +78,7 @@ def reference_source(width, sequence):
 
 def rotation_source(name, basis):
     return name if basis == "z" else (f"h({name})" if basis == "x" else
-                                     f"h(adjoint(t,adjoint(t,{name})))")
+                                     f"h(adjoint(t)(adjoint(t)({name})))")
 
 
 def rotate(state, axis, basis):
@@ -98,8 +98,8 @@ def make_case(rng, index):
     word, lines = [], []
     constructors = [
         ("then_op(pa,pb)", [("h", [0]), ("t", [0]), ("x", [0]), ("z", [0])]),
-        ("inverse_op(pa)", [("t_inverse", [0]), ("h", [0])]),
-        ("repeat_op(2,pa)", [("h", [0]), ("t", [0])] * 2),
+        ("adjoint(pa)", [("t_inverse", [0]), ("h", [0])]),
+        ("power(pa,2)", [("h", [0]), ("t", [0])] * 2),
         ("conjugate_op(pa,pb)", [("t_inverse", [0]), ("h", [0]), ("x", [0]), ("z", [0]), ("h", [0]), ("t", [0])]),
     ]
     for step in range(rng.randrange(3, 9)):
@@ -126,7 +126,7 @@ def make_case(rng, index):
         ("t" if name == "t_inverse" else name, axes, inverse ^ (name == "t_inverse"))
         for _ in range(count) for name, axes in (list(reversed(word)) if inverse else word)
     ]
-    expression = "adjoint(w,q)" if inverse else f"repeat_static({count},w,q)"
+    expression = "adjoint(w)(q)" if inverse else f"power(w,{count})(q)"
     definitions = f"""unitary fn w(q:Q<{ty}>)->Q<{ty}>{{{split_source(width)}{''.join(lines)}{join_source(width)}}}
 unitary fn u(q:Q<{ty}>)->Q<{ty}>{{{expression}}}
 unitary fn identity(q:Q<{ty}>)->Q<{ty}>{{q}}
@@ -182,7 +182,7 @@ unitary fn checked(q:Q<{ty}>)->Q<{ty}>{{apply_contract(u,reference,q)}}
             bits = tuple(prefix + [bool((label >> axis) & 1) for axis, _ in measurements])
             expected[bits] = expected.get(bits, 0.0) + abs(value) ** 2
     arity = len(outcomes)
-    result_type = "CBit" if arity == 1 else "(" + ",".join(["CBit"] * arity) + ")"
+    result_type = "Bit" if arity == 1 else "(" + ",".join(["Bit"] * arity) + ")"
     result = outcomes[0] if arity == 1 else "(" + ",".join(outcomes) + ")"
     source = IMPORTS + definitions + f"observe fn main()->{result_type}{{{''.join(preparation)}{result}}}"
     return source, expected

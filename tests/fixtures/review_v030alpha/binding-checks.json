@@ -1,0 +1,140 @@
+{
+  "initial": {
+    "format": 1,
+    "status": "failed",
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_schema_registry.py",
+          "--write"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"4e7176c32369f2ee9307b803ab4e481f716cba08f58d05e6ffc3371dd0ed3a37\", \"mode\": \"rebuilt-types-and-audits\", \"source_revision\": \"32512abcc621d4dc785f21da8520d981510e1308f7bc978561d2d53cd5bae8ba\", \"status\": \"passed\", \"version\": 1}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_verification_inventory.py"
+        ],
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "frozen source changed; review inventory/fixtures: src/bin/qleisli/json.rs\n"
+      }
+    ],
+    "version": "0.3.0-alpha",
+    "source_review": [
+      {
+        "path": "lean-kernel/QleisliKernel/Raw/Observation.lean",
+        "before_sha256": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+        "after_sha256": "68d38c8638a18a64a14ac2d17ba7f93b891d70d7578eff40218b28bda89bc4b0",
+        "classification": "reviewed",
+        "diff_base": "git HEAD",
+        "diff_base_sha256": "eab60ffd9d8a2549cd4a6a2180b490bea17f250f2042bee48e819be83f2ea6a6",
+        "diff_base_matches_binding": true,
+        "diff": "--- HEAD:lean-kernel/QleisliKernel/Raw/Observation.lean\n+++ lean-kernel/QleisliKernel/Raw/Observation.lean\n@@ -56,10 +56,31 @@\n   simp only [phiValid,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at ok\n   exact \u27e8ok.1.1.2,ok.1.2\u27e9\n \n+/-- Issued identities normally grow by appending. Check that common case in\n+linear time, retaining the membership check for arbitrary public states. -/\n+def historySubset {\u03b1 : Type} [BEq \u03b1] (before after : List \u03b1) : Bool :=\n+  if before.isPrefixOf after then true else before.all after.contains\n+\n+/-- The fast path changes neither acceptance nor the shared work counter. -/\n+theorem historySubset_eq {\u03b1 : Type} [BEq \u03b1] [LawfulBEq \u03b1] (before after : List \u03b1) :\n+    historySubset before after = before.all after.contains := by\n+  by_cases hprefix : before.isPrefixOf after = true\n+  \u00b7 simp only [historySubset,hprefix,\u2193reduceIte]\n+    symm\n+    simp only [List.all_eq_true,List.contains_iff_mem]\n+    exact (List.isPrefixOf_iff_prefix.mp hprefix).subset\n+  \u00b7 simp [historySubset,hprefix]\n+\n def history (before after : State) : Bool :=\n-  before.quantum.seenTokens.all after.quantum.seenTokens.contains &&\n-  before.quantum.seenWires.all after.quantum.seenWires.contains &&\n-  before.classical.all after.classical.contains\n+  historySubset before.quantum.seenTokens after.quantum.seenTokens &&\n+  historySubset before.quantum.seenWires after.quantum.seenWires &&\n+  historySubset before.classical after.classical\n+\n+theorem history_eq (before after : State) : history before after =\n+    (before.quantum.seenTokens.all after.quantum.seenTokens.contains &&\n+    before.quantum.seenWires.all after.quantum.seenWires.contains &&\n+    before.classical.all after.classical.contains) := by\n+  simp only [history,historySubset_eq]\n \n /-- Arm states share the monotonically growing global identity store. Only\n their live quantum frame/effect is restored to the common branch entry. -/\n@@ -195,7 +216,7 @@\n     (\u2200 wire \u2208 initial.quantum.seenWires, wire \u2208 final.quantum.seenWires) \u2227\n     (\u2200 value \u2208 initial.classical, value \u2208 final.classical) := by\n   have preserved := (checkOps_invariants _ _ _ _ _ _ _ ok).2\n-  simp only [history,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at preserved\n+  simp only [history_eq,Bool.and_eq_true,List.all_eq_true,List.contains_iff_mem] at preserved\n   exact \u27e8preserved.1.1,preserved.1.2,preserved.2\u27e9\n \n /-- The actual right-arm entry inherits every ID issued by the complete left\n"
+      },
+      {
+        "path": "lean-kernel/Tests.lean",
+        "before_sha256": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+        "after_sha256": "d9546eb839d0193793b73611dad11c4e60508f2ef89381dd5100005069cf3310",
+        "classification": "reviewed",
+        "diff_base": "git HEAD",
+        "diff_base_sha256": "c7c720d6f152090fd7a356b89cb063f860a92efd79f51db525effd9d00f44021",
+        "diff_base_matches_binding": true,
+        "diff": "--- HEAD:lean-kernel/Tests.lean\n+++ lean-kernel/Tests.lean\n@@ -460,6 +460,15 @@\n \n namespace RawObservationTests\n open QleisliKernel.Semantics.Observation\n+-- Fast append-only histories and the old membership fallback agree even on\n+-- reordered/duplicate identities; scope pairs must remain exactly equal.\n+example : Raw.Observation.historySubset ([] : List Nat) [1] = true := by decide\n+example : Raw.Observation.historySubset [1,2] [1,2,3] = true := by decide\n+example : Raw.Observation.historySubset [1,2] [2,1,3] = true := by decide\n+example : Raw.Observation.historySubset [1,1] [1] = true := by decide\n+example : Raw.Observation.historySubset [1,2] [1,3] = false := by decide\n+example : Raw.Observation.historySubset [(1,0),(2,1)] [(2,1),(1,0)] = true := by decide\n+example : Raw.Observation.historySubset [(1,0)] [(1,1)] = false := by decide\n private def nested : Nat \u2192 List Op\n   | 0 => []\n   | n+1 => [.branch 0 (nested n) [] [] []]\n"
+      },
+      {
+        "path": "src/bin/qleisli/json.rs",
+        "before_sha256": "792880ca3d3d0f8daafe5a948162c87e8055aaa90f364d79b69761ae8d4a2d4c",
+        "after_sha256": "82f4eafbc22dc9c57bb21fd7a355664bebd8cfa33f931506fd2053cbf2080b54",
+        "classification": "reviewed",
+        "diff_base": "git HEAD",
+        "diff_base_sha256": "792880ca3d3d0f8daafe5a948162c87e8055aaa90f364d79b69761ae8d4a2d4c",
+        "diff_base_matches_binding": true,
+        "diff": "--- HEAD:src/bin/qleisli/json.rs\n+++ src/bin/qleisli/json.rs\n@@ -209,12 +209,17 @@\n }\n \n pub(super) fn run(args: &[OsString]) -> ExitCode {\n-    let positional: Vec<_> = args.iter().filter(|arg| *arg != \"--format=json\").collect();\n-    let command = positional\n-        .first()\n-        .and_then(|arg| arg.to_str())\n-        .unwrap_or(\"\");\n     let options = super::options::Options::parse(args, true);\n+    let command = options.as_ref().map_or_else(\n+        || {\n+            args.iter()\n+                .find(|arg| *arg != \"--format=json\")\n+                .and_then(|arg| arg.to_str())\n+                .unwrap_or(\"\")\n+                .to_owned()\n+        },\n+        |options| options.command.clone(),\n+    );\n     let mut root = PathBuf::new();\n     let mut artifact_pointer = None;\n     let mut warnings = vec![];\n@@ -279,7 +284,7 @@\n                 .join(\",\");\n             let document = format!(\n                 \"{{\\\"format\\\":\\\"qleisli.result\\\",\\\"version\\\":1,\\\"command\\\":{},\\\"outcome\\\":\\\"ok\\\",\\\"diagnostics\\\":[{warnings}],\\\"result\\\":{result}}}\\n\",\n-                quoted(command)\n+                quoted(&command)\n             );\n             (document, ExitCode::SUCCESS)\n         }\n@@ -290,7 +295,7 @@\n                 Some(pointer) => artifact_diagnostic_json(error.code, &error.message, &pointer),\n             };\n             (\n-                envelope(command, Some(&diagnostic), \"null\"),\n+                envelope(&command, Some(&diagnostic), \"null\"),\n                 ExitCode::from(status),\n             )\n         }\n"
+      },
+      {
+        "path": "src/contract/function.rs",
+        "before_sha256": "55eea7babd677a05d799087284e3ffa6a14408f814731f4d0af52cb572dcb6f3",
+        "after_sha256": "a7605360780d0a280bba8c7de355fdb2d037b3df77e83b378d4a55c43335f5f0",
+        "classification": "reviewed",
+        "diff_base": "git HEAD",
+        "diff_base_sha256": "55eea7babd677a05d799087284e3ffa6a14408f814731f4d0af52cb572dcb6f3",
+        "diff_base_matches_binding": true,
+        "diff": "--- HEAD:src/contract/function.rs\n+++ src/contract/function.rs\n@@ -196,22 +196,25 @@\n         budget: &mut Budget,\n     ) -> Result<Self, ContractDiagnostic> {\n         validate_identity(&identity, budget)?;\n-        let implementation_view = implementation.clone();\n-        let specification_view = specification.clone();\n-        let signature_view = signature.clone();\n+        // Keep the untrusted trees borrowed until transport has checked their\n+        // capacity. Cloning here would recurse before its depth checks run.\n         kernel\n-            .function_evidence(signature, implementation, specification, identity, budget)\n+            .function_evidence(\n+                &signature,\n+                &implementation,\n+                &specification,\n+                identity,\n+                budget,\n+            )\n             .map_err(|failure| {\n                 let error = native_error(failure);\n                 let detail = if error == ContractError::EquationMismatch {\n                     (|| {\n-                        let bits = signature_view.bits()?;\n-                        preflight(&implementation_view, bits, budget)?;\n-                        preflight(&specification_view, bits, budget)?;\n-                        let a = extract(&implementation_view, &signature_view, budget)?\n-                            .matrix(budget)?;\n-                        let b = extract(&specification_view, &signature_view, budget)?\n-                            .matrix(budget)?;\n+                        let bits = signature.bits()?;\n+                        preflight(&implementation, bits, budget)?;\n+                        preflight(&specification, bits, budget)?;\n+                        let a = extract(&implementation, &signature, budget)?.matrix(budget)?;\n+                        let b = extract(&specification, &signature, budget)?.matrix(budget)?;\n                         Ok::<_, ContractError>(super::equation_counterexample(&a, &b))\n                     })()\n                     .ok()\n"
+      },
+      {
+        "path": "src/interchange/native.rs",
+        "before_sha256": "1f6e797001b081509c6206db94f2343e4672197f9cf92dee2da9069153106b82",
+        "after_sha256": "b19830b978cec8ff22f20a5205a55153a8044df7686d735abb47459d41381560",
+        "classification": "reviewed",
+        "diff_base": "git HEAD",
+        "diff_base_sha256": "1f6e797001b081509c6206db94f2343e4672197f9cf92dee2da9069153106b82",
+        "diff_base_matches_binding": true,
+        "diff": "--- HEAD:src/interchange/native.rs\n+++ src/interchange/native.rs\n@@ -363,9 +363,9 @@\n \n     pub(crate) fn function_evidence(\n         &self,\n-        signature: crate::contract::BasisType,\n-        implementation: RawProgram,\n-        specification: RawProgram,\n+        signature: &crate::contract::BasisType,\n+        implementation: &RawProgram,\n+        specification: &RawProgram,\n         identity: crate::contract::function::RetainedIdentity,\n         budget: &mut crate::contract::exact::Budget,\n     ) -> Result<crate::contract::FunctionEvidence> {\n@@ -376,9 +376,9 @@\n         encoder.entries.push(Value::Null);\n         encoder.evidence_fields(\n             0,\n-            &signature,\n-            &implementation,\n-            &specification,\n+            signature,\n+            implementation,\n+            specification,\n             identity.parts(),\n             None,\n         )?;\n"
+      }
+    ],
+    "changes": [],
+    "error": "check failed: /opt/homebrew/opt/python@3.14/bin/python3.14 scripts/check_verification_inventory.py"
+  },
+  "intermediate_failure_reason": "A subsequent independent review fixed the CLI usage-error fallback while the proof/schema refresh was running. The source inventory correctly rejected the newer Rust file until it was reviewed and rebound.",
+  "final": {
+    "format": 1,
+    "status": "passed",
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_verification_inventory.py"
+        ],
+        "exit_code": 0,
+        "stdout": "VM-22: 232 constructors, 234 source snapshots, 20 boundaries; native authority selected by #276; full Soundness remains open.\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_schema_registry.py",
+          "--source-only"
+        ],
+        "exit_code": 0,
+        "stdout": "{\"entries\": 3, \"externally_enabled\": 0, \"format\": \"qleisli.schema-registry-validation\", \"manifest_sha256\": \"4e7176c32369f2ee9307b803ab4e481f716cba08f58d05e6ffc3371dd0ed3a37\", \"mode\": \"source-identity-only\", \"source_revision\": \"32512abcc621d4dc785f21da8520d981510e1308f7bc978561d2d53cd5bae8ba\", \"status\": \"passed\", \"version\": 1}\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_docs.py"
+        ],
+        "exit_code": 0,
+        "stdout": "Checked 1569 local links, 8 Markdown anchors, 0 Rust declarations, 0 Rust tests, and 201 Lean root modules.\n",
+        "stderr": ""
+      },
+      {
+        "command": [
+          "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "scripts/check_editions.py"
+        ],
+        "exit_code": 0,
+        "stdout": "Edition 2026: 1043 .qli and 5 .qlt files covered by 26 explicit manifests; no repository-root manifest.\n",
+        "stderr": ""
+      }
+    ],
+    "version": "0.3.0-alpha",
+    "source_review": [
+      {
+        "path": "src/bin/qleisli/json.rs",
+        "before_sha256": "82f4eafbc22dc9c57bb21fd7a355664bebd8cfa33f931506fd2053cbf2080b54",
+        "after_sha256": "e05bec3229c78eb6aa02c98aa73afb037870f06eb9b8e6edf2a3418e18a0519a",
+        "classification": "reviewed",
+        "diff_base": "git HEAD",
+        "diff_base_sha256": "792880ca3d3d0f8daafe5a948162c87e8055aaa90f364d79b69761ae8d4a2d4c",
+        "diff_base_matches_binding": false,
+        "diff": "--- HEAD:src/bin/qleisli/json.rs\n+++ src/bin/qleisli/json.rs\n@@ -209,12 +209,17 @@\n }\n \n pub(super) fn run(args: &[OsString]) -> ExitCode {\n-    let positional: Vec<_> = args.iter().filter(|arg| *arg != \"--format=json\").collect();\n-    let command = positional\n-        .first()\n-        .and_then(|arg| arg.to_str())\n-        .unwrap_or(\"\");\n     let options = super::options::Options::parse(args, true);\n+    let command = options.as_ref().map_or_else(\n+        || {\n+            args.iter()\n+                .find(|arg| !arg.as_encoded_bytes().starts_with(b\"-\"))\n+                .and_then(|arg| arg.to_str())\n+                .unwrap_or(\"\")\n+                .to_owned()\n+        },\n+        |options| options.command.clone(),\n+    );\n     let mut root = PathBuf::new();\n     let mut artifact_pointer = None;\n     let mut warnings = vec![];\n@@ -279,7 +284,7 @@\n                 .join(\",\");\n             let document = format!(\n                 \"{{\\\"format\\\":\\\"qleisli.result\\\",\\\"version\\\":1,\\\"command\\\":{},\\\"outcome\\\":\\\"ok\\\",\\\"diagnostics\\\":[{warnings}],\\\"result\\\":{result}}}\\n\",\n-                quoted(command)\n+                quoted(&command)\n             );\n             (document, ExitCode::SUCCESS)\n         }\n@@ -290,7 +295,7 @@\n                 Some(pointer) => artifact_diagnostic_json(error.code, &error.message, &pointer),\n             };\n             (\n-                envelope(command, Some(&diagnostic), \"null\"),\n+                envelope(&command, Some(&diagnostic), \"null\"),\n                 ExitCode::from(status),\n             )\n         }\n"
+      }
+    ],
+    "changes": []
+  }
+}

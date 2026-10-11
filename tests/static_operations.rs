@@ -46,7 +46,7 @@ impl Root {
         result
     }
     fn evolution(&self, n: usize) {
-        self.write("evolution.qli", &format!("use std::quantum::t; pub unitary fn evolve(q: Q<Bit>) -> Q<Bit> {{ repeat_static({n}, t, q) }}"));
+        self.write("evolution.qli", &format!("use std::quantum::t; pub unitary fn evolve(q: Q<Bit>) -> Q<Bit> {{ power(t,{n})( q) }}"));
     }
 }
 impl Drop for Root {
@@ -64,7 +64,7 @@ fn probability(result: &BTreeMap<Vec<bool>, f64>, bits: &[bool], expected: f64) 
 const IMPORTS: &str = "use std::quantum::init0; use std::quantum::h; use std::quantum::x;
 use std::quantum::z; use std::quantum::t; use std::quantum::cnot;
 use std::quantum::join; use std::quantum::split; use std::observe::measure_z;
-use std::observe::discard; use std::routines::measure_x;";
+use std::observe::discard; use std::measurement::measure_x;";
 
 #[test]
 fn qpe_resolves_all_eighth_turns_in_little_endian_order() {
@@ -86,7 +86,7 @@ fn qpe_off_grid_phases_match_the_finite_fourier_distribution() {
         "main.qli",
         "use estimation::phase2; use std::quantum::init0;
         use std::quantum::x; use std::observe::measure_z;
-        observe fn main() -> ((CBit,CBit),CBit) {
+        observe fn main() -> ((Bit,Bit),Bit) {
             let (phase, q) = phase2(x(init0())); (phase, measure_z(q))
         }",
     );
@@ -113,7 +113,7 @@ fn qpe_preserves_degenerate_coherence_and_correlates_with_a_reference() {
         "main.qli",
         &format!(
             "{IMPORTS} use estimation::phase3;
-        observe fn main() -> ((((CBit,CBit),CBit),CBit),CBit) {{
+        observe fn main() -> ((((Bit,Bit),Bit),Bit),Bit) {{
             let (r, q) = cnot(h(init0()), init0());
             let (phase, q) = phase3(q);
             ((phase, measure_z(r)), measure_z(q))
@@ -128,7 +128,7 @@ fn qpe_preserves_degenerate_coherence_and_correlates_with_a_reference() {
         "main.qli",
         &format!(
             "{IMPORTS} use estimation::phase3;
-        observe fn main() -> ((((CBit,CBit),CBit),CBit),CBit) {{
+        observe fn main() -> ((((Bit,Bit),Bit),Bit),Bit) {{
             let (r, q) = cnot(h(init0()), init0());
             let (phase, q) = phase3(q);
             let (r, q) = cnot(r, q);
@@ -149,13 +149,13 @@ fn inverse_reverses_noncommuting_gates_and_output_axis_reordering() {
         unitary fn mix(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
             let (a,b) = split(q);
             let a = t(h(a));
-            let b = do x <- b; pure not x;
+            let b = basis b as x {{ not x }};
             let (a,b) = cnot(a,b);
             join(b,a)
         }}
-        observe fn main() -> (CBit,CBit) {{
+        observe fn main() -> (Bit,Bit) {{
             let q = mix(join(init0(), h(init0())));
-            let (a,b) = split(adjoint(mix,q));
+            let (a,b) = split(adjoint(mix)(q));
             (measure_z(a),measure_x(b))
         }}"
         ),
@@ -177,13 +177,13 @@ fn control_preserves_reflection_sign_including_inverse_and_nested_control() {
             unitary fn minus(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(q); join(negbit(a),b)
             }}
-            unitary fn inverse_minus(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{ adjoint(minus,q) }}
+            unitary fn inverse_minus(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{ adjoint(minus)(q) }}
             unitary fn nested(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(q);
                 let (a,b) = qif(a,b) {{ 0 => idbit, 1 => negbit }};
                 join(a,b)
             }}
-            observe fn main() -> (CBit,(CBit,CBit)) {{
+            observe fn main() -> (Bit,(Bit,Bit)) {{
                 let q = join(x(init0()), h(init0()));
                 let (c,q) = qif(h(init0()),q) {{ 0 => identity, 1 => {operation} }};
                 let (a,b) = split(q);
@@ -202,12 +202,12 @@ fn computed_zero_width_phase_survives_inverse_and_control() {
         "main.qli",
         &format!(
             "{IMPORTS}
-        basis fn yes(x: Unit) -> Bit {{ 1 }}
+        classical fn yes(x: Unit) -> Bit {{ 1 }}
         unitary fn identity(q: Q<Unit>) -> Q<Unit> {{ q }}
         unitary fn phase(q: Q<Unit>) -> Q<Unit> {{ with_computed(q,yes) {{ |a| t(a) }} }}
-        unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ adjoint(phase,q) }}
-        observe fn main() -> (CBit,CBit) {{
-            let pair = do b <- init0(); pure ((),b);
+        unitary fn phase_back(q: Q<Unit>) -> Q<Unit> {{ adjoint(phase)(q) }}
+        observe fn main() -> (Bit,Bit) {{
+            let pair = basis init0() as b {{ ((),b) }};
             let (u,b) = split(pair);
             let (c,u) = qif(h(init0()),u) {{ 0 => identity, 1 => phase_back }};
             let c = t(c);
@@ -224,12 +224,12 @@ fn grover_reflection_and_its_negative_are_distinguished_under_control() {
     let root = Root::new();
     for (function, expected) in [("reflect_uniform2", false), ("negative", true)] {
         root.write("main.qli", &format!("{IMPORTS}
-            use std::routines::reflect_uniform2; use std::routines::hadamard2;
+            use std::reflection::reflect_uniform2; use std::transform::hadamard2;
             unitary fn identity(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{ q }}
             unitary fn negative(q: Q<(Bit,Bit)>) -> Q<(Bit,Bit)> {{
                 let (a,b) = split(reflect_uniform2(q)); join(z(x(z(x(a)))),b)
             }}
-            observe fn main() -> (CBit,(CBit,CBit)) {{
+            observe fn main() -> (Bit,(Bit,Bit)) {{
                 let (c,q) = qif(h(init0()),hadamard2(join(init0(),init0()))) {{ 0 => identity, 1 => {function} }};
                 let (a,b) = split(q); (measure_x(c),(measure_x(a),measure_x(b)))
             }}"));
@@ -243,9 +243,7 @@ fn repetition_zero_one_and_many_have_explicit_semantics() {
     for n in [0, 1, 2, 3, 4096] {
         root.write(
             "main.qli",
-            &format!(
-                "{IMPORTS} observe fn main() -> CBit {{ measure_z(repeat_static({n},x,init0())) }}"
-            ),
+            &format!("{IMPORTS} observe fn main() -> Bit {{ measure_z(power(x,{n})(init0())) }}"),
         );
         probability(&root.run(), &[n % 2 == 1], 1.0);
     }
@@ -256,19 +254,19 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
     let root = Root::new();
     let cases = [
         (
-            "unitary fn f(q:Q<Bit>) -> Q<Bit> { repeat_static(0,missing,q) }",
+            "unitary fn f(q:Q<Bit>) -> Q<Bit> { power(missing,0)(q) }",
             ErrorCode::UnknownName,
         ),
         (
-            "unitary fn f(q:Q<Bit>) -> Q<Bit> { repeat_static(0,measure_z,q) }",
+            "unitary fn f(q:Q<Bit>) -> Q<Bit> { power(measure_z,0)(q) }",
             ErrorCode::Effect,
         ),
         (
-            "iso fn u(q:Q<Bit>) -> Q<Bit> { q } unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u,q)}",
+            "observe fn u(q:Q<Bit>)->Q<Bit>{let b=measure_z(init0());q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u)(q)}",
             ErrorCode::Effect,
         ),
         (
-            "unitary fn u(q:Q<Bit>,c:CBit)->Q<Bit>{q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u,q)}",
+            "unitary fn u(q:Q<Bit>,c:Bit)->Q<Bit>{q} unitary fn f(q:Q<Bit>)->Q<Bit>{adjoint(u)(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
@@ -276,19 +274,19 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
             ErrorCode::Ownership,
         ),
         (
-            "unitary fn f(q:Q<Bit>)->Q<Bit>{ let h = (); adjoint(h,q) }",
+            "unitary fn f(q:Q<Bit>)->Q<Bit>{ let h = (); adjoint(h)(q) }",
             ErrorCode::TypeMismatch,
         ),
         (
-            "unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(t,q)}",
+            "unitary fn f(q:Q<(Bit,Bit)>)->Q<(Bit,Bit)>{adjoint(t)(q)}",
             ErrorCode::TypeMismatch,
         ),
         (
-            "unitary fn f(q:Q<Bit>)->Q<Bit>{repeat_static(0,f,q)}",
+            "unitary fn f(q:Q<Bit>)->Q<Bit>{power(f,0)(q)}",
             ErrorCode::RecursiveCall,
         ),
         (
-            "unitary fn f(q:Q<Bit>)->Q<Bit>{repeat_static(0,bad,q)} unitary fn bad(q:Q<Bit>)->Q<Bit>{h(q);q}",
+            "unitary fn f(q:Q<Bit>)->Q<Bit>{power(bad,0)(q)} unitary fn bad(q:Q<Bit>)->Q<Bit>{h(q);q}",
             ErrorCode::Ownership,
         ),
     ];
@@ -300,16 +298,7 @@ fn static_forms_reject_bad_names_effects_types_and_ownership() {
 
 #[test]
 fn static_syntax_has_bounded_numbers_and_precise_failures() {
-    for (body, offending) in [
-        ("repeat_static(4097,h,q)", "4097"),
-        (
-            "repeat_static(999999999999999999999999,h,q)",
-            "999999999999999999999999",
-        ),
-        ("repeat_static(00,h,q)", "00"),
-        ("repeat_static(n,h,q)", "n"),
-        ("qif(q,r){1=>h,0=>x}", "1"),
-    ] {
+    for (body, offending) in [("power(h,00)(q)", "00"), ("qif(q,r){1=>h,0=>x}", "1")] {
         let prefix = "unitary fn f(q:Q<Bit>,r:Q<Bit>)->Q<Bit>{";
         let source = format!("{prefix}{body}}}");
         let error = parse_module(&source).unwrap_err();
@@ -318,7 +307,23 @@ fn static_syntax_has_bounded_numbers_and_precise_failures() {
             prefix.len() + body.find(offending).unwrap()
         );
     }
-    let expr = format!("{}q{}", "adjoint(h,".repeat(10_000), ")".repeat(10_000));
+    // Canonical power retains its complete Nat syntax; closed-instance bounds
+    // and unresolved names are checked after parsing, at the count itself.
+    for (count, code) in [
+        ("4097", ErrorCode::Limit),
+        ("999999999999999999999999", ErrorCode::Limit),
+        ("n", ErrorCode::TypeMismatch),
+    ] {
+        let prefix = format!("{IMPORTS} unitary fn f(q:Q<Bit>)->Q<Bit>{{power(h,");
+        let source = format!("{prefix}{count})(q)}}");
+        parse_module(&source).unwrap();
+        let root = Root::new();
+        root.write("main.qli", &source);
+        let error = check_project(&root.0).unwrap_err();
+        assert_eq!(error.code, code, "{error}");
+        assert_eq!(&source[error.span.start..error.span.end], count);
+    }
+    let expr = format!("{}q{}", "adjoint(h)(".repeat(10_000), ")".repeat(10_000));
     let source = format!("unitary fn f(q:Q<Bit>)->Q<Bit>{{{expr}}}");
     assert!(parse_module(&source).unwrap_err().message.contains("limit"));
 }
@@ -333,15 +338,15 @@ fn nested_static_expansion_is_bounded_in_work_and_depth() {
                 "main.qli",
                 &format!(
                     "{IMPORTS}
-            unitary fn a(q:Q<Bit>)->Q<Bit>{{repeat_static(4096,t,q)}}
-            unitary fn b(q:Q<Bit>)->Q<Bit>{{repeat_static(4096,a,q)}}"
+            unitary fn a(q:Q<Bit>)->Q<Bit>{{power(t,4096)(q)}}
+            unitary fn b(q:Q<Bit>)->Q<Bit>{{power(a,4096)(q)}}"
                 ),
             );
             assert_eq!(check_project(&root.0).unwrap_err().code, ErrorCode::Limit);
             let mut source = format!("{IMPORTS} unitary fn f0(q:Q<Bit>)->Q<Bit>{{t(q)}}");
             for i in 1..90 {
                 source.push_str(&format!(
-                    " unitary fn f{i}(q:Q<Bit>)->Q<Bit>{{adjoint(f{},q)}}",
+                    " unitary fn f{i}(q:Q<Bit>)->Q<Bit>{{adjoint(f{})(q)}}",
                     i - 1
                 ));
             }

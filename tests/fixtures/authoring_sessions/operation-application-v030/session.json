@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "kind": "informed_first_attempt",
+  "task": "#33 canonical static specialization and constructed operation application",
+  "baseline_commit": "1bf268ffbd826004d1565f59e9b80adab8cd3483",
+  "project_version": "0.3.0-alpha",
+  "author": "Codex; informed code/Reference access, model/sampling unavailable",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Complete bounded desired source saved before application implementation.",
+      "sha256": {
+        "main.qli": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6"
+      },
+      "observations": [
+        "observation-before.json"
+      ]
+    },
+    {
+      "id": "attempt-02",
+      "reason": "Correct observer manifest schema only; desired source bytes unchanged.",
+      "sha256": {
+        "main.qli": "90e3f03047a873501a263b4410b185502d147bf018e2619ee1f0f34818105ac6"
+      },
+      "observations": [
+        "observation-repaired-manifest.json"
+      ],
+      "reports": [
+        "expectations.json",
+        "validation-inverse-unit.json",
+        "validation-power-unit.json"
+      ]
+    },
+    {
+      "id": "attempt-03",
+      "reason": "Separate legacy-spelling translation for before-code semantic-adapter probe; preserves original desired source and both first refusals.",
+      "sha256": {
+        "main.qli": "4a7e7b3907c10456d1b02c7c379306cc7fbb3ad6a26b3a2d83af32c070335968"
+      },
+      "observations": [
+        "observation-legacy-probe.json"
+      ],
+      "reports": [
+        "validation-z-adapter.json"
+      ]
+    }
+  ]
+}

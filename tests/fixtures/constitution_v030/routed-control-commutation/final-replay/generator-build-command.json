@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "rustc",
+    "--edition=2024",
+    "/private/tmp/qleisli-routed-control-replay-20261005/Generate.rs",
+    "--extern",
+    "qleisli=/private/tmp/qleisli-routed-control-replay-20261005/target/debug/libqleisli.rlib",
+    "-L",
+    "dependency=/private/tmp/qleisli-routed-control-replay-20261005/target/debug/deps",
+    "-o",
+    "/private/tmp/qleisli-routed-control-replay-20261005/generate"
+  ],
+  "cwd": "/private/tmp/qleisli-routed-control-replay-20261005",
+  "started_at": "2026-10-04T15:32:05.844389+00:00",
+  "elapsed_seconds": 0.3271359170321375,
+  "exit_code": 0,
+  "stdout": "generator-build.stdout.txt",
+  "stderr": "generator-build.stderr.txt"
+}

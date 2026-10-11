@@ -1,0 +1,31 @@
+{
+  "format": 1,
+  "kind": "curated_local_counterexamples",
+  "cases": [
+    {
+      "id": "duplicate_owner",
+      "project": "negative/duplicate_owner",
+      "expected_code": "ownership",
+      "expected_message": "quantum ownership `q` has already been consumed"
+    },
+    {
+      "id": "measured_owner",
+      "project": "negative/measured_owner",
+      "expected_code": "ownership",
+      "expected_message": "quantum ownership `q` has already been consumed"
+    },
+    {
+      "id": "measurement_adjoint",
+      "project": "negative/measurement_adjoint",
+      "expected_code": "type_mismatch",
+      "expected_message": "type or tuple/size shape mismatch: expected `Bit`, found `Q<Bit>`"
+    },
+    {
+      "id": "dirty_auxiliary",
+      "project": "negative/dirty_auxiliary",
+      "expected_code": "unsupported",
+      "expected_message": "with_computed currently accepts only identity and expanded Z/T gates on its ancilla; for other unitary bodies, use with_computed(source, predicate, logical) { |data, ancilla| ... } and return both owners. The logical operation must satisfy the exact computed-relation contract; adding it does not bypass cleanup checking"
+    }
+  ],
+  "baseline_sha256": "43869bbf8656055d4e7dd500a8fed9edc5eb49c6d94542d4f4ccea1712426f29"
+}

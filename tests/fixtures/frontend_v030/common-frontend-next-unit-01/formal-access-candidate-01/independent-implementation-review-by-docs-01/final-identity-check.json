@@ -1,0 +1,9 @@
+{
+  "observed_utc": "2026-10-05T18:40:00.723613+00:00",
+  "input_rows": 39,
+  "all_recorded_current_input_bytes_hashes_modes_unchanged_at_review_end": true,
+  "original_FIRST_rows": 46,
+  "all_original_FIRST_rows_unchanged_at_review_end": true,
+  "production_edits_by_reviewer": false,
+  "execution": "read-only JSON/data/hash checks only; no recorded argv imported or executed"
+}

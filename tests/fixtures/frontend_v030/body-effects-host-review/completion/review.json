@@ -1,0 +1,151 @@
+{
+  "format": "qleisli.issue-implementation-completion-review",
+  "version": 1,
+  "issue": 315,
+  "target": "0.3.0",
+  "edition": "2026",
+  "recorded_utc": "2026-10-05 15:23:15 UTC",
+  "published_functional_commit": "eb9c36ef9c13b5b968fda6858e61ea4419430144",
+  "review": {
+    "kind": "independent-read-only-AI-code-and-evidence-review",
+    "agent": "/root/review_isometry_adapter",
+    "basis": "Fresh original GitHub criteria, actual code/Reference/stdlib and Git diff, preserved actual logs/source maps and terminal hosted integration. The earlier criterion-review.json is an index, not assumed evidence.",
+    "verdict": "All fourteen original implementation criteria satisfied and evidenced; no remaining required implementation gap found.",
+    "authority": "Ordinary implementation review only. No human Guardian judgment, interpretation adoption, guarantee admission or mathematical discharge is supplied."
+  },
+  "criteria": [
+    {
+      "number": 1,
+      "text": "The Language Reference states that ordinary checked `.qli` effects are derived from the body by the normative checker.",
+      "finding": "Body/callee effects are normative and derive through both typed consumers.",
+      "evidence": "docs/src/reference/source-text.md; src/frontend/compile/mod.rs; src/frontend/sized/check.rs",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 2,
+      "text": "Effect inference is deterministic and uniquely determined under #100.",
+      "finding": "Ordered joins and the least monotone sized solution follow termination checking; all six declaration-order permutations retain principal facts.",
+      "evidence": "src/frontend/effects.rs; tests/body_effects.rs",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 3,
+      "text": "A handwritten effect annotation on an ordinary body cannot manufacture semantic authority.",
+      "finding": "Checked inferred/asserted facts never seed inference with a prefix.",
+      "evidence": "src/frontend/effects.rs: FunctionEffect::checked; tests/body_effects.rs",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 4,
+      "text": "If explicit annotations remain, their assertion/checking semantics are specified.",
+      "finding": "Unitary <= Iso <= Observe optional upper-bound assertions preserve principal facts.",
+      "evidence": "docs/src/reference/source-text.md; tests/body_effects.rs",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 5,
+      "text": "An annotation cannot hide or downgrade `Observe`.",
+      "finding": "Direct/transitive/internal observation contradictions reject; text/JSON source and host diagnostics identify unsupported external justification.",
+      "evidence": "tests/body_effects.rs; tests/repair_diagnostics.rs; tests/fixtures/authoring_sessions/body-effects-host-review-v030/",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 6,
+      "text": "The current derived stdlib is audited for redundant hand-written effect contracts.",
+      "finding": "Every current derived source is audited: ten runtime functions and three basis definitions.",
+      "evidence": "tests/fixtures/frontend_v030/body-effects/stdlib-audit.json; stdlib/src",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 7,
+      "text": "Redundant stdlib effect annotations are removed or converted into checked assertions rather than trusted declarations.",
+      "finding": "Historical diff removes seven unitary and three observe prefixes, retaining bodies and mathematical comments.",
+      "evidence": "tests/fixtures/frontend_v030/body-effects/stdlib-before/; tests/fixtures/frontend_v030/body-effects/stdlib-audit.json",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 8,
+      "text": "`qlidoc` / interface metadata can expose inferred effect classes without requiring duplicate source annotations.",
+      "finding": "Immutable checked ProjectEffects/ParsedProgram facts and rendering expose principal class and assertion from retained source; source-only documentation remains unverified.",
+      "evidence": "src/frontend/compile/mod.rs; src/frontend/sized.rs; src/frontend/documentation.rs; tests/body_effects.rs",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 9,
+      "text": "Exact mathematical `Meaning` specifications remain distinguished from mechanically inferred effect classification.",
+      "finding": "Reference/rendering distinguish effect class from exact Meaning/access/preservation; independent mathematical comments remain.",
+      "evidence": "docs/src/reference/source-text.md; src/frontend/documentation.rs; tests/fixtures/frontend_v030/body-effects/stdlib-audit.json",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 10,
+      "text": "Anything that genuinely requires trusted semantic authority is classified under the primitive boundary of #167/#154, not ordinary stdlib.",
+      "finding": "Existing sealed catalogs and admission rules remain unchanged; no primitive is introduced.",
+      "evidence": "src/frontend/core.rs; src/frontend/sized/primitive.rs; docs/src/reference/primitive-boundary.md; STDLIB.md",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 11,
+      "text": "No ordinary stdlib function gains privileged effect authority because of its module/path/name.",
+      "finding": "Bundled derived bodies follow ordinary checking; misleading names/module placements and std injection are tested.",
+      "evidence": "tests/body_effects.rs; src/frontend/compile/mod.rs; src/frontend/sized/check.rs",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 12,
+      "text": "#152's later structural refactor consumes these checked/inferred contracts without redefining them.",
+      "finding": "The future #152 consumer contract requires immutable inferred facts and source identity while retaining later structural scope.",
+      "evidence": "https://github.com/MGYamada/Qleisli/issues/152",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 13,
+      "text": "**`externally unitary` / `externally isometry` are explicitly left unresolved and deferred to the long-term post-v1 work in #283.**",
+      "finding": "The original decision and Reference explicitly retain unsupported external justification and unresolved post-v1 #283.",
+      "evidence": "docs/src/reference/source-text.md; https://github.com/MGYamada/Qleisli/issues/283",
+      "status": "verified-implementation-criterion"
+    },
+    {
+      "number": 14,
+      "text": "No 0.3.0 escape hatch is introduced that approximates the future #283 mechanism.",
+      "finding": "Source/provider/host checks consume principal facts, with independent shape/owner/access/native checks and no external-certificate bypass.",
+      "evidence": "src/frontend/effects.rs; src/frontend/sized/check.rs; tests/body_effects.rs; tests/repair_diagnostics.rs",
+      "status": "verified-implementation-criterion"
+    }
+  ],
+  "validation": {
+    "local_toolchains": [
+      "1.98.1",
+      "1.85.0"
+    ],
+    "each": {
+      "passed": 788,
+      "failed": 0,
+      "default_ignored": 52,
+      "reported_groups": 90,
+      "source_inputs": 184
+    },
+    "source_binding": "Independent reviewer checked each of the two 184-input maps against published functional eb9c36e; they are identical. Current Iso adapter changes are outside this verdict.",
+    "local_records": [
+      "validation-latest-all-escalated-retry-01",
+      "validation-msrv-all-escalated"
+    ],
+    "hosted": {
+      "run_id": 37303925654,
+      "run_url": "https://github.com/MGYamada/Qleisli/actions/runs/37303925654",
+      "tested_merge": "a416dcd0a9dad6c8495f9ba36d0ccf7d3382a9ea",
+      "branch_head": "eb9c36ef9c13b5b968fda6858e61ea4419430144",
+      "base": "ba83c5c97a9c67bf3904423745b3e9c019a083cb",
+      "producer_lanes": 8,
+      "conclusion": "success",
+      "readiness": "skipped"
+    }
+  },
+  "limits": [
+    "The current uncommitted Iso implementation has separate validation, including retained stale-test failures; this is not its completion record.",
+    "Default ignores do not establish all optional lanes. Hosted fixed lanes carry their own actual results.",
+    "No general source/runtime preservation theorem, QS/PR/quantitative RS/EXACT discharge, new primitive, human adoption or release approval.",
+    "#152 remains later structural work and #283 remains unresolved post-v1.",
+    "Future #317 namespace changes must preserve ordinary checked effect facts; none of its twenty criteria is completed here."
+  ]
+}

@@ -1,0 +1,1 @@
+use dep::gate as alias;pub unitary fn f(q:Q<Bit>)->Q<Bit>{alias(q)}

@@ -1,0 +1,1 @@
+main:96..103: static: wrong number of static arguments for main::g: expected [n: Nat, m: Nat], received 1

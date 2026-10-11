@@ -1,0 +1,10 @@
+{
+  "issue": 32,
+  "before_body_sha256": "0411f6d1791d5c0576c5b790ec3783d2d1575013863f16ac7963b20787f41de0",
+  "after_body_sha256": "26d7c9c7c9240ce79dd58886e99a0e6e99c2b64a156eb47feea18a7acdc62875",
+  "after_updated_at": "2026-10-05T17:12:57Z",
+  "exact_expected_body_readback": true,
+  "criterion_lines_unchanged": true,
+  "state_and_milestone_unchanged": true,
+  "scope": "Concrete ordinary name-check contract posted after actual40 first-source observations and before source implementation. No closure, interpretation, guarantee or release readiness."
+}

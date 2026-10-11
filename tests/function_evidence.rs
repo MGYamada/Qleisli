@@ -142,28 +142,152 @@ fn checks_two_raw_functions_and_retains_their_full_snapshots() {
     assert_eq!(theorem.depth(), 1);
     assert_eq!(theorem.expanded_steps(), 2);
     theorem
-        .check_binding(&identity(), &implementation, &specification)
+        .check_binding(
+            &BasisType::Bit,
+            &identity(),
+            &implementation,
+            &specification,
+        )
         .unwrap();
     let mut renamed = identity();
     renamed.implementation.push_str("_changed");
     assert_eq!(
-        theorem.check_binding(&renamed, &implementation, &specification),
+        theorem.check_binding(&BasisType::Bit, &renamed, &implementation, &specification),
         Err(ContractError::EvidenceMismatch)
     );
     let mut edited = identity();
     edited.sources[0].1.push(' ');
     assert_eq!(
-        theorem.check_binding(&edited, &implementation, &specification),
+        theorem.check_binding(&BasisType::Bit, &edited, &implementation, &specification),
         Err(ContractError::EvidenceMismatch)
     );
     assert_eq!(
-        theorem.check_binding(&identity(), &specification, &specification),
+        theorem.check_binding(&BasisType::Bit, &identity(), &specification, &specification),
         Err(ContractError::EvidenceMismatch)
     );
     assert_eq!(
-        theorem.check_binding(&identity(), &implementation, &implementation),
+        theorem.check_binding(
+            &BasisType::Bit,
+            &identity(),
+            &implementation,
+            &implementation
+        ),
         Err(ContractError::EvidenceMismatch)
     );
+}
+
+#[test]
+fn nonmonomial_reference_checks_preserve_exact_phase_and_axis() {
+    let implementation = raw(
+        1,
+        vec![
+            gate(SingleGate::H, 0, 1),
+            gate(SingleGate::H, 1, 2),
+            gate(SingleGate::H, 2, 3),
+        ],
+        3,
+    );
+    let reference = raw(1, vec![gate(SingleGate::H, 0, 1)], 1);
+    let receipt = check(1, implementation, reference.clone());
+    let s = Exact::inv_sqrt2();
+    let entries = [s, s, s, s.neg().unwrap()];
+    assert_eq!(
+        receipt.meaning(),
+        &Matrix::new(2, 2, entries.to_vec()).unwrap()
+    );
+
+    // H and -H have identical probabilities for every basis input. The
+    // native equation must still distinguish their exact coefficients.
+    for entry in entries {
+        let negative = entry.neg().unwrap();
+        assert_eq!(
+            entry.mul(entry.conjugate().unwrap()).unwrap(),
+            negative.mul(negative.conjugate().unwrap()).unwrap()
+        );
+    }
+    let negative_h = raw(
+        1,
+        vec![
+            gate(SingleGate::H, 0, 1),
+            RawOp::ApplyUnitary {
+                input: t(1),
+                output: t(2),
+                steps: vec![monomial(&[], &[0], &[4])],
+            },
+        ],
+        2,
+    );
+    for candidate in [raw(1, vec![], 0), negative_h] {
+        assert_eq!(
+            FunctionEvidence::check(
+                BasisType::Bit,
+                candidate,
+                reference.clone(),
+                identity(),
+                &mut work(),
+            )
+            .unwrap_err(),
+            ContractError::EquationMismatch
+        );
+    }
+
+    let on_axis = |target| {
+        flat(
+            2,
+            vec![CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Hadamard { target },
+            }],
+        )
+    };
+    assert_eq!(
+        FunctionEvidence::check(basis(2), on_axis(1), on_axis(0), identity(), &mut work())
+            .unwrap_err(),
+        ContractError::EquationMismatch
+    );
+}
+
+#[test]
+fn attachment_requires_the_exact_expected_basis_tree() {
+    let cases = [
+        (
+            BasisType::Tuple(vec![BasisType::Bit; 3]),
+            BasisType::pair(
+                BasisType::Bit,
+                BasisType::pair(BasisType::Bit, BasisType::Bit),
+            ),
+        ),
+        (
+            BasisType::Unit,
+            BasisType::pair(BasisType::Unit, BasisType::Unit),
+        ),
+        (
+            BasisType::Bit,
+            BasisType::pair(BasisType::Unit, BasisType::Bit),
+        ),
+    ];
+    for (retained, substituted) in cases {
+        let bits = retained.bits().unwrap();
+        assert_eq!(bits, substituted.bits().unwrap());
+        assert_ne!(retained, substituted);
+        let program = raw(bits as u8, vec![], 0);
+        let receipt = FunctionEvidence::check(
+            retained.clone(),
+            program.clone(),
+            program.clone(),
+            identity(),
+            &mut work(),
+        )
+        .unwrap();
+        assert_eq!(
+            receipt.check_binding(&retained, &identity(), &program, &program),
+            Ok(())
+        );
+        assert_eq!(
+            receipt.check_binding(&substituted, &identity(), &program, &program),
+            Err(ContractError::EvidenceMismatch)
+        );
+    }
 }
 
 #[test]
@@ -720,6 +844,7 @@ fn cached_calls_keep_opaque_dependencies_and_phase_under_control_and_adjoint() {
     assert_eq!(evidence.meaning(), child.meaning());
     child
         .check_binding(
+            evidence.signature(),
             evidence.identity(),
             evidence.implementation(),
             evidence.specification(),
@@ -739,7 +864,12 @@ fn cached_dependency_equality_is_identity_based_and_clone_stable() {
     let parent = check(0, implementation, raw(0, vec![], 0));
     let replaced = flat(0, vec![call(Arc::new(separate), vec![], false)]);
     assert_eq!(
-        parent.check_binding(parent.identity(), &replaced, parent.specification()),
+        parent.check_binding(
+            &BasisType::Unit,
+            parent.identity(),
+            &replaced,
+            parent.specification()
+        ),
         Ok(()) // Equal complete native snapshots can have distinct host Arc identities.
     );
 }
@@ -840,6 +970,75 @@ fn independent_raw_checks_share_work_across_certified_compute_regions() {
         ),
         "{error}"
     );
+}
+
+#[test]
+fn untrusted_function_trees_reject_without_recursive_cloning() {
+    const CHILD: &str = "QLEISLI_TEST_UNTRUSTED_FUNCTION_TREE";
+    if let Ok(case) = std::env::var(CHILD) {
+        std::thread::Builder::new()
+            .stack_size(2 * 1024 * 1024)
+            .spawn(move || {
+                let mut signature = BasisType::Unit;
+                let mut implementation = raw(0, vec![], 0);
+                let mut specification = raw(0, vec![], 0);
+                match case.as_str() {
+                    "implementation" | "specification" => {
+                        let mut operations = vec![];
+                        for _ in 0..1000 {
+                            operations = vec![RawOp::ClassicalBranch {
+                                condition: c(0),
+                                then_ops: operations,
+                                else_ops: vec![],
+                                quantum_phis: vec![],
+                                classical_phis: vec![],
+                            }];
+                        }
+                        if case == "implementation" {
+                            implementation.operations = operations;
+                        } else {
+                            specification.operations = operations;
+                        }
+                    }
+                    "signature" => {
+                        for _ in 0..10_000 {
+                            signature = BasisType::pair(BasisType::Unit, signature);
+                        }
+                    }
+                    _ => panic!("unknown regression case"),
+                }
+                // Zero qubits and no execution: malformed trees must hit a
+                // transport/type limit before any recursive clone or encoding.
+                assert!(matches!(
+                    FunctionEvidence::check(
+                        signature,
+                        implementation,
+                        specification,
+                        identity(),
+                        &mut work(),
+                    ),
+                    Err(ContractError::Limit(_))
+                ));
+            })
+            .unwrap()
+            .join()
+            .unwrap();
+        return;
+    }
+    // A stack overflow aborts the process, so isolate each public-API call
+    // rather than allowing a regression to terminate unrelated tests.
+    for case in ["implementation", "specification", "signature"] {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args([
+                "--exact",
+                "untrusted_function_trees_reject_without_recursive_cloning",
+                "--nocapture",
+            ])
+            .env(CHILD, case)
+            .output()
+            .unwrap();
+        assert!(output.status.success(), "{case}: {output:?}");
+    }
 }
 
 #[test]

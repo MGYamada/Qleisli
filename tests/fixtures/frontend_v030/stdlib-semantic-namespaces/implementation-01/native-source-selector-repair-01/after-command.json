@@ -1,0 +1,35 @@
+{
+  "format": "qleisli.native-source-selector-observation",
+  "version": 1,
+  "phase": "after-selector-repair",
+  "started_utc": "2026-10-06T03:16:54.844064+00:00",
+  "argv": [
+    "python3",
+    "-B",
+    "scripts/test_native_verification.py",
+    "--binary",
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+    "--kernel",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+    "--record",
+    "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/native-source-selector-repair-01/after-native"
+  ],
+  "cwd": "/Users/masa/git/Qleisli",
+  "exit_code": 0,
+  "seconds": 98.99018470803276,
+  "stdout": "after.stdout.txt",
+  "stderr": "after.stderr.txt",
+  "input_sha256": {
+    "scripts/test_native_verification.py": "073d317b307cad850e1ad0976bbdaff63f985659311e4cbfec831ceca925b376",
+    "scripts/check_input_corpus.py": "5ff4af010a9d8fa80506f64b16d22aca340b84d376fcf924de7c8c1dfc4d03bd",
+    "corpus/manifest.json": "6e5142c6130ee9efcf8a0efd8109871ca648a5574112433a00da503dd943131d"
+  },
+  "input_changed_during_run": {},
+  "binaries": {
+    "/private/tmp/qleisli-bounded-validation-target/debug/qleisli": "a7c2b2d387dc0c3ae360b047ff433abb7e341cc21c8a9aefbfe8b5056c791ae8",
+    "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+  },
+  "build_input_record": "tests/fixtures/frontend_v030/stdlib-semantic-namespaces/implementation-01/post-comment-validation-03.json",
+  "build_source_mismatches": {},
+  "scope": "Actual existing native/CLI script run, fixed fixtures and corpus clients at most four qubits. No fresh build, maximum-size quantum case, generic QFT implementation, source-preservation proof or guarantee admission."
+}

@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/private/tmp/qleisli-bits-meaning-target/debug/qleisli",
+    "--format=json",
+    "check",
+    "--entry=main::main",
+    "--ir-profile=raw",
+    "--module=main=/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/control-diagnostics-v030/attempt-01/old-control.qli",
+    "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+  ],
+  "exit_code": 1,
+  "recorded_utc": "2026-10-10T01:13:37.686466+00:00",
+  "cli_sha256_before": "f56316b5f363e6c547d744f1db09af7b7b7e24b4b6720043b322ff7f789c3d65",
+  "cli_sha256_after": "f56316b5f363e6c547d744f1db09af7b7b7e24b4b6720043b322ff7f789c3d65",
+  "stdout": {
+    "format": "qleisli.result",
+    "version": 1,
+    "command": "check",
+    "outcome": "error",
+    "diagnostics": [
+      {
+        "code": "parse",
+        "severity": "error",
+        "message": "unexpected character `&`",
+        "primary": {
+          "module": "main",
+          "path": "/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/control-diagnostics-v030/attempt-01/old-control.qli",
+          "start": 60,
+          "end": 61
+        },
+        "related": []
+      }
+    ],
+    "result": null
+  },
+  "stderr": ""
+}

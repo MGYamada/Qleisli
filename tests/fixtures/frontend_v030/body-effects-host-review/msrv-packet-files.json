@@ -1,0 +1,26 @@
+{
+  "format": "qleisli.validation-addendum",
+  "version": 1,
+  "base_packet": {
+    "path": "tests/fixtures/frontend_v030/body-effects-host-review/packet-files.json",
+    "sha256": "89a551aba9fa4166f8e735766eed27463d626a538af44a9a7a4f0290a7de13d5"
+  },
+  "files": {
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/0.stdout.txt": "8b146e8b52156f761a0981cbb12f8bd3bff8dc528f16cfcddc8791d55a1acb6f",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/1.stdout.txt": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/2.stderr.txt": "b8052f879c4c1e8e9371bab224463aee9adcf4fcdba592d0f6050ecbb4769e24",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/2.stdout.txt": "538691913d0f332e94d4e6260367cf95012aa5519dd3e648949447abe1410db4",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/3.stderr.txt": "ffd3230808aba20899462b71fd09fab43ab8a8daab52016cb9c3d030e4f87829",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/3.stdout.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/executed-driver.py.txt": "8c9aeae2161e654f70c3def297e40c28e043f88464d4d1695678f2cc68416853",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/native.json": "d7e82e98411eb1e67da4256220393190824817f3a272757480bd7565fb002c4d",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/result.json": "ff7aa91f21f5047b8d8fd43250c1e849caa49f50216aa2c56c0665328acb88be",
+    "tests/fixtures/frontend_v030/body-effects-host-review/validation-msrv-all-escalated/source-files.json": "cadd0d24283adcaee8ecdb7abf006857ee9766f90d7208f868be790747507b92",
+    "tests/fixtures/frontend_v030/body-effects-host-review/msrv-completion.json": "88d579c7c3a1eec97b59f577d625178b09911e2d6747c69b3a17ed006771284c",
+    "tests/fixtures/frontend_v030/body-effects-host-review/msrv-completion.md": "7c8dec659d4b0cdff22e38f3a6e6b5efeb16d9f6e51aaddf29fe0e6eb358eef2",
+    "tests/fixtures/frontend_v030/body-effects-host-review/summary-retry-01.json": "eeca4255f32b370cd7a1bdc6300c36333656018c8ab2f4e00f48f3264f7c9631"
+  },
+  "scope": "Completed additional MSRV observations with exact current-source/native identity. Initial packet bytes remain unchanged. No current-head hosted CI, release or proof-discharge claim."
+}

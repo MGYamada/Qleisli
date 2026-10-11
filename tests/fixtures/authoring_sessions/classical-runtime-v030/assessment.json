@@ -1,0 +1,128 @@
+{
+  "format": 1,
+  "kind": "informed_before_after_source_observation",
+  "registered_utc": "2026-10-06T06:40:51.274424+00:00",
+  "baseline_commit": "6db68d05607556a893e9d65e66138b486313ad9a",
+  "decision": "https://github.com/MGYamada/Qleisli/issues/22#issuecomment-6010679334",
+  "first_files_sha256": "8869e1d72c64d9d58b7e699a235b4d30a234aa2528ca9f1145e238dce46e0bfe",
+  "source_repairs": 0,
+  "withdrawn_source_relationship": "Each of four first sources differs from its preserved basis-runtime-v030 counterpart only by basis fn -> classical fn. This is a separate human-selected unit, not a repaired withdrawn attempt.",
+  "phases": {
+    "before": {
+      "capture": "observations-before/capture.json",
+      "capture_sha256": "1e927e1f7f23d23b19d62334c8291f883379c528900529a38a02e77cd01090e9",
+      "observations": 8,
+      "successes": 0,
+      "refusals": 8,
+      "identity": {
+        "cli": {
+          "path": "/private/tmp/qleisli-default-boundary-after",
+          "sha256": "0340621153f39c92a9493c19c389039ccbae4f7ab43b5e742cd643428c428db7"
+        },
+        "kernel": {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+        }
+      },
+      "observation_sha256": {
+        "observations-before/shared-flip-finite-check.json": "3fb6b83dc77cd83535ef58f8e8c6ad98fd0f885e5ff14d2047e1d31f362eeba2",
+        "observations-before/shared-flip-selected-check.json": "cdfd548d2fed8465b57e04642a80dc8e931414b52f1f9f4e4655731919bea8b6",
+        "observations-before/ordinary-and-finite-check.json": "87be8be42604860ce167783c03b34e183f1b88ca6e9ce132b2d7f92c7aa9f738",
+        "observations-before/ordinary-and-selected-check.json": "d11df82c2fef4167affd1b3fb78507c94827eed17793e24eba1f54038523273c",
+        "observations-before/nested-label-finite-check.json": "e635be5b4c9c155b81202dfe2021955a925e369450ed31c311edd0741422bb5e",
+        "observations-before/nested-label-selected-check.json": "92b1ba3a89e4a43723b4ccb897f8fbd8ca5cb775cc8b53a3d910f039a9ccaab7",
+        "observations-before/quantum-argument-finite-check.json": "69c0fedc261629be490f272fcb89ee9c34acfb4ae2cf96b09504e66baa7fe700",
+        "observations-before/quantum-argument-selected-check.json": "4b6033ccb282c5cf4a3ccf1f821e498e0c31c48c3a5a9cac3fddd9943f95b0ca"
+      },
+      "interpretation": "All eight commands reject the unavailable classical declaration keyword before type/effect/owner checking; these refusals do not validate downstream live-Q or coherent-lift conditions."
+    },
+    "after": {
+      "capture": "observations-after/capture.json",
+      "capture_sha256": "a3904ec54e0c8ad49ff2cfa964253cb799d1a7eee178916cddd1c24e1f128d02",
+      "observations": 13,
+      "successes": 10,
+      "refusals": 3,
+      "identity": {
+        "cli": {
+          "path": "/private/tmp/qleisli-classical-functions-after",
+          "sha256": "8291ddad7119af45ec24fe6c1a9266384470b4d0556ebedd6c0c87b710844e5a"
+        },
+        "kernel": {
+          "path": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+          "sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85"
+        }
+      },
+      "observation_sha256": {
+        "observations-after/shared-flip-finite-check.json": "58a337be9496b7d96b62bf89c03a88e2511bf0da9273272d528fa7a8c06bfa1c",
+        "observations-after/shared-flip-selected-check.json": "fb5cf3ceac842ef06a061b3386119a66a270d89e8910a22259d1459579b88272",
+        "observations-after/ordinary-and-finite-check.json": "8dd476e9a8b9393bd961e00c1acab959a40471c380bc303acd306495f54a2700",
+        "observations-after/ordinary-and-selected-check.json": "dfc29381c183995fc217dfa525db8659c0c1d21c59a6c12a2c403bd40526b14e",
+        "observations-after/nested-label-finite-check.json": "1fb07be9e8be39ad87e990e3ee63b3a81b52fc2c8a4a2f67c442289ca9f106da",
+        "observations-after/nested-label-selected-check.json": "140cbba6119556176076206614072dd169e625ec2bfe148070fe0bf02cda7d67",
+        "observations-after/quantum-argument-finite-check.json": "373bfad57eb702bee1289ff43ff6e4f4a92e3d6d8f59385ac1871a466a787b10",
+        "observations-after/quantum-argument-selected-check.json": "5ed9310f22758e4399ee0909257948e3269f1c0663bf49039e0c996825ef8167",
+        "observations-after/shared-flip-finite-run.json": "a97ec187169c845f78f55853155ecd79af8deaf32670aaee719f710c4a0874b8",
+        "observations-after/ordinary-and-finite-run.json": "21ad60a586c370966c86b5e26731aa29106747a143604c6f613796872211cf4b",
+        "observations-after/ordinary-and-selected-run.json": "b45f1a78365d73a713861d59114b2afd2db3f20f1e585f753c6a03fe7bd8f661",
+        "observations-after/nested-label-finite-run.json": "10969d021e661838d692b44ff9750536aafcc3b20ec5496c9b500956ed41bd9b",
+        "observations-after/nested-label-selected-run.json": "82b53baee5f70c7a9022f05c6efca7c4fd9a2344e3a3c274c57815ce9eb28fb5"
+      },
+      "interpretation": "Five finite/selected checks and five runs succeed. Two live-Q argument checks and the selected coherent-lift check reject with their retained diagnostic categories and original-source spans."
+    }
+  },
+  "verification_limit": "Selected positive commands report native-validity, source_steps_checked:true and source_meaning_verified:false. Source/stream/binary hashes are local identities, not authenticated build provenance or child-start attestation.",
+  "scope": "Four informed complete first projects; 21 actual observations. No blind or few-example model benchmark, exact semantic oracle, general source-preservation/resource theorem, full CI success, Issue completion or new guarantee. Broader QS/PR/quantitative RS/EXACT duties remain pending; existing two ordinary QLV1 guarantees retain their scope.",
+  "observed_after_controls": {
+    "shared-flip": {
+      "finite_check_exit": 0,
+      "finite_run_bits": [
+        true,
+        false
+      ],
+      "finite_run_probability": 1,
+      "selected_check_exit": 1,
+      "selected_diagnostic": "unsupported",
+      "selected_span": [
+        224,
+        254
+      ],
+      "selected_run": "not attempted because coherent lifting remains outside that profile"
+    },
+    "ordinary-and": {
+      "finite_check_exit": 0,
+      "selected_check_exit": 0,
+      "finite_run_bits": [
+        false
+      ],
+      "selected_run_bits": [
+        false
+      ],
+      "run_probability": 1,
+      "noninjective_classical_function": true
+    },
+    "nested-label": {
+      "finite_check_exit": 0,
+      "selected_check_exit": 0,
+      "finite_run_bits": [
+        false
+      ],
+      "selected_run_bits": [
+        false
+      ],
+      "run_probability": 1,
+      "ordinary_unit_product_and_measured_bit": true
+    },
+    "quantum-argument": {
+      "finite_check_exit": 1,
+      "selected_check_exit": 1,
+      "finite_diagnostic": "type_mismatch",
+      "selected_diagnostic": "type",
+      "span": [
+        176,
+        177
+      ],
+      "expected_type": "Bit",
+      "found_type": "Q<Bit>"
+    }
+  }
+}

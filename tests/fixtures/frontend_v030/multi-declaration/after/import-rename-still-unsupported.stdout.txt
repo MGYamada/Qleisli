@@ -1,0 +1,3 @@
+finite.load: /Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-rename-still-unsupported/main.qli:14..16: parse error: expected `;`, found identifier
+sized.parse: main:14..16: parse: expected `;`, found identifier
+finite.check: Diagnostic { code: "parse", message: "parse error: expected `;`, found identifier", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/multi-declaration/initial-study/import-rename-still-unsupported/main.qli", span: Span { start: 14, end: 16 }, line: 1, column: 15 }) }

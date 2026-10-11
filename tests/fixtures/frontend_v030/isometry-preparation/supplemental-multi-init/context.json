@@ -1,0 +1,11 @@
+{
+  "kind": "informed supplemental independent validation source",
+  "recorded_utc": "2026-10-05T13:28:10.670892+00:00",
+  "baseline": "21b58b90 with current uncommitted Iso adapter",
+  "purpose": "Two fresh initializations separated by scalar work, reversed final owner/axis order, external reference coefficients. Frozen before first run; does not replace the original 14-program authoring session.",
+  "independent_expectation": "For every external-reference coefficient z, output order (b,a) yields omega*z/sqrt(2) at system rows 0 and 2, zero at 1 and 3; no normalization or owner-separability assumption.",
+  "files": {
+    "main.qli": "98db9359dd3413f144bea1a9319e32013df01bdb859c862229f4dbad05a256df",
+    "Qargo.toml": "aa65142a0f09cdfdbab93bda0ca8736a259133fd6b3a85ed48a7c3d84204a1e2"
+  }
+}

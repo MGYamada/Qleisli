@@ -1,0 +1,22 @@
+
+running 17 tests
+test apply_contract_is_reserved_and_has_exact_static_name_syntax ... ok
+test names_remain_shadowed_after_input_evaluation_and_dependencies_are_acyclic ... ok
+test exact_source_types_declared_effects_and_ordinary_targets_are_required ... ok
+test incorrect_implementations_cannot_change_the_clients_meaning ... ok
+test repeated_calls_reuse_one_immutable_evidence_object ... ok
+test input_ownership_is_consumed_once_and_quantum_frames_remain_owned ... ok
+test repeated_contract_calls_do_not_recompare_frozen_source_snapshots ... ok
+test dependency_source_changes_invalidate_the_previous_compilation ... ok
+test classical_branches_and_ensemble_components_share_execution_budget ... ok
+test adjoint_control_and_repetition_keep_evidence_and_relative_phase ... ok
+test ordered_function_outputs_are_part_of_the_contract ... ok
+test repeated_nested_contracts_share_one_execution_budget ... ok
+test retained_contract_preserves_phase_with_an_entangled_reference ... ok
+test nested_function_evidence_survives_external_inverse_and_control ... ok
+test zero_width_contract_phase_survives_coherent_control ... ok
+test unrelated_source_comments_do_not_multiply_contract_reuse_work ... ok
+test unchanged_client_requires_one_specification_across_private_layouts ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 5.26s
+

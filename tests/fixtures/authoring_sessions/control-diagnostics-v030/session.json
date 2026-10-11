@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "kind": "curated_repair_replay",
+  "task": "Teach the coherent-control false friend while preserving actual source/native refusals",
+  "author": "Codex assistant; informed maintenance, no external model invoked",
+  "project_version": "0.3.0-alpha",
+  "baseline_commit": "7898c211a973c430d84b4614205054b561e2ed68",
+  "context": "context.md",
+  "attempts": [
+    {
+      "id": "attempt-01",
+      "reason": "Freeze the four actual refusal sources and one valid Z control before diagnostic maintenance; no source repair.",
+      "sha256": {
+        "shared.qli": "37932c8c9a8226034681cacb6a3794a2fde30c13b24de74eeb57b47e808e1682",
+        "mutable.qli": "11cf0925f5d21581e798cb4e18334f19aae4feb2ea958ec03a70cbe67a87cbe1",
+        "old-control.qli": "273a7c7154f70222a2914e719cdc9c4938a7cc9b290dc130c641aeda64eaacb9",
+        "sector.qli": "5b0903af1c458312ac2afe5b54af5978dc3afcf0b7b2c9d6074faed4b6b6df4c",
+        "valid.qli": "8903d4d785dd11e01883f93c678c0e02ab174b71e02f99212a69441c56339314"
+      },
+      "manifest_sha256": {
+        "Qargo.toml": "680bb4c9356ba638c4fe2dbeba1bd53c0dff644a3b7a5a985fc4cb89eec63b37"
+      },
+      "reports": [
+        "prior-probes.json"
+      ],
+      "observations": [
+        "before/shared.json",
+        "before/mutable.json",
+        "before/old-control.json",
+        "before/sector.json",
+        "before/valid.json",
+        "after/shared.json",
+        "after/mutable.json",
+        "after/old-control.json",
+        "after/sector.json",
+        "after/valid.json"
+      ]
+    }
+  ]
+}

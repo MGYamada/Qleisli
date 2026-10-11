@@ -1,0 +1,21 @@
+{
+  "kind": "mutable-evidence-dispatch-substitution-probe",
+  "result": {
+    "admitted_guarantees": 2,
+    "pending_obligations": 3,
+    "mode": "source-identity-only"
+  },
+  "error": null,
+  "profile_input_digests": [
+    "bbe98914fa2bcc17a1d508c2763048d9a3fea8c8b4400d3d5e092f60e4d199e4"
+  ],
+  "ledger_input_digest": "9385f041c14c6712755058ca2aa45f5a61066049fc973212756b9db814b49741",
+  "retained_invalid_evidence": true,
+  "accepted_invalid_snapshot": true,
+  "source_files": {
+    "scripts/check_constitution.py": "3624ca3d432d25fe3fb0ae6a60bf58b5439f283d55ca2d883bbf3ce510138ca3",
+    "scripts/check_guarantee_ledger.py": "3e58e592f4a691091e91b8fd5b281c3dfceb56e8adf12a59c7f77d620a9ec46b",
+    "scripts/check_initial_guarantees.py": "230119ff57b24cd50d71f4d9e922222f2e2714ac226c1e706c690c4bce76774d"
+  },
+  "scope": "Only timing of the actual initial checker read_file is mocked; validation and fixed verifier otherwise execute normally in an isolated historical-source fixture. No repository or Lean file is mutated."
+}

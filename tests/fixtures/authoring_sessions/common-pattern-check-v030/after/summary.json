@@ -1,0 +1,814 @@
+{
+  "rows": [
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/nested-runtime-parameter-finite-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/nested-runtime-parameter-finite-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/nested-runtime-parameter-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/nested-runtime-parameter-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "nested-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/nested-runtime-parameter-selected-auto-emit-proposal-json.json",
+      "exit_code": 0,
+      "native_invocations": 0,
+      "proposal_emitted": true,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/duplicate-runtime-parameter-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/duplicate-runtime-parameter-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/duplicate-runtime-parameter-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/duplicate-runtime-parameter-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-runtime-parameter",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/duplicate-runtime-parameter-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/legal-rebinding-finite-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/legal-rebinding-finite-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 20,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/legal-rebinding-selected-auto-check-text.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/legal-rebinding-selected-auto-check-json.json",
+      "exit_code": 0,
+      "native_invocations": 1,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "legal-rebinding",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/legal-rebinding-selected-auto-emit-proposal-json.json",
+      "exit_code": 0,
+      "native_invocations": 0,
+      "proposal_emitted": true,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/hidden-live-owner-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/hidden-live-owner-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/hidden-live-owner-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/hidden-live-owner-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "hidden-live-owner",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/hidden-live-owner-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/duplicate-join-input-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/duplicate-join-input-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/duplicate-join-input-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/duplicate-join-input-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "duplicate-join-input",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/duplicate-join-input-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/quantum-unit-wildcard-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/quantum-unit-wildcard-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/quantum-unit-wildcard-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/quantum-unit-wildcard-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "quantum-unit-wildcard",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/quantum-unit-wildcard-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/empty-register-wildcard-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/empty-register-wildcard-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/empty-register-wildcard-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/empty-register-wildcard-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "empty-register-wildcard",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/empty-register-wildcard-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/unused-invalid-sibling-finite-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 1,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "finite",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/unused-invalid-sibling-finite-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 1,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "text",
+      "observation": "after/unused-invalid-sibling-selected-auto-check-text.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "action": "check",
+      "presentation": "json",
+      "observation": "after/unused-invalid-sibling-selected-auto-check-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    },
+    {
+      "case": "unused-invalid-sibling",
+      "profile": "selected-auto",
+      "action": "emit-proposal",
+      "presentation": "json",
+      "observation": "after/unused-invalid-sibling-selected-auto-emit-proposal-json.json",
+      "exit_code": 1,
+      "native_invocations": 0,
+      "proposal_emitted": false,
+      "equality": {
+        "exit_code": true,
+        "stdout": true,
+        "stderr": true,
+        "proposal_presence": true,
+        "proposal_bytes": true,
+        "native_argv": true,
+        "native_count": true
+      },
+      "all_equal": true
+    }
+  ],
+  "actual_observation_count": 40,
+  "required_observation_count": 40,
+  "all_equal": true,
+  "timed_out": false,
+  "source_repairs": 0,
+  "retained_baseline_files": 191,
+  "current_input_files": 235,
+  "first_session_index_unchanged": true,
+  "native_consistency_is_not_source_preservation": true,
+  "scope": "Only fixed check/emit-proposal commands; no program run/sample or new mathematical guarantee."
+}

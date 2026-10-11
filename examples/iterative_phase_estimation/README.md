@@ -8,8 +8,8 @@ target's Z measurement. The floating-point reference `run` also lists
 these are numerical artifacts, not additional ideal outcomes.
 
 [iterative::phase3](iterative.qli) is an ordinary experimental `.qli` definition:
-`Observe`, with `static U: Op<Bit>`, `requires Controlled(U)`, and runtime type
-`Q<Bit> -> ((CBit,CBit,CBit),Q<Bit>)`. It consumes the input binding and returns
+`Observe`, with `const U: Op<Bit>`, `requires Controllable(U)`, and runtime type
+`Q<Bit> -> ((Bit,Bit,Bit),Q<Bit>)`. It consumes the input binding and returns
 the conditional target owner. The input need not be an eigenstate and may be
 entangled with a reference. No stdlib API, syntax or checker rule is added.
 
@@ -18,6 +18,12 @@ the next `init0()`. Prior classical bits select T† and (T²)† corrections wi
 ordinary `if`. This uses at most one live logical meter alongside the target;
 it makes no claim that the current IR/backend recycles physical wire IDs or
 reduces the simulator's allocation. The target is neither reset nor discarded.
+
+The source uses `controlled(power(U,4))(meter,q)` and
+`controlled(power(U,2))(meter,q)`, then `controlled(U)(meter,q)`.
+Feedback uses `adjoint(quarter_phase)(meter)` and `adjoint(t)(meter)`.
+The local `eighth_phase` function is an ordinary checked source provider for
+the repeated T gate; a bare sealed gate is not a closed static provider.
 
 For output `y = low + 2*middle + 4*high`, the intended unnormalized branch is
 

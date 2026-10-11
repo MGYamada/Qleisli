@@ -1,0 +1,15 @@
+{
+  "binary": "/private/tmp/qleisli-ordinary-types-after-20261005/target/debug/qleisli",
+  "binary_sha256": "3dfd46195b43c254f8a21635b7462d28467069a162f6f02cdbf1207fd1229be0",
+  "kernel": "/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel",
+  "kernel_sha256": "39effde0f152a2c926fcea3a7f99fc2f25f9de65906be2b8c527508353c90c85",
+  "compiled_source_manifest": "tests/fixtures/frontend_v030/ordinary-types-independent/after-source.json",
+  "compiled_source_manifest_sha256": "b8fef2b21231960c48cb28de3e9c5ffa2c4298a749f51b352991fbdabebaf4f2",
+  "scope": "Existing isolated binary, no Cargo invocation. Current production differences after the corpus hash verification are documentation comments only; exact observed build identity remains the archived source manifest.",
+  "script_sha256": {
+    "scripts/test_cli_json.py": "fc5ccd0803eb77c210f2d8101d000febc8d1d49a5af9db0319949ad0cbc22033",
+    "scripts/test_qli_differential.py": "3529aa129660a8e24062e7901d8904e9a5be2072b38d6ceeb0f2ce06cb497f83",
+    "scripts/test_compact_sized_graph.py": "1d032ddb66a6213ce43494adc703f5ce43cd15dd25704d1177bc4ebdc9ee1e22",
+    "scripts/test_check_authoring_sessions.py": "24ef88b4771b9b9c598161791a2bf13d4d386f7f97202315f5b1388e5e24f374"
+  }
+}

@@ -12,17 +12,23 @@ inductive Frame where
   | object (keys : List String) (key : Bool) | array
   deriving Repr
 inductive Mode where
-  | outside | quote | escape | bare
+  | outside | quote | escape | keyQuote | keyEscape | bare
   deriving BEq, Repr
+/-- Only object keys and bare tokens are retained while scanning; value strings
+are validated by the final `Json.parse`, so no input-sized literal is built. -/
 structure Scan where
   mode : Mode := .outside
   literal : List Char := []
+  width : Nat := 0
   stack : List Frame := []
   depth : Nat := 0
   count : Nat := 0
   values : Nat := 0
   depthLimit : Nat := 64
   deriving Repr
+
+/-- Every accepted QIRF/request object has fixed short field names. -/
+def maxKeyChars : Nat := 4096
 
 private def bare (literal : List Char) : Except String Unit := do
   let text := String.ofList literal.reverse
@@ -33,15 +39,19 @@ private def bare (literal : List Char) : Except String Unit := do
   let some number := text.toNat? | throw "invalid integer"
   if number > 18446744073709551615 then throw "integer exceeds u64"
 
-private def stringToken (scan : Scan) : Except String Scan := do
+private def keyToken (scan : Scan) : Except String Scan := do
   let value ← Json.parse (String.ofList scan.literal.reverse)
   let text ← value.getStr?
   match scan.stack with
   | .object keys true :: rest =>
     if keys.contains text then throw "duplicate JSON field"
     if keys.length ≥ 64 then throw "too many object fields"
-    return {scan with mode := .outside,literal := [],stack := .object (text::keys) false :: rest}
-  | _ => return {scan with mode := .outside,literal := []}
+    return {scan with mode := .outside,literal := [],width := 0,stack := .object (text::keys) false :: rest}
+  | _ => throw "unexpected JSON key state"
+
+private def keyChar (scan : Scan) (char : Char) : Except String Scan :=
+  if scan.width ≥ maxKeyChars then throw "JSON key exceeds limit"
+  else pure {scan with literal := char :: scan.literal,width := scan.width+1}
 
 private def punctuation (scan : Scan) (char : Char) : Except String Scan := do
   if char == '{' || char == '[' then
@@ -67,31 +77,39 @@ private def outside (scan : Scan) (char : Char) : Except String Scan := do
     if !key && (scan.values ≥ 1000000 || scan.depth > scan.depthLimit) then
       throw "JSON value/depth limit"
     let scan := {scan with values := scan.values + if key then 0 else 1}
-    if char == '"' then return {scan with mode := .quote,literal := ['"']}
-    else return {scan with mode := .bare,literal := [char]}
+    if char == '"' then
+      return if key then {scan with mode := .keyQuote,literal := ['"'],width := 1}
+        else {scan with mode := .quote}
+    else return {scan with mode := .bare,literal := [char],width := 1}
 
 private def scanChar (scan : Scan) (char : Char) : Except String Scan := do
   if scan.count ≥ 16777216 then throw "JSON exceeds 16 MiB"
   let scan := {scan with count := scan.count+1}
   match scan.mode with
   | .outside => outside scan char
-  | .escape => return {scan with mode := .quote,literal := char :: scan.literal}
+  | .escape => return {scan with mode := .quote}
   | .quote =>
-    let scan := {scan with literal := char :: scan.literal}
     if char == '\\' then return {scan with mode := .escape}
-    if char == '"' then stringToken scan else return scan
+    if char == '"' then return {scan with mode := .outside} else return scan
+  | .keyEscape => keyChar {scan with mode := .keyQuote} char
+  | .keyQuote =>
+    if char == '\\' then keyChar {scan with mode := .keyEscape} char
+    else if char == '"' then do keyToken (← keyChar scan char)
+    else keyChar scan char
   | .bare =>
     if char == ',' || char == ':' || char == '}' || char == ']' ||
         char == ' ' || char == '\n' || char == '\r' || char == '\t' then
       bare scan.literal
-      outside {scan with mode := .outside,literal := []} char
-    else return {scan with literal := char :: scan.literal}
+      outside {scan with mode := .outside,literal := [],width := 0} char
+    else if scan.width ≥ 20 then throw "expected bounded unsigned integer"
+    else return {scan with literal := char :: scan.literal,width := scan.width+1}
 
 /-- Duplicate fields are rejected before Lean.Json's map insertion can erase them.
-Numeric spelling, byte/depth bounds and full JSON framing are checked afresh. -/
+Numeric spelling, byte/depth bounds and full JSON framing are checked afresh.
+The scan folds over the string directly instead of materializing `List Char`. -/
 def parseWithDepth (text : String) (depthLimit : Nat) : Except String Json := do
   if text.utf8ByteSize > 16777216 then throw "JSON exceeds 16 MiB"
-  let scan ← text.toList.foldlM scanChar {depthLimit}
+  let scan ← text.foldl (fun state char => state >>= (scanChar · char)) (pure {depthLimit})
   if scan.mode == .bare then bare scan.literal
   else if scan.mode != .outside then throw "unterminated JSON string"
   if !scan.stack.isEmpty then throw "unclosed JSON container"
@@ -165,6 +183,12 @@ def basis (value : Json) : Except String Basis := do
     if text == "unit" then return .unit
     if text == "bit" then return .bit
     if text == "pair" then return .pair
+    if text.startsWith "bits:" then
+      if text.length > 15 then throw "invalid bits atom"
+      let some width := (text.drop 5).toString.toNat? | throw "invalid bits atom"
+      if width > 4294967295 || text != "bits:" ++ toString width then
+        throw "invalid bits atom"
+      return .bits width
     let some arity := (text.drop 6).toString.toNat? | throw "invalid basis atom"
     if text != "tuple:" ++ toString arity then throw "invalid basis atom"
     return .tuple arity

@@ -233,6 +233,16 @@ fn execute_op(
 ) -> Result<Vec<Component>, SimulationError> {
     budget.charge(1)?;
     match operation {
+        RawOp::PackUnit { output } => {
+            component.tokens.insert(*output, vec![]);
+        }
+        RawOp::UnpackUnit { input } => {
+            if !component.take(*input)?.is_empty() {
+                return Err(SimulationError::InconsistentVerifiedIr(
+                    "finish requires a zero-axis owner",
+                ));
+            }
+        }
         RawOp::CertifiedCompute {
             source,
             source_out,

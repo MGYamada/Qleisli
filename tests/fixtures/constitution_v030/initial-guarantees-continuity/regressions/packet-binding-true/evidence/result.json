@@ -1,0 +1,95 @@
+{
+  "case": "packet-binding-true",
+  "source": "lean-kernel/Protocol/Validity.lean",
+  "baseline_source_sha256": "a93b958c7696a618f157c2a71f3188d0f9d0491f66d73d8409aff4aec0ff518b",
+  "mutated_source_sha256": "6c662211b9d8f267f7eef7963630690cd4ac87ded29e1ecd4475079713cbf9ce",
+  "extractor_sha256": "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a",
+  "historical_expression_sha256": "d092e65a2bbfaa810e3508a04d255ca25116960f805c82e993c9ca7f4d477480",
+  "environment": "Copy of independently fresh-built historical source and project oleans; only this recorded source mutation is applied, then Lake rebuilds its dependencies. External dependency symlinks are unchanged pinned caches.",
+  "expected_continuity": "different",
+  "commands": [
+    {
+      "step": "build",
+      "argv": [
+        "lake",
+        "build",
+        "Qleisli.NativeValidity"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/packet-binding-true/lean",
+      "started_at": "2026-10-04T13:13:14.460966+00:00",
+      "elapsed_seconds": 29.896,
+      "exit_code": 0,
+      "stdout": "build.stdout.txt",
+      "stderr": "build.stderr.txt"
+    },
+    {
+      "step": "extract",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../evidence/Extract.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/packet-binding-true/lean",
+      "started_at": "2026-10-04T13:13:44.357407+00:00",
+      "elapsed_seconds": 6.519,
+      "exit_code": 0,
+      "stdout": "extract.stdout.txt",
+      "stderr": "extract.stderr.txt"
+    },
+    {
+      "step": "review",
+      "argv": [
+        "lake",
+        "env",
+        "lean",
+        "-DwarningAsError=true",
+        "../evidence/Review.lean"
+      ],
+      "cwd": "/private/tmp/qleisli-continuity-independent-regressions/packet-binding-true/lean",
+      "started_at": "2026-10-04T13:13:50.876640+00:00",
+      "elapsed_seconds": 5.066,
+      "exit_code": 0,
+      "stdout": "review.stdout.txt",
+      "stderr": "review.stderr.txt"
+    }
+  ],
+  "status": "checked",
+  "actual_expression_sha256": "beb9a9e526e1fb80adbcac8d19eeed38700cd114c85a42633f0113d69a4d1e28",
+  "expressions_equal_to_historical": false,
+  "review_output_equal_to_historical": true,
+  "changed_declarations": [
+    "QleisliKernel.Protocol.Validity.Acceptance.mk"
+  ],
+  "added_declarations": [],
+  "removed_declarations": [
+    "UInt8",
+    "instGetElem?OfGetElemOfDecidable",
+    "instInhabitedUInt8",
+    "ByteArray.extract",
+    "ByteArray.instBEq",
+    "ByteArray.instGetElemNatUInt8LtSize",
+    "ByteArray.size",
+    "GetElem?.getElem!",
+    "String.toUTF8",
+    "UInt8.toNat",
+    "QleisliKernel.Protocol.Validity.maxFileBytes",
+    "QleisliKernel.Protocol.Validity.maxPacketBytes",
+    "QleisliKernel.Protocol.Validity.packet",
+    "_private.Protocol.Validity.0.QleisliKernel.Protocol.Validity.u32"
+  ],
+  "files": {
+    "Extract.lean": "c8aa9bfc7fe67e9de195f87df4794f3290115cc31bc52e2459fa2aa4c7d6161a",
+    "Review.lean": "01648635d815afd9b268e84f67e474f7d5258181b43239695d9fc4588f7cffc4",
+    "build.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build.stdout.txt": "883d8293b8a8c304622f8f9e72cd492e2e04ade83c6b862fe1f5329a87da3c63",
+    "extract.json.gz": "af9435c7a06b16449f706d2f81280fce9e818b76c8578f96b985ef187d542525",
+    "extract.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "extract.stdout.txt": "beb9a9e526e1fb80adbcac8d19eeed38700cd114c85a42633f0113d69a4d1e28",
+    "mutated-source.lean.txt": "6c662211b9d8f267f7eef7963630690cd4ac87ded29e1ecd4475079713cbf9ce",
+    "mutation.patch": "df5b5ed75f069095f67fc0438f72e7e8ac765ad5b1a730ccf3b2307d48a3adcf",
+    "review.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "review.stdout.txt": "7922e319d2d25bdcbe2e25dc2e7bcdde9d38a3cb0aeed279398fe51ee544ea2b"
+  }
+}

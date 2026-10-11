@@ -3,6 +3,7 @@
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0
 """
 import json
+import hashlib
 import math
 from pathlib import Path
 import shutil
@@ -152,6 +153,507 @@ class IntakeTests(unittest.TestCase):
         (self.root / "qualtran/equals2/extra.qli").write_text("// unrecorded module\n")
         with self.assertRaisesRegex(ValueError, "missing authoring snapshots"):
             corpus.check_manifest(self.root)
+
+    def test_current_negatives_preserve_baseline_and_source_identities(self):
+        original = json.loads((self.root / "negative/manifest.json").read_text())
+        current = corpus.current_negatives(self.root)
+        self.assertEqual([(c["id"], c["project"]) for c in current],
+                         [(c["id"], c["project"]) for c in original["cases"]])
+        changed = [c["id"] for b, c in zip(original["cases"], current) if b != c]
+        self.assertEqual(changed, ["measurement_adjoint"])
+
+    def test_missing_current_negative_selection_rejects(self):
+        self.edit_manifest(lambda m: m.pop("negative_expectations"))
+        with self.assertRaisesRegex(ValueError, "missing or invalid current negative"):
+            corpus.check_manifest(self.root)
+
+    def test_changed_current_negative_bytes_reject(self):
+        path = self.root / "negative/current-manifest.json"
+        path.write_text(path.read_text() + " ")
+        with self.assertRaisesRegex(ValueError, "expectation identity changed"):
+            corpus.current_negatives(self.root)
+
+    def test_current_negative_cannot_drop_or_replace_rejected_source(self):
+        path = self.root / "negative/current-manifest.json"
+        initial = json.loads(path.read_text())
+        for drop in (True, False):
+            data = json.loads(json.dumps(initial))
+            if drop:
+                data["cases"].pop()
+            else:
+                data["cases"][0]["project"] = "negative/measurement_adjoint"
+            path.write_text(json.dumps(data))
+            self.edit_manifest(lambda m: m["negative_expectations"].update(sha256=corpus.sha256(path)))
+            with self.assertRaisesRegex(ValueError, "current negative (coverage|identity or contract) changed"):
+                corpus.current_negatives(self.root)
+
+    def test_current_negative_rejects_stale_baseline(self):
+        path = self.root / "negative/manifest.json"
+        path.write_text(path.read_text() + " ")
+        with self.assertRaisesRegex(ValueError, "baseline changed"):
+            corpus.current_negatives(self.root)
+
+    def test_current_negative_path_cannot_escape(self):
+        self.edit_manifest(lambda m: m["negative_expectations"].update(path="../outside.json"))
+        with self.assertRaises(ValueError):
+            corpus.current_negatives(self.root)
+
+
+class MigrationTests(unittest.TestCase):
+    """Small synthetic records test chaining, not genuine compiler acceptance."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.project = "qualtran/example"
+        self.before = {self.project + "/" + name: self.digest("before " + name)
+                       for name in ("main.qli", "kernel.qli")}
+        self.paths = []
+
+    @staticmethod
+    def digest(text):
+        return hashlib.sha256(text.encode()).hexdigest()
+
+    def write(self, path, value):
+        path.write_text(json.dumps(value))
+
+    def migration(self, name, before):
+        root = self.root / "migrations" / name
+        root.mkdir(parents=True)
+        files = {}
+        for rel, digest in before.items():
+            path = root / "sources" / rel
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(name + " " + rel)
+            files[rel] = {"before": digest, "after": corpus.sha256(path)}
+        after = {rel: r["after"] for rel, r in files.items()}
+        self.write(root / "checks.json", {
+            "sources": after,
+            "results": [{"project": self.project, "argv": ["synthetic-check"],
+                         "cwd": str(root), "exit_code": 0, "stderr": "",
+                         "stdout": json.dumps({"outcome": "ok"})}],
+        })
+        self.write(root / "migration.json", {
+            "format": 1, "kind": "explicit-source-migration", "issue": 25,
+            "project_version": "0.3.0-alpha", "created_utc": "2026-10-05T00:00:00Z",
+            "context": "Synthetic validator regression, not compiler evidence.",
+            "projects": [self.project], "files": files, "observations": ["checks.json"],
+        })
+        self.paths.append(str((root / "migration.json").relative_to(self.root)))
+        return root, after
+
+    def check(self):
+        return corpus.migrated_sources(self.root, self.paths, self.before)
+
+    def mutate(self, path, action):
+        data = json.loads(path.read_text())
+        action(data)
+        self.write(path, data)
+
+    def test_ordered_successive_migrations_preserve_predecessors(self):
+        _, after = self.migration("first", self.before)
+        _, final = self.migration("second", after)
+        self.assertEqual(self.check(), final)
+        self.paths.reverse()
+        with self.assertRaisesRegex(ValueError, "stale migration predecessor"):
+            self.check()
+
+    def snapshot_selection(self):
+        first, after = self.migration("first", self.before)
+        for source in after:
+            target = self.root / source
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(first / "sources" / source, target)
+        selected, final = self.migration("selected", after)
+        self.mutate(selected / "migration.json", lambda m: m.update(source_selection="snapshot"))
+        self.write(self.root / "manifest.json", {"source_migrations": self.paths})
+        return selected, after, final
+
+    def test_explicit_snapshot_selects_current_files_and_preserves_old_directory(self):
+        selected, after, final = self.snapshot_selection()
+        locations = {}
+        self.assertEqual(corpus.migrated_sources(self.root, self.paths, self.before,
+                                                source_paths=locations), final)
+        self.assertEqual({source: corpus.sha256(self.root / source) for source in after}, after)
+        self.assertEqual(locations, {source: (selected / "sources" / source).resolve() for source in final})
+        self.assertEqual(corpus.current_project({"project": self.project}, self.root),
+                         (selected / "sources" / self.project).resolve())
+        self.assertEqual(corpus.current_project({"project": "unaffected/project"}, self.root),
+                         (self.root / "unaffected/project").resolve())
+
+    def test_snapshot_selection_rejects_changed_retained_predecessor(self):
+        self.snapshot_selection()
+        (self.root / self.project / "kernel.qli").write_text("changed preserved source")
+        with self.assertRaisesRegex(ValueError, "selected migration predecessor changed"):
+            self.check()
+
+    def test_snapshot_selection_rejects_stale_current_file_and_extra_manifest(self):
+        selected, _, _ = self.snapshot_selection()
+        project = selected / "sources" / self.project
+        source = project / "kernel.qli"
+        original = source.read_text()
+        source.write_text("stale derivative")
+        with self.assertRaisesRegex(ValueError, "selected migration snapshot changed"):
+            corpus.current_project({"project": self.project}, self.root)
+        source.write_text(original)
+        (project / "Qargo.toml").write_text("unrecorded edition override")
+        with self.assertRaisesRegex(ValueError, "selected migration snapshot changed"):
+            corpus.current_project({"project": self.project}, self.root)
+
+    def test_snapshot_root_symlink_cannot_escape_corpus(self):
+        selected, _, _ = self.snapshot_selection()
+        with tempfile.TemporaryDirectory() as directory:
+            outside = Path(directory) / "sources"
+            shutil.move(selected / "sources", outside)
+            (selected / "sources").symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "snapshot root escapes intake"):
+                self.check()
+            with self.assertRaisesRegex(ValueError, "snapshot root escapes intake"):
+                corpus.current_project({"project": self.project}, self.root)
+
+    def test_unknown_snapshot_selection_cannot_silently_use_original(self):
+        selected, _, _ = self.snapshot_selection()
+        self.mutate(selected / "migration.json", lambda m: m.update(source_selection="original"))
+        with self.assertRaisesRegex(ValueError, "unknown migration source selection"):
+            self.check()
+        with self.assertRaisesRegex(ValueError, "unknown migration source selection"):
+            corpus.current_project({"project": self.project}, self.root)
+
+    def test_execution_and_report_binding_use_selected_snapshot(self):
+        selected, _, _ = self.snapshot_selection()
+        case = {"id": self.project, "project": self.project, "kind": "measure"}
+        for name in ("Qargo.toml", "semantic_faults/manifest.json"):
+            path = self.root / name
+            path.parent.mkdir(exist_ok=True)
+            path.write_text("{}")
+        (self.root / "negative").mkdir()
+        for name in ("manifest.json", "current-manifest.json"):
+            shutil.copyfile(corpus.CORPUS / "negative" / name, self.root / "negative" / name)
+        manifest_path = self.root / "manifest.json"
+        manifest = json.loads(manifest_path.read_text())
+        manifest["negative_expectations"] = json.loads((corpus.CORPUS / "manifest.json").read_text())["negative_expectations"]
+        manifest_path.write_text(json.dumps(manifest))
+        with patch.object(corpus, "CORPUS", self.root), \
+             patch.object(corpus, "run", return_value={(True,): 1.0}) as run, \
+             patch.object(corpus, "protocol_probes", return_value=[]):
+            corpus.check_case(case, Path(__file__), False)
+            self.assertEqual(run.call_args.args[1], (selected / "sources" / self.project).resolve())
+            binding = corpus.input_binding([case], [], [], Path(__file__))
+        selected_prefix = str((selected / "sources" / self.project).relative_to(self.root))
+        self.assertEqual(set(binding["source_sha256"]),
+                         {selected_prefix + "/" + name for name in ("main.qli", "kernel.qli")})
+        self.assertEqual(set(binding["source_migration_sha256"]), set(self.paths))
+
+    def test_removed_or_duplicate_migration_rejects(self):
+        self.migration("first", self.before)
+        original = list(self.paths)
+        self.paths = []
+        with self.assertRaisesRegex(ValueError, "unrecorded source migration"):
+            self.check()
+        self.paths = original * 2
+        with self.assertRaisesRegex(ValueError, "duplicate source migration"):
+            self.check()
+
+    def test_stale_predecessor_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: next(iter(m["files"].values())).update(before="0" * 64))
+        with self.assertRaisesRegex(ValueError, "stale migration predecessor"):
+            self.check()
+
+    def test_alias_paths_cannot_duplicate_migrations_or_observations(self):
+        root, _ = self.migration("first", self.before)
+        self.paths.append("migrations/first/../first/migration.json")
+        with self.assertRaisesRegex(ValueError, "duplicate source migration path"):
+            self.check()
+        self.paths.pop()
+        self.mutate(root / "migration.json", lambda m: m.update(observations=["checks.json", "./checks.json"]))
+        with self.assertRaisesRegex(ValueError, "duplicate migration observation path"):
+            self.check()
+
+    def test_missing_project_file_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: m["files"].pop(self.project + "/kernel.qli"))
+        with self.assertRaisesRegex(ValueError, "incomplete migration project snapshots"):
+            self.check()
+
+    def test_unknown_project_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: m.update(projects=["unknown/project"]))
+        with self.assertRaisesRegex(ValueError, "unknown/duplicate migrated project"):
+            self.check()
+
+    def test_changed_snapshot_rejects(self):
+        root, _ = self.migration("first", self.before)
+        (root / "sources" / self.project / "kernel.qli").write_text("altered")
+        with self.assertRaisesRegex(ValueError, "migration snapshot changed"):
+            self.check()
+
+    def test_extra_snapshot_rejects(self):
+        root, _ = self.migration("first", self.before)
+        (root / "sources" / self.project / "extra.qli").write_text("extra")
+        with self.assertRaisesRegex(ValueError, "migration snapshot inventory changed"):
+            self.check()
+
+    def test_missing_observations_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "migration.json", lambda m: m.update(observations=[]))
+        with self.assertRaisesRegex(ValueError, "missing/duplicate migration observations"):
+            self.check()
+
+    def test_stale_observation_identity_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m.update(sources=self.before))
+        with self.assertRaisesRegex(ValueError, "observation source identity mismatch"):
+            self.check()
+
+    def test_incomplete_observation_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m.update(results=[]))
+        with self.assertRaisesRegex(ValueError, "incomplete migration observations"):
+            self.check()
+
+    def test_missing_command_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m["results"][0].pop("argv"))
+        with self.assertRaisesRegex(ValueError, "missing migration command observation"):
+            self.check()
+
+    def test_contradictory_observation_rejects(self):
+        root, _ = self.migration("first", self.before)
+        self.mutate(root / "checks.json", lambda m: m["results"][0].update(exit_code=1))
+        with self.assertRaisesRegex(ValueError, "contradictory migration observation"):
+            self.check()
+
+    def test_duplicate_json_fields_rejects(self):
+        root, _ = self.migration("first", self.before)
+        path = root / "migration.json"
+        path.write_text(path.read_text()[:-1] + ', "format": 1}')
+        with self.assertRaisesRegex(ValueError, "duplicate migration JSON field"):
+            self.check()
+
+    def test_malformed_path_list_rejects(self):
+        self.paths = [{}]
+        with self.assertRaisesRegex(ValueError, "invalid/duplicate source migration"):
+            self.check()
+
+
+class CounterexampleMigrationTests(unittest.TestCase):
+    """Synthetic selection records test provenance, never compiler acceptance."""
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "corpus"
+        self.root.mkdir()
+        self.fault = {"id": "fault", "reference": "reference", "project": "semantic_faults/fault",
+                      "reason": "Synthetic retained semantic mutation."}
+        self.negative = {"id": "dirty", "project": "negative/dirty", "expected_code": "unsupported",
+                         "expected_message": "Synthetic retained negative contract."}
+        self.write(self.root / "semantic_faults/manifest.json", {"format": 1, "cases": [self.fault]})
+        baseline = {"format": 1, "kind": "curated_local_counterexamples", "cases": [self.negative]}
+        self.write(self.root / "negative/manifest.json", baseline)
+        self.write(self.root / "negative/current-manifest.json",
+                   {**baseline, "baseline_sha256": corpus.sha256(self.root / "negative/manifest.json")})
+        self.stage = self.root / "migrations/classical"
+        self.record = self.stage / "counterexamples.json"
+        files = {}
+        for project, names in ((self.fault["project"], ("main.qli", "kernel.qli")),
+                               (self.negative["project"], ("main.qli",))):
+            for name in names:
+                relative = project + "/" + name
+                before = self.root / relative
+                after = self.stage / "counterexample-sources" / relative
+                before.parent.mkdir(parents=True, exist_ok=True)
+                after.parent.mkdir(parents=True, exist_ok=True)
+                before.write_text("// Synthetic fixture, not compiler evidence.\nbasis fn one(b: Bit) -> Bit { 1 }\n"
+                                  "unitary fn rotate(q: Q<Bit>) -> Q<Bit> { adjoint(h, repeat_static(2, t, q)) }\n")
+                after.write_text(before.read_text().replace("basis fn", "classical fn"))
+                files[relative] = {"before": corpus.sha256(before), "after": corpus.sha256(after)}
+        self.write(self.record, {
+            "format": 1, "kind": "explicit-counterexample-source-migration", "issue": 22,
+            "project_version": "0.3.0-alpha", "created_utc": "2026-10-06T00:00:00Z",
+            "context": "Synthetic validator regression; no compiler was executed.",
+            "source_selection": "snapshot", "transformation": "basis-to-classical-function",
+            "projects": [self.fault["project"], self.negative["project"]], "files": files,
+            "baselines": {name: corpus.sha256(self.root / name) for name in
+                          ("semantic_faults/manifest.json", "negative/manifest.json", "negative/current-manifest.json")},
+            "observations": ["checks.json"],
+        })
+        self.write(self.stage / "checks.json", {
+            "sources": {source: record["after"] for source, record in files.items()},
+            "results": [self.observation(self.fault["project"], 0, {"outcome": "ok"}),
+                        self.observation(self.negative["project"], 1,
+                                         {"outcome": "error", "result": None,
+                                          "diagnostics": [{"code": "unsupported"}]})],
+        })
+        self.write(self.root / "manifest.json", {
+            "source_migrations": [], "counterexample_source_migrations": ["migrations/classical/counterexamples.json"],
+            "negative_expectations": {"path": "negative/current-manifest.json",
+                                      "sha256": corpus.sha256(self.root / "negative/current-manifest.json")},
+        })
+
+    @staticmethod
+    def write(path, value):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(value))
+
+    def mutate(self, path, action):
+        data = json.loads(path.read_text())
+        action(data)
+        self.write(path, data)
+
+    def observation(self, project, exit_code, output):
+        return {"project": project, "argv": ["synthetic-check"], "cwd": str(self.root),
+                "exit_code": exit_code, "stdout": json.dumps(output), "stderr": ""}
+
+    def canonical_stage(self):
+        data = json.loads(self.record.read_text())
+        stage = self.root / "migrations/canonical"
+        for source, record in data["files"].items():
+            before = self.stage / "counterexample-sources" / source
+            after = stage / "counterexample-sources" / source
+            after.parent.mkdir(parents=True, exist_ok=True)
+            after.write_bytes(corpus.canonical_counterexample_application(before.read_bytes()))
+            record.update(before=corpus.sha256(before), after=corpus.sha256(after))
+        data.update(issue=33, transformation="canonical-operation-application")
+        self.write(stage / "counterexamples.json", data)
+        observation = json.loads((self.stage / "checks.json").read_text())
+        observation["sources"] = {source: record["after"] for source, record in data["files"].items()}
+        self.write(stage / "checks.json", observation)
+        self.mutate(self.root / "manifest.json", lambda manifest:
+                    manifest["counterexample_source_migrations"].append("migrations/canonical/counterexamples.json"))
+        return stage
+
+    def test_canonical_stage_preserves_previous_keyword_translation_and_current_selection(self):
+        stage = self.canonical_stage()
+        selected = corpus.current_project(self.fault, self.root)
+        self.assertEqual(selected, (stage / "counterexample-sources" / self.fault["project"]).resolve())
+        self.assertIn("classical fn", (selected / "main.qli").read_text())
+        self.assertIn("inverse(h)(power(migration_t, 2)(q))", (selected / "main.qli").read_text())
+        self.assertEqual(corpus.current_project(self.negative, self.root),
+                         (stage / "counterexample-sources" / self.negative["project"]).resolve())
+        self.mutate(self.root / "manifest.json", lambda manifest:
+                    manifest["counterexample_source_migrations"].reverse())
+        with self.assertRaisesRegex(ValueError, "stale counterexample migration predecessor"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_rehashed_canonical_semantic_and_wrapper_edits_reject(self):
+        stage = self.canonical_stage()
+        source = self.fault["project"] + "/kernel.qli"
+        path = stage / "counterexample-sources" / source
+        original = path.read_text()
+        for replacement in (original.replace("power(migration_t, 2)", "power(migration_t, 3)"),
+                            original.replace("{ t(q) }", "{ h(q) }")):
+            with self.subTest(replacement=replacement):
+                path.write_text(replacement)
+                self.mutate(stage / "counterexamples.json", lambda data:
+                            data["files"][source].update(after=corpus.sha256(path)))
+                with self.assertRaisesRegex(ValueError, "more than the canonical application"):
+                    corpus.current_project(self.fault, self.root)
+
+    def test_canonical_translation_retains_nested_payload_and_unmatched_forms(self):
+        source = b"inverse(h)(q); adjoint(foo,adjoint(bar, f(q))); repeat_static(3, foo, join(a, b));\n"
+        expected = b"inverse(h)(q); inverse(foo)(inverse(bar)(f(q))); power(foo, 3)(join(a, b));\n"
+        self.assertEqual(corpus.canonical_counterexample_application(source), expected)
+        for unchanged in (b"repeat_static(n, foo, q)", b"adjoint(foo[n], q)", b"classical fn one(b: Bit) -> Bit { 1 }"):
+            self.assertEqual(corpus.canonical_counterexample_application(unchanged), unchanged)
+
+    def test_execution_and_report_binding_share_the_explicit_current_sources(self):
+        expected = self.stage / "counterexample-sources"
+        with patch.object(corpus, "CORPUS", self.root), patch.object(corpus.subprocess, "run") as run, \
+             patch.object(corpus, "check_case", side_effect=corpus.SemanticMismatch("synthetic expected mismatch")) as check:
+            run.return_value.returncode = 0
+            run.return_value.stderr = ""
+            run.return_value.stdout = '{"outcome":"ok"}'
+            result = corpus.check_semantic_fault(self.fault, {"id": "reference"}, Path("synthetic-compiler"))
+            self.assertEqual(result["typecheck"], "passed")
+            self.assertEqual(run.call_args.args[0][2], str((expected / self.fault["project"]).resolve()))
+            self.assertEqual(check.call_args.kwargs["project"], (expected / self.fault["project"]).resolve())
+            run.return_value.returncode = 1
+            run.return_value.stdout = '{"outcome":"error","result":null,"diagnostics":[{"code":"unsupported"}]}'
+            corpus.check_negative(self.negative, Path("synthetic-compiler"))
+            self.assertEqual(run.call_args.args[0][2], str((expected / self.negative["project"]).resolve()))
+            binding = corpus.input_binding([], [self.fault], [self.negative], Path(__file__))
+        self.assertEqual(len(binding["source_sha256"]), 3)
+        self.assertTrue(all(name.startswith("migrations/classical/counterexample-sources/")
+                            for name in binding["source_sha256"]))
+        self.assertEqual(set(binding["semantic_fault_source_sha256"]),
+                         {str(path.relative_to(self.root)) for path in (expected / self.fault["project"]).glob("*.qli")})
+        self.assertEqual(set(binding["counterexample_source_migration_sha256"]),
+                         {"migrations/classical/counterexamples.json"})
+        self.assertEqual(corpus.current_negatives(self.root), [self.negative])
+
+    def test_current_and_predecessor_changes_and_extra_edition_overrides_reject(self):
+        selected = self.stage / "counterexample-sources" / self.fault["project"]
+        path = selected / "kernel.qli"
+        original = path.read_text()
+        path.write_text(original + "// changed\n")
+        with self.assertRaisesRegex(ValueError, "counterexample snapshot changed"):
+            corpus.current_project(self.fault, self.root)
+        path.write_text(original)
+        (selected / "Qargo.toml").write_text("unrecorded edition override")
+        with self.assertRaisesRegex(ValueError, "snapshot inventory changed"):
+            corpus.current_project(self.fault, self.root)
+        (selected / "Qargo.toml").unlink()
+        (self.root / self.fault["project"] / "kernel.qli").write_text("changed frozen source")
+        with self.assertRaisesRegex(ValueError, "stale counterexample migration predecessor"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_rehashed_semantic_changes_cannot_hide_behind_keyword_migration(self):
+        source = self.fault["project"] + "/kernel.qli"
+        path = self.stage / "counterexample-sources" / source
+        path.write_text(path.read_text().replace("{ 1 }", "{ b }"))
+        self.mutate(self.record, lambda data: data["files"][source].update(after=corpus.sha256(path)))
+        with self.assertRaisesRegex(ValueError, "more than the declaration keyword"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_deleted_records_duplicate_paths_and_unknown_projects_reject(self):
+        manifest = self.root / "manifest.json"
+        original = manifest.read_text()
+        self.mutate(manifest, lambda data: data.update(counterexample_source_migrations=[]))
+        with self.assertRaisesRegex(ValueError, "unrecorded counterexample"):
+            corpus.current_project(self.fault, self.root)
+        manifest.write_text(original)
+        self.mutate(manifest, lambda data: data["counterexample_source_migrations"].append(
+            "migrations/classical/../classical/counterexamples.json"))
+        with self.assertRaisesRegex(ValueError, "duplicate counterexample source migration path"):
+            corpus.current_project(self.fault, self.root)
+        manifest.write_text(original)
+        self.mutate(self.record, lambda data: data["projects"].append("semantic_faults/unknown"))
+        with self.assertRaisesRegex(ValueError, "unknown/duplicate counterexample migration project"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_stale_observation_rejected_fault_and_changed_negative_code_reject(self):
+        path = self.stage / "checks.json"
+        original = path.read_text()
+        self.mutate(path, lambda data: data.update(sources={}))
+        with self.assertRaisesRegex(ValueError, "observation source identity mismatch"):
+            corpus.current_project(self.fault, self.root)
+        path.write_text(original)
+        self.mutate(path, lambda data: data["results"].__setitem__(0, self.observation(
+            self.fault["project"], 1, {"outcome": "error"})))
+        with self.assertRaisesRegex(ValueError, "must remain type-correct"):
+            corpus.current_project(self.fault, self.root)
+        path.write_text(original)
+        self.mutate(path, lambda data: data["results"].__setitem__(1, self.observation(
+            self.negative["project"], 1, {"outcome": "error", "diagnostics": [{"code": "type_mismatch"}]})))
+        with self.assertRaisesRegex(ValueError, "negative source migration diagnostic changed"):
+            corpus.current_project(self.fault, self.root)
+
+    def test_changed_baseline_and_escaping_snapshot_root_reject(self):
+        baseline = self.root / "semantic_faults/manifest.json"
+        original = baseline.read_text()
+        baseline.write_text(original + " ")
+        with self.assertRaisesRegex(ValueError, "counterexample migration baseline changed"):
+            corpus.current_project(self.fault, self.root)
+        baseline.write_text(original)
+        with tempfile.TemporaryDirectory() as directory:
+            outside = Path(directory) / "sources"
+            shutil.move(self.stage / "counterexample-sources", outside)
+            (self.stage / "counterexample-sources").symlink_to(outside, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "snapshot root escapes intake"):
+                corpus.current_project(self.fault, self.root)
 
 
 class OracleTests(unittest.TestCase):
@@ -327,6 +829,61 @@ class OracleTests(unittest.TestCase):
 
 
 class ReportTests(unittest.TestCase):
+    def test_quick_selection_covers_sources_and_widths_without_expanding_maximum_cases(self):
+        cases = json.loads((corpus.CORPUS / "manifest.json").read_text())["cases"]
+        selected = corpus.representative_entries(cases)
+        self.assertEqual(len(selected), 20)
+        self.assertEqual(selected, corpus.representative_entries(list(reversed(cases))))
+        groups = {(case["id"].split("/")[0], case["qubits"]) for case in cases if case["kind"] == "unitary"}
+        chosen = {(case["id"].split("/")[0], case["qubits"]) for case in cases if case["id"] in selected}
+        self.assertEqual(groups, chosen)
+        for case in cases:
+            if case["id"] in selected:
+                self.assertTrue(all(0 <= index < 1 << case["qubits"] for index in selected[case["id"]]))
+        full = sum(corpus.semantic_probe_count(case, True) for case in cases if case["kind"] == "unitary")
+        self.assertEqual(full, 15848)
+        self.assertLess((len(cases) + 2 * len(selected)) / full, 0.01)
+
+    def test_quick_case_checks_shipped_output_and_both_complex_axes(self):
+        case = next(case for case in json.loads((corpus.CORPUS / "manifest.json").read_text())["cases"]
+                    if case["id"] == "quantum_katas/global_phase")
+        default = sum(bit << j for j, bit in enumerate(case["default_input"]))
+        shipped = corpus.probabilities(corpus.reference_column(case, default))
+        column = corpus.reference_column(case, 1)
+        expected = [shipped, corpus.interference(column, 0, "x"), corpus.interference(column, 0, "y")]
+        with patch.object(corpus, "run", side_effect=expected) as run:
+            record = corpus.check_case(case, Path("unused"), False, quick_probe=(1, 0))
+        self.assertEqual(record["semantic_probes"], 2)
+        self.assertEqual(run.call_count, 3)
+        with patch.object(corpus, "run", return_value=shipped) as run:
+            record = corpus.check_case(case, Path("unused"), False, quick_probe=())
+        self.assertEqual(record["semantic_probes"], 0)
+        self.assertEqual(run.call_count, 1)
+        with patch.object(corpus, "run", return_value={(False,): 0.0, (True,): 1.0}), self.assertRaises(corpus.SemanticMismatch):
+            corpus.check_case(case, Path("unused"), False, quick_probe=())
+
+    def test_quick_report_discloses_omitted_faults_and_never_claims_exhaustive_coverage(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "report.json"
+            def check(case, *args, **kwargs):
+                return dict(id=case["id"], semantic_probes=2 if kwargs["quick_probe"] else 0)
+            with patch.object(corpus, "check_case", side_effect=check), patch.object(corpus, "check_semantic_fault", side_effect=lambda f, *a: dict(id=f["id"])) as faults, patch.object(corpus, "check_negative", side_effect=lambda c, b: dict(id=c["id"])):
+                self.assertEqual(corpus.main([__file__, "--quick", "--report", str(path)]), 0)
+            report = json.loads(path.read_text())
+            self.assertEqual(len(report["cases"]), 87)
+            self.assertEqual(sum(row["semantic_probes"] for row in report["cases"]), 40)
+            self.assertEqual(faults.call_count, 4)
+            self.assertEqual(set(report["expected_ids"]["semantic_faults"]), corpus.QUICK_FAULT_IDS)
+            self.assertEqual(len(report["omitted_semantic_fault_ids"]), 59)
+            self.assertEqual(len(report["negative_cases"]), 4)
+            self.assertEqual(report["validation_mode"], "quick-representative-v1")
+            self.assertFalse(report["exhaustive_unitary_entries"])
+            with patch.object(corpus, "check_manifest") as manifest:
+                for arguments in (("--quick",), (__file__, "--quick", "--exhaustive")):
+                    with self.assertRaises(SystemExit):
+                        corpus.main(list(arguments))
+                manifest.assert_not_called()
+
     def test_partial_results_and_failures_survive_parallel_completion(self):
         import subprocess
         with tempfile.TemporaryDirectory() as directory:

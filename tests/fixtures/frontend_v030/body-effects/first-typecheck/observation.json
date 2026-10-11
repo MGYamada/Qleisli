@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "cargo",
+    "check",
+    "--offline",
+    "--all-targets"
+  ],
+  "exit_code": 101,
+  "representation": "Concatenated tool-decoded combined output chunks; not original split stdout/stderr byte streams",
+  "scope": "Actual first type-check failure before repairs; no tests executed."
+}

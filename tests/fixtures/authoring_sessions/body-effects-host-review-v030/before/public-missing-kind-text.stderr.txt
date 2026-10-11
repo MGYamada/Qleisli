@@ -1,0 +1,1 @@
+/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/body-effects-host-review-v030/attempt-01/public-missing-kind/Qargo.toml:1:1: project: Qargo.toml requires schema-version = 2

@@ -1,0 +1,2 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/sized_review_dialects.rs (/private/tmp/qleisli-ci-repair-fae/target/debug/deps/sized_review_dialects-5a4051bc5c694371)

@@ -1,0 +1,12 @@
+{
+  "format": "qleisli.reported-prior-failure",
+  "version": 1,
+  "status": "parent-transcript-not-original-raw-output",
+  "reported_exit_code": 1,
+  "reported_diagnostic": "frozen source changed; review inventory/fixtures: src/frontend/mod.rs",
+  "original_command": null,
+  "original_raw_stdout": null,
+  "original_raw_stderr": null,
+  "provenance": "Direct parent task message reporting the actual initial stale guard failure; no original raw log was supplied.",
+  "limit": "This records that report only. Separate before.* outputs are newly executed guard observations."
+}

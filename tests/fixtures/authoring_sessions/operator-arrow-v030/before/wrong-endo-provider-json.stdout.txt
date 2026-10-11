@@ -1,0 +1,1 @@
+{"format":"qleisli.result","version":1,"command":"check","outcome":"error","diagnostics":[{"code":"name","severity":"error","message":"unresolved function split","primary":{"module":"main","path":"/Users/masa/git/Qleisli/tests/fixtures/authoring_sessions/operator-arrow-v030/attempt-01/wrong-endo-provider/main.qli","start":47,"end":55},"related":[]}],"result":null}

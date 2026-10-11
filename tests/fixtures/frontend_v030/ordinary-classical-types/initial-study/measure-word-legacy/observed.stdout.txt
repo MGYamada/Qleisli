@@ -1,0 +1,8 @@
+common.parse: ok declarations=1
+finite.check: Diagnostic { code: "project", message: "missing module `std::classical`", primary: Some(SourceLocation { path: "/Users/masa/git/Qleisli/tests/fixtures/frontend_v030/ordinary-classical-types/initial-study/measure-word-legacy/main.qli", span: Span { start: 29, end: 60 }, line: 1, column: 30 }) }
+sized.generic: ok
+sized.instance: ok
+sized.elaborate: ok
+sized.inputs: [SourceValue { ty: Type { kind: Q(Type { kind: Bit }) }, identity: Some(0), fields: [] }]
+sized.output: SourceValue { ty: Type { kind: Bits(1) }, identity: Some(3), fields: [] }
+sized.lower: proposed instrument=true bytes=1748

@@ -1,0 +1,79 @@
+{
+  "kind": "pre-code original generic access provider experiment",
+  "base_commit": "672b81c44bcb8d5c2f5973015c6618f0bc16e033",
+  "scope": "Informed first sources; exactly one system qubit each; no source-preservation, independent model or blind-benchmark claim.",
+  "observations": [
+    {
+      "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "sha256": "ef23bd0d9cd0d018492e56773cb366ce4af34cb28b773fe66d7c0fc71c725737",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::client",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "adjoint-bit.before.stdout.txt",
+      "stderr": "adjoint-bit.before.stderr.txt"
+    },
+    {
+      "source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+      "sha256": "0f8cf52a31f0e1c05f2a3e11cf41ed7203cd59e093424dd1b85a0d7168e04aba",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::client",
+        "--module=main=tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "controlled-unit.before.stdout.txt",
+      "stderr": "controlled-unit.before.stderr.txt"
+    }
+  ],
+  "negative_generic_access_observations": [
+    {
+      "original_source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/adjoint-bit.qli",
+      "derivation": {
+        "replace": " requires Adjoint(U)",
+        "with": ""
+      },
+      "derived_source_sha256": "0e0f5f0c00653d50e286dda8716668e06045bfa599c70e9416724f526a42e18e",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::client",
+        "--module=main=/private/tmp/qleisli-generic-access-negative-ysj4sf2z/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"access\",\"severity\":\"error\",\"message\":\"missing Adjoint operation access\",\"primary\":{\"module\":\"main\",\"path\":\"/private/tmp/qleisli-generic-access-negative-ysj4sf2z/main.qli\",\"start\":426,\"end\":438},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "scope": "Actual omitted-access derivative; temporary path removed after observation, reproducible from the unchanged original plus exact replacement."
+    },
+    {
+      "original_source": "tests/fixtures/authoring_sessions/meaning-enforcement-v030/access-attempt-01/controlled-unit.qli",
+      "derivation": {
+        "replace": " requires Controlled(U)",
+        "with": ""
+      },
+      "derived_source_sha256": "226419a8915afe4bf3bdcb2521f552dcefca07167b774cf76ab3c4c309847574",
+      "argv": [
+        "/private/tmp/qleisli-bounded-validation-target/debug/qleisli",
+        "check",
+        "--format=json",
+        "--entry=main::client",
+        "--module=main=/private/tmp/qleisli-generic-access-negative-ysj4sf2z/main.qli",
+        "--lean-kernel=/Users/masa/git/Qleisli/lean-kernel/.lake/build/bin/qleisli-kernel"
+      ],
+      "exit_code": 1,
+      "stdout": "{\"format\":\"qleisli.result\",\"version\":1,\"command\":\"check\",\"outcome\":\"error\",\"diagnostics\":[{\"code\":\"access\",\"severity\":\"error\",\"message\":\"missing Controlled operation access\",\"primary\":{\"module\":\"main\",\"path\":\"/private/tmp/qleisli-generic-access-negative-ysj4sf2z/main.qli\",\"start\":496,\"end\":514},\"related\":[]}],\"result\":null}\n",
+      "stderr": "",
+      "scope": "Actual omitted-access derivative; temporary path removed after observation, reproducible from the unchanged original plus exact replacement."
+    }
+  ]
+}

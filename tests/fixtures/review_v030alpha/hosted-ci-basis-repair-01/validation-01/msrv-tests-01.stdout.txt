@@ -1,0 +1,16 @@
+
+running 11 tests
+test binary_arity_static_arguments_and_tuple_scalar_remain_separate_rules ... ok
+test exact_basis_view_never_unpacks_an_owner_and_preserves_nested_zero_width_fields ... ok
+test finite_controls_remain_checked_and_raw_tuple_limits_are_explicit ... ok
+test isolated_zero_owner_loss_revival_alias_and_zero_iteration_bodies_reject ... ok
+test ordered_axes_and_eager_helper_argument_do_not_erase_quantum_work ... ok
+test same_width_substitutions_and_implicit_destructuring_remain_type_errors ... ok
+test scalar_on_removed_unit_is_omega_on_every_retained_axis_and_reference ... ok
+test split_and_join_create_fresh_distinct_linear_owners_without_flattening ... ok
+test structural_tuple_events_after_observation_retain_exact_basis_and_reference ... ok
+test tuple_operation_binding_adjoint_repeat_and_control_have_independent_full_action ... ok
+test fixed_left_right_unitors_and_roundtrips_preserve_each_exact_tree_and_reference ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.40s
+

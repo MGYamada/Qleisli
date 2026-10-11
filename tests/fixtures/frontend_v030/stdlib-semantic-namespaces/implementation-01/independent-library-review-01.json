@@ -1,0 +1,205 @@
+{
+  "format": "qleisli.independent-stdlib-namespace-review",
+  "version": 1,
+  "issue": 317,
+  "reviewer": {
+    "kind": "independent-ai-technical-review",
+    "task": "/root/current_ci_failure_audit",
+    "independent_of": "Root-owned bundled registry/library split and separate documentation-authoring agent",
+    "authority_limit": "Technical advisory review only; no human Guardian judgment, binding interpretation, guarantee admission or release approval."
+  },
+  "observed_utc": "2026-10-06T02:56:48.021269+00:00",
+  "before_commit": "bdc2d076bc57c1e7284a913cf6c078d75081189c",
+  "scope": {
+    "applicable_issue_criteria_count": 21,
+    "assessment": "Library/registry/source-contract consistency subset only; this record does not establish completion of all 21 criteria.",
+    "excluded": "Generic QFT implementation, public integration, fixed/generic equivalence and QFT-specific proof completion remain outside all v0.3.0/current-goal work under the direct user override. Existing fixed QFT2/QFT3 support remains reviewed here."
+  },
+  "reviewed_current_files_sha256": {
+    "src/frontend/source.rs": "caa1c9a6f61876f2942c0ad711b4c57064407acdb271998a0991a5fd8b04273b",
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/transform.qli": "3b097e71dc74b51c0e1e09b66b33aa319fed599c14a1b96769e5076c2a8aff40",
+    "stdlib/src/reflection.qli": "99ea6514ac57b990894291101a580e39256c5e5471f8bf14de8d0856876a1382",
+    "stdlib/src/measurement.qli": "937a3cbddbbaf3fef059874d47e2cc3d2aec7862c61aedf446711c98306b5c4c",
+    "examples/order_finding/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+    "docs/src/reference/stdlib.md": "3d4d4c57eeebd2bbf286d5446f7178ea081d7696b4a9c34bf76d01cb5e2d347e",
+    "STDLIB.md": "bd08f3f0e70616d0bd095b1e4b27bc2301d5587cb948ddcb2f167bcb12cb57b1"
+  },
+  "reviewed_before_files_sha256": {
+    "src/frontend/source.rs": "dab33f22c795fa23f1150142355adb2967939144b64d0f2b2d142f51e76edef3",
+    "stdlib/src/arithmetic.qli": "1d292aab68a8b5fef99a2cefde86f37752045b8d2d6d3a60e83fdaa8c0c1f68a",
+    "stdlib/src/basis.qli": "7831eb5bd62db1a50a06ce18ad30eebf074a3f2b82e8b9540e86af12c6aad877",
+    "stdlib/src/routines.qli": "ebd42bf42f39c5120daec962f71784ac9ceb5400f898d4d502ff8ceaeaca142b",
+    "stdlib/src/transforms.qli": "75adb034c128e31cc3bdbc6c8b5c455a4d112d5b5c127d84bc499a3c78d15fba",
+    "STDLIB.md": "b9fe392b269469d3d6b503a93392eb9956a5001175da454edc97c5777c909a87"
+  },
+  "supporting_resolution_files_sha256": {
+    "src/frontend/resolve.rs": "8cec720c14c5929abbccd3842fccf62c1d930fdef2f1f400685e29c96016452a",
+    "src/frontend/project.rs": "6751e1619e4050a9e27d6334427df3fe9524cb930428f2a9e8a758f8b549700a"
+  },
+  "static_identity_checks": {
+    "definition_pairs": [
+      {
+        "name": "xor2",
+        "before_path": "stdlib/src/basis.qli",
+        "current_path": "stdlib/src/basis.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "9e9c63891f652ea48213398c10b3dd277ab82ff8769f6dd27a788a07516e7a13"
+      },
+      {
+        "name": "and2",
+        "before_path": "stdlib/src/basis.qli",
+        "current_path": "stdlib/src/basis.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "8304c2ac28d1c75a53b9061f0339fc1889c230c1c7f14e9590d3d3547254e541"
+      },
+      {
+        "name": "qft2",
+        "before_path": "stdlib/src/transforms.qli",
+        "current_path": "stdlib/src/transform.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "b7df99381f991e8279ff9a1c0efea05a5bce94c15437a96dcc12e241db90b399"
+      },
+      {
+        "name": "qft3",
+        "before_path": "stdlib/src/transforms.qli",
+        "current_path": "stdlib/src/transform.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "0825125ee7056b2b287afc69c0e5dfe4757e9bc78cf09c5b5af73c15618fae15"
+      },
+      {
+        "name": "hadamard2",
+        "before_path": "stdlib/src/routines.qli",
+        "current_path": "stdlib/src/transform.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "4e07a56d9fab2cae46cae69a0298284bcf7ee3b0197ef04e91dc3c70bd428835"
+      },
+      {
+        "name": "nonzero2",
+        "before_path": "stdlib/src/routines.qli",
+        "current_path": "stdlib/src/reflection.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "8b5d4fa91e707edc5e9d120f241318f636096ff11e34e68909e3b056cee594fd"
+      },
+      {
+        "name": "reflect_uniform2",
+        "before_path": "stdlib/src/routines.qli",
+        "current_path": "stdlib/src/reflection.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "1fa3845cc6bfd0c462e78a7759a20bef670e0a8e598a34c30e575074be7f4c9c"
+      },
+      {
+        "name": "measure_x",
+        "before_path": "stdlib/src/routines.qli",
+        "current_path": "stdlib/src/measurement.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "02bfd23fce51f961d6ce03a768cc790987692be916a5c675f48b8430b9a2480b"
+      },
+      {
+        "name": "measure_z2",
+        "before_path": "stdlib/src/routines.qli",
+        "current_path": "stdlib/src/measurement.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "e403b5284ca312ab07797f7671a875dfbd4542dd19bda5b028c3375ffc9d1444"
+      },
+      {
+        "name": "parity_zz",
+        "before_path": "stdlib/src/routines.qli",
+        "current_path": "stdlib/src/measurement.qli",
+        "declaration_signature_and_body_byte_identical": true,
+        "declaration_sha256": "08dfc2e1e4998d9089906c0fae5214b88e8cccba6e2af9d8b253f4d64b764858"
+      }
+    ],
+    "basis_module_whole_bytes_unchanged": true,
+    "local_arithmetic_whole_bytes_equal_to_former_module": true,
+    "registered_modules": [
+      "std::basis",
+      "std::measurement",
+      "std::reflection",
+      "std::transform"
+    ],
+    "public_definitions": [
+      {
+        "path": "stdlib/src/basis.qli",
+        "name": "xor2"
+      },
+      {
+        "path": "stdlib/src/basis.qli",
+        "name": "and2"
+      },
+      {
+        "path": "stdlib/src/transform.qli",
+        "name": "hadamard2"
+      },
+      {
+        "path": "stdlib/src/transform.qli",
+        "name": "qft2"
+      },
+      {
+        "path": "stdlib/src/transform.qli",
+        "name": "qft3"
+      },
+      {
+        "path": "stdlib/src/reflection.qli",
+        "name": "reflect_uniform2"
+      },
+      {
+        "path": "stdlib/src/measurement.qli",
+        "name": "measure_x"
+      },
+      {
+        "path": "stdlib/src/measurement.qli",
+        "name": "measure_z2"
+      },
+      {
+        "path": "stdlib/src/measurement.qli",
+        "name": "parity_zz"
+      }
+    ],
+    "private_definitions": [
+      {
+        "path": "stdlib/src/reflection.qli",
+        "name": "nonzero2"
+      }
+    ],
+    "retired_module_names_absent_from_production_Rust_and_current_stdlib_source": true
+  },
+  "review_observations": [
+    {
+      "topic": "Registry and visibility",
+      "result": "The registry supplies exactly the four current ordinary modules. Source::local retains the reserved std prefix. Shared import resolution searches target declarations and public visibility, so importing hadamard2 into reflection does not re-export it; nonzero2 remains private. No retired-module alias or special semantic admission is introduced."
+    },
+    {
+      "topic": "Fixed Fourier phase/order",
+      "result": "The unchanged F4 circuit column for input (a,b), output (v,u), has coefficient i^(a*v)*(-1)^(b*v+a*u)/2. This equals positive exp(2*pi*i*(a+2*b)*(v+2*u)/4)/2. F8 similarly has exponent a*v+2*b*v+4*c*v+2*a*w+4*b*w+4*a*u modulo 8 for output ((v,w),u), equal to (a+2*b+4*c)*(v+2*w+4*u) modulo 8. The Reference preserves positive phase, little-endian axes, included reversal and exact original tuple trees."
+    },
+    {
+      "topic": "Reflection sign and cleanup",
+      "result": "nonzero2 is zero only at 00. Computing it, applying Z, and uncomputing therefore describes diag(+1,-1,-1,-1)=2|00><00|-I; conjugating by H tensor H gives 2|++><++|-I with the documented scalar sign. The same protected-computed body and private predicate are retained; this review does not separately prove the checker cleanup/preservation obligation."
+    },
+    {
+      "topic": "Complete measurement instruments",
+      "result": "measure_x consumes its owner with branch <b|H. measure_z2 consumes both owners and retains left/right result order. The zero meter in parity_zz accumulates a xor b by two unchanged CNOTs and is consumed by measurement, yielding branch projector (I+(-1)^s Z_a Z_b)/2 while retaining both original data owners and within-sector coherence. Docs require distinct owners without requiring separability and include arbitrary external references."
+    },
+    {
+      "topic": "Local fixed arithmetic",
+      "result": "The complete A001-A003 module is byte-identical to the former std arithmetic module. Its documented +1 permutations, modular wrap, retained addend, all-space value-15 fixed point, output route (d,a,b,c), tuple shapes and no-auxiliary/no-measurement contracts remain intact. No reserved parameterized arithmetic identity is represented as an implemented callable API."
+    },
+    {
+      "topic": "Authority and future-scope claims",
+      "result": "The Reference and STDLIB distinguish source checking, bounded tests, actual-IR conformance, source preservation and human specification review; reservations are not delivered families. They explicitly exclude generic QFT from the current scope and claim no new QS/PR/RS/EXACT discharge or constitutional guarantee."
+    }
+  ],
+  "actionable_findings": [],
+  "conclusion": "No blocking or actionable source-contract, mathematical-sign, tuple/owner, registry-alias or helper-export discrepancy found in the exact reviewed snapshot.",
+  "performed": [
+    "Read current registry, four library modules, local arithmetic and both documentation targets.",
+    "Read HEAD former source bodies and current shared import/visibility resolution.",
+    "Compare 10 complete declarations/signatures/bodies and two whole-file byte identities.",
+    "Hash all reviewed inputs, count public/private definitions and statically scan production Rust/current library source for retired aliases."
+  ],
+  "not_performed": [
+    "No builds, Rust/Python semantic tests, native acceptance, simulation, Lean build/audit/replay or release checks were run for this independent review.",
+    "No general source-preservation theorem, constitutional discharge or runtime/native-output correctness claim."
+  ]
+}
