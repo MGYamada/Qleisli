@@ -33,7 +33,11 @@ CONTRACT_PROOF = {
         'sector preservation. control_reference proves projector commutation for every joint amplitude '
         'and arbitrary reference. Finite project ctrl calls bind fresh native decisions to actual emitted '
         'call intervals and original ordered owner interfaces; selected-source integration, general '
-        'source preservation and alias/resource obligations remain open.'
+        'source preservation and alias/resource obligations remain open. '
+        'For instrument requests, instrument_meaning binds both original QIRF roots and dependency graphs, '
+        'complete Kraus sums, untruncated dimensions and requested complete signature equality to exact '
+        'unnormalized public outcome maps on every joint matrix and finite external reference. '
+        'The private Rust paired handle and observing source call-boundary integration remain open.'
     ),
     'gaps': (
         'This separate protocol does not inherit NativeValidity.check_sound. General EffectSound/CPTP, source/compiler '
@@ -108,13 +112,20 @@ PATHS = {
         ('lean-kernel/Protocol/NativeContract.lean', ['def check ', 'QleisliKernel.Qirf.checkContract',
          'QleisliKernel.Qirf.check ', 'structure Acceptance ', 'structure LeafAcceptance ',
          'structure ControlAcceptance ', 'QleisliKernel.Qirf.ControlAccess.check', 'theorem check_acceptance']),
+        ('lean-kernel/Protocol/InstrumentContract.lean', ['def decode ', 'def check ', 'structure Acceptance ',
+         'expectedText.toUTF8', 'theorem check_acceptance']),
+        ('lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean', ['def interface ', 'def check ',
+         'Validity.checkRoot actual actualOrder', 'Validity.checkRoot expected expectedOrder',
+         'Raw.InstrumentEquality.compare', 'theorem check_acceptance']),
         ('lean-kernel/QleisliKernel/Qirf/Contract.lean', ['theorem checkContract_bound']),
         ('lean/Qleisli/Qirf.lean', ['theorem reconstruct_semantics', 'theorem check_semantics']),
         ('lean/Qleisli/NativeContract.lean', ['structure LeafMeaning ', 'theorem check_root_meaning',
          'theorem leaf_meaning', 'theorem leaf_reference_laws', 'theorem check_sound',
          'structure EncodedMeaning ', 'theorem encoded_meaning', 'theorem check_encoded_sound',
          'theorem encoded_reference', 'structure ControlMeaning ', 'theorem control_meaning',
-         'theorem control_reference']),
+         'theorem control_reference', 'structure InstrumentMeaning ', 'theorem instrument_meaning']),
+        ('lean/Qleisli/QirfInstrumentContract.lean', ['theorem reconstruct_denotes',
+         'theorem reconstruct_kraus_complete', 'theorem check_dimensions', 'theorem check_instrument']),
         ('lean/Qleisli/NativeContractWrapper.lean', ['theorem circuitMatrix_entries',
          'theorem check_encoded_original', 'theorem check_reference_original']),
         ('tests/fixtures/constitution_v030/native-contract-wrapper/Review.lean', [
@@ -125,7 +136,8 @@ PATHS = {
          '#check @Qleisli.NativeContract.check_sound', '#print Qleisli.NativeContract.LeafMeaning']),
     ], [('tests/semantic_contracts.rs', 'primitive_evidence_preserves_exact_phase'),
         ('tests/finite_leaf.rs', 'reconstruct_hadamard_in_both_formats_and_bind_complete_bytes'),
-        ('scripts/test_native_verification.py', 'test_control_requests')]),
+        ('scripts/test_native_verification.py', 'test_control_requests'),
+        ('scripts/test_native_verification.py', 'test_instrument_requests')]),
     'source-documentation': path_rule('documentation', 'source', '', [
         ('src/bin/qleisli.rs', ['if options.command == "doc"', 'render_markdown(&source)']),
         ('src/frontend/documentation.rs', ['pub fn render_markdown(']),

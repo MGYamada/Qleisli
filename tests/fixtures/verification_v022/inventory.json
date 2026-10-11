@@ -2255,7 +2255,7 @@
     },
     {
       "path": "lean-kernel/Protocol/NativeContract.lean",
-      "sha256": "edb707beec732bcc5211694ad37b0ca5b95882b851d2fe32cea2cd30fd809808",
+      "sha256": "aaf4799dfb0e2dc9d4c297c559b85180ed3c317cef64cb5f07a888914da70f32",
       "group": "finite-contract",
       "surface": null
     },
@@ -2867,7 +2867,7 @@
     },
     {
       "path": "lean/Qleisli/NativeContract.lean",
-      "sha256": "39361f30da883bf95e32606faf94483306640b1c8ea1cbe4b6f613711f0e22e0",
+      "sha256": "98e2137a4554f795563bee2e2d4c1e4e67c784a374ab8d61bed6cadb7607bbf2",
       "group": "finite-contract",
       "surface": null
     },
@@ -5176,6 +5176,12 @@
     {
       "path": "lean-kernel/QleisliKernel/Semantics/InstrumentContract.lean",
       "sha256": "2ed860b6ce2288823f9b8b00726826e343ca2d3bfefd0d63ebbeeb10c486af39",
+      "group": "raw-core",
+      "surface": null
+    },
+    {
+      "path": "lean-kernel/Protocol/InstrumentContract.lean",
+      "sha256": "2a4d227228186d25d0edd316fb37df4f7496b05e1536236120aa17fbd71bea70",
       "group": "raw-core",
       "surface": null
     }

@@ -1,6 +1,7 @@
 import Qleisli.QirfValidity
 import Qleisli.NativeContractWrapper
 import Qleisli.ControlAccess
+import Qleisli.QirfInstrumentContract
 import Protocol.NativeContract
 
 /-! Composition from the actual native-contract byte entry point to existing
@@ -43,6 +44,11 @@ theorem acceptance_root_meaning {bytes : ByteArray} {answer : Bool} {work left :
       QleisliKernel.Qirf.ControlAccess.checkOwners_bound _ _ _ _ _ _ _ request.accepted
     exact ⟨root,_,a,accepted,Qleisli.Qirf.Validity.root_meaning _ _ _ _
       (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted)⟩
+  | instrument request =>
+    obtain ⟨accepted⟩ := QleisliKernel.Qirf.InstrumentContract.check_acceptance
+      _ _ _ _ _ _ _ _ _ _ request.binding.accepted
+    exact ⟨request.checked.actual,_,_,accepted.actualRoot,Qleisli.Qirf.Validity.root_meaning _ _ _ _
+      (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted.actualRoot)⟩
 
 theorem check_root_meaning (bytes : ByteArray) (answer : Bool) (work left : Nat)
     (ok : (check bytes).run work = (.ok answer,left)) :
@@ -147,6 +153,68 @@ theorem control_owners_meaning {artifact : QleisliKernel.Qirf.Artifact} {order :
       binding.signatures binding.axes binding.actual :=
   Qleisli.ControlAccess.checked_owners_meaning _ _ _ _ _ _ _ binding.accepted
 
+/-- Independent original-body meanings for both observing roots. The complete
+Kraus families are trace preserving; every public outcome map agrees on any
+joint matrix and finite external reference, without a separability premise.
+The byte acceptance retains the requested complete types and original expected
+artifact separately; source/type lowering and native I/O preservation are open. -/
+structure InstrumentMeaning (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    {value : Lean.Json} {work left : Nat}
+    (request : InstrumentAcceptance artifact order value work left) : Prop where
+  actualRootMeaning : Qleisli.Qirf.Validity.RootMeaning artifact order request.checked.actual
+  expectedRootMeaning : Qleisli.Qirf.Validity.RootMeaning
+    request.binding.expected request.binding.expectedOrder request.checked.expected
+  actualBody : Qleisli.Semantics.RawInstrument.ProgramMeaning request.checked.actual.dependencies
+    request.checked.actual.program []
+    (request.checked.actualInstrument.histories.map Qleisli.Raw.Instrument.Denotation.reference)
+  expectedBody : Qleisli.Semantics.RawInstrument.ProgramMeaning request.checked.expected.dependencies
+    request.checked.expected.program []
+    (request.checked.expectedInstrument.histories.map Qleisli.Raw.Instrument.Denotation.reference)
+  actualComplete : ∑ i, (Qleisli.Raw.Instrument.family request.checked.actualInstrument i)ᴴ *
+    Qleisli.Raw.Instrument.family request.checked.actualInstrument i = 1
+  expectedComplete : ∑ i, (Qleisli.Raw.Instrument.family request.checked.expectedInstrument i)ᴴ *
+    Qleisli.Raw.Instrument.family request.checked.expectedInstrument i = 1
+  dimensions : (∀ history ∈ request.checked.actualInstrument.histories,
+    history.operator.rows = 2^request.checked.actualInstrument.structureCheck.state.quantum.frame.length ∧
+    history.operator.cols = 2^request.checked.actualInstrument.structureCheck.prepared.inputBits) ∧
+    (∀ history ∈ request.checked.expectedInstrument.histories,
+    history.operator.rows = 2^request.checked.actualInstrument.structureCheck.state.quantum.frame.length ∧
+    history.operator.cols = 2^request.checked.actualInstrument.structureCheck.prepared.inputBits)
+  signaturesEqual : request.binding.decoded.actualSignature = request.binding.decoded.expectedSignature
+  referenceEquality : ∀ (R : Type) [Fintype R] [DecidableEq R]
+    (rho : _root_.Matrix
+      (Fin (2^request.checked.actualInstrument.structureCheck.prepared.inputBits) × R)
+      (Fin (2^request.checked.actualInstrument.structureCheck.prepared.inputBits) × R) ℂ),
+    (fun outcome => Qleisli.Semantics.InstrumentEquality.channel
+      (Qleisli.Qirf.InstrumentContract.operators request.checked.actual.program.classicalOutputs
+        request.checked.actualInstrument.histories outcome
+        (2^request.checked.actualInstrument.structureCheck.state.quantum.frame.length)
+        (2^request.checked.actualInstrument.structureCheck.prepared.inputBits)) rho) =
+    (fun outcome => Qleisli.Semantics.InstrumentEquality.channel
+      (Qleisli.Qirf.InstrumentContract.operators request.checked.expected.program.classicalOutputs
+        request.checked.expectedInstrument.histories outcome
+        (2^request.checked.actualInstrument.structureCheck.state.quantum.frame.length)
+        (2^request.checked.actualInstrument.structureCheck.prepared.inputBits)) rho)
+
+theorem instrument_meaning {artifact : QleisliKernel.Qirf.Artifact} {order : Array Nat}
+    {value : Lean.Json} {work left : Nat}
+    (request : InstrumentAcceptance artifact order value work left) :
+    InstrumentMeaning artifact order request := by
+  obtain ⟨accepted⟩ := QleisliKernel.Qirf.InstrumentContract.check_acceptance
+    _ _ _ _ _ _ _ _ _ _ request.binding.accepted
+  exact ⟨Qleisli.Qirf.Validity.root_meaning _ _ _ _
+      (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted.actualRoot),
+    Qleisli.Qirf.Validity.root_meaning _ _ _ _
+      (QleisliKernel.Qirf.Validity.checkRoot_postcondition _ _ _ _ _ accepted.expectedRoot),
+    Qleisli.Qirf.InstrumentContract.reconstruct_denotes _ _ _ _ _ _ accepted.actualReconstructed,
+    Qleisli.Qirf.InstrumentContract.reconstruct_denotes _ _ _ _ _ _ accepted.expectedReconstructed,
+    Qleisli.Qirf.InstrumentContract.reconstruct_kraus_complete _ _ _ _ _ _ accepted.actualReconstructed,
+    Qleisli.Qirf.InstrumentContract.reconstruct_kraus_complete _ _ _ _ _ _ accepted.expectedReconstructed,
+    Qleisli.Qirf.InstrumentContract.check_dimensions _ _ _ _ _ _ _ _ _ _ request.binding.accepted,
+    accepted.signaturesEqual,
+    fun _ _ _ rho => Qleisli.Qirf.InstrumentContract.check_instrument
+      _ _ _ _ _ _ _ _ _ _ request.binding.accepted rho⟩
+
 /-- The native success premise supplies the request binding. The leaf result
 is conditional only on the decoded request kind, not on a producer receipt or
 an assumed operator meaning. `check_encoded_sound` additionally exposes the
@@ -166,7 +234,8 @@ theorem check_sound (bytes : ByteArray) (answer : Bool) (work left : Nat)
           ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual
       | .controlOwners request => ∃ root,
           Qleisli.ControlAccess.OwnersMeaning binding.artifact binding.order root
-            request.signatures request.axes request.actual := by
+            request.signatures request.axes request.actual
+      | .instrument request => InstrumentMeaning binding.artifact binding.order request := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,acceptance_root_meaning binding,?_⟩
   cases binding.request with
@@ -174,6 +243,7 @@ theorem check_sound (bytes : ByteArray) (answer : Bool) (work left : Nat)
   | leaf request => exact leaf_meaning request
   | control request => exact control_meaning request
   | controlOwners request => exact control_owners_meaning request
+  | instrument request => exact instrument_meaning request
 
 /-- Independent meaning of the original bounded, closed, unitary root in an
 encoded native request. The dependency interpretation is tied to a fresh graph
@@ -233,7 +303,8 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
           ControlMeaning binding.artifact binding.order root request.signature request.axes request.actual
       | .controlOwners request => ∃ root,
           Qleisli.ControlAccess.OwnersMeaning binding.artifact binding.order root
-            request.signatures request.axes request.actual := by
+            request.signatures request.axes request.actual
+      | .instrument request => InstrumentMeaning binding.artifact binding.order request := by
   obtain ⟨binding⟩ := check_acceptance _ _ _ _ ok
   refine ⟨binding,?_⟩
   cases binding.request with
@@ -243,6 +314,7 @@ theorem check_encoded_sound (bytes : ByteArray) (answer : Bool) (work left : Nat
   | leaf request => exact leaf_meaning request
   | control request => exact control_meaning request
   | controlOwners request => exact control_owners_meaning request
+  | instrument request => exact instrument_meaning request
 
 /-- The original-byte control request preserves projectors on every joint
 amplitude and arbitrary reference; no separability premise is used. -/

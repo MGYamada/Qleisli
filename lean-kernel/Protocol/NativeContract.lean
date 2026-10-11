@@ -1,6 +1,7 @@
 import Protocol.Validity
 import QleisliKernel.Qirf.Contract
 import QleisliKernel.Qirf.ControlAccess
+import Protocol.InstrumentContract
 
 /-! Strict bounded request decoding; acceptance is delegated to the pure kernel.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
@@ -73,6 +74,9 @@ def check (bytes : ByteArray) : WorkM Bool := do
     checkControl artifact order value
   else if kind == "control-owners" then
     checkControlOwners artifact order value
+  else if kind == "instrument" then do
+    let _ ← InstrumentContract.check artifact order value
+    pure ()
   else throw .request
   return true
 
@@ -198,12 +202,19 @@ theorem ControlAcceptance.preservesSectors
     QleisliKernel.Qirf.ControlAccess.check_bound _ _ _ _ _ _ _ binding.accepted
   exact sectors
 
+structure InstrumentAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
+    (value : Json) (work left : Nat) where
+  checked : QleisliKernel.Qirf.InstrumentContract.Checked
+  kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "instrument"
+  binding : InstrumentContract.Acceptance artifact order value checked work left
+
 inductive RequestAcceptance (artifact : QleisliKernel.Qirf.Artifact) (order : Array Nat)
     (value : Json) (work left : Nat) where
   | encoded (binding : EncodedAcceptance artifact order value work left)
   | leaf (binding : LeafAcceptance artifact order value work left)
   | control (binding : ControlAcceptance artifact order value work left)
   | controlOwners (binding : ControlOwnersAcceptance artifact order value work left)
+  | instrument (binding : InstrumentAcceptance artifact order value work left)
 
 /-- Original QLV1 bytes, mandatory original request, decoded payload and the
 continuous work states of the actual native-contract checker. These are
@@ -351,6 +362,19 @@ theorem check_acceptance (bytes : ByteArray) (answer : Bool) (work left : Nat)
               obtain ⟨binding⟩ := checkControlOwners_binding artifact order value w₉ left kindBound
                 (final.2.symm ▸ accepted)
               exact ⟨⟨.controlOwners binding⟩,final.1⟩
-            · cases h
+            · split at h
+              · rename_i isInstrument
+                obtain ⟨checked,middle,accepted,h⟩ := bind_success _ _ _ _ _ h
+                obtain ⟨_,after,unit,hreturn⟩ := bind_success _ _ _ _ _ h
+                have final := pure_success _ _ _ _ hreturn
+                have same := pure_success _ _ _ _ unit
+                have last : middle = left := (final.2.trans same.2).symm
+                have kindBound : (value.getObjVal? "kind" >>= Json.getStr?) = .ok "instrument" := by
+                  simp only [beq_iff_eq] at isInstrument
+                  simp [kj,bind,Except.bind,k,isInstrument]
+                obtain ⟨binding⟩ := InstrumentContract.check_acceptance artifact order value checked w₉ left
+                  (last ▸ accepted)
+                exact ⟨⟨.instrument ⟨checked,kindBound,binding⟩⟩,final.1⟩
+              · cases h
 
 end QleisliKernel.Protocol.NativeContract

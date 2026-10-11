@@ -2,9 +2,10 @@ import Qleisli.Semantics.Instrument
 
 /-! Independent finite instrument-equality mathematics for the adopted #46
 design. No acceptance checker, source adapter or evidence producer is imported.
-This experiment proves no production, source or constitutional discharge.
+This reference is independent of executable comparison. Source preservation
+and constitutional discharge remain separate obligations.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
-namespace Qleisli.Experiments.InstrumentEquality
+namespace Qleisli.Semantics.InstrumentEquality
 open scoped BigOperators
 open Qleisli.Semantics.Instrument
 
@@ -70,4 +71,4 @@ theorem instrument_eq_of_choi_eq {I O Left Right R Y : Type}
   funext outcome
   exact channel_eq_of_choi_eq _ _ (equal outcome) rho
 
-end Qleisli.Experiments.InstrumentEquality
+end Qleisli.Semantics.InstrumentEquality

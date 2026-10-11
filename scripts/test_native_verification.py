@@ -183,6 +183,141 @@ def test_control_owner_requests(kernel, run):
         check(obligation=dict(request, **{key: value}))
 
 
+def test_instrument_requests(kernel, run):
+    """Exact observing equations from two original graphs and a strict request.
+
+    These small body changes have independent algebraic expectations: HH and
+    a branch phase preserve Z readout; relabeling and replacing the residual
+    state do not. Whole-root request-free disclosure is checked separately.
+    """
+    import test_lean_observation as observation
+    import test_lean_raw as raw
+
+    bit, unit = dict(tag="bit"), dict(tag="unit")
+    qbit = dict(tag="quantum", basis=bit)
+    port, op, program = raw.port, raw.op, observation.p
+
+    def artifact(body):
+        return dict(format="qleisli.finite-ir", version=1, profile="finite-v0", sources=[],
+                    programs=[body], evidence=[], root=0, root_interface=None)
+
+    z = artifact(program([port(0, [0])], operations=[op("measure_z", input=0, output=0)], results=[0]))
+    signature = dict(input=bit, result=bit)
+    request = dict(format="qleisli.native-contract", version=1, kind="instrument",
+                   actual_signature=signature, expected_signature=signature,
+                   identity=dict(implementation="implementation", specification="expected",
+                                 sources=[dict(path="original.qli", text="retained source identity")]),
+                   expected_artifact=encoded(z).decode())
+
+    def check(actual=z, expected=z, sig=signature, accepted=False, obligation=None, error=None):
+        if obligation is None:
+            obligation = dict(request, actual_signature=sig, expected_signature=sig,
+                              expected_artifact=encoded(expected).decode())
+        output = run([kernel, "--qirf-contract", VERSION], 0 if accepted else 1,
+                     packet(encoded(actual), encoded(obligation)))
+        lines = output.decode().splitlines()
+        assert lines[:2] == ["qleisli.qirf-native 1", "accepted" if accepted else "error"], output
+        if accepted:
+            assert len(lines) == 4 and 0 <= int(lines[2]) <= 10000000 and lines[3] == "1"
+        elif error is not None:
+            assert lines == ["qleisli.qirf-native 1", "error", error], output
+
+    check(accepted=True)
+    hh = artifact(program([port(0, [0])], operations=[op("gate", gate="h", input=0, output=1),
+        op("gate", gate="h", input=1, output=2), op("measure_z", input=2, output=0)], results=[0]))
+    phase = artifact(program([port(0, [0])], operations=[op("gate", gate="t", input=0, output=1),
+        op("measure_z", input=1, output=0)], results=[0]))
+    flipped = artifact(program([port(0, [0])], operations=[op("measure_z", input=0, output=0),
+        op("classical_not", input=0, output=1)], results=[1]))
+    check(hh, accepted=True)
+    check(phase, accepted=True)
+    check(flipped, error="contract")
+    discard = artifact(program([port(0, [0])], operations=[op("discard", input=0)]))
+    discard_h = artifact(program([port(0, [0])], operations=[op("gate", gate="h", input=0, output=1),
+        op("discard", input=1)]))
+    check(discard_h, discard, dict(input=bit, result=unit), accepted=True)
+    nondestructive = artifact(program([port(0, [0])], operations=[op("init0", output=1, wire=1),
+        op("cnot", control=0, target=1, control_out=2, target_out=3),
+        op("measure_z", input=3, output=0)], outputs=[2], results=[0]))
+    replacement = artifact(program([port(0, [0])], operations=[op("measure_z", input=0, output=0),
+        op("init0", output=1, wire=1)], outputs=[1], results=[0]))
+    residual = dict(input=bit, result=dict(tag="pair", left=qbit, right=bit))
+    check(nondestructive, nondestructive, residual, accepted=True)
+    check(replacement, nondestructive, residual, error="contract")
+    ordered = copy.deepcopy(flipped); ordered["programs"][0]["classical_outputs"] = [0, 1]
+    reversed_results = copy.deepcopy(ordered); reversed_results["programs"][0]["classical_outputs"] = [1, 0]
+    check(ordered, reversed_results, dict(input=bit, result=dict(tag="pair", left=bit, right=bit)),
+          error="contract")
+
+    zero_owner = copy.deepcopy(z)
+    zero_owner["programs"][0]["operations"].append(op("pack_unit", output=1))
+    zero_owner["programs"][0]["quantum_outputs"] = [1]
+    zero_signature = dict(input=bit, result=dict(tag="pair", left=dict(tag="quantum", basis=unit), right=bit))
+    check(zero_owner, zero_owner, zero_signature, accepted=True)
+    check(z, zero_owner, zero_signature, error="contract")
+    check(zero_owner, error="contract")
+    check(discard, discard, dict(input=bit, result=dict(tag="bits", width=0)), accepted=True)
+    nested = dict(tag="tuple", fields=[unit, dict(tag="pair", left=unit, right=unit), unit])
+    check(discard, discard, dict(input=bit, result=nested), accepted=True)
+
+    pure = program([port(0, [0])], outputs=[0], effect="unitary")
+    false_observe = artifact(dict(pure, declared_effect="observe"))
+    check(false_observe, false_observe, dict(input=bit, result=qbit), error="contract")
+    dependency = copy.deepcopy(z)
+    dependency["programs"] = [copy.deepcopy(pure), copy.deepcopy(pure),
+        program([port(0, [0])], operations=[op("apply_unitary", input=0, output=1,
+            steps=[dict(controls=[], action=dict(tag="contract", indices=[0], evidence=0, adjoint=False))]),
+            op("measure_z", input=1, output=0)], results=[0])]
+    dependency["root"] = 2
+    dependency["sources"] = [dict(path="dependency.qli", text="original dependency identity")]
+    dependency["evidence"] = [dict(signature=bit, implementation=0, specification=1,
+                                  identity=dict(implementation="id", specification="spec", sources=[0]))]
+    check(dependency, accepted=True)
+    changed = copy.deepcopy(dependency)
+    hadamard = program([port(0, [0])], operations=[op("gate", gate="h", input=0, output=1)],
+                      outputs=[1], effect="unitary")
+    changed["programs"][0] = hadamard
+    check(changed, error="contract")
+    changed["programs"][1] = hadamard
+    check(changed, error="contract")  # Dependency equation holds; whole instrument differs.
+    check(expected=changed, error="contract")
+    wrong_root = copy.deepcopy(z); wrong_root["root"] = 9
+    check(wrong_root, error="invalid_ir")
+    check(expected=wrong_root, error="invalid_ir")
+
+    for field in request:
+        bad = copy.deepcopy(request); del bad[field]
+        check(obligation=bad)
+    for extra in [dict(matrix=[]), dict(accepted=True), dict(work=0), dict(receipt="success")]:
+        check(obligation=dict(request, **extra), error="invalid_ir")
+    for key, value in [("format", "claimed"), ("version", 2), ("kind", "claimed-instrument"),
+                       ("expected_artifact", ""), ("expected_artifact", {}),
+                       ("expected_artifact", encoded(z).decode() + "x")]:
+        check(obligation=dict(request, **{key: value}))
+    for bad in [dict(input=dict(tag="bits", width=1), result=bit),
+                dict(input=bit, result=dict(tag="bits", width=1)),
+                dict(signature, extra=unit)]:
+        check(obligation=dict(request, expected_signature=bad))
+    for result in [dict(tag="bits", width=-1), dict(tag="bits", width=True),
+                   dict(tag="bits", width=4294967296), dict(tag="bit", extra=0),
+                   dict(tag="tuple", fields=[bit, unit]), dict(tag="pair", left=bit),
+                   dict(tag="unknown")]:
+        check(obligation=dict(request, actual_signature=dict(input=bit, result=result)), error="invalid_ir")
+    deep = unit
+    for _ in range(66):
+        deep = dict(tag="pair", left=unit, right=deep)
+    check(obligation=dict(request, expected_signature=dict(input=bit, result=deep)), error="invalid_ir")
+    check(obligation=dict(request, identity=dict(request["identity"], implementation="")), error="limit")
+    check(obligation=dict(request, identity=dict(request["identity"], matrix=[])), error="invalid_ir")
+    for data in [packet(encoded(z)), packet(encoded(z), b"\xff"),
+                 packet(encoded(z), encoded(request)) + b"x", packet(encoded(z), encoded(request))[:-1]]:
+        run([kernel, "--qirf-contract", VERSION], 1, data)
+    # A per-call contract does not turn request-free whole-root inspection into
+    # an external functional specification certificate.
+    output = run([kernel, "--qirf-native", VERSION], 0, packet(encoded(z)))
+    assert output.decode().splitlines()[3] == "0", output
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--binary", type=Path, default=ROOT / "target/debug/qleisli")
@@ -234,6 +369,7 @@ def main():
 
             test_control_requests(kernel, run)
             test_control_owner_requests(kernel, run)
+            test_instrument_requests(kernel, run)
 
             for command, extra in [("check", []), ("run", []), ("sample", ["--shots=64", "--seed=7"])]:
                 base = json.loads(run([binary, command, SOURCE, "--format=json", *extra]))

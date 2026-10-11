@@ -32,16 +32,16 @@ driver, input, library and response identities. Physical sizes in this driver
 do not establish complete source types or principal Observe effects. It is
 an unwired component, not a production contract gate or guarantee discharge.
 
-[ReferenceEquality.lean](ReferenceEquality.lean) independently defines the
+[the independent instrument reference](../../lean/Qleisli/Semantics/InstrumentEquality.lean) independently defines the
 complete hidden-history channel and its Choi coefficients. Its checked theorem
 derives equality of each public outcome map on arbitrary joint input/reference
 matrices, even with different hidden-history counts. The
 [proof record](proof-validation.json) retains the actual Lean 4.30.0 compilation
 and axiom output; only `propext`, `Classical.choice` and `Quot.sound` occur.
-This mathematical foundation is not yet connected to a production native
-instrument-comparison gate.
+The original experimental sources remain in Git history; the current proofs
+now live in the production Lean tree and connect to the native byte gate below.
 
-[NativeCoefficient.lean](NativeCoefficient.lean) connects the actual preparation
+[the coefficient bridge](../../lean/Qleisli/RawInstrumentEquality.lean) connects the actual preparation
 and comparison definitions to that independent reference: ordered public
 projection preserves the reconstructed matrices, each streamed scalar equals
 the complete complex coefficient sum, and successful comparison implies
@@ -52,7 +52,8 @@ and four axiom checks; only the same three standard Lean axioms occur.
 [Twelve small checked regressions](ComponentChecks.lean) cover split Kraus
 histories, zero outcomes, empty/malformed histories, arity/dimension/entry-count
 mismatches, noncanonical scalars and exhausted work. The proof runner uses the
-existing pinned project and removes its temporary modules on exit.
+existing pinned project, freshly compiles the production bridge, checks twelve
+axiom sets and removes its temporary outputs on exit.
 
 Both Lean packages were built and audited; the kernel root and native Main
 were freshly replayed. Existing scoped
@@ -71,7 +72,7 @@ this is not a proof that native IR independently recovers a source type.
 Factoring the existing reconstruction preserves its previous complete WorkM
 recipe, including failures and remaining work, by definitional equality.
 
-[OriginalGate.lean](OriginalGate.lean) proves that shared reconstruction denotes
+[the original-gate bridge](../../lean/Qleisli/QirfInstrumentContract.lean) proves that shared reconstruction denotes
 the original body and has complete Kraus sum. It connects original ordered
 result IDs to the independent full instrument, proves all compared original
 dimensions are retained, and derives exact equality on arbitrary finite joint
@@ -86,11 +87,21 @@ driver reads original QIRF bytes; it is not a public protocol definition.
 Malformed prefix trees reject before allocating more children than their
 remaining atoms can contain, keeping pending storage within the structural cap.
 
-The production request decoder and private paired handle, source identity and
-call-boundary integration in both adapters remain unimplemented. Complete source
-type preservation remains an open proof obligation.
-Rust suites, hosted completion CI, packaging and full release checks were not
-rerun for this unwired component. Source, decoder/native/runtime and realization
+The strict production decoder now carries both complete signatures, source
+identity and original expected QIRF text in the existing `--qirf-contract` mode.
+[The protocol contract](../../docs/src/reference/production-boundary.md#original-artifact-observing-instrument-requests)
+fixes its exact fields, bounds and refusals. Production byte acceptance is
+connected to both original meanings, complete Kraus sums and exact public
+outcome maps on arbitrary finite external references. The existing native
+verification runner includes its transport and small semantic regressions.
+The [native-wire record](native-wire-validation.json) retains 381 process checks,
+the unchanged 799 original decisions, fresh production proofs and audits,
+both toolchains' focused native tests and the two existing guarantee checks.
+
+The private paired Rust handle and source call-boundary integration in both
+adapters remain unimplemented. Complete source type preservation remains an
+open proof obligation. Rust suites, hosted completion CI, packaging and full
+release checks were not rerun for this native-only unit. Source, decoder/native/runtime and realization
 correspondence remain separate obligations. Issue #46 stays open.
 
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0.

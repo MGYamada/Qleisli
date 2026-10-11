@@ -171,6 +171,59 @@ validation record. These identity and proof checks do not admit a new guarantee,
 close S05, or establish source/compiler, deployed-binary, Rust rematerialization,
 target/runtime or quantitative Resource Safety claims.
 
+### Original-artifact observing instrument requests
+
+The version-paired `--qirf-contract` gate accepts `kind = "instrument"` in
+`qleisli.native-contract` version 1. Its exact fields are `format`, `version`,
+`kind`, `actual_signature`, `expected_signature`, `identity` and
+`expected_artifact`. `expected_artifact` is the original expected QIRF JSON as
+a UTF-8 string; the actual QIRF remains the original QLV1 body. Both complete
+graphs, selected roots and dependency evidence are freshly checked. Supplied
+matrices, receipts, success flags, missing fields and extra fields reject.
+The QLV1 framing, QIRF representation and previous request variants are unchanged.
+
+Each signature has exactly `input` and `result`. `input` is the existing QIRF
+basis tree. The complete result tree uses these exact objects:
+
+| Result | Fields |
+| --- | --- |
+| Ordinary Unit or Bit | `{"tag":"unit"}` or `{"tag":"bit"}` |
+| Ordinary Bits | `{"tag":"bits","width":N}`, with a u32 natural width, including zero |
+| Quantum owner | `{"tag":"quantum","basis":B}`, with the complete QIRF basis tree |
+| Pair | `{"tag":"pair","left":L,"right":R}` |
+| Tuple of at least three values | `{"tag":"tuple","fields":[...]}` |
+
+The signatures must agree as entire trees, including Unit, Bits<0>, zero-width
+quantum owners and product nodes. The ordered quantum owners and classical
+projection must match the original roots. Both bodies must have principal
+Observe effects; an Observe annotation on a pure body supplies no evidence.
+The first profile has one quantum input and no runtime classical inputs.
+Signatures are requested type data: native widths alone do not reconstruct
+or prove preservation of the source's full types.
+
+`identity` has exactly `implementation`, `specification` and `sources`, with
+each source containing exactly `path` and `text`. Existing name/path, 128-source
+and aggregate 1 MiB identity bounds apply. Result trees are bounded to depth 64
+and 4,096 nodes. Existing six-bit dense reconstruction, shared work, JSON and
+16 MiB transport limits apply; no equality tolerance is introduced.
+
+`Protocol.NativeContract.InstrumentAcceptance` retains the original decoded
+request, original expected text, fresh expected graph and continuous checking
+states. `Qleisli.NativeContract.instrument_meaning`, `check_sound` and
+`check_encoded_sound` connect success to both original-body instrument meanings,
+complete Kraus sums, untruncated dimensions and identical unnormalized public
+outcome maps on any joint matrix with a finite external reference. The independent
+reference in `Qleisli.Semantics.InstrumentEquality` sums all hidden histories;
+neither their count nor their labels are public outcomes.
+
+This native request does not yet implement the observing source overload of
+`apply_contract`. Its private Rust paired handle and call-boundary integration
+in both adapters remain open. It grants no observing Meaning, coherent control
+or adjoint access. Pure Meaning retains its exact phase rule. Request-free
+whole-root inspection still reports no independent requested meaning. Source,
+decoder, native compilation/runtime and emitted-artifact preservation remain
+separate obligations; these lemmas admit no constitutional guarantee.
+
 ## Public operations that confer no new acceptance
 
 | Operation | Scope |

@@ -1,13 +1,14 @@
 import Qleisli.Exact
 import QleisliKernel.Raw.InstrumentEquality
 import Qleisli.RawInstrumentDenotation
-import ReferenceEquality
+import Qleisli.Semantics.InstrumentEquality
 
 /-! Refinement of the actual streamed native coefficient computation to the
-independent complex meaning. This experiment is not a public acceptance gate
-or a source-preservation/constitutional discharge.
+independent complex meaning. Original-byte acceptance is connected in
+Qleisli.NativeContract; source preservation and constitutional discharge remain
+separate obligations.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
-namespace Qleisli.Experiments.InstrumentCoefficient
+namespace Qleisli.Raw.InstrumentEquality
 open QleisliKernel.Semantics.Exact QleisliKernel.Finite
 open QleisliKernel.Raw.InstrumentEquality
 open Qleisli.Semantics.Exact
@@ -188,10 +189,10 @@ noncomputable def operators (histories : List History) (outcome : List Bool)
 
 theorem choi_meaning (histories : List History) (outcome : List Bool) (rows cols : Nat)
     (row otherRow : Fin rows) (col otherCol : Fin cols) :
-    Qleisli.Experiments.InstrumentEquality.choi (operators histories outcome rows cols)
+    Qleisli.Semantics.InstrumentEquality.choi (operators histories outcome rows cols)
         (row,col) (otherRow,otherCol) =
       meaning histories outcome row.val col.val otherRow.val otherCol.val := by
-  unfold Qleisli.Experiments.InstrumentEquality.choi meaning
+  unfold Qleisli.Semantics.InstrumentEquality.choi meaning
   rw [← List.ofFn_getElem_eq_map, List.sum_ofFn]
   apply Finset.sum_congr rfl
   intro index _
@@ -204,14 +205,14 @@ theorem compare_instrument {R : Type} [Fintype R] [DecidableEq R]
     (rows cols results : Nat) (actual expected : List History) (work left : Nat)
     (ok : (QleisliKernel.Raw.InstrumentEquality.compare rows cols results actual expected).run work =
       (.ok (),left)) (rho : Matrix (Fin cols × R) (Fin cols × R) ℂ) :
-    (fun outcome => Qleisli.Experiments.InstrumentEquality.channel
+    (fun outcome => Qleisli.Semantics.InstrumentEquality.channel
       (operators actual outcome rows cols) rho) =
-    (fun outcome => Qleisli.Experiments.InstrumentEquality.channel
+    (fun outcome => Qleisli.Semantics.InstrumentEquality.channel
       (operators expected outcome rows cols) rho) := by
-  apply Qleisli.Experiments.InstrumentEquality.instrument_eq_of_choi_eq
+  apply Qleisli.Semantics.InstrumentEquality.instrument_eq_of_choi_eq
   intro outcome
   ext ⟨row,col⟩ ⟨otherRow,otherCol⟩
   rw [choi_meaning, choi_meaning]
   exact compare_meaning _ _ _ _ _ _ _ ok _ _ _ _ _ row.isLt col.isLt otherRow.isLt otherCol.isLt
 
-end Qleisli.Experiments.InstrumentCoefficient
+end Qleisli.Raw.InstrumentEquality

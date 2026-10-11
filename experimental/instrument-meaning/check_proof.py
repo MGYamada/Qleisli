@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the experimental native/reference bridge in a fresh temporary module root.
+"""Freshly compile the production instrument bridge and audit its axioms.
 
 Uses the existing pinned Lean project and build products, not a second toolchain
 or acceptance path. Temporary oleans are removed even on failure.
@@ -18,31 +18,31 @@ import time
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = Path(__file__).resolve().parent
-WRAPPER = '''import os,subprocess,sys
-env=dict(os.environ)
-env['LEAN_PATH']=sys.argv[1]+os.pathsep+env.get('LEAN_PATH','')
-sys.exit(subprocess.run(sys.argv[2:],env=env).returncode)
-'''
+
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--record', type=Path, required=True)
     args = parser.parse_args()
-    paths = [SOURCE / name for name in ('ReferenceEquality.lean', 'NativeCoefficient.lean', 'OriginalGate.lean', 'ComponentChecks.lean', 'check_proof.py')]
+    modules = ('Qleisli/Semantics/InstrumentEquality', 'Qleisli/RawInstrumentEquality',
+               'Qleisli/QirfInstrumentContract', 'Qleisli/NativeContract')
+    paths = [SOURCE / name for name in ('ComponentChecks.lean', 'check_proof.py')]
+    paths += [ROOT / 'lean' / (name+'.lean') for name in modules]
     paths += [ROOT / name for name in ('lean-kernel/QleisliKernel/Raw/InstrumentEquality.lean',
         'lean/Qleisli/Exact.lean', 'lean/Qleisli/Semantics/Exact.lean',
         'lean/Qleisli/RawInstrumentDenotation.lean', 'lean/Qleisli/Semantics/RawInstrument.lean',
         'lean-kernel/QleisliKernel/Qirf/InstrumentContract.lean',
         'lean-kernel/QleisliKernel/Semantics/InstrumentContract.lean',
         'lean-kernel/QleisliKernel/Raw/Instrument.lean',
+        'lean-kernel/Protocol/InstrumentContract.lean', 'lean-kernel/Protocol/NativeContract.lean',
         'lean/Qleisli/Semantics/Instrument.lean', 'lean/lean-toolchain', 'lean/lake-manifest.json')]
     def identities():
         return {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}
     before = identities()
     report = dict(format=1, status='running', recorded_utc=datetime.datetime.now(datetime.timezone.utc).isoformat(),
         source_sha256=before, commands=[],
-        scope='Actual streamed coefficient comparison and unwired original-QIRF gate refine independent complex instruments on arbitrary finite external references. Fresh reconstruction denotes the original body and has complete Kraus sum. No public wire/handle, source preservation, guarantee admission or full QS/PR/RS proof.')
+        scope='Actual streamed coefficient comparison and original-QIRF native byte gate refine independent complex instruments on arbitrary finite external references. Fresh reconstruction denotes the original body and has complete Kraus sum. No Rust paired handle, source preservation, native I/O correspondence, guarantee admission or full QS/PR/RS proof.')
     def run(command):
         started = time.monotonic()
         result = subprocess.run(command, cwd=ROOT / 'lean', capture_output=True, text=True, timeout=180)
@@ -53,24 +53,25 @@ def main():
             raise RuntimeError(result.stdout+result.stderr)
         return result.stdout
     try:
-        run(['lake', 'build', 'Qleisli.Exact', 'Qleisli.RawInstrumentDenotation'])
+        run(['lake', 'build', 'Qleisli.NativeContract'])
         with tempfile.TemporaryDirectory(prefix='qleisli-instrument-proofs-') as directory:
             project = Path(directory)
-            for name in ('ReferenceEquality', 'NativeCoefficient', 'OriginalGate'):
-                run(['lake', 'env', sys.executable, '-c', WRAPPER, directory, 'lean',
-                    '-DwarningAsError=true', '--root='+str(SOURCE),
-                    '-o', str(project / (name+'.olean')), str(SOURCE / (name+'.lean'))])
+            for name in modules:
+                run(['lake', 'env', 'lean', '-DwarningAsError=true', '--root='+str(ROOT / 'lean'),
+                    '-o', str(project / (name.rsplit('/', 1)[-1]+'.olean')),
+                    str(ROOT / 'lean' / (name+'.lean'))])
             audit = project / 'Audit.lean'
-            audit.write_text('import OriginalGate\n'+''.join(
-                '#print axioms Qleisli.Experiments.InstrumentCoefficient.'+name+'\n'
+            audit.write_text('import Qleisli.NativeContract\n'+''.join(
+                '#print axioms Qleisli.Raw.InstrumentEquality.'+name+'\n'
                 for name in ('prepare_reference', 'coefficient_meaning', 'compare_meaning', 'compare_instrument'))+''.join(
-                '#print axioms Qleisli.Experiments.OriginalInstrumentGate.'+name+'\n'
-                for name in ('reconstruct_denotes', 'reconstruct_kraus_complete', 'prepare_projected', 'check_dimensions', 'check_instrument')))
-            axioms = run(['lake', 'env', sys.executable, '-c', WRAPPER, directory, 'lean',
-                '-DwarningAsError=true', '--root='+directory, str(audit)])
+                '#print axioms Qleisli.Qirf.InstrumentContract.'+name+'\n'
+                for name in ('reconstruct_denotes', 'reconstruct_kraus_complete', 'prepare_projected', 'check_dimensions', 'check_instrument'))+''.join(
+                '#print axioms Qleisli.NativeContract.'+name+'\n'
+                for name in ('instrument_meaning', 'check_sound', 'check_encoded_sound')))
+            axioms = run(['lake', 'env', 'lean', '-DwarningAsError=true', str(audit)])
             report['axiom_output'] = axioms
             lists = re.findall(r'depends on axioms: \[(.*?)\]', axioms, re.S)
-            assert len(lists) == 9, 'missing theorem axiom output'
+            assert len(lists) == 12, 'missing theorem axiom output'
             allowed = {'propext', 'Classical.choice', 'Quot.sound'}
             assert all({name.strip() for name in names.split(',')} <= allowed for names in lists), 'unexpected axiom'
             run(['lake', 'env', 'lean', '-DwarningAsError=true', str(SOURCE / 'ComponentChecks.lean')])

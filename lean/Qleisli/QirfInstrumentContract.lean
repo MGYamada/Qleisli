@@ -1,11 +1,11 @@
-import NativeCoefficient
+import Qleisli.RawInstrumentEquality
 import QleisliKernel.Qirf.InstrumentContract
 
-/-! Original-QIRF gate refinement, still unwired from public acceptance.
+/-! Original-QIRF gate refinement for exact observing contracts.
 All premises below are actual executions, not supplied matrices or receipts.
 No source/type-lowering, decoder, runtime or constitutional discharge is claimed.
 Copyright 2026 Masahiko G. Yamada. SPDX-License-Identifier: Apache-2.0 -/
-namespace Qleisli.Experiments.OriginalInstrumentGate
+namespace Qleisli.Qirf.InstrumentContract
 open QleisliKernel.Semantics.Exact QleisliKernel.Semantics.Observation QleisliKernel.Finite
 open Qleisli.Semantics.Exact QleisliKernel.Qirf.InstrumentContract
 open scoped BigOperators Matrix
@@ -89,16 +89,16 @@ theorem prepare_projected (outputs : List Nat)
     (prepared : List QleisliKernel.Raw.InstrumentEquality.History) (work left : Nat)
     (ok : (QleisliKernel.Raw.InstrumentEquality.prepare outputs original).run work = (.ok prepared,left))
     (outcome : List Bool) (row col otherRow otherCol : Nat) :
-    InstrumentCoefficient.meaning prepared outcome row col otherRow otherCol =
+    Qleisli.Raw.InstrumentEquality.meaning prepared outcome row col otherRow otherCol =
       projected outputs original outcome row col otherRow otherCol := by
-  have relation := InstrumentCoefficient.prepare_reference _ _ _ _ _ ok
+  have relation := Qleisli.Raw.InstrumentEquality.prepare_reference _ _ _ _ _ ok
   clear ok
   induction relation with
   | nil => rfl
   | @cons a b as bs relates rest ih =>
-    simp only [InstrumentCoefficient.meaning,projected,List.map_cons,List.sum_cons] at ih ⊢
+    simp only [Qleisli.Raw.InstrumentEquality.meaning,projected,List.map_cons,List.sum_cons] at ih ⊢
     rw [ih]
-    simp only [InstrumentCoefficient.contribution,← relates.1,relates.2,Option.some.injEq]
+    simp only [Qleisli.Raw.InstrumentEquality.contribution,← relates.1,relates.2,Option.some.injEq]
 
 noncomputable def operators (outputs : List Nat)
     (histories : List QleisliKernel.Raw.Instrument.History) (outcome : List Bool)
@@ -108,9 +108,9 @@ noncomputable def operators (outputs : List Nat)
 
 theorem choi_projected (outputs : List Nat) (histories : List QleisliKernel.Raw.Instrument.History)
     (outcome : List Bool) (rows cols : Nat) (row otherRow : Fin rows) (col otherCol : Fin cols) :
-    InstrumentEquality.choi (operators outputs histories outcome rows cols) (row,col) (otherRow,otherCol) =
+    Qleisli.Semantics.InstrumentEquality.choi (operators outputs histories outcome rows cols) (row,col) (otherRow,otherCol) =
       projected outputs histories outcome row col otherRow otherCol := by
-  unfold InstrumentEquality.choi projected
+  unfold Qleisli.Semantics.InstrumentEquality.choi projected
   rw [← List.ofFn_getElem_eq_map,List.sum_ofFn]
   apply Finset.sum_congr rfl
   intro index _
@@ -123,7 +123,7 @@ private theorem validate_dimensions (rows cols results : Nat)
     ∀ history ∈ histories, history.operator.rows = rows ∧ history.operator.cols = cols := by
   obtain ⟨_,middle,_,rest⟩ := bind_success _ _ _ _ _ ok
   intro history member
-  obtain ⟨before,after,h⟩ := InstrumentCoefficient.forM_member _ _ _ _ rest history member
+  obtain ⟨before,after,h⟩ := Qleisli.Raw.InstrumentEquality.forM_member _ _ _ _ rest history member
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,_,h⟩ := bind_success _ _ _ _ _ h
   obtain ⟨_,_,dimensions,_⟩ := bind_success _ _ _ _ _ h
@@ -135,7 +135,7 @@ private theorem prepare_dimensions (outputs : List Nat)
     (ok : (QleisliKernel.Raw.InstrumentEquality.prepare outputs original).run work = (.ok prepared,left))
     (valid : ∀ history ∈ prepared, history.operator.rows = rows ∧ history.operator.cols = cols) :
     ∀ history ∈ original, history.operator.rows = rows ∧ history.operator.cols = cols := by
-  have relation := InstrumentCoefficient.prepare_reference _ _ _ _ _ ok
+  have relation := Qleisli.Raw.InstrumentEquality.prepare_reference _ _ _ _ _ ok
   clear ok
   induction relation with
   | nil => simp
@@ -180,22 +180,22 @@ theorem check_instrument {R : Type} [Fintype R] [DecidableEq R]
       (.ok checked,left))
     (rho : Matrix (Fin (2^checked.actualInstrument.structureCheck.prepared.inputBits) × R)
       (Fin (2^checked.actualInstrument.structureCheck.prepared.inputBits) × R) ℂ) :
-    (fun outcome => InstrumentEquality.channel
+    (fun outcome => Qleisli.Semantics.InstrumentEquality.channel
       (operators checked.actual.program.classicalOutputs checked.actualInstrument.histories outcome
         (2^checked.actualInstrument.structureCheck.state.quantum.frame.length)
         (2^checked.actualInstrument.structureCheck.prepared.inputBits)) rho) =
-    (fun outcome => InstrumentEquality.channel
+    (fun outcome => Qleisli.Semantics.InstrumentEquality.channel
       (operators checked.expected.program.classicalOutputs checked.expectedInstrument.histories outcome
         (2^checked.actualInstrument.structureCheck.state.quantum.frame.length)
         (2^checked.actualInstrument.structureCheck.prepared.inputBits)) rho) := by
   obtain ⟨accepted⟩ := check_acceptance _ _ _ _ _ _ _ _ _ _ ok
-  apply InstrumentEquality.instrument_eq_of_choi_eq
+  apply Qleisli.Semantics.InstrumentEquality.instrument_eq_of_choi_eq
   intro outcome
   ext ⟨row,col⟩ ⟨otherRow,otherCol⟩
   rw [choi_projected,choi_projected,
     ← prepare_projected _ _ _ _ _ accepted.actualPrepared,
     ← prepare_projected _ _ _ _ _ accepted.expectedPrepared]
-  exact InstrumentCoefficient.compare_meaning _ _ _ _ _ _ _ accepted.compared
+  exact Qleisli.Raw.InstrumentEquality.compare_meaning _ _ _ _ _ _ _ accepted.compared
     _ _ _ _ _ row.isLt col.isLt otherRow.isLt otherCol.isLt
 
-end Qleisli.Experiments.OriginalInstrumentGate
+end Qleisli.Qirf.InstrumentContract

@@ -6,15 +6,17 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
-- Add an unwired Mathlib-free exact instrument-coefficient comparator for the
+- Add a Mathlib-free exact instrument-coefficient comparator for the
   adopted observing `apply_contract` design. Stream complete outcome-indexed
   Choi coefficients under existing limits; prove its complex/reference meaning
-  and ordered projection in a bounded experiment. Preserve all public request
-  modes and pure Meaning phase rules; source integration remains unfinished.
-  Add the unwired paired original-QIRF gate with complete requested signatures,
+  and ordered projection. Preserve existing request variants and pure Meaning
+  phase rules; source integration remains unfinished.
+  Add the paired original-QIRF gate with complete requested signatures,
   principal Observe checks, retained zero-width owners and fresh graph evidence.
   Prove its original instrument/reference comparison and complete Kraus sum;
-  public protocol, paired handle and source call-boundary integration remain open.
+  connect strict native `kind = "instrument"` byte acceptance to both original
+  meanings and exact outcome maps on arbitrary finite external references.
+  The private paired handle and source call-boundary integration remain open.
 
 - Add the adopted bounded `meaning M: A = reference(f)` form for closed
   principal-Unitary endomorphisms. Mix reference and monomial targets through
