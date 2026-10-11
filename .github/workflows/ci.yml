@@ -275,8 +275,7 @@ jobs:
           python3 -m venv /tmp/qleisli-interop-validation
           /tmp/qleisli-interop-validation/bin/pip install -r scripts/interop-validation-requirements.txt
           /tmp/qleisli-interop-validation/bin/pip install -r scripts/qir-reader-requirements.txt
-          /tmp/qleisli-interop-validation/bin/pip install setuptools==80.9.0
-          /tmp/qleisli-interop-validation/bin/pip install --no-build-isolation --no-deps ./python
+          /tmp/qleisli-interop-validation/bin/pip install --no-deps ./python
       - run: cargo +1.98.1 build --example interop --bin qleisli
       - name: Independently parse OpenQASM and verify QIR with LLVM
         run: /tmp/qleisli-interop-validation/bin/python scripts/test_interop_external.py target/debug/examples/interop --llvm-as llvm-as-18 --opt opt-18

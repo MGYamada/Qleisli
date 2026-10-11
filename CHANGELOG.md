@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Update the Python build backend to setuptools 83.0.0. Build the installed
+  interop test package in isolation using its declared build requirements,
+  so CI tests the backend selected by dependency updates.
+
 ## 0.3.0-alpha — 2026-10-11
 
 Development snapshot under the explicitly approved alpha scope (#351), not
