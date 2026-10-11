@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import textwrap
 import unittest
 from unittest.mock import patch
 
@@ -516,16 +517,33 @@ class SyntheticRelease(unittest.TestCase):
         self.assertIn('--record-constitution',text)
         self.assertIn('inputs.release_readiness',final)
 
-    def test_reduced_corpus_mode_cannot_replace_release_or_manual_full_validation(self):
+    def test_corpus_runs_representative_checks_for_every_ci_profile(self):
         text=(ROOT/'.github/workflows/ci.yml').read_text()
-        block=text.split('      - name: Bounded corpus checks')[1].split('      - name: Retain actual corpus mode')[0]
-        for condition in ("startsWith(github.ref, 'refs/tags/')", "startsWith(github.head_ref, 'codex/release-')",
-                          "startsWith(github.head_ref, 'release/')", "github.event_name == 'workflow_dispatch'",
-                          "inputs.validation == 'full'", "inputs.release_readiness"):
-            self.assertIn(condition,block)
-        self.assertIn('mode=--quick',block)
-        self.assertIn('if [[ "$CORPUS_FULL" == \'true\' ]]; then\n            mode=--exhaustive',block)
-        self.assertIn('"$mode" --report "$RUNNER_TEMP/corpus.json"',block)
+        block=text.split('        id: corpus\n')[1].split('      - name: Retain actual corpus mode')[0]
+        self.assertNotIn('CORPUS_FULL',block)
+        command=textwrap.dedent(block.split('        run: |\n')[1])
+        with tempfile.TemporaryDirectory(prefix='qleisli-corpus-ci-') as directory:
+            root=Path(directory)
+            arguments=root/'arguments.txt'
+            python=root/'python3'
+            python.write_text('#!/bin/sh\nprintf \'%s\\n\' "$@" > "$CORPUS_TEST_ARGS"\n')
+            python.chmod(0o755)
+            for event, ref, head, full in (
+                ('workflow_dispatch','refs/heads/codex/v0.3.0-foundation','', 'false'),
+                ('push','refs/tags/v0.3.0','', 'true'),
+                ('pull_request','refs/pull/1/merge','codex/release-0.3.0', 'true'),
+                ('pull_request','refs/pull/1/merge','release/0.3.0', 'true'),
+                ('workflow_dispatch','refs/heads/main','', 'true'),
+            ):
+                with self.subTest(event=event,ref=ref,head=head):
+                    env=dict(os.environ,PATH=directory+os.pathsep+os.environ['PATH'],
+                             RUNNER_TEMP=directory,CORPUS_TEST_ARGS=str(arguments),
+                             GITHUB_EVENT_NAME=event,GITHUB_REF=ref,GITHUB_HEAD_REF=head,
+                             CORPUS_FULL=full,INPUT_VALIDATION='full',INPUT_RELEASE_READINESS='true')
+                    subprocess.run(['bash','-e','-c',command],env=env,check=True,capture_output=True)
+                    self.assertEqual(arguments.read_text().splitlines(),[
+                        'scripts/check_input_corpus.py','target/debug/qleisli','--quick',
+                        '--report',str(root/'corpus.json')])
         retained=text.split('      - name: Retain actual corpus mode')[1].split('      - run:')[0]
         self.assertIn('if: always()',retained)
         self.assertIn('corpus-${{ github.sha }}-${{ github.run_attempt }}',retained)

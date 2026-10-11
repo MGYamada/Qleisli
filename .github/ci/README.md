@@ -266,21 +266,22 @@ different evidence and must be reported separately.
 
 ## Corpus runtime visibility
 
-The exhaustive finite corpus checks every complex matrix entry through separate
-X/Y interference drivers. A unitary case of dimension `d` requires `d + 2*d*d`
-drivers, plus its shipped entry. Each driver retains source checking and a fresh
-native acceptance decision; repeated CLI/setup work is part of the runtime.
-The four case workers do not remove that cost.
+At the maintainer's request, all hosted corpus validation uses `--quick`,
+including Issue-completion checks, release tags, release PRs, manual full
+validation and release readiness. Exhaustive corpus execution is no longer a
+CI or release requirement. Other full-validation, proof, package, installation
+and constitutional gates retain their existing scope.
 
-At the maintainer's request, test-lane completion validation uses `--quick`: all 87
+The representative corpus run checks all 87
 shipped entries, both X/Y measurements of 20 deterministic representative entries
 stratified by source and existing qubit width, four selected type-correct semantic
 faults and all rejection cases. It omits the other matrix entries, all additional
 protocol probes and 59 semantic faults. The report explicitly names this reduced
 mode, selected entries and omitted faults; its success is not exhaustive coverage.
 Each actual execution still checks source declarations and obtains fresh native
-acceptance. Releases, release PRs and manually requested full/release validation
-retain `--exhaustive`; ordinary CI success alone is insufficient release evidence.
+acceptance. The standalone oracle's explicit `--exhaustive` option remains
+available for focused historical replay; CI never selects it. A representative
+corpus pass alone is insufficient release evidence.
 
 The checker writes case starts, progress every 64 completed semantic probes,
 elapsed monotonic time and completion/failure to stderr with immediate flushing.

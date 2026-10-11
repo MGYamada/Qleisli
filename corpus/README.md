@@ -121,14 +121,19 @@ cargo build --bin qleisli
 cargo run --bin qleisli -- run corpus/quantum_katas/teleport
 cargo run --bin qleisli -- run corpus/pennylane_demos/qaoa_maxcut
 python3 scripts/check_input_corpus.py
-python3 scripts/check_input_corpus.py target/debug/qleisli --exhaustive
+python3 scripts/check_input_corpus.py target/debug/qleisli --quick
 ```
 
 The metadata-only command checks the closed source list, permission records,
 attribution, hashes and authoring snapshots without network access. The last
-command checks all finite unitary matrix entries and protocol instruments.
-Without `--exhaustive`, execution uses all computational inputs plus selected
-interference entries; it is a smaller regression run, not the full matrix check.
+command runs the same representative checks used by every CI profile, including
+release and manual full validation: all shipped entries, X/Y probes for 20
+deterministic representative entries, four semantic faults and all rejection
+cases. Its report identifies selected entries and omitted faults; it does not
+claim full matrix or instrument coverage. Exhaustive corpus execution is no
+longer a CI or release requirement. The standalone `--exhaustive` option remains
+available for focused historical replay. Without either flag, execution uses
+all computational inputs plus selected interference entries.
 A single case can be selected with `--case qualtran/add2`.
 
 Language migrations retain the original authoring sessions and observations.

@@ -6,6 +6,10 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Use representative corpus validation for every CI profile, including release
+  and manual full validation. Remove automatic exhaustive corpus execution;
+  retain selected-probe and omitted-fault reporting and fresh native acceptance.
+
 - Add a Mathlib-free exact instrument-coefficient comparator for the
   adopted observing `apply_contract` design. Stream complete outcome-indexed
   Choi coefficients under existing limits; prove its complex/reference meaning
