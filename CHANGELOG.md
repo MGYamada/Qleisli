@@ -6,6 +6,12 @@ development milestones from the scope of their evidence.
 
 ## Unreleased
 
+- Add the adopted bounded `meaning M: A = reference(f)` form for closed
+  principal-Unitary endomorphisms. Mix reference and monomial targets through
+  compose/tensor, retaining original artifacts, dependencies and source-bound
+  native receipts in both concrete adapters. Preserve exact phase, Unit owners
+  and axis order; keep the public FiniteMeaning accessor monomial-only.
+
 - Repair native comparison generators after the isometry vocabulary migration:
   map preserved wire effect tags explicitly to Rust variants and check the
   decoder's exact constructor set, including quantum Unit packing. Resolve

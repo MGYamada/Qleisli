@@ -1980,7 +1980,7 @@ pub(super) fn lower_with_checked_meanings(
     let operations = check
         .leaves
         .iter()
-        .map(|(key, leaf)| NativeOperation {
+        .map(|(key, leaf, _)| NativeOperation {
             key: key.clone(),
             leaf,
         })

@@ -3,7 +3,7 @@
   "version": 2,
   "authority": "Lean",
   "external_schemas_enabled": false,
-  "surface_sha256": "50e52463c819fe7d86e48e3ada9ce7c305cb58605a5c943dfb5701ce8ed32459",
+  "surface_sha256": "e520e363ed89b3627e1c4d4a57a4f7d575ce2c5c12d18d0430d977c197e6b58c",
   "groups": [
     {
       "id": "raw-core",
@@ -100,7 +100,8 @@
       "evidence": [
         "tests/meaning_evidence.rs",
         "lean-kernel/QleisliKernel/Semantics/ControlAccess.lean",
-        "lean/Qleisli/ControlAccess.lean"
+        "lean/Qleisli/ControlAccess.lean",
+        "tests/reference_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -175,7 +176,8 @@
         "tests/axis_routing_boundary.rs",
         "tests/rust_boundary_diagnostics.rs",
         "tests/selected_source_cli.rs",
-        "tests/fixtures/authoring_sessions/closure-capture-v030/README.md"
+        "tests/fixtures/authoring_sessions/closure-capture-v030/README.md",
+        "tests/reference_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -778,7 +780,8 @@
       "evidence": [
         "tests/sized_source.rs",
         "tests/ordinary_booleans.rs",
-        "tests/basis_polymorphism.rs"
+        "tests/basis_polymorphism.rs",
+        "tests/reference_meanings.rs"
       ],
       "proof_gates": [
         "S05-C1",
@@ -3156,7 +3159,8 @@
             "pub fn check_finite_meaning",
             "pub struct CheckedSourceMeanings",
             "program.checked.interface(definition.original).statics",
-            "program.meaning_targets[&id].finite(span)?",
+            "program.meaning_targets[&id].expression(span)?",
+            "target.finite()",
             "budget",
             "OperationSite::Step(caller, step)",
             "operation.meanings.iter()",
@@ -3230,12 +3234,41 @@
             "source.has_operation_meanings()",
             ".check_operation_meanings("
           ]
+        },
+        {
+          "path": "src/frontend/meaning.rs",
+          "markers": [
+            "pub(super) fn materialize(",
+            "Node::Reference",
+            "FunctionEvidence::check_retained_with_kernel",
+            "original reference artifact is absent"
+          ]
         }
       ],
       "tests": [
         {
           "path": "src/frontend/specialize/raw.rs",
           "test": "control_audit_collects_new_meanings_in_the_expanded_original_graph"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "reference_operation_bindings_retain_requests_in_raw_and_hierarchy"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "mixed_composition_and_tensor_keep_order_and_low_axes"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "scalar_unit_reference_keeps_exact_phase_and_zero_axis_owner"
+        },
+        {
+          "path": "tests/reference_meanings.rs",
+          "test": "reference_does_not_erase_unused_generic_or_zero_repeat_lying_contracts"
+        },
+        {
+          "path": "src/frontend/specialize/raw/contracts.rs",
+          "test": "reference_operation_replay_rejects_equal_matrix_receipt_substitution"
         },
         {
           "path": "tests/selected_function_contracts.rs",
@@ -3370,11 +3403,11 @@
           "test": "native_replay_refuses_h_on_control_and_preserves_unit_scalar_phase"
         }
       ],
-      "entry_path": "RawSourceProposal::check_finite_meaning",
-      "checked_artifact": "Actual QIRF source proposal bytes, exact requested finite matrix/boundary and immutable retained source-step program",
-      "checker": "Kernel.check_leaf via existing Protocol.NativeContract.check, followed by Rust raw/preservation::validate",
-      "proof_scope": "The existing NativeContract leaf theorems bind the original body/request, complete unary interface and exact finite operator. Source-step replay is an independent Rust check; no AST-to-step theorem is supplied.",
-      "gaps": "No generic Op<A,M> or unused-provider enforcement, general AST/source preservation, native compiler/decoder/runtime proof or quantitative RS. Source/request borrowing protects host identity, not a constitutional guarantee."
+      "entry_path": "ElaboratedProgram::check_function_contracts, ElaboratedProgram::check_operation_meanings and RawSourceProposal::check_finite_meaning",
+      "checked_artifact": "Actual QIRF source proposal and dependency bytes, exact requested finite boundary and monomial matrix or original reference artifact, and immutable retained source-step program",
+      "checker": "Fresh FunctionEvidence/MeaningEvidence equations and Kernel.check_leaf through existing native contract checks, followed by independent Rust source-step replay",
+      "proof_scope": "Existing native finite/function contract theorems bind original implementation/request artifacts and dependencies, complete interfaces and exact operators. Both adapters check closed operation bindings, including unused and zero-count providers. Source-step replay is an independent Rust check; no AST-to-step theorem is supplied.",
+      "gaps": "Unclosed generic contracts, general hierarchical operator closure, general AST/source preservation, native compiler/decoder/runtime proof and quantitative RS remain separate obligations. Retained source/request identity and finite reference checks are not a constitutional guarantee."
     }
   ]
 }

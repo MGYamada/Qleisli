@@ -122,6 +122,61 @@ struct Argument<'a> {
     atoms: Vec<Atom>,
 }
 
+// Native decoding issues fresh proof identities. Compare the complete retained
+// pair/dependency snapshots at an independently selected source site instead.
+fn same_steps(
+    actual: &[crate::ir::CircuitStep],
+    expected: &[crate::ir::CircuitStep],
+    budget: &mut crate::contract::exact::Budget,
+    site: Site<'_>,
+) -> Result<bool> {
+    if actual.len() != expected.len() {
+        return Ok(false);
+    }
+    for (actual, expected) in actual.iter().zip(expected) {
+        if actual.controls != expected.controls {
+            return Ok(false);
+        }
+        match (&actual.action, &expected.action) {
+            (
+                CircuitAction::Contract {
+                    indices: a,
+                    evidence,
+                    adjoint: d,
+                },
+                CircuitAction::Contract {
+                    indices: b,
+                    evidence: required,
+                    adjoint: e,
+                },
+            ) => {
+                budget
+                    .charge(evidence.snapshot_key().len() + required.snapshot_key().len())
+                    .map_err(|e| site.error("limit", e.to_string()))?;
+                if a != b
+                    || d != e
+                    || evidence
+                        .check_binding(
+                            required.signature(),
+                            required.identity(),
+                            required.implementation(),
+                            required.specification(),
+                        )
+                        .is_err()
+                {
+                    return Ok(false);
+                }
+            }
+            (CircuitAction::Contract { .. }, _) | (_, CircuitAction::Contract { .. }) => {
+                return Ok(false);
+            }
+            (a, b) if a != b => return Ok(false),
+            _ => {}
+        }
+    }
+    Ok(true)
+}
+
 struct Replay<'a, 'b> {
     source: &'a ElaboratedProgram,
     raw: &'a RawProgram,
@@ -135,10 +190,7 @@ struct Replay<'a, 'b> {
     tokens: BTreeSet<TokenId>,
     wires: BTreeSet<WireId>,
     live: BTreeMap<TokenId, Arc<[WireId]>>,
-    meanings: &'a [(
-        super::super::elaborate::OperationKey,
-        crate::interchange::finite_leaf::CheckedUnitaryLeaf,
-    )],
+    meanings: &'a [super::CheckedMeaning],
 }
 
 impl Replay<'_, '_> {
@@ -290,7 +342,9 @@ impl Replay<'_, '_> {
             else {
                 return Err(site.invalid("Raw program omits the source inverse action"));
             };
-            if input != target_token || steps != &expected.steps {
+            if input != target_token
+                || !same_steps(steps, &expected.steps, self.control_work, site)?
+            {
                 return Err(
                     site.invalid("Raw inverse differs from the original ordered source action")
                 );
@@ -337,7 +391,7 @@ impl Replay<'_, '_> {
         else {
             return Err(site.invalid("Raw control omits its conditional exact action"));
         };
-        if *input != joined || steps != &expected.steps {
+        if *input != joined || !same_steps(steps, &expected.steps, self.control_work, site)? {
             return Err(
                 site.invalid("Raw controlled action changes phase, axes or original provider")
             );
@@ -1225,7 +1279,7 @@ impl Replay<'_, '_> {
         self.charge(meanings.len(), site)?;
         if !meanings.is_empty() {
             let key = operation.key();
-            for (_, leaf) in meanings.iter().filter(|(required, _)| *required == key) {
+            for (_, leaf, _) in meanings.iter().filter(|(required, _, _)| *required == key) {
                 self.meaning_interval(operation, arguments, &outputs, first, leaf, site)?;
             }
         }
@@ -1326,6 +1380,64 @@ impl Replay<'_, '_> {
         depth: usize,
         site: Site<'_>,
     ) -> Result<Vec<Atom>> {
+        if let Some(required) = self.meanings.iter().find_map(|(key, _, receipt)| {
+            (*key == operation.key())
+                .then_some(receipt.as_ref())
+                .flatten()
+        }) {
+            let [argument] = arguments else {
+                return Err(site.invalid("reference Meaning changes its unary argument"));
+            };
+            let [Atom::Quantum(token, wires)] = argument.atoms.as_slice() else {
+                return Err(site.invalid("reference Meaning loses its original owner"));
+            };
+            if argument
+                .ty
+                .quantum_basis()
+                .and_then(super::finite_basis)
+                .as_ref()
+                != Some(required.signature())
+            {
+                return Err(site.invalid("reference Meaning changes its exact basis tree"));
+            }
+            let Some(RawOp::ApplyUnitary {
+                input,
+                output,
+                steps,
+            }) = self.raw.operations.get(self.cursor)
+            else {
+                return Err(site.invalid("Raw program omits its reference Meaning application"));
+            };
+            let [actual] = steps.as_slice() else {
+                return Err(site.invalid("reference Meaning has a different original interval"));
+            };
+            let crate::ir::CircuitAction::Contract {
+                indices,
+                evidence,
+                adjoint,
+            } = &actual.action
+            else {
+                return Err(site.invalid("reference Meaning receipt was replaced"));
+            };
+            if input != token
+                || !actual.controls.is_empty()
+                || *adjoint
+                || indices.iter().copied().ne(0..wires.len())
+            {
+                return Err(
+                    site.invalid("reference Meaning changes original owner, direction or axes")
+                );
+            }
+            evidence.check_binding(required.signature(), required.identity(), required.implementation(), required.specification())
+                .map_err(|_| site.invalid("reference Meaning substitutes its original implementation, independent request or dependencies"))?;
+            let output = *output;
+            if self.live.remove(token).as_ref() != Some(wires) {
+                return Err(site.invalid("reference Meaning consumes an unavailable owner"));
+            }
+            let output = self.introduce_owner(output, wires, false, site)?;
+            self.cursor += 1;
+            return Ok(vec![output]);
+        }
         if let Some(id) = operation.definition() {
             let definition =
                 self.source.definitions().get(id).ok_or_else(|| {
@@ -1811,10 +1923,7 @@ pub(super) fn validate_subject_with_meanings(
     raw: &RawProgram,
     kernel: Option<&crate::interchange::native::Kernel>,
     control_work: &mut crate::contract::exact::Budget,
-    meanings: &[(
-        super::super::elaborate::OperationKey,
-        crate::interchange::finite_leaf::CheckedUnitaryLeaf,
-    )],
+    meanings: &[super::CheckedMeaning],
 ) -> Result<()> {
     let definition = source
         .definitions()
@@ -2157,6 +2266,7 @@ mod tests {
         let root = &source.definitions()[source.root()];
         let mut emitter = super::super::Emitter {
             source: &source,
+            meanings: &[],
             raw: crate::frontend::raw_state::RawState::new(),
             calls: 0,
             cells: MAX_CELLS - 1,

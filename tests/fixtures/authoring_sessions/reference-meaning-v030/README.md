@@ -79,3 +79,41 @@ covering all 21 Raw constructors. Earlier failed checks and unattested compiler
 labels remain disclosed. These local results do not constitute a full CI,
 release, source-preservation or constitutional-discharge receipt. The recorded
 times include concurrent execution and are not a performance comparison.
+
+## Adopted reference form and local implementation
+
+The maintainer adopted the concrete `reference(f)` proposal in
+[#46](https://github.com/MGYamada/Qleisli/issues/46#issuecomment-6103631623).
+The historical candidate notices and six first observations above remain
+unchanged. The subsequent implementation supports closed principal-Unitary
+endomorphisms, including mixed reference/monomial compose and tensor targets.
+Original source, request artifacts and dependency receipts remain attached;
+even a reference to identity stays outside the monomial-only public accessor.
+
+Three appended CLI observations use the unchanged first candidate. The
+[ordinary project check](observations/candidate-project-after.json) now reaches
+the existing closed-classical-main restriction instead of a parser refusal.
+The [selected Raw check](observations/candidate-raw-after.json) and
+[selected hierarchy check](observations/candidate-hierarchy-after.json) succeed.
+Their existing scope disclosures remain: neither reports verified source
+meaning or supplies an independent whole-root user request.
+
+The separate [reference validation record](reference-validation.json) binds
+the actual Rust 1.99.0 and MSRV 1.85.0 executables and checked source files.
+Each passed 451 tests and all-target Clippy, with seven existing ignores and
+all 4,000 ownership cases retained. Ten reference tests compare literal H,
+mixed phase/axis actions and Unit scalar phase, check both adapters, and reject
+wrong effects, types, cycles, unused generic and zero-count contracts. An
+internal mutation test also rejects a genuine equal-matrix receipt with a
+different original implementation through direct, inverse and controlled uses.
+
+The first broad runs failed only when the sandbox denied `ps` in the process
+cleanup test; their logs remain recorded. The same full commands succeeded
+with process-inspection permission, without changing tests or implementation.
+Rust 1.99.0 also reported a local `rust-objcopy`/libLLVM debug-strip warning;
+compilation, tests and Clippy still completed. Test-authoring corrections are
+disclosed separately from semantic counterexamples. These are local bounded
+checks, not a new guarantee or #46 completion: instrument Meaning, exact small
+QFT specifications and general same-basis matrix/composite hierarchy equality
+remain separate obligations. Generic QFT implementation and general arrows
+remain outside the goal.

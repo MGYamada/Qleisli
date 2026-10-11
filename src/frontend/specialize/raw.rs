@@ -23,7 +23,11 @@ const MAX_DEPTH: usize = 16;
 const MAX_CELLS: usize = 100_000;
 const MAX_LIVE_QUBITS: usize = 16;
 
-pub(super) type CheckedMeaning = (super::elaborate::OperationKey, CheckedUnitaryLeaf);
+pub(super) type CheckedMeaning = (
+    super::elaborate::OperationKey,
+    CheckedUnitaryLeaf,
+    Option<Arc<crate::contract::FunctionEvidence>>,
+);
 
 #[derive(Clone, Debug)]
 enum OperationSite {
@@ -106,25 +110,15 @@ impl CheckedSourceMeanings<'_> {
                 "source Meaning budget exceeds the shared exact-work ceiling",
             ));
         }
-        let mut proposal = lower_inner(self.source, self.source.root(), None, None, None)?;
-        budget
-            .charge(proposal.payload().len())
-            .map_err(|error| Error::new("limit", Span::default(), error.to_string()))?;
-        let accepted = kernel
-            .accept(proposal.proposal())
-            .map_err(|error| Error::new(error.code, Span::default(), error.to_string()))?;
-        budget
-            .charge(accepted.native_exact_work())
-            .map_err(|error| Error::new("limit", Span::default(), error.to_string()))?;
-        preservation::validate_subject_with_meanings(
+        let mut proposal = lower_inner(
             self.source,
             self.source.root(),
             None,
-            accepted.raw(),
-            Some(kernel),
-            budget,
-            &self.leaves,
+            None,
+            Some((kernel, budget, &self.leaves)),
         )?;
+        // lower_inner freshly accepts and independently replays these exact
+        // emitted intervals once, using the same original requests and budget.
         proposal.meanings = Some(self.leaves.clone());
         Ok(proposal)
     }
@@ -190,7 +184,7 @@ struct MeaningCollector<'a, 'b> {
     source: &'a ElaboratedProgram,
     kernel: &'b native::Kernel,
     budget: &'b mut Budget,
-    leaves: Vec<(super::elaborate::OperationKey, CheckedUnitaryLeaf)>,
+    leaves: Vec<CheckedMeaning>,
     bytes: usize,
 }
 impl MeaningCollector<'_, '_> {
@@ -251,7 +245,7 @@ impl MeaningCollector<'_, '_> {
             ));
         }
         // Fix the original request before producing or checking its actual body.
-        let required = program.meaning_targets[&id].finite(span)?;
+        let target = program.meaning_targets[&id].expression(span)?;
         let checking =
             source
                 .has_control_obligations()
@@ -271,8 +265,34 @@ impl MeaningCollector<'_, '_> {
         self.budget
             .charge(proposal.payload().len())
             .map_err(|e| Error::new("limit", span, e.to_string()))?;
-        let check = proposal
-            .check_finite_meaning(self.kernel, &required, self.budget)
+        let check = (|| -> Result<(CheckedUnitaryLeaf, Option<Arc<crate::contract::FunctionEvidence>>)> {
+            if target.references().is_empty() {
+                let required = target.finite().map_err(|e| invalid(span, &e.to_string()))?;
+                let check = proposal.check_finite_meaning(self.kernel, required, self.budget)?;
+                return Ok((check.leaf, None));
+            }
+            let required = source.meaning_artifacts.get(&id)
+                .ok_or_else(|| invalid(span, "original reference target has no fresh native artifact"))?;
+            if proposal.finite_boundary.as_ref().map(|boundary| boundary.signature()) != Some(target.signature()) {
+                return Err(invalid(span, "reference Meaning changes its exact unary Unitary basis tree"));
+            }
+            let accepted = self.kernel.accept(proposal.proposal())
+                .map_err(|e| Error::new(e.code, span, e.to_string()))?;
+            self.budget.charge(accepted.native_exact_work())
+                .map_err(|e| Error::new("limit", span, e.to_string()))?;
+            proposal.replay_with_work(&accepted, self.budget)?;
+            let receipt = Arc::new(crate::contract::FunctionEvidence::check_retained_with_kernel(
+                self.kernel, target.signature().clone(), accepted.raw().clone(), required.raw.clone(),
+                crate::contract::function::RetainedIdentity::shared(definition.path().to_owned(),
+                    program.checked.resolution.path(id), required.sources.clone()), self.budget)
+                .map_err(|e| Error::new(if e.error.is_capacity() {"limit"} else {"contract"}, span, e.to_string()))?);
+            let leaf = contracts::leaf(self.kernel, &receipt, self.budget, span)?;
+            self.bytes = self.bytes.saturating_add(leaf.payload().len());
+            if self.bytes > MAX_CELLS {
+                return Err(Error::new("limit", span, "source Meaning checking exceeds 100000 aggregate provider bytes"));
+            }
+            Ok((leaf, Some(receipt)))
+        })()
             .map_err(|mut error| {
                 let location = match site.origin() {
                     OperationSite::Binding(_, name) => name.clone(),
@@ -287,7 +307,7 @@ impl MeaningCollector<'_, '_> {
                 );
                 error
             })?;
-        self.leaves.push((operation.key(), check.leaf));
+        self.leaves.push((operation.key(), check.0, check.1));
         Ok(())
     }
 }
@@ -744,6 +764,7 @@ fn quantum(atoms: &[Atom], span: Span) -> Result<Slot> {
 }
 struct Emitter<'a> {
     source: &'a ElaboratedProgram,
+    meanings: &'a [CheckedMeaning],
     raw: RawState<u32>,
     calls: usize,
     cells: usize,
@@ -811,6 +832,7 @@ impl Emitter<'_> {
         // the work/depth budget for a new temporary state.
         let mut child = Emitter {
             source: self.source,
+            meanings: self.meanings,
             raw: RawState::new(),
             calls: self.calls,
             cells: self.cells,
@@ -931,6 +953,48 @@ impl Emitter<'_> {
         arguments: Vec<Vec<Atom>>,
         depth: usize,
     ) -> Result<Vec<Atom>> {
+        if let Some(receipt) = self
+            .meanings
+            .iter()
+            .find_map(|(key, _, receipt)| (*key == op.key()).then_some(receipt.as_ref()).flatten())
+        {
+            let [input] = arguments.as_slice() else {
+                return Err(invalid(
+                    op.span(),
+                    "reference Meaning operation requires one whole owner",
+                ));
+            };
+            let slot = quantum(input, op.span())?;
+            let register = &self.raw.registers[&slot];
+            if finite_basis(&register.basis).as_ref() != Some(receipt.signature()) {
+                return Err(invalid(
+                    op.span(),
+                    "reference Meaning operation changes its exact basis",
+                ));
+            }
+            let input = register.token;
+            let bits = register.wires.len();
+            self.reserve_operations(1, op.span())?;
+            let output = self.raw.token();
+            self.raw.operations.push(crate::ir::RawOp::ApplyUnitary {
+                input,
+                output,
+                steps: vec![crate::ir::CircuitStep {
+                    controls: vec![],
+                    action: crate::ir::CircuitAction::Contract {
+                        indices: (0..bits).collect(),
+                        evidence: receipt.clone(),
+                        adjoint: false,
+                    },
+                }],
+            });
+            self.raw
+                .registers
+                .get_mut(&slot)
+                .expect("original operation owner")
+                .token = output;
+            return Ok(vec![Atom::Quantum(slot)]);
+        }
         if let Some(id) = op.definition() {
             return self.invoke(id, arguments, depth, op.span());
         }
@@ -2005,6 +2069,7 @@ fn lower_inner(
     let root = &source.definitions()[subject];
     let mut emitter = Emitter {
         source,
+        meanings: checking.as_ref().map_or(&[], |(_, _, meanings)| *meanings),
         raw: RawState::new(),
         calls: 0,
         cells: 0,
@@ -2290,11 +2355,11 @@ mod tests {
         let foreign = checked
             .leaves
             .iter()
-            .map(|(key, _)| {
+            .map(|(key, _, _)| {
                 let check = identity
                     .check_finite_meaning(&checker, &required, &mut Budget::new(DEFAULT_EXACT_WORK))
                     .unwrap();
-                (key.clone(), check.leaf)
+                (key.clone(), check.leaf, None)
             })
             .collect::<Vec<_>>();
         assert!(!foreign.is_empty());
@@ -2351,7 +2416,7 @@ mod tests {
             let foreign = checked
                 .leaves
                 .iter()
-                .map(|(key, leaf)| {
+                .map(|(key, leaf, _)| {
                     let signature = leaf.boundary().signature().clone();
                     let dim = 1usize << signature.bits().unwrap();
                     let identity =
@@ -2382,7 +2447,7 @@ mod tests {
                         &mut Budget::new(DEFAULT_EXACT_WORK),
                     )
                     .unwrap();
-                    (key.clone(), leaf)
+                    (key.clone(), leaf, None)
                 })
                 .collect::<Vec<_>>();
             assert!(!foreign.is_empty());

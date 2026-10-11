@@ -48,13 +48,9 @@ pub(super) fn charge(steps: &[CircuitStep], cells: &mut usize, span: Span) -> Re
                     permutation,
                     phases,
                 } => indices.len() + permutation.len() + phases.len(),
-                CircuitAction::Contract { .. } => {
-                    return Err(Error::new(
-                        "unsupported",
-                        span,
-                        "source access flattening does not accept opaque contract assertions",
-                    ));
-                }
+                CircuitAction::Contract {
+                    indices, evidence, ..
+                } => indices.len() + evidence.expanded_steps(),
             };
         *cells = cells.saturating_add(size);
         if *cells > MAX_CELLS {

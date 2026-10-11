@@ -14,7 +14,8 @@ use crate::ir::*;
 #[derive(Clone)]
 pub(super) struct DeclaredMeaning {
     pub basis: Ty,
-    pub target: FiniteMeaning,
+    pub target: crate::frontend::meaning::Target,
+    pub raw: RawProgram,
     pub matrix: Matrix,
 }
 #[derive(Clone, Debug, PartialEq)]
@@ -134,6 +135,15 @@ impl Compiler<'_> {
         contract_basis(&basis)
             .bits()
             .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        if let FnBody::MeaningReference { function } = &decl.body {
+            let Callee::User(reference) = self.resolve(&key_name.0, function)? else {
+                unreachable!("common reference judgment requires an ordinary definition")
+            };
+            let target =
+                crate::frontend::meaning::Target::reference(contract_basis(&basis), reference)
+                    .map_err(|e| self.op_error(&key_name.0, function.span, e))?;
+            return self.finish_meaning(key, basis, target);
+        }
         if let FnBody::MeaningCompose { first, second }
         | FnBody::MeaningTensor {
             left: first,
@@ -155,18 +165,7 @@ impl Compiler<'_> {
                 left.compose(right)
             }
             .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
-            let matrix = target
-                .matrix(&mut self.exact_work)
-                .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
-            self.meanings.insert(
-                *key,
-                DeclaredMeaning {
-                    basis,
-                    target,
-                    matrix,
-                },
-            );
-            return Ok(());
+            return self.finish_meaning(key, basis, target);
         }
         let FnBody::Meaning {
             permutation,
@@ -218,14 +217,65 @@ impl Compiler<'_> {
             )
         }
         .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
-        let matrix = target
-            .matrix(&mut self.exact_work)
-            .map_err(|e| self.op_error(&key_name.0, decl.span, e))?;
+        self.finish_meaning(
+            key,
+            basis,
+            crate::frontend::meaning::Target::monomial(target),
+        )
+    }
+    fn finish_meaning(
+        &mut self,
+        key: &Key,
+        basis: Ty,
+        target: crate::frontend::meaning::Target,
+    ) -> Result<(), CompileError> {
+        let declaration = self.declarations[key];
+        let name = self.resolution.declaration(*key).name.clone();
+        let span = declaration.span;
+        let (raw, matrix) = if let Ok(finite) = target.finite() {
+            let raw = finite
+                .target_ir()
+                .map_err(|e| self.op_error(&name.0, span, e))?;
+            let matrix = finite
+                .matrix(&mut self.exact_work)
+                .map_err(|e| self.op_error(&name.0, span, e))?;
+            (raw, matrix)
+        } else {
+            let sources = self.retained_sources(&name.0, span)?;
+            let path = self.resolution.path(*key);
+            let identity = || RetainedIdentity::shared(path.clone(), path.clone(), sources.clone());
+            let mut references = BTreeMap::new();
+            for id in target.references() {
+                let program = self.checked.get(&id).ok_or_else(|| {
+                    self.error(
+                        &name.0,
+                        span,
+                        ErrorCode::InvalidIr,
+                        "original reference function has not been independently checked",
+                    )
+                })?;
+                references.insert(id, program.program().clone());
+            }
+            let raw = target
+                .materialize(&self.kernel, &references, &identity, &mut self.exact_work)
+                .map_err(|e| self.op_error(&name.0, span, e))?;
+            let evidence = FunctionEvidence::check_retained_with_kernel(
+                &self.kernel,
+                target.signature().clone(),
+                raw.clone(),
+                raw.clone(),
+                identity(),
+                &mut self.exact_work,
+            )
+            .map_err(|e| self.op_error(&name.0, span, e.error))?;
+            (raw, evidence.meaning().clone())
+        };
         self.meanings.insert(
             *key,
             DeclaredMeaning {
                 basis,
                 target,
+                raw,
                 matrix,
             },
         );
@@ -435,16 +485,29 @@ impl Compiler<'_> {
             ),
             sources,
         );
-        let budget = &mut self.exact_work;
         let evidence = if let Some(mkey) = &mkey {
-            MeaningEvidence::check_retained_with_kernel(
-                &self.kernel,
-                implementation,
-                self.meanings[mkey].target.clone(),
-                identity,
-                budget,
-            )
-            .map(|e| e.receipt())
+            let target = &self.meanings[mkey];
+            if let Ok(finite) = target.target.finite() {
+                MeaningEvidence::check_retained_with_kernel(
+                    &self.kernel,
+                    implementation,
+                    finite.clone(),
+                    identity,
+                    &mut self.exact_work,
+                )
+                .map(|e| e.receipt())
+            } else {
+                FunctionEvidence::check_retained_with_kernel(
+                    &self.kernel,
+                    target.target.signature().clone(),
+                    implementation,
+                    target.raw.clone(),
+                    identity,
+                    &mut self.exact_work,
+                )
+                .map(Arc::new)
+                .map_err(|e| e.error)
+            }
         } else {
             FunctionEvidence::check_retained_with_kernel(
                 &self.kernel,
@@ -452,7 +515,7 @@ impl Compiler<'_> {
                 implementation.clone(),
                 implementation,
                 identity,
-                budget,
+                &mut self.exact_work,
             )
             .map(Arc::new)
             .map_err(|diagnostic| diagnostic.error)

@@ -549,6 +549,7 @@ impl<'a> Program<'a> {
                     || !matches!(
                         self.decl(id).body,
                         ast::FnBody::Meaning { .. }
+                            | ast::FnBody::MeaningReference { .. }
                             | ast::FnBody::MeaningCompose { .. }
                             | ast::FnBody::MeaningTensor { .. }
                     )
@@ -786,17 +787,20 @@ pub(super) fn program_with<'a, R>(
     let mut effects = BTreeMap::new();
     for id in &order {
         let decl = program.decl(*id);
-        if decl.kind == FnKind::Meaning {
-            continue;
-        }
-        let fact = FunctionEffect::checked(decl.kind, inferred[id]).ok_or_else(|| {
-            SourceError::new(
-                "effect",
-                bodies[id].origin(&inferred),
-                super::effects::assertion_error(&decl.name.text, decl.kind, inferred[id]),
+        let fact = if decl.kind == FnKind::Meaning {
+            None
+        } else {
+            Some(
+                FunctionEffect::checked(decl.kind, inferred[id]).ok_or_else(|| {
+                    SourceError::new(
+                        "effect",
+                        bodies[id].origin(&inferred),
+                        super::effects::assertion_error(&decl.name.text, decl.kind, inferred[id]),
+                    )
+                    .in_module(program.module(*id))
+                })?,
             )
-            .in_module(program.module(*id))
-        })?;
+        };
         if let Some((ceiling, span)) = bodies[id].first_violation(&inferred) {
             let message = if ceiling == crate::ir::Effect::Unitary {
                 super::effects::unitary_required(
@@ -809,8 +813,10 @@ pub(super) fn program_with<'a, R>(
             };
             return Err(SourceError::new("effect", span, message).in_module(program.module(*id)));
         }
-        program.budget.charge(decl.span, 1)?;
-        effects.insert(*id, fact);
+        if let Some(fact) = fact {
+            program.budget.charge(decl.span, 1)?;
+            effects.insert(*id, fact);
+        }
     }
     for (owner, span, region) in &program.unitary_regions {
         if region.inferred_with(&inferred) != Some(crate::ir::Effect::Unitary) {

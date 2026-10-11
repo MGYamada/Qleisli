@@ -97,6 +97,7 @@ pub enum TypeKind {
 pub enum FnBody {
     Natural(Natural),
     Meaning { permutation: bool, function: Ident },
+    MeaningReference { function: Ident },
     MeaningCompose { first: Ident, second: Ident },
     MeaningTensor { left: Ident, right: Ident },
     Basis(BasisExpr),

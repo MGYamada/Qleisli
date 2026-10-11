@@ -571,7 +571,9 @@ where
         (self.charge)(declaration.span, 2)?;
         let mut tasks = vec![match &declaration.body {
             FnBody::Natural(n) => Task::Natural(n),
-            FnBody::Meaning { function, .. } => Task::Reference(function),
+            FnBody::Meaning { function, .. } | FnBody::MeaningReference { function } => {
+                Task::Reference(function)
+            }
             FnBody::MeaningCompose { second, .. } => Task::Reference(second),
             FnBody::MeaningTensor { right, .. } => Task::Reference(right),
             FnBody::Basis(expression) => Task::Basis(expression),

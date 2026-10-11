@@ -144,6 +144,7 @@ fn interface(p: &Program<'_>, id: DefId) -> Result<Interface> {
             | (
                 FnKind::Meaning,
                 ast::FnBody::Meaning { .. }
+                    | ast::FnBody::MeaningReference { .. }
                     | ast::FnBody::MeaningCompose { .. }
                     | ast::FnBody::MeaningTensor { .. }
             )

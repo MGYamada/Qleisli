@@ -594,6 +594,7 @@ pub struct ElaboratedProgram {
     calls: usize,
     folds: usize,
     pub(super) contracts: BTreeMap<(DefId, DefId), Arc<super::raw::contracts::CheckedContract>>,
+    pub(super) meaning_artifacts: BTreeMap<DefId, Arc<super::raw::contracts::CheckedTarget>>,
 }
 
 /// Preflight admission to the hierarchical transport profile, not acceptance
@@ -606,19 +607,25 @@ pub enum HierarchyEligibility {
 }
 
 impl ElaboratedProgram {
-    /// Original equality obligations, including those absent from the selected body.
+    /// Original equality/reference-artifact obligations, including unused declarations.
     pub fn has_function_contracts(&self) -> bool {
         self.instance
             .program
-            .checked
-            .obligations
-            .iter()
-            .any(|obligation| {
-                matches!(
-                    obligation.kind,
-                    crate::frontend::check::ObligationKind::FunctionEquality { .. }
-                )
-            })
+            .meaning_targets
+            .values()
+            .any(|target| !target.references().is_empty())
+            || self
+                .instance
+                .program
+                .checked
+                .obligations
+                .iter()
+                .any(|obligation| {
+                    matches!(
+                        obligation.kind,
+                        crate::frontend::check::ObligationKind::FunctionEquality { .. }
+                    )
+                })
     }
     /// Bind every original closed pair to fresh native evidence in this immutable preparation.
     pub fn check_function_contracts(
@@ -629,6 +636,15 @@ impl ElaboratedProgram {
         super::raw::contracts::check(self, kernel, budget)
     }
     pub(super) fn require_function_contracts(&self) -> Result<()> {
+        for (id, target) in self.instance.program.meaning_targets.iter() {
+            if !target.references().is_empty() && !self.meaning_artifacts.contains_key(id) {
+                return Err(error(
+                    "meaning",
+                    Span::default(),
+                    "original reference Meanings require fresh native artifact checking before lowering",
+                ));
+            }
+        }
         for obligation in &self.instance.program.checked.obligations {
             if let crate::frontend::check::ObligationKind::FunctionEquality {
                 implementation,
@@ -998,6 +1014,11 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
     for &id in extra_roots {
         builder.function(id, BTreeMap::new(), BTreeMap::new(), BTreeMap::new(), 0)?;
     }
+    for target in instance.program.meaning_targets.values() {
+        for id in target.references() {
+            builder.function(id, BTreeMap::new(), BTreeMap::new(), BTreeMap::new(), 0)?;
+        }
+    }
     // Equality targets are closed by the common judgment. Keep them even when
     // their caller is unused, generic, or erased by a zero-count specialization.
     for obligation in &instance.program.checked.obligations {
@@ -1035,6 +1056,7 @@ fn build(instance: &Instantiation, extra_roots: &[DefId]) -> Result<(ElaboratedP
             calls: builder.calls,
             folds: builder.folds,
             contracts: BTreeMap::new(),
+            meaning_artifacts: BTreeMap::new(),
         },
         work,
     ))

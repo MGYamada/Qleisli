@@ -250,7 +250,13 @@ impl Parser {
             self.expect(&TokenKind::Colon)?;
             let return_type = self.basis_type()?;
             self.expect(&TokenKind::Equals)?;
-            let body = if self.word("compose") || self.word("tensor") {
+            let body = if self.word("reference") {
+                self.bump();
+                self.expect(&TokenKind::LParen)?;
+                let function = self.ident()?;
+                self.expect(&TokenKind::RParen)?;
+                FnBody::MeaningReference { function }
+            } else if self.word("compose") || self.word("tensor") {
                 let tensor = self.word("tensor");
                 self.bump();
                 self.expect(&TokenKind::LParen)?;

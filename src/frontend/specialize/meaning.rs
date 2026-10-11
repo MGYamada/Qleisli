@@ -203,13 +203,11 @@ pub(super) enum Rows {
         permutation: Vec<u16>,
         phases: Vec<u8>,
     },
+    General(crate::frontend::meaning::Target),
 }
 impl TargetTable {
-    pub(super) fn finite(
-        &self,
-        span: Span,
-    ) -> super::Result<crate::contract::meaning::FiniteMeaning> {
-        use crate::contract::{BasisType, meaning::FiniteMeaning};
+    fn signature(basis: &Ty, span: Span) -> super::Result<crate::contract::BasisType> {
+        use crate::contract::BasisType;
         fn signature(ty: &Ty, span: Span) -> super::Result<BasisType> {
             Ok(match &ty.kind {
                 Kind::Unit => BasisType::Unit,
@@ -238,8 +236,37 @@ impl TargetTable {
         }
         // The retained table/tree was bounded before preparation. Conversion
         // visits at most 4096 nodes/depth 64 and copies at most 64 rows.
-        let basis = signature(&self.basis, span)?;
+        signature(basis, span)
+    }
+    pub(super) fn expression(&self, span: Span) -> super::Result<crate::frontend::meaning::Target> {
+        match &self.rows {
+            Rows::General(target) => Ok(target.clone()),
+            _ => self
+                .finite(span)
+                .map(crate::frontend::meaning::Target::monomial),
+        }
+    }
+    pub(super) fn references(&self) -> std::collections::BTreeSet<DefId> {
+        match &self.rows {
+            Rows::General(target) => target.references(),
+            _ => std::collections::BTreeSet::new(),
+        }
+    }
+    pub(super) fn finite(
+        &self,
+        span: Span,
+    ) -> super::Result<crate::contract::meaning::FiniteMeaning> {
+        use crate::contract::meaning::FiniteMeaning;
+        let basis = Self::signature(&self.basis, span)?;
         let requested = match &self.rows {
+            Rows::General(target) if target.signature() == &basis => target.finite().cloned(),
+            Rows::General(_) => {
+                return Err(super::Error::new(
+                    "meaning",
+                    span,
+                    "retained Meaning target changes its exact basis tree",
+                ));
+            }
             Rows::Monomial {
                 permutation,
                 phases,
@@ -260,6 +287,7 @@ impl TargetTable {
     }
     pub(super) fn cells(&self) -> usize {
         match &self.rows {
+            Rows::General(target) => target.cells(),
             Rows::Permutation(rows) | Rows::Phase(rows) => rows.len(),
             Rows::Monomial {
                 permutation,
@@ -486,6 +514,21 @@ impl<'a> Context<'a, '_> {
             second.span,
             &mut |span, cells| self.budget.charge(span, cells),
         )?;
+        if matches!(left.rows, Rows::General(_)) || matches!(right.rows, Rows::General(_)) {
+            let left = left.expression(first.span).map_err(SourceError::from)?;
+            let right = right.expression(second.span).map_err(SourceError::from)?;
+            let target = if tensor {
+                left.tensor(&right)
+            } else {
+                left.compose(&right)
+            }
+            .map_err(|e| self.error(declaration.span, e.to_string()))?;
+            self.budget.charge(declaration.span, target.cells())?;
+            return Ok(TargetTable {
+                basis,
+                rows: Rows::General(target),
+            });
+        }
         let left = left
             .finite(first.span)
             .map_err(|e| self.error(first.span, e.to_string()))?;
@@ -513,6 +556,19 @@ impl<'a> Context<'a, '_> {
     }
     fn target(&self) -> Result<TargetTable> {
         let declaration = self.declaration();
+        if let FnBody::MeaningReference { function } = &declaration.body {
+            let basis = self.closed(&self.interfaces[&self.definition].result, declaration.span)?;
+            let signature =
+                TargetTable::signature(&basis, declaration.span).map_err(SourceError::from)?;
+            let target =
+                crate::frontend::meaning::Target::reference(signature, self.global(function)?)
+                    .map_err(|e| self.error(function.span, e.to_string()))?;
+            self.budget.charge(declaration.span, target.cells())?;
+            return Ok(TargetTable {
+                basis,
+                rows: Rows::General(target),
+            });
+        }
         let FnBody::Meaning {
             permutation,
             function,

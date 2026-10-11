@@ -96,11 +96,9 @@ pub(super) fn check(
                         permutation,
                         phases,
                     } => indices.len() + permutation.len() + phases.len(),
-                    CircuitAction::Contract { .. } => {
-                        return Err(
-                            site.invalid("transformed Meaning cannot acquire opaque evidence")
-                        );
-                    }
+                    CircuitAction::Contract {
+                        indices, evidence, ..
+                    } => indices.len() + evidence.expanded_steps(),
                 };
             charge(cells, size, site)?;
             let mut step = original.clone();
@@ -109,12 +107,12 @@ pub(super) fn check(
             }
             match &mut step.action {
                 CircuitAction::Hadamard { target } => map(target)?,
-                CircuitAction::Monomial { indices, .. } => {
+                CircuitAction::Monomial { indices, .. }
+                | CircuitAction::Contract { indices, .. } => {
                     for axis in indices {
                         map(axis)?;
                     }
                 }
-                CircuitAction::Contract { .. } => unreachable!("rejected above"),
             }
             steps.push(step);
         }

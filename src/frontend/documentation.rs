@@ -63,6 +63,7 @@ pub(crate) fn attach(
                     return Some((opening, index));
                 }
                 super::ast::FnBody::Meaning { .. }
+                | super::ast::FnBody::MeaningReference { .. }
                 | super::ast::FnBody::MeaningCompose { .. }
                 | super::ast::FnBody::MeaningTensor { .. } => return None,
                 super::ast::FnBody::Quantum(body) => body.span.start,
@@ -187,6 +188,7 @@ fn render(
         ));
         let end = match &decl.body {
             super::ast::FnBody::Meaning { .. }
+            | super::ast::FnBody::MeaningReference { .. }
             | super::ast::FnBody::MeaningCompose { .. }
             | super::ast::FnBody::MeaningTensor { .. } => decl.span.end,
             super::ast::FnBody::Quantum(body) if !decl.requires.is_empty() => body.span.start,

@@ -1158,6 +1158,10 @@
         "MeaningTensor": {
           "declaration": "MeaningTensor { left: Ident, right: Ident }",
           "group": "source"
+        },
+        "MeaningReference": {
+          "declaration": "MeaningReference { function: Ident }",
+          "group": "source"
         }
       }
     },
@@ -3332,7 +3336,7 @@
     },
     {
       "path": "src/frontend/ast.rs",
-      "sha256": "1eb11546eb1174ebd679b7eeeba169d9d923574f4ad8e73be14876b059dc129c",
+      "sha256": "64867002103b64537366b9d474d6603f8f6c5bdff6ca0a55bff3a93da892b072",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3381,7 +3385,7 @@
     },
     {
       "path": "src/frontend/check.rs",
-      "sha256": "bb8cda4a372af60c69013b1c5b4796ba0ce530bd3c8ac5838c11a7d659121e23",
+      "sha256": "79e54ea7b2bee0ab230992ad9f937e388842c005340f82e6bc3a4be74976c988",
       "surface": {
         "declarations": [],
         "functions": [
@@ -3399,7 +3403,7 @@
     },
     {
       "path": "src/frontend/check/body.rs",
-      "sha256": "935d99b099dda80a5449ffe54bb88add130a02afa30bd845036408b6ddb28353",
+      "sha256": "ab3c60b8a8e2093b981604032074419623583a63cc35e8a852ceb0ac836585c3",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3419,7 +3423,7 @@
     },
     {
       "path": "src/frontend/check/body/special.rs",
-      "sha256": "b601f41555952d5958a397dd6dd439299b99e007019095cffc3d070474fcfaf2",
+      "sha256": "5ef410fd47e232a71a820d8c2e576dd38b5bae1c5c1677eb13b7fef33e0d7032",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3429,7 +3433,7 @@
     },
     {
       "path": "src/frontend/check/declarations.rs",
-      "sha256": "c4a937741411e17f4af22736bb9eeebc6f802ef1527af5d6648200e8c36a8737",
+      "sha256": "592354b281833e171ded7003db5703c15d1e0b2a6a06e40d2b5490447a0d86d1",
       "surface": {
         "declarations": [],
         "functions": [],
@@ -3528,7 +3532,7 @@
     },
     {
       "path": "src/frontend/compile/lower/function_contract.rs",
-      "sha256": "ae92c3c0b7f60dc30a9b25a3fdb753d971722cf7e84b000e15329638fc070356",
+      "sha256": "15a6393a10256e07856959a069b31147d5e8b2db3ac6951b0318db68ee89f435",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3598,7 +3602,7 @@
     },
     {
       "path": "src/frontend/compile/mod.rs",
-      "sha256": "2e7079e70cb5db81d0859494904b2b0d695aab2c16e8780420cea175e9ea6b24",
+      "sha256": "48a3b08fba3c18c01e4e379ddae6448b40334b3c9ceec65c19a1cb5acc256d50",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3634,7 +3638,7 @@
     },
     {
       "path": "src/frontend/compile/operations.rs",
-      "sha256": "22f9a386acdfe2230a873c17db4991745041d2bb98561057e99a51a28482c808",
+      "sha256": "bd48bb0fa042a524d175c7612875630c3b7c7d59da216a21211c8524a30294ea",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -3681,7 +3685,7 @@
     },
     {
       "path": "src/frontend/documentation.rs",
-      "sha256": "09c3f93180f1538552030d9cef667d8c951229051d78242b228644d2edce585d",
+      "sha256": "239495d8a77186891cfb148955a57504a288fcd03b3743259608a3c56696d9c8",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3772,7 +3776,7 @@
     },
     {
       "path": "src/frontend/mod.rs",
-      "sha256": "0a1c4bf844cb0bdd52b07bcd8eb5a14cbf8b8e1fee8d25ce7858ab6cb5d4962a",
+      "sha256": "0217e2e36230b516646fcae1e8f80dbfdc247e2a0511fa523458e58318013b17",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3812,7 +3816,7 @@
     },
     {
       "path": "src/frontend/parser.rs",
-      "sha256": "fe2955992ebbfc99ed0a3bc6ef5fe04b1e070341098149fdf40c4913bbceb30a",
+      "sha256": "2b45b2e6520329112a4672deb9f7d3f4788c9ab15166076fade1323d1ab56672",
       "group": "source",
       "surface": {
         "declarations": [
@@ -3953,7 +3957,7 @@
     },
     {
       "path": "src/frontend/resolve/locals.rs",
-      "sha256": "61dd3776fd35289157bc815922d5fcabbd2fe06dc6603d4b9a19bdce07b32d58",
+      "sha256": "e2e274cc224b82364fa9f790eb538d89e6821a0c2157eb217569a9f409a62d0c",
       "group": "source",
       "surface": {
         "declarations": [],
@@ -4065,7 +4069,7 @@
     },
     {
       "path": "src/frontend/specialize/elaborate.rs",
-      "sha256": "2c372530e361bd82c7df906eb41e65cb0d905b005c84050f7214b78e1cb49d58",
+      "sha256": "368e920c6f88a180df10fc196c3722490ddca680b58b488e9be7122fb8119de6",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4178,7 +4182,7 @@
     },
     {
       "path": "src/frontend/specialize/lower.rs",
-      "sha256": "eb41a0029f7a1de07b70323f5f3ffd150ec94ca62ee66c84de839f379091c58a",
+      "sha256": "b4d6844043add97171a4690924dac2e88b42483c6eb4b2f67615b7759d0b0668",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4245,7 +4249,7 @@
     },
     {
       "path": "src/frontend/specialize/meaning.rs",
-      "sha256": "3ac169c1f0aba7499d1b1c8cca98435ed3e798fa96985427f91c24aa0a2ce17d",
+      "sha256": "a6d5291ac476383694326631e4f01589470d60e66b59b78738399ea0328d0f2b",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4296,7 +4300,7 @@
     },
     {
       "path": "src/frontend/specialize/raw.rs",
-      "sha256": "ba5b0aa996a9d718d0fecca5575df2c176dcbdf22dd11c8caeecb0ac777ec41f",
+      "sha256": "7d2496dc4407da60d1c80b1ecf29f2c949c46b0db2d5c40cfbfdd65aacef4fd1",
       "group": "sized-source",
       "surface": {
         "declarations": [
@@ -4336,7 +4340,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/circuit.rs",
-      "sha256": "1e04318ef653e17a17b2ec356e70bed9607db96003f842de977e68d92da84f17",
+      "sha256": "ca0941db7e2e8dbdd0d88ccdde3bb0b82ae2da52c6dd61ca2d900f23cee657cd",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4346,7 +4350,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/contracts.rs",
-      "sha256": "6364a16fbb01751a30e24a39bd2bb88b49f0e6c5dbe9fb112dc432b0cb691a43",
+      "sha256": "9d3688bec16d09f61a9fcb3c5964ba7a8a8c1e72fa328425cbbe327531bafa0a",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4356,7 +4360,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation.rs",
-      "sha256": "451d8ef3e494643b6c0d6b024cda6eb671344b1fd81b9bbdac609df94bd161f2",
+      "sha256": "be7875ee6735e4b31fc2476228c92457fb98ed2a0d94733f9e6a3aa9679e7010",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4372,7 +4376,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access.rs",
-      "sha256": "110523b062f8a9286c66f9c8a8deb44daba3bdccbdfe5b7db2fca0146d14c885",
+      "sha256": "e6e5f85f2adeee22da5cf24eb0939f6acefb19e8381cb78bc31973a712e1c08d",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -4382,7 +4386,7 @@
     },
     {
       "path": "src/frontend/specialize/raw/preservation/access_meaning.rs",
-      "sha256": "317789616568bc7c2d8e1a4f78e9b17ee356c1022d8e1d37d306a6dd3fb3cceb",
+      "sha256": "7c470677efcf7086ddacd21269b615b0f85715a51075a3637948e1fdc3cf73bf",
       "group": "sized-source",
       "surface": {
         "declarations": [],
@@ -5146,6 +5150,16 @@
       "sha256": "24820273afe49a3c5a52486045782ce7442d1e7e47cc88cf928c7cd1351be8ef",
       "group": "raw-core",
       "surface": null
+    },
+    {
+      "path": "src/frontend/meaning.rs",
+      "sha256": "0eb9148a353a9e468caa573f2cf0bdad3eee4899af3c4873a8de4a18e0b23c9c",
+      "group": "source",
+      "surface": {
+        "declarations": [],
+        "functions": [],
+        "capacity_constants": []
+      }
     }
   ],
   "boundaries": [

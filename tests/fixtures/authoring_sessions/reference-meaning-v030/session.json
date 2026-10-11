@@ -30,7 +30,10 @@
         "observations/contract-negative-h-project-check.json",
         "observations/contract-hhh-selected-check.json",
         "observations/contract-hhh-selected-after.json",
-        "observations/contract-hhh-selected-corrected-after.json"
+        "observations/contract-hhh-selected-corrected-after.json",
+        "observations/candidate-project-after.json",
+        "observations/candidate-raw-after.json",
+        "observations/candidate-hierarchy-after.json"
       ]
     }
   ],

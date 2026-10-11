@@ -14,6 +14,7 @@ mod error;
 mod formals;
 pub mod lexer;
 mod linear;
+mod meaning;
 mod ordinary;
 pub mod parser;
 mod pattern;

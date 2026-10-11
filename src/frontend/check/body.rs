@@ -273,6 +273,9 @@ pub(super) fn check(p: &mut Program<'_>, id: DefId) -> Result<(BodyEffects, Vec<
             permutation,
             function,
         } => checker.meaning(*permutation, function, &expected, &scope)?,
+        FnBody::MeaningReference { function } => {
+            checker.meaning_reference(function, &expected, &scope)?
+        }
         FnBody::MeaningCompose { first, second } => {
             checker.meaning_binary(first, second, false, &expected, &scope)?
         }

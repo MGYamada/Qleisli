@@ -233,10 +233,7 @@ impl Compiler<'_> {
             let implementation = raw(&implementation_key)?;
             let signature = contract_basis(basis);
             let specification = if let Some(key) = declared_meaning {
-                self.meanings[&key]
-                    .target
-                    .target_ir()
-                    .map_err(|e| self.error(module, span, ErrorCode::Contract, e.to_string()))?
+                self.meanings[&key].raw.clone()
             } else {
                 raw(&specification_key)?
             };

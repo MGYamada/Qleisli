@@ -142,6 +142,58 @@ impl Checker<'_, '_> {
         self.program.budget.ty(expr.span, &result)?;
         Ok(result)
     }
+    pub(super) fn meaning_reference(
+        &mut self,
+        function: &Ident,
+        basis: &Ty,
+        scope: &Scope,
+    ) -> Result<()> {
+        let Target::Declaration(id) = self.resolve(function)? else {
+            return Err(SourceError::new(
+                "type",
+                function.span,
+                "reference requires a closed ordinary principal-Unitary function",
+            ));
+        };
+        if matches!(
+            self.program.decl(id).kind,
+            FnKind::Static | FnKind::Classical | FnKind::Meaning
+        ) {
+            return Err(SourceError::new(
+                "type",
+                function.span,
+                "reference requires a closed ordinary principal-Unitary function",
+            ));
+        }
+        let interface = &self.program.interfaces[&id];
+        if !interface.statics.is_empty() || interface.params.len() != 1 {
+            return Err(SourceError::new(
+                "type",
+                function.span,
+                "reference requires a closed ordinary principal-Unitary function with one Q<A> input",
+            ));
+        }
+        let expected = Ty::quantum(self.program.budget.copy_ty(function.span, basis)?);
+        self.program.budget.ty(function.span, &expected)?;
+        normalize::expect(
+            &interface.params[0],
+            &expected,
+            &scope.context,
+            function.span,
+            &self.program.budget,
+        )?;
+        normalize::expect(
+            &interface.result,
+            &expected,
+            &scope.context,
+            function.span,
+            &self.program.budget,
+        )?;
+        // Formation owns no live quantum state and grants no operation access.
+        // The dependency edge still participates in all-declaration cycle checks.
+        self.effects.require_unitary(id, function.span);
+        self.edge(id, function.span)
+    }
     pub(super) fn meaning_binary(
         &mut self,
         first: &Ident,

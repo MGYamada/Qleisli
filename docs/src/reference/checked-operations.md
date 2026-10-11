@@ -104,15 +104,17 @@ A finite endomorphic Meaning declaration has one of these bodies:
 ```text
 MeaningBody ::= permutation_by ( Identifier )
               | phase_by ( Identifier )
+              | reference ( Identifier )
               | compose ( Identifier , Identifier )
               | tensor ( Identifier , Identifier )
 ```
 
-`compose` and `tensor` are contextual identifiers in this position, not reserved
-words. Operands resolve to declared Meanings through ordinary visibility rules;
-forward references are allowed, while dependency cycles reject. Every declared
-Meaning is checked, including unused declarations. A runtime value or classical
-function name is not a Meaning operand.
+`reference`, `compose` and `tensor` are contextual identifiers in this position,
+not reserved words. The operands of `compose` and `tensor` resolve to declared
+Meanings through ordinary visibility rules; `reference` instead resolves its
+function as described below. Forward references are allowed, while dependency
+cycles reject. Every declared Meaning is checked, including unused declarations.
+A runtime value or classical function name is not a Meaning operand.
 
 If `First` and `Second` both have the exact basis tree `A`,
 `meaning M: A = compose(First, Second);` applies First and then Second.
@@ -140,7 +142,7 @@ meaning ZX: Bit = compose(Z, X);
 meaning Ordered: (Bit, Bit) = tensor(Z, X);
 ```
 
-These constructors normalize monomial targets within the existing six-bit
+For monomial operands, these constructors normalize targets within the existing six-bit
 finite bound and work limits. Equality retains every column, exact phase and
 axis order; it is not probability equality or equality up to global phase.
 For example, `compose(X, Z)` differs from `ZX` by a minus sign. Target formation
@@ -148,14 +150,61 @@ does not prove a provider correct: `checked_op` and refined parameters still
 require the existing fresh native comparison against the independently formed
 request, with original source/dependency and provider identities retained.
 
+### Reference programs
+
+`meaning H: Bit = reference(reference_h);` names one closed ordinary function
+whose principal effect is Unitary and whose exact interface is
+`Q<Bit> -> Q<Bit>`. The general rule uses the same exact basis `A` on both
+sides. The argument is a single resolved function identifier; static arguments,
+constructed operations, classical/static functions and other Meaning names
+are not accepted. Visibility and all-declaration dependency-cycle checks apply,
+including cycles through `apply_contract` and `checked_op`. A declared effect
+assertion cannot replace inference of the actual principal effect.
+
+```qli
+use std::quantum::h;
+
+fn reference_h(q: Q<Bit>) -> Q<Bit> { h(q) }
+meaning H: Bit = reference(reference_h);
+meaning HH: Bit = compose(H, H);
+```
+
+The reference contributes its independently checked original Raw artifact and
+dependencies. A fresh native exact equation compares the implementation with
+that request. In both concrete adapters, emitted contract receipts retain both
+artifacts, their dependencies and the original source snapshot. A matching
+matrix, function name or source annotation cannot substitute another receipt.
+Unused targets, unused generic equality obligations and zero-repeat child
+requests are checked before emission. This remains bounded implementation and
+artifact-attachment checking, not a proof that source elaboration preserves its
+intended meaning or that a reference program is an adequate specification.
+
+Composition applies the first operand and then the second; tensor assigns
+the left operand to low-order axes. Either operand may contain references or
+monomial targets. Exact complex phase, ordered basis trees and zero-axis
+`Q<Unit>` scalar action remain observable in equality. A reference graph is
+retained even when its denotation happens to be monomial, such as a reference
+to identity or `compose(H, H)`. The public monomial-only `FiniteMeaning`
+accessor explicitly rejects every reference-containing graph.
+
+The existing exact carrier, six-bit bound, arithmetic/work limits and native
+acceptance profiles remain in force. Reference expression graphs have at most
+4,096 cells and depth 64, with at most 100,000 aggregate materialized artifact
+bytes. The selected adapter additionally retains its existing call/dependency
+depth, operation, source-snapshot and aggregate provider limits; an in-limit
+expression is not a promise that every concrete profile can materialize it.
+Exhaustion or unsupported equality rejects without approximation. Formation
+creates no live owner or inverse/control capability. Existing capability and
+source-control checks still govern those uses.
+
 The finite source route supports its existing closed observing entry. The
 selected hierarchy route supports its existing pure input/output entry for
 these refined operations; a readout entry outside its existing profile still
 rejects. No readout/instrument rule is broadened by Meaning composition.
 General arrows and rectangular Meanings are deferred beyond all of v0.3.0
 under [#83](https://github.com/MGYamada/Qleisli/issues/83), with no future release
-target assigned. Endomorphic nonmonomial/reference Meaning, instrument Meaning
-and same-basis matrix-versus-composite equality remain unfinished under
+target assigned. Instrument Meaning and general same-basis
+matrix-versus-composite hierarchy equality remain unfinished under
 [#46](https://github.com/MGYamada/Qleisli/issues/46). These bounded constructors
 do not complete that Issue or establish source-to-request preservation; its
 remaining work must not reintroduce deferred general-arrow support.

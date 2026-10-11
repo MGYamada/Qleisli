@@ -70,11 +70,9 @@ impl Trace<'_, '_, '_> {
                     permutation,
                     phases,
                 } => indices.len() + permutation.len() + phases.len(),
-                CircuitAction::Contract { .. } => {
-                    return Err(self
-                        .site
-                        .invalid("source access cannot be replaced by opaque evidence"));
-                }
+                CircuitAction::Contract {
+                    indices, evidence, ..
+                } => indices.len() + evidence.expanded_steps(),
             };
         self.charge(count)?;
         if self.steps.len() >= MAX_STEPS {
@@ -241,7 +239,7 @@ impl Trace<'_, '_, '_> {
             .meanings
             .iter()
             .enumerate()
-            .filter_map(|(index, (required, _))| (*required == key).then_some(index))
+            .filter_map(|(index, (required, _, _))| (*required == key).then_some(index))
             .collect::<Vec<_>>();
         let input = if leaves.is_empty() {
             vec![]
@@ -297,6 +295,42 @@ impl Trace<'_, '_, '_> {
         arguments: Vec<Vec<Logical>>,
         depth: usize,
     ) -> Result<Vec<Logical>> {
+        if let Some(receipt) = self
+            .meanings
+            .iter()
+            .find_map(|(key, _, receipt)| (*key == op.key()).then_some(receipt.as_ref()).flatten())
+        {
+            let [input] = arguments.as_slice() else {
+                return Err(self
+                    .site
+                    .invalid("reference Meaning access changes its unary argument"));
+            };
+            let axes = self.owner(input)?;
+            let (ports, effect, _) =
+                super::super::operation_signature(op, self.source.definitions(), op.span())?;
+            if ports.input != ports.output
+                || effect != crate::ir::Effect::Unitary
+                || ports
+                    .input
+                    .quantum_basis()
+                    .and_then(super::super::finite_basis)
+                    .as_ref()
+                    != Some(receipt.signature())
+            {
+                return Err(self
+                    .site
+                    .invalid("reference Meaning access changes its exact interface"));
+            }
+            self.push(CircuitStep {
+                controls: vec![],
+                action: CircuitAction::Contract {
+                    indices: axes.clone(),
+                    evidence: receipt.clone(),
+                    adjoint: false,
+                },
+            })?;
+            return Ok(vec![Logical::Quantum(axes)]);
+        }
         if let Some(id) = op.definition() {
             return self.function(id, arguments, depth);
         }
@@ -843,11 +877,7 @@ fn invert(steps: &mut [CircuitStep], site: Site<'_>) -> Result<()> {
                 *permutation = inverse;
                 *phases = conjugate;
             }
-            CircuitAction::Contract { .. } => {
-                return Err(
-                    site.invalid("source inverse cannot acquire an opaque contract assertion")
-                );
-            }
+            CircuitAction::Contract { adjoint, .. } => *adjoint = !*adjoint,
         }
     }
     Ok(())

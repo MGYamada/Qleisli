@@ -819,15 +819,13 @@ fn process_loaded_project_details(
             compiler.basis.insert(*key, function);
         }
     }
+    let mut main = None;
     for key in &order {
         compiler.checking = Some(*key);
         if compiler.declarations[key].kind == FnKind::Meaning {
             compiler.compile_meaning(key)?;
+            continue;
         }
-    }
-    let mut main = None;
-    for key in &order {
-        compiler.checking = Some(*key);
         if compiler.declarations[key].static_params.is_empty()
             && !matches!(
                 compiler.declarations[key].kind,
